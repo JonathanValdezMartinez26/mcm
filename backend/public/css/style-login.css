@@ -1,0 +1,132 @@
+/* Import Lib. and Fonts */
+@import 'https://daneden.github.io/animate.css/animate.min.css';
+@import url(http://weloveiconfonts.com/api/?family=fontawesome);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700);
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300);
+
+* {
+  box-sizing: border-box;
+}
+
+    [class*="fontawesome-"]:before {
+      font-family: 'FontAwesome', sans-serif,"Open Sans";
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background-color: #292931;
+      color: #606468;
+      font: 400 0.875rem/1.5 "Open Sans","source sans pro",sans-serif;
+    }
+    .signin-form {
+      width: 300px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -moz-transform:translate(-50%,-50%);
+      -webkit-transform:translate(-50%,-50%);
+      transform:translate(-50%,-50%);
+    }
+    .signin-form h2 {
+      margin: 22px;
+      text-align: center;
+      font-size: 35px;
+      font-family:sans-serif,'source sans pro';
+      font-weight: 600;
+      color: #d0d3d4;
+    }
+    .signin-form .form-row {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      margin-bottom: 17px;
+    }
+    .signin-form input {
+      margin: 0;
+      width: 100%;
+      padding: 0;
+      color: inherit;
+      font: inherit;
+      border: 0;
+      outline: 0;
+      -moz-transition: background-color .2s linear;
+      -webkit-transition: background-color .2s linear;
+      transition: background-color .2s linear;
+    }
+    .form label,
+    .form input[type="text"],
+    .form input[type="password"] {
+      padding: 10px;
+      border-radius: 3px;
+    }
+    .form label {
+      font-size: 20px;
+      color: #e7e7e7;
+      background-color: #363b41;
+      border-bottom-right-radius: 0;
+      border-top-right-radius: 0;
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+    .form input[type="text"], .form input[type="password"] {
+      color: #eee;
+      background-color: #3b4148;
+      border-bottom-left-radius: 0;
+      border-top-left-radius: 0;
+    }
+    .form input[type="text"]:focus, .form input[type="text"]:hover, .form input[type="password"]:focus, .form input[type="password"]:hover {
+      background-color: #434A52;
+      border-top-right-radius: 6px;
+      border-bottom-right-radius: 6px;
+    }
+    .form #signin {
+      opacity: 0;
+      display: none;
+    }
+    .form .virtual-signin {
+      position: absolute;
+      left: 50%;
+      margin-top:10px;
+      transform:translate(-50%,0);
+    }
+
+    .signin-label {
+      padding-left: 10px;
+    }
+    .fontawesome-unlock {
+      color: #fff;
+      font-size: 32px;
+    }
+    .unlock {
+      font-size: 30px;
+    }
+
+    /* Gear Effects */
+    #gear {
+      display: block;
+      width: 30px;
+      height: 30px;
+      background: url(http://i.imgur.com/lOBxb.png);
+      -moz-animation: gear 2s infinite ease-in;
+      -webkit-animation: gear 2s infinite ease-in;
+      animation: gear 2s infinite linear;
+      -webkit-animation-play-state: paused;
+      animation-play-state: paused;
+      -webkit-animation-play-state: running;
+      animation-play-state: running;
+    }
+    @-webkit-keyframes gear {
+      0% { -webkit-transform: rotate(0deg);transform: rotate(0deg);}
+      100% { -webkit-transform: rotate(360deg);transform: rotate(360deg); }
+    }
+    @-moz-keyframes gear {
+      0% { -webkit-transform: rotate(0deg);transform: rotate(0deg);}
+      100% { -webkit-transform: rotate(360deg);transform: rotate(360deg); }
+    }
+    @keyframes gear {
+      0% { -webkit-transform: rotate(0deg);transform: rotate(0deg);}
+      100% { -webkit-transform: rotate(360deg);transform: rotate(360deg); }
+    }

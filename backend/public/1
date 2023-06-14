@@ -1,0 +1,409 @@
+<?php
+namespace App\models;
+defined("APPPATH") OR die("Access denied");
+
+use \Core\Database;
+use \App\interfaces\Crud;
+use \App\controllers\UtileriasLog;
+
+class AdminIncidencia implements Crud{
+
+    public static function getAll(){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+        SELECT
+          c.catalogo_colaboradores_id,
+          c.clave_noi,
+          c.nombre,
+          c.apellido_paterno,
+          c.apellido_materno,
+          s.nombre AS status,
+          c.motivo,
+          c.sexo,
+          c.numero_identificador,
+          c.rfc,
+          e.nombre AS catalogo_empresa_id,
+          c.nombre AS catalogo_lector_id,
+          u.nombre AS catalogo_ubicacion_id,
+          d.nombre AS catalogo_departamento_id,
+          p.nombre AS catalogo_puesto_id,
+          h.nombre AS catalogo_horario_id,
+          c.fecha_alta,
+          c.fecha_baja,
+          c.foto,
+          c.pago,
+          c.opcion,
+          c.numero_empleado
+        FROM catalogo_colaboradores c
+        JOIN catalogo_empresa e ON e.catalogo_empresa_id = c.catalogo_empresa_id
+        JOIN catalogo_ubicacion u ON u.catalogo_ubicacion_id = c.catalogo_ubicacion_id
+        JOIN catalogo_departamento d ON d.catalogo_departamento_id = c.catalogo_departamento_id
+        JOIN catalogo_puesto p ON p.catalogo_puesto_id = c.catalogo_puesto_id
+        JOIN catalogo_horario h ON h.catalogo_horario_id = c.catalogo_horario_id
+        JOIN catalogo_status s ON s.catalogo_status_id = c.status WHERE c.status !=2
+sql;
+        return $mysqli->queryAll($query);
+    }
+
+    public static function getAllColaboradores($departamento, $usuario){
+        if($usuario == "root")
+          $queryWhere = "";
+        else
+          $queryWhere = " AND c.catalogo_departamento_id = '$departamento' ";
+
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+SELECT c.catalogo_colaboradores_id, c.foto, c.numero_empleado, s.nombre AS status, c.nombre, c.apellido_paterno, c.apellido_materno, d.nombre AS nombre_departamento, e.nombre AS nombre_empresa FROM catalogo_colaboradores AS c INNER JOIN catalogo_empresa e ON (e.catalogo_empresa_id = c.catalogo_empresa_id) INNER JOIN catalogo_departamento AS d ON (c.catalogo_departamento_id = d.catalogo_departamento_id) INNER JOIN catalogo_status AS s On (s.catalogo_status_id = c.status) WHERE s.catalogo_status_id != 2 {$queryWhere}
+sql;
+        return $mysqli->queryAll($query);
+    }
+
+    public static function getAllColaboradoresSemanal($departamento, $usuario){
+        if($usuario == "root")
+          $queryWhere = "";
+        else
+          $queryWhere = " AND c.catalogo_departamento_id = '$departamento' ";
+
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+SELECT c.catalogo_colaboradores_id, c.foto, c.numero_empleado, s.nombre AS status, c.nombre, c.apellido_paterno, c.apellido_materno, d.nombre AS nombre_departamento, e.nombre AS nombre_empresa FROM catalogo_colaboradores AS c INNER JOIN catalogo_empresa e ON (e.catalogo_empresa_id = c.catalogo_empresa_id) INNER JOIN catalogo_departamento AS d ON (c.catalogo_departamento_id = d.catalogo_departamento_id) INNER JOIN catalogo_status AS s On (s.catalogo_status_id = c.status) WHERE s.catalogo_status_id != 2 {$queryWhere} AND c.Pago = 'Semanal'
+sql;
+        return $mysqli->queryAll($query);
+    }
+
+    public static function getAllColaboradoresQuincenal($departamento, $usuario){
+        if($usuario == "root")
+          $queryWhere = "";
+        else
+          $queryWhere = " AND c.catalogo_departamento_id = '$departamento' ";
+
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+SELECT c.catalogo_colaboradores_id, c.foto, c.numero_empleado, s.nombre AS status, c.nombre, c.apellido_paterno, c.apellido_materno, d.nombre AS nombre_departamento, e.nombre AS nombre_empresa FROM catalogo_colaboradores AS c INNER JOIN catalogo_empresa e ON (e.catalogo_empresa_id = c.catalogo_empresa_id) INNER JOIN catalogo_departamento AS d ON (c.catalogo_departamento_id = d.catalogo_departamento_id) INNER JOIN catalogo_status AS s On (s.catalogo_status_id = c.status) WHERE s.catalogo_status_id != 2 {$queryWhere} AND c.Pago = 'Quincenal'
+sql;
+        return $mysqli->queryAll($query);
+    }
+
+    public static function getDataDate($numeroEmpleado){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+SELECT c.catalogo_colaboradores_id, op.date_check, h.hora_entrada, h.hora_salida, h.tolerancia_entrada FROM catalogo_colaboradores AS c INNER JOIN catalogo_horario AS h ON (h.catalogo_horario_id = c.catalogo_horario_id) INNER JOIN operacion_checador AS op WHERE c.catalogo_colaboradores_id = 1 AND op.numero_empleado = '$numeroEmpleado'
+sql;
+      return $mysqli->queryAll($query);
+    }
+
+    public static function getHorariosColaborador($id){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+select ch.catalogo_horario_id, ch.horario_default, h.nombre FROM catalogo_colaboradores AS cc
+INNER JOIN colaboradores_horario AS ch ON (cc.catalogo_colaboradores_id = ch.catalogo_colaboradores_id)
+INNER JOIN catalogo_horario AS h ON (ch.catalogo_horario_id = h.catalogo_horario_id)
+WHERE cc.catalogo_colaboradores_id = '$id'
+sql;
+      return $mysqli->queryAll($query);
+    }
+
+
+    public static function insert($colaborador){}
+    public static function update($colaborador){}
+    public static function delete($id){}
+
+    public static function getById($id){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+      SELECT
+        c.*,
+        s.nombre AS status
+      FROM catalogo_colaboradores c
+      JOIN catalogo_status s
+      ON c.status = s.catalogo_status_id
+      WHERE c.catalogo_colaboradores_id = $id
+sql;
+      return $mysqli->queryOne($query);
+    }
+
+      public static function getHorasHorarioById($id){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+      SELECT
+        h.hora_entrada,
+        h.hora_salida,
+        dl.nombre
+      FROM colaboradores_horario ch
+      JOIN catalogo_colaboradores c
+      ON ch.catalogo_colaboradores_id = c.catalogo_colaboradores_id
+      JOIN catalogo_horario h
+      ON ch.catalogo_horario_id = h.catalogo_horario_id
+      JOIN horario_dias_laborales hdl
+      ON hdl.catalogo_horario_id = h.catalogo_horario_id
+      JOIN dias_laborales dl
+      ON hdl.dias_laborales_id = dl.dias_laborales_id
+      WHERE c.catalogo_colaboradores_id = $id
+sql;
+      return $mysqli->queryAll($query);
+    }
+
+    public static function getRegistroAsistencia($datos){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+      SELECT
+        oc.*
+      FROM operacion_checador oc
+      WHERE oc.date_check >= '$datos->fecha_inicio'
+      AND oc.date_check <= '$datos->fecha_fin'
+      AND numero_empleado = $datos->numero_empleado
+sql;
+      return $mysqli->queryAll($query);
+    }
+
+    public static function getHorarioLaboral($datos){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+        SELECT
+          ch.hora_entrada,
+          ch.hora_salida,
+          ch.tolerancia_entrada,
+          ch.numero_retardos,
+          dl.nombre AS dia_semana,
+          ch.nombre horario
+        FROM catalogo_horario ch
+        JOIN horario_dias_laborales hdl
+        ON hdl.catalogo_horario_id = ch.catalogo_horario_id
+        JOIN dias_laborales dl
+        ON dl.dias_laborales_id = hdl.dias_laborales_id
+        JOIN colaboradores_horario clh
+        ON clh.catalogo_horario_id = ch.catalogo_horario_id
+        WHERE clh.catalogo_colaboradores_id = $datos->catalogo_colaboradores_id
+        ORDER BY dl.dias_laborales_id
+sql;
+      return $mysqli->queryAll($query);
+    }
+
+    public static function getDatosUsuarioLogeado($user){
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+        SELECT * FROM utilerias_administradores AS a WHERE usuario LIKE '$user'
+sql;
+        return $mysqli->queryOne($query);
+    }
+
+    public static function getDepartamentos($id){
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+        SELECT ad.catalogo_departamento_id, d.nombre AS nombre_departamento FROM utilerias_administradores_departamentos AS ad
+INNER JOIN catalogo_departamento AS d ON (d.catalogo_departamento_id = ad.catalogo_departamento_id)
+WHERE id_administrador = '$id'
+sql;
+        return $mysqli->queryAll($query);
+    }
+
+    public static function getDepartamentosRh(){
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+        SELECT DISTINCT ad.catalogo_departamento_id, d.nombre AS nombre_departamento FROM utilerias_administradores_departamentos AS ad
+INNER JOIN catalogo_departamento AS d ON (d.catalogo_departamento_id = ad.catalogo_departamento_id)
+sql;
+        return $mysqli->queryAll($query);
+    }
+
+    public static function insertProrrateoColaboradorIncidencia($datos){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+      INSERT INTO prorrateo_colaboradores_incidencia
+      VALUES(null, :catalogo_colaboradores_id, :fecha, :catalogo_incidencia_id, :comentario)
+sql;
+      $params = array(
+        ':catalogo_colaboradores_id' => $datos->catalogo_colaboradores_id,
+        ':fecha' => $datos->fecha,
+        ':catalogo_incidencia_id' => $datos->catalogo_incidencia_id,
+        ':comentario' => $datos->comentario
+      );
+
+      return $mysqli->insert($query, $params);
+    }
+
+    public static function getProrrateoColaboradorIncidenciaById($colaborador_id){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+      SELECT p.*, i.nombre
+      FROM prorrateo_colaboradores_incidencia p
+      JOIN catalogo_incidencia i
+      USING (catalogo_incidencia_id)
+      WHERE catalogo_colaboradores_id = $colaborador_id
+      ORDER BY prorrateo_colaboradores_incidencia_id DESC
+sql;
+      return $mysqli->queryAll($query);
+    }
+
+    //SE AGREGA CAMBIO FALTA VALIDAR POR EMPRESA
+    public static function getAsistenciaModificada($datos){
+print_r($datos);
+      $mysqli = Database::getInstance();
+      $query =<<<sql
+      SELECT
+        oc.*
+      FROM operacion_checador oc
+      WHERE DATE(oc.date_check) = DATE('$datos->fecha_inicio')
+      AND numero_empleado = $datos->numero_empleado
+      ORDER BY oc.date_check ASC
+sql;
+      return $mysqli->queryAll($query);
+    }
+
+
+    public static function getAsistencia($datos){
+      $mysqli = Database::getInstance();
+      $query =<<<sql
+      SELECT
+        oc.*
+      FROM operacion_checador oc
+      WHERE oc.date_check >= '$datos->fecha_inicio'
+      AND oc.date_check <= '$datos->fecha_fin'
+      AND numero_empleado = $datos->numero_empleado
+sql;
+      return $mysqli->queryOne($query);
+    }
+
+    public static function getAsistenciaOne($datos){
+      $mysqli = Database::getInstance();
+      $query =<<<sql
+      SELECT
+        oc.*
+      FROM operacion_checador oc
+      WHERE oc.date_check >= '$datos->fecha_inicio'
+      AND oc.date_check <= '$datos->fecha_fin'
+      AND numero_empleado = $datos->numero_empleado
+sql;
+      return $mysqli->queryOne($query);
+    }
+
+    public static function getNombreEmpresa($id){
+      $mysqli = Database::getInstance();
+      $query =<<<sql
+      SELECT * FROM catalogo_empresa WHERE catalogo_empresa_id = '$id'
+sql;
+      return $mysqli->queryOne($query);
+    }
+
+    public static function getIncidencias(){
+      $mysqli = Database::getInstance();
+      $query =<<<sql
+      SELECT * FROM catalogo_incidencia
+sql;
+      return $mysqli->queryAll($query);
+    }
+
+    public static function getFechaIncidenciaById($datos){
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+        SELECT * FROM prorrateo_colaboradores_incidencia
+        WHERE fecha_incidencia LIKE '%$datos->fecha%'
+        AND catalogo_colaboradores_id = $datos->catalogo_colaboradores_id
+sql;
+        return $mysqli->queryOne($query);
+    }
+
+    public static function deleteFechaIncidenciaById($datos){
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+        DELETE FROM prorrateo_colaboradores_incidencia
+        WHERE fecha_incidencia LIKE '%$datos->fecha%'
+        AND catalogo_colaboradores_id = $datos->catalogo_colaboradores_id
+sql;
+        echo $mysqli->update($query);
+    }
+
+    public static function getIncidenciasAsignadas(){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+      SELECT * FROM prorrateo_colaboradores_incidencia WHERE catalogo_colaboradores_id = :catalogo_colaboradores_id AND fecha_incidencia = :fecha_incidencia 
+sql;
+      $parametros = array(":catalogo_colaboradores_id"=>$colaborador->_catalogo_colaboradores_id,
+                      ":fecha_incidencia"=>$colaborador->_fecha_incidencia);
+      $id = $mysqli->insert($query,$parametros);
+
+      return $id;
+    }
+
+    public static function getDatosColaborador($id){
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+        SELECT * FROM catalogo_colaboradores WHERE catalogo_colaboradores_id = '$id'
+sql;
+        return $mysqli->queryOne($query);
+    }
+
+    // INICIO DE CONSULTASS 
+
+    public static function getFechasColaboradorChecador($numeroEmpleado){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+        SELECT * FROM `operacion_checador` WHERE `numero_empleado` = $numeroEmpleado AND date_check >= "2017-09-04 00:00:00" AND date_check <= "2017-09-04 23:59:59" GROUP BY numero_empleado 
+sql;
+      return $mysqli->queryAll($query);
+    }
+
+    public static function getFechaInicio($numero_empleado, $fecha){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+      SELECT * FROM operacion_checador oc WHERE oc.numero_empleado = $numero_empleado AND oc.date_check >= "$fecha 00:00:00" AND oc.date_check <= "$fecha 23:59:59" GROUP BY oc.numero_empleado 
+sql;
+      return $mysqli->queryAll($query);
+    }
+
+    public static function deleteIncidencia($datos){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+        DELETE FROM prorrateo_colaboradores_incidencia WHERE catalogo_colaboradores_id = :id AND fecha_incidencia = :fecha
+sql;
+      $parametros = array(
+        ':id' =>$datos->_id, 
+        ':fecha' =>$datos->_fecha
+      );
+
+      return $mysqli->update($query,$parametros);
+    }
+
+    public static function getPeriodoFechas($periodo){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+      SELECT * FROM prorrateo_periodo WHERE tipo = "$periodo" ORDER BY prorrateo_periodo_id DESC
+sql;
+      return $mysqli->queryAll($query);
+    }
+
+    public static function getLastPeriodo($periodo){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+      SELECT * FROM prorrateo_periodo WHERE tipo = "$periodo" ORDER BY prorrateo_periodo_id DESC LIMIT 1
+sql;
+      return $mysqli->queryOne($query);
+    }
+
+    public static function getPeriodoFechasProceso($periodo){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+      SELECT * FROM prorrateo_periodo WHERE tipo = "$periodo" AND status = 0
+sql;
+      return $mysqli->queryAll($query);
+    }
+
+    public static function getPeriodoFechasProcesoBusqueda($periodo,$id){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+      SELECT * FROM prorrateo_periodo WHERE tipo = "$periodo" AND prorrateo_periodo_id = "$id"
+sql;
+      return $mysqli->queryAll($query);
+    }
+
+    public static function getPeriodoById($id){
+      $mysqli = Database::getInstance();
+      $query=<<<sql
+      SELECT * FROM prorrateo_periodo WHERE prorrateo_periodo_id = "$id"
+sql;
+      return $mysqli->queryOne($query);
+    }
+
+
+
+}

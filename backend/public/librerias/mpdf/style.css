@@ -1,0 +1,70 @@
+	div.mpdf_toc_level_0 {
+    	padding-right: 7em; /* match the outdent specified for ToC */
+    }
+
+    #portada{
+        width: 100%;
+        height: 100%;
+        display:inline-block;
+        align:center;
+    }
+
+    #imgPortada{
+        width: 100%;
+        height: 100%;
+        align:center;
+        border-radius: 10em;
+    }
+    
+	#table{
+        color: #00bfff;
+        background: #b22222;
+        border: 1px solid #adff2f;
+        width: 100%;
+        height: 100%;
+    }
+
+    #table_footer{
+    	border-top: 1px solid #000000; 
+    	vertical-align: top; 
+    	font-family: sans; 
+    	font-size: 8pt;
+    }
+
+    #indice{
+    	color: red;
+    }
+
+    .oculto{
+    	display: none;
+    	font-family: "Times New Roman", Times, serif;
+    	font-size: 10px;
+    }
+
+    #saltoContenido{
+        page-break-inside: avoid;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 20px;
+        text-align:justify;
+        border: 0px;
+    }
+
+    #saltoForsozo{
+        page-break-after: always;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 20px;
+        text-align:justify;
+        border: 0px;
+    }
+
+    .mayusculas{
+        text-transform: uppercase;
+    }
+
+
+
+
+
+
+
+

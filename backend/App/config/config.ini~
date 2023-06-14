@@ -1,0 +1,7 @@
+[database]
+adapter  = Mysql
+host     = ecommerce.cgleiy5mh9ts.us-west-2.rds.amazonaws.com
+port     = 9089
+user     = wal
+password = 1qwal@Wal
+database = admin_walmart
