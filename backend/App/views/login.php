@@ -8,7 +8,7 @@ echo $header;
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="shortcut icon" href="/img/logo.png">
-        <title>Login | ADG </title>
+        <title>Login | MCM </title>
 
         <!-- Bootstrap -->
         <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -28,7 +28,7 @@ echo $header;
             <div class="animate form login_form">
                 <section class="login_content">
                     <div style="text-align: center;">
-                        <img  src="/img/logo.png" alt="Login">
+                        <img  src="/img/logo.png" alt="Login" width="350" height="260">
                     </div>
                     <br>
                     <form id="login" action="/Login/crearSession" method="POST" class="form-horizontal">
@@ -51,11 +51,11 @@ echo $header;
                         <div class="separator">
 
                             <div class="clearfix"></div>
-                            <br />
+                            <br/>
 
                             <div>
                                 <h1><i class="fa fa-paw"></i> Más con Menos</h1>
-                                <p>© 2021 Todos los derechos reservados, Más con Menos, usted acepta los terminos de Privacidad y Condiciones al loguearse al sistema</p>
+                                <p>© 2023 Todos los derechos reservados, Más con Menos, usted acepta los terminos de Privacidad y Condiciones al loguearse al sistema</p>
                             </div>
                         </div>
                     </form>
