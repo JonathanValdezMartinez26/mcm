@@ -122,7 +122,7 @@
                             <div class="col-md-6">
                                 <div class="form-group" >
                                     <label for="exampleInputEmail1">Número de Credito Nuevo *</label>
-                                    <input type="text" class="form-control" id="credito_nuevo" name="credito_nuevo" aria-describedby="credito_nuevo" placeholder="Escribe el número del credito"  value="">
+                                    <input type="number" class="form-control" id="credito_nuevo" name="credito_nuevo" aria-describedby="credito_nuevo" placeholder="Escribe el número del credito"  value="" max="30">
                                 </div>
                             </div>
                         </div>
@@ -165,7 +165,7 @@
                             <div class="col-md-6" >
                                 <div class="form-group" >
                                     <label for="exampleInputEmail1">Ciclo Nuevo *</label>
-                                    <input type="number" class="form-control" id="ciclo_c_n" name="ciclo_c_n" aria-describedby="ciclo_c_n" placeholder="Escribe el nuevo ciclo"  value="<?php echo $Administracion['CICLO']; ?>">
+                                    <input type="number" class="form-control" id="ciclo_c_n" name="ciclo_c_n" aria-describedby="ciclo_c_n" placeholder="Escribe el nuevo ciclo"  value="<?php echo $Administracion['CICLO']; ?>" max="30">
                                 </div>
                             </div>
 

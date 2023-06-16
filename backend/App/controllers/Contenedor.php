@@ -109,16 +109,16 @@ $menu.=<<<html
               <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Call Center <span class="fa fa-chevron-down"></span></a>
                  <ul class="nav child_menu">
-                   <li><a href="/Creditos/CambioSucursal/">Consultar Cliente</a></li>
-                   <li><a href="/Creditos/CambioSucursal/">Pendientes</a></li>
-                   <li><a href="/Creditos/CambioSucursal/">Historico</a></li>
+                   <li><a href="/CallCenter/Consultar/">Consultar Cliente</a></li>
+                   <li><a href="/CallCenter/Pendientes/">Pendientes</a></li>
+                   <li><a href="/CallCenter/Historico/">Historico</a></li>
                   </ul>
                 </li>
               </ul>
               <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Operaciones <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
-                   <li><a href="/Creditos/CambioSucursal/">PLD Reporte</a></li>
+                   <li><a href="/Operaciones/ReportePLD/">PLD Reporte</a></li>
                   </ul>
                 </li>
               </ul>

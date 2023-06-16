@@ -79,7 +79,7 @@ class App
             }
             else
             {
-                throw new \Exception("Error Processing Method {$this->_method}", 1);
+                View::render("principal_all");
             }
         }
         //asociamos el resto de segmentos a $this->_params para pasarlos al método llamado, por defecto será un array vacío
