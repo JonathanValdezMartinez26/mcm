@@ -22,9 +22,7 @@ echo $header;
         <!-- Custom Theme Style -->
         <link href="../build/css/custom.min.css" rel="stylesheet">
     </head>
-
-    <div  id="particles-js">
-        <div class="login_wrapper">
+    <div class="login_wrapper">
             <div class="animate form login_form">
                 <section class="login_content">
                     <div style="text-align: center;">
@@ -63,7 +61,4 @@ echo $header;
             </div>
 
         </div>
-    </div>
-
-
 <?php echo $footer; ?>
