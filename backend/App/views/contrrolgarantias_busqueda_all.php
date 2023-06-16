@@ -16,7 +16,7 @@
                     <form class="" action="/Creditos/ControlGarantias/" method="get">
                         <div class="row">
                                 <div class="col-md-4">
-                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="number" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
+                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="number" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>" maxlength="6">
                                     <span id="availability1"></span>
                                 </div>
                                 <div class="col-md-4">
@@ -70,51 +70,51 @@
                     <form onsubmit="enviar_add(); return false" id="Add">
                         <div class="row">
 
-                            <div class="col-md-6" style="display: none;">
+                            <div class="col-md-6">
                                 <div class="form-group" >
                                     <label for="exampleInputEmail1">Credito *</label>
-                                    <input type="text" class="form-control" id="credito" name="credito" aria-describedby="credito" placeholder="Escribe el nombre del artículo"  value="<?php echo $credito; ?>">
+                                    <input type="text" class="form-control" id="credito" name="credito" aria-describedby="credito" value="<?php echo $credito; ?>" readonly>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Nombre *</label>
-                                    <input type="text" class="form-control" id="articulo" name="articulo" aria-describedby="articulo" placeholder="Escribe el nombre del artículo" value="">
+                                    <label for="exampleInputEmail1">Nombre del Artículo *</label>
+                                    <input type="text" class="form-control" id="articulo" name="articulo" aria-describedby="articulo" placeholder="Escribe el nombre del artículo" value="" onkeypress="return check(event)" maxlength="20" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="marca">Marca *</label>
-                                    <input type="text" class="form-control" id="marca" name="marca" aria-describedby="marca" placeholder="Escribe la marca del artículo" value="">
+                                    <input type="text" class="form-control" id="marca" name="marca" aria-describedby="marca" placeholder="Escribe la marca del artículo" value="" onkeypress="return check(event)" maxlength="20" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="modelo">Modelo *</label>
-                                    <input type="text" class="form-control" id="modelo" name="modelo" aria-describedby="modelo" placeholder="Escribe el modelo del artículo" value="">
+                                    <input type="text" class="form-control" id="modelo" name="modelo" aria-describedby="modelo" placeholder="Escribe el modelo del artículo" value="" onkeypress="return check_t(event)" maxlength="20" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="serie">Número de Serie *</label>
-                                    <input type="text" class="form-control" id="serie" name="serie" aria-describedby="serie" placeholder="Escribe el número de serie" value="">
+                                    <input type="text" class="form-control" id="serie" name="serie" aria-describedby="serie" placeholder="Escribe el número de serie" value="" maxlength="20" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="valor">Valor *</label>
-                                    <input type="text" class="form-control" id="valor" name="valor" aria-describedby="valor" placeholder="Escribe el valor del artículo" value="">
+                                    <input type="number" class="form-control" id="valor" name="valor" aria-describedby="valor" placeholder="Escribe el valor del artículo" value="" maxlength="6">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="factura">Factura *</label>
-                                    <input type="text" class="form-control" id="factura" name="factura" aria-describedby="factura" placeholder="Escribe el número de factura" value="">
+                                    <input type="text" class="form-control" id="factura" name="factura" aria-describedby="factura" placeholder="Escribe el número de factura" value="" onkeypress="return check_t(event)" maxlength="20" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
@@ -130,7 +130,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="modal_editar_articulo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -146,55 +145,55 @@
                             <div class="col-md-6" >
                                 <div class="form-group" >
                                     <label for="exampleInputEmail1">Secuencia *</label>
-                                    <input type="text" class="form-control" id="secuencia_e" name="secuencia_e" aria-describedby="credito_e" placeholder="Escribe el nombre del artículo"  value="<?php echo $credito; ?>">
+                                    <input type="text" class="form-control" id="secuencia_e" name="secuencia_e" aria-describedby="secuencia_e" value="<?php echo $credito; ?>" readonly>
                                 </div>
                             </div>
 
                             <div class="col-md-6" >
                                 <div class="form-group" >
                                     <label for="exampleInputEmail1">Credito *</label>
-                                    <input type="text" class="form-control" id="credito_e" name="credito_e" aria-describedby="credito_e" placeholder="Escribe el nombre del artículo"  value="<?php echo $credito; ?>">
+                                    <input type="text" class="form-control" id="credito_e" name="credito_e" aria-describedby="credito_e"  value="<?php echo $credito; ?>" readonly>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Nombre *</label>
-                                    <input type="text" class="form-control" id="articulo_e" name="articulo_e" aria-describedby="articulo_e" placeholder="Escribe el nombre del artículo" value="">
+                                    <input type="text" class="form-control" id="articulo_e" name="articulo_e" aria-describedby="articulo_e" placeholder="Escribe el nombre del artículo" value="" onkeypress="return check(event)" maxlength="20" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="marca">Marca *</label>
-                                    <input type="text" class="form-control" id="marca_e" name="marca_e" aria-describedby="marca_e" placeholder="Escribe la marca del artículo" value="">
+                                    <input type="text" class="form-control" id="marca_e" name="marca_e" aria-describedby="marca_e" placeholder="Escribe la marca del artículo" value="" onkeypress="return check(event)" maxlength="20" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="modelo">Modelo *</label>
-                                    <input type="text" class="form-control" id="modelo_e" name="modelo_e" aria-describedby="modelo_e" placeholder="Escribe el modelo del artículo" value="">
+                                    <input type="text" class="form-control" id="modelo_e" name="modelo_e" aria-describedby="modelo_e" placeholder="Escribe el modelo del artículo" value="" onkeypress="return check_t(event)" maxlength="20" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="serie">Número de Serie *</label>
-                                    <input type="text" class="form-control" id="serie_e" name="serie_e" aria-describedby="serie_" placeholder="Escribe el número de serie" value="">
+                                    <input type="text" class="form-control" id="serie_e" name="serie_e" aria-describedby="serie_" placeholder="Escribe el número de serie" value="" onkeypress="return check_t(event)" maxlength="20" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="valor">Valor *</label>
-                                    <input type="text" class="form-control" id="valor_e" name="valor_e" aria-describedby="valor_e" placeholder="Escribe el valor del artículo" value="">
+                                    <input type="number" class="form-control" id="valor_e" name="valor_e" aria-describedby="valor_e" placeholder="Escribe el valor del artículo" value="" maxlength="6" >
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="factura">Factura *</label>
-                                    <input type="text" class="form-control" id="factura_e" name="factura_e" aria-describedby="factura_e" placeholder="Escribe el número de factura" value="">
+                                    <input type="text" class="form-control" id="factura_e" name="factura_e" aria-describedby="factura_e" placeholder="Escribe el número de factura" value="" onkeypress="return check_t(event)" maxlength="20" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
@@ -211,86 +210,7 @@
     </div>
 </div>
 
-<script>
-    function Delete_Garantias(secuencia) {
-        credito = getParameterByName('Credito');
-        secuencias = secuencia;
-
-        alertify.confirm('¿Segúro que desea eliminar lo seleccionado?', function(response){
-            if(response){
-
-                $.ajax({
-                    type: "POST",
-                    url: "/Creditos/DeleteGarantia/",
-                    data: {"credito" : credito, "secuencia" : secuencias},
-                    success: function(response){
-                        //alert(response);
-                        if(response != '0')
-                        {
-                            alertify.success("Se ha eliminado correctamente");
-                            location.reload();
-
-                        }
-                        else
-                        {
-                            alertify.error("Error, al eliminar.");
-                        }
-                    }
-                });
 
 
-            }
-        });
-
-    }
-
-    function Edit_Garantias(articulo_p, marca_p, modelo_p, no_serie_p, monto_p, factura_p, secuencia_p) {
-
-        $('#articulo_e').val(articulo_p);
-        $('#marca_e').val(marca_p);
-        $('#modelo_e').val(modelo_p);
-        $('#serie_e').val(no_serie_p);
-        $('#valor_e').val(monto_p);
-        $('#factura_e').val(factura_p);
-        $('#secuencia_e').val(secuencia_p);
-
-
-
-        $('#modal_editar_articulo').modal('show');
-
-    }
-
-    function Update_Garantias(secuencia) {
-
-        secuencias = secuencia;
-
-        alertify.confirm('¿Segúro que desea eliminar lo seleccionado?', function(response){
-            if(response){
-
-                $.ajax({
-                    type: "POST",
-                    url: "/Creditos/DeleteGarantia/",
-                    data: {"credito" : credito, "secuencia" : secuencias},
-                    success: function(response){
-                        //alert(response);
-                        if(response != '0')
-                        {
-                            alertify.success("Se ha eliminado correctamente");
-                            location.reload();
-
-                        }
-                        else
-                        {
-                            alertify.error("Error, al eliminar.");
-                        }
-                    }
-                });
-
-
-            }
-        });
-
-    }
-</script>
 
 <?php echo $footer; ?>

@@ -10,21 +10,13 @@
 
         <div class="card card-danger col-md-5" >
             <div class="card-header">
-                <h5 class="card-title">Seleccione el tipo de busqueda e ingrese el número de crédito </h5>
+                <h5 class="card-title">Ingrese el número de crédito </h5>
             </div>
             <div class="card-body">
                 <form class="" action="/Creditos/ControlGarantias/" method="GET">
                     <div class="row">
-                        <div class="col-md-3">
-                            <select class="form-control mr-sm-3" style="font-size: 21px;" autofocus type="select" id="" name="" placeholder="000000" aria-label="Search">
-                                <option value="credito">Crédito</option>
-                                <option value="fecha">Fecha</option>
-                            </select>
-                            <span id="availability1"></span>
-                        </div>
                         <div class="col-md-4">
-                            <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="number" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
-                            <span id="availability1"></span>
+                            <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="number" id="Credito" name="Credito" placeholder="000000" maxlength="6" aria-label="Search" value="<?php echo $credito; ?>">
                         </div>
                         <div class="col-md-4">
                             <button class="btn btn-default" type="submit">Buscar</button>
@@ -43,7 +35,7 @@
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                             <label style="font-size: 14px; color: black;">Crédito no encontrado:</label> <li style="color: black;">Valida que el número de crédito sea correcto</li> <li style="color: black;">Si el problema persiste, comunicate con soporte técnico</li>
                             <br>
-                            <a href="/Creditos/CambioSucursal/" class="alert-link">Regresar</a>.
+                            <a href="/Creditos/ControlGarantias/" class="alert-link">Regresar</a>.
                         </div>
                     </div>
                 </div>

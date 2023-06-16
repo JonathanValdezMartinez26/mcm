@@ -164,6 +164,7 @@ html;
               <div class="clearfix"></div>
             </footer>
           </div>
+          
         <script src="/js/moment/moment.min.js"></script>
         <script src="/js/datepicker/scriptdatepicker.js"></script>
         <script src="/js/datepicker/datepicker2.js"></script>
@@ -194,6 +195,117 @@ html;
 
         <script src="/librerias/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
         <script type="text/javascript" src="/librerias/vintage_flip_clock/jquery.flipcountdown.js"></script>
+       <script>
+        function Delete_Garantias(secuencia) {
+            credito = getParameterByName('Credito');
+            secuencias = secuencia;
+    
+            alertify.confirm('¿Segúro que desea eliminar lo seleccionado?', function(response){
+                if(response){
+    
+                    $.ajax({
+                        type: "POST",
+                        url: "/Creditos/DeleteGarantia/",
+                        data: {"credito" : credito, "secuencia" : secuencias},
+                        success: function(response){
+                            //alert(response);
+                            if(response != '0')
+                            {
+                                alertify.success("Se ha eliminado correctamente");
+                                location.reload();
+    
+                            }
+                            else
+                            {
+                                alertify.error("Error, al eliminar.");
+                            }
+                        }
+                    });
+    
+    
+                }
+            });
+    
+        }
+        function Edit_Garantias(articulo_p, marca_p, modelo_p, no_serie_p, monto_p, factura_p, secuencia_p) {
+    
+            $('#articulo_e').val(articulo_p);
+            $('#marca_e').val(marca_p);
+            $('#modelo_e').val(modelo_p);
+            $('#serie_e').val(no_serie_p);
+            $('#valor_e').val(monto_p);
+            $('#factura_e').val(factura_p);
+            $('#secuencia_e').val(secuencia_p);
+    
+    
+    
+            $('#modal_editar_articulo').modal('show');
+    
+        }
+        function Update_Garantias(secuencia) {
+    
+            secuencias = secuencia;
+    
+            alertify.confirm('¿Segúro que desea eliminar lo seleccionado?', function(response){
+                if(response){
+    
+                    $.ajax({
+                        type: "POST",
+                        url: "/Creditos/DeleteGarantia/",
+                        data: {"credito" : credito, "secuencia" : secuencias},
+                        success: function(response){
+                            //alert(response);
+                            if(response != '0')
+                            {
+                                alertify.success("Se ha eliminado correctamente");
+                                location.reload();
+    
+                            }
+                            else
+                            {
+                                alertify.error("Error, al eliminar.");
+                            }
+                        }
+                    });
+    
+    
+                }
+            });
+    
+        }
+    
+        function check(e) {
+            tecla = (document.all) ? e.keyCode : e.which;
+    
+            //Tecla de retroceso para borrar, siempre la permite
+            if (tecla == 8) {
+                return true;
+            }
+    
+            // Patrón de entrada, en este caso solo acepta numeros y letras
+            patron = /[A-Za-z]/;
+            tecla_final = String.fromCharCode(tecla);
+            return patron.test(tecla_final);
+        }
+    
+        function check_t(e) {
+            tecla = (document.all) ? e.keyCode : e.which;
+    
+            //Tecla de retroceso para borrar, siempre la permite
+            if (tecla == 8) {
+                return true;
+            }
+    
+            // Patrón de entrada, en este caso solo acepta numeros y letras
+            patron = /[A-Za-z0-9]/;
+            tecla_final = String.fromCharCode(tecla);
+            return patron.test(tecla_final);
+        }
+    
+        function mayus(e) {
+            e.value = e.value.toUpperCase();
+        }
+</script>
   </body>
 </html>
 html;
