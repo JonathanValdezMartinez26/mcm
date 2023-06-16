@@ -62,9 +62,9 @@ class Contenedor extends Controller{
         </head>
 html;
 $menu =<<<html
-<body class="nav-md">
-  <div class="container body">
-    <div class="main_container">
+<body class="nav-md" >
+  <div class="container body" >
+    <div class="main_container" style="background: #ffffff">
 
       <div class="col-md-3 left_col">
         <div class="left_col scroll-view">
@@ -161,7 +161,7 @@ html;
             <footer>
               <div class="pull-right">
               </div>
-              <div class="clearfix"></div>
+             
             </footer>
           </div>
           
