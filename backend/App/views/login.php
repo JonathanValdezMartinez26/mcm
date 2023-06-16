@@ -22,7 +22,8 @@ echo $header;
         <!-- Custom Theme Style -->
         <link href="../build/css/custom.min.css" rel="stylesheet">
     </head>
-    <div class="login_wrapper">
+    <div class="login_wrapper" style="margin-top: 0%;">
+        <br>
             <div class="animate form login_form">
                 <section class="login_content">
                     <div style="text-align: center;">
