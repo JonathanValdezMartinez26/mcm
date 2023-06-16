@@ -5,7 +5,7 @@
 <div class="right_col">
         <div class="panel panel-body" style="margin-bottom: 0px;">
             <div class="x_title">
-                <h3> Administración de Pagos</h3>
+                <h3> Consulta de Pagos</h3>
                 <div class="clearfix"></div>
             </div>
 
@@ -18,9 +18,8 @@
                     <form class="" action="/Pagos/" method="GET">
                         <div class="row">
                             <div class="col-md-3">
-                                <select class="form-control mr-sm-3" style="font-size: 21px;" autofocus type="select" id="" name="" placeholder="000000" aria-label="Search">
-                                    <option value="credito">Crédito</option>
-                                    <option value="fecha">Fecha</option>
+                                <select class="form-control mr-sm-3" style="font-size: 21px;" autofocus type="select" id="id_sucursal" name="id_sucursal" placeholder="000000" aria-label="Search">
+                                    <?php echo $getSucursales; ?>
                                 </select>
                                 <span id="availability1"></span>
                             </div>
@@ -202,7 +201,7 @@
                                 <div class="form-group">
                                     <label for="ejecutivo">Ejecutivo *</label>
                                     <select class="form-control" autofocus type="select" id="tipo" name="tipo" aria-label="Search">
-                                        <?php echo $getSucursales; ?>
+                                        <?php echo $status; ?>
                                     </select>
                                 </div>
                             </div>

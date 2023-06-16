@@ -630,12 +630,12 @@ html;
     }
 
     public function Layout()
-        {
-            $extraFooter = <<<html
+    {
+        $extraFooter = <<<html
       <script>
-        $(document).ready(function(){
-
-          $("#muestra-cupones").tablesorter();
+      
+         $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
                 "columnDefs": [{
                     "orderable": false,
@@ -643,7 +643,6 @@ html;
                 }],
                  "order": false
             });
-
             // Remove accented character from search input as well
             $('#muestra-cupones input[type=search]').keyup( function () {
                 var table = $('#example').DataTable();
@@ -651,77 +650,245 @@ html;
                     jQuery.fn.DataTable.ext.type.search.html(this.value)
                 ).draw();
             });
-
             var checkAll = 0;
-            $("#checkAll").click(function () {
-              if(checkAll==0){
-                $("input:checkbox").prop('checked', true);
-                checkAll = 1;
-              }else{
-                $("input:checkbox").prop('checked', false);
-                checkAll = 0;
-              }
-
-            });
-
-
-            $("#export_pdf").click(function(){
-              $('#all').attr('action', '/Empresa/generarPDF/');
-              $('#all').attr('target', '_blank');
-              $("#all").submit();
-            });
-
-            $("#export_excel").click(function(){
-              $('#all').attr('action', '/Empresa/generarExcel/');
-              $('#all').attr('target', '_blank');
-              $("#all").submit();
-            });
-
-            $("#delete").click(function(){
-              var seleccionados = $("input[name='borrar[]']:checked").length;
-              if(seleccionados>0){
-                alertify.confirm('¿Segúro que desea eliminar lo seleccionado?', function(response){
-                  if(response){
-                    $('#all').attr('target', '');
-                    $('#all').attr('action', '/Empresa/delete');
-                    $("#all").submit();
-                    alertify.success("Se ha eliminado correctamente");
-                  }
-                });
-              }else{
-                alertify.confirm('Selecciona al menos uno para eliminar');
-              }
-            });
-
+            
         });
+    
       </script>
 html;
-            $CorteCaja = CorteCajaDao::getAll();
-            $usuario = $this->__usuario;
+
+        $fecha_inicio = $_GET['Inicial'];
+        $fecha_fin = $_GET['Final'];
+
+
+        if(empty($fecha_inicio) || empty($fecha_fin))
+        {
+            View::render("pagos_layout_all");
+        }
+        else
+        {
+            ///////////////////////////////////////////////////////////////////////////////////
             $tabla = '';
-            foreach ($CorteCaja as $key => $value) {
+
+            $Layout = PagosDao::GeneraLayoutContable($fecha_inicio, $fecha_fin);
+
+            if ($Layout != '') {
+                foreach ($Layout as $key => $value) {
+
+                    $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;">{$value['FECHA']}</td>
+                    <td style="padding: 0px !important;">{$value['REFERENCIA']}</td>
+                    <td style="padding: 0px !important;">{$value['MONTO']}</td>
+                    <td style="padding: 0px !important;">$ {$value['MONEDA']}</td>
+                </tr>
+html;
+                }
+                if($Layout[0] == '')
+                {
+                    View::render("pagos_layout_busqueda_message");
+                }
+                else
+                {
+                    View::set('tabla', $tabla);
+                    View::set('footer', $this->_contenedor->footer($extraFooter));
+                    View::render("pagos_layout_busqueda");
+                }
+
+            } else {
+                View::render("pagos_layout_all");
+            }
+
+            ////////////////////////////////////////////////////
+        }
+
+
+    }
+
+    public function PagosConsulta()
+    {
+        $extraFooter = <<<html
+      <script>
+      
+          function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+    
+        $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+        });
+        
+        function FunDelete_Pago(secuencia, fech, ciclo) {
+             credito = getParameterByName('Credito');
+             secuencias = secuencia;
+             fecha = fech;
+             
+                alertify.confirm('¿Segúro que desea eliminar lo seleccionado?', function(response){
+                  if(response){
+                      
+                      $.ajax({
+                        type: "POST",
+                        url: "/Pagos/Delete/",
+                        data: {"credito" : credito, "secuencia" : secuencias, "fecha" : fecha},
+                        success: function(response){
+                            if(response != 1)
+                                {
+                                    alertify.success("Se ha eliminado correctamente");
+                                    location.reload();
+                                    
+                                }
+                            else
+                                {
+                                     alertify.error("Error, al eliminar.");
+                                }
+                        }
+                    });
+                      
+                    
+                  }
+                });
+              
+             }
+        
+        function enviar_add(){	
+             monto = document.getElementById("monto").value; 
+            if(monto == '')
+                {
+                    if(monto == 0)
+                        {
+                             alertify.confirm('Ingresa un monto, mayor a $0');
+                        }
+                }
+            else
+                {
+                    $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/PagosAdd/',
+                    data: $('#Add').serialize(),
+                    success: function(respuesta) {
+                        if(respuesta=='ok'){
+                        alert('enviado'); 
+                        document.getElementById("monto").value = "";
+                        document.getElementById("tipo").value = "";
+                        alertify.confirm('Registro Guardado con Exito');
+                        }
+                        else {
+                        $('#addnew').modal('hide')
+                         alertify.confirm('Registro Guardado con Exito');
+                            document.getElementById("monto").value = "";
+                            document.getElementById("tipo").value = "";
+                        }
+                    }
+                    });
+                }
+    }
+    
+        
+      </script>
+html;
+
+        //$busqueda = $_POST['busqueda'];
+        $credito = $_GET['Credito'];
+        $tabla = '';
+
+        $sucursales = PagosDao::ListaSucursales($this->__usuario);
+
+        $getSucursales = '';
+        if($this->__usuario == 'ADMIN' || $this->__usuario == 'AMGM')
+        {
+            $getSucursales .= <<<html
+                <option value="">TODAS</option>
+html;
+        }
+        foreach ($sucursales as $key => $val2) {
+            $getSucursales .= <<<html
+                <option value="{$val2['ID_SUCURSAL']}">{$val2['SUCURSAL']}</option>
+html;
+
+        }
+
+        if ($credito != '') {
+            $Administracion = PagosDao::ConsultarPagosAdministracion($credito);
+            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito);
+
+            foreach ($Administracion as $key => $value) {
+                $oldDate = strtotime($value['FECHA']);
+                $newDate = date('Y-m-d',$oldDate);
+
+                if($value['FIDENTIFICAPP'] ==  NULL)
+                {
+                    $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
+                }
+                else
+                {
+                    $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-female"></i></span>';
+                }
+
                 $tabla .= <<<html
-                <tr>
-                <td> {$value['NUM_PAG']}</td>
-                
-                <td><i class="fa fa-user"></i>  {$value['CDGPE']}</td>
-                <td>$ {$value['MONTO_TOTAL']}</td>
-                <td>$ {$value['MONTO_PAGO']}</td>
-                <td>$ {$value['MONTO_GARANTIA']}</td>
-                <td>$ {$value['MONTO_DESCUENTO']}</td>
-                <td>$ {$value['MONTO_REFINANCIAMIENTO']}</td>
-                <td class="center" >
-                    <a href="/CorteCaja/Show/{$value['CDGPE']}" type="submit" name="id_coordinador" class="btn btn-success"><span class="fa fa-product-hunt" style="color:white"></span> Liberar Pagos</a>
-                </td>
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;" width="45" nowrap>{$medio}</td>
+                    <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
+                    <td style="padding: 0px !important;">{$value['CDGNS']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA']}</td>
+                    <td style="padding: 0px !important;">{$value['CICLO']}</td>
+                    <td style="padding: 0px !important;">$ {$value['MONTO']}</td>
+                    <td style="padding: 0px !important;">{$value['TIPO']}</td>
+                    <td style="padding: 0px !important;" class="center" >
+                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('4');"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago({$value['SECUENCIA']}, '{$newDate}', {$value['CICLO']});"><i class="fa fa-trash"></i></button>
+                    </td>
                 </tr>
 html;
             }
+            if($Administracion[0] == '')
+            {
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('getSucursales', $getSucursales);
+                View::set('credito', $credito);
+                View::render("pagos_consulta_busqueda_message");
+            }
+            else
+            {
+                View::set('tabla', $tabla);
+                View::set('Administracion', $AdministracionOne);
+                View::set('credito', $credito);
+                View::set('getSucursales', $getSucursales);
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::render("pagos_consulta_busqueda");
+            }
 
-            View::set('tabla', $tabla);
+        } else {
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
-            View::render("cortecaja_all");
+            View::set('getSucursales', $getSucursales);
+            View::render("pagos_consulta_all");
         }
+
+        if(isset($_POST['agregar'])){
+            echo '<script> alert("Data Saved"); </script>';
+        }
+    }
 
     public function generarPDF()
         {

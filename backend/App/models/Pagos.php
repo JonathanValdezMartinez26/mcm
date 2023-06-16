@@ -163,6 +163,69 @@ sql;
 
     }
 
+    public static function ListaSucursales($id_user){
+
+        $query=<<<sql
+        SELECT
+        RG.CODIGO ID_REGION,
+        RG.NOMBRE REGION,
+        CO.CODIGO ID_SUCURSAL,
+        CO.NOMBRE SUCURSAL
+        FROM
+        PCO, CO, RG
+        WHERE
+        PCO.CDGCO = CO.CODIGO
+        AND CO.CDGRG = RG.CODIGO
+        AND PCO.CDGEM = 'EMPFIN'
+        AND PCO.CDGPE = '$id_user'
+        ORDER BY
+        ID_REGION,
+        ID_SUCURSAL
+sql;
+
+        $mysqli = Database::getInstance();
+        return $mysqli->queryAll($query);
+
+    }
+
+    public static function GeneraLayoutContable($f1, $f2){
+
+        $query=<<<sql
+        	SELECT
+	FECHA,
+	CASE
+		WHEN PGD.TIPO = 'P' THEN 'P' || PRN.CDGNS || PRN.CDGTPC || FN_DV('P' || PRN.CDGNS || PRN.CDGTPC)
+		WHEN PGD.TIPO = 'G' THEN '0' || PRN.CDGNS || PRN.CDGTPC || FN_DV('0' || PRN.CDGNS || PRN.CDGTPC)
+		ELSE 'NO IDENTIFICADO'
+	END REFERENCIA,
+	PGD.MONTO,
+	'MN' MONEDA
+FROM
+	PAGOSDIA PGD, PRN
+WHERE
+	PGD.CDGEM = PRN.CDGEM
+	AND PGD.CDGNS = PRN.CDGNS
+	AND PGD.CICLO = PRN.CICLO
+	AND PGD.CDGEM = 'EMPFIN'
+	AND PGD.ESTATUS = 'A'
+	AND PGD.TIPO IN('P','G')
+	AND PGD.FECHA BETWEEN TIMESTAMP '$f1 00:00:00.000000' AND TIMESTAMP '$f2 00:00:00.000000'
+ORDER BY
+	PGD.FECHA
+sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryAll($query);
+        } catch (Exception $e) {
+            return "";
+        }
+
+
+
+
+    }
+
     public static function DeletePago($id, $secuencia, $fecha){
         $mysqli = Database::getInstance(true);
         $query=<<<sql
@@ -173,6 +236,5 @@ sql;
         $accion->_sql= $query;
         return $mysqli->update($query);
     }
-
 
 }

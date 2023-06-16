@@ -91,8 +91,11 @@ $menu.=<<<html
                 <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
                    <li><a href="/Pagos/">Admninistración</a></li>
+                   <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>
                    <li><a href="/Pagos/PagosRegistro/">Registro Pagos</a></li>
-                   <li><a href="/Pagos/CorteCaja/">Corte Caja</a></li>
+                   <li><a href="/Pagos/PagosConsulta/">Consulta Pagos</a></li>
+                   <li><a href="/Pagos/Layout/">Layout</a></li>
+                   
                   </ul>
                 </li>
                 <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Creditos <span class="fa fa-chevron-down"></span></a>
@@ -104,8 +107,19 @@ $menu.=<<<html
                 </li>
               </ul>
               <ul class="nav side-menu">
-                <li><a href="/CallCenter/"><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Call Center</a>
-                 
+                <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Call Center <span class="fa fa-chevron-down"></span></a>
+                 <ul class="nav child_menu">
+                   <li><a href="/Creditos/CambioSucursal/">Consultar Cliente</a></li>
+                   <li><a href="/Creditos/CambioSucursal/">Pendientes</a></li>
+                   <li><a href="/Creditos/CambioSucursal/">Historico</a></li>
+                  </ul>
+                </li>
+              </ul>
+              <ul class="nav side-menu">
+                <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Operaciones <span class="fa fa-chevron-down"></span></a>
+                  <ul class="nav child_menu">
+                   <li><a href="/Creditos/CambioSucursal/">PLD Reporte</a></li>
+                  </ul>
                 </li>
               </ul>
               </div>

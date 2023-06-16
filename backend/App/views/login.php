@@ -54,8 +54,8 @@ echo $header;
                             <br />
 
                             <div>
-                                <h1><i class="fa fa-paw"></i> Alimentos De La Granja</h1>
-                                <p>© 2021 Todos los derechos reservados, Alimentos De La Granja, usted acepta los terminos de Privacidad y Condiciones al loguearse al sistema</p>
+                                <h1><i class="fa fa-paw"></i> Más con Menos</h1>
+                                <p>© 2021 Todos los derechos reservados, Más con Menos, usted acepta los terminos de Privacidad y Condiciones al loguearse al sistema</p>
                             </div>
                         </div>
                     </form>
