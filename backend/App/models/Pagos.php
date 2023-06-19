@@ -135,7 +135,7 @@ sql;
 
     public static function insertProcedure(){
         $query=<<<sql
-        CALL SPACCIONPAGODIA('EMPFIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,'001237','04','10','PRUEBA PRUEBA LOL','TESP','TERESA SANCHEZ PEREZ','DGNV','2652','P','1',?, '20220924000000')
+        CALL SPACCIONPAGODIA('EMPFIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,'001237','04','10','PRUEBA PRUEBA LOL','TESP','TERESA SANCHEZ PEREZ','DGNV','2652','P','1',?, '')
 sql;
 
         $mysqli = Database::getInstance();

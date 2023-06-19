@@ -210,11 +210,6 @@ html;
         $pagos->_ejecutivo = MasterDom::getData('ejecutivo');
         $id = PagosDao::insertProcedure($pagos);
 
-        if($id >= 1){
-            return 'ok';
-        }else{
-            return 'fail';
-        }
     }
 
     public function Delete(){
@@ -307,15 +302,16 @@ html;
                     url: '/Pagos/PagosAdd/',
                     data: $('#Add').serialize(),
                     success: function(respuesta) {
-                        if(respuesta=='ok'){
-                        alert('enviado'); 
+                        if(respuesta=='1 Proceso realizado exitosamente'){
+                        
                         document.getElementById("monto").value = "";
                         document.getElementById("tipo").value = "";
                         alertify.confirm('Registro Guardado con Exito');
+                        $('#addnew').modal('hide');
                         }
                         else {
-                        $('#addnew').modal('hide')
-                         alertify.confirm('Registro Guardado con Exito');
+                        
+                         alert(respuesta);
                             document.getElementById("monto").value = "";
                             document.getElementById("tipo").value = "";
                         }

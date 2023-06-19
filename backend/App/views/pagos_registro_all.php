@@ -1,4 +1,8 @@
 <?php echo $header; ?>
+<head>
+    <link rel="shortcut icon" href="/img/logo.png">
+    <title>Registro de Pagos MCM </title>
+</head>
 <div class="right_col">
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
