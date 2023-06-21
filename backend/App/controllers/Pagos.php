@@ -106,7 +106,7 @@ class Pagos extends Controller
                     url: '/Pagos/PagosAdd/',
                     data: $('#Add').serialize(),
                     success: function(respuesta) {
-                        if(respuesta=='ok'){
+                         if(respuesta=='1 Proceso realizado exitosamente'){
                         alert('enviado'); 
                         document.getElementById("monto").value = "";
                         document.getElementById("tipo").value = "";
@@ -114,7 +114,7 @@ class Pagos extends Controller
                         }
                         else {
                         $('#addnew').modal('hide')
-                         alertify.confirm('Registro Guardado con Exito');
+                         alert(respuesta);
                             document.getElementById("monto").value = "";
                             document.getElementById("tipo").value = "";
                         }
@@ -203,10 +203,18 @@ html;
 
     public function PagosAdd(){
         $pagos = new \stdClass();
+        $credito = MasterDom::getDataAll('credito');
+        $pagos->_credito = $credito;
+
+        $ciclo = MasterDom::getDataAll('ciclo');
+        $pagos->_ciclo = $ciclo;
+
         $monto = MasterDom::getDataAll('monto');
         $pagos->_monto = $monto;
+
         $tipo = MasterDom::getDataAll('tipo');
         $pagos->_tipo = $tipo;
+
         $pagos->_ejecutivo = MasterDom::getData('ejecutivo');
         $id = PagosDao::insertProcedure($pagos);
 
@@ -676,7 +684,7 @@ html;
                     <td style="padding: 0px !important;">{$value['FECHA']}</td>
                     <td style="padding: 0px !important;">{$value['REFERENCIA']}</td>
                     <td style="padding: 0px !important;">{$value['MONTO']}</td>
-                    <td style="padding: 0px !important;">$ {$value['MONEDA']}</td>
+                    <td style="padding: 0px !important;">{$value['MONEDA']}</td>
                 </tr>
 html;
                 }

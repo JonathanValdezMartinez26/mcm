@@ -226,13 +226,18 @@ static $_mail;
 
     ///////////////////////////////////////////////////////////////////////////////////////////7
 
-    public function queryProcedurePago($sql,$params = ''){
+    public function queryProcedurePago($credito, $ciclo, $monto){
+
+
+        $fecha = new DateTime();
+        echo $fecha->getTimestamp();
+
 
         $uno = "EMPFIN";
-        $dos = "24-09-2022";
-        $tres = "24-09-2022";
-        $cuatro = "001237";
-        $cinco = "04";
+        $dos = "19-06-2023";
+        $tres = "19-06-2023";
+        $cuatro = $credito;
+        $cinco = $ciclo;
         $seis = "10";
         $siete = "PRUEBA PRUEBA LOL";
         $ocho = "TESP";
@@ -266,8 +271,8 @@ static $_mail;
         $result = $stmt->execute();
 
         if ($result) {
-            print_r($stmt->fetchAll(PDO::FETCH_ASSOC));
-            var_dump($resultado);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            var_dump($result);
 
         } else {
             echo "\nPDOStatement::errorInfo():\n";

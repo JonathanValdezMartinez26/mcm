@@ -133,13 +133,19 @@ sql;
         return $mysqli->queryAll($query);
     }
 
-    public static function insertProcedure(){
+    public static function insertProcedure($pago){
+
+
+        $credito_i = $pago->_credito;
+        $ciclo_i = $pago->_ciclo;
+        $monto_i = $pago->_monto;
+
         $query=<<<sql
         CALL SPACCIONPAGODIA('EMPFIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,'001237','04','10','PRUEBA PRUEBA LOL','TESP','TERESA SANCHEZ PEREZ','DGNV','2652','P','1',?, '')
 sql;
 
         $mysqli = Database::getInstance();
-        return $mysqli->queryProcedurePago($query);
+        return $mysqli->queryProcedurePago($credito_i, $ciclo_i, $monto_i);
 
     }
 

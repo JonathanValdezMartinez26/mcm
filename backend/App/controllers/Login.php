@@ -58,7 +58,7 @@ html;
                     });
 
                     return response;
-                },"El usuario no es correcto");
+                },"El usuario no es correcto, o no tiene acceso al sistema, verifique. ");
 
                 $("#login").validate({
                     rules:{
@@ -145,6 +145,8 @@ html;
         session_start();
         $_SESSION['usuario'] = $user['CODIGO'];
         $_SESSION['nombre'] = $user['NOMBRE1'];
+        $_SESSION['puesto'] = $user['PUESTO'];
+        $_SESSION['cdgo'] = $user['CDGO'];
         header("location: /Principal/");
     }
 

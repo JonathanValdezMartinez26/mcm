@@ -119,6 +119,20 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label for="monto">Credito No° *</label>
+                                    <input type="number" class="form-control" id="credito" name="credito" <?php echo $Administracion['CDGNS']; ?>>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="monto">Ciclo° *</label>
+                                    <input type="number" class="form-control" id="ciclo" name="ciclo" value="<?php echo $Administracion['CICLO']; ?>" readonly>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
                                     <label for="monto">Monto *</label>
                                     <input type="number" class="form-control" id="monto" name="monto" placeholder="$1260.10">
                                 </div>

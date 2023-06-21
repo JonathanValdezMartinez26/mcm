@@ -27,6 +27,7 @@ class Contenedor extends Controller{
 
      $usuario = $this->__usuario;
 
+
      $header =<<<html
 
         <!DOCTYPE html>
@@ -86,18 +87,36 @@ $menu.=<<<html
           <br/>
           <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
             <div class="menu_section">
-              <h3>General</h3>
-              <ul class="nav side-menu">
+              <h3>General </h3>
+              <ul class="nav side-menu">       
+html;
+        if($this->__puesto == 'C' || $this->__cdgo == '') {
+
+            $menu .= <<<html
                 <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
-                   <li><a href="/Pagos/">Admninistración</a></li>
+html;
+        }
+        if($this->__puesto == 'D' )
+        {
+            $menu.=<<<html
+            <li><a href="/Pagos/">Admninistración</a></li>
+            <li><a href="/Pagos/PagosConsulta/">Consulta Pagos</a></li>
+            <li><a href="/Pagos/Layout/">Layout</a></li> 
+html;
+        }
+            if($this->__puesto == 'A' || $this->__cdgo == '')
+            {
+$menu.=<<<html
                    <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>
                    <li><a href="/Pagos/PagosRegistro/">Registro Pagos</a></li>
-                   <li><a href="/Pagos/PagosConsulta/">Consulta Pagos</a></li>
-                   <li><a href="/Pagos/Layout/">Layout</a></li>
-                   
+           
                   </ul>
                 </li>
+html;
+        }
+        if($this->__puesto == 'D' ) {
+            $menu .= <<<html
                 <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Creditos <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
                    <li><a href="/Creditos/ControlGarantias/">Control de Garantías</a></li>
@@ -105,7 +124,10 @@ $menu.=<<<html
                    <li><a href="/Creditos/CambioSucursal/">Cambio de Sucursal</a></li>
                   </ul>
                 </li>
-              </ul>
+html;
+        }
+        if($this->__usuario == 'ADMIN' || $this->__puesto == 'POR ASIGNAR') {
+            $menu .= <<<html
               <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Call Center <span class="fa fa-chevron-down"></span></a>
                  <ul class="nav child_menu">
@@ -115,6 +137,10 @@ $menu.=<<<html
                   </ul>
                 </li>
               </ul>
+html;
+        }
+if($this->__usuario == 'ADMIN' || $this->__usuario== 'SORA') {
+    $menu .= <<<html
               <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Operaciones <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
@@ -122,6 +148,9 @@ $menu.=<<<html
                   </ul>
                 </li>
               </ul>
+html;
+}
+            $menu.=<<<html
               </div>
           </div>
         </div>
