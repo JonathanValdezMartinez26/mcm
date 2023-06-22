@@ -227,7 +227,6 @@ html;
         $fecha = $_POST['fecha'];
         $id = PagosDao::DeletePago($id, $secuencia, $fecha);
 
-        var_dump($id);
     }
 
     public function PagosRegistro()
@@ -410,7 +409,7 @@ html;
         return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
     }
     
-        $(document).ready(function(){
+      $(document).ready(function(){
             $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
                 "columnDefs": [{
@@ -497,8 +496,11 @@ html;
       </script>
 html;
 
+
         $consolidado = $_GET['Consolidado'];
         $tabla = '';
+        $CorteCajaById = PagosDao::getAllCorteCajaByID($consolidado);
+
 
         if ($consolidado != '') {
             $CorteCaja = PagosDao::getAllByIdCorteCaja(1);
@@ -539,15 +541,22 @@ html;
 
                 }
                 //////////////////////////////////////
+
                 if($value['INCIDENCIA'] == 1)
                 {
                     $incidencia = '<br><span class="count_top" style="font-size: 20px; color: gold"><i class="fa fa-warning"></i></span> <b>Incidencia:</b>'.$value['COMENTARIO_INCIDENCIA'];
                     $monto = '<span class="count_top" style="font-size: 18px; color: #017911">Monto a recibir: $' .number_format($value['NUEVO_MONTO']). '</span>
                               <span class="count_top" style="font-size: 13px; color: #ff0066">Monto registrado: $' .number_format($value['MONTO']).'</span>';
-
+                    $botones = "";
                 }else{
                     $incidencia = '';
                     $monto = '$ '.number_format($value['MONTO']);
+
+                    $botones =  <<<html
+                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago({$value['CORTECAJA_PAGOSDIA_PK']});"><i class="fa fa-trash"></i></button>
+                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$tipo_pago}', '{$value['MONTO']}','{$estatus}', '{$value['EJECUTIVO']}');"><i class="fa fa-edit"></i></button>
+                
+html;
                 }
                 $tabla .= <<<html
                 <tr>
@@ -556,15 +565,13 @@ html;
                 <td> {$value['CDGNS']}</td>
                 <td> {$value['NOMBRE']}</td>
                 <td> {$value['CICLO']}</td>
-                <td> {$value['CICLO']}</td>
                 <td> {$tipo_pago}</td>
                 <td>{$monto}</td>
                 <td>{$estatus}</td>
                 <td><i class="fa fa-user"></i>   {$value['EJECUTIVO']} {$incidencia}</td>
                 
-                <td class="center" >
-                <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago({$value['CORTECAJA_PAGOSDIA_PK']});"><i class="fa fa-trash"></i></button>
-                <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('4', '4');"><i class="fa fa-edit"></i></button>
+                <td class="center">
+                {$botones}
                 </td>
                 </tr>
 html;
@@ -581,6 +588,7 @@ html;
             else
             {
                 View::set('tabla', $tabla);
+                View::set('CorteCajaById', $CorteCajaById);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::render("cortecaja_view");
@@ -604,7 +612,7 @@ html;
                 <td>$ {$value['MONTO_REFINANCIAMIENTO']}</td>
                 <td></td>
                 <td class="center" >
-                    <a href="/Pagos/CorteCaja/?Consolidado={$value['CDGPE']}/" type="submit" name="id_coordinador" class="btn btn-success"><span class="fa fa-product-hunt" style="color:white"></span> Liberar Pagos</a>
+                    <a href="/Pagos/CorteCaja/?Consolidado={$value['CDGPE']}" type="submit" name="id_coordinador" class="btn btn-success"><span class="fa fa-product-hunt" style="color:white"></span> Liberar Pagos</a>
                 </td>
                 </tr>
             

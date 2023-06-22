@@ -122,6 +122,25 @@ sql;
         return $mysqli->queryAll($query);
     }
 
+    public static function getAllCorteCajaByID($id){
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+SELECT EJECUTIVO, COUNT(CDGPE) AS NUM_PAG, CDGPE, SUM(MONTO) AS MONTO_TOTAL,
+SUM(CASE WHEN TIPO = 'P' THEN monto ELSE 0 END) AS MONTO_PAGO,
+SUM(CASE WHEN TIPO = 'M' THEN monto ELSE 0 END) AS MONTO_GARANTIA,
+SUM(CASE WHEN TIPO = 'D' THEN monto ELSE 0 END) AS MONTO_DESCUENTO,
+SUM(CASE WHEN TIPO = 'R' THEN monto ELSE 0 END) AS MONTO_REFINANCIAMIENTO,
+SUM(CASE WHEN TIPO = 'G' THEN monto ELSE 0 END) AS MONTO_MULTA
+FROM CORTECAJA_PAGOSDIA
+WHERE CDGPE = '$id'
+GROUP BY CDGPE, EJECUTIVO 
+HAVING COUNT (CDGPE) > 0 
+
+
+sql;
+        return $mysqli->queryOne($query);
+    }
+
     public static function getAllByIdCorteCaja($user){
         $mysqli = Database::getInstance();
         $query=<<<sql
@@ -237,7 +256,6 @@ sql;
         $query=<<<sql
       UPDATE PAGOSDIA SET ESTATUS = 'E' WHERE CDGNS = '$id' AND SECUENCIA = '$secuencia' AND FREGISTRO <> TIMESTAMP '$fecha 00:00:00.000000'
 sql;
-    var_dump($query);
         $accion = new \stdClass();
         $accion->_sql= $query;
         return $mysqli->update($query);
