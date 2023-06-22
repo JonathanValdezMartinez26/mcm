@@ -4,9 +4,37 @@
     <div class="x_panel tile fixed_height_240">
       <div class="x_title">
           <h3> Resumen de cobros realizados por el ejecutivo </h3>
-          <div class="clearfix"></div>
       </div>
       <div class="x_content">
+          <a href="/Pagos/PagosRegistro/?Credito=003011" type="button" class="btn btn-primary">
+              Agregar Pago
+          </a>
+          <hr style="border-top: 1px solid #787878; margin-top: 5px;">
+          <div class="row" >
+              <div class="tile_count float-right col-sm-12" style="margin-bottom: 1px; margin-top: 1px">
+                  <div class="col-md-2 col-sm-4  tile_stats_count">
+                      <span class="count_top" style="font-size: 15px"><i class="fa fa-calendar"></i> Fechas de Corte</span>
+
+                      <div class="count" style="font-size: 14px"><?php echo $Administracion['CLIENTE']; ?></div>
+                  </div>
+                  <div class="col-md-2 col-sm-4  tile_stats_count">
+                      <span class="count_top" style="font-size: 15px"><i class="fa fa-dollar"></i> Pagos Registrados</span>
+                      <div class="count" style="font-size: 14px"><?php echo $Administracion['CICLO']; ?> </div>
+                  </div>
+                  <div class="col-md-1 col-sm-4  tile_stats_count">
+                      <span class="count_top" style="font-size: 15px"><i></i><i class="fa fa-dollar"></i> Monto Total</span>
+                      <div class="count" style="font-size: 14px"> $ <?php echo number_format($Administracion['MONTO']); ?></div>
+                  </div>
+                  <div class="col-md-1 col-sm-4  tile_stats_count">
+                      <span class="count_top" style="font-size: 15px"><i></i><i class="fa fa-dollar"></i> Total a Pagos</span>
+                      <div class="count" style="font-size: 14px"> $ <?php echo number_format($Administracion['MONTO']); ?></div>
+                  </div>
+                  <div class="col-md-2 col-sm-4  tile_stats_count">
+                      <span class="count_top" style="font-size: 15px"><i></i><i class="fa fa-dollar"></i> Monto a Garantias</span>
+                      <div class="count" style="font-size: 14px"> $ <?php echo number_format($Administracion['MONTO']); ?></div>
+                  </div>
+              </div>
+          </div>
 
           <div class="form-group ">
               <div class="panel-body">
@@ -38,12 +66,12 @@
   </div>
 </div>
 
-<div class="modal fade" id="addnew" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modal_editar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Agregar Nuevo Registro  Pagos</h4></center>
+                <center><h4 class="modal-title" id="myModalLabel">Editar Registro de Pago (App Móvil)</h4></center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -81,7 +109,7 @@
                                 <div class="form-group">
                                     <label for="ejecutivo">Ejecutivo *</label>
                                     <select class="form-control" autofocus type="select" id="tipo" name="tipo" aria-label="Search">
-                                        <?php echo $status; ?>
+                                        <?php echo $getSucursales; ?>
                                     </select>
                                 </div>
                             </div>
@@ -98,6 +126,11 @@
         </div>
     </div>
 </div>
-
+<script>
+    function EditarPago(id, id1)
+    {
+        $('#modal_editar_pago').modal('show'); // abri
+    }
+</script>
 
 <?php echo $footer;?>
