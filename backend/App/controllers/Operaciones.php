@@ -9,7 +9,6 @@ use \App\models\Pagos AS PagosDao;
 
 class Operaciones extends Controller
 {
-
     private $_contenedor;
 
     function __construct()
@@ -20,12 +19,10 @@ class Operaciones extends Controller
         View::set('footer', $this->_contenedor->footer());
 
     }
-
     public function getUsuario()
     {
         return $this->__usuario;
     }
-
     public function ReportePLD()
     {
         $extraFooter = <<<html
@@ -101,6 +98,5 @@ html;
 
 
     }
-
 
 }

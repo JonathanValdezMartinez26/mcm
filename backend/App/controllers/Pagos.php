@@ -545,15 +545,15 @@ html;
                 if($value['INCIDENCIA'] == 1)
                 {
                     $incidencia = '<br><span class="count_top" style="font-size: 20px; color: gold"><i class="fa fa-warning"></i></span> <b>Incidencia:</b>'.$value['COMENTARIO_INCIDENCIA'];
-                    $monto = '<span class="count_top" style="font-size: 18px; color: #017911">Monto a recibir: $' .number_format($value['NUEVO_MONTO']). '</span>
-                              <span class="count_top" style="font-size: 13px; color: #ff0066">Monto registrado: $' .number_format($value['MONTO']).'</span>';
+                    $monto = '<span class="count_top" style="font-size: 16px; color: #017911">Monto a recibir: $' .number_format($value['NUEVO_MONTO']). '</span><br>
+                              <span class="count_top" style="font-size: 15px; color: #ff0066">Monto registrado: $' .number_format($value['MONTO']).'</span>';
                     $botones = "";
                 }else{
                     $incidencia = '';
                     $monto = '$ '.number_format($value['MONTO']);
 
                     $botones =  <<<html
-                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago({$value['CORTECAJA_PAGOSDIA_PK']});"><i class="fa fa-trash"></i></button>
+                    
                     <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$tipo_pago}', '{$value['MONTO']}','{$estatus}', '{$value['EJECUTIVO']}');"><i class="fa fa-edit"></i></button>
                 
 html;

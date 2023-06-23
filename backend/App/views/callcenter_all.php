@@ -13,14 +13,14 @@
                             <h5 class="card-title">Ingrese el número de crédito y ciclo</h5>
                         </div>
                         <div class="card-body">
-                            <form class="" action="/CallCenter/" method="post">
+                            <form class="" action="/CallCenter/Consultar/" method="GET">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="number" id="credito" name="credito" placeholder="000000" aria-label="Search">
+                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="number" id="Credito" name="Credito" placeholder="000000" aria-label="Search">
                                     <span id="availability1"></span>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="number" id="ciclo" name="ciclo" placeholder="00" aria-label="Search">
+                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="number" id="Ciclo" name="Ciclo" placeholder="00" aria-label="Search">
                                     <span id="availability1"></span>
                                 </div>
                                 <div class="col-md-4">
