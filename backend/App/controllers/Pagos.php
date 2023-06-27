@@ -159,6 +159,16 @@ class Pagos extends Controller
          {
              swal("Atención", "Usted no puede modificar este registro", "warning");
          }
+         
+         function InfoAdmin()
+         {
+             swal("Info", "Este registro fue capturado por una administradora en caja", "info");
+         }
+         
+         function InfoPhone()
+         {
+             swal("Info", "Este registro fue capturado por un ejecutivo en campo y procesado por una administradora", "info");
+         }
     
         
       </script>
@@ -187,10 +197,12 @@ html;
                 if($value['FIDENTIFICAPP'] ==  NULL)
                 {
                     $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
+                    $mensaje = 'InfoAdmin();';
                 }
                 else
                 {
-                    $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-female"></i></span>';
+                    $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
+                    $mensaje = 'InfoPhone();';
                 }
 
                 if($value['DESIGNATION'] == 'SI')
@@ -213,7 +225,7 @@ html;
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;" width="45" nowrap>{$medio}</td>
+                    <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
                     <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
                     <td style="padding: 0px !important;">{$value['CDGNS']}</td>
                     <td style="padding: 0px !important;">{$value['FECHA']}</td>
