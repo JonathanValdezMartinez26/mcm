@@ -122,7 +122,7 @@
                             <div class="col-md-6">
                                 <div class="form-group" >
                                     <label for="exampleInputEmail1">Número de Credito Nuevo *</label>
-                                    <input type="number" class="form-control" id="credito_nuevo" name="credito_nuevo" aria-describedby="credito_nuevo" placeholder="Escribe el número del credito"  value="" max="30">
+                                    <input type="number" class="form-control" id="credito_nuevo" name="credito_nuevo" aria-describedby="credito_nuevo" placeholder="Escribe el número del credito"  value="" max="300000">
                                 </div>
                             </div>
                         </div>

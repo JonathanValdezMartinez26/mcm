@@ -43,6 +43,7 @@ class Contenedor extends Controller{
             <meta charset="utf-8">
             <title>MCM</title>
             <link href="/css/nprogress.css" rel="stylesheet">
+            <link href="/css/loader.css" rel="stylesheet">
             <link rel="stylesheet" href="/css/tabla/sb-admin-2.css">
             <link rel="stylesheet" href="/css/bootstrap/datatables.bootstrap.css">
             <link rel="stylesheet" href="/css/bootstrap/bootstrap.css">
@@ -139,7 +140,7 @@ html;
               </ul>
 html;
         }
-if($this->__usuario == 'ADMIN' || $this->__usuario== 'SORA') {
+if($this->__usuario == 'ADMIN' || $this->__usuario == 'SORA') {
     $menu .= <<<html
               <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Operaciones <span class="fa fa-chevron-down"></span></a>
@@ -195,8 +196,7 @@ html;
           </div>
           
         <script src="/js/moment/moment.min.js"></script>
-        <script src="/js/datepicker/scriptdatepicker.js"></script>
-        <script src="/js/datepicker/datepicker2.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
         <script src="/js/jquery.min.js"></script>
         <!-- Bootstrap -->
@@ -207,11 +207,9 @@ html;
         <script src="/js/custom.min.js"></script>
 
         <script src="/js/validate/jquery.validate.js"></script>
-        <script src="/js/alertify/alertify.min.js"></script>
         <script src="/js/login.js"></script>
 
         <script src="/js/tabla/jquery.dataTables.min.js"></script>
-        <script src="/js/tabla/dataTables.editor.min.js"></script>
         <script src="/js/tabla/dataTables.bootstrap.min.js"></script>
         <script src="/js/tabla/jquery.tablesorter.js"></script>
 
@@ -334,9 +332,14 @@ html;
         function mayus(e) {
             e.value = e.value.toUpperCase();
         }
+        
+        $(window).load(function() {
+    $(".loader").fadeOut("slow");
+});
 </script>
   </body>
 </html>
+
 html;
 
     return $footer.$extra;

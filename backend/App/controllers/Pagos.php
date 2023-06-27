@@ -7,6 +7,7 @@ use \Core\MasterDom;
 use \Core\Controller;
 use \App\models\Pagos AS PagosDao;
 
+
 class Pagos extends Controller
 {
 
@@ -21,9 +22,21 @@ class Pagos extends Controller
 
     }
 
-    public function getUsuario()
-    {
-        return $this->__usuario;
+    function verifica_rango($fecha) {
+
+        $hoy = date("Y-m-d H:i:s");
+
+        $date_inicio = strtotime($fecha);
+
+
+
+        $date_fin = strtotime($date_fin);
+        $date_nueva = strtotime($date_nueva);
+
+
+        if (($date_nueva >= $date_inicio) && ($date_nueva <= $date_fin))
+            return true;
+        return false;
     }
 
     public function index()
@@ -58,10 +71,9 @@ class Pagos extends Controller
             
         });
         
-        function FunDelete_Pago(secuencia, fech, ciclo) {
+        function FunDelete_Pago(secuencia, fecha) {
              credito = getParameterByName('Credito');
-             secuencias = secuencia;
-             fecha = fech;
+             user = 'ADMIN';
              
                 alertify.confirm('¿Segúro que desea eliminar lo seleccionado?', function(response){
                   if(response){
@@ -69,9 +81,9 @@ class Pagos extends Controller
                       $.ajax({
                         type: "POST",
                         url: "/Pagos/Delete/",
-                        data: {"credito" : credito, "secuencia" : secuencias, "fecha" : fecha},
+                        data: {"cdgns" : credito, "fecha" : fecha, "secuencia": secuencia, "usuario" : user},
                         success: function(response){
-                            if(response != 1)
+                            if(response == '1 Proceso realizado exitosamente')
                                 {
                                     alertify.success("Se ha eliminado correctamente");
                                     location.reload();
@@ -79,6 +91,7 @@ class Pagos extends Controller
                                 }
                             else
                                 {
+                                    alert(response);   
                                      alertify.error("Error, al eliminar.");
                                 }
                         }
@@ -92,25 +105,28 @@ class Pagos extends Controller
         
         function enviar_add(){	
              monto = document.getElementById("monto").value; 
+             
             if(monto == '')
                 {
                     if(monto == 0)
                         {
-                             alertify.confirm('Ingresa un monto, mayor a $0');
+                             alert("Ingresa un monto mayor a $0")
                         }
                 }
             else
                 {
+                    texto = $("#ejecutivo :selected").text();
+                   
                     $.ajax({
                     type: 'POST',
                     url: '/Pagos/PagosAdd/',
-                    data: $('#Add').serialize(),
+                    data: $('#Add').serialize()+ "&ejec="+texto,
                     success: function(respuesta) {
                          if(respuesta=='1 Proceso realizado exitosamente'){
-                        alert('enviado'); 
+                      
                         document.getElementById("monto").value = "";
-                        document.getElementById("tipo").value = "";
-                        alertify.confirm('Registro Guardado con Exito');
+                        alert("Registro guardado exitosamente");
+                        location.reload();
                         }
                         else {
                         $('#addnew').modal('hide')
@@ -123,6 +139,11 @@ class Pagos extends Controller
                 }
     }
     
+        function Desactivado()
+         {
+             swal("Good job!", "You clicked the button!", "success");
+         }
+    
         
       </script>
 html;
@@ -130,8 +151,10 @@ html;
         //$busqueda = $_POST['busqueda'];
         $credito = $_GET['Credito'];
         $tabla = '';
+        $editar = '';
+        $fechaActual = date('m-d-Y h:i:s');
 
-        $status = PagosDao::ListaEjecutivos();
+        $status = PagosDao::ListaEjecutivos($this->__cdgco);
         $getStatus = '';
         foreach ($status as $key => $val2) {
             $getStatus .= <<<html
@@ -143,8 +166,7 @@ html;
             $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito);
 
             foreach ($Administracion as $key => $value) {
-                $oldDate = strtotime($value['FECHA']);
-                $newDate = date('Y-m-d',$oldDate);
+
 
                 if($value['FIDENTIFICAPP'] ==  NULL)
                 {
@@ -155,6 +177,24 @@ html;
                     $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-female"></i></span>';
                 }
 
+                if($value['DESIGNATION'] == 'SI')
+                {
+                    $editar = <<<html
+                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIPO']}', '{$value['MONTO']}', '{$value['EJECUTIVO']}');"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}');"><i class="fa fa-trash"></i></button>
+html;
+                }
+                else
+                {
+                    $editar = <<<html
+                    <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()"><i class="fa fa-trash"></i></button>
+html;
+                }
+
+
+
+
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;" width="45" nowrap>{$medio}</td>
@@ -164,10 +204,8 @@ html;
                     <td style="padding: 0px !important;">{$value['CICLO']}</td>
                     <td style="padding: 0px !important;">$ {$value['MONTO']}</td>
                     <td style="padding: 0px !important;">{$value['TIPO']}</td>
-                    <td style="padding: 0px !important;" class="center" >
-                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('4');"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago({$value['SECUENCIA']}, '{$newDate}', {$value['CICLO']});"><i class="fa fa-trash"></i></button>
-                    </td>
+                    <td style="padding: 0px !important;">{$value['EJECUTIVO']}</td>
+                    <td style="padding: 0px !important;" class="center">{$editar}</td>
                 </tr>
 html;
             }
@@ -177,6 +215,7 @@ html;
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('status', $getStatus);
                 View::set('credito', $credito);
+                View::set('usuario', $this->__usuario);
                 View::render("pagos_admin_busqueda_message");
             }
             else
@@ -184,7 +223,9 @@ html;
                 View::set('tabla', $tabla);
                 View::set('Administracion', $AdministracionOne);
                 View::set('credito', $credito);
+                View::set('fechaActual', $fechaActual);
                 View::set('status', $getStatus);
+                View::set('usuario', $this->__usuario);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::render("pagos_admin_busqueda");
@@ -195,15 +236,11 @@ html;
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::render("pagos_admin_all");
         }
-
-        if(isset($_POST['agregar'])){
-            echo '<script> alert("Data Saved"); </script>';
-        }
     }
 
     public function PagosAdd(){
         $pagos = new \stdClass();
-        $credito = MasterDom::getDataAll('credito');
+        $credito = MasterDom::getDataAll('cdgns');
         $pagos->_credito = $credito;
 
         $ciclo = MasterDom::getDataAll('ciclo');
@@ -215,17 +252,31 @@ html;
         $tipo = MasterDom::getDataAll('tipo');
         $pagos->_tipo = $tipo;
 
+        $nombre = MasterDom::getDataAll('nombre');
+        $pagos->_nombre = $nombre;
+
+        $usuario = MasterDom::getDataAll('usuario');
+        $pagos->_usuario = $usuario;
+
         $pagos->_ejecutivo = MasterDom::getData('ejecutivo');
+
+        $pagos->_ejecutivo_nombre = MasterDom::getData('ejec');
+
         $id = PagosDao::insertProcedure($pagos);
 
+        return $id;
     }
 
     public function Delete(){
 
-        $id = $_POST['credito'];
-        $secuencia = $_POST['secuencia'];
+        $cdgns = $_POST['cdgns'];
         $fecha = $_POST['fecha'];
-        $id = PagosDao::DeletePago($id, $secuencia, $fecha);
+        $usuario = $_POST['usuario'];
+        $secuencia = $_POST['secuencia'];
+
+        $id = PagosDao::DeleteProcedure($cdgns, $fecha, $usuario, $secuencia);
+
+        return $id;
 
     }
 
@@ -261,7 +312,9 @@ html;
             
         });
         
-        function FunDelete_Pago(secuencia, fech, ciclo) {
+         
+          
+        function FunDelete_Pago(secuencia, fech) {
              credito = getParameterByName('Credito');
              secuencias = secuencia;
              fecha = fech;
@@ -304,6 +357,7 @@ html;
                 }
             else
                 {
+                    
                     $.ajax({
                     type: 'POST',
                     url: '/Pagos/PagosAdd/',
@@ -348,12 +402,6 @@ html;
             $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito);
 
             foreach ($Administracion as $key => $value) {
-                $oldDate = strtotime($value['FECHA']);
-
-                $newDate = date('Y-m-d',$oldDate);
-
-
-
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;">{$value['SECUENCIA']}</td>
@@ -364,7 +412,7 @@ html;
                     <td style="padding: 0px !important;">{$value['TIPO']}</td>
                     <td style="padding: 0px !important;" class="center" >
                         <button type="button" class="btn btn-success btn-circle" onclick="FunEdit($credito, {$value['SECUENCIA']}, {$value['CICLO']});"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago({$value['SECUENCIA']}, '{$newDate}', {$value['CICLO']});"><i class="fa fa-trash"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago({$value['SECUENCIA']}, '{$value['FECHA']}');"><i class="fa fa-trash"></i></button>
                     </td>
                 </tr>
 html;
@@ -641,15 +689,27 @@ html;
 
     public function Layout()
     {
+        $fechaActual = date('d-m-Y');
+
         $extraFooter = <<<html
       <script>
-      
+          function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+             
          $(document).ready(function(){
             $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
+                  "lengthMenu": [
+                    [25, 50, -1],
+                    [25, 50, 'Todos'],
+                ],
                 "columnDefs": [{
                     "orderable": false,
-                    "targets": 0
+                    "targets": 0,
                 }],
                  "order": false
             });
@@ -662,9 +722,11 @@ html;
             });
             var checkAll = 0;
             
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
              $("#export_excel").click(function(){
-                 alert("Hola");
-              $('#all').attr('action', '/Pagos/generarExcel/');
+              $('#all').attr('action', '/Pagos/generarExcel/?Inicial='+fecha1+'&Final='+fecha2);
               $('#all').attr('target', '_blank');
               $("#all").submit();
             });
@@ -674,6 +736,7 @@ html;
     
       </script>
 html;
+
 
         $fecha_inicio = $_GET['Inicial'];
         $fecha_fin = $_GET['Final'];
@@ -709,12 +772,16 @@ html;
                 else
                 {
                     View::set('tabla', $tabla);
+                    View::set('fecha_i', $fecha_inicio);
+                    View::set('fecha_f', $fecha_fin);
                     View::set('footer', $this->_contenedor->footer($extraFooter));
                     View::render("pagos_layout_busqueda");
                 }
 
             } else {
+                View::set('fechaActual', $fechaActual);
                 View::render("pagos_layout_all");
+
             }
 
             ////////////////////////////////////////////////////
@@ -723,90 +790,98 @@ html;
 
     }
 
-    public function generarExcel()
-        {
-
-            $objPHPExcel = new \PHPExcel();
-
-            $objPHPExcel->getProperties()->setCreator("jma");
-            $objPHPExcel->getProperties()->setLastModifiedBy("jma");
-            $objPHPExcel->getProperties()->setTitle("Reporte");
-            $objPHPExcel->getProperties()->setSubject("Reorte");
-            $objPHPExcel->getProperties()->setDescription("Descripcion");
-            $objPHPExcel->setActiveSheetIndex(0);
-
-
-            $estilo_encabezado = array(
-                'font' => array('bold' => true, 'name' => 'Verdana', 'size' => 14, 'color' => array('rgb' => 'FEAE41')),
-                'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
-                'type' => \PHPExcel_Style_Fill::FILL_SOLID
-            );
-
-            $estilo_celda = array(
-                'font' => array('bold' => false, 'name' => 'Verdana', 'size' => 12, 'color' => array('rgb' => 'B59B68')),
-                'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
-                'type' => \PHPExcel_Style_Fill::FILL_SOLID
-
-            );
-
-
-            $fila = 9;
-            $adaptarTexto = true;
-
-            $controlador = "Pagos";
-            $columna = array('A', 'B', 'C', 'D');
-            $nombreColumna = array('Id', 'Nombre', 'Descripción', 'Status');
-            $nombreCampo = array('catalogo_empresa_id', 'nombre', 'descripcion', 'status');
-
-            $objPHPExcel->getActiveSheet()->SetCellValue('A' . $fila, 'Reporte de Empresas');
-            $objPHPExcel->getActiveSheet()->mergeCells('A' . $fila . ':' . $columna[count($nombreColumna) - 1] . $fila);
-            $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->applyFromArray($estilo_titulo);
-            $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->getAlignment()->setWrapText($adaptarTexto);
-
-            $fila += 1;
-
-            /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
-            foreach ($nombreColumna as $key => $value) {
-                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, $value);
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_encabezado);
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
-                $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
-            }
-            $fila += 1; //fila donde comenzaran a escribirse los datos
-
+    public function generarExcel(){
 
         $fecha_inicio = $_GET['Inicial'];
         $fecha_fin = $_GET['Final'];
 
-                foreach (PagosDao::GeneraLayoutContable($fecha_inicio, $fecha_fin) as $key => $value) {
-                    foreach ($nombreCampo as $key => $campo) {
-                        $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
-                        $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_celda);
-                        $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
-                    }
-                    $fila += 1;
-                }
+        $objPHPExcel = new \PHPExcel();
+        $objPHPExcel->getProperties()->setCreator("jma");
+        $objPHPExcel->getProperties()->setLastModifiedBy("jma");
+        $objPHPExcel->getProperties()->setTitle("Reporte");
+        $objPHPExcel->getProperties()->setSubject("Reorte");
+        $objPHPExcel->getProperties()->setDescription("Descripcion");
+        $objPHPExcel->setActiveSheetIndex(0);
 
-            $objPHPExcel->getActiveSheet()->getStyle('A1:' . $columna[count($columna) - 1] . $fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-            for ($i = 0; $i < $fila; $i++) {
-                $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(20);
+
+
+        $estilo_titulo = array(
+            'font' => array('bold' => true,'name'=>'Verdana','size'=>13, 'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+        );
+
+        $estilo_encabezado = array(
+            'font' => array('bold' => true,'name'=>'Verdana','size'=>12, 'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+        );
+
+        $estilo_celda = array(
+            'font' => array('bold' => false,'name'=>'Verdana','size'=>11,'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+
+        );
+
+
+        $fila = 1;
+        $adaptarTexto = true;
+
+        $controlador = "Pagos";
+        $columna = array('A','B','C','D');
+        $nombreColumna = array('Fecha','Referencia','Monto','Moneda');
+        $nombreCampo = array('FECHA','REFERENCIA','MONTO','MONEDA');
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'LAYOUT PAGOS');
+        $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
+        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
+        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
+
+        $fila +=1;
+
+        /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
+        foreach ($nombreColumna as $key => $value) {
+            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, $value);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_encabezado);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
+        }
+        $fila +=1; //fila donde comenzaran a escribirse los datos
+
+        /* FILAS DEL ARCHIVO EXCEL */
+
+        $Layoutt = PagosDao::GeneraLayoutContable($fecha_inicio, $fecha_fin);
+        foreach ($Layoutt as $key => $value) {
+            foreach ($nombreCampo as $key => $campo) {
+                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_celda);
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
             }
-
-            $objPHPExcel->getActiveSheet()->setTitle('Reporte');
-
-            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            header('Content-Disposition: attachment;filename="Reporte AG ' . $controlador . '.xlsx"');
-            header('Cache-Control: max-age=0');
-            header('Cache-Control: max-age=1');
-            header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-            header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-            header('Cache-Control: cache, must-revalidate');
-            header('Pragma: public');
-
-            \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
-            $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-            $objWriter->save('php://output');
+            $fila +=1;
         }
 
+
+        $objPHPExcel->getActiveSheet()->getStyle('A1:'.$columna[count($columna)-1].$fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        for ($i=0; $i <$fila ; $i++) {
+            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(20);
+        }
+
+
+        $objPHPExcel->getActiveSheet()->setTitle('Reporte');
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Layout '.$controlador.'.xlsx"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+        header ('Cache-Control: cache, must-revalidate');
+        header ('Pragma: public');
+
+        \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
+    }
 
 }

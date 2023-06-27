@@ -69,7 +69,7 @@
                             <div class="count" style="font-size: 14px"><?php echo $Administracion['SUCURSAL']; ?></div>
                         </div>
                         <div class="col-md-2 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i></i> Ejecutivo</span>
+                            <span class="count_top" style="font-size: 15px"><i></i> Ejecutivo de cuenta</span>
                             <div class="count" style="font-size: 14px"><?php echo $Administracion['EJECUTIVO']; ?> </div>
                         </div>
                     </div>
@@ -85,6 +85,7 @@
                                     <th>Ciclo</th>
                                     <th>Monto</th>
                                     <th>Tipo</th>
+                                    <th>Ejecutivo</th>
                                     <th>Acciones</th>
                                 </tr>
                                 </thead>
@@ -103,63 +104,86 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Agregar Registro de Pago</h4></center>
+                <center><h4 class="modal-title" id="myModalLabel">Agregar Registro de Pago (Administradora)</h4></center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
                     <form onsubmit="enviar_add(); return false" id="Add">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Fecha</label>
-                                    <input type="text" class="form-control" id="Fecha" aria-describedby="Fecha" disabled placeholder="" value="<?php $fechaActual = date('d-m-Y H:i:s'); echo $fechaActual; ?>">
-                                    <small id="emailHelp" class="form-text text-muted">Aparecera la fecha en la que registras el pago.</small>
+                                    <label for="Fecha">Fecha</label>
+                                    <input type="text" class="form-control" id="Fecha" aria-describedby="Fecha" disabled placeholder="" value="<?php echo $fechaActual; ?>">
+                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro en la app.</small>
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4" style="display: none">
                                 <div class="form-group">
-                                    <label for="monto">Credito No° *</label>
-                                    <input type="number" class="form-control" id="credito" name="credito" <?php echo $Administracion['CDGNS']; ?>>
+                                    <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo $usuario; ?>">
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="monto">Ciclo° *</label>
-                                    <input type="number" class="form-control" id="ciclo" name="ciclo" value="<?php echo $Administracion['CICLO']; ?>" readonly>
+                                    <label for="movil">Medio de Registro</label>
+                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="ADMINISTRADORA">
+                                    <small id="emailHelp" class="form-text text-muted">Medio de registro del pago.</small>
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="cdgns">CDGNS</label>
+                                    <input type="number" class="form-control" id="cdgns" name="cdgns" readonly value="<?php echo $credito; ?>">
+                                    <small id="emailHelp" class="form-text text-muted">Número del crédito.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-10">
+                                <div class="form-group">
+                                    <label for="nombre">Nombre del Cliente</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" readonly value="<?php echo $Administracion['CLIENTE']; ?>">
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="ciclo">Ciclo</label>
+                                    <input type="number" class="form-control" id="ciclo" name="ciclo" readonly value="<?php echo $Administracion['CICLO']; ?>">
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="tipo">Tipo de Operación</label>
+                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <option value="P">PAGO</option>
+                                        <option value="M">MULTA</option>
+                                        <option value="G">GARANTÍA</option>
+                                        <option value="D">DESCUENTO</option>
+                                        <option value="R">REFINANCIAMIENTO</option>
+                                        <option value="S">SEGURO</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="monto">Monto *</label>
-                                    <input type="number" class="form-control" id="monto" name="monto" placeholder="$1260.10">
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="tipo">Tipo de Pago *</label>
-                                    <select class="form-control" autofocus type="select" id="tipo" name="tipo" aria-label="Search">
-                                        <option value="credito">Pago</option>
-                                        <option value="fecha">Garantía</option>
-                                        <option value="fecha">Multa</option>
-                                        <option value="fecha">Descuento</option>
-                                        <option value="fecha">Refinanciamiento</option>
-                                    </select>
+                                    <input autofocus type="text" class="form-control" id="monto" name="monto" autocomplete="off" max="10000">
                                 </div>
                             </div>
 
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="ejecutivo">Ejecutivo *</label>
-                                    <select class="form-control" autofocus type="select" id="tipo" name="tipo" aria-label="Search">
+                                    <label for="ejecutivo">Nombre del Ejecutivo</label>
+                                    <select class="form-control mr-sm-3"  autofocus type="select" id="ejecutivo" name="ejecutivo">
                                         <?php echo $status; ?>
                                     </select>
+                                    <small id="emailHelp" class="form-text text-muted">Nombre del ejecutivo que entrega el pago.</small>
                                 </div>
                             </div>
-
                         </div>
                 </div>
             </div>
@@ -173,54 +197,100 @@
     </div>
 </div>
 
+
 <div class="modal fade" id="modal_editar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Editar Registro de Pago</h4></center>
+                <center><h4 class="modal-title" id="myModalLabel">Editar Registro de Pago (Administradora)</h4></center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
                     <form onsubmit="enviar_add(); return false" id="Add">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Fecha</label>
-                                    <input type="text" class="form-control" id="Fecha" aria-describedby="Fecha" disabled placeholder="" value="<?php $fechaActual = date('d-m-Y H:i:s'); echo $fechaActual; ?>">
-                                    <small id="emailHelp" class="form-text text-muted">Aparecera la fecha en la que registras el pago.</small>
+                                    <label for="Fecha_e">Fecha</label>
+                                    <input type="text" class="form-control" id="Fecha_e" aria-describedby="Fecha_e" disabled placeholder="" value="<?php echo $fechaActual; ?>">
+                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro en la app.</small>
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="monto">Monto *</label>
-                                    <input type="number" class="form-control" id="monto" name="monto" placeholder="$1260.10">
+                                    <label for="movil_e">Medio de Registro</label>
+                                    <input type="text" class="form-control" id="movil_e" aria-describedby="movil_e" disabled placeholder="" value="ADMINISTRADORA">
+                                    <small id="emailHelp" class="form-text text-muted">Medio de registro del pago.</small>
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="tipo">Tipo de Pago *</label>
-                                    <select class="form-control" autofocus type="select" id="tipo" name="tipo" aria-label="Search">
-                                        <option value="credito">Pago</option>
-                                        <option value="fecha">Garantía</option>
-                                        <option value="fecha">Multa</option>
-                                        <option value="fecha">Descuento</option>
-                                        <option value="fecha">Refinanciamiento</option>
+                                    <label for="cdgns_e">CDGNS</label>
+                                    <input type="number" class="form-control" id="cdgns_e" name="cdgns_e" readonly>
+                                    <small id="emailHelp" class="form-text text-muted">Número del crédito.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-10">
+                                <div class="form-group">
+                                    <label for="nombre_e">Nombre del Cliente</label>
+                                    <input type="text" class="form-control" id="nombre_e" name="nombre_e" readonly>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="ciclo_e">Ciclo</label>
+                                    <input type="number" class="form-control" id="ciclo_e" name="ciclo_e" readonly>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="pago_e">Tipo de Operación</label>
+                                    <input type="text" class="form-control" id="pago_e" name="pago_e" readonly>
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="tipo">Tipo de Operación</label>
+                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <option value="P">PAGO</option>
+                                        <option value="M">MULTA</option>
+                                        <option value="G">GARANTÍA</option>
+                                        <option value="D">DESCUENTO</option>
+                                        <option value="R">REFINANCIAMIENTO</option>
+                                        <option value="S">SEGURO</option>
                                     </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="monto_e">Monto *</label>
+                                    <input type="text" class="form-control" id="monto_e" name="monto_e">
                                 </div>
                             </div>
 
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="ejecutivo">Ejecutivo *</label>
-                                    <select class="form-control" autofocus type="select" id="tipo" name="tipo" aria-label="Search">
-                                        <?php echo $getSucursales; ?>
-                                    </select>
+                                    <label for="ejecutivo_e">Nombre del Ejecutivo</label>
+                                    <input type="text" class="form-control" id="ejecutivo_e" name="ejecutivo_e" readonly>
                                 </div>
                             </div>
 
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="ejecutivo">Nombre del Ejecutivo</label>
+                                    <select class="form-control mr-sm-3"  autofocus type="select" id="ejecutivo" name="ejecutivo">
+                                        <?php echo $status; ?>
+                                    </select>
+                                    <small id="emailHelp" class="form-text text-muted">Nombre del ejecutivo que entrega el pago.</small>
+                                </div>
+                            </div>
                         </div>
                 </div>
             </div>
@@ -235,12 +305,20 @@
 </div>
 
 <script>
-    function EditarPago(id_suc)
-    {
-        credito = getParameterByName('Credito');
-        id_sucursal = id_suc;
+    function EditarPago(fecha, cdgns, nombre, ciclo, tipo_pago, monto, ejecutivo) {
 
-        $('#modal_editar_pago').modal('show'); // abri
+        document.getElementById("Fecha_e").value = fecha;
+        document.getElementById("cdgns_e").value = cdgns;
+        document.getElementById("nombre_e").value = nombre;
+        document.getElementById("ciclo_e").value = ciclo;
+        document.getElementById("pago_e").value = tipo_pago;
+        document.getElementById("monto_e").value = monto;
+        document.getElementById("ejecutivo_e").value = ejecutivo;
+
+
+
+        $('#modal_editar_pago').modal('show');
+        document.getElementById(monto_e).focus();
     }
 </script>
 

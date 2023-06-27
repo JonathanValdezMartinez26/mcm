@@ -24,7 +24,13 @@ class Pagos{
         PAGOSDIA.EJECUTIVO,
         PAGOSDIA.CDGOCPE,
         PAGOSDIA.FREGISTRO,
-        PAGOSDIA.FIDENTIFICAPP
+        PAGOSDIA.FIDENTIFICAPP,
+        TRUNC(FREGISTRO) + 12/24 AS DE,
+        TRUNC(FREGISTRO) + 1 + 12/24 AS HASTA,
+        CASE
+        WHEN FREGISTRO >= TRUNC(FREGISTRO) + 12/24 AND FREGISTRO <=TRUNC(FREGISTRO) + 1 + 12/24 THEN 'SI'
+        Else 'NO'
+        END AS DESIGNATION
     FROM
         PAGOSDIA, NS, CO, RG
     WHERE
@@ -35,7 +41,7 @@ class Pagos{
         AND NS.CDGCO = CO.CODIGO 
         AND CO.CDGRG = RG.CODIGO
     ORDER BY
-        FECHA DESC, SECUENCIA
+        FREGISTRO DESC, SECUENCIA
 sql;
 
       $mysqli = Database::getInstance();
@@ -48,7 +54,7 @@ sql;
         SELECT 
 		SC.CDGNS NO_CREDITO,
 		SC.CDGCL ID_CLIENTE,
-		GET_NOMBRE_CLIENTE(SC.CDGCL) CLIENTE,
+		GET_NOMBRE_CLIENTE(SC.CDGCL,1) CLIENTE,
 		SC.CICLO,
 		NVL(SC.CANTAUTOR,SC.CANTSOLIC) MONTO,
 		SC.SITUACION,
@@ -154,21 +160,22 @@ sql;
 
     public static function insertProcedure($pago){
 
-
         $credito_i = $pago->_credito;
         $ciclo_i = $pago->_ciclo;
         $monto_i = $pago->_monto;
+        $tipo_i = $pago->_tipo;
+        $nombre_i = $pago->_nombre;
+        $user_i = $pago->_usuario;
+        $ejecutivo_i = $pago->_ejecutivo;
+        $ejecutivo_nombre_i = $pago->_ejecutivo_nombre;
 
-        $query=<<<sql
-        CALL SPACCIONPAGODIA('EMPFIN',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,'001237','04','10','PRUEBA PRUEBA LOL','TESP','TERESA SANCHEZ PEREZ','DGNV','2652','P','1',?, '')
-sql;
 
         $mysqli = Database::getInstance();
-        return $mysqli->queryProcedurePago($credito_i, $ciclo_i, $monto_i);
+        return $mysqli->queryProcedurePago($credito_i, $ciclo_i, $monto_i, $tipo_i, $nombre_i, $user_i,  $ejecutivo_i, $ejecutivo_nombre_i);
 
     }
 
-    public static function ListaEjecutivos(){
+    public static function ListaEjecutivos($cdgco){
 
         $query=<<<sql
         SELECT
@@ -178,7 +185,7 @@ FROM
 	PE
 WHERE
 	CDGEM = 'EMPFIN' 
-	AND CDGCO = '018'
+	AND CDGCO = '$cdgco'
 	AND ACTIVO = 'S'
 ORDER BY 1
 sql;
@@ -259,6 +266,13 @@ sql;
         $accion = new \stdClass();
         $accion->_sql= $query;
         return $mysqli->update($query);
+    }
+
+    public static function DeleteProcedure($cdgns, $fecha, $user, $secuencia){
+
+        $mysqli = Database::getInstance();
+        return $mysqli->queryProcedureDeletePago($cdgns, $fecha, $user, $secuencia);
+
     }
 
 }

@@ -1,7 +1,5 @@
 <?php echo $header; ?>
-<style type="text/css">
-    panel {  }
-</style>
+<div class="loader"></div>
 <div class="right_col">
         <div class="panel panel-body" style="margin-bottom: 0px;">
             <div class="x_title">
@@ -19,11 +17,11 @@
                     <form class="" action="/Pagos/Layout/" method="GET">
                         <div class="row">
                             <div class="col-md-4">
-                                <input class="form-control mr-sm-4" style="font-size: 25px;" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
+                                <input class="form-control mr-sm-4" style="font-size: 25px;" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $fecha_i; ?>">
                                 <span id="availability1"></span>
                             </div>
                             <div class="col-md-4">
-                                <input class="form-control mr-sm-4" style="font-size: 25px;" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
+                                <input class="form-control mr-sm-4" style="font-size: 25px;" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $fecha_f; ?>">
                                 <span id="availability1"></span>
                             </div>
                             <div class="col-md-4">
@@ -35,6 +33,7 @@
             </div>
             <div class="card col-md-12">
                 <hr style="border-top: 1px solid #e5e5e5; margin-top: 5px;">
+                <form name="all" id="all" method="POST">
                 <button id="export_excel" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
                 <hr style="border-top: 1px solid #787878; margin-top: 5px;">
 
@@ -53,9 +52,9 @@
                                 </tbody>
                             </table>
                         </div>
+                </form>
                 </div>
             </div>
     </div>
 </div>
-
 <?php echo $footer; ?>

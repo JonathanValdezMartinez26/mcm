@@ -16,11 +16,11 @@
                 <form class="" action="/Pagos/Layout/" method="GET">
                     <div class="row">
                         <div class="col-md-4">
-                            <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
+                            <input class="form-control mr-sm-4" style="font-size: 25px;" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $fecha_i; ?>">
                             <span id="availability1"></span>
                         </div>
                         <div class="col-md-4">
-                            <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
+                            <input class="form-control mr-sm-4" style="font-size: 25px;" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $fecha_f; ?>">
                             <span id="availability1"></span>
                         </div>
                         <div class="col-md-4">

@@ -226,54 +226,49 @@ static $_mail;
 
     ///////////////////////////////////////////////////////////////////////////////////////////7
 
-    public function queryProcedurePago($credito, $ciclo, $monto){
+    public function queryProcedurePago($credito, $ciclo_, $monto_, $tipo_, $nombre_, $user_, $ejecutivo_id,  $ejec_nom_){
 
+        $fechaActual = date('d-m-Y');
 
-        $fecha = new DateTime();
-        echo $fecha->getTimestamp();
-
-
-        $uno = "EMPFIN";
-        $dos = "19-06-2023";
-        $tres = "19-06-2023";
-        $cuatro = $credito;
-        $cinco = $ciclo;
-        $seis = "10";
-        $siete = "PRUEBA PRUEBA LOL";
-        $ocho = "TESP";
-        $nueve = "TERESA SANCHEZ PEREZ jona";
-        $diez = "DGNV";
-        $once = "2652";
-        $doce = "P";
-        $trece = 1;
+        $empresa = "EMPFIN";
+        $fecha = $fechaActual;
+        $fecha_aux = "";
+        $cdgns = $credito;
+        $ciclo = $ciclo_;
+        $secuencia = "";
+        $nombre = $nombre_;
+        $cdgocpe = $ejecutivo_id;
+        $ejecutivo = $ejec_nom_;
+        $cdgpe = $user_;
+        $monto = $monto_;
+        $tipo_mov = $tipo_;
+        $tipo = 1;
         $resultado = "";
-        $quince = "";
+        $identifica_app = "";
 
         $query_text = "CALL SPACCIONPAGODIA(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         $stmt = $this->_mysqli->prepare($query_text);
-        $stmt->bindParam(1,$uno, PDO::PARAM_STR);
-        $stmt->bindParam(2,$dos, PDO::PARAM_STR);
-        $stmt->bindParam(3,$tres, PDO::PARAM_STR);
-        $stmt->bindParam(4,$cuatro, PDO::PARAM_STR);
-        $stmt->bindParam(5,$cinco, PDO::PARAM_STR);
-        $stmt->bindParam(6,$seis, PDO::PARAM_STR);
-        $stmt->bindParam(7,$siete, PDO::PARAM_STR);
-        $stmt->bindParam(8,$ocho, PDO::PARAM_STR);
-        $stmt->bindParam(9,$nueve, PDO::PARAM_STR);
-        $stmt->bindParam(10,$diez, PDO::PARAM_STR);
-        $stmt->bindParam(11,$once, PDO::PARAM_STR);
-        $stmt->bindParam(12,$doce, PDO::PARAM_STR);
-        $stmt->bindParam(13,$trece, PDO::PARAM_INT, 10);
+        $stmt->bindParam(1,$empresa, PDO::PARAM_STR);
+        $stmt->bindParam(2,$fecha, PDO::PARAM_STR);
+        $stmt->bindParam(3,$fecha_aux, PDO::PARAM_STR);
+        $stmt->bindParam(4,$cdgns, PDO::PARAM_STR);
+        $stmt->bindParam(5,$ciclo, PDO::PARAM_STR);
+        $stmt->bindParam(6,$secuencia, PDO::PARAM_STR);
+        $stmt->bindParam(7,$nombre, PDO::PARAM_STR);
+        $stmt->bindParam(8,$cdgocpe, PDO::PARAM_STR);
+        $stmt->bindParam(9,$ejecutivo, PDO::PARAM_STR);
+        $stmt->bindParam(10,$cdgpe, PDO::PARAM_STR);
+        $stmt->bindParam(11,$monto, PDO::PARAM_STR);
+        $stmt->bindParam(12,$tipo_mov, PDO::PARAM_STR);
+        $stmt->bindParam(13,$tipo, PDO::PARAM_INT, 10);
         $stmt->bindParam(14,$resultado, PDO::PARAM_STR|PDO::PARAM_INPUT_OUTPUT, 100);
-        $stmt->bindParam(15,$quince, PDO::PARAM_STR);
+        $stmt->bindParam(15,$identifica_app, PDO::PARAM_STR);
 
 
         $result = $stmt->execute();
 
         if ($result) {
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-            var_dump($result);
-
+            echo $resultado;
         } else {
             echo "\nPDOStatement::errorInfo():\n";
             $arr = $stmt->errorInfo();
@@ -281,6 +276,55 @@ static $_mail;
         }
 
     }
+    public function queryProcedureDeletePago($cdgns_, $fecha_, $user_, $secuencia_){
+
+        $empresa = "EMPFIN";
+        $fecha = $fecha_;
+        $fecha_aux = '';
+        $cdgns = $cdgns_;
+        $ciclo = "";
+        $secuencia = $secuencia_;
+        $nombre = "";
+        $cdgocpe = "";
+        $ejecutivo = "";
+        $cdgpe = $user_;
+        $monto = "";
+        $tipo_mov = "P";
+        $tipo = 3;
+        $resultado = "";
+        $identifica_app = "";
+
+        $query_text = "CALL SPACCIONPAGODIA(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        $stmt = $this->_mysqli->prepare($query_text);
+        $stmt->bindParam(1,$empresa, PDO::PARAM_STR);
+        $stmt->bindParam(2,$fecha, PDO::PARAM_STR);
+        $stmt->bindParam(3,$fecha_aux, PDO::PARAM_STR);
+        $stmt->bindParam(4,$cdgns, PDO::PARAM_STR);
+        $stmt->bindParam(5,$ciclo, PDO::PARAM_STR);
+        $stmt->bindParam(6,$secuencia, PDO::PARAM_STR);
+        $stmt->bindParam(7,$nombre, PDO::PARAM_STR);
+        $stmt->bindParam(8,$cdgocpe, PDO::PARAM_STR);
+        $stmt->bindParam(9,$ejecutivo, PDO::PARAM_STR);
+        $stmt->bindParam(10,$cdgpe, PDO::PARAM_STR);
+        $stmt->bindParam(11,$monto, PDO::PARAM_STR);
+        $stmt->bindParam(12,$tipo_mov, PDO::PARAM_STR);
+        $stmt->bindParam(13,$tipo, PDO::PARAM_INT, 10);
+        $stmt->bindParam(14,$resultado, PDO::PARAM_STR|PDO::PARAM_INPUT_OUTPUT, 100);
+        $stmt->bindParam(15,$identifica_app, PDO::PARAM_STR);
+
+
+        $result = $stmt->execute();
+
+        if ($result) {
+            echo $resultado;
+        } else {
+            echo "\nPDOStatement::errorInfo():\n";
+            $arr = $stmt->errorInfo();
+            print_r($arr);
+        }
+
+    }
+
     public function queryProcedureActualizaSucursal($n_credito_p, $ciclo_p, $nueva_suc_p){
 
         $empresa = "EMPFIN";
