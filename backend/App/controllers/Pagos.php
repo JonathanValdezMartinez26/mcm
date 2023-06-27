@@ -74,32 +74,45 @@ class Pagos extends Controller
         function FunDelete_Pago(secuencia, fecha) {
              credito = getParameterByName('Credito');
              user = 'ADMIN';
-             
-                alertify.confirm('¿Segúro que desea eliminar lo seleccionado?', function(response){
-                  if(response){
-                      
-                      $.ajax({
+             ////////////////////////////
+             swal({
+              title: "¿Segúro que desea eliminar el registro seleccionado?",
+              text: "",
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            })
+            .then((willDelete) => {
+              if (willDelete) {
+                  $.ajax({
                         type: "POST",
                         url: "/Pagos/Delete/",
                         data: {"cdgns" : credito, "fecha" : fecha, "secuencia": secuencia, "usuario" : user},
                         success: function(response){
                             if(response == '1 Proceso realizado exitosamente')
                                 {
-                                    alertify.success("Se ha eliminado correctamente");
+                                    swal("Registro fue eliminado correctamente", {
+                                      icon: "success",
+                                    });
                                     location.reload();
                                     
                                 }
                             else
                                 {
-                                    alert(response);   
-                                     alertify.error("Error, al eliminar.");
+                                    swal(response, {
+                                      icon: "error",
+                                    });
+                                    
                                 }
                         }
                     });
-                      
-                    
-                  }
-                });
+                  /////////////////
+                
+              } else {
+                swal("No se pudo eliminar el registro");
+              }
+            });
+             
               
              }
         
@@ -125,7 +138,10 @@ class Pagos extends Controller
                          if(respuesta=='1 Proceso realizado exitosamente'){
                       
                         document.getElementById("monto").value = "";
-                        alert("Registro guardado exitosamente");
+                        
+                         swal("Registro guardado exitosamente", {
+                                      icon: "success",
+                                    });
                         location.reload();
                         }
                         else {
@@ -141,7 +157,7 @@ class Pagos extends Controller
     
         function Desactivado()
          {
-             swal("Good job!", "You clicked the button!", "success");
+             swal("Atención", "Usted no puede modificar este registro", "warning");
          }
     
         
@@ -187,8 +203,8 @@ html;
                 else
                 {
                     $editar = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()"><i class="fa fa-trash"></i></button>
+                    <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
 html;
                 }
 
