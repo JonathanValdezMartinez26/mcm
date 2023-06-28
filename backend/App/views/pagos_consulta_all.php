@@ -9,26 +9,26 @@
 
             <div class="card card-danger col-md-8" >
                 <div class="card-header">
-                    <h5 class="card-title">Seleccione el tipo de busqueda e ingrese el número de crédito </h5>
+                    <h5 class="card-title">Seleccione la sucursal y el rango de la fecha a generar el reporte </h5>
                 </div>
 
                 <div class="card-body">
-                    <form class="" action="/Pagos/Layout/" method="GET">
+                    <form class="" action="/Pagos/PagosConsulta/" method="GET">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="col-md-3">
-                                    <select class="form-control mr-sm-3" style="font-size: 21px;" autofocus type="select" id="id_sucursal" name="id_sucursal" placeholder="000000" aria-label="Search">
+                                    <select class="form-control mr-sm-3" style="font-size: 18px;" autofocus type="select" id="id_sucursal" name="id_sucursal" placeholder="000000" aria-label="Search">
                                         <?php echo $getSucursales; ?>
                                     </select>
-                                    <span id="availability1"></span>
+                                    <span id="availability1" style="font-size:15px">Sucursales</span>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
-                                    <span id="availability1"></span>
+                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $fechaActual; ?>">
+                                    <span id="availability1" style="font-size:15px">Desde</span>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
-                                    <span id="availability1"></span>
+                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $fechaActual; ?>">
+                                    <span id="availability1" style="font-size:15px">Hasta</span>
                                 </div>
                                 <div class="col-md-2">
                                     <button class="btn btn-default" type="submit">Buscar</button>

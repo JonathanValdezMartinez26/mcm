@@ -1,34 +1,38 @@
 <?php echo $header; ?>
-<style type="text/css">
-    panel {  }
-</style>
 <div class="right_col">
-        <div class="panel panel-body" style="margin-bottom: 0px;">
+    <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
+        <div class="panel panel-body">
             <div class="x_title">
                 <h3> Consulta de Pagos</h3>
                 <div class="clearfix"></div>
             </div>
 
-            <div class="card card-danger col-md-5" >
+            <div class="card card-danger col-md-8" >
                 <div class="card-header">
-                    <h5 class="card-title">Seleccione el tipo de busqueda e ingrese el número de crédito </h5>
+                    <h5 class="card-title">Seleccione la sucursal y el rango de la fecha a generar el reporte </h5>
                 </div>
 
                 <div class="card-body">
-                    <form class="" action="/Pagos/" method="GET">
+                    <form class="" action="/Pagos/PagosConsulta/" method="GET">
                         <div class="row">
-                            <div class="col-md-3">
-                                <select class="form-control mr-sm-3" style="font-size: 21px;" autofocus type="select" id="id_sucursal" name="id_sucursal" placeholder="000000" aria-label="Search">
-                                    <?php echo $getSucursales; ?>
-                                </select>
-                                <span id="availability1"></span>
-                            </div>
-                            <div class="col-md-4">
-                                <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="number" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
-                                <span id="availability1"></span>
-                            </div>
-                            <div class="col-md-4">
-                                <button class="btn btn-default" type="submit">Buscar</button>
+                            <div class="col-md-12">
+                                <div class="col-md-3">
+                                    <select class="form-control mr-sm-3" style="font-size: 18px;" autofocus type="select" id="id_sucursal" name="id_sucursal" placeholder="000000" aria-label="Search">
+                                        <?php echo $getSucursales; ?>
+                                    </select>
+                                    <span id="availability1" style="font-size:15px">Sucursales</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $Inicial; ?>">
+                                    <span id="availability1" style="font-size:15px">Desde</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $Final; ?>">
+                                    <span id="availability1" style="font-size:15px">Hasta</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-default" type="submit">Buscar</button>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -36,55 +40,25 @@
             </div>
             <div class="card col-md-12">
                 <hr style="border-top: 1px solid #e5e5e5; margin-top: 5px;">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_pago">
-                     <i class="fa fa-plus"></i> Agregar Pago
-                </button>
-                <hr style="border-top: 1px solid #787878; margin-top: 5px;">
-                <div class="row" >
-                    <div class="tile_count float-right col-sm-12" style="margin-bottom: 1px; margin-top: 1px">
-                        <div class="col-md-3 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Cliente</span>
+                <form name="all" id="all" method="POST">
+                    <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
+                    <hr style="border-top: 1px solid #787878; margin-top: 5px;">
 
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion['CLIENTE']; ?></div>
-                        </div>
-                        <div class="col-md-1 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i class="fa fa-clock-o"></i> Ciclo</span>
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion['CICLO']; ?> </div>
-                        </div>
-                        <div class="col-md-1 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i></i> Prestamo</span>
-                            <div class="count" style="font-size: 14px"> $ <?php echo number_format($Administracion['MONTO']); ?></div>
-                        </div>
-                        <div class="col-md-1 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i></i> Día de Pago</span>
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion['DIA_PAGO']; ?></div>
-                        </div>
-                        <div class="col-md-1 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i></i> Parcialidad</span>
-                            <div class="count" style="font-size: 14px">$ <?php echo number_format($Administracion['PARCIALIDAD']); ?></div>
-                        </div>
-                        <div class="col-md-2 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i></i> Sucursal</span>
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion['SUCURSAL']; ?></div>
-                        </div>
-                        <div class="col-md-2 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i></i> Ejecutivo</span>
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion['EJECUTIVO']; ?> </div>
-                        </div>
-                    </div>
-                </div>
                 <div class="dataTable_wrapper">
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
                         <tr>
                                     <th>Medio</th>
+                                    <th>Sucursal</th>
                                     <th>Consecutivo</th>
-                                    <th>CDGNS</th>
                                     <th>Fecha</th>
+                                    <th>N.Crédito</th>
+                                    <th>Cliente</th>
                                     <th>Ciclo</th>
                                     <th>Monto</th>
                                     <th>Tipo</th>
-                                    <th>Acciones</th>
+                                    <th>Ejecutivo</th>
+                                    <th>Fecha de Registro</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -218,17 +192,5 @@
         </div>
     </div>
 </div>
-
-<script>
-    function EditarPago(id_suc)
-    {
-        credito = getParameterByName('Credito');
-        id_sucursal = id_suc;
-
-        $('#modal_editar_pago').modal('show'); // abri
-    }
-</script>
-
-
 
 <?php echo $footer; ?>

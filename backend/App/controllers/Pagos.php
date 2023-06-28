@@ -25,7 +25,7 @@ class Pagos extends Controller
     public function index()
     {
         $extraHeader = <<<html
-        <title>Administración Pagos</title>
+        <title>Administración de Pagos</title>
         <link rel="shortcut icon" href="/img/logo.png">
 html;
 
@@ -215,8 +215,6 @@ html;
 
             foreach ($Administracion as $key => $value) {
 
-
-
                 if($value['FIDENTIFICAPP'] ==  NULL)
                 {
                     $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
@@ -290,6 +288,146 @@ html;
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::render("pagos_admin_all");
+        }
+    }
+
+    public function PagosConsulta()
+    {
+        $extraHeader = <<<html
+        <title>Consulta de Pagos</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
+        $extraFooter = <<<html
+      <script>
+      
+      function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+             
+         $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+                  "lengthMenu": [
+                    [13, 50, -1],
+                    [132, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            sucursal = getParameterByName('id_sucursal');
+            
+             $("#export_excel_consulta").click(function(){
+                 alert("hola");
+              $('#all').attr('action', '/Pagos/generarExcelConsulta/?Inicial='+fecha1+'&Final='+fecha2+'&Sucursal='+sucursal);
+              $('#all').attr('target', '_blank');
+              $("#all").submit();
+            });
+        });
+      
+         Inicial.max = new Date().toISOString().split("T")[0];
+         Final.max = new Date().toISOString().split("T")[0];
+          
+         function InfoAdmin()
+         {
+             swal("Info", "Este registro fue capturado por una administradora en caja", "info");
+         }
+         function InfoPhone()
+         {
+             swal("Info", "Este registro fue capturado por un ejecutivo en campo y procesado por una administradora", "info");
+         }
+    
+      </script>
+html;
+
+        $fechaActual = date('Y-m-d');
+        $id_sucursal = $_GET['id_sucursal'];
+        $Inicial = $_GET['Inicial'];
+        $Final = $_GET['Final'];
+
+
+        $sucursales = PagosDao::ListaSucursales($this->__usuario);
+        $getSucursales = '';
+        foreach ($sucursales as $key => $val2) {
+            $getSucursales .= <<<html
+                <option value="{$val2['ID_SUCURSAL']}">{$val2['SUCURSAL']}</option>
+html;
+        }
+
+        if ($id_sucursal != '' || $Inicial == '' || $Final == '') {
+            $Consulta = PagosDao::ConsultarPagosFechaSucursal($id_sucursal, $Inicial, $Final);
+
+            foreach ($Consulta as $key => $value) {
+                if($value['FIDENTIFICAPP'] ==  NULL)
+                {
+                    $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
+                    $mensaje = 'InfoAdmin();';
+                }
+                else
+                {
+                    $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
+                    $mensaje = 'InfoPhone();';
+                }
+
+                $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
+                    <td style="padding: 0px !important;">{$value['NOMBRE_SUCURSAL']}</td>
+                    <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA']}</td>
+                    <td style="padding: 0px !important;">{$value['CDGNS']}</td>
+                    <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
+                    <td style="padding: 0px !important;">{$value['CICLO']}</td>
+                    <td style="padding: 0px !important;">$ {$value['MONTO']}</td>
+                    <td style="padding: 0px !important;">{$value['TIPO']}</td>
+                    <td style="padding: 0px !important;">{$value['EJECUTIVO']}</td>
+                    <td style="padding: 0px !important;">{$value['FREGISTRO']}</td>
+                </tr>
+html;
+            }
+            if($Consulta[0] == '')
+            {
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('getSucursales', $getSucursales);
+                View::set('fechaActual', $fechaActual);
+                View::render("pagos_consulta_busqueda_message");
+            }
+            else
+            {
+                View::set('tabla', $tabla);
+                View::set('Inicial', $Inicial);
+                View::set('Final', $Final);
+                View::set('getSucursales', $getSucursales);
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::render("pagos_consulta_busqueda");
+            }
+
+        } else {
+
+            View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
+            View::set('fechaActual', $fechaActual);
+            View::set('getSucursales', $getSucursales);
+            View::render("pagos_consulta_all");
         }
     }
 
@@ -777,7 +915,11 @@ html;
 
     public function Layout()
     {
-        $fechaActual = date('d-m-Y');
+
+        $extraHeader = <<<html
+        <title>Layout Pagos</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
 
         $extraFooter = <<<html
       <script>
@@ -792,8 +934,8 @@ html;
             $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
                   "lengthMenu": [
-                    [25, 50, -1],
-                    [25, 50, 'Todos'],
+                    [21, 50, -1],
+                    [21, 50, 'Todos'],
                 ],
                 "columnDefs": [{
                     "orderable": false,
@@ -825,7 +967,7 @@ html;
       </script>
 html;
 
-
+        $fechaActual = date('d-m-Y');
         $fecha_inicio = $_GET['Inicial'];
         $fecha_fin = $_GET['Final'];
 
@@ -833,6 +975,7 @@ html;
         if(empty($fecha_inicio) || empty($fecha_fin))
         {
             View::render("pagos_layout_all");
+            View::set('header', $this->_contenedor->header($extraHeader));
         }
         else
         {
@@ -862,13 +1005,16 @@ html;
                     View::set('tabla', $tabla);
                     View::set('fecha_i', $fecha_inicio);
                     View::set('fecha_f', $fecha_fin);
-                    View::set('footer', $this->_contenedor->footer($extraFooter));
                     View::render("pagos_layout_busqueda");
+                    View::set('header', $this->_contenedor->header($extraHeader));
+                    View::set('footer', $this->_contenedor->footer($extraFooter));
                 }
 
             } else {
                 View::set('fechaActual', $fechaActual);
                 View::render("pagos_layout_all");
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
 
             }
 
@@ -960,6 +1106,101 @@ html;
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="Layout '.$controlador.'.xlsx"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+        header ('Cache-Control: cache, must-revalidate');
+        header ('Pragma: public');
+
+        \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
+    }
+
+    public function generarExcelConsulta(){
+
+        $fecha_inicio = $_GET['Inicial'];
+        $fecha_fin = $_GET['Final'];
+        $Sucursal = $_GET['Sucursal'];
+
+        $objPHPExcel = new \PHPExcel();
+        $objPHPExcel->getProperties()->setCreator("jma");
+        $objPHPExcel->getProperties()->setLastModifiedBy("jma");
+        $objPHPExcel->getProperties()->setTitle("Reporte");
+        $objPHPExcel->getProperties()->setSubject("Reorte");
+        $objPHPExcel->getProperties()->setDescription("Descripcion");
+        $objPHPExcel->setActiveSheetIndex(0);
+
+
+
+        $estilo_titulo = array(
+            'font' => array('bold' => true,'name'=>'Verdana','size'=>13, 'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+        );
+
+        $estilo_encabezado = array(
+            'font' => array('bold' => true,'name'=>'Verdana','size'=>12, 'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+        );
+
+        $estilo_celda = array(
+            'font' => array('bold' => false,'name'=>'Verdana','size'=>11,'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+
+        );
+
+
+        $fila = 1;
+        $adaptarTexto = true;
+
+        $controlador = "Pagos";
+        $columna = array('A','B','C','D','E','F','G','H','I','J');
+        $nombreColumna = array('Sucursal','Consecutivo','Fecha','NoCredito', 'Cliente', 'Ciclo', 'Monto', 'Tipo', 'Ejecutivo', 'FechaRegistro');
+        $nombreCampo = array('NOMBRE_SUCURSAL','SECUENCIA','FECHA','CDGNS','NOMBRE','CICLO','MONTO', 'TIPO', 'EJECUTIVO', 'FREGISTRO');
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'REPORTE PAGOS GLOBAL');
+        $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
+        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
+        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
+
+        $fila +=1;
+
+        /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
+        foreach ($nombreColumna as $key => $value) {
+            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, $value);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_encabezado);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
+        }
+        $fila +=1; //fila donde comenzaran a escribirse los datos
+
+        /* FILAS DEL ARCHIVO EXCEL */
+
+        $Layoutt = PagosDao::ConsultarPagosFechaSucursal($Sucursal, $fecha_inicio, $fecha_fin);
+        foreach ($Layoutt as $key => $value) {
+            foreach ($nombreCampo as $key => $campo) {
+                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_celda);
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            }
+            $fila +=1;
+        }
+
+
+        $objPHPExcel->getActiveSheet()->getStyle('A1:'.$columna[count($columna)-1].$fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        for ($i=0; $i <$fila ; $i++) {
+            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(20);
+        }
+
+
+        $objPHPExcel->getActiveSheet()->setTitle('Reporte');
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Consulta Pagos Global '.$controlador.'.xlsx"');
         header('Cache-Control: max-age=0');
         header('Cache-Control: max-age=1');
         header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');

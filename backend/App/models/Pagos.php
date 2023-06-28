@@ -49,6 +49,49 @@ sql;
       return $mysqli->queryAll($query);
     }
 
+    public static function ConsultarPagosFechaSucursal($id_sucursal, $Inicial, $Final){
+
+        $query=<<<sql
+        SELECT
+        RG.CODIGO ID_REGION,
+        RG.NOMBRE REGION,
+        NS.CDGCO ID_SUCURSAL,
+        GET_NOMBRE_SUCURSAL(NS.CDGCO) AS NOMBRE_SUCURSAL,
+        PAGOSDIA.SECUENCIA,
+        PAGOSDIA.FECHA,
+        PAGOSDIA.CDGNS,
+        PAGOSDIA.NOMBRE,
+        PAGOSDIA.CICLO,
+        PAGOSDIA.MONTO,
+        TIPO_OPERACION(PAGOSDIA.TIPO) as TIPO,
+        PAGOSDIA.TIPO AS TIP,
+        PAGOSDIA.EJECUTIVO,
+        PAGOSDIA.CDGOCPE,
+        PAGOSDIA.FREGISTRO,
+        PAGOSDIA.FIDENTIFICAPP,
+        TRUNC(FREGISTRO) + 12/24 AS DE,
+        TRUNC(FREGISTRO) + 1 + 12/24 AS HASTA,
+        CASE
+        WHEN FREGISTRO >= TRUNC(FREGISTRO) + 12/24 AND FREGISTRO <=TRUNC(FREGISTRO) + 1 + 12/24 THEN 'SI'
+        Else 'NO'
+        END AS DESIGNATION
+    FROM
+        PAGOSDIA, NS, CO, RG
+    WHERE
+        PAGOSDIA.CDGEM = 'EMPFIN'
+        AND PAGOSDIA.ESTATUS = 'A'
+        AND PAGOSDIA.FECHA BETWEEN TO_DATE('$Inicial', 'YY-mm-dd') AND TO_DATE('$Final', 'YY-mm-dd') 
+        AND NS.CODIGO = PAGOSDIA.CDGNS
+        AND NS.CDGCO = CO.CODIGO 
+        AND CO.CDGRG = RG.CODIGO
+    ORDER BY
+        FREGISTRO DESC, SECUENCIA
+sql;
+        $mysqli = Database::getInstance();
+        //var_dump($mysqli->queryAll($query));
+        return $mysqli->queryAll($query);
+    }
+
     public static function ConsultarPagosAdministracionOne($noCredito){
 
             $query=<<<sql
