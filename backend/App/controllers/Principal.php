@@ -23,8 +23,11 @@ class Principal extends Controller{
     }
 
     public function index() {
-
-      View::set('footer',$this->_contenedor->footer($extraFooter));
+     $extraHeader = <<<html
+        <title>Principal MCM</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+      View::set('header', $this->_contenedor->header($extraHeader));
       View::render("principal_all");
     }
 

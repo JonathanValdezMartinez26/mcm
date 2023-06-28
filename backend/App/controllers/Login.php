@@ -30,7 +30,6 @@ html;
         <script src="/js/validate/jquery.validate.js"></script>
         <script src="/js/alertify/alertify.min.js"></script>
 
-        <script src="/js/particles.js"></script>
         <script src="/js/app.js"></script>
         <script src="/js/stats.js"></script>
         <script type="text/javascript" src="/librerias/vintage_flip_clock/jquery.flipcountdown.js"></script>
@@ -146,7 +145,8 @@ html;
         $_SESSION['usuario'] = $user['CODIGO'];
         $_SESSION['nombre'] = $user['NOMBRE1'];
         $_SESSION['puesto'] = $user['PUESTO'];
-        $_SESSION['cdgo'] = $user['CDGO'];
+        $_SESSION['cdgco'] = $user['CDGCO'];
+
         header("location: /Principal/");
     }
 

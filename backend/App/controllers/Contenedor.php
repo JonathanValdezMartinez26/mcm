@@ -16,7 +16,6 @@ class Contenedor extends Controller{
 
     function __construct(){
       parent::__construct();
-
     }
 
     public function getUsuario(){
@@ -41,7 +40,7 @@ class Contenedor extends Controller{
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
             <!-- Meta, title, CSS, favicons, etc. -->
             <meta charset="utf-8">
-            <title>MCM</title>
+            
             <link href="/css/nprogress.css" rel="stylesheet">
             <link href="/css/loader.css" rel="stylesheet">
             <link rel="stylesheet" href="/css/tabla/sb-admin-2.css">

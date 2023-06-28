@@ -226,23 +226,23 @@ static $_mail;
 
     ///////////////////////////////////////////////////////////////////////////////////////////7
 
-    public function queryProcedurePago($credito, $ciclo_, $monto_, $tipo_, $nombre_, $user_, $ejecutivo_id,  $ejec_nom_){
+    public function queryProcedurePago($credito, $ciclo_, $monto_, $tipo_, $nombre_, $user_, $ejecutivo_id,  $ejec_nom_, $tipo_procedure, $fecha_aux, $secuencia){
 
         $fechaActual = date('d-m-Y');
 
         $empresa = "EMPFIN";
         $fecha = $fechaActual;
-        $fecha_aux = "";
+        $fecha_aux = $fecha_aux;
         $cdgns = $credito;
         $ciclo = $ciclo_;
-        $secuencia = "";
+        $secuencia = $secuencia;
         $nombre = $nombre_;
         $cdgocpe = $ejecutivo_id;
         $ejecutivo = $ejec_nom_;
         $cdgpe = $user_;
         $monto = $monto_;
         $tipo_mov = $tipo_;
-        $tipo = 1;
+        $tipo = $tipo_procedure;
         $resultado = "";
         $identifica_app = "";
 

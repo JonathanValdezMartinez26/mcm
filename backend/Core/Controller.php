@@ -7,7 +7,7 @@ class Controller{
     public $__usuario = '';
     public $__nombre = '';
     public $__puesto = '';
-    public $__cdgo = '';
+    public $__cdgco = '';
 
     public function __construct(){
     	session_start();
@@ -21,7 +21,7 @@ class Controller{
     	    $this->__usuario = $_SESSION['usuario'];
     	    $this->__nombre = $_SESSION['nombre'];
             $this->__puesto = $_SESSION['puesto'];
-            $this->__cdgo = $_SESSION['cdgo'];
+            $this->__cdgco = $_SESSION['cdgco'];
 
     	}
     }

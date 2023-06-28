@@ -22,34 +22,22 @@ class Pagos extends Controller
 
     }
 
-    function verifica_rango($fecha) {
-
-        $hoy = date("Y-m-d H:i:s");
-
-        $date_inicio = strtotime($fecha);
-
-
-
-        $date_fin = strtotime($date_fin);
-        $date_nueva = strtotime($date_nueva);
-
-
-        if (($date_nueva >= $date_inicio) && ($date_nueva <= $date_fin))
-            return true;
-        return false;
-    }
-
     public function index()
     {
+        $extraHeader = <<<html
+        <title>Administración Pagos</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
         $extraFooter = <<<html
       <script>
       
-          function getParameterByName(name) {
+        function getParameterByName(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec(location.search);
         return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-    }
+        }
     
         $(document).ready(function(){
             $("#muestra-cupones").tablesorter();
@@ -70,7 +58,6 @@ class Pagos extends Controller
             var checkAll = 0;
             
         });
-        
         function FunDelete_Pago(secuencia, fecha) {
              credito = getParameterByName('Credito');
              user = 'ADMIN';
@@ -107,15 +94,11 @@ class Pagos extends Controller
                         }
                     });
                   /////////////////
-                
               } else {
                 swal("No se pudo eliminar el registro");
               }
             });
-             
-              
              }
-        
         function enviar_add(){	
              monto = document.getElementById("monto").value; 
              
@@ -123,7 +106,9 @@ class Pagos extends Controller
                 {
                     if(monto == 0)
                         {
-                             alert("Ingresa un monto mayor a $0")
+                             swal("Atención", "Ingrese un monto mayor a $0", "warning");
+                             document.getElementById("monto").focus();
+                             
                         }
                 }
             else
@@ -145,8 +130,10 @@ class Pagos extends Controller
                         location.reload();
                         }
                         else {
-                        $('#addnew').modal('hide')
-                         alert(respuesta);
+                        $('#modal_agregar_pago').modal('hide')
+                         swal(response, {
+                                      icon: "error",
+                                    });
                             document.getElementById("monto").value = "";
                             document.getElementById("tipo").value = "";
                         }
@@ -154,30 +141,65 @@ class Pagos extends Controller
                     });
                 }
     }
-    
+        function enviar_edit(){	
+           
+             monto = document.getElementById("monto_e").value; 
+             
+            if(monto == '')
+                {
+                    if(monto == 0)
+                        {
+                             swal("Atención", "Ingrese un monto mayor a $0", "warning");
+                             document.getElementById("monto_e").focus();
+                        }
+                }
+            else
+                {
+                    texto = $("#ejecutivo :selected").text();
+                   
+                    $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/PagosEdit/',
+                    data: $('#Edit').serialize()+ "&ejec="+texto,
+                    success: function(respuesta) {
+                         if(respuesta=='1 Proceso realizado exitosamente'){
+                      
+                        document.getElementById("monto_e").value = "";
+                        
+                         swal("Registro guardado exitosamente", {
+                                      icon: "success",
+                                    });
+                        //location.reload();
+                        }
+                        else {
+                        $('#modal_editar_pago').modal('hide')
+                         swal(response, {
+                                      icon: "error",
+                                    });
+                        }
+                    }
+                    });
+                }
+    }
         function Desactivado()
          {
              swal("Atención", "Usted no puede modificar este registro", "warning");
          }
-         
          function InfoAdmin()
          {
              swal("Info", "Este registro fue capturado por una administradora en caja", "info");
          }
-         
          function InfoPhone()
          {
              swal("Info", "Este registro fue capturado por un ejecutivo en campo y procesado por una administradora", "info");
          }
     
-        
       </script>
 html;
 
-        //$busqueda = $_POST['busqueda'];
+
         $credito = $_GET['Credito'];
         $tabla = '';
-        $editar = '';
         $fechaActual = date('m-d-Y h:i:s');
 
         $status = PagosDao::ListaEjecutivos($this->__cdgco);
@@ -194,6 +216,7 @@ html;
             foreach ($Administracion as $key => $value) {
 
 
+
                 if($value['FIDENTIFICAPP'] ==  NULL)
                 {
                     $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
@@ -206,9 +229,16 @@ html;
                 }
 
                 if($value['DESIGNATION'] == 'SI')
-                {
+                {/////
+                    /// /
+                    ///
+                    ///
+                    /// aqui poner que si los pagos son de app no se pueden modificar, consulte con operaciones
+                    ///
+                    ///
+                    ///
                     $editar = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIPO']}', '{$value['MONTO']}', '{$value['EJECUTIVO']}');"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
                     <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}');"><i class="fa fa-trash"></i></button>
 html;
                 }
@@ -219,9 +249,6 @@ html;
                     <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
 html;
                 }
-
-
-
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
@@ -291,7 +318,41 @@ html;
         $pagos->_ejecutivo_nombre = MasterDom::getData('ejec');
 
         $id = PagosDao::insertProcedure($pagos);
+        return $id;
+    }
 
+    public function PagosEdit(){
+        $pagos = new \stdClass();
+
+        $fecha = MasterDom::getDataAll('Fecha_e');
+        $pagos->_fecha = $fecha;
+
+        $secuencia = MasterDom::getDataAll('secuencia_e');
+        $pagos->_secuencia = $secuencia;
+
+        $credito = MasterDom::getDataAll('cdgns_e');
+        $pagos->_credito = $credito;
+
+        $ciclo = MasterDom::getDataAll('ciclo_e');
+        $pagos->_ciclo = $ciclo;
+
+        $monto = MasterDom::getDataAll('monto_e');
+        $pagos->_monto = $monto;
+
+        $tipo = MasterDom::getDataAll('tipo_e');
+        $pagos->_tipo = $tipo;
+
+        $nombre = MasterDom::getDataAll('nombre_e');
+        $pagos->_nombre = $nombre;
+
+        $usuario = MasterDom::getDataAll('usuario_e');
+        $pagos->_usuario = $usuario;
+
+        $pagos->_ejecutivo = MasterDom::getData('ejecutivo_e');
+
+        $pagos->_ejecutivo_nombre = MasterDom::getData('ejec_e');
+
+        $id = PagosDao::EditProcedure($pagos);
         return $id;
     }
 
@@ -303,7 +364,6 @@ html;
         $secuencia = $_POST['secuencia'];
 
         $id = PagosDao::DeleteProcedure($cdgns, $fecha, $usuario, $secuencia);
-
         return $id;
 
     }

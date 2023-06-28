@@ -79,21 +79,21 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Nombre del Artículo *</label>
-                                    <input type="text" class="form-control" id="articulo" name="articulo" aria-describedby="articulo" placeholder="Escribe el nombre del artículo" value="" onkeypress="return check(event)" maxlength="20" onkeyup="mayus(this);">
+                                    <input type="text" class="form-control" id="articulo" name="articulo" aria-describedby="articulo" placeholder="Escribe el nombre del artículo" value="" maxlength="80" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="marca">Marca *</label>
-                                    <input type="text" class="form-control" id="marca" name="marca" aria-describedby="marca" placeholder="Escribe la marca del artículo" value="" onkeypress="return check(event)" maxlength="20" onkeyup="mayus(this);">
+                                    <input type="text" class="form-control" id="marca" name="marca" aria-describedby="marca" placeholder="Escribe la marca del artículo" value=""  maxlength="80" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="modelo">Modelo *</label>
-                                    <input type="text" class="form-control" id="modelo" name="modelo" aria-describedby="modelo" placeholder="Escribe el modelo del artículo" value="" onkeypress="return check_t(event)" maxlength="20" onkeyup="mayus(this);">
+                                    <input type="text" class="form-control" id="modelo" name="modelo" aria-describedby="modelo" placeholder="Escribe el modelo del artículo" value="" maxlength="50" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
@@ -114,7 +114,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="factura">Factura *</label>
-                                    <input type="text" class="form-control" id="factura" name="factura" aria-describedby="factura" placeholder="Escribe el número de factura" value="" onkeypress="return check_t(event)" maxlength="20" onkeyup="mayus(this);">
+                                    <input type="text" class="form-control" id="factura" name="factura" aria-describedby="factura" placeholder="Escribe el número de factura" value=""  maxlength="50" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
@@ -158,21 +158,21 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Nombre *</label>
-                                    <input type="text" class="form-control" id="articulo_e" name="articulo_e" aria-describedby="articulo_e" placeholder="Escribe el nombre del artículo" value="" onkeypress="return check(event)" maxlength="20" onkeyup="mayus(this);">
+                                    <input type="text" class="form-control" id="articulo_e" name="articulo_e" aria-describedby="articulo_e" placeholder="Escribe el nombre del artículo" value="" maxlength="80" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="marca">Marca *</label>
-                                    <input type="text" class="form-control" id="marca_e" name="marca_e" aria-describedby="marca_e" placeholder="Escribe la marca del artículo" value="" onkeypress="return check(event)" maxlength="20" onkeyup="mayus(this);">
+                                    <input type="text" class="form-control" id="marca_e" name="marca_e" aria-describedby="marca_e" placeholder="Escribe la marca del artículo" value="" maxlength="20" onkeyup="mayus(this);">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="modelo">Modelo *</label>
-                                    <input type="text" class="form-control" id="modelo_e" name="modelo_e" aria-describedby="modelo_e" placeholder="Escribe el modelo del artículo" value="" onkeypress="return check_t(event)" maxlength="20" onkeyup="mayus(this);">
+                                    <input type="text" class="form-control" id="modelo_e" name="modelo_e" aria-describedby="modelo_e" placeholder="Escribe el modelo del artículo" value=""  maxlength="50" onkeyup="mayus(this);">
                                 </div>
                             </div>
 

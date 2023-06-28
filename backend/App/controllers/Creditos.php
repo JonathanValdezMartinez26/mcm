@@ -91,47 +91,48 @@ class Creditos extends Controller{
                                                                 data: $('#Add').serialize(),
                                                                 success: function(respuesta) {
                                                                     if(respuesta != '0'){
-                                                                    alertify.success('Registro Guardado con Exito');
+                                                                    swal("Registro guardado exitosamente", {
+                                                                      icon: "success",
+                                                                    });
                                                                     location.reload();
                                                                     }
                                                                     else {
-                                                                     alertify.error('Registro Guardado con Exito');
-                                                                     
+                                                                         swal(response, {
+                                                                          icon: "error",
+                                                                        });
                                                                     }
                                                                 }
                                                                 });
                                                          }
                                                       else
                                                           {
-                                                               alert("Ingrese la serie de la factura")
+                                                               swal("Atención", "Ingrese la serie de la factura", "warning");
                                                           }
                                                  }
                                               else
                                                   {
-                                                       alert("Ingrese el valor del artículo")
+                                                       swal("Atención", "Ingrese el valor del artículo", "warning");
                                                   }
                                          }
                                       else
                                           {
-                                               alert("Ingrese el número de serie")
+                                               swal("Atención", "Ingrese el número de serie", "warning");
                                           }
                                  }
                               else
                                   {
-                                       alert("Ingrese el modelo")
+                                       swal("Atención", "Ingrese el modelo", "warning");
                                   }
                          }
                       else
                           {
-                               alert("Ingrese el nombre de la marca")
+                               swal("Atención", "Ingrese el nombre de la marca", "warning");
                           }
                  }
              else
                  {
-                     alert("Ingrese el nombre del articulo")
+                       swal("Atención", "Ingrese el nombre del articulo", "warning");
                  }
-             
-             
              
     }
     
@@ -196,16 +197,104 @@ class Creditos extends Controller{
                              }
                           else
                               {
-                                   alert("Ingrese el nombre de la marca")
+                                   swal("Atención", "Ingrese el nombre de la marca", "warning");
                               }
                      }
                  else
                      {
-                         alert("Ingrese el nombre del articulo")
+                         swal("Atención", "Ingrese el nombre del articulo", "warning");
                      }
                  
                  
                  
+        }
+        
+        function Delete_Garantias(secuencia) {
+            credito = getParameterByName('Credito');
+            secuencias = secuencia;
+   
+              swal({
+              title: "¿Segúro que desea eliminar el registro seleccionado?",
+              text: "",
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            })
+            .then((willDelete) => {
+              if (willDelete) {
+                  
+                    $.ajax({
+                        type: "POST",
+                        url: "/Creditos/DeleteGarantia/",
+                        data: {"credito" : credito, "secuencia" : secuencias},
+                        success: function(response){
+                            //alert(response);
+                            if(response != '0')
+                            {
+                               swal("Registro fue eliminado correctamente", {
+                                      icon: "success",
+                                    });
+                                    location.reload();
+                            }
+                            else
+                            {
+                                 swal(response, {
+                                      icon: "error",
+                                    });
+                            }
+                        }
+                    });
+                    } else {
+                swal("No se pudo eliminar el registro");
+              }
+            });
+    
+    
+    
+        }
+        function Edit_Garantias(articulo_p, marca_p, modelo_p, no_serie_p, monto_p, factura_p, secuencia_p) {
+    
+            $('#articulo_e').val(articulo_p);
+            $('#marca_e').val(marca_p);
+            $('#modelo_e').val(modelo_p);
+            $('#serie_e').val(no_serie_p);
+            $('#valor_e').val(monto_p);
+            $('#factura_e').val(factura_p);
+            $('#secuencia_e').val(secuencia_p);
+    
+            $('#modal_editar_articulo').modal('show');
+    
+        }
+        function Update_Garantias(secuencia) {
+    
+            secuencias = secuencia;
+    
+            alertify.confirm('¿Segúro que desea eliminar lo seleccionado?', function(response){
+                if(response){
+    
+                    $.ajax({
+                        type: "POST",
+                        url: "/Creditos/DeleteGarantia/",
+                        data: {"credito" : credito, "secuencia" : secuencias},
+                        success: function(response){
+                            //alert(response);
+                            if(response != '0')
+                            {
+                                alertify.success("Se ha eliminado correctamente");
+                                location.reload();
+    
+                            }
+                            else
+                            {
+                                alertify.error("Error, al eliminar.");
+                            }
+                        }
+                    });
+    
+    
+                }
+            });
+    
         }
         
       </script>

@@ -21,6 +21,7 @@ class Pagos{
         PAGOSDIA.CICLO,
         PAGOSDIA.MONTO,
         TIPO_OPERACION(PAGOSDIA.TIPO) as TIPO,
+        PAGOSDIA.TIPO AS TIP,
         PAGOSDIA.EJECUTIVO,
         PAGOSDIA.CDGOCPE,
         PAGOSDIA.FREGISTRO,
@@ -168,10 +169,34 @@ sql;
         $user_i = $pago->_usuario;
         $ejecutivo_i = $pago->_ejecutivo;
         $ejecutivo_nombre_i = $pago->_ejecutivo_nombre;
+        $tipo_procedure_ = 1;
+        $fecha_aux = "";
 
 
         $mysqli = Database::getInstance();
-        return $mysqli->queryProcedurePago($credito_i, $ciclo_i, $monto_i, $tipo_i, $nombre_i, $user_i,  $ejecutivo_i, $ejecutivo_nombre_i);
+        return $mysqli->queryProcedurePago($credito_i, $ciclo_i, $monto_i, $tipo_i, $nombre_i, $user_i,  $ejecutivo_i, $ejecutivo_nombre_i,  $tipo_procedure_, $fecha_aux, "");
+
+    }
+
+    public static function EditProcedure($pago){
+
+        $credito_i = $pago->_credito;
+        $secuencia_i = $pago->_secuencia;
+        $ciclo_i = $pago->_ciclo;
+        $monto_i = $pago->_monto;
+        $tipo_i = $pago->_tipo;
+        $nombre_i = $pago->_nombre;
+        $user_i = $pago->_usuario;
+        $ejecutivo_i = $pago->_ejecutivo;
+        $ejecutivo_nombre_i = $pago->_ejecutivo_nombre;
+        $tipo_procedure_ = 2;
+        $fecha_aux = $pago->_fecha;
+
+
+
+
+        $mysqli = Database::getInstance();
+        return $mysqli->queryProcedurePago($credito_i, $ciclo_i, $monto_i, $tipo_i, $nombre_i, $user_i,  $ejecutivo_i, $ejecutivo_nombre_i, $tipo_procedure_, $fecha_aux, $secuencia_i);
 
     }
 
@@ -185,7 +210,7 @@ FROM
 	PE
 WHERE
 	CDGEM = 'EMPFIN' 
-	AND CDGCO = '$cdgco'
+	AND CDGCO = '018'
 	AND ACTIVO = 'S'
 ORDER BY 1
 sql;

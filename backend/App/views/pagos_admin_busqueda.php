@@ -207,7 +207,7 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form onsubmit="enviar_add(); return false" id="Add">
+                    <form onsubmit="enviar_edit(); return false" id="Edit">
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -242,22 +242,22 @@
 
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="ciclo_e">Ciclo</label>
-                                    <input type="number" class="form-control" id="ciclo_e" name="ciclo_e" readonly>
+                                    <label for="secuencia_e">Secuencia</label>
+                                    <input type="number" class="form-control" id="secuencia_e" name="secuencia_e" readonly>
                                 </div>
                             </div>
 
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="pago_e">Tipo de Operación</label>
-                                    <input type="text" class="form-control" id="pago_e" name="pago_e" readonly>
+                                    <label for="ciclo_e">Ciclo</label>
+                                    <input type="number" class="form-control" id="ciclo_e" name="ciclo_e" readonly>
                                 </div>
                             </div>
 
                             <div class="col-md-5">
                                 <div class="form-group">
-                                    <label for="tipo">Tipo de Operación</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                    <label for="tipo_e">Tipo de Operación</label>
+                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo_e" name="tipo_e">
                                         <option value="P">PAGO</option>
                                         <option value="M">MULTA</option>
                                         <option value="G">GARANTÍA</option>
@@ -278,14 +278,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="ejecutivo_e">Nombre del Ejecutivo</label>
-                                    <input type="text" class="form-control" id="ejecutivo_e" name="ejecutivo_e" readonly>
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="ejecutivo">Nombre del Ejecutivo</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="ejecutivo" name="ejecutivo">
+                                    <select class="form-control mr-sm-3"  autofocus type="select" id="ejecutivo_e" name="ejecutivo_e">
                                         <?php echo $status; ?>
                                     </select>
                                     <small id="emailHelp" class="form-text text-muted">Nombre del ejecutivo que entrega el pago.</small>
@@ -305,17 +298,20 @@
 </div>
 
 <script>
-    function EditarPago(fecha, cdgns, nombre, ciclo, tipo_pago, monto, ejecutivo) {
+    function EditarPago(fecha, cdgns, nombre, ciclo, tipo_pago, monto, ejecutivo, secuencia) {
 
         document.getElementById("Fecha_e").value = fecha;
         document.getElementById("cdgns_e").value = cdgns;
         document.getElementById("nombre_e").value = nombre;
         document.getElementById("ciclo_e").value = ciclo;
-        document.getElementById("pago_e").value = tipo_pago;
         document.getElementById("monto_e").value = monto;
-        document.getElementById("ejecutivo_e").value = ejecutivo;
+        document.getElementById("secuencia_e").value = secuencia;
 
+        const $select = document.querySelector('#tipo_e');
+        $select.value = tipo_pago;
 
+        const $select_e = document.querySelector('#ejecutivo_e');
+        $select_e.value = ejecutivo;
 
         $('#modal_editar_pago').modal('show');
         document.getElementById(monto_e).focus();
