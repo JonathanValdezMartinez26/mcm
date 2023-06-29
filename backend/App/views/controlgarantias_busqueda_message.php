@@ -33,7 +33,7 @@
                         <br />
                         <div class="alert alert-warning alert-dismissable">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                            <label style="font-size: 14px; color: black;">Crédito no encontrado:</label> <li style="color: black;">Valida que el número de crédito sea correcto</li> <li style="color: black;">Si el problema persiste, comunicate con soporte técnico</li>
+                            <label style="font-size: 14px; color: black;">Crédito no encontrado:</label> <li style="color: black;">Valide que el número de crédito sea correcto</li> <li style="color: black;">Si el problema persiste, comuníquese con soporte técnico</li>
                             <br>
                             <a href="/Creditos/ControlGarantias/" class="alert-link">Regresar</a>.
                         </div>

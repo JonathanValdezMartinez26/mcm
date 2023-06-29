@@ -13,7 +13,7 @@
                 <h5 class="card-title">Seleccione el tipo de busqueda e ingrese el número de crédito </h5>
             </div>
             <div class="card-body">
-                <form class="" action="/Pagos/" method="GET">
+                <form class="" action="/Pagos/PagosRegistro/" method="GET">
                     <div class="row">
                         <div class="col-md-3">
                             <select class="form-control mr-sm-3" style="font-size: 21px;" autofocus type="select" placeholder="000000" aria-label="Search">
@@ -40,9 +40,9 @@
                         <br />
                         <div class="alert alert-warning alert-dismissable">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                            <label style="font-size: 14px; color: black;">Crédito no encontrado:</label> <li style="color: black;">Valida que el número de crédito sea correcto</li> <li style="color: black;">Si el problema persiste, comunicate con soporte técnico</li>
+                            <label style="font-size: 14px; color: black;">Crédito no encontrado:</label> <li style="color: black;">Valide que el número de crédito sea correcto</li> <li style="color: black;">Si el problema persiste, comuníquese con soporte técnico</li>
                             <br>
-                            <a href="/Pagos/" class="alert-link">Regresar</a>.
+                            <a href="/Pagos/PagosRegistro/" class="alert-link">Regresar</a>.
                         </div>
                     </div>
                 </div>

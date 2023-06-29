@@ -538,15 +538,20 @@ html;
 
     public function PagosRegistro()
     {
+        $extraHeader = <<<html
+        <title>Registro de Pagos</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
         $extraFooter = <<<html
       <script>
       
-          function getParameterByName(name) {
+        function getParameterByName(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec(location.search);
         return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-    }
+        }
     
         $(document).ready(function(){
             $("#muestra-cupones").tablesorter();
@@ -567,68 +572,82 @@ html;
             var checkAll = 0;
             
         });
-        
-         
-          
-        function FunDelete_Pago(secuencia, fech) {
+        function FunDelete_Pago(secuencia, fecha) {
              credito = getParameterByName('Credito');
-             secuencias = secuencia;
-             fecha = fech;
-             
-                alertify.confirm('¿Segúro que desea eliminar lo seleccionado?', function(response){
-                  if(response){
-                      
-                      $.ajax({
+             user = 'ADMIN';
+             ////////////////////////////
+             swal({
+              title: "¿Segúro que desea eliminar el registro seleccionado?",
+              text: "",
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            })
+            .then((willDelete) => {
+              if (willDelete) {
+                  $.ajax({
                         type: "POST",
                         url: "/Pagos/Delete/",
-                        data: {"credito" : credito, "secuencia" : secuencias, "fecha" : fecha},
+                        data: {"cdgns" : credito, "fecha" : fecha, "secuencia": secuencia, "usuario" : user},
                         success: function(response){
-                            if(response != 1)
+                            if(response == '1 Proceso realizado exitosamente')
                                 {
-                                    alertify.success("Se ha eliminado correctamente");
+                                    swal("Registro fue eliminado correctamente", {
+                                      icon: "success",
+                                    });
                                     location.reload();
                                     
                                 }
                             else
                                 {
-                                     alertify.error("Error, al eliminar.");
+                                    swal(response, {
+                                      icon: "error",
+                                    });
+                                    
                                 }
                         }
                     });
-                      
-                    
-                  }
-                });
-              
+                  /////////////////
+              } else {
+                swal("No se pudo eliminar el registro");
+              }
+            });
              }
-        
         function enviar_add(){	
              monto = document.getElementById("monto").value; 
+             
             if(monto == '')
                 {
                     if(monto == 0)
                         {
-                             alertify.confirm('Ingresa un monto, mayor a $0');
+                             swal("Atención", "Ingrese un monto mayor a $0", "warning");
+                             document.getElementById("monto").focus();
+                             
                         }
                 }
             else
                 {
-                    
+                    texto = $("#ejecutivo :selected").text();
+                   
                     $.ajax({
                     type: 'POST',
                     url: '/Pagos/PagosAdd/',
-                    data: $('#Add').serialize(),
+                    data: $('#Add').serialize()+ "&ejec="+texto,
                     success: function(respuesta) {
-                        if(respuesta=='1 Proceso realizado exitosamente'){
-                        
+                         if(respuesta=='1 Proceso realizado exitosamente'){
+                      
                         document.getElementById("monto").value = "";
-                        document.getElementById("tipo").value = "";
-                        alertify.confirm('Registro Guardado con Exito');
-                        $('#addnew').modal('hide');
+                        
+                         swal("Registro guardado exitosamente", {
+                                      icon: "success",
+                                    });
+                        location.reload();
                         }
                         else {
-                        
-                         alert(respuesta);
+                        $('#modal_agregar_pago').modal('hide')
+                         swal(response, {
+                                      icon: "error",
+                                    });
                             document.getElementById("monto").value = "";
                             document.getElementById("tipo").value = "";
                         }
@@ -636,40 +655,124 @@ html;
                     });
                 }
     }
+        function enviar_edit(){	
+           
+             monto = document.getElementById("monto_e").value; 
+             
+            if(monto == '')
+                {
+                    if(monto == 0)
+                        {
+                             swal("Atención", "Ingrese un monto mayor a $0", "warning");
+                             document.getElementById("monto_e").focus();
+                        }
+                }
+            else
+                {
+                    texto = $("#ejecutivo :selected").text();
+                   
+                    $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/PagosEdit/',
+                    data: $('#Edit').serialize()+ "&ejec="+texto,
+                    success: function(respuesta) {
+                         if(respuesta=='1 Proceso realizado exitosamente'){
+                      
+                        document.getElementById("monto_e").value = "";
+                        
+                         swal("Registro guardado exitosamente", {
+                                      icon: "success",
+                                    });
+                        //location.reload();
+                        }
+                        else {
+                        $('#modal_editar_pago').modal('hide')
+                         swal(response, {
+                                      icon: "error",
+                                    });
+                        }
+                    }
+                    });
+                }
+    }
+        function Desactivado()
+         {
+             swal("Atención", "Usted no puede modificar este registro", "warning");
+         }
+         function InfoAdmin()
+         {
+             swal("Info", "Este registro fue capturado por una administradora en caja", "info");
+         }
+         function InfoPhone()
+         {
+             swal("Info", "Este registro fue capturado por un ejecutivo en campo y procesado por una administradora", "info");
+         }
+    
       </script>
 html;
 
-        //$busqueda = $_POST['busqueda'];
+
         $credito = $_GET['Credito'];
         $tabla = '';
+        $fechaActual = date('m-d-Y h:i:s');
 
-        $status = PagosDao::ListaEjecutivos();
+        $status = PagosDao::ListaEjecutivos($this->__cdgco);
         $getStatus = '';
         foreach ($status as $key => $val2) {
             $getStatus .= <<<html
                 <option value="{$val2['ID_EJECUTIVO']}">{$val2['EJECUTIVO']}</option>
 html;
         }
-
-
-
         if ($credito != '') {
             $Administracion = PagosDao::ConsultarPagosAdministracion($credito);
             $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito);
 
             foreach ($Administracion as $key => $value) {
+
+                if($value['FIDENTIFICAPP'] ==  NULL)
+                {
+                    $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
+                    $mensaje = 'InfoAdmin();';
+                }
+                else
+                {
+                    $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
+                    $mensaje = 'InfoPhone();';
+                }
+
+                if($value['DESIGNATION'] == 'SI')
+                {/////
+                    /// /
+                    ///
+                    ///
+                    /// aqui poner que si los pagos son de app no se pueden modificar, consulte con operaciones
+                    ///
+                    ///
+                    ///
+                    $editar = <<<html
+                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}');"><i class="fa fa-trash"></i></button>
+html;
+                }
+                else
+                {
+                    $editar = <<<html
+                    <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
+html;
+                }
+
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;">{$value['SECUENCIA']}</td>
+                    <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
+                    <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
                     <td style="padding: 0px !important;">{$value['CDGNS']}</td>
                     <td style="padding: 0px !important;">{$value['FECHA']}</td>
                     <td style="padding: 0px !important;">{$value['CICLO']}</td>
                     <td style="padding: 0px !important;">$ {$value['MONTO']}</td>
                     <td style="padding: 0px !important;">{$value['TIPO']}</td>
-                    <td style="padding: 0px !important;" class="center" >
-                        <button type="button" class="btn btn-success btn-circle" onclick="FunEdit($credito, {$value['SECUENCIA']}, {$value['CICLO']});"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago({$value['SECUENCIA']}, '{$value['FECHA']}');"><i class="fa fa-trash"></i></button>
-                    </td>
+                    <td style="padding: 0px !important;">{$value['EJECUTIVO']}</td>
+                    <td style="padding: 0px !important;" class="center">{$editar}</td>
                 </tr>
 html;
             }
@@ -679,26 +782,27 @@ html;
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('status', $getStatus);
                 View::set('credito', $credito);
-                View::render("pagos_registro_busqueda_message");
+                View::set('usuario', $this->__usuario);
+                View::render("pagos_admin_busqueda_message");
             }
             else
             {
                 View::set('tabla', $tabla);
                 View::set('Administracion', $AdministracionOne);
                 View::set('credito', $credito);
+                View::set('fechaActual', $fechaActual);
                 View::set('status', $getStatus);
+                View::set('usuario', $this->__usuario);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::render("pagos_registro_busqueda");
+                View::render("pagos_admin_busqueda");
             }
 
         } else {
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
-            View::render("pagos_registro_all");
+            View::render("pagos_admin_all");
         }
-
-
     }
 
     public function CorteCaja()

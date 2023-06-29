@@ -46,9 +46,9 @@
                         <br />
                         <div class="alert alert-warning alert-dismissable">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                            <label style="font-size: 14px; color: black;">No hay pagos registrados en su rango de fechas:</label> <li style="color: black;">Valide que las fechas que desea consultar sean correctas</li> <li style="color: black;">Si el problema persiste, comunicate con soporte técnico</li>
+                            <label style="font-size: 14px; color: black;">No hay pagos registrados en su rango de fechas:</label> <li style="color: black;">Valide que las fechas que desea consultar sean correctas</li> <li style="color: black;">Si el problema persiste, comuníquese con soporte técnico</li>
                             <br>
-                            <a href="/Pagos/" class="alert-link">Regresar</a>.
+                            <a href="/Pagos/PagosConsulta/" class="alert-link">Regresar</a>.
                         </div>
                     </div>
                 </div>

@@ -38,7 +38,7 @@
                         <br />
                         <div class="alert alert-warning alert-dismissable">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                            <label style="font-size: 14px; color: black;">Los parametros no arrojan resultados:</label> <li style="color: black;">Valida que las fechas que ingresaste sean correctas. </li> <li style="color: black;">Si el problema persiste, comunicate con soporte técnico.</li>
+                            <label style="font-size: 14px; color: black;">Los parametros no arrojan resultados:</label> <li style="color: black;">Valide que las fechas que ingresaste sean correctas. </li> <li style="color: black;">Si el problema persiste, comuníquese con soporte técnico.</li>
                             <br>
                             <a href="/Pagos/Layout/" class="alert-link">Regresar</a>.
                         </div>
