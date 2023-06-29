@@ -993,9 +993,9 @@ html;
         if($Inicial == '' && $Final == '')
         {
             View::set('fechaActual', $fechaActual);
-            View::render("pagos_layout_all");
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
+            View::render("pagos_layout_all");
 
         }
         else
