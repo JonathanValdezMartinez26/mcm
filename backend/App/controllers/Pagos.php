@@ -382,11 +382,15 @@ html;
 
         $sucursales = PagosDao::ListaSucursales($this->__usuario);
         $getSucursales = '';
+        $getSucursales .= <<<html
+                <option value="">TODAS</option>
+html;
         foreach ($sucursales as $key => $val2) {
             $getSucursales .= <<<html
                 <option value="{$val2['ID_SUCURSAL']}">{$val2['SUCURSAL']}</option>
 html;
         }
+
 
         if ($id_sucursal != '' || $Inicial != '' || $Final != '') {
             $Consulta = PagosDao::ConsultarPagosFechaSucursal($id_sucursal, $Inicial, $Final);
