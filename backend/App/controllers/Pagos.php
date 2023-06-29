@@ -392,7 +392,7 @@ html;
         }
 
 
-        if ($id_sucursal != '' || $Inicial != '' || $Final != '') {
+        if ($Inicial != '' && $Final != '') {
             $Consulta = PagosDao::ConsultarPagosFechaSucursal($id_sucursal, $Inicial, $Final);
 
             foreach ($Consulta as $key => $value) {

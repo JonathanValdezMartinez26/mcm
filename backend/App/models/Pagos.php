@@ -51,6 +51,10 @@ sql;
 
     public static function ConsultarPagosFechaSucursal($id_sucursal, $Inicial, $Final){
 
+        if($id_sucursal)
+        {
+            $valor_sucursal = 'AND NS.CDGCO ='.$id_sucursal;
+        }
         $query=<<<sql
         SELECT
         RG.CODIGO ID_REGION,
@@ -84,6 +88,7 @@ sql;
         AND NS.CODIGO = PAGOSDIA.CDGNS
         AND NS.CDGCO = CO.CODIGO 
         AND CO.CDGRG = RG.CODIGO
+        $valor_sucursal
     ORDER BY
         FREGISTRO DESC, SECUENCIA
 sql;
