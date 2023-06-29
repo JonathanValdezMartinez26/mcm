@@ -340,7 +340,24 @@ html;
               $('#all').attr('target', '_blank');
               $("#all").submit();
             });
+             
+             
         });
+      
+            function Validar(){
+                
+                fecha1 = moment(document.getElementById("Inicial").innerHTML = inputValue);
+                fecha2 = moment(document.getElementById("Final").innerHTML = inputValue);
+                
+                dias = fecha2.diff(fecha1, 'days');alert(dias);
+                
+                if(dias == 1)
+                    {
+                        alert("si es");
+                        return false;
+                    }
+                return false;
+          }
       
          Inicial.max = new Date().toISOString().split("T")[0];
          Final.max = new Date().toISOString().split("T")[0];
@@ -371,7 +388,7 @@ html;
 html;
         }
 
-        if ($id_sucursal != '' || $Inicial == '' || $Final == '') {
+        if ($id_sucursal != '' || $Inicial != '' || $Final != '') {
             $Consulta = PagosDao::ConsultarPagosFechaSucursal($id_sucursal, $Inicial, $Final);
 
             foreach ($Consulta as $key => $value) {

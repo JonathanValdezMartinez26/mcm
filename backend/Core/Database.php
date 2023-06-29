@@ -63,6 +63,7 @@ static $_mail;
 	    die();
         }
     }
+
     public function insert($sql,$params = ''){
 
         if($params == '' ){

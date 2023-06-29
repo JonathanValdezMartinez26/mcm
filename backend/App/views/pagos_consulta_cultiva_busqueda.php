@@ -3,31 +3,26 @@
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
             <div class="x_title">
-                <h3> Consulta de Pagos</h3>
+                <h3> Consulta de Desembolsos Cultiva (PLD)</h3>
                 <div class="clearfix"></div>
             </div>
 
             <div class="card card-danger col-md-8" >
                 <div class="card-header">
-                    <h5 class="card-title">Seleccione la sucursal y el rango de la fecha a generar el reporte </h5>
+                    <h5 class="card-title">Seleccione el rango de fechas a generar el , solo tiene permitido un rango 7 días </h5>
                 </div>
 
                 <div class="card-body">
-                    <form class="" id="consulta" action="/Pagos/PagosConsulta/" method="GET" onsubmit="return Validar()">
+                    <form class="" id="consulta" action="/Operaciones/ReportePLDDesembolsos/" method="GET" onsubmit="return Validar()">
                         <div class="row">
                             <div class="col-md-12">
+
                                 <div class="col-md-3">
-                                    <select class="form-control mr-sm-3" style="font-size: 18px;" autofocus type="select" id="id_sucursal" name="id_sucursal" placeholder="000000" aria-label="Search">
-                                        <?php echo $getSucursales; ?>
-                                    </select>
-                                    <span id="availability1" style="font-size:15px">Sucursales</span>
-                                </div>
-                                <div class="col-md-3">
-                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $Inicial; ?>">
+                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $fechaActual; ?>">
                                     <span id="availability1" style="font-size:15px">Desde</span>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $Final; ?>">
+                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $fechaActual; ?>">
                                     <span id="availability1" style="font-size:15px">Hasta</span>
                                 </div>
                                 <div class="col-md-2">
@@ -48,17 +43,27 @@
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
                         <tr>
-                                    <th>Medio</th>
+                                    <th>Ciclo Desembolso</th>
+                                    <th>Localidad</th>
                                     <th>Sucursal</th>
-                                    <th>Consecutivo</th>
-                                    <th>Fecha</th>
-                                    <th>N.Crédito</th>
+                                    <th>Tipo de Operación</th>
                                     <th>Cliente</th>
-                                    <th>Ciclo</th>
+                                    <th>N.Cuenta</th>
+                                    <th>Instrumento Monetario</th>
+                                    <th>Moneda</th>
                                     <th>Monto</th>
-                                    <th>Tipo</th>
-                                    <th>Ejecutivo</th>
-                                    <th>Fecha de Registro</th>
+                                    <th>Fecha</th>
+                                    <th>Tipo de Receptor</th>
+                                    <th>Clave de Receptor</th>
+                                    <th>Caja</th>
+                                    <th>Id Cajero</th>
+                                   <th>Fecha y Hora</th>
+                                   <th>N.Tarjeta</th>
+                                   <th>Tipo de Tarjeta</th>
+                                   <th>Código de Autorización</th>
+                                   <th>Atraso</th>
+                                   <th>oficina</th>
+                                   <th>Situación</th>
                                 </tr>
                                 </thead>
                                 <tbody>

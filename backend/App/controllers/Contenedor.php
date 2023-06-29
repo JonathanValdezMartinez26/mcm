@@ -93,7 +93,7 @@ html;
         if($this->__puesto == 'C' || $this->__cdgo == '') {
 
             $menu .= <<<html
-                <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
+                <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
 html;
         }
@@ -117,7 +117,7 @@ html;
         }
         if($this->__puesto == 'D' ) {
             $menu .= <<<html
-                <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Creditos <span class="fa fa-chevron-down"></span></a>
+                <li><a><i class="fa fa-users"> </i>&nbsp; Creditos <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
                    <li><a href="/Creditos/ControlGarantias/">Control de Garantías</a></li>
                    <li><a href="/Creditos/ActualizaCredito/">Actualización de Créditos</a></li>
@@ -129,7 +129,7 @@ html;
         if($this->__usuario == 'ADMIN' || $this->__puesto == 'POR ASIGNAR') {
             $menu .= <<<html
               <ul class="nav side-menu">
-                <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Call Center <span class="fa fa-chevron-down"></span></a>
+                <li><a><i class="glyphicon glyphicon glyphicon-phone-alt"> </i>&nbsp; Call Center <span class="fa fa-chevron-down"></span></a>
                  <ul class="nav child_menu">
                    <li><a href="/CallCenter/Consultar/">Consultar Cliente</a></li>
                    <li><a href="/CallCenter/Pendientes/">Pendientes</a></li>
@@ -142,9 +142,11 @@ html;
 if($this->__usuario == 'ADMIN' || $this->__usuario == 'SORA') {
     $menu .= <<<html
               <ul class="nav side-menu">
-                <li><a><i class="glyphicon glyphicon-folder-open"> </i>&nbsp; Operaciones <span class="fa fa-chevron-down"></span></a>
+                <li><a><i class="glyphicon glyphicon glyphicon-th-list	
+"> </i>&nbsp; Operaciones <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
-                   <li><a href="/Operaciones/ReportePLD/">PLD Reporte</a></li>
+                   <li><a href="/Operaciones/ReportePLDDesembolsos/">PLD Reporte Desembolsos</a></li>
+                   <li><a href="/Operaciones/ReportePLDPagos/">PLD Reporte Pagos</a></li>
                   </ul>
                 </li>
               </ul>
