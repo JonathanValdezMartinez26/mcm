@@ -19,6 +19,10 @@ class CallCenter{
 
     public function Consultar()
     {
+        $extraHeader = <<<html
+        <title>Consulta de Clientes Call Center</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
         $extraFooter = <<<html
       <script>
       
@@ -45,15 +49,16 @@ class CallCenter{
       </script>
 html;
 
-
         $credito = $_GET['Credito'];
         $ciclo = $_GET['Ciclo'];
+        $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo);
 
         if ($credito != '' && $ciclo != '') {
-            $Administracion = CallCenterDao::getAllDescription($credito, $ciclo);
 
-            if($Administracion[0] == '')
+
+            if($AdministracionOne[0] == '')
             {
+                View::set('Administracion', $AdministracionOne);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('credito', $credito);
@@ -62,16 +67,19 @@ html;
             }
             else
             {
-                View::set('Administracion', $Administracion);
-                View::set('credito', $credito);
-                View::set('ciclo', $ciclo);
+
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('credito', $credito);
+                View::set('ciclo', $ciclo);
+                View::set('Administracion', $AdministracionOne);
                 View::render("callcenter_cliente_all");
             }
         } else {
+
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
+            View::set('Administracion', $AdministracionOne);
             View::set('credito', $credito);
             View::set('ciclo', $ciclo);
             View::render("callcenter_all");

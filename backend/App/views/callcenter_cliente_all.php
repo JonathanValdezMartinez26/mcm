@@ -44,19 +44,19 @@
                                         <div class="col-md-3 col-sm-4  tile_stats_count">
                                             <span class="count_top" style="font-size: 19px"><i class="fa fa-dollar"></i> Monto</span>
 
-                                            <div class="count" style="font-size: 15px"><?php echo $Administracion['MONTO']; ?></div>
+                                            <div class="count" style="font-size: 15px">$ <?php echo number_format($Administracion[0]['MONTO']); ?></div>
                                         </div>
                                         <div class="col-md-3 col-sm-4  tile_stats_count">
                                             <span class="count_top" style="font-size: 19px"><i class="fa fa-clock-o"></i> Plazo</span>
-                                            <div class="count" style="font-size: 15px"><?php echo $Administracion['PLAZO']; ?> rer</div>
+                                            <div class="count" style="font-size: 15px"><?php echo $Administracion[0]['PLAZO']; ?> semanas</div>
                                         </div>
                                         <div class="col-md-3 col-sm-4  tile_stats_count">
                                             <span class="count_top" style="font-size: 19px"><i></i> Parcialidad</span>
-                                            <div class="count" style="font-size: 15px"> $ <?php echo number_format($Administracion['PARCIALIDAD']); ?></div>
+                                            <div class="count" style="font-size: 15px"> $ <?php echo number_format($Administracion[0]['PARCIALIDAD']); ?></div>
                                         </div>
                                         <div class="col-md-3 col-sm-4  tile_stats_count">
                                             <span class="count_top" style="font-size: 19px"><i><i class="fa fa-calendar"></i></i> Día de Pago</span>
-                                            <div class="count" style="font-size: 15px"><?php echo $Administracion['DIA_PAGO']; ?></div>
+                                            <div class="count" style="font-size: 15px"><?php echo $Administracion[0]['DIA_PAGO']; ?></div>
                                         </div>
                                     </div>
                             </div>
@@ -91,26 +91,31 @@
                                         </tr>
                                             <tr>
                                                 <td style="font-size: 16px"><strong>Nombre</strong></td>
-                                                <td style="font-size: 16px"><strong>Fecha de Nacimiento</strong></td>
+                                                <td style="font-size: 16px"><strong>Fec. Nac</strong></td>
                                                 <td style="font-size: 16px"><strong>Edad</strong></td>
                                                 <td style="font-size: 16px"><strong>Sexo</strong></td>
                                                 <td style="font-size: 16px"><strong>Edo. Civil</strong></td>
-                                                <td style="font-size: 16px"><strong>Telefono</strong></td>
                                             </tr>
                                             <tr>
-                                                <td style="font-size: 16px">MA MARGARITA VICTORIA SAMANIEGO RICARDO</td>
-                                                <td style="font-size: 16px">23/12/1962</td>
-                                                <td style="font-size: 16px">60</td>
-                                                <td style="font-size: 16px">F</td>
-                                                <td style="font-size: 16px">VIUDO</td>
-                                                <td style="font-size: 16px"></td>
+                                                <td style="font-size: 16px"><?php echo $Administracion[0]['CLIENTE']; ?></td>
+                                                <td style="font-size: 16px"><?php echo $Administracion[1]['NACIMIENTO']; ?></td>
+                                                <td style="font-size: 16px"><?php echo $Administracion[1]['EDAD']; ?></td>
+                                                <td style="font-size: 16px"><?php echo $Administracion[1]['SEXO']; ?></td>
+                                                <td style="font-size: 16px"><?php echo $Administracion[1]['EDO_CIVIL']; ?></td>
+
                                             </tr>
                                             <tr>
-                                                <td style="font-size: 16px" colspan="6"><strong>Actividad Economica</strong></td>
+                                                <td style="font-size: 16px" colspan="1"><strong>Contacto</strong></td>
+                                                <td style="font-size: 16px" colspan="5"><strong>Actividad Económica</strong></td>
                                             </tr>
                                             <tr>
-                                                <td style="font-size: 16px" colspan="6">BAZAR</td>
+                                                <td style="font-size: 16px" colspan="1"><?php
+                                                    $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
+                                                    echo $format; ?>
+                                                </td>
+                                                <td style="font-size: 16px" colspan="5">BAZAR</td>
                                             </tr>
+
                                         </tbody>
                                 </table>
                                 </div>
@@ -125,17 +130,21 @@
                                                 <td style="font-size: 16px"><strong>Calle</strong></td>
                                                 <td style="font-size: 16px"><strong>Colonia</strong></td>
                                                 <td style="font-size: 16px"><strong>Localidad</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 16px"><?php echo $Administracion[1]['CALLE']; ?></td>
+                                                <td style="font-size: 16px"><?php echo $Administracion[1]['COLONIA']; ?></td>
+                                                <td style="font-size: 16px"><?php echo $Administracion[1]['LOCALIDAD']; ?></td>
+                                            </tr>
+                                            <tr>
                                                 <td style="font-size: 16px"><strong>Municipio</strong></td>
                                                 <td style="font-size: 16px"><strong>Estado</strong></td>
                                                 <td style="font-size: 16px"><strong>CP</strong></td>
                                             </tr>
                                             <tr>
-                                                <td style="font-size: 16px">SAN JOAQUIN 16</td>
-                                                <td style="font-size: 16px">SN JUAN CUAUTLANCIN</td>
-                                                <td style="font-size: 16px">Cuautlancingo</td>
-                                                <td style="font-size: 16px">Cuautlancingo</td>
-                                                <td style="font-size: 16px">PUEBLA</td>
-                                                <td style="font-size: 16px">72764</td>
+                                                <td style="font-size: 16px"><?php echo $Administracion[1]['MUNICIPIO']; ?></td>
+                                                <td style="font-size: 16px"><?php echo $Administracion[1]['ESTADO']; ?></td>
+                                                <td style="font-size: 16px"><?php echo $Administracion[1]['CP']; ?></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -160,26 +169,31 @@
                                         </tr>
                                         <tr>
                                             <td style="font-size: 16px"><strong>Nombre</strong></td>
-                                            <td style="font-size: 16px"><strong>Fecha de Nacimiento</strong></td>
+                                            <td style="font-size: 16px"><strong>Fec. Nac</strong></td>
                                             <td style="font-size: 16px"><strong>Edad</strong></td>
                                             <td style="font-size: 16px"><strong>Sexo</strong></td>
                                             <td style="font-size: 16px"><strong>Edo. Civil</strong></td>
-                                            <td style="font-size: 16px"><strong>Telefono</strong></td>
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 16px">MA MARGARITA VICTORIA SAMANIEGO RICARDO</td>
-                                            <td style="font-size: 16px">23/12/1962</td>
-                                            <td style="font-size: 16px">60</td>
-                                            <td style="font-size: 16px">F</td>
-                                            <td style="font-size: 16px">VIUDO</td>
-                                            <td style="font-size: 16px"></td>
+                                            <td style="font-size: 16px"><?php echo $Administracion[0]['AVAL']; ?></td>
+                                            <td style="font-size: 16px"><?php echo $Administracion[2]['NACIMIENTO']; ?></td>
+                                            <td style="font-size: 16px"><?php echo $Administracion[2]['EDAD']; ?></td>
+                                            <td style="font-size: 16px"><?php echo $Administracion[2]['SEXO']; ?></td>
+                                            <td style="font-size: 16px"><?php echo $Administracion[2]['EDO_CIVIL']; ?></td>
+
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 16px" colspan="6"><strong>Actividad Economica</strong></td>
+                                            <td style="font-size: 16px" colspan="1"><strong>Contacto</strong></td>
+                                            <td style="font-size: 16px" colspan="5"><strong>Actividad Económica</strong></td>
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 16px" colspan="6">BAZAR</td>
+                                            <td style="font-size: 16px" colspan="1"><?php
+                                                $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
+                                                echo $format; ?>
+                                            </td>
+                                            <td style="font-size: 16px" colspan="5">BAZAR</td>
                                         </tr>
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -194,17 +208,21 @@
                                             <td style="font-size: 16px"><strong>Calle</strong></td>
                                             <td style="font-size: 16px"><strong>Colonia</strong></td>
                                             <td style="font-size: 16px"><strong>Localidad</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 16px"><?php echo $Administracion[2]['CALLE']; ?></td>
+                                            <td style="font-size: 16px"><?php echo $Administracion[2]['COLONIA']; ?></td>
+                                            <td style="font-size: 16px"><?php echo $Administracion[2]['LOCALIDAD']; ?></td>
+                                        </tr>
+                                        <tr>
                                             <td style="font-size: 16px"><strong>Municipio</strong></td>
                                             <td style="font-size: 16px"><strong>Estado</strong></td>
                                             <td style="font-size: 16px"><strong>CP</strong></td>
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 16px">SAN JOAQUIN 16</td>
-                                            <td style="font-size: 16px">SN JUAN CUAUTLANCIN</td>
-                                            <td style="font-size: 16px">Cuautlancingo</td>
-                                            <td style="font-size: 16px">Cuautlancingo</td>
-                                            <td style="font-size: 16px">PUEBLA</td>
-                                            <td style="font-size: 16px">72764</td>
+                                            <td style="font-size: 16px"><?php echo $Administracion[2]['MUNICIPIO']; ?></td>
+                                            <td style="font-size: 16px"><?php echo $Administracion[2]['ESTADO']; ?></td>
+                                            <td style="font-size: 16px"><?php echo $Administracion[2]['CP']; ?></td>
                                         </tr>
                                         </tbody>
                                     </table>
