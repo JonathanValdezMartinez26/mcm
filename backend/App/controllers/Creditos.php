@@ -27,6 +27,10 @@ class Creditos extends Controller{
 
     public function ControlGarantias()
     {
+        $extraHeader = <<<html
+        <title>Control de Garantias</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
         $extraFooter = <<<html
       <script>
         $(document).ready(function(){
@@ -333,14 +337,16 @@ html;
 html;
             }
             if($Garantias[0] != ''){
-                View::set('tabla',$tabla);
+                View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer',$this->_contenedor->footer($extraFooter));
+                View::set('tabla',$tabla);
                 View::set('credito',$credito);
                 View::render("contrrolgarantias_busqueda_all");
 
             }
             else
             {
+                View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer',$this->_contenedor->footer($extraFooter));
                 View::set('credito',$credito);
                 View::render("controlgarantias_busqueda_message");
@@ -349,6 +355,7 @@ html;
         }
         else
         {
+            View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer',$this->_contenedor->footer($extraFooter));
             View::render("controlgarantias_all");
         }
@@ -357,6 +364,10 @@ html;
     }
 
     public function ActualizaCredito() {
+        $extraHeader = <<<html
+        <title>Actualizar Crédito</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
         $extraFooter = <<<html
       <script>
     
@@ -500,8 +511,9 @@ html;
                 }
 
                 ////////////////////////
-                View::set('tabla',$tabla);
+                View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer',$this->_contenedor->footer($extraFooter));
+                View::set('tabla',$tabla);
                 View::set('credito',$credito);
                 View::set('combo',$ComboSucursal);
                 View::set('Administracion', $AdministracionOne);
@@ -510,6 +522,7 @@ html;
             }
             else
             {
+                View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer',$this->_contenedor->footer($extraFooter));
                 View::set('credito',$credito);
                 View::render("actualizacredito_busqueda_message");
@@ -518,13 +531,17 @@ html;
         }
         else
         {
+            View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer',$this->_contenedor->footer($extraFooter));
             View::render("actualizacredito_all");
         }
     }
 
     public function CambioSucursal() {
-
+        $extraHeader = <<<html
+        <title>Cambio de Sucursal</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
         $extraFooter =<<<html
       <script>
         $(document).ready(function(){
@@ -602,20 +619,19 @@ html;
 html;
                 }
 
-
+                View::set('header',$this->_contenedor->header($extraHeader));
+                View::set('footer',$this->_contenedor->footer($extraFooter));
                 View::set('Administracion', $credito_cambio);
                 View::set('sucursal', $ComboSucursal);
                 View::set('credito', $credito);
-                View::set('header',$this->_contenedor->header($extraHeader));
-                View::set('footer',$this->_contenedor->footer($extraFooter));
                 View::render("cambio_sucursal_busqueda");
             }
             else
             {
-                View::set('Administracion', $credito_cambio);
-                View::set('credito', $credito);
                 View::set('header',$this->_contenedor->header($extraHeader));
                 View::set('footer',$this->_contenedor->footer($extraFooter));
+                View::set('Administracion', $credito_cambio);
+                View::set('credito', $credito);
                 View::render("cambio_sucursal_busqueda_message");
 
             }
@@ -623,9 +639,9 @@ html;
         }
         else
         {
-            View::set('credito', $credito);
             View::set('header',$this->_contenedor->header($extraHeader));
             View::set('footer',$this->_contenedor->footer($extraFooter));
+            View::set('credito', $credito);
             View::render("cambio_sucursal_all");
         }
 
