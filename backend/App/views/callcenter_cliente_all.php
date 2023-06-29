@@ -35,7 +35,7 @@
         <div class="row">
 
             <div class="col-md-10">
-                <span class="badge" style="background: #57687b"><h4 style="margin-top: 4px; margin-bottom: 4px">Datos del Crédito</h4></span>
+                <span class="badge" style="background: #57687b"><h4 style="margin-top: 4px; margin-bottom: 4px">Datos del Crédito | <i class="fa fa-user"></i> <?php echo $Administracion[0]['CLIENTE']; ?></h4></span>
                 <div class="panel panel-body" style="padding: 0px">
                     <div class="x_content">
                         <div class="col-sm-12">
@@ -44,19 +44,19 @@
                                         <div class="col-md-3 col-sm-4  tile_stats_count">
                                             <span class="count_top" style="font-size: 19px"><i class="fa fa-dollar"></i> Monto</span>
 
-                                            <div class="count" style="font-size: 15px">$ <?php echo number_format($Administracion[0]['MONTO']); ?></div>
+                                            <div class="count" style="font-size: 17px">$ <?php echo number_format($Administracion[0]['MONTO']); ?></div>
                                         </div>
                                         <div class="col-md-3 col-sm-4  tile_stats_count">
                                             <span class="count_top" style="font-size: 19px"><i class="fa fa-clock-o"></i> Plazo</span>
-                                            <div class="count" style="font-size: 15px"><?php echo $Administracion[0]['PLAZO']; ?> semanas</div>
+                                            <div class="count" style="font-size: 17px"><?php echo $Administracion[0]['PLAZO']; ?> semanas</div>
                                         </div>
                                         <div class="col-md-3 col-sm-4  tile_stats_count">
                                             <span class="count_top" style="font-size: 19px"><i></i> Parcialidad</span>
-                                            <div class="count" style="font-size: 15px"> $ <?php echo number_format($Administracion[0]['PARCIALIDAD']); ?></div>
+                                            <div class="count" style="font-size: 17px"> $ <?php echo number_format($Administracion[0]['PARCIALIDAD']); ?></div>
                                         </div>
                                         <div class="col-md-3 col-sm-4  tile_stats_count">
                                             <span class="count_top" style="font-size: 19px"><i><i class="fa fa-calendar"></i></i> Día de Pago</span>
-                                            <div class="count" style="font-size: 15px"><?php echo $Administracion[0]['DIA_PAGO']; ?></div>
+                                            <div class="count" style="font-size: 17px"><?php echo $Administracion[0]['DIA_PAGO']; ?></div>
                                         </div>
                                     </div>
                             </div>
@@ -87,7 +87,7 @@
                                     <table class="table table-striped table-bordered table-hover">
                                         <tbody>
                                         <tr>
-                                            <td style="font-size: 18px; background: #787878;color: white" colspan="6"><strong>Identificación</strong></td>
+                                            <td style="font-size: 18px; background: #787878;color: white" colspan="6"><strong> Identificación del Cliente</strong></td>
                                         </tr>
                                             <tr>
                                                 <td style="font-size: 16px"><strong>Nombre</strong></td>
@@ -109,7 +109,7 @@
                                                 <td style="font-size: 16px" colspan="5"><strong>Actividad Económica</strong></td>
                                             </tr>
                                             <tr>
-                                                <td style="font-size: 16px" colspan="1"><?php
+                                                <td style="font-size: 19px" colspan="1"><i class="fa fa-phone-square"></i> <?php
                                                     $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
                                                     echo $format; ?>
                                                 </td>
@@ -124,7 +124,7 @@
                                     <table class="table table-striped table-bordered table-hover">
                                         <tbody>
                                         <tr>
-                                            <td style="font-size: 18px; background: #787878;color: white" colspan="6"><strong>Domicilio</strong></td>
+                                            <td style="font-size: 18px; background: #787878;color: white" colspan="6"><strong>Domicilio del Cliente</strong></td>
                                         </tr>
                                             <tr>
                                                 <td style="font-size: 16px"><strong>Calle</strong></td>
@@ -165,7 +165,7 @@
                                     <table class="table table-striped table-bordered table-hover">
                                         <tbody>
                                         <tr>
-                                            <td style="font-size: 18px; background: #73879C;color: white" colspan="6"><strong>Identificación</strong></td>
+                                            <td style="font-size: 18px; background: #73879C;color: white" colspan="6"><strong>Identificación del Aval</strong></td>
                                         </tr>
                                         <tr>
                                             <td style="font-size: 16px"><strong>Nombre</strong></td>
@@ -187,7 +187,7 @@
                                             <td style="font-size: 16px" colspan="5"><strong>Actividad Económica</strong></td>
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 16px" colspan="1"><?php
+                                            <td style="font-size: 19px" colspan="1"><i class="fa fa-phone-square"></i> <?php
                                                 $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
                                                 echo $format; ?>
                                             </td>
@@ -202,7 +202,7 @@
                                     <table class="table table-striped table-bordered table-hover">
                                         <tbody>
                                         <tr>
-                                            <td style="font-size: 18px; background: #73879C;color: white" colspan="6"><strong>Domicilio</strong></td>
+                                            <td style="font-size: 18px; background: #73879C;color: white" colspan="6"><strong>Domicilio del Aval</strong></td>
                                         </tr>
                                         <tr>
                                             <td style="font-size: 16px"><strong>Calle</strong></td>
