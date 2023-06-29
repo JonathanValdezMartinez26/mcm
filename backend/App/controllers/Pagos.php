@@ -934,7 +934,7 @@ html;
     {
 
         $extraHeader = <<<html
-        <title>Layout Pagos</title>
+        <title>Layout Contable</title>
         <link rel="shortcut icon" href="/img/logo.png">
 html;
 
@@ -978,29 +978,32 @@ html;
               $("#all").submit();
             });
         });
+          
+          Inicial.max = new Date().toISOString().split("T")[0];
+          Final.max = new Date().toISOString().split("T")[0];
          
-        
     
       </script>
 html;
 
-        $fechaActual = date('d-m-Y');
-        $fecha_inicio = $_GET['Inicial'];
-        $fecha_fin = $_GET['Final'];
+        $fechaActual = date('Y-m-d');
+        $Inicial = $_GET['Inicial'];
+        $Final = $_GET['Final'];
 
-
-        if(empty($fecha_inicio) || empty($fecha_fin))
+        if($Inicial == '' && $Final == '')
         {
+            View::set('fechaActual', $fechaActual);
             View::render("pagos_layout_all");
             View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
+
         }
         else
         {
             ///////////////////////////////////////////////////////////////////////////////////
             $tabla = '';
 
-            $Layout = PagosDao::GeneraLayoutContable($fecha_inicio, $fecha_fin);
-
+            $Layout = PagosDao::GeneraLayoutContable($Inicial, $Final);
             if ($Layout != '') {
                 foreach ($Layout as $key => $value) {
 
@@ -1015,23 +1018,27 @@ html;
                 }
                 if($Layout[0] == '')
                 {
+                    View::set('header', $this->_contenedor->header($extraHeader));
+                    View::set('footer', $this->_contenedor->footer($extraFooter));
+                    View::set('fechaActual', $fechaActual);
                     View::render("pagos_layout_busqueda_message");
                 }
                 else
                 {
                     View::set('tabla', $tabla);
-                    View::set('fecha_i', $fecha_inicio);
-                    View::set('fecha_f', $fecha_fin);
-                    View::render("pagos_layout_busqueda");
+                    View::set('Inicial', $Inicial);
+                    View::set('Final', $Final);
                     View::set('header', $this->_contenedor->header($extraHeader));
                     View::set('footer', $this->_contenedor->footer($extraFooter));
+                    View::render("pagos_layout_busqueda");
                 }
+
 
             } else {
                 View::set('fechaActual', $fechaActual);
-                View::render("pagos_layout_all");
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::render("pagos_layout_all");
 
             }
 
