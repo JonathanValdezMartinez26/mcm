@@ -48,90 +48,10 @@ html;
 
         $credito = $_GET['Credito'];
         $ciclo = $_GET['Ciclo'];
-        $tabla = '';
 
         if ($credito != '' && $ciclo != '') {
             $Administracion = CallCenterDao::getAllDescription($credito, $ciclo);
-            var_dump($Administracion);
-            foreach ($Administracion as $key => $value) {
-                $tabla .= <<<html
-                <div class="Contenedor1_resultados__XMhF5">
-                <div class="TarjetaCallCenter_tarjeta__3sZn0">
-                <span class="TarjetaCallCenter_titulo__V-jAl">Datos del Credito</span>
-                <table class="TarjetaCallCenter_tablaDatos__k8d8R">
-                    <tbody>
-                        <tr>
-                            <td>
-                                <strong>Monto</strong>
-                            </td>
-                            <td>
-                                <strong>Plazo</strong></td>
-                            <td>
-                                <strong>Parcialidad</strong>
-                            </td>
-                            <td>
-                                <strong>Día de Pago</strong>
-                            </td>
-                        </tr>
-                        <tr>
-                         <td>{$value['MONTO']}</td>
-                         <td>{$value['PLAZO']}</td>
-                         <td>{$value['PARCIALIDAD']}</td>
-                         <td>{$value['DIA_PAGO']}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <span class="TarjetaCallCenter_titulo__V-jAl">Datos del Cliente</span>
-                <table class="TarjetaCallCenter_tablaDatos__k8d8R">
-                <tbody>
-                <tr>
-                    <td rowspan="4">
-                        <strong>Identificación</strong>
-                    </td>
-                    <td>    
-                        <strong>Nombre</strong>
-                    </td>
-                    <td>
-                        <strong>Fecha de Nacimiento</strong>
-                    </td>
-                    <td>
-                        <strong>Edad</strong>
-                    </td>
-                    <td>
-                        <strong>Sexo</strong>
-                    </td>
-                    <td>
-                        <strong>Edo. Civil</strong>
-                    </td>
-                    <td>
-                        <strong>Telefono</strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td>MA MARGARITA VICTORIA SAMANIEGO RICARDO</td>
-                    <td>22/12/1962</td>
-                    <td>60</td>
-                    <td>F</td>
-                    <td>VIUDO</td>
-                    <td>2212176765</td>
-                </tr>
-                <tr><td colspan="6">
-                <strong>Actividad Economica</strong>
-                </td></tr><tr><td colspan="6">BAZAR</td></tr>
-                </tbody>
-                </table>
-                <table class="TarjetaCallCenter_tablaDatos__k8d8R"><tbody>
-                <tr><td rowspan="2"><strong>Domicilio</strong></td>
-                <td>
-                <strong>Calle</strong>
-                </td><td><strong>Colonia</strong>
-                </td><td><strong>Localidad</strong></td><td>
-                <strong>Municipio</strong></td><td><strong>Estado</strong>
-                </td><td><strong>CP</strong></td></tr><tr><td>SAN JOAQUIN 16</td><td>SN JUAN CUAUTLANCIN</td><td>Cuautlancingo</td><td>Cuautlancingo</td><td>PUEBLA</td><td>72764</td></tr></tbody></table><span class="TarjetaCallCenter_titulo__V-jAl">Datos del Aval</span><table class="TarjetaCallCenter_tablaDatos__k8d8R"><tbody><tr><td rowspan="4"><strong>Identificación</strong></td><td><strong>Nombre</strong></td><td><strong>Fecha de Nacimiento</strong></td><td><strong>Edad</strong></td><td><strong>Sexo</strong></td><td><strong>Edo. Civil</strong></td><td><strong>Telefono</strong></td></tr><tr><td>MA ALEJANDRA MORALES FLORES</td><td>07/06/1968</td><td>54</td><td>F</td><td>CASADO</td><td>2213680143</td></tr><tr><td colspan="6"><strong>Actividad Economica</strong></td></tr><tr><td colspan="6">VENTA DE COMIDA</td></tr></tbody></table><table class="TarjetaCallCenter_tablaDatos__k8d8R"><tbody><tr><td rowspan="2"><strong>Domicilio</strong></td><td><strong>Calle</strong></td><td><strong>Colonia</strong></td><td><strong>Localidad</strong></td><td><strong>Municipio</strong></td><td><strong>Estado</strong></td><td><strong>CP</strong></td></tr><tr><td>SAN JOAQUIN 8 1 VACIO</td>
-                <td>SN JUAN CUAUTLANCIN</td><td>Cuautlancingo</td><td>Cuautlancingo</td><td>PUEBLA</td><td>72764</td></tr></tbody></table>
-                </div></div>
-html;
-            }
+
             if($Administracion[0] == '')
             {
                 View::set('header', $this->_contenedor->header($extraHeader));
@@ -142,7 +62,7 @@ html;
             }
             else
             {
-                View::set('tabla', $tabla);
+                View::set('Administracion', $Administracion);
                 View::set('credito', $credito);
                 View::set('ciclo', $ciclo);
                 View::set('header', $this->_contenedor->header($extraHeader));
