@@ -78,7 +78,7 @@
             </div>
 
             <div class="col-md-6">
-                <span class="badge" style="background: #73879C"><h4 style="margin-top: 4px; margin-bottom: 4px">Datos del Cliente</h4></span>
+                <span class="badge" style="background: #787878"><h4 style="margin-top: 4px; margin-bottom: 4px">Datos del Cliente</h4></span>
                 <div class="panel panel-body">
                     <div class="x_content">
                         <div class="col-sm-12">
@@ -165,7 +165,7 @@
                                     <table class="table table-striped table-bordered table-hover">
                                         <tbody>
                                         <tr>
-                                            <td style="font-size: 18px; background: #787878;color: white" colspan="6"><strong>Identificación</strong></td>
+                                            <td style="font-size: 18px; background: #73879C;color: white" colspan="6"><strong>Identificación</strong></td>
                                         </tr>
                                         <tr>
                                             <td style="font-size: 16px"><strong>Nombre</strong></td>
@@ -202,7 +202,7 @@
                                     <table class="table table-striped table-bordered table-hover">
                                         <tbody>
                                         <tr>
-                                            <td style="font-size: 18px; background: #787878;color: white" colspan="6"><strong>Domicilio</strong></td>
+                                            <td style="font-size: 18px; background: #73879C;color: white" colspan="6"><strong>Domicilio</strong></td>
                                         </tr>
                                         <tr>
                                             <td style="font-size: 16px"><strong>Calle</strong></td>
