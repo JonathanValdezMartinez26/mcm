@@ -185,6 +185,9 @@
                                     <table class="table table-striped table-bordered table-hover">
                                         <tbody>
                                         <tr>
+                                            <td style="font-size: 18px; background: #787878;color: white" colspan="6"><strong>Domicilio</strong></td>
+                                        </tr>
+                                        <tr>
                                             <td style="font-size: 16px"><strong>Calle</strong></td>
                                             <td style="font-size: 16px"><strong>Colonia</strong></td>
                                             <td style="font-size: 16px"><strong>Localidad</strong></td>
@@ -209,7 +212,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 <?php echo $footer; ?>

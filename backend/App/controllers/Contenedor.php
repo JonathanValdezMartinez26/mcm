@@ -189,11 +189,14 @@ html;
 
     public function footer($extra = ''){
         $footer =<<<html
-            <footer>
+             <footer>
               <div class="pull-right">
+                <!--a href="#">AG Alimentos de Granja</a-->
               </div>
-             
+            mcm
+              
             </footer>
+            <!-- /footer content -->
           </div>
           
         <script src="/js/moment/moment.min.js"></script>
