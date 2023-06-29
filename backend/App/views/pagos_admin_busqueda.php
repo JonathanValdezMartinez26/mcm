@@ -1,7 +1,5 @@
 <?php echo $header; ?>
-<style type="text/css">
-    panel {  }
-</style>
+
 <div class="right_col">
         <div class="panel panel-body" style="margin-bottom: 0px;">
             <div class="x_title">

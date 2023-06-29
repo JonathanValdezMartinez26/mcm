@@ -370,6 +370,15 @@ html;
          {
              swal("Info", "Este registro fue capturado por un ejecutivo en campo y procesado por una administradora", "info");
          }
+         
+         
+         id_sucursal = getParameterByName('id_sucursal');
+         if(id_sucursal != '')
+             {
+                 const select_e = document.querySelector('#id_sucursal');
+                select_e.value = id_sucursal;
+             }
+         
     
       </script>
 html;
