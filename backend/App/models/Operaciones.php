@@ -2,7 +2,7 @@
 namespace App\models;
 defined("APPPATH") OR die("Access denied");
 
-use \Core\Database_;
+use \Core\Database_cultiva;
 
 class Operaciones{
 
