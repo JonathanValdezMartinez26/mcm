@@ -87,7 +87,7 @@ $menu.=<<<html
               <h3>General </h3>
               <ul class="nav side-menu">       
 html;
-        if($this->__perfil== 'ADMIN' || $this->__perfil== 'CAJA') {
+        if($this->__perfil== 'ADMIN' || $this->__perfil== 'CAJA' || $this->__perfil== 'GTOCA') {
 
             $menu .= <<<html
                 <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
@@ -98,8 +98,14 @@ html;
         {
             $menu.=<<<html
             <li><a href="/Pagos/">Admninistración</a></li>
-            <li><a href="/Pagos/PagosConsulta/">Consulta Pagos</a></li>
             <li><a href="/Pagos/Layout/">Layout</a></li> 
+html;
+        }
+
+        if($this->__perfil== 'ADMIN' || $this->__perfil== 'GTOCA')
+        {
+            $menu.=<<<html
+            <li><a href="/Pagos/PagosConsulta/">Consulta Pagos</a></li>
 html;
         }
             if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' )
