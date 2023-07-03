@@ -2,19 +2,19 @@
 namespace App\models;
 defined("APPPATH") OR die("Access denied");
 
-use \Core\Database_cultiva;
+use \Core\Database_;
 
 class Operaciones{
 
     public static function ConsultarDesembolsos($Inicial, $Final){
-
+    ///CAMBIOGIT 
         $query=<<<sql
         SELECT PRN.CANTENTRE, PRC.CDGEM, PRN.CICLO, EF.NOMBRE AS LOCALIDAD, '001'  AS SUCURSAL, 
         '08' AS TIPO_OPERACION, CL.CODIGO AS ID_CLIENTE,  
         PRC.CDGNS AS NUM_CUENTA, '01' AS INSTRUMENTO_MONETARIO,  'MXN' AS MONEDA,
         PRC.CANTENTRE AS MONTO, to_char(PRN.INICIO,'yyyymmdd') AS FECHA_OPERACION, '4' AS TIPO_RECEPTOR, 
         'Inbursa' AS CLAVE_RECEPTOR, '0' AS NUM_CAJA, '0' AS ID_CAJERO, to_char(PRN.INICIO,'yyyymmdd') AS FECHA_HORA,
-        '0' AS NOTARJETA_CTA, PRC.NOCHEQUE AS TIPOTARJETA, '0' AS COD_AUTORIZACION, 'NO' AS ATRASO,
+        PRC.NOCHEQUE AS NOTARJETA_CTA, '4' AS TIPOTARJETA, '0' AS COD_AUTORIZACION, 'NO' AS ATRASO,
         PRN.CDGCO AS OFICINA_CLIENTE, PRN.SITUACION
         FROM PRC 
         INNER JOIN PRN ON PRC.CDGNS = PRN.CDGNS 
@@ -32,7 +32,7 @@ sql;
         //AND PRC.CDGNS = '003065'
 
         try {
-            $mysqli = Database_cultiva::getInstance();
+            $mysqli = Database_::getInstance();
             return $mysqli->queryAll($query);
         } catch (Exception $e) {
             return "";
@@ -69,7 +69,7 @@ sql;
 
 sql;
 
-            $mysqli = Database_cultiva::getInstance();
+            $mysqli = Database_::getInstance();
             return $mysqli->queryAll($query);
 
     }
