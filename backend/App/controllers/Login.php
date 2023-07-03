@@ -129,7 +129,7 @@ html;
         $user = LoginDao::getById($usuario);
 
         if (count($user)>=1) {
-            $user['NOMBRE1'] = utf8_encode($user['NOMBRE1']);
+            $user['NOMBRE'] = utf8_encode($user['NOMBRE']);
             echo json_encode($user);
         }
     }
@@ -141,9 +141,10 @@ html;
         $user = LoginDao::getById($usuario);
         session_start();
         $_SESSION['usuario'] = $user['CODIGO'];
-        $_SESSION['nombre'] = $user['NOMBRE1'];
+        $_SESSION['nombre'] = $user['NOMBRE'];
         $_SESSION['puesto'] = $user['PUESTO'];
         $_SESSION['cdgco'] = $user['CDGCO'];
+        $_SESSION['perfil'] = $user['PERFIL'];
 
         header("location: /Principal/");
     }

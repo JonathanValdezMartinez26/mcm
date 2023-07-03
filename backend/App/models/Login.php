@@ -23,7 +23,20 @@ sql;
         //var_dump($pass);
 
         $query1 =<<<sql
-        SELECT * FROM PE WHERE CODIGO LIKE :usuario AND CLAVE LIKE :password 
+        SELECT
+    CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) NOMBRE,
+    UT.CDGTUS PERFIL, PE.PUESTO , PE.CDGCO, PE.CODIGO 
+FROM
+    PE,
+	UT
+WHERE
+	PE.CODIGO = UT.CDGPE
+	AND PE.CDGEM = UT.CDGEM
+    AND PE.CDGEM = 'EMPFIN'
+    AND PE.ACTIVO = 'S'
+    AND (PE.BLOQUEO = 'N' OR PE.BLOQUEO IS NULL)
+    AND PE.CODIGO = :usuario
+    AND PE.CLAVE LIKE :password 
 sql;
         $params1 = array(
             ':usuario'=> $usuario->_usuario,
@@ -38,7 +51,20 @@ sql;
     public static function getUser($usuario){
         $mysqli = Database::getInstance(true);
         $query =<<<sql
-        SELECT * FROM PE WHERE CODIGO = '$usuario' AND ACTIVO = 'S'
+        SELECT
+            CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) NOMBRE,
+            UT.CDGTUS PERFIL, PE.PUESTO , PE.CDGCO, PE.CODIGO
+        FROM
+            PE,
+            UT
+        WHERE
+            PE.CODIGO = UT.CDGPE
+            AND PE.CDGEM = UT.CDGEM
+            AND PE.CDGEM = 'EMPFIN'
+            AND PE.ACTIVO = 'S'
+            AND (PE.BLOQUEO = 'N' OR PE.BLOQUEO IS NULL)
+            AND PE.CODIGO = '$usuario'
+
 sql;
 
         return $mysqli->queryAll($query);

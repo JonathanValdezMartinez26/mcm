@@ -87,14 +87,14 @@ $menu.=<<<html
               <h3>General </h3>
               <ul class="nav side-menu">       
 html;
-        if($this->__puesto == 'C' || $this->__cdgo == '') {
+        if($this->__perfil== 'ADMIN' || $this->__perfil== 'CAJA') {
 
             $menu .= <<<html
                 <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
 html;
         }
-        if($this->__puesto == 'D' )
+        if($this->__perfil== 'ADMIN')
         {
             $menu.=<<<html
             <li><a href="/Pagos/">Admninistración</a></li>
@@ -102,7 +102,7 @@ html;
             <li><a href="/Pagos/Layout/">Layout</a></li> 
 html;
         }
-            if($this->__puesto == 'A' || $this->__cdgo == '')
+            if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' )
             {
 $menu.=<<<html
                    <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>
@@ -112,7 +112,7 @@ $menu.=<<<html
                 </li>
 html;
         }
-        if($this->__puesto == 'D' ) {
+        if($this->__perfil== 'ADMIN') {
             $menu .= <<<html
                 <li><a><i class="fa fa-users"> </i>&nbsp; Creditos <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
@@ -123,7 +123,7 @@ html;
                 </li>
 html;
         }
-        if($this->__usuario == 'ADMIN' || $this->__puesto == 'POR ASIGNAR') {
+        if($this->__perfil == 'ADMIN' || $this->__perfil == 'CALLC') {
             $menu .= <<<html
               <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon glyphicon-phone-alt"> </i>&nbsp; Call Center <span class="fa fa-chevron-down"></span></a>
@@ -137,7 +137,7 @@ html;
               </ul>
 html;
         }
-if($this->__usuario == 'ADMIN' || $this->__usuario == 'SORA') {
+if($this->__perfil == 'ADMIN' || $this->__usuario == 'PLD') {
     $menu .= <<<html
               <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon glyphicon-th-list	
