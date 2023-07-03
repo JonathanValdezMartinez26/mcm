@@ -32,7 +32,7 @@ sql;
         //AND PRC.CDGNS = '003065'
 
         try {
-            $mysqli = Database_::getInstance();
+            $mysqli = Database_cultiva::getInstance();
             return $mysqli->queryAll($query);
         } catch (Exception $e) {
             return "";
@@ -69,7 +69,7 @@ sql;
 
 sql;
 
-            $mysqli = Database_::getInstance();
+            $mysqli = Database_cultiva::getInstance();
             return $mysqli->queryAll($query);
 
     }
