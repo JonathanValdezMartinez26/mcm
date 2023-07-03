@@ -49,9 +49,6 @@ class Contenedor extends Controller{
             <link rel="stylesheet" href="/css/bootstrap/bootstrap-switch.css">
             <link rel="stylesheet" href="/css/validate/screen.css">
 
-            <link rel="stylesheet" href="/css/alertify/alertify.core.css" />
-            <link rel="stylesheet" href="/css/alertify/alertify.default.css" id="toggleCSS" />
-
             <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet">
           	<link href="/css/font-awesome.min.css" rel="stylesheet">
             <link href="/css/menu/menu5custom.min.css" rel="stylesheet">
@@ -131,6 +128,7 @@ html;
               <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon glyphicon-phone-alt"> </i>&nbsp; Call Center <span class="fa fa-chevron-down"></span></a>
                  <ul class="nav child_menu">
+                    <li><a href="/CallCenter/Consultar/">Administración</a></li>
                    <li><a href="/CallCenter/Consultar/">Consultar Cliente</a></li>
                    <li><a href="/CallCenter/Pendientes/">Pendientes</a></li>
                    <li><a href="/CallCenter/Historico/">Historico</a></li>

@@ -6,7 +6,7 @@
           <h3> Resumen de cobros realizados por el ejecutivo (<?php echo $CorteCajaById['EJECUTIVO']; ?>)</h3>
       </div>
       <div class="x_content">
-          <a href="/Pagos/PagosRegistro/?Credito=003011" type="button" class="btn btn-primary">
+          <a href="/Pagos/PagosRegistro/?Credito=003011" type="button" class="btn btn-primary" >
               Agregar Pago
           </a>
           <hr style="border-top: 1px solid #787878; margin-top: 5px;">
@@ -34,7 +34,7 @@
                       <div class="count" style="font-size: 20px"> <b>$ <?php echo number_format($CorteCajaById['MONTO_GARANTIA']); ?></b></div>
                   </div>
                   <div class="col-md-2 col-sm-4  tile_stats_count">
-                      <button style="background: #109d0e !important; border-radius: 25px;" type="submit" name="agregar" class="btn btn-success btn-lg" value="enviar"><span class="fa fa-check"></span> Procesar Pagos</button>
+                      <button style="background: #109d0e !important; border-radius: 25px;" type="submit" name="agregar" class="btn btn-success btn-lg" value="enviar" onclick="FunprecesarPagos()"><span class="fa fa-check"></span> Procesar Pagos</button>
                   </div>
 
 

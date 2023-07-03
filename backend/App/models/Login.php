@@ -29,7 +29,7 @@ sql;
             ':usuario'=> $usuario->_usuario,
             ':password'=>$pass['PASS']
         );
-        //var_dump($params1);
+
         return $mysqli->queryOne($query1,$params1);
 
 

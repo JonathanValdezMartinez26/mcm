@@ -28,7 +28,7 @@ class Creditos extends Controller{
     public function ControlGarantias()
     {
         $extraHeader = <<<html
-        <title>Control de Garantias</title>
+        <title>Control de Garantías</title>
         <link rel="shortcut icon" href="/img/logo.png">
 html;
         $extraFooter = <<<html

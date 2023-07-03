@@ -836,39 +836,7 @@ html;
             var checkAll = 0;
             
         });
-        
-        function FunDelete_Pago(secuencia, fech, ciclo) {
-             credito = getParameterByName('Credito');
-             secuencias = secuencia;
-             fecha = fech;
-             
-                alertify.confirm('¿Segúro que desea eliminar lo seleccionado?', function(response){
-                  if(response){
-                      
-                      $.ajax({
-                        type: "POST",
-                        url: "/Pagos/Delete/",
-                        data: {"credito" : credito, "secuencia" : secuencias, "fecha" : fecha},
-                        success: function(response){
-                            if(response != 1)
-                                {
-                                    alertify.success("Se ha eliminado correctamente");
-                                    location.reload();
-                                    
-                                }
-                            else
-                                {
-                                     alertify.error("Error, al eliminar.");
-                                }
-                        }
-                    });
-                      
-                    
-                  }
-                });
-              
-             }
-        
+       
         function enviar_add(){	
              monto = document.getElementById("monto").value; 
             if(monto == '')
@@ -889,11 +857,15 @@ html;
                         alert('enviado'); 
                         document.getElementById("monto").value = "";
                         document.getElementById("tipo").value = "";
-                        alertify.confirm('Registro Guardado con Exito');
+                         swal("Registro guardado exitosamente", {
+                                      icon: "success",
+                                    });
                         }
                         else {
                         $('#addnew').modal('hide')
-                         alertify.confirm('Registro Guardado con Exito');
+                         swal("Registro guardado exitosamente", {
+                                      icon: "error",
+                                    });
                             document.getElementById("monto").value = "";
                             document.getElementById("tipo").value = "";
                         }
@@ -901,6 +873,74 @@ html;
                     });
                 }
     }
+        function FunprecesarPagos() {
+           alert("procesando...");
+           ///////
+           Swal.fire({
+  title: 'Auto close alert!',
+  'html':
+    'I will close in <strong></strong> seconds.<br/><br/>' +
+    '<button id="increase" class="btn btn-warning">' +
+    'I need 5 more seconds!' +
+    '</button><br/><br/>' +
+    '<button id="stop" class="btn btn-danger">' +
+    'Please stop the timer!!' +
+    '</button><br/><br/>' +
+    '<button id="resume" class="btn btn-success" disabled>' +
+    'Phew... you can restart now!' +
+    '</button><br/><br/>' +
+    '<button id="toggle" class="btn btn-primary">' +
+    'Toggle' +
+    '</button>',
+  timer: 10000,
+  didOpen: () => {
+        const content = Swal.getHtmlContainer()
+    const $ = content.querySelector.bind(content)
+
+    const stop = $('#stop')
+    const resume = $('#resume')
+    const toggle = $('#toggle')
+    const increase = $('#increase')
+
+    Swal.showLoading()
+
+    function toggleButtons () {
+        stop.disabled = !Swal.isTimerRunning()
+      resume.disabled = Swal.isTimerRunning()
+    }
+
+    stop.addEventListener('click', () => {
+            Swal.stopTimer()
+      toggleButtons()
+    })
+
+    resume.addEventListener('click', () => {
+            Swal.resumeTimer()
+      toggleButtons()
+    })
+
+    toggle.addEventListener('click', () => {
+            Swal.toggleTimer()
+      toggleButtons()
+    })
+
+    increase.addEventListener('click', () => {
+            Swal.increaseTimer(5000)
+    })
+
+    timerInterval = setInterval(() => {
+            Swal.getHtmlContainer().querySelector('strong')
+            .textContent = (Swal.getTimerLeft() / 1000)
+                .toFixed(0)
+    }, 100)
+  },
+  willClose: () => {
+        clearInterval(timerInterval)
+  }
+})
+           ///////////
+           
+        }
       </script>
 html;
 

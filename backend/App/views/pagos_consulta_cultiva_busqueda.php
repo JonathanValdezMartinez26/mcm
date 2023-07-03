@@ -18,11 +18,11 @@
                             <div class="col-md-12">
 
                                 <div class="col-md-3">
-                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $fechaActual; ?>">
+                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $Inicial; ?>">
                                     <span id="availability1" style="font-size:15px">Desde</span>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $fechaActual; ?>">
+                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $Final; ?>">
                                     <span id="availability1" style="font-size:15px">Hasta</span>
                                 </div>
                                 <div class="col-md-2">
@@ -43,7 +43,6 @@
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
                         <tr>
-                                    <th>Ciclo Desembolso</th>
                                     <th>Localidad</th>
                                     <th>Sucursal</th>
                                     <th>Tipo de Operación</th>
@@ -63,7 +62,6 @@
                                    <th>Código de Autorización</th>
                                    <th>Atraso</th>
                                    <th>oficina</th>
-                                   <th>Situación</th>
                                 </tr>
                                 </thead>
                                 <tbody>
