@@ -203,18 +203,30 @@ html;
 
         $fechaActual = date("Y-m-d");
         $horaActual = date("H:i:s");
+        $dia = date("N");
 
-        if($horaActual <= '10:00:00')
+        if($horaActual <= '11:00:00')
         {
-            $date_past = strtotime('-1', strtotime($fechaActual));
-            $date_past = date('Y-m-d', $date_past);
+            if ($dia == 5)
+            {
+                $date_past = strtotime('-4', strtotime($fechaActual));
+                $date_past = date('Y-m-d', $date_past);
+            }
+            else
+            {
+                $date_past = strtotime('-2', strtotime($fechaActual));
+                $date_past = date('Y-m-d', $date_past);
+            }
 
             $inicio_f = $date_past;
             $fin_f = $fechaActual;
         }
         else
         {
-            $inicio_f = $fechaActual;
+            $date_past = strtotime('-2', strtotime($fechaActual));
+            $date_past = date('Y-m-d', $date_past);
+
+            $inicio_f = $date_past;
             $fin_f = $fechaActual;
         }
 
@@ -661,6 +673,7 @@ html;
                          swal("Registro guardado exitosamente", {
                                       icon: "success",
                                     });
+                         location.reload();
                         
                         }
                         else {
@@ -737,11 +750,20 @@ html;
 
         $fechaActual = date("Y-m-d");
         $horaActual = date("H:i:s");
+        $dia = date("N");
 
         if($horaActual <= '10:00:00')
         {
-            $date_past = strtotime('-1', strtotime($fechaActual));
-            $date_past = date('Y-m-d', $date_past);
+            if ($dia == 5)
+            {
+                $date_past = strtotime('-3', strtotime($fechaActual));
+                $date_past = date('Y-m-d', $date_past);
+            }
+            else
+            {
+                $date_past = strtotime('-1', strtotime($fechaActual));
+                $date_past = date('Y-m-d', $date_past);
+            }
 
             $inicio_f = $date_past;
             $fin_f = $fechaActual;
@@ -898,6 +920,8 @@ html;
                          swal("Registro guardado exitosamente", {
                                       icon: "success",
                                     });
+                         location.reload();
+                         
                         }
                         else {
                         $('#addnew').modal('hide')
