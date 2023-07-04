@@ -210,6 +210,7 @@ sql;
     public static function insertProcedure($pago){
 
         $credito_i = $pago->_credito;
+        $fecha_i = $pago->_fecha;
         $ciclo_i = $pago->_ciclo;
         $monto_i = $pago->_monto;
         $tipo_i = $pago->_tipo;
@@ -222,7 +223,7 @@ sql;
 
 
         $mysqli = Database::getInstance();
-        return $mysqli->queryProcedurePago($credito_i, $ciclo_i, $monto_i, $tipo_i, $nombre_i, $user_i,  $ejecutivo_i, $ejecutivo_nombre_i,  $tipo_procedure_, $fecha_aux, "");
+        return $mysqli->queryProcedurePago($credito_i, $ciclo_i, $monto_i, $tipo_i, $nombre_i, $user_i,  $ejecutivo_i, $ejecutivo_nombre_i,  $tipo_procedure_, $fecha_aux, "", $fecha_i);
 
     }
 

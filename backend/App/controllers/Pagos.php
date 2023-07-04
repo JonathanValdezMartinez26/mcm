@@ -200,7 +200,23 @@ html;
 
         $credito = $_GET['Credito'];
         $tabla = '';
-        $fechaActual = date('m-d-Y h:i:s');
+
+        $fechaActual = date("Y-m-d");
+        $horaActual = date("H:i:s");
+
+        if($horaActual <= '10:00:00')
+        {
+            $date_past = strtotime('-1', strtotime($fechaActual));
+            $date_past = date('Y-m-d', $date_past);
+
+            $inicio_f = $date_past;
+            $fin_f = $fechaActual;
+        }
+        else
+        {
+            $inicio_f = $fechaActual;
+            $fin_f = $fechaActual;
+        }
 
         $status = PagosDao::ListaEjecutivos($this->__cdgco);
         $getStatus = '';
@@ -276,7 +292,8 @@ html;
                 View::set('tabla', $tabla);
                 View::set('Administracion', $AdministracionOne);
                 View::set('credito', $credito);
-                View::set('fechaActual', $fechaActual);
+                View::set('inicio_f', $inicio_f);
+                View::set('fin_f', $fin_f);
                 View::set('status', $getStatus);
                 View::set('usuario', $this->__usuario);
                 View::set('header', $this->_contenedor->header($extraHeader));
@@ -469,6 +486,9 @@ html;
         $ciclo = MasterDom::getDataAll('ciclo');
         $pagos->_ciclo = $ciclo;
 
+        $fecha = MasterDom::getDataAll('Fecha');
+        $pagos->_fecha = $fecha;
+
         $monto = MasterDom::getDataAll('monto');
         $pagos->_monto = $monto;
 
@@ -641,7 +661,7 @@ html;
                          swal("Registro guardado exitosamente", {
                                       icon: "success",
                                     });
-                        location.reload();
+                        
                         }
                         else {
                         $('#modal_agregar_pago').modal('hide')
@@ -714,7 +734,23 @@ html;
 
         $credito = $_GET['Credito'];
         $tabla = '';
-        $fechaActual = date('m-d-Y h:i:s');
+
+        $fechaActual = date("Y-m-d");
+        $horaActual = date("H:i:s");
+
+        if($horaActual <= '10:00:00')
+        {
+            $date_past = strtotime('-1', strtotime($fechaActual));
+            $date_past = date('Y-m-d', $date_past);
+
+            $inicio_f = $date_past;
+            $fin_f = $fechaActual;
+        }
+        else
+        {
+            $inicio_f = $fechaActual;
+            $fin_f = $fechaActual;
+        }
 
         $status = PagosDao::ListaEjecutivos($this->__cdgco);
         $getStatus = '';
@@ -790,6 +826,8 @@ html;
                 View::set('tabla', $tabla);
                 View::set('Administracion', $AdministracionOne);
                 View::set('credito', $credito);
+                View::set('inicio_f', $inicio_f);
+                View::set('fin_f', $fin_f);
                 View::set('fechaActual', $fechaActual);
                 View::set('status', $getStatus);
                 View::set('usuario', $this->__usuario);

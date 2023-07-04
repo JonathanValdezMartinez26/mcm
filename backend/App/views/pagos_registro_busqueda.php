@@ -111,8 +111,8 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="Fecha">Fecha</label>
-                                    <input type="text" class="form-control" id="Fecha" aria-describedby="Fecha" disabled placeholder="" value="<?php echo $fechaActual; ?>">
-                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro en la app.</small>
+                                    <input onkeydown="return false" type="date" class="form-control" id="Fecha" name="Fecha" min="<?php echo $inicio_f; ?>" max="<?php echo $fin_f; ?>" value="<?php echo $fin_f; ?>">
+                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
                                 </div>
                             </div>
 

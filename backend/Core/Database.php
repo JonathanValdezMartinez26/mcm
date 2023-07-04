@@ -227,12 +227,12 @@ static $_mail;
 
     ///////////////////////////////////////////////////////////////////////////////////////////7
 
-    public function queryProcedurePago($credito, $ciclo_, $monto_, $tipo_, $nombre_, $user_, $ejecutivo_id,  $ejec_nom_, $tipo_procedure, $fecha_aux, $secuencia){
+    public function queryProcedurePago($credito, $ciclo_, $monto_, $tipo_, $nombre_, $user_, $ejecutivo_id,  $ejec_nom_, $tipo_procedure, $fecha_aux, $secuencia, $fecha){
 
-        $fechaActual = date('d-m-Y');
+        $newDate = date("d-m-Y", strtotime($fecha));
 
         $empresa = "EMPFIN";
-        $fecha = $fechaActual;
+        $fecha = $newDate;
         $fecha_aux = $fecha_aux;
         $cdgns = $credito;
         $ciclo = $ciclo_;

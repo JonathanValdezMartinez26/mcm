@@ -16,7 +16,7 @@
                     <form class="" action="/Pagos/" method="GET">
                         <div class="row">
                             <div class="col-md-3">
-                                <select class="form-control mr-sm-3" style="font-size: 21px;" autofocus type="select" id="" name="" placeholder="000000" aria-label="Search">
+                                <select class="form-control sm-3 mr-sm-3" style="font-size: 21px;" autofocus type="select" id="" name="" placeholder="000000" aria-label="Search">
                                     <option value="credito">Crédito</option>
                                     <option value="fecha">Fecha</option>
                                 </select>
@@ -111,8 +111,8 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="Fecha">Fecha</label>
-                                    <input type="text" class="form-control" id="Fecha" aria-describedby="Fecha" disabled placeholder="" value="<?php echo $fechaActual; ?>">
-                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro en la app.</small>
+                                    <input onkeydown="return false" type="date" class="form-control" id="Fecha" name="Fecha" min="<?php echo $inicio_f; ?>" max="<?php echo $fin_f; ?>" value="<?php echo $fin_f; ?>">
+                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
                                 </div>
                             </div>
 
@@ -211,7 +211,7 @@
                                 <div class="form-group">
                                     <label for="Fecha_e">Fecha</label>
                                     <input type="text" class="form-control" id="Fecha_e" aria-describedby="Fecha_e" disabled placeholder="" value="<?php echo $fechaActual; ?>">
-                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro en la app.</small>
+                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
                                 </div>
                             </div>
 
@@ -313,6 +313,7 @@
 
         $('#modal_editar_pago').modal('show');
         document.getElementById(monto_e).focus();
+
     }
 </script>
 
