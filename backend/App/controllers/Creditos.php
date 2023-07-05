@@ -325,9 +325,10 @@ html;
                 {
                     $factura = $value['FACTURA'];
                 }
+                $fecha = strval($value['FECREGISTRO']);
                 $tabla.=<<<html
                 <tr>
-                    <td>{$value['FECREGISTRO']}</td>
+                    <td>{$fecha}</td>
                     <td>{$value['SECUENCIA']}</td>
                     <td>{$value['ARTICULO']}</td>
                     <td>{$value['MARCA']}</td>
