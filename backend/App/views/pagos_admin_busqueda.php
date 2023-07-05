@@ -206,10 +206,17 @@
                 <div class="container-fluid">
                     <form onsubmit="enviar_edit(); return false" id="Edit">
                         <div class="row">
+                            <div class="col-md-4" style="display: none">
+                                <div class="form-group" >
+                                    <label for="Fecha_e_r">Fecha</label>
+                                    <input onkeydown="return false" type="date" class="form-control" id="Fecha_e_r" name="Fecha_e_r" readonly>
+                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
+                                </div>
+                            </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="Fecha_e">Fecha</label>
-                                    <input type="text" class="form-control" id="Fecha_e" aria-describedby="Fecha_e" disabled placeholder="" value="<?php echo $fechaActual; ?>">
+                                    <input onkeydown="return false" type="date" class="form-control" id="Fecha_e" name="Fecha_e" min="<?php echo $inicio_f; ?>" max="<?php echo $fin_f; ?>">
                                     <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
                                 </div>
                             </div>
@@ -297,7 +304,15 @@
 <script>
     function EditarPago(fecha, cdgns, nombre, ciclo, tipo_pago, monto, ejecutivo, secuencia) {
 
-        document.getElementById("Fecha_e").value = fecha;
+        var now = new Date(fecha);
+
+        var day = ("0" + now.getDate()).slice(-2);
+        var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+        var today = now.getFullYear()+"-"+(day)+"-"+(month) ;
+
+        document.getElementById("Fecha_e").value = today;
+        document.getElementById("Fecha_e_r").value = today;
         document.getElementById("cdgns_e").value = cdgns;
         document.getElementById("nombre_e").value = nombre;
         document.getElementById("ciclo_e").value = ciclo;
@@ -311,7 +326,6 @@
         $select_e.value = ejecutivo;
 
         $('#modal_editar_pago').modal('show');
-        document.getElementById(monto_e).focus();
 
     }
 </script>

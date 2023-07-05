@@ -234,6 +234,7 @@ sql;
     public static function EditProcedure($pago){
 
         $credito_i = $pago->_credito;
+        $fecha = $pago->_fecha;
         $secuencia_i = $pago->_secuencia;
         $ciclo_i = $pago->_ciclo;
         $monto_i = $pago->_monto;
@@ -243,13 +244,11 @@ sql;
         $ejecutivo_i = $pago->_ejecutivo;
         $ejecutivo_nombre_i = $pago->_ejecutivo_nombre;
         $tipo_procedure_ = 2;
-        $fecha_aux = $pago->_fecha;
-
-
+        $fecha_aux = $pago->_fecha_aux;
 
 
         $mysqli = Database::getInstance();
-        return $mysqli->queryProcedurePago($credito_i, $ciclo_i, $monto_i, $tipo_i, $nombre_i, $user_i,  $ejecutivo_i, $ejecutivo_nombre_i, $tipo_procedure_, $fecha_aux, $secuencia_i);
+        return $mysqli->queryProcedurePago($credito_i, $ciclo_i, $monto_i, $tipo_i, $nombre_i, $user_i,  $ejecutivo_i, $ejecutivo_nombre_i, $tipo_procedure_, $fecha_aux, $secuencia_i, $fecha);
 
     }
 

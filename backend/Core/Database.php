@@ -230,10 +230,11 @@ static $_mail;
     public function queryProcedurePago($credito, $ciclo_, $monto_, $tipo_, $nombre_, $user_, $ejecutivo_id,  $ejec_nom_, $tipo_procedure, $fecha_aux, $secuencia, $fecha){
 
         $newDate = date("d-m-Y", strtotime($fecha));
+        $newDateFechaAux = date("d-m-Y", strtotime($fecha_aux));
 
         $empresa = "EMPFIN";
         $fecha = $newDate;
-        $fecha_aux = $fecha_aux;
+        $fecha_aux =  $newDateFechaAux;
         $cdgns = $credito;
         $ciclo = $ciclo_;
         $secuencia = $secuencia;

@@ -134,8 +134,7 @@ html;
                          swal(respuesta, {
                                       icon: "error",
                                     });
-                            document.getElementById("monto").value = "";
-                            document.getElementById("tipo").value = "";
+                            location.reload();
                         }
                     }
                     });
@@ -155,12 +154,12 @@ html;
                 }
             else
                 {
-                    texto = $("#ejecutivo :selected").text();
+                    texto = $("#ejecutivo_e :selected").text();
                    
                     $.ajax({
                     type: 'POST',
                     url: '/Pagos/PagosEdit/',
-                    data: $('#Edit').serialize()+ "&ejec="+texto,
+                    data: $('#Edit').serialize()+ "&ejec_e="+texto,
                     success: function(respuesta) {
                          if(respuesta=='1 Proceso realizado exitosamente'){
                       
@@ -169,7 +168,7 @@ html;
                          swal("Registro guardado exitosamente", {
                                       icon: "success",
                                     });
-                        //location.reload();
+                        location.reload();
                         }
                         else {
                         $('#modal_editar_pago').modal('hide')
@@ -510,7 +509,7 @@ html;
         $nombre = MasterDom::getDataAll('nombre');
         $pagos->_nombre = $nombre;
 
-        $usuario = MasterDom::getDataAll('usuario');
+        $usuario = $this->__usuario;
         $pagos->_usuario = $usuario;
 
         $pagos->_ejecutivo = MasterDom::getData('ejecutivo');
@@ -524,8 +523,6 @@ html;
     public function PagosEdit(){
         $pagos = new \stdClass();
 
-        $fecha = MasterDom::getDataAll('Fecha_e');
-        $pagos->_fecha = $fecha;
 
         $secuencia = MasterDom::getDataAll('secuencia_e');
         $pagos->_secuencia = $secuencia;
@@ -536,6 +533,12 @@ html;
         $ciclo = MasterDom::getDataAll('ciclo_e');
         $pagos->_ciclo = $ciclo;
 
+        $fecha = MasterDom::getDataAll('Fecha_e');
+        $pagos->_fecha = $fecha;
+
+        $fecha_aux = MasterDom::getDataAll('Fecha_e_r');
+        $pagos->_fecha_aux = $fecha_aux;
+
         $monto = MasterDom::getDataAll('monto_e');
         $pagos->_monto = $monto;
 
@@ -545,7 +548,7 @@ html;
         $nombre = MasterDom::getDataAll('nombre_e');
         $pagos->_nombre = $nombre;
 
-        $usuario = MasterDom::getDataAll('usuario_e');
+        $usuario = $this->__usuario;
         $pagos->_usuario = $usuario;
 
         $pagos->_ejecutivo = MasterDom::getData('ejecutivo_e');
@@ -697,17 +700,17 @@ html;
                     if(monto == 0)
                         {
                              swal("Atención", "Ingrese un monto mayor a $0", "warning");
-                             document.getElementById("monto_e").focus();
+                             
                         }
                 }
             else
                 {
-                    texto = $("#ejecutivo :selected").text();
-                   
+                    texto = $("#ejecutivo_e :selected").text(); 
+             
                     $.ajax({
                     type: 'POST',
                     url: '/Pagos/PagosEdit/',
-                    data: $('#Edit').serialize()+ "&ejec="+texto,
+                    data: $('#Edit').serialize()+ "&ejec_e="+texto,
                     success: function(respuesta) {
                          if(respuesta=='1 Proceso realizado exitosamente'){
                       
@@ -716,7 +719,7 @@ html;
                          swal("Registro guardado exitosamente", {
                                       icon: "success",
                                     });
-                        //location.reload();
+                        location.reload();
                         }
                         else {
                         $('#modal_editar_pago').modal('hide')
