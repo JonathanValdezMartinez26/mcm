@@ -132,8 +132,8 @@ html;
                     <td style="padding: 0px !important;">{$value['NUM_CAJA']}</td>
                     <td style="padding: 0px !important;">{$value['ID_CAJERO']}</td>
                     <td style="padding: 0px !important;">{$value['FECHA_HORA']}</td>
-                    <td style="padding: 0px !important;">{$value['NOTARJETA_CTA']}</td>
                     <td style="padding: 0px !important;">{$value['TIPOTARJETA']}</td>
+                    <td style="padding: 0px !important;">{$value['NOTARJETA_CTA']}</td>
                     <td style="padding: 0px !important;">{$value['COD_AUTORIZACION']}</td>
                     <td style="padding: 0px !important;">{$value['ATRASO']}</td>
                     <td style="padding: 0px !important;">{$value['OFICINA_CLIENTE']}</td>
