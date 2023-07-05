@@ -327,6 +327,7 @@ html;
                 }
                 $tabla.=<<<html
                 <tr>
+                    <td>{$value['FECREGISTRO']}</td>
                     <td>{$value['SECUENCIA']}</td>
                     <td>{$value['ARTICULO']}</td>
                     <td>{$value['MARCA']}</td>

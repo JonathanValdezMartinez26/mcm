@@ -38,6 +38,7 @@
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
                         <tr>
+                            <th>Fecha de Registro</th>
                             <th>Secuencia</th>
                             <th>Articulo</th>
                             <th>Marca</th>
