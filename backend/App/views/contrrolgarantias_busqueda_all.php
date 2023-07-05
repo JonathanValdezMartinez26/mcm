@@ -29,10 +29,13 @@
             </div>
 
             <div class="card col-md-12">
-                <hr style="border-top: 1px solid #e5e5e5; margin-top: 5px;">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_articulo">
-                    <i class="fa fa-plus"></i> Agregar Artículo
-                </button>
+                <form name="all" id="all" method="POST">
+                    <hr style="border-top: 1px solid #787878; margin-top: 5px;">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_articulo">
+                        <i class="fa fa-plus"></i> Agregar Artículo
+                    </button>
+                    <button id="export_excel" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
+
                 <hr style="border-top: 1px solid #787878; margin-top: 5px;">
                 <div class="dataTable_wrapper">
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
@@ -54,6 +57,7 @@
                         </tbody>
                     </table>
                 </div>
+                </form>
             </div>
         </div>
     </div>
