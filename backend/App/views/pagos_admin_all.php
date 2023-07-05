@@ -14,8 +14,8 @@
 
                 <div class="card-body">
                     <form class="" action="/Pagos/" method="GET">
-                        <div class="row">
-                            <div class="col-md-3">
+                        <div class="col-md-12">
+                            <div class="col-md-3 col-sm-6 .col-xs-12	">
                                 <select class="form-control mr-sm-3" style="font-size: 21px;" autofocus type="select" placeholder="000000" aria-label="Search">
                                     <option value="credito">Crédito</option>
                                 </select>

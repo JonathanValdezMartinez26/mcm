@@ -363,7 +363,7 @@ html;
             sucursal = getParameterByName('id_sucursal');
             
              $("#export_excel_consulta").click(function(){
-                 alert("hola");
+             
               $('#all').attr('action', '/Pagos/generarExcelConsulta/?Inicial='+fecha1+'&Final='+fecha2+'&Sucursal='+sucursal);
               $('#all').attr('target', '_blank');
               $("#all").submit();
