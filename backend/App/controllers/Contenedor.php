@@ -102,17 +102,12 @@ html;
 html;
         }
 
-        if($this->__perfil== 'ADMIN' || $this->__perfil== 'GTOCA')
-        {
-            $menu.=<<<html
-            <li><a href="/Pagos/PagosConsulta/">Consulta Pagos</a></li>
-html;
-        }
-            if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' )
+            if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil== 'GTOCA')
             {
 $menu.=<<<html
-                   <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>
+                    <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
                    <li><a href="/Pagos/PagosRegistro/">Registro Pagos</a></li>
+                   <li><a href="/Pagos/PagosConsulta/">Consulta Pagos</a></li>
            
                   </ul>
                 </li>
