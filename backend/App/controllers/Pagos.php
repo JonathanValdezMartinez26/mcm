@@ -1315,7 +1315,6 @@ html;
         $nombreCampo = array('FECHA','REFERENCIA','MONTO','MONEDA');
 
 
-        $fila +=1;
 
         /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
         foreach ($nombreColumna as $key => $value) {
@@ -1405,12 +1404,6 @@ html;
         $nombreColumna = array('Sucursal','Codigo','Fecha','Cliente', 'Nombre', 'Ciclo', 'Monto', 'Tipo', 'Ejecutivo', 'Registro');
         $nombreCampo = array('NOMBRE_SUCURSAL','SECUENCIA','FECHA','CDGNS','NOMBRE','CICLO','MONTO', 'TIPO', 'EJECUTIVO', 'FREGISTRO');
 
-        $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'REPORTE PAGOS GLOBAL');
-        $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
-        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
-        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
-
-        $fila +=1;
 
         /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
         foreach ($nombreColumna as $key => $value) {
