@@ -42,24 +42,27 @@ sql;
     public static function ConsultarPagos($Inicial, $Final){
 
         $query=<<<sql
-                SELECT PRN.CANTENTRE, PRC.CDGEM, PRN.CICLO, EF.NOMBRE AS LOCALIDAD, PRN.CDGCO AS SUCURSAL,
+                SELECT PRN.CANTENTRE, PRC.CDGEM, PRN.CICLO, EF.NOMBRE AS LOCALIDAD,
+ CASE WHEN IB.CODIGO  = 13 THEN '001' ------------------------ IMBURSA
+ 		WHEN IB.CODIGO = 11  THEN '002' ---------------------- PAYCASH
+ 		WHEN IB.CODIGO = 05 THEN '003' ----------------------- OXXO
+ 		WHEN IB.CODIGO = 00 THEN '001' ----------------------- ES BANORTE PERO PASA A IMBURSA
+ 		WHEN IB.CODIGO = 04 THEN '004' ----------------------- SON GARANTIAS
+ 		ELSE '000' END AS SUCURSAL, 
                 '09' AS TIPO_OPERACION, CL.CODIGO AS ID_CLIENTE, 
                 PRC.CDGNS AS NUM_CUENTA, '01' AS INSTRUMENTO_MONETARIO, 'MXN' AS MONEDA, 
                 ROUND((MP.CANTIDAD * PRC.CANTENTRE)/PRN.CANTENTRE, 2)  AS MONTO, to_char(PRN.INICIO,'yyyymmdd') AS FECHA_OPERACION,  
-                (CASE WHEN CB.NOMBRE = 'OXXO' THEN 1 ELSE 4 END) AS TIPO_RECEPTOR,
+                (CASE WHEN (CB.NOMBRE = 'OXXO' || 'PAYCASH') THEN 1 ELSE 4 END) AS TIPO_RECEPTOR,
                 IB.NOMBRE AS CLAVE_RECEPTOR, '0' AS NUM_CAJA, '0' AS ID_CAJERO, to_char(PRN.INICIO,'yyyymmdd') AS FECHA_HORA,
                 '0' AS NOTARJETA_CTA, '4' AS TIPOTARJETA, '0' AS COD_AUTORIZACION, 'NO' AS ATRASO,
                 PRN.CDGCO AS OFICINA_CLIENTE, PRN.SITUACION
                 FROM PRC 
-                
                 INNER JOIN PRN ON PRC.CDGNS = PRN.CDGNS 
-                
                 INNER JOIN MP ON PRN.CDGNS = MP.CDGNS 
                 INNER JOIN CL ON CL.CODIGO = PRC.CDGCL 
                 INNER JOIN EF ON CL.CDGEF = EF.CODIGO -------------EF ES EL ESTADO
-                INNER JOIN CB ON CB.CDGIB = MP.CDGCB  -------------CB ES EL 
+                INNER JOIN CB ON CB.CODIGO = MP.CDGCB  -------------CB ES EL 
                 INNER JOIN IB ON CB.CDGIB = IB.CODIGO -------------IB ES EL LISTADOI DE LOS BANCOS
-                
                 WHERE MP.CDGEM = 'EMPFIN' AND MP.TIPO = 'PD' AND MP.ESTATUS = 'B'
                 AND (CDGNS) IN (SELECT CDGNS FROM MP)
                 AND MP.CDGNS = PRN.CDGNS 
