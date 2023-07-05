@@ -205,7 +205,7 @@
                             <div class="col-md-6">
                                 <div class="form-group" >
                                     <label for="exampleInputEmail1">Ciclo *</label>
-                                    <input type="text" class="form-control" id="ciclo_s" name="ciclo_s" aria-describedby="ciclo_s" placeholder="Escribe el cilco"  value="<?php echo $Administracion['CICLO']; ?>">
+                                    <input type="number" class="form-control" id="ciclo_s" name="ciclo_s" aria-describedby="ciclo_s" placeholder="Escribe el cilco"  value="<?php echo $Administracion['CICLO']; ?>">
                                 </div>
                             </div>
 
