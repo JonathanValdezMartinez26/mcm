@@ -578,14 +578,7 @@ html;
             });
         });
         
-        function EditarSucursal(id_suc)
-        {
-            credito = getParameterByName('Credito');
-            id_sucursal = id_suc;
-    
-            $('#modal_cambio_sucursal').modal('show'); // abrir
-    
-        }
+       
         
         function getParameterByName(name) {
             name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -620,14 +613,11 @@ html;
                         alertify.error("Error en la actualización");
                     }
                 }
-                else
-                    {
-                        swal(respuesta, {
-                                    icon: "error",
-                                });
-                    }
+                
             });
     }
+    
+     
       </script>
 html;
 

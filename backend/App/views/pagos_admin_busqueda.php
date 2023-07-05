@@ -18,7 +18,6 @@
                             <div class="col-md-3">
                                 <select class="form-control sm-3 mr-sm-3" style="font-size: 21px;" autofocus type="select" id="" name="" placeholder="000000" aria-label="Search">
                                     <option value="credito">Crédito</option>
-                                    <option value="fecha">Fecha</option>
                                 </select>
                                 <span id="availability1"></span>
                             </div>

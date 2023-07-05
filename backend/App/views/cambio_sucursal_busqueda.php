@@ -110,8 +110,21 @@
 </div>
 
 <script>
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
 
+    function EditarSucursal(id_suc)
+    {
+        credito = getParameterByName('Credito');
+        id_sucursal = id_suc;
 
+        $('#modal_cambio_sucursal').modal('show'); // abrir
+
+    }
 </script>
 
 
