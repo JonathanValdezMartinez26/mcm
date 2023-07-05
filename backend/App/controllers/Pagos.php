@@ -254,7 +254,7 @@ html;
                     $mensaje = 'InfoPhone();';
                 }
 
-                if($value['DESIGNATION'] == 'SI')
+                if($value['DESIGNATION_ADMIN'] == 'SI')
                 {/////
                     /// /
                     ///
@@ -799,7 +799,8 @@ html;
                 }
 
                 if($value['DESIGNATION'] == 'SI')
-                {/////
+                {
+                    /////
                     /// /
                     ///
                     ///

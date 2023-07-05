@@ -31,7 +31,11 @@ class Pagos{
         CASE
         WHEN SYSDATE BETWEEN (TRUNC(FECHA) + 12/24) AND (TRUNC(FECHA) + 1 + 12/24) THEN 'SI'
         Else 'NO'
-        END AS DESIGNATION
+        END AS DESIGNATION,
+        CASE
+        WHEN SYSDATE BETWEEN (TRUNC(FECHA) + 12/24) AND (TRUNC(FECHA) + 2 + 12/24) THEN 'SI'
+        Else 'NO'
+        END AS DESIGNATION_ADMIN
     FROM
         PAGOSDIA, NS, CO, RG
     WHERE
