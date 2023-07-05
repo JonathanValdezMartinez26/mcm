@@ -1287,19 +1287,19 @@ html;
 
 
         $estilo_titulo = array(
-            'font' => array('bold' => true,'name'=>'Verdana','size'=>13, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_encabezado = array(
-            'font' => array('bold' => true,'name'=>'Verdana','size'=>12, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_celda = array(
-            'font' => array('bold' => false,'name'=>'Verdana','size'=>11,'color' => array('rgb' => '060606')),
+            'font' => array('bold' => false,'name'=>'Calibri','size'=>11,'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
 
@@ -1314,10 +1314,6 @@ html;
         $nombreColumna = array('Fecha','Referencia','Monto','Moneda');
         $nombreCampo = array('FECHA','REFERENCIA','MONTO','MONEDA');
 
-        $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'LAYOUT PAGOS');
-        $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
-        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
-        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
 
         $fila +=1;
 
@@ -1382,19 +1378,19 @@ html;
 
 
         $estilo_titulo = array(
-            'font' => array('bold' => true,'name'=>'Verdana','size'=>13, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_encabezado = array(
-            'font' => array('bold' => true,'name'=>'Verdana','size'=>12, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_celda = array(
-            'font' => array('bold' => false,'name'=>'Verdana','size'=>11,'color' => array('rgb' => '060606')),
+            'font' => array('bold' => false,'name'=>'Calibri','size'=>11,'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
 
@@ -1406,7 +1402,7 @@ html;
 
         $controlador = "Pagos";
         $columna = array('A','B','C','D','E','F','G','H','I','J');
-        $nombreColumna = array('Sucursal','Consecutivo','Fecha','NoCredito', 'Cliente', 'Ciclo', 'Monto', 'Tipo', 'Ejecutivo', 'FechaRegistro');
+        $nombreColumna = array('Sucursal','Codigo','Fecha','Cliente', 'Nombre', 'Ciclo', 'Monto', 'Tipo', 'Ejecutivo', 'Registro');
         $nombreCampo = array('NOMBRE_SUCURSAL','SECUENCIA','FECHA','CDGNS','NOMBRE','CICLO','MONTO', 'TIPO', 'EJECUTIVO', 'FREGISTRO');
 
         $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'REPORTE PAGOS GLOBAL');
