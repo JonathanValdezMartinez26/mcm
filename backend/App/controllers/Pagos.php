@@ -131,7 +131,7 @@ html;
                         }
                         else {
                         $('#modal_agregar_pago').modal('hide')
-                         swal(response, {
+                         swal(respuesta, {
                                       icon: "error",
                                     });
                             document.getElementById("monto").value = "";
@@ -173,7 +173,7 @@ html;
                         }
                         else {
                         $('#modal_editar_pago').modal('hide')
-                         swal(response, {
+                         swal(respuesta, {
                                       icon: "error",
                                     });
                         }
@@ -678,7 +678,7 @@ html;
                         }
                         else {
                         $('#modal_agregar_pago').modal('hide')
-                         swal(response, {
+                         swal(respuesta, {
                                       icon: "error",
                                     });
                             document.getElementById("monto").value = "";
@@ -720,7 +720,7 @@ html;
                         }
                         else {
                         $('#modal_editar_pago').modal('hide')
-                         swal(response, {
+                         swal(respuesta, {
                                       icon: "error",
                                     });
                         }
@@ -925,7 +925,7 @@ html;
                         }
                         else {
                         $('#addnew').modal('hide')
-                         swal("Registro guardado exitosamente", {
+                         swal(respuesta, {
                                       icon: "error",
                                     });
                             document.getElementById("monto").value = "";

@@ -101,7 +101,7 @@ html;
                                                                     location.reload();
                                                                     }
                                                                     else {
-                                                                         swal(response, {
+                                                                         swal(respuesta, {
                                                                           icon: "error",
                                                                         });
                                                                     }
@@ -173,8 +173,9 @@ html;
                                                                         location.reload();
                                                                         }
                                                                         else {
-                                                                         alertify.error('Registro Guardado con Exito');
-                                                                         
+                                                                             swal(respuesta, {
+                                                                              icon: "error",
+                                                                            });
                                                                         }
                                                                     }
                                                                     });
@@ -280,17 +281,21 @@ html;
                         type: "POST",
                         url: "/Creditos/DeleteGarantia/",
                         data: {"credito" : credito, "secuencia" : secuencias},
-                        success: function(response){
+                        success: function(respuesta){
                             //alert(response);
-                            if(response != '0')
+                            if(respuesta != '0')
                             {
-                                alertify.success("Se ha eliminado correctamente");
-                                location.reload();
+                                  swal("Registro fue eliminado correctamente", {
+                                      icon: "success",
+                                    });
+                                    location.reload();
     
                             }
                             else
                             {
-                                alertify.error("Error, al eliminar.");
+                                swal(respuesta, {
+                                    icon: "error",
+                                });
                             }
                         }
                     });
@@ -394,19 +399,25 @@ html;
                  {
                      if(respuesta == '1 Proceso realizado exitosamente')
                          {
-                             alertify.success('Registro Guardado con Exito');
+                             swal("Registro guardado correctamente", {
+                                      icon: "success",
+                             });
                              location.reload();
                          }
                      else
                          {
-                             alert(respuesta);
+                             swal(respuesta, {
+                                    icon: "error",
+                                });
                              document.getElementById("credito_nuevo").value = "";
                              $('#modal_editar_numero_credito').modal('hide');
                          }
                      
                  }
                  else {
-                       alertify.error('Error');
+                       swal(respuesta, {
+                                    icon: "error",
+                                });
                  }
                     }
                  });
@@ -431,26 +442,34 @@ html;
                  {
                      if(respuesta == '1 Proceso realizado exitosamente')
                          {
-                             alertify.success('Registro Guardado con Exito');
+                            swal("Registro guardado correctamente", {
+                                      icon: "success",
+                             });
                              location.reload();
                          }
                      else
                          {
-                             alert(respuesta);
+                            swal(respuesta, {
+                                    icon: "error",
+                                });
                              document.getElementById("credito_nuevo").value = "";
                              $('#modal_actualizar_ciclo').modal('hide');
                          }
                      
                  }
                  else {
-                       alertify.error('Error');
+                       swal(respuesta, {
+                                    icon: "error",
+                                });
                  }
                     }
                  });
             }
             else
             {
-                alert("Ingresa el número del nuevo ciclo");
+                swal("Ingrese el número del nuevo ciclo", {
+                                      icon: "warning",
+                             });
             }
         }
         function enviar_edit_situacion(){
@@ -465,19 +484,25 @@ html;
                  {
                      if(respuesta == '1 Proceso realizado exitosamente')
                          {
-                             alertify.success('Registro Guardado con Exito');
+                             swal("Registro guardado correctamente", {
+                                      icon: "success",
+                             });
                              location.reload();
                          }
                      else
                          {
-                             alert(respuesta);
+                             swal(respuesta, {
+                                    icon: "error",
+                                });
                              document.getElementById("credito_nuevo").value = "";
                              $('#modal_actualizar_ciclo').modal('hide');
                          }
                      
                  }
                  else {
-                       alertify.error('Error');
+                       swal(respuesta, {
+                                    icon: "error",
+                                });
                  }
                     }
                  });
@@ -581,15 +606,26 @@ html;
                 data: {"credito" : credito, "sucursal" : sucursal, "ciclo" : ciclo},
                 success: function(respuesta) {
                     if(respuesta!='0'){
-                         alertify.success("Se ha eactualizado correctamente");
+                        swal("Registro actualizado correctamente", {
+                                      icon: "success",
+                             });
                         location.reload();
                         
                     }
                     else {
+                        swal(respuesta, {
+                                    icon: "error",
+                                });
                         $('#modal_cambio_sucursal').modal('hide')
                         alertify.error("Error en la actualización");
                     }
                 }
+                else
+                    {
+                        swal(respuesta, {
+                                    icon: "error",
+                                });
+                    }
             });
     }
       </script>
