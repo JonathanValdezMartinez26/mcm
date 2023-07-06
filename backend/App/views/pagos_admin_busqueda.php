@@ -254,7 +254,7 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="ciclo_e">Ciclo</label>
-                                    <input type="number" class="form-control" id="ciclo_e" name="ciclo_e" readonly>
+                                    <input type="number" class="form-control" id="ciclo_e" name="ciclo_e">
                                 </div>
                             </div>
 
