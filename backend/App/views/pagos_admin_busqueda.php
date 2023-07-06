@@ -147,7 +147,7 @@
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="ciclo">Ciclo</label>
-                                    <input type="number" class="form-control" id="ciclo" name="ciclo" readonly value="<?php echo $Administracion['CICLO']; ?>">
+                                    <input type="number" class="form-control" id="ciclo" name="ciclo" value="<?php echo $Administracion['CICLO']; ?>">
                                 </div>
                             </div>
 
@@ -254,7 +254,7 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="ciclo_e">Ciclo</label>
-                                    <input type="number" class="form-control" id="ciclo_e" name="ciclo_e">
+                                    <input type="number" class="form-control" id="ciclo_e" name="ciclo_e" readonly>
                                 </div>
                             </div>
 
