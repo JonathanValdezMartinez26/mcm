@@ -132,7 +132,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="cdgns">CDGNS</label>
-                                    <input type="number" class="form-control" id="cdgns" name="cdgns" readonly value="<?php echo $credito; ?>">
+                                    <input type="number" class="form-control" id="cdgns" name="cdgns" readonly min="1" value="<?php echo $credito; ?>">
                                     <small id="emailHelp" class="form-text text-muted">Número del crédito.</small>
                                 </div>
                             </div>
@@ -147,7 +147,7 @@
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="ciclo">Ciclo</label>
-                                    <input type="number" class="form-control" id="ciclo" name="ciclo" value="<?php echo $Administracion['CICLO']; ?>">
+                                    <input type="number" class="form-control" id="ciclo" name="ciclo" min="1" value="<?php echo $Administracion['CICLO']; ?>">
                                 </div>
                             </div>
 
