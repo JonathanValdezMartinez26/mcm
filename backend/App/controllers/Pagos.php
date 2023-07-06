@@ -760,7 +760,7 @@ html;
         if($this->__cdgco == '025' || $this->__cdgco == '026' || $this->__cdgco == '003'  || $this->__cdgco == '014'  || $this->__cdgco == '007'  || $this->__cdgco == '016')
         {
             // 025 - SUC TOLUCA 2// 026 - SUC TOLUCA 3 // 014 - SUC TOLUCA // 007 ZINA // 016
-            if($horaActual <= '11:10:00')
+            if($horaActual <= '12:10:00')
             {
                 if ($dia == 5)
                 {
