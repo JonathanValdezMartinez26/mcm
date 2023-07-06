@@ -755,7 +755,8 @@ html;
         $horaActual = date("H:i:s");
         $dia = date("N");
 
-        if($horaActual <= '10:00:00')
+
+        if($horaActual <= '11:00:00')
         {
             if ($dia == 5)
             {
