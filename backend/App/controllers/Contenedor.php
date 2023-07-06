@@ -140,12 +140,20 @@ html;
                 </li>
 html;
 
-        if($this->__perfil == 'ADMIN' || $this->__perfil == 'CALLC') {
+        if($this->__perfil == 'ADMIN' || $this->__perfil == 'CALLC'  || $this->__perfil == 'ACALL') {
             $menu .= <<<html
               <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon glyphicon-phone-alt"> </i>&nbsp; Call Center <span class="fa fa-chevron-down"></span></a>
                  <ul class="nav child_menu">
+html;
+        }
+        if($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL') {
+            $menu .= <<<html
                     <li><a href="/CallCenter/Consultar/">Administración</a></li>
+html;
+        }
+        if($this->__perfil == 'ADMIN' || $this->__perfil == 'CALLC' || $this->__perfil == 'ACALL') {
+            $menu .= <<<html
                    <li><a href="/CallCenter/Consultar/">Consultar Cliente</a></li>
                    <li><a href="/CallCenter/Pendientes/">Pendientes</a></li>
                    <li><a href="/CallCenter/Historico/">Historico</a></li>
