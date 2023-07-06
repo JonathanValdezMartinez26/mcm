@@ -37,6 +37,17 @@ WHERE
     AND (PE.BLOQUEO = 'N' OR PE.BLOQUEO IS NULL)
     AND PE.CODIGO = :usuario
     AND PE.CLAVE LIKE :password 
+    AND (UT.CDGTUS = 'ADMIN' ------ USUARIO ADMIN
+    OR UT.CDGTUS = 'CAJA' ------- USUARIO CAJA
+    OR UT.CDGTUS = 'GTOCA' ------ USUARIO GERENTE SUCURSAL
+    OR UT.CDGTUS = 'AMOCA' ------ 
+    OR UT.CDGTUS = 'GARAN' ------ USUARIO PARA REGISTRAR GARANTIAS
+    OR UT.CDGTUS = 'CAMAG' ------ 
+    OR UT.CDGTUS = 'CALLC' ------ USUARIO 
+    OR UT.CDGTUS = 'ACALL' ----- USUARIO ADMIN CALL CENTER
+    OR UT.CDGTUS = 'PLDCON' ---- USUARIO PLD CONSULTA )
+    )
+
 sql;
         $params1 = array(
             ':usuario'=> $usuario->_usuario,
