@@ -42,7 +42,7 @@ static $_mail;
         $dsn = 'oci:dbname=ESIACOM';
 
         //OR connect using the Oracle Instant Client
-        $dsn = 'oci:dbname=//25.67.211.74:1521/ESIACOM';
+        $dsn = 'oci:dbname=//25.13.83.206:1521/ESIACOM';
 
         $username = 'ESIACOM';
         $password = 'ESIACOM';
