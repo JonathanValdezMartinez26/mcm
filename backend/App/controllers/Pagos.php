@@ -756,27 +756,58 @@ html;
         $dia = date("N");
 
 
-        if($horaActual <= '11:00:00')
+        if($this->__usuario == '025' || $this->__usuario == '026' || $this->__usuario == '003'  || $this->__usuario == '014'  || $this->__usuario == '007'  || $this->__usuario == '016')
         {
-            if ($dia == 5)
+            // 025 - SUC TOLUCA 2// 026 - SUC TOLUCA 3 // 014 - SUC TOLUCA // 007 ZINA // 016
+            if($horaActual <= '11:10:00')
             {
-                $date_past = strtotime('-3', strtotime($fechaActual));
-                $date_past = date('Y-m-d', $date_past);
+                if ($dia == 5)
+                {
+                    $date_past = strtotime('-3', strtotime($fechaActual));
+                    $date_past = date('Y-m-d', $date_past);
+                }
+                else
+                {
+                    $date_past = strtotime('-1', strtotime($fechaActual));
+                    $date_past = date('Y-m-d', $date_past);
+                }
+
+                $inicio_f = $date_past;
+                $fin_f = $fechaActual;
             }
             else
             {
-                $date_past = strtotime('-1', strtotime($fechaActual));
-                $date_past = date('Y-m-d', $date_past);
+                $inicio_f = $fechaActual;
+                $fin_f = $fechaActual;
             }
 
-            $inicio_f = $date_past;
-            $fin_f = $fechaActual;
         }
         else
         {
-            $inicio_f = $fechaActual;
-            $fin_f = $fechaActual;
+            if($horaActual <= '10:00:00')
+            {
+                if ($dia == 5)
+                {
+                    $date_past = strtotime('-3', strtotime($fechaActual));
+                    $date_past = date('Y-m-d', $date_past);
+                }
+                else
+                {
+                    $date_past = strtotime('-1', strtotime($fechaActual));
+                    $date_past = date('Y-m-d', $date_past);
+                }
+
+                $inicio_f = $date_past;
+                $fin_f = $fechaActual;
+            }
+            else
+            {
+                $inicio_f = $fechaActual;
+                $fin_f = $fechaActual;
+            }
         }
+
+
 
         $status = PagosDao::ListaEjecutivos($this->__cdgco);
         $getStatus = '';
