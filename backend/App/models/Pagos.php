@@ -132,6 +132,7 @@ sql;
 		AND SC.CDGCL <> Q2.CDGCL
 		AND SC.CDGNS = SN.CDGNS
 		AND SC.CICLO = SN.CICLO
+	    AND sc.SITUACION = 'A'
 		AND SC.CANTSOLIC <> '9999' order by SC.SOLICITUD  desc
 sql;
 
