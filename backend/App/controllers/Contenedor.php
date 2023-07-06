@@ -24,7 +24,8 @@ class Contenedor extends Controller{
 
     public function header($extra = ''){
         date_default_timezone_set('America/Mazatlan');
-     $usuario = $this->__usuario;
+        $usuario = $this->__usuario;
+        $nombre = $this->__nombre;
 
      $header =<<<html
 
@@ -71,7 +72,7 @@ $menu =<<<html
           <div class="clearfix"></div>
           <div class="profile clearfix">
             <div class="profile_pic">
-              <img src="/img/logo.png" alt="..." class="img-circle profile_img">
+              <img src="https://www.designbust.com/download/325/png/user_online_icon512.png" alt="..." class="img-circle profile_img">
             </div>
             <div class="profile_info">
               <span>Bienvenido,</span>
@@ -112,17 +113,33 @@ $menu.=<<<html
                 </li>
 html;
         }
-        if($this->__perfil== 'ADMIN') {
+        if($this->__perfil== 'ADMIN' || $this->__perfil== 'GARAN' || $this->__perfil== 'CAMAG') {
             $menu .= <<<html
                 <li><a><i class="fa fa-users"> </i>&nbsp; Creditos <span class="fa fa-chevron-down"></span></a>
-                  <ul class="nav child_menu">
+                 <ul class="nav child_menu">
+html;
+        }
+        if($this->__perfil== 'ADMIN' || $this->__perfil== 'GARAN') {
+            $menu .= <<<html
+                 
                    <li><a href="/Creditos/ControlGarantias/">Control de Garantías</a></li>
+html;
+        }
+            if($this->__perfil== 'ADMIN' ) {
+                $menu .= <<<html
                    <li><a href="/Creditos/ActualizaCredito/">Actualización de Créditos</a></li>
+html;
+       }
+            if($this->__perfil== 'ADMIN' || $this->__perfil== 'CAMAG') {
+                $menu .= <<<html
                    <li><a href="/Creditos/CambioSucursal/">Cambio de Sucursal</a></li>
+html;
+            }
+               $menu .= <<<html
                   </ul>
                 </li>
 html;
-        }
+
         if($this->__perfil == 'ADMIN' || $this->__perfil == 'CALLC') {
             $menu .= <<<html
               <ul class="nav side-menu">
@@ -165,7 +182,7 @@ html;
             <ul class="nav navbar-nav navbar-right">
               <li class="">
                 <a href="" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    Opciones
+                    <span class=" fa fa-user"></span> {$nombre}
                     <span class=" fa fa-angle-down"></span>
                   </a>
                 <ul class="dropdown-menu dropdown-usermenu pull-right">
