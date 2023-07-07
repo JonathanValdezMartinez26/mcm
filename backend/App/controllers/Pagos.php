@@ -712,7 +712,6 @@ html;
                                       icon: "error",
                                     });
                             document.getElementById("monto").value = "";
-                            document.getElementById("tipo").value = "";
                         }
                     }
                     });
@@ -979,7 +978,6 @@ html;
                         if(respuesta=='ok'){
                         alert('enviado'); 
                         document.getElementById("monto").value = "";
-                        document.getElementById("tipo").value = "";
                          swal("Registro guardado exitosamente", {
                                       icon: "success",
                                     });
@@ -992,7 +990,6 @@ html;
                                       icon: "error",
                                     });
                             document.getElementById("monto").value = "";
-                            document.getElementById("tipo").value = "";
                         }
                     }
                     });
