@@ -29,14 +29,14 @@ echo $header;
                         <img  src="/img/logo.png" alt="Login" width="350" height="260">
                     </div>
                     <br>
-                    <form id="login" action="/Login/crearSession" method="POST" class="form-horizontal">
+                    <form id="login" action="/Login/crearSession" method="POST" class="form-horizontal" name="login">
                         <h1 style="color: #C43136; font-size: 30px; text-align: center;">Iniciar Sesión</h1>
                         <div class="col-md-1 col-sm-1 col-xs-1"><span id="availability"> </span></div>
                         <div class="col-md-12 col-sm-12 col-xs-12">
-                            <input type="text" name="usuario" id="usuario" class="form-control col-md-6 col-xs-12" placeholder="Usuario" required="">
+                            <input type="text" name="usuario" id="usuario" class="form-control col-md-6 col-xs-12" placeholder="Usuario" required="" onkeyup="mayus(this);">
                         </div>
                         <div class="col-md-12 col-sm-12 col-xs-12">
-                            <input type="password" name="password" id="password" class="form-control col-md-5 col-xs-12" placeholder="Contraseña" required="" >
+                            <input type="password" name="password" id="password" class="form-control col-md-5 col-xs-12" placeholder="Contraseña" required="" onkeypress="if (event.keyCode == 13) enviar_formulario()">
                         </div>
                         <div class="col-md-12 col-sm-12 col-xs-12">
                             <div class="col-md-12 col-sm-12 col-xs-12">

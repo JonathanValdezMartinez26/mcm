@@ -32,6 +32,17 @@ html;
 
        
         <script>
+        
+        document.getElementById("usuario").focus();
+        
+        function enviar_formulario(){
+           $("#btnEntrar").click();
+        }
+        
+        function mayus(e) {
+            e.value = e.value.toUpperCase();
+        }
+        
             $(document).ready(function(){
                 $.validator.addMethod("checkUserName",function(value, element) {
                   var response = false;
