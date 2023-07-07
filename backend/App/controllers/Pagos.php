@@ -869,6 +869,7 @@ html;
 html;
                 }
 
+                $monto = number_format($value['MONTO'], 2);
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
@@ -876,7 +877,7 @@ html;
                     <td style="padding: 0px !important;">{$value['CDGNS']}</td>
                     <td style="padding: 0px !important;">{$value['FECHA']}</td>
                     <td style="padding: 0px !important;">{$value['CICLO']}</td>
-                    <td style="padding: 0px !important;">$ {$value['MONTO']}</td>
+                    <td style="padding: 0px !important;">$ {$monto}</td>
                     <td style="padding: 0px !important;">{$value['TIPO']}</td>
                     <td style="padding: 0px !important;">{$value['EJECUTIVO']}</td>
                     <td style="padding: 0px !important;" class="center">{$editar}</td>
@@ -1275,11 +1276,12 @@ html;
             if ($Layout != '') {
                 foreach ($Layout as $key => $value) {
 
+                    $monto = number_format($value['MONTO'], 2);
                     $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;">{$value['FECHA']}</td>
                     <td style="padding: 0px !important;">{$value['REFERENCIA']}</td>
-                    <td style="padding: 0px !important;">{$value['MONTO']}</td>
+                    <td style="padding: 0px !important;">$ {$monto}</td>
                     <td style="padding: 0px !important;">{$value['MONEDA']}</td>
                 </tr>
 html;
