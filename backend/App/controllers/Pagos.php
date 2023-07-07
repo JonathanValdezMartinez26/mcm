@@ -231,9 +231,19 @@ html;
 
         $status = PagosDao::ListaEjecutivosAdmin($credito);
         $getStatus = '';
-        foreach ($status as $key => $val2) {
+       
+        foreach ($status[0] as $key => $val2) {
+            if($status[1] == $val2['ID_EJECUTIVO'])
+            {
+                $select = 'selected';
+            }
+            else
+            {
+                $select = '';
+            }
+
             $getStatus .= <<<html
-                <option value="{$val2['ID_EJECUTIVO']}">{$val2['EJECUTIVO']}</option>
+                <option $select value="{$val2['ID_EJECUTIVO']}">{$val2['EJECUTIVO']}</option>
 html;
         }
         if ($credito != '') {

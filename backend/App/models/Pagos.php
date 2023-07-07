@@ -276,13 +276,15 @@ sql;
 
     public static function ListaEjecutivosAdmin($credito){
         $query_cdgco=<<<sql
-        SELECT PRN.CDGCO  FROM PRN WHERE PRN.CDGNS = '$credito' GROUP BY PRN.CDGCO 
+        SELECT PRN.CDGCO, PRN.CDGOCPE  FROM PRN WHERE PRN.CDGNS = '$credito' ORDER BY PRN.CICLO DESC
 sql;
 
         $mysqli = Database::getInstance();
         $res_cdgco = $mysqli->queryOne($query_cdgco);
 
         $cdgco = $res_cdgco['CDGCO'];
+        $cdgocpe = $res_cdgco['CDGOCPE'];
+
 
         $query=<<<sql
         SELECT
@@ -297,7 +299,8 @@ WHERE
 ORDER BY 1
 sql;
 
-        return $mysqli->queryAll($query);
+        $val = $mysqli->queryAll($query);
+        return [$val, $cdgocpe];
 
     }
 
