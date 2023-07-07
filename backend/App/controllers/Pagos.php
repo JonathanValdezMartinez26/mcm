@@ -192,6 +192,19 @@ html;
          {
              swal("Info", "Este registro fue capturado por un ejecutivo en campo y procesado por una administradora", "info");
          }
+         
+         function BotonPago(estatus)
+         {
+            if(estatus == 'LIQUIDADO')
+                {
+                    select = $("#tipo");
+                     select.empty();
+                     select.append($("<option>", {
+                        value: 'M',
+                        text: 'MULTA'
+                      }));
+                }
+         }
     
       </script>
 html;

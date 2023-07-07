@@ -22,7 +22,7 @@
                                     <span id="availability1"></span>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="number" id="Ciclo" name="Ciclo" placeholder="00" aria-label="Search" value="<?php echo $ciclo; ?>">
+                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="number" id="Ciclo" name="Ciclo" placeholder="00" min="1" aria-label="Search" value="<?php echo $ciclo; ?>">
                                     <span id="availability1"></span>
                                 </div>
                                 <div class="col-md-4">
