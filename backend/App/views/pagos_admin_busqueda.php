@@ -44,7 +44,7 @@
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Cliente</span>
 
                             <div class="count" style="font-size: 14px"><?php echo $Administracion['CLIENTE']; ?></div>
-                            <span class="count_top badge" style="padding: 1px 1px; background: <?php echo $Administracion['COLOR']; ?>"><h5><i class="">SITUACIÓN: <?php echo $Administracion['SITUACION_NOMBRE']; ?></i></h5></span>
+                            <span class="count_top badge" style="padding: 1px 1px; background: <?php echo $Administracion['COLOR']; ?>"><h5><b><i class="">SITUACIÓN: <?php echo $Administracion['SITUACION_NOMBRE']; ?></i></b></h5></span>
                         </div>
                         <div class="col-md-1 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-clock-o"></i> Ciclo</span>
