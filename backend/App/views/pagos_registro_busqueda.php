@@ -101,7 +101,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Agregar Registro de Pago (Administradora)</h4></center>
+                <center><h4 class="modal-title" id="myModalLabel">Agregar Registro de Pago (Cajera)</h4></center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -124,7 +124,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="movil">Medio de Registro</label>
-                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="ADMINISTRADORA">
+                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="CAJERA">
                                     <small id="emailHelp" class="form-text text-muted">Medio de registro del pago.</small>
                                 </div>
                             </div>
@@ -199,7 +199,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Editar Registro de Pago (Administradora)</h4></center>
+                <center><h4 class="modal-title" id="myModalLabel">Editar Registro de Pago (Cajera)</h4></center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
