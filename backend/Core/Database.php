@@ -248,7 +248,8 @@ static $_mail;
         $resultado = "";
         $identifica_app = "";
 
-        $query_text = "CALL SPACCIONPAGODIA(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        $query_text = "CALL SPACCIONPAGODIA(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        ///$query_text = "CALL SPACCIONPAGODIA(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";/////este es el que funciona bien cuando se actualice la base de datos de produccion
         $stmt = $this->_mysqli->prepare($query_text);
         $stmt->bindParam(1,$empresa, PDO::PARAM_STR);
         $stmt->bindParam(2,$fecha, PDO::PARAM_STR);
@@ -264,7 +265,7 @@ static $_mail;
         $stmt->bindParam(12,$tipo_mov, PDO::PARAM_STR);
         $stmt->bindParam(13,$tipo, PDO::PARAM_INT, 10);
         $stmt->bindParam(14,$resultado, PDO::PARAM_STR|PDO::PARAM_INPUT_OUTPUT, 100);
-        $stmt->bindParam(15,$identifica_app, PDO::PARAM_STR);
+        //$stmt->bindParam(15,$identifica_app, PDO::PARAM_STR);
 
 
         $result = $stmt->execute();
@@ -296,7 +297,8 @@ static $_mail;
         $resultado = "";
         $identifica_app = "";
 
-        $query_text = "CALL SPACCIONPAGODIA(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        $query_text = "CALL SPACCIONPAGODIA(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        //$query_text = "CALL SPACCIONPAGODIA(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         $stmt = $this->_mysqli->prepare($query_text);
         $stmt->bindParam(1,$empresa, PDO::PARAM_STR);
         $stmt->bindParam(2,$fecha, PDO::PARAM_STR);
@@ -312,7 +314,7 @@ static $_mail;
         $stmt->bindParam(12,$tipo_mov, PDO::PARAM_STR);
         $stmt->bindParam(13,$tipo, PDO::PARAM_INT, 10);
         $stmt->bindParam(14,$resultado, PDO::PARAM_STR|PDO::PARAM_INPUT_OUTPUT, 100);
-        $stmt->bindParam(15,$identifica_app, PDO::PARAM_STR);
+        //$stmt->bindParam(15,$identifica_app, PDO::PARAM_STR);
 
 
         $result = $stmt->execute();
