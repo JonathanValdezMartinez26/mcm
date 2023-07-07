@@ -250,6 +250,8 @@ html;
             $Administracion = PagosDao::ConsultarPagosAdministracion($credito);
             $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito);
 
+
+
             foreach ($Administracion as $key => $value) {
 
                 if($value['FIDENTIFICAPP'] ==  NULL)

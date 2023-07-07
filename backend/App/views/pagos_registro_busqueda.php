@@ -34,16 +34,20 @@
             </div>
             <div class="card col-md-12">
                 <hr style="border-top: 1px solid #e5e5e5; margin-top: 5px;">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_pago">
-                     <i class="fa fa-plus"></i> Agregar Pago
-                </button>
-                <hr style="border-top: 1px solid #787878; margin-top: 5px;">
+                <div style="display: <?php echo $Administracion['ACTIVO']; ?>">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_pago" >
+                        <i class="fa fa-plus"></i> Agregar Pago
+                    </button>
+                    <hr style="border-top: 1px solid #787878; margin-top: 5px;">
+                </div>
                 <div class="row" >
                     <div class="tile_count float-right col-sm-12" style="margin-bottom: 1px; margin-top: 1px">
                         <div class="col-md-3 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Cliente</span>
 
                             <div class="count" style="font-size: 14px"><?php echo $Administracion['CLIENTE']; ?></div>
+                            <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Cliente <span class="badge" style="background: <?php echo $Administracion['COLOR']; ?> "><h4 style="margin-top: 4px; margin-bottom: 4px"><i class="">SITUACIÓN: <?php echo $Administracion['SITUACION_NOMBRE']; ?></i> </h4></span></span>
+
                         </div>
                         <div class="col-md-1 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-clock-o"></i> Ciclo</span>
