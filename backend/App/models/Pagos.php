@@ -263,12 +263,40 @@ FROM
 	PE
 WHERE
 	CDGEM = 'EMPFIN' 
-	AND CDGCO = '018'
+	AND CDGCO = '$cdgco'
 	AND ACTIVO = 'S'
 ORDER BY 1
 sql;
 
         $mysqli = Database::getInstance();
+        return $mysqli->queryAll($query);
+
+    }
+
+
+    public static function ListaEjecutivosAdmin($credito){
+        $query_cdgco=<<<sql
+        SELECT PRN.CDGCO  FROM PRN WHERE PRN.CDGNS = '$credito' GROUP BY PRN.CDGCO 
+sql;
+
+        $mysqli = Database::getInstance();
+        $res_cdgco = $mysqli->queryOne($query_cdgco);
+
+        $cdgco = $res_cdgco['CDGCO'];
+
+        $query=<<<sql
+        SELECT
+	CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) EJECUTIVO,
+	CODIGO ID_EJECUTIVO
+FROM
+	PE
+WHERE
+	CDGEM = 'EMPFIN' 
+	AND CDGCO = '$cdgco'
+	AND ACTIVO = 'S'
+ORDER BY 1
+sql;
+
         return $mysqli->queryAll($query);
 
     }
