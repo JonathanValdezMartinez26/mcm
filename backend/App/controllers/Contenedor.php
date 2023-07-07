@@ -250,6 +250,14 @@ html;
         <script src="/librerias/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
         <script type="text/javascript" src="/librerias/vintage_flip_clock/jquery.flipcountdown.js"></script>
        <script>
+       
+       function ponerElCursorAlFinal(id)
+        {
+            var el = document.getElementById(id);
+            el.selectionStart=el.selectionEnd=el.value.length;
+            el.focus();
+        }
+        
         function Delete_Garantias(secuencia) {
             credito = getParameterByName('Credito');
             secuencias = secuencia;

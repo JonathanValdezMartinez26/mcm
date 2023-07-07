@@ -32,6 +32,8 @@ html;
         $extraFooter = <<<html
       <script>
       
+        ponerElCursorAlFinal('Credito');
+      
         function getParameterByName(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
@@ -607,6 +609,8 @@ html;
 
         $extraFooter = <<<html
       <script>
+      
+        ponerElCursorAlFinal('Credito');
       
         function getParameterByName(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
