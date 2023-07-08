@@ -87,7 +87,7 @@ $menu.=<<<html
               <h3>General </h3>
               <ul class="nav side-menu">       
 html;
-        if($this->__perfil== 'ADMIN' || $this->__perfil== 'CAJA' || $this->__perfil== 'GTOCA' || $this->__perfil== 'AMOCA') {
+        if($this->__perfil== 'ADMIN' || $this->__perfil== 'CAJA' || $this->__perfil== 'GTOCA' || $this->__perfil== 'AMOCA' || $this->__perfil== 'OCOF' ) {
 
             $menu .= <<<html
                 <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
@@ -102,7 +102,7 @@ html;
 html;
         }
 
-            if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil== 'GTOCA' || $this->__perfil== 'AMOCA')
+            if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil== 'GTOCA' || $this->__perfil== 'AMOCA' || $this->__perfil== 'OCOF' )
             {
 $menu.=<<<html
                     <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
