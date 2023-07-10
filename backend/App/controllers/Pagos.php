@@ -262,8 +262,8 @@ html;
 html;
         }
         if ($credito != '') {
-            $Administracion = PagosDao::ConsultarPagosAdministracion($credito);
-            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito);
+            $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $this->__usuario, $this->__cdgco);
+            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__usuario, $this->__cdgco);
 
 
 
@@ -317,7 +317,7 @@ html;
                 </tr>
 html;
             }
-            if($Administracion[0] == '')
+            if($Administracion[0] == '' && $AdministracionOne[0] == '')
             {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -447,9 +447,14 @@ html;
 
         $sucursales = PagosDao::ListaSucursales($this->__usuario);
         $getSucursales = '';
-        $getSucursales .= <<<html
+        if($this->__perfil == 'ADMIN')
+            {
+                $getSucursales .= <<<html
                 <option value="">TODAS</option>
 html;
+            }
+
+
         foreach ($sucursales as $key => $val2) {
             $getSucursales .= <<<html
                 <option value="{$val2['ID_SUCURSAL']}">{$val2['SUCURSAL']}</option>
@@ -854,8 +859,8 @@ html;
 html;
         }
         if ($credito != '') {
-            $Administracion = PagosDao::ConsultarPagosAdministracion($credito);
-            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito);
+            $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $this->__usuario, $this->__cdgco);
+            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__usuario, $this->__cdgco);
 
             foreach ($Administracion as $key => $value) {
 
@@ -908,7 +913,7 @@ html;
                 </tr>
 html;
             }
-            if($Administracion[0] == '')
+            if($Administracion[0] == '' && $AdministracionOne[0] == '')
             {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));

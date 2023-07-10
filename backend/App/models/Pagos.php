@@ -6,7 +6,12 @@ use \Core\Database;
 
 class Pagos{
 
-    public static function ConsultarPagosAdministracion( $noCredito){
+    public static function ConsultarPagosAdministracion($noCredito, $user, $cdgco){
+
+        if($user != 'ADMIN' || $user != '')
+        {
+            $Q1 = "AND CO.CODIGO = '$cdgco'";
+        }
 
             $query=<<<sql
         SELECT
@@ -45,6 +50,7 @@ class Pagos{
         AND NS.CODIGO = PAGOSDIA.CDGNS
         AND NS.CDGCO = CO.CODIGO 
         AND CO.CDGRG = RG.CODIGO
+        $Q1
     ORDER BY
         FREGISTRO DESC, SECUENCIA
 sql;
@@ -101,7 +107,12 @@ sql;
         return $mysqli->queryAll($query);
     }
 
-    public static function ConsultarPagosAdministracionOne($noCredito){
+    public static function ConsultarPagosAdministracionOne( $noCredito, $user, $cdgco){
+
+        if($user != 'ADMIN' || $user != '')
+        {
+            $Q1 = "AND PRN.CDGCO = '$cdgco'";
+        }
 
             $query=<<<sql
         SELECT 
@@ -152,6 +163,7 @@ sql;
 		AND SC.CICLO = SN.CICLO
 	    AND PRN.CICLO = SC.CICLO 
 		AND PRN.CDGNS = SC.CDGNS 
+	    $Q1
 		AND SC.CANTSOLIC <> '9999' order by SC.SOLICITUD  desc
 sql;
 

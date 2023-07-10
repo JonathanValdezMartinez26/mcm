@@ -26,6 +26,7 @@ class Contenedor extends Controller{
         date_default_timezone_set('America/Mazatlan');
         $usuario = $this->__usuario;
         $nombre = $this->__nombre;
+        $sucursal = $this->__cdgco;
 
      $header =<<<html
 
@@ -78,7 +79,7 @@ $menu =<<<html
               <span>Bienvenido,</span>
 html;
 $menu.=<<<html
-              <h2>{$usuario}</h2>
+              <h2>{$usuario}, {$sucursal}</h2>
             </div>
           </div>
           <br/>
