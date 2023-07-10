@@ -806,7 +806,7 @@ html;
             // 025 - SUC TOLUCA 2// 026 - SUC TOLUCA 3 // 014 - SUC TOLUCA // 007 ZINA // 016
             if($horaActual <= '11:10:00')
             {
-                if ($dia == 5)
+                if ($dia == 1)
                 {
                     $date_past = strtotime('-3 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
@@ -831,7 +831,7 @@ html;
         {
             if($horaActual <= '10:00:00')
             {
-                if ($dia == 5)
+                if ($dia == 1)
                 {
                     $date_past = strtotime('-3 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
@@ -903,10 +903,39 @@ html;
                 }
                 else
                 {
-                    $editar = <<<html
+                    $date_past_b = strtotime('-3 days', strtotime($fechaActual));
+                    $date_past_b = date('Y-m-d', $date_past_b);
+
+                    $fecha_base = strtotime($value['FECHA']);
+                    $fecha_base = date('Y-m-d', $fecha_base);
+
+                    $inicio_b = $date_past_b;
+
+                    if($inicio_b == $fecha_base)
+                    {
+                        if($horaActual <= '10:05:00')
+                        {
+                            $editar = <<<html
+                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}');"><i class="fa fa-trash"></i></button>
+html;
+                        }
+                        else
+                        {
+                            $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
                     <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
 html;
+                        }
+
+                    }
+                    else
+                    {
+                        $editar = <<<html
+                    <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
+html;
+                    }
                 }
 
                 $monto = number_format($value['MONTO'], 2);
