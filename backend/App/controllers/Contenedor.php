@@ -81,7 +81,7 @@ $menu =<<<html
               <span>Bienvenido,</span>
 html;
 $menu.=<<<html
-              <h2>{$usuario}, {$sucursal}, {$perfil}</h2>
+              <h2>{$perfil}</h2>
             </div>
           </div>
           <br/>

@@ -108,7 +108,7 @@ sql;
         FREGISTRO DESC, SECUENCIA
 sql;
         $mysqli = Database::getInstance();
-        
+
         return $mysqli->queryAll($query);
     }
 
