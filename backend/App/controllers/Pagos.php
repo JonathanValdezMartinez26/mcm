@@ -262,8 +262,8 @@ html;
 html;
         }
         if ($credito != '') {
-            $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $this->__usuario, $this->__cdgco);
-            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__usuario, $this->__cdgco);
+            $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $this->__perfil, $this->__cdgco);
+            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__cdgco);
 
 
 
@@ -859,8 +859,8 @@ html;
 html;
         }
         if ($credito != '') {
-            $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $this->__usuario, $this->__cdgco);
-            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__usuario, $this->__cdgco);
+            $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $this->____perfil, $this->__cdgco);
+            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->____perfil, $this->__cdgco);
 
             foreach ($Administracion as $key => $value) {
 

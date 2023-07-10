@@ -27,6 +27,8 @@ class Contenedor extends Controller{
         $usuario = $this->__usuario;
         $nombre = $this->__nombre;
         $sucursal = $this->__cdgco;
+        $perfil = $this->__perfil;
+
 
      $header =<<<html
 
@@ -79,7 +81,7 @@ $menu =<<<html
               <span>Bienvenido,</span>
 html;
 $menu.=<<<html
-              <h2>{$usuario}, {$sucursal}</h2>
+              <h2>{$usuario}, {$sucursal}, {$perfil}</h2>
             </div>
           </div>
           <br/>

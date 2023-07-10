@@ -8,12 +8,17 @@ class Pagos{
 
     public static function ConsultarPagosAdministracion($noCredito, $user, $cdgco){
 
-        if($user != 'ADMIN' || $user != '')
+        if($user != 'ADMIN')
         {
             $Q1 = "AND CO.CODIGO = '$cdgco'";
         }
+        else
+        {
+            $Q1 = '';
+        }
 
-            $query=<<<sql
+
+        $query=<<<sql
         SELECT
         RG.CODIGO ID_REGION,
         RG.NOMBRE REGION,
@@ -103,15 +108,19 @@ sql;
         FREGISTRO DESC, SECUENCIA
 sql;
         $mysqli = Database::getInstance();
-        //var_dump($mysqli->queryAll($query));
+        
         return $mysqli->queryAll($query);
     }
 
     public static function ConsultarPagosAdministracionOne( $noCredito, $user, $cdgco){
 
-        if($user != 'ADMIN' || $user != '')
+        if($user != 'ADMIN')
         {
             $Q1 = "AND PRN.CDGCO = '$cdgco'";
+        }
+        else
+        {
+            $Q1 = '';
         }
 
             $query=<<<sql
@@ -166,7 +175,6 @@ sql;
 	    $Q1
 		AND SC.CANTSOLIC <> '9999' order by SC.SOLICITUD  desc
 sql;
-
 
         $mysqli = Database::getInstance();
         return $mysqli->queryOne($query);
