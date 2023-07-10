@@ -219,25 +219,18 @@ html;
         $horaActual = date("H:i:s");
         $dia = date("N");
 
-        if($horaActual <= '11:00:00')
+
+        if ($dia == 1)
         {
-            if ($dia == 5)
-            {
-                $date_past = strtotime('-4', strtotime($fechaActual));
-                $date_past = date('Y-m-d', $date_past);
-            }
-            else
-            {
-                $date_past = strtotime('-2', strtotime($fechaActual));
-                $date_past = date('Y-m-d', $date_past);
-            }
+            $date_past = strtotime('-3 days', strtotime($fechaActual));
+            $date_past = date('Y-m-d', $date_past);
 
             $inicio_f = $date_past;
             $fin_f = $fechaActual;
         }
         else
         {
-            $date_past = strtotime('-2', strtotime($fechaActual));
+            $date_past = strtotime('-2 days', strtotime($fechaActual));
             $date_past = date('Y-m-d', $date_past);
 
             $inicio_f = $date_past;
@@ -797,12 +790,12 @@ html;
             {
                 if ($dia == 5)
                 {
-                    $date_past = strtotime('-3', strtotime($fechaActual));
+                    $date_past = strtotime('-3 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 }
                 else
                 {
-                    $date_past = strtotime('-1', strtotime($fechaActual));
+                    $date_past = strtotime('-1 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 }
 
@@ -822,12 +815,12 @@ html;
             {
                 if ($dia == 5)
                 {
-                    $date_past = strtotime('-3', strtotime($fechaActual));
+                    $date_past = strtotime('-3 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 }
                 else
                 {
-                    $date_past = strtotime('-1', strtotime($fechaActual));
+                    $date_past = strtotime('-1 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 }
 
