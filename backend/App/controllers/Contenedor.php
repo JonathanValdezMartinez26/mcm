@@ -78,10 +78,11 @@ $menu =<<<html
               <img src="https://www.designbust.com/download/325/png/user_online_icon512.png" alt="..." class="img-circle profile_img">
             </div>
             <div class="profile_info">
-              <span>Bienvenido,</span>
+              <span>Usuario: {$usuario}</span>
+              <br>
+              <span class="fa fa-key">: {$perfil}</span>
 html;
 $menu.=<<<html
-              <h2>{$perfil}</h2>
             </div>
           </div>
           <br/>
