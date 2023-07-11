@@ -46,7 +46,8 @@ WHERE
     OR UT.CDGTUS = 'CAMAG' ------ 
     OR UT.CDGTUS = 'CALLC' ------ USUARIO 
     OR UT.CDGTUS = 'ACALL' ----- USUARIO ADMIN CALL CENTER
-    OR UT.CDGTUS = 'PLDCON' ---- USUARIO PLD CONSULTA )
+    OR UT.CDGTUS = 'PLD' ---- USUARIO PLD CONSULTA )
+        
     )
 
 sql;
