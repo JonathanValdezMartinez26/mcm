@@ -132,6 +132,7 @@ html;
             if($this->__perfil== 'ADMIN' ) {
                 $menu .= <<<html
                    <li><a href="/Creditos/ActualizaCredito/">Actualización de Créditos</a></li>
+                   <li><a href="/Devengo/">Devengo Crédito</a></li>
 html;
        }
             if($this->__perfil== 'ADMIN' || $this->__perfil== 'CAMAG') {
