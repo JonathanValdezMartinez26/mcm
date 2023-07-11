@@ -325,7 +325,7 @@ html;
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer',$this->_contenedor->footer($extraFooter));
                 View::set('credito',$credito);
-                View::render("contrrolgarantias_busqueda_all");
+                View::render("devengo_all");
 
             }
             else
@@ -341,7 +341,7 @@ html;
         {
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer',$this->_contenedor->footer($extraFooter));
-            View::render("controlgarantias_all");
+            View::render("devengo_busqueda_all");
         }
 
 
