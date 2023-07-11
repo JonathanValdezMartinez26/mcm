@@ -88,7 +88,7 @@ sql;
                         PRC.CDGNS AS NUM_CUENTA, '01' AS INSTRUMENTO_MONETARIO, 'MXN' AS MONEDA, 
                         ROUND((MP.CANTIDAD * PRC.CANTENTRE)/PRN.CANTENTRE, 2)  AS MONTO, to_char(PRN.INICIO,'yyyymmdd') AS FECHA_OPERACION,  
                         (CASE WHEN (CB.NOMBRE = 'OXXO' || 'PAYCASH') THEN 1 ELSE 4 END) AS TIPO_RECEPTOR,
-                        IB.NOMBRE AS CLAVE_RECEPTOR, '0' AS NUM_CAJA, '0' AS ID_CAJERO, to_char(PRN.INICIO,'yyyymmdd') AS FECHA_HORA,
+                        (CASE WHEN (IB.NOMBRE = 'BANORTE') THEN 'IMBURSA' ELSE  IB.NOMBRE END) AS CLAVE_RECEPTOR, '0' AS NUM_CAJA, '0' AS ID_CAJERO, to_char(PRN.INICIO,'yyyymmdd') AS FECHA_HORA,
                         '036180500609569035' AS NOTARJETA_CTA, '4' AS TIPOTARJETA, '0' AS COD_AUTORIZACION, 'NO' AS ATRASO,
                         PRN.CDGCO AS OFICINA_CLIENTE, PRN.SITUACION, MP.FDEPOSITO
     
@@ -98,8 +98,8 @@ sql;
                 INNER JOIN PRC ON PRC.CDGNS  = PRN.CDGNS 
                 INNER JOIN CL ON CL.CODIGO = PRC.CDGCL 
                 INNER JOIN EF ON CL.CDGEF = EF.CODIGO 
-                INNER JOIN CB ON CB.CODIGO = PRN.CDGCB 
-                INNER JOIN IB ON CB.CDGIB = IB.CODIGO 
+                INNER JOIN CB ON CB.CODIGO = MP.CDGCB 
+                INNER JOIN IB ON IB.CODIGO = CB.CDGIB
                 
                 
                 WHERE MP.CDGEM = 'EMPFIN' 
@@ -109,7 +109,6 @@ sql;
                 AND MP.CICLO = PRN.CICLO 
                 AND MP.CDGNS = PRC.CDGNS 
                 AND MP.CDGNS = PRN.CDGNS 
-                AND CB.CODIGO = PRN.CDGCB 
 
                 AND MP.FDEPOSITO BETWEEN TO_DATE('$Inicial', 'YY-mm-dd') AND TO_DATE('$Final', 'YY-mm-dd') ORDER BY PRN.CICLO  DESC
 sql;
