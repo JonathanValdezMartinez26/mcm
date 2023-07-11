@@ -78,7 +78,7 @@ $menu =<<<html
               <img src="https://www.designbust.com/download/325/png/user_online_icon512.png" alt="..." class="img-circle profile_img">
             </div>
             <div class="profile_info">
-              <span>Usuario: {$usuario}</span>
+              <span>USUARIO: {$usuario}</span>
               <br>
               <span class="fa fa-key">: {$perfil}</span>
 html;
