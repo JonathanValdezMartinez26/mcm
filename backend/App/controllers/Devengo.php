@@ -61,7 +61,31 @@ html;
             
         });
         
-         
+        function enviar_add(){
+           alert("Hola");
+             .ajax({
+                   type: 'POST',
+                   url: '/Creditos/InsertGarantia/',
+                   data: $('#Add').serialize(),
+                   success: function(respuesta) 
+                   {
+                       if(respuesta != '0')
+                       {
+                           swal("Registro guardado exitosamente",
+                            {
+                                icon: "success",
+                             });
+                            location.reload();
+                       }
+                       else {
+                              swal(respuesta, {
+                              icon: "error",
+                                });
+                             }
+                   }
+             });
+      }
+    
       </script>
 html;
 
