@@ -35,6 +35,8 @@ class Operaciones{
 sql;
 
 
+        
+
 
         try {
             $mysqli = Database_cultiva::getInstance();
