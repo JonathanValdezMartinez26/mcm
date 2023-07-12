@@ -115,8 +115,6 @@ sql;
                 AND MP.FDEPOSITO BETWEEN TO_DATE('$Inicial', 'YY-mm-dd') AND TO_DATE('$Final', 'YY-mm-dd') ORDER BY PRN.CICLO  DESC
 sql;
 
-        var_dump($query);
-
         try {
             $mysqli = Database_cultiva::getInstance();
             return $mysqli->queryAll($query);
