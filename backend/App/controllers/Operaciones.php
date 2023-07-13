@@ -166,6 +166,150 @@ html;
         }
     }
 
+    public function ReportePLDPagosNacimiento()
+    {
+        $extraHeader = <<<html
+        <title>Consulta de Desembolsos Cultiva con Fecha Nac</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
+        $extraFooter = <<<html
+      <script>
+      
+      function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+             
+         $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+                  "lengthMenu": [
+                    [13, 50, -1],
+                    [132, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
+             $("#export_excel_consulta").click(function(){
+              $('#all').attr('action', '/Operaciones/generarExcelPagos/?Inicial='+fecha1+'&Final='+fecha2);
+              $('#all').attr('target', '_blank');
+              $("#all").submit();
+            });
+             
+             
+        });
+      
+            function Validar(){
+                
+                fecha1 = moment(document.getElementById("Inicial").innerHTML = inputValue);
+                fecha2 = moment(document.getElementById("Final").innerHTML = inputValue);
+                
+                dias = fecha2.diff(fecha1, 'days');alert(dias);
+                
+                if(dias == 1)
+                    {
+                        alert("si es");
+                        return false;
+                    }
+                return false;
+          }
+      
+         Inicial.max = new Date().toISOString().split("T")[0];
+         Final.max = new Date().toISOString().split("T")[0];
+          
+         function InfoAdmin()
+         {
+             swal("Info", "Este registro fue capturado por una administradora en caja", "info");
+         }
+         function InfoPhone()
+         {
+             swal("Info", "Este registro fue capturado por un ejecutivo en campo y procesado por una administradora", "info");
+         }
+    
+      </script>
+html;
+
+        $fechaActual = date('Y-m-d');
+        $Inicial = $_GET['Inicial'];
+        $Final = $_GET['Final'];
+
+
+
+        if ($Inicial != '' || $Final != '') {
+            $Consulta = OperacionesDao::ConsultarPagosNacimiento($Inicial, $Final);
+
+            foreach ($Consulta as $key => $value) {
+
+                $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;">{$value['LOCALIDAD']}</td>
+                    <td style="padding: 0px !important;">{$value['SUCURSAL']}</td>
+                    <td style="padding: 0px !important;">{$value['TIPO_OPERACION']}</td>
+                    <td style="padding: 0px !important;">{$value['ID_CLIENTE']}</td>
+                    <td style="padding: 0px !important;">{$value['NUM_CUENTA']}</td>
+                    <td style="padding: 0px !important;">{$value['INSTRUMENTO_MONETARIO']}</td>
+                    <td style="padding: 0px !important;">{$value['MONEDA']}</td>
+                    <td style="padding: 0px !important;">$ {$value['MONTO']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_OPERACION']}</td>
+                    <td style="padding: 0px !important;">{$value['TIPO_RECEPTOR']}</td>
+                    <td style="padding: 0px !important;">{$value['CLAVE_RECEPTOR']}</td>
+                    <td style="padding: 0px !important;">{$value['NUM_CAJA']}</td>
+                    <td style="padding: 0px !important;">{$value['ID_CAJERO']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_HORA']}</td>
+                    <td style="padding: 0px !important;">{$value['NOTARJETA_CTA']}</td>
+                    <td style="padding: 0px !important;">{$value['TIPOTARJETA']}</td>
+                    <td style="padding: 0px !important;">{$value['COD_AUTORIZACION']}</td>
+                    <td style="padding: 0px !important;">{$value['ATRASO']}</td>
+                    <td style="padding: 0px !important;">{$value['OFICINA_CLIENTE']}</td>
+                    <td style="padding: 0px !important;">{$value['FEC_NAC']}</td>
+                    <td style="padding: 0px !important;">{$value['EDAD']}</td>
+                </tr>
+html;
+            }
+            if($Consulta[0] == '')
+            {
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('fechaActual', $fechaActual);
+                View::render("pagos_cobrados_consulta_cultiva_busqueda_message");
+            }
+            else
+            {
+                View::set('tabla', $tabla);
+                View::set('Inicial', $Inicial);
+                View::set('Final', $Final);
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::render("pagos_cobrados_consulta_cultiva_busqueda");
+            }
+
+        } else {
+
+            View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
+            View::set('fechaActual', $fechaActual);
+            View::render("pagos_cobrados_consulta_cultiva_all");
+        }
+    }
+
     public function ReportePLDDesembolsos()
     {
         $extraHeader = <<<html
