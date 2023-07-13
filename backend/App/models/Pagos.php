@@ -6,17 +6,7 @@ use \Core\Database;
 
 class Pagos{
 
-    public static function ConsultarPagosAdministracion($noCredito, $user, $cdgco){
-
-        if($user != 'ADMIN')
-        {
-            $Q1 = "AND CO.CODIGO = '$cdgco'";
-        }
-        else
-        {
-            $Q1 = '';
-        }
-
+    public static function ConsultarPagosAdministracion($noCredito){
 
         $query=<<<sql
         SELECT
@@ -55,7 +45,6 @@ class Pagos{
         AND NS.CODIGO = PAGOSDIA.CDGNS
         AND NS.CDGCO = CO.CODIGO 
         AND CO.CDGRG = RG.CODIGO
-        $Q1
     ORDER BY
         FREGISTRO DESC, SECUENCIA
 sql;
@@ -112,18 +101,31 @@ sql;
         return $mysqli->queryAll($query);
     }
 
-    public static function ConsultarPagosAdministracionOne( $noCredito, $user, $cdgco){
+    public static function ConsultarPagosAdministracionOne( $noCredito, $perfil, $user){
 
-        if($user != 'ADMIN')
+        if($perfil != 'ADMIN')
         {
-            $Q1 = "AND PRN.CDGCO = '$cdgco'";
+            $Q1 = "AND PRN.CDGCO = 
+            
+            ANY(SELECT
+        CO.CODIGO ID_SUCURSAL
+        FROM
+        PCO, CO, RG
+        WHERE
+        PCO.CDGCO = CO.CODIGO
+        AND CO.CDGRG = RG.CODIGO
+        AND PCO.CDGEM = 'EMPFIN'
+        AND PCO.CDGPE = '$user') 
+            
+            
+            ";
         }
         else
         {
             $Q1 = '';
         }
 
-            $query=<<<sql
+        $query=<<<sql
         SELECT 
 		SC.CDGNS NO_CREDITO,
 		SC.CDGCL ID_CLIENTE,
@@ -175,8 +177,9 @@ sql;
 	    $Q1
 		AND SC.CANTSOLIC <> '9999' order by SC.SOLICITUD  desc
 sql;
-
+        //_dump($query);
         $mysqli = Database::getInstance();
+        //var_dump($mysqli->queryOne($query));
         return $mysqli->queryOne($query);
     }
 

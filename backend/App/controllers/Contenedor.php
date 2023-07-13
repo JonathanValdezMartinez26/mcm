@@ -181,6 +181,20 @@ if($this->__perfil == 'ADMIN' || $this->__usuario == 'PLD') {
               </ul>
 html;
 }
+
+        if($this->__perfil == 'ADMIN') {
+            $menu .= <<<html
+              <ul class="nav side-menu">
+                <li><a><i class="glyphicon glyphicon glyphicon-cog	
+"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>
+                  <ul class="nav child_menu">
+                   <li><a href="/">Ajustar Hora de Cierre</a></li>
+                   <li><a href="/">Gestionar Días Festivos</a></li>
+                  </ul>
+                </li>
+              </ul>
+html;
+        }
             $menu.=<<<html
               </div>
           </div>

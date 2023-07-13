@@ -255,11 +255,22 @@ html;
 html;
         }
         if ($credito != '') {
-            $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $this->__perfil, $this->__cdgco);
-            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__cdgco);
+            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__usuario);
 
 
+            if($AdministracionOne['NO_CREDITO'] == '')
+            {
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('status', $getStatus);
+                View::set('credito', $credito);
+                View::set('usuario', $this->__usuario);
+                View::render("pagos_admin_busqueda_message");
 
+            }
+            else
+            {
+            $Administracion = PagosDao::ConsultarPagosAdministracion($credito);
             foreach ($Administracion as $key => $value) {
 
                 if($value['FIDENTIFICAPP'] ==  NULL)
@@ -328,17 +339,7 @@ html;
                 </tr>
 html;
             }
-            if($Administracion[0] == '' && $AdministracionOne[0] == '')
-            {
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::set('status', $getStatus);
-                View::set('credito', $credito);
-                View::set('usuario', $this->__usuario);
-                View::render("pagos_admin_busqueda_message");
-            }
-            else
-            {
+
                 View::set('tabla', $tabla);
                 View::set('Administracion', $AdministracionOne);
                 View::set('credito', $credito);
@@ -870,55 +871,77 @@ html;
 html;
         }
         if ($credito != '') {
-            $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $this->____perfil, $this->__cdgco);
-            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->____perfil, $this->__cdgco);
 
-            foreach ($Administracion as $key => $value) {
 
-                if($value['FIDENTIFICAPP'] ==  NULL)
-                {
-                    $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
-                    $mensaje = 'InfoAdmin();';
-                }
-                else
-                {
-                    $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
-                    $mensaje = 'InfoPhone();';
-                }
+            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__usuario);
 
-                if($value['DESIGNATION'] == 'SI')
-                {
-                    /////
-                    /// /
-                    ///
-                    ///
-                    /// aqui poner que si los pagos son de app no se pueden modificar, consulte con operaciones
-                    ///
-                    ///
-                    ///
-                    $editar = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}');"><i class="fa fa-trash"></i></button>
-html;
-                }
-                else
-                {
-                    $date_past_b = strtotime('-3 days', strtotime($fechaActual));
-                    $date_past_b = date('Y-m-d', $date_past_b);
+            if($AdministracionOne['NO_CREDITO'] == '')
+            {
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('status', $getStatus);
+                View::set('credito', $credito);
+                View::set('usuario', $this->__usuario);
+                View::render("pagos_registro_busqueda_message");
+            }
+            else
+            {
+                $Administracion = PagosDao::ConsultarPagosAdministracion($credito);
+                foreach ($Administracion as $key => $value) {
 
-                    $fecha_base = strtotime($value['FECHA']);
-                    $fecha_base = date('Y-m-d', $fecha_base);
-
-                    $inicio_b = $date_past_b;
-
-                    if($inicio_b == $fecha_base)
+                    if($value['FIDENTIFICAPP'] ==  NULL)
                     {
-                        if($horaActual <= '10:05:00')
-                        {
-                            $editar = <<<html
+                        $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
+                        $mensaje = 'InfoAdmin();';
+                    }
+                    else
+                    {
+                        $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
+                        $mensaje = 'InfoPhone();';
+                    }
+
+                    if($value['DESIGNATION'] == 'SI')
+                    {
+                        /////
+                        /// /
+                        ///
+                        ///
+                        /// aqui poner que si los pagos son de app no se pueden modificar, consulte con operaciones
+                        ///
+                        ///
+                        ///
+                        $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
                     <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}');"><i class="fa fa-trash"></i></button>
 html;
+                    }
+                    else
+                    {
+                        $date_past_b = strtotime('-3 days', strtotime($fechaActual));
+                        $date_past_b = date('Y-m-d', $date_past_b);
+
+                        $fecha_base = strtotime($value['FECHA']);
+                        $fecha_base = date('Y-m-d', $fecha_base);
+
+                        $inicio_b = $date_past_b;
+
+                        if($inicio_b == $fecha_base)
+                        {
+                            if($horaActual <= '10:05:00')
+                            {
+                                $editar = <<<html
+                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}');"><i class="fa fa-trash"></i></button>
+html;
+                            }
+                            else
+                            {
+                                $editar = <<<html
+                    <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
+html;
+                            }
+
                         }
                         else
                         {
@@ -927,19 +950,10 @@ html;
                     <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
 html;
                         }
-
                     }
-                    else
-                    {
-                        $editar = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
-html;
-                    }
-                }
 
-                $monto = number_format($value['MONTO'], 2);
-                $tabla .= <<<html
+                    $monto = number_format($value['MONTO'], 2);
+                    $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
                     <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
@@ -952,18 +966,8 @@ html;
                     <td style="padding: 0px !important;" class="center">{$editar}</td>
                 </tr>
 html;
-            }
-            if($Administracion[0] == '' && $AdministracionOne[0] == '')
-            {
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::set('status', $getStatus);
-                View::set('credito', $credito);
-                View::set('usuario', $this->__usuario);
-                View::render("pagos_registro_busqueda_message");
-            }
-            else
-            {
+                }
+
                 View::set('tabla', $tabla);
                 View::set('Administracion', $AdministracionOne);
                 View::set('credito', $credito);
