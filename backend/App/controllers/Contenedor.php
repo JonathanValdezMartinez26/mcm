@@ -175,7 +175,7 @@ if($this->__perfil == 'ADMIN' || $this->__usuario == 'PLD') {
                   <ul class="nav child_menu">
                    <li><a href="/Operaciones/ReportePLDDesembolsos/">PLD Reporte Desembolsos</a></li>
                    <li><a href="/Operaciones/ReportePLDPagos/">PLD Reporte Pagos</a></li>
-                    <li><a href="/Operaciones/ReportePLDPagos/">PLD R. Pagos Edad</a></li>
+                    <li><a href="/Operaciones/ReportePLDPagosNacimiento/">PLD R. Pagos Edad</a></li>
                   </ul>
                 </li>
               </ul>

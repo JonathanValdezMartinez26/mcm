@@ -3,7 +3,7 @@
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
             <div class="x_title">
-                <h3> Consulta de Pagos de Clientes Cultiva (PLD)</h3>
+                <h3> Consulta de Pagos de Clientes Cultiva (PLD) con edad</h3>
                 <div class="clearfix"></div>
             </div>
 
