@@ -697,7 +697,7 @@ html;
         $adaptarTexto = true;
 
         $controlador = "Operaciones";
-        $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N','O', 'P', 'Q', 'R', 'S', 'T', 'V', 'W');
+        $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N','O', 'P', 'Q', 'R', 'S', 'T', 'U');
         $nombreColumna = array( 'LOCALIDAD','SUCURSAL','TIPO DE OPERACION','ID CLIENTE', 'NUMERO DE CTA-CONTRATO-OPERACIO- POLIZA O NUMERO DE SEGURIDAD SOCIAL', 'INSTRUMENTO MONETARIO', 'MONEDA', 'MONTO', 'FECHA DE LA OPERACION', 'TIPO RECEPTOR', 'CLAVE DCE RECEPTOR', 'NUM CAJA', 'ID-CAJERO', 'FECHA-HORA', 'NOTARJETA-CTA DEP', 'TIPOTARJETA', 'COD-AUTORIZACION', 'ATRASO', 'OFICINA CLIENTE', 'FEC_NAC', 'EDAD');
         $nombreCampo = array('LOCALIDAD','SUCURSAL','TIPO_OPERACION','ID_CLIENTE',
             'NUM_CUENTA',
@@ -728,7 +728,7 @@ html;
 
         /* FILAS DEL ARCHIVO EXCEL */
 
-        $Layoutt = OperacionesDao::ConsultarPagos($fecha_inicio, $fecha_fin);
+        $Layoutt = OperacionesDao::ConsultarPagosNacimiento($fecha_inicio, $fecha_fin);
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
