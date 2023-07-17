@@ -64,6 +64,7 @@
                                    <th>oficina</th>
                                    <th>Fec Nac</th>
                                    <th>Edad</th>
+                                   <th>Ciclo</th>
                                 </tr>
                                 </thead>
                                 <tbody>

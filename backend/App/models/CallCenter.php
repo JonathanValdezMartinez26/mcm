@@ -122,4 +122,45 @@ sql;
 
     }
 
+    public static function getAllAnalistas(){
+
+        $mysqli = Database::getInstance();
+
+        $query3=<<<sql
+        SELECT
+            CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) NOMBRE,
+            UT.CDGTUS PERFIL, PE.CDGCO, PE.CODIGO AS USUARIO
+        FROM
+            PE,
+            UT
+        WHERE
+            PE.CODIGO = UT.CDGPE
+            AND PE.CDGEM = UT.CDGEM
+            AND PE.CDGEM = 'EMPFIN'
+            AND PE.ACTIVO = 'S'
+            AND (PE.BLOQUEO = 'N' OR PE.BLOQUEO IS NULL)
+            AND UT.CDGTUS = 'CALLC'
+			AND NOT EXISTS(SELECT CDGPE FROM ASIGNACION_SUC_A WHERE PE.CODIGO = ASIGNACION_SUC_A.CDGPE)
+sql;
+        return $mysqli->queryAll($query3);
+
+
+    }
+
+    public static function getAllAnalistasAsignadas(){
+
+        $mysqli = Database::getInstance();
+
+        $query3=<<<sql
+         SELECT
+           *
+        FROM
+           ASIGNACION_SUC_A
+               
+sql;
+        return $mysqli->queryAll($query3);
+
+
+    }
+
 }

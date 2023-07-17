@@ -281,6 +281,7 @@ html;
                     <td style="padding: 0px !important;">{$value['OFICINA_CLIENTE']}</td>
                     <td style="padding: 0px !important;">{$value['FEC_NAC']}</td>
                     <td style="padding: 0px !important;">{$value['EDAD']}</td>
+                    <td style="padding: 0px !important;">{$value['CICLO']}</td>
                 </tr>
 html;
             }
@@ -698,7 +699,7 @@ html;
 
         $controlador = "Operaciones";
         $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N','O', 'P', 'Q', 'R', 'S', 'T', 'U');
-        $nombreColumna = array( 'LOCALIDAD','SUCURSAL','TIPO DE OPERACION','ID CLIENTE', 'NUMERO DE CTA-CONTRATO-OPERACIO- POLIZA O NUMERO DE SEGURIDAD SOCIAL', 'INSTRUMENTO MONETARIO', 'MONEDA', 'MONTO', 'FECHA DE LA OPERACION', 'TIPO RECEPTOR', 'CLAVE DCE RECEPTOR', 'NUM CAJA', 'ID-CAJERO', 'FECHA-HORA', 'NOTARJETA-CTA DEP', 'TIPOTARJETA', 'COD-AUTORIZACION', 'ATRASO', 'OFICINA CLIENTE', 'FEC_NAC', 'EDAD');
+        $nombreColumna = array( 'LOCALIDAD','SUCURSAL','TIPO DE OPERACION','ID CLIENTE', 'NUMERO DE CTA-CONTRATO-OPERACIO- POLIZA O NUMERO DE SEGURIDAD SOCIAL', 'INSTRUMENTO MONETARIO', 'MONEDA', 'MONTO', 'FECHA DE LA OPERACION', 'TIPO RECEPTOR', 'CLAVE DCE RECEPTOR', 'NUM CAJA', 'ID-CAJERO', 'FECHA-HORA', 'NOTARJETA-CTA DEP', 'TIPOTARJETA', 'COD-AUTORIZACION', 'ATRASO', 'OFICINA CLIENTE', 'FEC_NAC', 'EDAD', 'CICLO');
         $nombreCampo = array('LOCALIDAD','SUCURSAL','TIPO_OPERACION','ID_CLIENTE',
             'NUM_CUENTA',
             'INSTRUMENTO_MONETARIO',
@@ -706,7 +707,7 @@ html;
             'MONTO',
             'FECHA_OPERACION',
             'TIPO_RECEPTOR','CLAVE_RECEPTOR','NUM_CAJA','ID_CAJERO','FECHA_HORA','NOTARJETA_CTA',
-            'TIPOTARJETA','COD_AUTORIZACION','ATRASO','OFICINA_CLIENTE', 'FEC_NAC', 'EDAD'
+            'TIPOTARJETA','COD_AUTORIZACION','ATRASO','OFICINA_CLIENTE', 'FEC_NAC', 'EDAD', 'CICLO'
         );
 
 
