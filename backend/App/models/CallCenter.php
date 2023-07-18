@@ -122,6 +122,34 @@ sql;
 
     }
 
+    public static function getAllSolicitudes(){
+
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+        SELECT SN.CDGNS, SN.CICLO, TO_CHAR(SN.SOLICITUD ,'DD/MM/YYYY HH24:MI:SS') AS FECHA_SOL, SN.INICIO, 
+        SN.CDGCO, SC.CDGCL, CL.NOMBRE1 || ' ' ||  CL.NOMBRE2 || ' ' || CL.PRIMAPE || ' ' || CL.SEGAPE NOMBRE, 
+        CO.NOMBRE AS NOMBRE_SUCURSAL, RG.NOMBRE AS REGION, CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS EJECUTIVO,
+            PE.CODIGO ID_EJECUTIVO, TO_CHAR(SN.SOLICITUD) AS FECHA
+        FROM SN 
+        INNER JOIN SC ON SN.CDGNS = SC.CDGNS 
+        INNER JOIN CL ON CL.CODIGO = SC.CDGCL 
+        INNER JOIN CO ON SN.CDGCO = CO.CODIGO 
+        INNER JOIN RG ON CO.CDGRG = RG.CODIGO 
+        INNER JOIN PE ON PE.CODIGO = SN.CDGOCPE 
+        
+        
+        WHERE SN.CICLO = SC.CICLO 
+        AND SN.CDGNS = SC.CDGNS 
+        AND CL.CODIGO = SC.CDGCL 
+        AND SN.SITUACION = 'S' 
+        AND SC.CANTSOLIC != '9999'
+        ORDER BY SN.SOLICITUD DESC
+sql;
+
+        return $mysqli->queryAll($query);
+
+    }
+
     public static function getAllAnalistas(){
 
         $mysqli = Database::getInstance();
