@@ -15,7 +15,7 @@ class Pagos{
         NS.CDGCO ID_SUCURSAL,
         GET_NOMBRE_SUCURSAL(NS.CDGCO),
         PAGOSDIA.SECUENCIA,
-        PAGOSDIA.FECHA,
+        TO_CHAR(PAGOSDIA.FECHA, 'YYYY-MM-DD' ) AS FECHA,
         PAGOSDIA.CDGNS,
         PAGOSDIA.NOMBRE,
         PAGOSDIA.CICLO,
@@ -299,15 +299,15 @@ sql;
 
         $query=<<<sql
         SELECT
-	CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) EJECUTIVO,
-	CODIGO ID_EJECUTIVO
-FROM
-	PE
-WHERE
-	CDGEM = 'EMPFIN' 
-	AND CDGCO = '$cdgco'
-	AND ACTIVO = 'S'
-ORDER BY 1
+        CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) EJECUTIVO,
+        CODIGO ID_EJECUTIVO
+        FROM
+            PE
+        WHERE
+            CDGEM = 'EMPFIN' 
+            AND CDGCO = '$cdgco'
+            AND ACTIVO = 'S'
+        ORDER BY 1
 sql;
 
         $mysqli = Database::getInstance();

@@ -11,6 +11,7 @@ require_once dirname(__DIR__).'/../public/librerias/mpdf/mpdf.php';
 require_once dirname(__DIR__).'/../public/librerias/phpexcel/Classes/PHPExcel.php';
 
 
+
 class Contenedor extends Controller{
 
 
@@ -154,7 +155,6 @@ html;
         }
         if($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL') {
             $menu .= <<<html
-
                     <li><a href="/CallCenter/Concentrado/">Concentrado Diario</a></li>
                     <li><a href="/CallCenter/Administracion/">Asignar Sucursales a Analistas</a></li>
 html;
@@ -162,7 +162,8 @@ html;
         if($this->__perfil == 'ADMIN' || $this->__perfil == 'CALLC' || $this->__perfil == 'ACALL') {
             $menu .= <<<html
                    <li><a href="/CallCenter/Pendientes/">Mis Pendientes</a></li>
-                   <li><a href="/CallCenter/Historico/">Mis Históricos</a></li>
+                   <li><a href="/CallCenter/Historico/">Mis Historicos</a></li>
+                  
                   </ul>
                 </li>
               </ul>

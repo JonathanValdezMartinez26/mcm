@@ -308,6 +308,7 @@ html;
 
                     $inicio_f = $date_past;
 
+
                     if($inicio_f == $fecha_base)
                     {
                         $editar = <<<html
