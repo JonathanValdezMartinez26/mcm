@@ -308,7 +308,6 @@ html;
 
                     $inicio_f = $date_past;
 
-
                     if($inicio_f == $fecha_base)
                     {
                         $editar = <<<html
@@ -331,7 +330,7 @@ html;
                     <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
                     <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
                     <td style="padding: 0px !important;">{$value['CDGNS']}</td>
-                    <td style="padding: 0px !important;">{$value['FECHA']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_TABLA']}</td>
                     <td style="padding: 0px !important;">{$value['CICLO']}</td>
                     <td style="padding: 0px !important;">$ {$monto}</td>
                     <td style="padding: 0px !important;">{$value['TIPO']}</td>
