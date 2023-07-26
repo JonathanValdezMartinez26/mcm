@@ -102,7 +102,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Agregar Registro de Pago (Administradora)</h4></center>
+                <center><h4 class="modal-title" id="myModalLabel">Agregar Registro de Pago (Administrador Central)</h4></center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -125,7 +125,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="movil">Medio de Registro</label>
-                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="ADMINISTRADORA">
+                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="CENTRAL">
                                     <small id="emailHelp" class="form-text text-muted">Medio de registro del pago.</small>
                                 </div>
                             </div>
@@ -201,13 +201,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Editar Registro de Pago (Administradora)</h4></center>
+                <center><h4 class="modal-title" id="myModalLabel">Editar Registro de Pago (Administrador Central)</h4></center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
                     <form onsubmit="enviar_edit(); return false" id="Edit">
                         <div class="row">
-                            <div class="col-md-4" >
+                            <div class="col-md-4" style="display: none">
                                 <div class="form-group" >
                                     <label for="Fecha_e_r">Fecha</label>
                                     <input onkeydown="return false" type="date" class="form-control" id="Fecha_e_r" name="Fecha_e_r" readonly>
@@ -225,7 +225,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="movil_e">Medio de Registro</label>
-                                    <input type="text" class="form-control" id="movil_e" aria-describedby="movil_e" disabled placeholder="" value="ADMINISTRADORA">
+                                    <input type="text" class="form-control" id="movil_e" aria-describedby="movil_e" disabled placeholder="" value="CENTRAL">
                                     <small id="emailHelp" class="form-text text-muted">Medio de registro del pago.</small>
                                 </div>
                             </div>
