@@ -292,7 +292,10 @@ sql;
 
 
         $mysqli = Database::getInstance();
+
         return $mysqli->queryProcedurePago($credito_i, $ciclo_i, $monto_i, $tipo_i, $nombre_i, $user_i,  $ejecutivo_i, $ejecutivo_nombre_i, $tipo_procedure_, $fecha_aux, $secuencia_i, $fecha);
+
+
 
     }
 
@@ -405,9 +408,6 @@ sql;
             return "";
         }
 
-
-
-
     }
 
     public static function DeletePago($id, $secuencia, $fecha){
@@ -421,7 +421,6 @@ sql;
     }
 
     public static function DeleteProcedure($cdgns, $fecha, $user, $secuencia){
-
         $mysqli = Database::getInstance();
         return $mysqli->queryProcedureDeletePago($cdgns, $fecha, $user, $secuencia);
 

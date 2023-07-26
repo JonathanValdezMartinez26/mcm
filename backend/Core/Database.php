@@ -281,8 +281,12 @@ static $_mail;
     }
     public function queryProcedureDeletePago($cdgns_, $fecha_, $user_, $secuencia_){
 
+        $fecha_parseada = strtotime($fecha_);
+        $fecha_parseada = date('d-m-Y', $fecha_parseada);
+
+
         $empresa = "EMPFIN";
-        $fecha = $fecha_;
+        $fecha = $fecha_parseada;
         $fecha_aux = '';
         $cdgns = $cdgns_;
         $ciclo = "";

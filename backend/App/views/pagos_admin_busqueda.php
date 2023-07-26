@@ -207,7 +207,7 @@
                 <div class="container-fluid">
                     <form onsubmit="enviar_edit(); return false" id="Edit">
                         <div class="row">
-                            <div class="col-md-4" style="display: none">
+                            <div class="col-md-4" >
                                 <div class="form-group" >
                                     <label for="Fecha_e_r">Fecha</label>
                                     <input onkeydown="return false" type="date" class="form-control" id="Fecha_e_r" name="Fecha_e_r" readonly>
@@ -310,10 +310,11 @@
         var day = ("0" + now.getDate()).slice(-2);
         var month = ("0" + (now.getMonth() + 1)).slice(-2);
 
-        var today = now.getFullYear()+"-"+(day)+"-"+(month) ;
+        var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
 
-        document.getElementById("Fecha_e").value = today;
-        document.getElementById("Fecha_e_r").value = today;
+
+        document.getElementById("Fecha_e").value = fecha;
+        document.getElementById("Fecha_e_r").value = fecha;
         document.getElementById("cdgns_e").value = cdgns;
         document.getElementById("nombre_e").value = nombre;
         document.getElementById("ciclo_e").value = ciclo;

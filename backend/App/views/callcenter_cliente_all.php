@@ -100,7 +100,7 @@
                                         <tr>
                                             <td style="font-size: 16px" colspan="6"><b><?php echo $Administracion[0]['CLIENTE']; ?></b></td>
                                             <td style="font-size: 16px" colspan="1">
-                                                <button type="button" class="btn btn-primary" style="border: 1px solid #c4a603; background: #FFFFFF" data-toggle="modal" data-target="#modal_agregar_pago" data-backdrop="static" data-keyboard="false" onclick="BotonPago('<?php echo $Administracion['SITUACION_NOMBRE']; ?>');">
+                                                <button type="button" class="btn btn-primary" style="border: 1px solid #c4a603; background: #FFFFFF" data-toggle="modal" data-target="#modal_detalle_cliente" data-backdrop="static" data-keyboard="false" onclick="BotonPago('<?php echo $Administracion['SITUACION_NOMBRE']; ?>');">
                                                     <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Ver Expediente (CLIENTE)</label>
                                                 </button>
                                             </td>
@@ -469,6 +469,47 @@
                 </form>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_detalle_cliente" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width: 1300px !important;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">CLIENTE</span>
+                <center><h4 class="modal-title" id="myModalLabel"><?php echo $Administracion[0]['CLIENTE']; ?></h4></center>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="Fecha">Fecha de trabajo</label>
+                                    <input onkeydown="return false" type="date" class="form-control" id="Fecha" name="Fecha" min="<?php echo $inicio_f; ?>" max="<?php echo $fin_f; ?>" value="<?php echo $fin_f; ?>">
+
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="movil">Ciclo del Crédito</label>
+                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="01">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="movil">Número de telefono del cliente</label>
+                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="<?php
+                                    $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
+                                    echo $format; ?>">
+                                </div>
+                            </div>
+                        </div>
+
+                    S
+                </div>
+            </div>
         </div>
     </div>
 </div>

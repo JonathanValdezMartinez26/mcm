@@ -60,9 +60,9 @@ html;
             var checkAll = 0;
             
         });
-        function FunDelete_Pago(secuencia, fecha) {
+       function FunDelete_Pago(secuencia, fecha, usuario) {
              credito = getParameterByName('Credito');
-             user = 'ADMIN';
+             user = usuario;
              ////////////////////////////
              swal({
               title: "¿Segúro que desea eliminar el registro seleccionado?",
@@ -295,7 +295,7 @@ html;
                     ///
                     $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}');"><i class="fa fa-trash"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
 html;
                 }
                 else
@@ -312,7 +312,7 @@ html;
                     {
                         $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}');"><i class="fa fa-trash"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
 html;
                     }
                     else
@@ -417,7 +417,8 @@ html;
                 fecha1 = moment(document.getElementById("Inicial").innerHTML = inputValue);
                 fecha2 = moment(document.getElementById("Final").innerHTML = inputValue);
                 
-                dias = fecha2.diff(fecha1, 'days');alert(dias);
+                dias = fecha2.diff(fecha1, 'days');
+                alert(dias);
                 
                 if(dias == 1)
                     {
@@ -655,9 +656,9 @@ html;
             var checkAll = 0;
             
         });
-        function FunDelete_Pago(secuencia, fecha) {
+        function FunDelete_Pago(secuencia, fecha, usuario) {
              credito = getParameterByName('Credito');
-             user = 'ADMIN';
+             user = usuario;
              ////////////////////////////
              swal({
               title: "¿Segúro que desea eliminar el registro seleccionado?",
@@ -912,7 +913,7 @@ html;
                         ///
                         $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}');"><i class="fa fa-trash"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
 html;
                     }
                     else
@@ -931,7 +932,7 @@ html;
                             {
                                 $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}');"><i class="fa fa-trash"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
 html;
                             }
                             else

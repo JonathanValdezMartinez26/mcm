@@ -307,6 +307,7 @@
 <script>
     function EditarPago(fecha, cdgns, nombre, ciclo, tipo_pago, monto, ejecutivo, secuencia) {
 
+        //alert(fecha);
         var now = new Date(fecha);
 
         var day = ("0" + now.getDate()).slice(-2);
@@ -314,8 +315,8 @@
 
         var today = now.getFullYear()+"-"+(day)+"-"+(month) ;
 
-        document.getElementById("Fecha_e").value = today;
-        document.getElementById("Fecha_e_r").value = today;
+        document.getElementById("Fecha_e").value = fecha;
+        document.getElementById("Fecha_e_r").value = fecha;
         document.getElementById("cdgns_e").value = cdgns;
         document.getElementById("nombre_e").value = nombre;
         document.getElementById("ciclo_e").value = ciclo;
