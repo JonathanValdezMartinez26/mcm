@@ -542,7 +542,7 @@ html;
                     <td style="padding: 0px !important;">{$value['CDGCL']}</td>
                     <td style="padding: 0px !important;">{$value['GRUPO']}</td>
                     <td style="padding: 0px !important;">{$value['ORIGEN']}</td>
-                    <td style="padding: 0px !important;">{$value['CLIENTES']}</td>
+                    <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
                     <td style="padding: 0px !important;">{$value['ADICIONAL']}</td>
                     <td style="padding: 0px !important;">{$value['A_PATERNO']}</td>
                     <td style="padding: 0px !important;">{$value['A_MATERNO']}</td>
