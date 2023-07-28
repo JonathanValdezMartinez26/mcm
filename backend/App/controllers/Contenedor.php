@@ -179,6 +179,8 @@ if($this->__perfil == 'ADMIN' || $this->__usuario == 'PLD') {
                    <li><a href="/Operaciones/ReportePLDPagos/">PLD Reporte Pagos</a></li>
                    <li><a href="/Operaciones/ReportePLDPagosNacimiento/">PLD R. Pagos Edad</a></li>
                    <li><a href="/Operaciones/IdentificacionClientes/">Identificación (Clientes)</a></li>
+                   <li><a href="/Operaciones/CuentasRelacionadas/">Cuentas Relacionadas</a></li>
+                   <li><a href="/Operaciones/PerfilTransaccional/">Perfil Transaccional</a></li>
                   </ul>
                 </li>
               </ul>

@@ -539,25 +539,48 @@ html;
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;">{$value['LOCALIDAD']}</td>
+                    <td style="padding: 0px !important;">{$value['CDGCL']}</td>
+                    <td style="padding: 0px !important;">{$value['GRUPO']}</td>
+                    <td style="padding: 0px !important;">{$value['ORIGEN']}</td>
+                    <td style="padding: 0px !important;">{$value['CLIENTES']}</td>
+                    <td style="padding: 0px !important;">{$value['ADICIONAL']}</td>
+                    <td style="padding: 0px !important;">{$value['A_PATERNO']}</td>
+                    <td style="padding: 0px !important;">{$value['A_MATERNO']}</td>
+                    <td style="padding: 0px !important;">{$value['TIPO_PERSONA']}</td>
+                    <td style="padding: 0px !important;">{$value['RFC']}</td>
+                    <td style="padding: 0px !important;">{$value['CURP']}</td>
+                    <td style="padding: 0px !important;">{$value['RAZON_SOCIAL']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_NAC']}</td>
+                    <td style="padding: 0px !important;">{$value['NACIONALIDAD']}</td>
+                    <td style="padding: 0px !important;">{$value['DOMICILIO']}</td>
+                    <td style="padding: 0px !important;">{$value['COLONIA']}</td>
+                    <td style="padding: 0px !important;">{$value['CIUDAD']}</td>
+                    <td style="padding: 0px !important;">{$value['PAIS']}</td>
+                    <td style="padding: 0px !important;">{$value['ESTADO']}</td>
+                    <td style="padding: 0px !important;">{$value['TELEFONO']}</td>
+                    <td style="padding: 0px !important;">{$value['ACTIVIDAD_ECONOMICA']}</td>
+                    <td style="padding: 0px !important;">{$value['CALIFICACION']}</td>
+                    <td style="padding: 0px !important;">{$value['ALTA']}</td>
                     <td style="padding: 0px !important;">{$value['SUCURSAL']}</td>
-                    <td style="padding: 0px !important;">{$value['TIPO_OPERACION']}</td>
-                    <td style="padding: 0px !important;">{$value['ID_CLIENTE']}</td>
-                    <td style="padding: 0px !important;">{$value['NUM_CUENTA']}</td>
-                    <td style="padding: 0px !important;">{$value['INSTRUMENTO_MONETARIO']}</td>
-                    <td style="padding: 0px !important;">{$value['MONEDA']}</td>
-                    <td style="padding: 0px !important;">$ {$value['MONTO']}</td>
-                    <td style="padding: 0px !important;">{$value['FECHA_OPERACION']}</td>
-                    <td style="padding: 0px !important;">{$value['TIPO_RECEPTOR']}</td>
-                    <td style="padding: 0px !important;">{$value['CLAVE_RECEPTOR']}</td>
-                    <td style="padding: 0px !important;">{$value['NUM_CAJA']}</td>
-                    <td style="padding: 0px !important;">{$value['ID_CAJERO']}</td>
-                    <td style="padding: 0px !important;">{$value['FECHA_HORA']}</td>
-                    <td style="padding: 0px !important;">{$value['NOTARJETA_CTA']}</td>
-                    <td style="padding: 0px !important;">{$value['TIPOTARJETA']}</td>
-                    <td style="padding: 0px !important;">{$value['COD_AUTORIZACION']}</td>
-                    <td style="padding: 0px !important;">{$value['ATRASO']}</td>
-                    <td style="padding: 0px !important;">{$value['OFICINA_CLIENTE']}</td>
+                    <td style="padding: 0px !important;">{$value['GENERO']}</td>
+                    <td style="padding: 0px !important;">{$value['CORREO_ELECTRONICO']}</td>
+                    <td style="padding: 0px !important;">{$value['FIRMA_ELECT']}</td>
+                    <td style="padding: 0px !important;">{$value['PROFESION']}</td>
+                    <td style="padding: 0px !important;">{$value['PAIS_NAC']}</td>
+                    <td style="padding: 0px !important;">{$value['EDO_NAC']}</td>
+                    <td style="padding: 0px !important;">{$value['LUGAR_NAC']}</td>
+                    <td style="padding: 0px !important;">{$value['NUMERO_DOCUMENTO']}</td>
+                    <td style="padding: 0px !important;">{$value['CONOCIMIENTO']}</td>
+                    <td style="padding: 0px !important;">{$value['INMIGRACION']}</td>
+                    <td style="padding: 0px !important;">{$value['CUENTA_ORIGINAL']}</td>
+                    <td style="padding: 0px !important;">{$value['SITUACION_CLIENTE']}</td>
+                    <td style="padding: 0px !important;">{$value['TIPO_DOCUMENTO']}</td>
+                    <td style="padding: 0px !important;">{$value['INDICADOR_EMPLEO']}</td>
+                    <td style="padding: 0px !important;">{$value['EMPRESAS']}</td>
+                    <td style="padding: 0px !important;">{$value['INDICADOR_GOBIERNO']}</td>
+                    <td style="padding: 0px !important;">{$value['PUESTO']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_INICIO']}</td>
+                    <td style="padding: 0px !important;">{$value['FEH_FIN']}</td>
                 </tr>
 html;
             }
@@ -566,7 +589,7 @@ html;
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('fechaActual', $fechaActual);
-                View::render("pagos_consulta_cultiva_busqueda_message");
+                View::render("clientes_consulta_cultiva_busqueda_message");
             }
             else
             {
@@ -575,7 +598,7 @@ html;
                 View::set('Final', $Final);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::render("pagos_consulta_cultiva_busqueda");
+                View::render("clientes_consulta_cultiva_busqueda");
             }
 
         } else {
@@ -583,7 +606,134 @@ html;
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::set('fechaActual', $fechaActual);
-            View::render("pagos_consulta_cultiva_all");
+            View::render("clientes_consulta_cultiva_all");
+        }
+    }
+
+    public function CuentasRelacionadas()
+    {
+        $extraHeader = <<<html
+        <title>Cuentas Relacionadas de clientes Cultiva</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
+        $extraFooter = <<<html
+      <script>
+      
+      function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+             
+         $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+                  "lengthMenu": [
+                    [13, 50, -1],
+                    [132, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
+             $("#export_excel_consulta").click(function(){
+              $('#all').attr('action', '/Operaciones/generarExcelClientesCR/?Inicial='+fecha1+'&Final='+fecha2);
+              $('#all').attr('target', '_blank');
+              $("#all").submit();
+            });
+             
+             
+        });
+      
+            function Validar(){
+                
+                fecha1 = moment(document.getElementById("Inicial").innerHTML = inputValue);
+                fecha2 = moment(document.getElementById("Final").innerHTML = inputValue);
+                
+                dias = fecha2.diff(fecha1, 'days');alert(dias);
+                
+                if(dias == 1)
+                    {
+                        alert("si es");
+                        return false;
+                    }
+                return false;
+          }
+      
+         Inicial.max = new Date().toISOString().split("T")[0];
+         Final.max = new Date().toISOString().split("T")[0];
+          
+      
+      </script>
+html;
+
+        $fechaActual = date('Y-m-d');
+        $Inicial = $_GET['Inicial'];
+        $Final = $_GET['Final'];
+
+
+
+        if ($Inicial != '' || $Final != '') {
+            $Consulta = OperacionesDao::CuentasRelacionadas($Inicial, $Final);
+
+            foreach ($Consulta as $key => $value) {
+
+                $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;">{$value['CLIENTE']}</td>
+                    <td style="padding: 0px !important;">{$value['GRUPO']}</td>
+                    <td style="padding: 0px !important;">{$value['CUENTA_RELACION']}</td>
+                    <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
+                    <td style="padding: 0px !important;">{$value['ADICIONAL']}</td>
+                    <td style="padding: 0px !important;">{$value['A_PATERNO']}</td>
+                    <td style="padding: 0px !important;">{$value['A_MATERNO']}</td>
+                    <td style="padding: 0px !important;">{$value['DESCRIPCION_OPERACION']}</td>
+                    <td style="padding: 0px !important;">{$value['IDENTIFICA_CUENTA']}</td>
+                    <td style="padding: 0px !important;">{$value['CONSERVA']}</td>
+                    <td style="padding: 0px !important;">{$value['OFICINA_CLIENTE']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_INICIO_OPERACION']}</td>
+                </tr>
+html;
+            }
+            if($Consulta[0] == '')
+            {
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('fechaActual', $fechaActual);
+                View::render("perfil_transaccional_cultiva_busqueda_message");
+            }
+            else
+            {
+                View::set('tabla', $tabla);
+                View::set('Inicial', $Inicial);
+                View::set('Final', $Final);
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::render("perfil_transaccional_cultiva_busqueda");
+            }
+
+        } else {
+
+            View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
+            View::set('fechaActual', $fechaActual);
+            View::render("perfil_transaccional_consulta_cultiva_all");
         }
     }
 
@@ -993,6 +1143,112 @@ html;
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="Consulta de Pagos Cultiva '.$controlador.'.xlsx"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+        header ('Cache-Control: cache, must-revalidate');
+        header ('Pragma: public');
+
+        \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
+    }
+
+    public function generarExcelClientesCR(){
+
+        $fecha_inicio = $_GET['Inicial'];
+        $fecha_fin = $_GET['Final'];
+
+        $objPHPExcel = new \PHPExcel();
+        $objPHPExcel->getProperties()->setCreator("jma");
+        $objPHPExcel->getProperties()->setLastModifiedBy("jma");
+        $objPHPExcel->getProperties()->setTitle("Reporte");
+        $objPHPExcel->getProperties()->setSubject("Reorte");
+        $objPHPExcel->getProperties()->setDescription("Descripcion");
+        $objPHPExcel->setActiveSheetIndex(0);
+
+
+
+        $estilo_titulo = array(
+            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+        );
+
+        $estilo_encabezado = array(
+            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+        );
+
+        $estilo_celda = array(
+            'font' => array('bold' => false,'name'=>'Calibri','size'=>11,'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+
+        );
+
+
+        $fila = 1;
+        $adaptarTexto = true;
+
+        $controlador = "Operaciones";
+        $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L');
+        $nombreColumna = array( 'CLIENTE','NUMERO DE CUENTA- CONTRATO-OPERACIÓN- PÓLIZA O NSS2','NO.CUENTA RELACIONADA',
+            'NOMBRE DEL TITULAR DE LA CUENTA O DE LA PERSONA RELACIONAD A', 'ADICIONAL',
+            'APELLIDO PATERNO', 'MATERNO', 'DESCRIPCION DE LA OPERACIÓN*', 'IDENTIFICA CUENTA como interna', 'CONSERVA CUENTA ORIGINAL', 'OFICINA CLIENTE', 'FECHA INICIO OPERACIÓN');
+
+        $nombreCampo = array('CLIENTE','GRUPO','CUENTA_RELACION','NOMBRE',
+            'ADICIONAL',
+            'A_PATERNO',
+            'A_MATERNO',
+            'DESCRIPCION_OPERACION',
+            'IDENTIFICA_CUENTA',
+            'CONSERVA',
+            'OFICINA_CLIENTE','FECHA_INICIO_OPERACION'
+        );
+
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'Cuentas Relacionadas PLD Cultiva');
+        $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
+        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
+        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
+
+        $fila +=1;
+
+        /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
+        foreach ($nombreColumna as $key => $value) {
+            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, $value);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_encabezado);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
+        }
+        $fila +=1; //fila donde comenzaran a escribirse los datos
+
+        /* FILAS DEL ARCHIVO EXCEL */
+
+        $Layoutt = OperacionesDao::CuentasRelacionadas($fecha_inicio, $fecha_fin);
+        foreach ($Layoutt as $key => $value) {
+            foreach ($nombreCampo as $key => $campo) {
+                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_celda);
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            }
+            $fila +=1;
+        }
+
+
+        $objPHPExcel->getActiveSheet()->getStyle('A1:'.$columna[count($columna)-1].$fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        for ($i=0; $i <$fila ; $i++) {
+            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(20);
+        }
+
+
+        $objPHPExcel->getActiveSheet()->setTitle('Reporte');
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="ConsultaCuentasRelacionadasCultiva'.$controlador.'.xlsx"');
         header('Cache-Control: max-age=0');
         header('Cache-Control: max-age=1');
         header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
