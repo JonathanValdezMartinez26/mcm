@@ -496,7 +496,7 @@ html;
             fecha2 = getParameterByName('Final');
             
              $("#export_excel_consulta").click(function(){
-              $('#all').attr('action', '/Operaciones/generarExcel/?Inicial='+fecha1+'&Final='+fecha2);
+              $('#all').attr('action', '/Operaciones/generarExcelPagosIC/?Inicial='+fecha1+'&Final='+fecha2);
               $('#all').attr('target', '_blank');
               $("#all").submit();
             });
@@ -556,24 +556,26 @@ html;
                     <td style="padding: 0px !important;">{$value['COLONIA']}</td>
                     <td style="padding: 0px !important;">{$value['CIUDAD']}</td>
                     <td style="padding: 0px !important;">{$value['PAIS']}</td>
-                    <td style="padding: 0px !important;">{$value['ESTADO']}</td>
+                    <td style="padding: 0px !important;">{$value['SUC_ID_ESTADO']}</td>
                     <td style="padding: 0px !important;">{$value['TELEFONO']}</td>
-                    <td style="padding: 0px !important;">{$value['ACTIVIDAD_ECONOMICA']}</td>
+                    <td style="padding: 0px !important;">{$value['ID_ACTIVIDAD_ECONO']}</td>
                     <td style="padding: 0px !important;">{$value['CALIFICACION']}</td>
                     <td style="padding: 0px !important;">{$value['ALTA']}</td>
-                    <td style="padding: 0px !important;">{$value['SUCURSAL']}</td>
+                    <td style="padding: 0px !important;">{$value['ID_SUCURSAL_SISTEMA']}</td>
                     <td style="padding: 0px !important;">{$value['GENERO']}</td>
                     <td style="padding: 0px !important;">{$value['CORREO_ELECTRONICO']}</td>
                     <td style="padding: 0px !important;">{$value['FIRMA_ELECT']}</td>
                     <td style="padding: 0px !important;">{$value['PROFESION']}</td>
+                    <td style="padding: 0px !important;">{$value['OCUPACION']}</td>
                     <td style="padding: 0px !important;">{$value['PAIS_NAC']}</td>
                     <td style="padding: 0px !important;">{$value['EDO_NAC']}</td>
                     <td style="padding: 0px !important;">{$value['LUGAR_NAC']}</td>
+                    
                     <td style="padding: 0px !important;">{$value['NUMERO_DOCUMENTO']}</td>
                     <td style="padding: 0px !important;">{$value['CONOCIMIENTO']}</td>
                     <td style="padding: 0px !important;">{$value['INMIGRACION']}</td>
                     <td style="padding: 0px !important;">{$value['CUENTA_ORIGINAL']}</td>
-                    <td style="padding: 0px !important;">{$value['SITUACION_CLIENTE']}</td>
+                    <td style="padding: 0px !important;">{$value['SITUACION_CREDITO']}</td>
                     <td style="padding: 0px !important;">{$value['TIPO_DOCUMENTO']}</td>
                     <td style="padding: 0px !important;">{$value['INDICADOR_EMPLEO']}</td>
                     <td style="padding: 0px !important;">{$value['EMPRESAS']}</td>
@@ -581,6 +583,7 @@ html;
                     <td style="padding: 0px !important;">{$value['PUESTO']}</td>
                     <td style="padding: 0px !important;">{$value['FECHA_INICIO']}</td>
                     <td style="padding: 0px !important;">{$value['FEH_FIN']}</td>
+                    <td style="padding: 0px !important;">{$value['CP']}</td>
                 </tr>
 html;
             }
@@ -1093,16 +1096,19 @@ html;
             'PAIS NAC.', 'EDO. NAC.', 'LUGAR NAC.', 'NUMERO DE DOCUMENTO', 'CONOCIMIENTO CLIENTE', 'REGISTR O NACIONAL DE INMIGRACION', 'CUENTA ORIGINAL', 'SITUACIÓN CLIENTE', 'TIPO DOCUMENTO', 'INDICADOR EMPLEO', 'EMPRESA LABORA(Ó)',
             'INDICADOR GOBIERNO', 'PUESTO', 'FECHA INICIO', 'FEH FIN');
 
-        $nombreCampo = array('LOCALIDAD','SUCURSAL','TIPO_OPERACION','ID_CLIENTE',
-            'NUM_CUENTA',
-            'INSTRUMENTO_MONETARIO',
-            'MONEDA',
-            'MONTO',
-            'FECHA_OPERACION',
-            'TIPO_RECEPTOR','CLAVE_RECEPTOR','NUM_CAJA','ID_CAJERO','FECHA_HORA','NOTARJETA_CTA',
-            'TIPOTARJETA','COD_AUTORIZACION','ATRASO','OFICINA_CLIENTE', 'FEC_NAC', 'EDAD', 'CICLO'
+        $nombreCampo = array('CDGCL','GRUPO','ORIGEN','NOMBRE',
+            'ADICIONAL',
+            'A_PATERNO',
+            'A_MATERNO',
+            'TIPO_PERSONA',
+            'RFC',
+            'CURP','RAZON_SOCIAL','FECHA_NAC','NACIONALIDAD','DOMICILIO','COLONIA',
+            'CIUDAD','PAIS','SUC_ID_ESTADO','TELEFONO', 'ID_ACTIVIDAD_ECONO', 'CALIFICACION', 'ALTA',
+            'ID_SUCURSAL_SISTEMA', 'GENERO', 'CORREO_ELECTRONICO', 'FIRMA_ELECT', 'PROFESION', 'OCUPACION',
+            'PAIS_NAC', 'EDO_NAC', 'LUGAR_NAC', 'NUMERO_DOCUMENTO', 'CONOCIMIENTO', 'INMIGRACION', 'CUENTA_ORIGINAL',
+            'SITUACION_CREDITO', 'TIPO_DOCUMENTO', 'INDICADOR_EMPLEO', 'EMPRESAS', 'INDICADOR_GOBIERNO', 'PUESTO',
+            'FECHA_INICIO', 'FEH_FIN', 'CP'
         );
-
 
         $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'Consulta de Pagos Cultiva');
         $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);

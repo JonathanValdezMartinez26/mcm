@@ -86,6 +86,7 @@
                                     <th>Puesto</th>
                                     <th>Fecha.Ini</th>
                                     <th>Fecha.Fin</th>
+                                    <th>CP</th>
                             </tr>
                         </thead>
                         <tbody>
