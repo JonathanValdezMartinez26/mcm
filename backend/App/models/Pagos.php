@@ -327,9 +327,19 @@ sql;
 
         $mysqli = Database::getInstance();
         $res_cdgco = $mysqli->queryOne($query_cdgco);
+        //var_dump($query_cdgco);
 
         $cdgco = $res_cdgco['CDGCO'];
         $cdgocpe = $res_cdgco['CDGOCPE'];
+
+        if($cdgco == '026' || $cdgco == '025' || $cdgco == '014')
+            {
+                $cdgco = "'026','025','014'";
+            }
+            else
+            {
+                $cdgco = "'".$cdgco."'";
+            }
 
 
         $query=<<<sql
@@ -340,11 +350,11 @@ FROM
 	PE
 WHERE
 	CDGEM = 'EMPFIN' 
-	AND CDGCO = '$cdgco'
+    AND CDGCO IN($cdgco)
 	AND ACTIVO = 'S'
 ORDER BY 1
 sql;
-
+ //var_dump($query);
         $val = $mysqli->queryAll($query);
         return [$val, $cdgocpe];
 

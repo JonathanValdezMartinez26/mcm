@@ -48,6 +48,8 @@ sql;
         $id_cliente = $credito_['ID_CLIENTE'];
         $id_aval= $credito_['ID_AVAL'];
 
+        //var_dump($id_cliente);
+
         $query2=<<<sql
          SELECT
         CONCATENA_NOMBRE(CL.NOMBRE1,CL.NOMBRE2,CL.PRIMAPE,CL.SEGAPE) NOMBRE,
@@ -57,17 +59,18 @@ sql;
         EDO_CIVIL(CL.EDOCIVIL) EDO_CIVIL,
         CL.TELEFONO,
         EF.NOMBRE ESTADO,
-        MU.NOMBRE MUNICIPIO,
+        UPPER(MU.NOMBRE) MUNICIPIO,
         LO.NOMBRE LOCALIDAD,
         COL.NOMBRE COLONIA,
         COL.CDGPOSTAL CP,
-         CL.CALLE
+        CL.CALLE, PI.NOMBRE ACT_ECO
     FROM
         CL,
         EF,
         MU,
         LO,
-        COL
+        COL, 
+        PI
     WHERE
         CL.CODIGO = '$id_cliente'
         AND EF.CODIGO = CL.CDGEF
@@ -80,6 +83,7 @@ sql;
         AND MU.CODIGO = LO.CDGMU 
         AND MU.CODIGO = COL.CDGMU 
         AND LO.CODIGO = COL.CDGLO
+        AND PI.CDGCL = CL.CODIGO 
 sql;
         $query3=<<<sql
          SELECT
@@ -90,17 +94,19 @@ sql;
         EDO_CIVIL(CL.EDOCIVIL) EDO_CIVIL,
         CL.TELEFONO,
         EF.NOMBRE ESTADO,
-        MU.NOMBRE MUNICIPIO,
+        UPPER(MU.NOMBRE) MUNICIPIO,
         LO.NOMBRE LOCALIDAD,
         COL.NOMBRE COLONIA,
         COL.CDGPOSTAL CP,
-         CL.CALLE
+        CL.CALLE, 
+        PI.NOMBRE ACT_ECO
     FROM
         CL,
         EF,
         MU,
         LO,
-        COL
+        COL, 
+        PI
     WHERE
         CL.CODIGO = '$id_aval'
         AND EF.CODIGO = CL.CDGEF
@@ -113,6 +119,7 @@ sql;
         AND MU.CODIGO = LO.CDGMU 
         AND MU.CODIGO = COL.CDGMU 
         AND LO.CODIGO = COL.CDGLO
+        AND PI.CDGCL = CL.CODIGO 
 sql;
 
         $cliente = $mysqli->queryOne($query2);

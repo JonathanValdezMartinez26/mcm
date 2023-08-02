@@ -100,7 +100,7 @@
                                         <tr>
                                             <td style="font-size: 16px" colspan="6"><b><?php echo $Administracion[0]['CLIENTE']; ?></b></td>
                                             <td style="font-size: 16px" colspan="1">
-                                                <button type="button" class="btn btn-primary" style="border: 1px solid #c4a603; background: #FFFFFF" data-toggle="modal" data-target="#modal_detalle_cliente" data-backdrop="static" data-keyboard="false" onclick="BotonPago('<?php echo $Administracion['SITUACION_NOMBRE']; ?>');">
+                                                <button type="button" class="btn btn-primary" style="border: 1px solid #c4a603; background: #FFFFFF" data-toggle="modal" data-target="#modal_expediente" data-backdrop="static" data-keyboard="false" onclick="BotonPago('<?php echo $Administracion['SITUACION_NOMBRE']; ?>');">
                                                     <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Ver Expediente (CLIENTE)</label>
                                                 </button>
                                             </td>
@@ -120,7 +120,7 @@
                                                 echo $format; ?>
                                             </td>
                                             <td style="font-size: 16px" colspan="5">
-                                                <button type="button" class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_agregar_pago" data-backdrop="static" data-keyboard="false" onclick="BotonPago('<?php echo $Administracion['SITUACION_NOMBRE']; ?>');">
+                                                <button type="button" class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_cliente" data-backdrop="static" data-keyboard="false" onclick="BotonPago('<?php echo $Administracion['SITUACION_NOMBRE']; ?>');">
                                                     <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">Iniciar con la Encuesta (CLIENTE)</label>
                                                 </button>
                                             </td>
@@ -161,13 +161,7 @@
 
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 16px" colspan="6"><?php echo $Administracion[0]['AVAL']; ?></td>
-                                            <td style="font-size: 16px" colspan="1">
-                                                <button type="button" class="btn btn-primary" style="border: 1px solid #c4a603; background: #FFFFFF" data-toggle="modal" data-target="#modal_agregar_pago" data-backdrop="static" data-keyboard="false" onclick="BotonPago('<?php echo $Administracion['SITUACION_NOMBRE']; ?>');">
-                                                    <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Ver Expediente (AVAL)</label>
-                                                </button>
-                                            </td>
-
+                                            <td style="font-size: 16px; padding-bottom: 19px !important; padding-top: 19px !important;" colspan="7"><?php echo $Administracion[0]['AVAL']; ?></td>
                                         </tr>
                                         <tr>
                                             <td style="font-size: 16px" colspan="1"><strong>Encuesta *</strong></td>
@@ -183,7 +177,7 @@
                                                 echo $format; ?>
                                             </td>
                                             <td style="font-size: 16px" colspan="5">
-                                                <button type="button" class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_agregar_pago" data-backdrop="static" data-keyboard="false" onclick="BotonPago('<?php echo $Administracion['SITUACION_NOMBRE']; ?>');">
+                                                <button type="button" class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_aval" data-backdrop="static" data-keyboard="false" onclick="BotonPago('<?php echo $Administracion['SITUACION_NOMBRE']; ?>');">
                                                     <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">Iniciar con la Encuesta (AVAL)</label>
                                                 </button>
                                             </td>
@@ -271,7 +265,7 @@
 
     </div>
 </div>
-<div class="modal fade" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modal_encuesta_cliente" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" style="width: 1300px !important;">
         <div class="modal-content">
             <div class="modal-header">
@@ -285,20 +279,20 @@
                         <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="Fecha">Fecha de trabajo</label>
-                                    <input onkeydown="return false" type="date" class="form-control" id="Fecha" name="Fecha" min="<?php echo $inicio_f; ?>" max="<?php echo $fin_f; ?>" value="<?php echo $fin_f; ?>">
+                                    <label for="Fecha">Fecha de trabajo *</label>
+                                    <input onkeydown="return false" type="text" class="form-control" id="Fecha" name="Fecha" value="<?php echo date("d/m/Y h:i:s"); ?>" readonly>
 
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="movil">Ciclo del Crédito</label>
-                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="01">
+                                    <label for="movil">Ciclo del Crédito Solicitado*</label>
+                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" readonly placeholder="" value="<?php echo $Administracion[0]['CICLO']; ?>">
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="movil">Número de telefono del cliente</label>
+                                    <label for="movil">Núm. telefono del cliente *</label>
                                     <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="<?php
                                     $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
                                     echo $format; ?>">
@@ -306,7 +300,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="tipo">Tipo de llamada que esta realizando</label>
+                                    <label for="tipo">Tipo de llamada que esta realizando *</label>
                                     <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
                                         <option selected disabled value="">Seleccione una opción</option>
                                         <option value="VOZ">VOZ</option>
@@ -317,141 +311,211 @@
                             </div>
 
                         </div>
-                        <div class="row">
-
+                        <div class="">
                             <hr>
                             <h5><b>Preguntas de validación</b></h5>
-                            <hr>
-                            <div class="col-md-3">
+                            <hr style="background: black">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">1.- ¿Qué edad tiene? *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[1]['EDAD']; ?> AÑOS</b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">2.- ¿Cuál es su fecha de nacimiento? *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[1]['NACIMIENTO']; ?></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="tipo">3.- ¿Cuál es su domicilio completo? *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[1]['CALLE']; ?>, <?php echo $Administracion[1]['COLONIA']; ?>, <?php echo $Administracion[1]['MUNICIPIO']; ?>, <?php echo $Administracion[1]['ESTADO']; ?>, C.P:<?php echo $Administracion[1]['CP']; ?>.</b></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr style="margin-top: 2px !important; margin-bottom: 2px !important;">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">4.- ¿Tiempo viviendo en este domicilio? *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="tipo">5.- Actualmente, ¿Cuál es su principal fuente de ingresos? *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[1]['ACT_ECO']; ?></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label for="tipo">6.- Mencione, ¿Cuál es el nombre completo de su aval? *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[0]['AVAL']; ?></b></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr style="margin-top: 2px !important; margin-bottom: 2px !important;">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">7.- Mencione, ¿Qué relación directa tiene con su aval? *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">8.- ¿ Cuál es la actividad económica de su aval? *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[2]['ACT_ECO']; ?></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">9.- Me proporciona el número telefónico de su aval *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php
+                                                $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
+                                                echo $format; ?></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">10.- ¿Firmó su solicitud?, ¿Cuándo firmo la solicitud? *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b></b></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr style="margin-top: 2px !important; margin-bottom: 2px !important;">
+                            <div class="row">
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">11.- Me puede indicar ¿para qué utilizará su crédito? *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">12.- ¿Compartirá su crédito con alguna otra persona? *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b></b></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Respuestas</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_encuesta_aval" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width: 1300px !important;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">AVAL</span>
+                <center><h4 class="modal-title" id="myModalLabel"><?php echo $Administracion[0]['AVAL']; ?></h4></center>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form onsubmit="enviar_add(); return false" id="Add">
+                        <div class="row">
+                            <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="tipo">1.- ¿Qué edad tiene?</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                        <option selected disabled value="">Seleccione una opción</option>
-                                        <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                        <option value="NO">NO RESPONDIO</option>
-                                    </select>
-                                    <p style="color: #007700"><b>R: 18 años</b></p>
+                                    <label for="Fecha">Fecha de trabajo *</label>
+                                    <input onkeydown="return false" type="text" class="form-control" id="Fecha" name="Fecha" value="<?php echo date("d/m/Y h:i:s"); ?>" readonly>
+
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="movil">Ciclo del Crédito Solicitado*</label>
+                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" readonly placeholder="" value="<?php echo $Administracion[0]['CICLO']; ?>">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="movil">Núm. telefono del cliente *</label>
+                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="<?php
+                                    $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
+                                    echo $format; ?>">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="tipo">2.- ¿Cuál es su fecha de nacimiento?</label>
+                                    <label for="tipo">Tipo de llamada que esta realizando *</label>
                                     <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
                                         <option selected disabled value="">Seleccione una opción</option>
-                                        <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                        <option value="NO">NO RESPONDIO</option>
+                                        <option value="VOZ">VOZ</option>
+                                        <option value="WHATSAPP">WHATSAPP</option>
+                                        <option value="VIDEO LLAMADA">VIDEO LLAMADA</option>
                                     </select>
-                                    <p style="color: #007700"><b>R: 18 años</b></p>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">3.- ¿Cuál es su domicilio completo?</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                        <option selected disabled value="">Seleccione una opción</option>
-                                        <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                        <option value="NO">NO RESPONDIO</option>
-                                    </select>
-                                    <p style="color: #007700"><b>R: 18 años</b></p>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">4.- ¿Tiempo viviendo en este domicilio?</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                        <option selected disabled value="">Seleccione una opción</option>
-                                        <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                        <option value="NO">NO RESPONDIO</option>
-                                    </select>
-                                    <p style="color: #007700"><b>R: 18 años</b></p>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">5.- Actualmente, ¿Cuál es su principal fuente de ingresos?</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                        <option selected disabled value="">Seleccione una opción</option>
-                                        <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                        <option value="NO">NO RESPONDIO</option>
-                                    </select>
-                                    <p style="color: #007700"><b>R: 18 años</b></p>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">6.- Mencione, ¿Cuál es el nombre completo de su aval?</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                        <option selected disabled value="">Seleccione una opción</option>
-                                        <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                        <option value="NO">NO RESPONDIO</option>
-                                    </select>
-                                    <p style="color: #007700"><b>R: 18 años</b></p>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">7.- Mencione, ¿Qué relación directa tiene con su aval?</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                        <option selected disabled value="">Seleccione una opción</option>
-                                        <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                        <option value="NO">NO RESPONDIO</option>
-                                    </select>
-                                    <p style="color: #007700"><b>R: 18 años</b></p>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">8.- ¿ Cuál es la actividad económica de su aval?</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                        <option selected disabled value="">Seleccione una opción</option>
-                                        <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                        <option value="NO">NO RESPONDIO</option>
-                                    </select>
-                                    <p style="color: #007700"><b>R: 18 años</b></p>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">9.- Me proporciona el número telefónico de su aval</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                        <option selected disabled value="">Seleccione una opción</option>
-                                        <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                        <option value="NO">NO RESPONDIO</option>
-                                    </select>
-                                    <p style="color: #007700"><b>R: 18 años</b></p>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">10.- ¿Firmó su solicitud?, ¿Cuándo firmo la solicitud?</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                        <option selected disabled value="">Seleccione una opción</option>
-                                        <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                        <option value="NO">NO RESPONDIO</option>
-                                    </select>
-                                    <p style="color: #007700"><b>R: 18 años</b></p>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">11.- Me puede indicar ¿para qué utilizará su crédito?</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                        <option selected disabled value="">Seleccione una opción</option>
-                                        <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                        <option value="NO">NO RESPONDIO</option>
-                                    </select>
-                                    <p style="color: #007700"><b>R: 18 años</b></p>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">12.- ¿Compartirá su crédito con alguna otra persona?</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                        <option selected disabled value="">Seleccione una opción</option>
-                                        <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                        <option value="NO">NO RESPONDIO</option>
-                                    </select>
-                                    <p style="color: #007700"><b>R: 18 años</b></p>
                                 </div>
                             </div>
                         </div>
@@ -460,6 +524,287 @@
                             <hr>
                             <h5><b>Preguntas de validación</b></h5>
                             <hr>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">1.- ¿Qué edad tiene?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[2]['EDAD']; ?> AÑOS</b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">2.- ¿Cuál es su fecha de nacimiento?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[2]['NACIMIENTO']; ?></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="tipo">3.- ¿Cuál es su domicilio completo?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[2]['CALLE']; ?>, <?php echo $Administracion[2]['COLONIA']; ?>, <?php echo $Administracion[2]['MUNICIPIO']; ?>, <?php echo $Administracion[2]['ESTADO']; ?>, C.P:<?php echo $Administracion[2]['CP']; ?>.</b></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr style="margin-top: 2px !important; margin-bottom: 2px !important;">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="tipo">4.- ¿Tiempo viviendo en este domicilio?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="tipo">5.- Actualmente, ¿Cuál es su principal fuente de ingresos?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[2]['ACT_ECO']; ?> </b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="tipo">6.- ¿Hace cuanto conoce a <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b></b></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr style="margin-top: 2px !important; margin-bottom: 2px !important;">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">7.- Mencione, ¿Qué relación directa tiene con <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">8.- ¿Sabe a que se dedica <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[1]['ACT_ECO']; ?></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">9.- Me proporciona el número telefónico de <?php echo $Administracion[0]['CLIENTE']; ?></label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php
+                                                $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
+                                                echo $format; ?></b></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Respuestas</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_expediente" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width: 1300px !important;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">AVAL</span>
+                <center><h4 class="modal-title" id="myModalLabel"><?php echo $Administracion[0]['AVAL']; ?></h4></center>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form onsubmit="enviar_add(); return false" id="Add">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="Fecha">Fecha de trabajo *</label>
+                                    <input onkeydown="return false" type="text" class="form-control" id="Fecha" name="Fecha" value="<?php echo date("d/m/Y h:i:s"); ?>" readonly>
+
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="movil">Ciclo del Crédito Solicitado*</label>
+                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" readonly placeholder="" value="<?php echo $Administracion[0]['CICLO']; ?>">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="movil">Núm. telefono del cliente *</label>
+                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="<?php
+                                    $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
+                                    echo $format; ?>">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="tipo">Tipo de llamada que esta realizando *</label>
+                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <option selected disabled value="">Seleccione una opción</option>
+                                        <option value="VOZ">VOZ</option>
+                                        <option value="WHATSAPP">WHATSAPP</option>
+                                        <option value="VIDEO LLAMADA">VIDEO LLAMADA</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+
+                            <hr>
+                            <h5><b>Preguntas de validación</b></h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">1.- ¿Qué edad tiene?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[2]['EDAD']; ?> AÑOS</b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">2.- ¿Cuál es su fecha de nacimiento?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[2]['NACIMIENTO']; ?></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="tipo">3.- ¿Cuál es su domicilio completo?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[2]['CALLE']; ?>, <?php echo $Administracion[2]['COLONIA']; ?>, <?php echo $Administracion[2]['MUNICIPIO']; ?>, <?php echo $Administracion[2]['ESTADO']; ?>, C.P:<?php echo $Administracion[2]['CP']; ?>.</b></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr style="margin-top: 2px !important; margin-bottom: 2px !important;">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="tipo">4.- ¿Tiempo viviendo en este domicilio?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="tipo">5.- Actualmente, ¿Cuál es su principal fuente de ingresos?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[2]['ACT_ECO']; ?> </b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="tipo">6.- ¿Hace cuanto conoce a <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b></b></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr style="margin-top: 2px !important; margin-bottom: 2px !important;">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">7.- Mencione, ¿Qué relación directa tiene con <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">8.- ¿Sabe a que se dedica <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php echo $Administracion[1]['ACT_ECO']; ?></b></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="tipo">9.- Me proporciona el número telefónico de <?php echo $Administracion[0]['CLIENTE']; ?></label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="NO">NO RESPONDIO</option>
+                                        </select>
+                                        <p style="color: #007700"><b>R: <?php
+                                                $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
+                                                echo $format; ?></b></p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                 </div>
             </div>
@@ -473,45 +818,5 @@
     </div>
 </div>
 
-<div class="modal fade" id="modal_detalle_cliente" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" style="width: 1300px !important;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">CLIENTE</span>
-                <center><h4 class="modal-title" id="myModalLabel"><?php echo $Administracion[0]['CLIENTE']; ?></h4></center>
-            </div>
-            <div class="modal-body">
-                <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label for="Fecha">Fecha de trabajo</label>
-                                    <input onkeydown="return false" type="date" class="form-control" id="Fecha" name="Fecha" min="<?php echo $inicio_f; ?>" max="<?php echo $fin_f; ?>" value="<?php echo $fin_f; ?>">
-
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label for="movil">Ciclo del Crédito</label>
-                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="01">
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label for="movil">Número de telefono del cliente</label>
-                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="<?php
-                                    $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
-                                    echo $format; ?>">
-                                </div>
-                            </div>
-                        </div>
-
-                    S
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <?php echo $footer; ?>
