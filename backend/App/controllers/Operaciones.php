@@ -27,7 +27,7 @@ class Operaciones extends Controller
     public function ReportePLDPagos()
     {
         $extraHeader = <<<html
-        <title>Consulta de Desembolsos Cultiva</title>
+        <title>Consulta de Pagos Cultiva</title>
         <link rel="shortcut icon" href="/img/logo.png">
 html;
 
