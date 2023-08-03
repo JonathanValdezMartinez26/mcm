@@ -175,10 +175,11 @@ sql;
 		AND SC.CICLO = SN.CICLO
 	    AND PRN.CICLO = SC.CICLO 
 		AND PRN.CDGNS = SC.CDGNS 
+		AND PRN.SITUACION IN('E', 'L')
 	    $Q1
 		AND SC.CANTSOLIC <> '9999' order by SC.SOLICITUD  desc
 sql;
-        //_dump($query);
+        //var_dump($query);
         $mysqli = Database::getInstance();
         //var_dump($mysqli->queryOne($query));
         return $mysqli->queryOne($query);

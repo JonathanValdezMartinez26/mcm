@@ -876,6 +876,7 @@ html;
 
             $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__usuario);
 
+
             if($AdministracionOne['NO_CREDITO'] == '')
             {
                 View::set('header', $this->_contenedor->header($extraHeader));
