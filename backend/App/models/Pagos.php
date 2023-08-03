@@ -352,6 +352,7 @@ WHERE
 	CDGEM = 'EMPFIN' 
     AND CDGCO IN($cdgco)
 	AND ACTIVO = 'S'
+    AND BLOQUEO = 'N'
 ORDER BY 1
 sql;
  //var_dump($query);
