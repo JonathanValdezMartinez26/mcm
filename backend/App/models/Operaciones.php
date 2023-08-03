@@ -125,28 +125,34 @@ sql;
                 WHEN IB.CODIGO = 05 THEN '003' ----------------------- OXXO
                 WHEN IB.CODIGO = 00 THEN '001' ----------------------- ES BANORTE PERO PASA A IMBURSA
                 WHEN IB.CODIGO = 04 THEN '004' ----------------------- SON GARANTIAS
-                ELSE '000' END AS SUCURSAL,
-                '09' AS TIPO_OPERACION, CL.CODIGO AS ID_CLIENTE, 
+                ELSE '000' END AS SUCURSAL, 
+                        '09' AS TIPO_OPERACION, CL.CODIGO AS ID_CLIENTE, 
                         PRC.CDGNS AS NUM_CUENTA, '01' AS INSTRUMENTO_MONETARIO, 'MXN' AS MONEDA, 
                         ROUND((MP.CANTIDAD * PRC.CANTENTRE)/PRN.CANTENTRE, 3)  AS MONTO, to_char(MP.FDEPOSITO,'yyyymmdd') AS FECHA_OPERACION,  
                         (CASE WHEN (CB.NOMBRE = 'OXXO' || 'PAYCASH') THEN 1 ELSE 4 END) AS TIPO_RECEPTOR,
                         (CASE WHEN (IB.NOMBRE = 'BANORTE') THEN 'INBURSA' ELSE  IB.NOMBRE END) AS CLAVE_RECEPTOR, '0' AS NUM_CAJA, '0' AS ID_CAJERO, to_char(MP.FDEPOSITO,'yyyymmdd') AS FECHA_HORA,
                         '036180500609569035' AS NOTARJETA_CTA, '4' AS TIPOTARJETA, '0' AS COD_AUTORIZACION, 'NO' AS ATRASO,
                         PRN.CDGCO AS OFICINA_CLIENTE, PRN.SITUACION, MP.FDEPOSITO
-                FROM PRC
-                INNER JOIN PRN ON PRC.CDGNS = PRN.CDGNS
-                INNER JOIN MP ON PRN.CDGNS = MP.CDGNS
-                INNER JOIN CL ON CL.CODIGO = PRC.CDGCL
-                INNER JOIN EF ON CL.CDGEF = EF.CODIGO -------------EF ES EL ESTADO
-                INNER JOIN CB ON CB.CODIGO = MP.CDGCB  -------------CB ES EL
-                INNER JOIN IB ON CB.CDGIB = IB.CODIGO -------------IB ES EL LISTADOI DE LOS BANCOS
+    
+                FROM MP 
                 
-                WHERE MP.CDGEM = 'EMPFIN' AND MP.TIPO = 'PD' AND MP.ESTATUS = 'B'
-                AND (CDGNS) IN (SELECT CDGNS FROM MP)
-                AND MP.CDGNS = PRN.CDGNS
-                AND PRN.CDGNS = PRC.CDGNS
-                AND prn.SITUACION = 'E'
-                AND PRN.INICIO BETWEEN TO_DATE('$Inicial', 'YY-mm-dd') AND TO_DATE('$Final', 'YY-mm-dd') ORDER BY PRN.INICIO
+                INNER JOIN PRN ON PRN.CDGNS = MP.CDGNS 
+                INNER JOIN PRC ON PRC.CDGNS  = PRN.CDGNS 
+                INNER JOIN CL ON CL.CODIGO = PRC.CDGCL 
+                INNER JOIN EF ON CL.CDGEF = EF.CODIGO 
+                INNER JOIN CB ON CB.CODIGO = MP.CDGCB 
+                INNER JOIN IB ON IB.CODIGO = CB.CDGIB
+                
+                
+                WHERE MP.CDGEM = 'EMPFIN' 
+                AND MP.TIPO = 'PD' 
+                AND MP.ESTATUS = 'B'
+                AND MP.CICLO = PRC.CICLO 
+                AND MP.CICLO = PRN.CICLO 
+                AND MP.CDGNS = PRC.CDGNS 
+                AND MP.CDGNS = PRN.CDGNS 
+
+                AND MP.FDEPOSITO BETWEEN TO_DATE('$Inicial', 'YY-mm-dd') AND TO_DATE('$Final', 'YY-mm-dd') ORDER BY PRN.CICLO  DESC
 sql;
 
         //$query=<<<sql
