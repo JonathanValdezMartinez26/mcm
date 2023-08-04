@@ -17,7 +17,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="col-md-3">
-                                    <select class="form-control mr-sm-3" style="font-size: 18px;" autofocus type="select" id="id_sucursal" name="id_sucursal" placeholder="000000" aria-label="Search">
+                                    <select class="form-control mr-sm-3" autofocus type="select" id="id_sucursal" name="id_sucursal" placeholder="000000" aria-label="Search">
                                         <?php echo $getSucursales; ?>
                                     </select>
                                     <span id="availability1" style="font-size:15px">Sucursales</span>
