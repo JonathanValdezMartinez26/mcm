@@ -113,11 +113,9 @@ sql;
         } catch (Exception $e) {
             return "";
         }
-
     }
 
     public static function ConsultarPagos($Inicial, $Final){
-
         $query=<<<sql
                 SELECT PRN.CANTENTRE, PRC.CDGEM, PRN.CICLO, EF.NOMBRE AS LOCALIDAD,
                 CASE WHEN IB.CODIGO  = 13 THEN '001' ------------------------ IMBURSA
