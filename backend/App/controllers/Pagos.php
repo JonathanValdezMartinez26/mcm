@@ -855,8 +855,6 @@ html;
         }
 
 
-
-
         $status = PagosDao::ListaEjecutivosAdmin($credito);
         foreach ($status[0] as $key => $val2) {
             if($status[1] == $val2['ID_EJECUTIVO'])

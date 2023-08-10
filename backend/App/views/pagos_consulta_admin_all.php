@@ -16,13 +16,13 @@
                     <form class="" action="/Pagos/" method="GET">
                         <div class="row">
                             <div class="col-md-3">
-                                <select class="form-control mr-sm-3" style="font-size: 21px;" autofocus type="select" id="id_sucursal" name="id_sucursal" placeholder="000000" aria-label="Search">
+                                <select class="form-control mr-sm-3" autofocus type="select" id="id_sucursal" name="id_sucursal" placeholder="000000" aria-label="Search">
                                     <?php echo $getSucursales; ?>
                                 </select>
                                 <span id="availability1"></span>
                             </div>
                             <div class="col-md-4">
-                                <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="number" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
+                                <input class="form-control mr-sm-2" autofocus type="number" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
                                 <span id="availability1"></span>
                             </div>
                             <div class="col-md-4">

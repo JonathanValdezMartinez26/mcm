@@ -14,15 +14,15 @@
 
                 <div class="card-body">
                     <form class="" action="/Pagos/" method="GET">
-                        <div class="col-md-12">
-                            <div class="col-md-3 col-sm-6 .col-xs-12	">
-                                <select class="form-control mr-sm-3" style="font-size: 21px;" autofocus type="select" placeholder="000000" aria-label="Search">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <select class="form-control sm-3 mr-sm-3" autofocus type="select" id="" name="" placeholder="000000" aria-label="Search">
                                     <option value="credito">Crédito</option>
                                 </select>
                                 <span id="availability1"></span>
                             </div>
                             <div class="col-md-4">
-                                <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="text" onKeypress="if (event.keyCode < 9 || event.keyCode > 57) event.returnValue = false;" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
+                                <input class="form-control mr-sm-2" autofocus type="text" onKeypress="if (event.keyCode < 9 || event.keyCode > 57) event.returnValue = false;" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
                                 <span id="availability1"></span>
                             </div>
                             <div class="col-md-4">

@@ -23,11 +23,11 @@
                                     <span id="availability1" style="font-size:15px">Sucursales</span>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $Inicial; ?>">
+                                    <input class="form-control mr-sm-2" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $Inicial; ?>">
                                     <span id="availability1" style="font-size:15px">Desde</span>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $Final; ?>">
+                                    <input class="form-control mr-sm-2" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $Final; ?>">
                                     <span id="availability1" style="font-size:15px">Hasta</span>
                                 </div>
                                 <div class="col-md-2">

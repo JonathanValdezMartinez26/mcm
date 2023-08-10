@@ -9,7 +9,7 @@
 
             <div class="card card-danger col-md-5" >
                 <div class="card-header">
-                    <h5 class="card-title">Ingrese el número de crédito y el ciclo del crédito a reactivar</h5>
+                    <h5 class="card-title">Ingrese el número de crédito y ciclo</h5>
                 </div>
 
                 <div class="card-body">
@@ -31,8 +31,22 @@
                 </div>
 
             </div>
-
-
+            <div class="card col-md-12">
+                <hr style="border-top: 1px solid #787878; margin-top: 5px;">
+                <div class="row" >
+                    <div class="tile_count float-right col-sm-12" style="margin-bottom: 1px; margin-top: 1px">
+                        <div class="x_content">
+                            <br />
+                            <div class="alert alert-warning alert-dismissable">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                <label style="font-size: 14px; color: black;">Crédito no encontrado para calcular devengo de días:</label> <li style="color: black;">Valide que el número de crédito sea correcto y tenga un crédito con liquidación anticipada. </li> <li style="color: black;">Si el problema persiste, comuníquese con soporte técnico.</li>
+                                <br>
+                                <a href="/Creditos/ControlGarantias/" class="alert-link">Regresar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

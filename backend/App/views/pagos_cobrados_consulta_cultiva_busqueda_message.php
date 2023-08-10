@@ -18,12 +18,12 @@
                             <div class="col-md-12">
 
                                 <div class="col-md-3">
-                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $fechaActual; ?>">
-                                    <span id="availability1" style="font-size:15px">Desde</span>
+                                    <input class="form-control mr-sm-2" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $fechaActual; ?>">
+                                    <span id="availability1">Desde</span>
                                 </div>
                                 <div class="col-md-3">
-                                    <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $fechaActual; ?>">
-                                    <span id="availability1" style="font-size:15px">Hasta</span>
+                                    <input class="form-control mr-sm-2" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $fechaActual; ?>">
+                                    <span id="availability1">Hasta</span>
                                 </div>
                                 <div class="col-md-2">
                                     <button class="btn btn-default" type="submit">Buscar</button>

@@ -17,11 +17,11 @@
                     <form class="" action="/Pagos/Layout/" method="GET">
                         <div class="row">
                             <div class="col-md-4">
-                                <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Inicial" name="Inicial" value="<?php echo $fechaActual; ?>" required="required">
+                                <input class="form-control mr-sm-2" autofocus type="date" id="Inicial" name="Inicial" value="<?php echo $fechaActual; ?>" required="required">
                                 <span id="availability1"></span>
                             </div>
                             <div class="col-md-4">
-                                <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="date" id="Final" name="Final" value="<?php echo $fechaActual; ?>" required="required">
+                                <input class="form-control mr-sm-2" autofocus type="date" id="Final" name="Final" value="<?php echo $fechaActual; ?>" required="required">
                                 <span id="availability1"></span>
                             </div>
                             <div class="col-md-4">

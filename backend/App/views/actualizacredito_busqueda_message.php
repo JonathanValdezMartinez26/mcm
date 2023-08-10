@@ -16,7 +16,7 @@
                 <form class="" action="/Creditos/ActualizaCredito/" method="GET">
                     <div class="row">
                         <div class="col-md-3">
-                            <select class="form-control mr-sm-3" style="font-size: 21px;" autofocus type="select" id="" name="" placeholder="000000" aria-label="Search">
+                            <select class="form-control mr-sm-3" style="font-size: 25px;" autofocus type="select" id="" name="" placeholder="000000" aria-label="Search">
                                 <option value="credito">Crédito</option>
                                 <option value="fecha">Fecha</option>
                             </select>

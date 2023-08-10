@@ -103,6 +103,7 @@ html;
         {
             $menu.=<<<html
             <li><a href="/Pagos/">Admninistración</a></li>
+            <li><a href="/Pagos/AdminBitacora">Admninistración Bitácora</a></li>
             <li><a href="/Pagos/Layout/">Layout</a></li> 
 html;
         }

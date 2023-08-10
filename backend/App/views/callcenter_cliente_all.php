@@ -3,7 +3,6 @@
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body" style="margin-bottom: 7px;">
             <div class="">
-
                     <div class="box-tools pull-left" data-toggle="tooltip" title="" data-original-title="Regresa a la página anterior para verl el listado de solicitudes">
                         <h3> Validación de Cliente y Aval</h3>
                     </div>
@@ -13,8 +12,6 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
 
         <div class="row">
@@ -98,7 +95,7 @@
 
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 16px" colspan="6"><b><?php echo $Administracion[0]['CLIENTE']; ?></b></td>
+                                            <td style="font-size: 16px; padding-bottom: 19px !important; padding-top: 19px !important;" colspan="6"><b><?php echo $Administracion[0]['CLIENTE']; ?> (<?php echo $Administracion[0]['ID_CLIENTE']; ?>)</b></td>
                                             <td style="font-size: 16px" colspan="1">
                                                 <button type="button" class="btn btn-primary" style="border: 1px solid #c4a603; background: #FFFFFF" data-toggle="modal" data-target="#modal_expediente" data-backdrop="static" data-keyboard="false" onclick="BotonPago('<?php echo $Administracion['SITUACION_NOMBRE']; ?>');">
                                                     <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Ver Expediente (CLIENTE)</label>
@@ -161,7 +158,7 @@
 
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 16px; padding-bottom: 19px !important; padding-top: 19px !important;" colspan="7"><?php echo $Administracion[0]['AVAL']; ?></td>
+                                            <td style="font-size: 16px; padding-bottom: 19px !important; padding-top: 19px !important;" colspan="7"><?php echo $Administracion[0]['AVAL']; ?> (<?php echo $Administracion[0]['ID_AVAL']; ?>)</td>
                                         </tr>
                                         <tr>
                                             <td style="font-size: 16px" colspan="1"><strong>Encuesta *</strong></td>
@@ -275,33 +272,56 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form onsubmit="enviar_add(); return false" id="Add">
+                    <form onsubmit="enviar_add_cl(); return false" id="Add_cl">
                         <div class="row">
-                            <div class="col-md-2">
+                            <div class="col-md-2" style="display: none;">
                                 <div class="form-group">
-                                    <label for="Fecha">Fecha de trabajo *</label>
-                                    <input onkeydown="return false" type="text" class="form-control" id="Fecha" name="Fecha" value="<?php echo date("d/m/Y h:i:s"); ?>" readonly>
-
+                                    <label for="fecha_solicitud">Fecha de solicitud *</label>
+                                    <input onkeydown="return false" type="text" class="form-control" id="fecha_solicitud" name="fecha_solicitud" value="<?php echo $Administracion[0]['FECHA_SOL']; ?>" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-2" style="display: none;">
+                                <div class="form-group">
+                                    <label for="cdgco">CDGCO *</label>
+                                    <input onkeydown="return false" type="text" class="form-control" id="cdgco" name="cdgco" value="<?php echo $suc; ?>" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-2" style="display: none;">
+                                <div class="form-group">
+                                    <label for="cdgre">CDGRE *</label>
+                                    <input onkeydown="return false" type="text" class="form-control" id="cdgre" name="cdgre" value="<?php echo $reg; ?>" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-2" style="display: none;">
+                                <div class="form-group">
+                                    <label for="cliente_id">Cliente ID CLIENTE *</label>
+                                    <input onkeydown="return false" type="text" class="form-control" id="cliente_id" name="cliente_id" value="<?php echo $Administracion[0]['ID_CLIENTE']; ?>" readonly>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="movil">Ciclo del Crédito Solicitado*</label>
-                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" readonly placeholder="" value="<?php echo $Administracion[0]['CICLO']; ?>">
+                                    <label for="fecha_cl">Fecha de trabajo *</label>
+                                    <input onkeydown="return false" type="text" class="form-control" id="fecha_cl" name="fecha_cl" value="<?php echo date("Y-m-d h:i:s"); ?>" readonly>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="movil">Núm. telefono del cliente *</label>
-                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="<?php
+                                    <label for="ciclo_cl">Ciclo del Crédito Solicitado*</label>
+                                    <input type="text" class="form-control" id="ciclo_cl" name="ciclo_cl" aria-describedby="ciclo_cl" readonly placeholder="" value="<?php echo $Administracion[0]['CICLO']; ?>">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="movil_cl">Núm. telefono del cliente *</label>
+                                    <input type="text" class="form-control" id="movil_cl" name="movil_cl" aria-describedby="movil_cl" readonly placeholder="" value="<?php
                                     $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
                                     echo $format; ?>">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="tipo">Tipo de llamada que esta realizando *</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                    <label for="tipo_llamada_cl">Tipo de llamada que esta realizando *</label>
+                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo_llamada_cl" name="tipo_llamada_cl">
                                         <option selected disabled value="">Seleccione una opción</option>
                                         <option value="VOZ">VOZ</option>
                                         <option value="WHATSAPP">WHATSAPP</option>
@@ -319,7 +339,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tipo">1.- ¿Qué edad tiene? *</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="uno_cl" name="uno_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -330,7 +350,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tipo">2.- ¿Cuál es su fecha de nacimiento? *</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="dos_cl" name="dos_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -341,7 +361,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="tipo">3.- ¿Cuál es su domicilio completo? *</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tres_cl" name="tres_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -355,7 +375,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tipo">4.- ¿Tiempo viviendo en este domicilio? *</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="cuatro_cl" name="cuatro_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -366,7 +386,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="tipo">5.- Actualmente, ¿Cuál es su principal fuente de ingresos? *</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="cinco_cl" name="cinco_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -377,7 +397,7 @@
                                 <div class="col-md-5">
                                     <div class="form-group">
                                         <label for="tipo">6.- Mencione, ¿Cuál es el nombre completo de su aval? *</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="seis_cl" name="seis_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -391,7 +411,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tipo">7.- Mencione, ¿Qué relación directa tiene con su aval? *</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="siete_cl" name="siete_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -402,7 +422,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tipo">8.- ¿ Cuál es la actividad económica de su aval? *</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="ocho_cl" name="ocho_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -413,7 +433,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tipo">9.- Me proporciona el número telefónico de su aval *</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="nueve_cl" name="nueve_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -426,7 +446,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tipo">10.- ¿Firmó su solicitud?, ¿Cuándo firmo la solicitud? *</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="diez_cl" name="diez_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -441,7 +461,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tipo">11.- Me puede indicar ¿para qué utilizará su crédito? *</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="once_cl" name="once_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -452,7 +472,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tipo">12.- ¿Compartirá su crédito con alguna otra persona? *</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="doce_cl" name="doce_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -484,33 +504,33 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form onsubmit="enviar_add(); return false" id="Add">
+                    <form onsubmit="enviar_add_av(); return false" id="Add_av">
                         <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="Fecha">Fecha de trabajo *</label>
-                                    <input onkeydown="return false" type="text" class="form-control" id="Fecha" name="Fecha" value="<?php echo date("d/m/Y h:i:s"); ?>" readonly>
+                                    <label for="Fecha_av">Fecha de trabajo *</label>
+                                    <input onkeydown="return false" type="text" class="form-control" id="Fecha_av" name="Fecha_av" value="<?php echo date("d/m/Y h:i:s"); ?>" readonly>
 
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="movil">Ciclo del Crédito Solicitado*</label>
-                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" readonly placeholder="" value="<?php echo $Administracion[0]['CICLO']; ?>">
+                                    <label for="ciclo_av">Ciclo del Crédito Solicitado*</label>
+                                    <input type="text" class="form-control" id="ciclo_av" aria-describedby="ciclo_av" readonly placeholder="" value="<?php echo $Administracion[0]['CICLO']; ?>">
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="movil">Núm. telefono del cliente *</label>
-                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="<?php
+                                    <label for="movil_av">Núm. telefono del cliente *</label>
+                                    <input type="text" class="form-control" id="movil_av" aria-describedby="movil_av" disabled placeholder="" value="<?php
                                     $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
                                     echo $format; ?>">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="tipo">Tipo de llamada que esta realizando *</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                    <label for="tipo_cl">Tipo de llamada que esta realizando *</label>
+                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo_cl" name="tipo_cl">
                                         <option selected disabled value="">Seleccione una opción</option>
                                         <option value="VOZ">VOZ</option>
                                         <option value="WHATSAPP">WHATSAPP</option>

@@ -68,18 +68,19 @@ static $_mail;
 
         if($params == '' ){
             try{
-		$this->_mysqli->beginTransaction();
+		        $this->_mysqli->beginTransaction();
                 $stmt = $this->_mysqli->exec($sql);
                 $res = $this->_mysqli->lastInsertId();
                 $this->_mysqli->commit();
                 return $res;
-            }catch(\PDOException $e){
-		$this->_mysqli->rollback();
-		if(self::$_mail)
-                    mail(self::MAIL,'error en insert '.self::TEMA,"Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1));
-		if(self::$_debug)
-		    echo $e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1);
-
+            }
+            catch(\PDOException $e)
+            {
+                $this->_mysqli->rollback();
+                if(self::$_mail)
+                            mail(self::MAIL,'error en insert '.self::TEMA,"Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1));
+                if(self::$_debug)
+                    echo $e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1);
                 return false;
             }
         }else{
