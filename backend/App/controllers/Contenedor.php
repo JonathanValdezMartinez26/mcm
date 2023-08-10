@@ -70,7 +70,7 @@ $menu =<<<html
 
       <div class="col-md-3 left_col">
         <div class="left_col scroll-view">
-          <div class="navbar nav_title" style="border: 0;">
+          <div class="navbar nav_title" style="border: 0;"> 
             <a href="/Principal/" class="site_title"><i class="fa fa-home"></i> <span>MCM</span></a>
           </div>
           <div class="clearfix"></div>

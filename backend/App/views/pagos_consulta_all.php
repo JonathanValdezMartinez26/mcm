@@ -16,7 +16,7 @@
                     <form class="" action="/Pagos/PagosConsulta/" method="GET">
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <select class="form-control mr-sm-3" autofocus type="select" id="id_sucursal" name="id_sucursal" placeholder="000000" aria-label="Search">
                                         <?php echo $getSucursales; ?>
                                     </select>
