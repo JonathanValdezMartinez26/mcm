@@ -227,7 +227,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="movil_e">Medio de Registro</label>
-                                    <input type="text" class="form-control" id="movil_e" aria-describedby="movil_e" disabled placeholder="" value="ADMINISTRADORA">
+                                    <input type="text" class="form-control" id="movil_e" aria-describedby="movil_e" disabled placeholder="" value="CAJERA">
                                     <small id="emailHelp" class="form-text text-muted">Medio de registro del pago.</small>
                                 </div>
                             </div>
