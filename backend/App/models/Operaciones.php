@@ -248,4 +248,28 @@ sql;
 
     }
 
+    public static function ConsultarPerfilTransaccional($Inicial, $Final){
+
+
+        $query=<<<sql
+                SELECT CDGCL, GRUPO, NOMBRE, INSTRUMENTO, TIPO_MONEDA, T_CAMBIO, MONT_PRESTAMO,
+              PLAZO, FRECUENCIA, TOTAL_PAGOS, MONTO_FIN_PAGO, ADELANTAR_PAGO, NUMERO_APORTACIONES,
+              MONTO_APORTACIONES, CUOTA_PAGO, SALDO, ID_SUCURSAL_SISTEMA, ORIGEN_RECURSO, 
+              DESTINO_RECURSOS, FECHA_INICIO_CREDITO, FECHA_FIN, DESTINO, ORIGEN, TIPO_OPERACION, INST_MONETARIO, TIPO_CREDITO,
+              PRODUCTO, PAIS_ORIGEN, PAIS_DESTINO, ALTA_CONTRATO, FECHA_ALTA
+              FROM PERFIL_TRANSACCIONAL 
+              WHERE FECHA_ALTA BETWEEN TO_DATE('$Inicial', 'YY-mm-dd') 
+              AND TO_DATE('$Final' , 'YY-mm-dd') 
+              AND ULTIMO_CICLO != 'D1';
+sql;
+
+        try {
+            $mysqli = Database_cultiva::getInstance();
+            return $mysqli->queryAll($query);
+        } catch (Exception $e) {
+            return "";
+        }
+
+    }
+
 }

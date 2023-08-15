@@ -323,6 +323,10 @@
         document.getElementById("monto_e").value = monto;
         document.getElementById("secuencia_e").value = secuencia;
 
+        if(tipo_pago != 'G')
+        {
+
+        }
         const $select = document.querySelector('#tipo_e');
         $select.value = tipo_pago;
 

@@ -375,7 +375,7 @@ html;
         $encuesta->_once = MasterDom::getData('once');
         $encuesta->_doce = MasterDom::getData('doce');
 
-        $id = CallCenterDao::insertEncuenstaCL($encuesta);
+        $id = CallCenterDao::insertEncuestaCL($encuesta);
         //var_dump($id);
 
     }

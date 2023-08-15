@@ -199,7 +199,7 @@ sql;
 
     }
 
-    public static function insertEncuenstaCL($encuesta){
+    public static function insertEncuestaCL($encuesta){
 
         $mysqli = Database::getInstance(1);
         $query=<<<sql
@@ -213,7 +213,7 @@ sql;
             ':cdgre'=>$encuesta->_cdgre
         );
 
-        //var_dump($query);
+        var_dump($query);
         return $mysqli->insert($query, $parametros);
     }
 
