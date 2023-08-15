@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form class="" id="consulta" action="/Operaciones/CuentasRelacionadas/" method="GET" onsubmit="return Validar()">
+                    <form class="" id="consulta" action="/Operaciones/PerfilTransaccional/" method="GET" onsubmit="return Validar()">
                         <div class="row">
                             <div class="col-md-12">
 
@@ -44,17 +44,40 @@
                         <thead>
                         <tr>
                             <th>Cliente</th>
-                            <th>Número Cuenta- Contrato</th>
-                            <th>No.Cuenta Relación</th>
-                            <th>Nombre</th>
-                            <th>Adicional</th>
-                            <th>Apellido P</th>
-                            <th>Apellido M</th>
-                            <th>Desc. Operacion</th>
-                            <th>Identifica Cuenta</th>
-                            <th>Conserva</th>
-                            <th>Oficina Cliente</th>
-                            <th>Inicio Oper</th>
+                            <th>Grupo</th>
+                            <th>Nombre Comp</th>
+                            <th>Instrumento</th>
+                            <th>Tipo_Moneda</th>
+                            <th>T Cambio</th>
+                            <th>Monto Presta</th>
+                            <th>Plazo</th>
+                            <th>Frecuencia</th>
+                            <th>Total Pagos</th>
+                            <th>Monto</th>
+                            <th>Aut Adelan</th>
+                            <th>No.Aporta</th>
+                            <th>Monto Aporta</th>
+                            <th>Cuota</th>
+                            <th>Saldo</th>
+                            <th>Sucursal</th>
+                            <th>Origen Recu</th>
+                            <th>Destino Recu</th>
+                            <th>Inicio</th>
+                            <th>Fin</th>
+                            <th>Destino</th>
+                            <th>Origen</th>
+                            <th>Tipo Operacion</th>
+                            <th>Instr Mon</th>
+                            <th>T Credito</th>
+                            <th>Clave  Pro</th>
+                            <th>Pais Origen</th>
+                            <th>Pais Destino</th>
+                            <th>Alta contrato</th>
+                            <th>Tipo Contr</th>
+                            <th>Tipo Doc</th>
+                            <th>Lat/Lon</th>
+                            <th>Localizacion</th>
+                            <th>CP</th>
                         </tr>
                         </thead>
                         <tbody>

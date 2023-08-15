@@ -3,7 +3,7 @@
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
             <div class="x_title">
-                <h3> Consulta del Perfil Transaccional Clientes Cultiva (PLD)</h3>
+                <h3> Cuentas Relacionadas Clientes Cultiva (PLD)</h3>
                 <div class="clearfix"></div>
             </div>
 
@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form class="" id="consulta" action="/Operaciones/PerfilTransaccional/" method="GET" onsubmit="return Validar()">
+                    <form class="" id="consulta" action="/Operaciones/CuentasRelacionadas/" method="GET" onsubmit="return Validar()">
                         <div class="row">
                             <div class="col-md-12">
 

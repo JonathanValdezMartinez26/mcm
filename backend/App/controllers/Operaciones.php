@@ -719,7 +719,7 @@ html;
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('fechaActual', $fechaActual);
-                View::render("perfil_transaccional_cultiva_busqueda_message");
+                View::render("cuentas_relacionadas_cultiva_busqueda_message");
             }
             else
             {
@@ -728,7 +728,7 @@ html;
                 View::set('Final', $Final);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::render("perfil_transaccional_cultiva_busqueda");
+                View::render("cuentas_relacionadas_cultiva_busqueda");
             }
 
         } else {
@@ -736,7 +736,7 @@ html;
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::set('fechaActual', $fechaActual);
-            View::render("perfil_transaccional_consulta_cultiva_all");
+            View::render("cuentas_relacionadas_consulta_all");
         }
     }
 
@@ -826,29 +826,42 @@ html;
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;">{$value['CANTENTRE']}</td>
-                    <td style="padding: 0px !important;">{$value['CICLO']}</td>
-                    <td style="padding: 0px !important;">{$value['LOCALIDAD']}</td>
-                    <td style="padding: 0px !important;">{$value['SUCURSAL']}</td>
+                    <td style="padding: 0px !important;">{$value['CDGCL']}</td>
+                    <td style="padding: 0px !important;">{$value['GRUPO']}</td>
+                    <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
+                    <td style="padding: 0px !important;">{$value['INSTRUMENTO']}</td>
+                    <td style="padding: 0px !important;">{$value['TIPO_MONEDA']}</td>
+                    <td style="padding: 0px !important;">{$value['T_CAMBIO']}</td>
+                    <td style="padding: 0px !important;">{$value['MONTO_PRESTAMO']}</td>
+                    <td style="padding: 0px !important;">{$value['PLAZO']}</td>
+                    <td style="padding: 0px !important;">{$value['FRECUENCIA']}</td>
+                    <td style="padding: 0px !important;">{$value['TOTAL_PAGOS']}</td>
+                    <td style="padding: 0px !important;">{$value['MONTO_FIN_PAGO']}</td>
+                    <td style="padding: 0px !important;">{$value['ADELANTAR_PAGO']}</td>
+                    <td style="padding: 0px !important;">{$value['NUMERO_APORTACIONES']}</td>
+                    <td style="padding: 0px !important;">{$value['MONTO_APORTACIONES']}</td>
+                    <td style="padding: 0px !important;">{$value['CUOTA_PAGO']}</td>
+                    <td style="padding: 0px !important;">{$value['SALDO']}</td>
+                    <td style="padding: 0px !important;">{$value['ID_SUCURSAL_SISTEMA']}</td>
+                    <td style="padding: 0px !important;">{$value['ORIGEN_RECURSO']}</td>
+                    <td style="padding: 0px !important;">{$value['DESTINO_RECURSOS']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_INICIO_CREDITO']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_FIN']}</td>
+                    <td style="padding: 0px !important;">{$value['DESTINO']}</td>
+                    <td style="padding: 0px !important;">{$value['ORIGEN']}</td>
                     <td style="padding: 0px !important;">{$value['TIPO_OPERACION']}</td>
-                    <td style="padding: 0px !important;">{$value['ID_CLIENTE']}</td>
-                    <td style="padding: 0px !important;">{$value['NUM_CUENTA']}</td>
-                    <td style="padding: 0px !important;">{$value['INSTRUMENTO_MONETARIO']}</td>
-                    <td style="padding: 0px !important;">{$value['MONEDA']}</td>
-                    <td style="padding: 0px !important;">{$value['MONTO']}</td>
-                    <td style="padding: 0px !important;">{$value['FECHA_OPERACION']}</td>
-                    <td style="padding: 0px !important;">{$value['TIPO_RECEPTOR']}</td>
-                    <td style="padding: 0px !important;">{$value['CLAVE_RECEPTOR']}</td>
-                    <td style="padding: 0px !important;">{$value['NUM_CAJA']}</td>
-                    <td style="padding: 0px !important;">{$value['ID_CAJERO']}</td>
-                    <td style="padding: 0px !important;">{$value['FECHA_HORA']}</td>
-                    <td style="padding: 0px !important;">{$value['NOTARJETA_CTA']}</td>
-                    <td style="padding: 0px !important;">{$value['TIPOTARJETA']}</td>
-                    <td style="padding: 0px !important;">{$value['COD_AUTORIZACION']}</td>
-                    <td style="padding: 0px !important;">{$value['ATRASO']}</td>
-                    <td style="padding: 0px !important;">{$value['OFICINA_CLIENTE']}</td>
-                    <td style="padding: 0px !important;">{$value['SITUACION']}</td>
-                    <td style="padding: 0px !important;">{$value['FDEPOSITO']}</td>
+                    <td style="padding: 0px !important;">{$value['INST_MONETARIO']}</td>
+                    <td style="padding: 0px !important;">{$value['TIPO_CREDITO']}</td>
+                    <td style="padding: 0px !important;">{$value['PRODUCTO']}</td>
+                    <td style="padding: 0px !important;">{$value['PAIS_ORIGEN']}</td>
+                    <td style="padding: 0px !important;">{$value['PAIS_DESTINO']}</td>
+                    <td style="padding: 0px !important;">{$value['ALTA_CONTRATO']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_ALTA']}</td>
+                    
+                    <td style="padding: 0px !important;">{$value['TIPO_DOC']}</td>
+                    <td style="padding: 0px !important;">{$value['LATLON']}</td>
+                    <td style="padding: 0px !important;">{$value['LOCALIZACION']}</td>
+                    <td style="padding: 0px !important;">{$value['CP']}</td>
                 </tr>
 html;
             }

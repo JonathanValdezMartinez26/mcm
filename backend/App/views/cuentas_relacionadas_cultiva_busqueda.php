@@ -3,27 +3,27 @@
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
             <div class="x_title">
-                <h3> Consulta de Pagos de Clientes Cultiva (PLD)</h3>
+                <h3> Cuentas Relacionadas Clientes Cultiva (PLD)</h3>
                 <div class="clearfix"></div>
             </div>
 
             <div class="card card-danger col-md-8" >
                 <div class="card-header">
-                    <h5 class="card-title">Seleccione el rango de fechas a generar el , solo tiene permitido un rango 7 días </h5>
+                    <h5 class="card-title">Seleccione el rango de fechas a generar el , solo tiene permitido un rango 30 días </h5>
                 </div>
 
                 <div class="card-body">
-                    <form class="" id="consulta" action="/Operaciones/ReportePLDPagos/" method="GET" onsubmit="return Validar()">
+                    <form class="" id="consulta" action="/Operaciones/CuentasRelacionadas/" method="GET" onsubmit="return Validar()">
                         <div class="row">
                             <div class="col-md-12">
 
                                 <div class="col-md-3">
                                     <input class="form-control mr-sm-2" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $Inicial; ?>">
-                                    <span id="availability1">Desde</span>
+                                    <span id="availability1" style="font-size:15px">Desde</span>
                                 </div>
                                 <div class="col-md-3">
                                     <input class="form-control mr-sm-2" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $Final; ?>">
-                                    <span id="availability1">Hasta</span>
+                                    <span id="availability1" style="font-size:15px">Hasta</span>
                                 </div>
                                 <div class="col-md-2">
                                     <button class="btn btn-default" type="submit">Buscar</button>
@@ -43,34 +43,27 @@
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
                         <tr>
-                                    <th>Localidad</th>
-                                    <th>Sucursal</th>
-                                    <th>Tipo de Operación</th>
-                                    <th>Cliente</th>
-                                    <th>N.Cuenta</th>
-                                    <th>Instrumento Monetario</th>
-                                    <th>Moneda</th>
-                                    <th>Monto</th>
-                                    <th>Fecha</th>
-                                    <th>Tipo de Receptor</th>
-                                    <th>Clave de Receptor</th>
-                                    <th>Caja</th>
-                                    <th>Id Cajero</th>
-                                   <th>Fecha y Hora</th>
-                                   <th>N.Tarjeta</th>
-                                   <th>Tipo de Tarjeta</th>
-                                   <th>Código de Autorización</th>
-                                   <th>Atraso</th>
-                                   <th>oficina</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?= $tabla; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                            <th>Cliente</th>
+                            <th>Número Cuenta- Contrato</th>
+                            <th>No.Cuenta Relación</th>
+                            <th>Nombre</th>
+                            <th>Adicional</th>
+                            <th>Apellido P</th>
+                            <th>Apellido M</th>
+                            <th>Desc. Operacion</th>
+                            <th>Identifica Cuenta</th>
+                            <th>Conserva</th>
+                            <th>Oficina Cliente</th>
+                            <th>Inicio Oper</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?= $tabla; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+        </div>
     </div>
 </div>
 
