@@ -64,109 +64,21 @@ static $_mail;
         }
     }
 
-    public function insert($sql,$params = ''){
+    public function insert($sql){
 
-        if($params == '' ){
-            try{
-		        $this->_mysqli->beginTransaction();
-                $stmt = $this->_mysqli->exec($sql);
-                $res = $this->_mysqli->lastInsertId();
-                $this->_mysqli->commit();
-                return $res;
-            }
-            catch(\PDOException $e)
-            {
-                $this->_mysqli->rollback();
-                if(self::$_mail)
-                            mail(self::MAIL,'error en insert '.self::TEMA,"Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1));
-                if(self::$_debug)
-                    echo $e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1);
-                return false;
-            }
-        }else{
-            try{
-		$this->_mysqli->beginTransaction();
-                $stmt = $this->_mysqli->prepare($sql);
-                $stmt->execute($params);
-                $res = $this->_mysqli->lastInsertId();
-                $this->_mysqli->commit();
-                return $res;
-            }catch(\PDOException $e){
-		$this->_mysqli->rollback();
-		if(self::$_mail)
-                    mail(self::MAIL,'error en insert '.self::TEMA,"Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1));
-		if(self::$_debug)
-		    echo "Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1);
-                return false;
-            }
-        }
-    }
-    public function update($sql,$params = ''){
+        $stmt = $this->_mysqli->prepare($sql);
+        $result = $stmt->execute();
 
-        if($params == ''){
-            try{
-                $this->_mysqli->beginTransaction();
-                $stmt = $this->_mysqli->exec($sql);
-                $this->_mysqli->commit();
-                return $stmt;
-            }catch(\PDOException $e){
-                $this->_mysqli->rollback();
-                if(self::$_mail)
-                    mail(self::MAIL,'error en update '.self::TEMA,"Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1));
-                if(self::$_debug)
-                    echo "Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1);
-                    return false;
-            }
-        }else{
-            try{
-                $this->_mysqli->beginTransaction();
-                $stmt = $this->_mysqli->prepare($sql);
-                $stmt->execute($params);
-                $this->_mysqli->commit();
-                return $stmt->rowCount();
-            }catch(\PDOException $e){
-                $this->_mysqli->rollback();
-                if(self::$_mail)
-                    mail(self::MAIL,'error en update '.self::TEMA,"Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1));
-                if(self::$_debug)
-                    //echo "Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1);
-                return false;
-            }
+        if ($result) {
+            echo '1';
+        } else {
+            echo "\nPDOStatement::errorInfo():\n";
+            $arr = $stmt->errorInfo();
+            print_r($arr);
         }
-    }
-    public function delete($sql,$params = ''){
 
-        if($params == ''){
-            try{
-                $this->_mysqli->beginTransaction();
-                $stmt = $this->_mysqli->exec($sql);
-                $this->_mysqli->commit();
-                return $stmt;
-            }catch(\PDOException $e){
-		$this->_mysqli->rollback();
-		if(self::$_mail)
-                    mail(self::MAIL,'error en delete '.self::TEMA,"Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1));
-		if(self::$_debug)
-		    echo "Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1);
-                return false;
-            }
-        }else{
-            try{
-                $this->_mysqli->beginTransaction();
-                $stmt = $this->_mysqli->prepare($sql);
-                $stmt->execute($params);
-                $this->_mysqli->commit();
-                return $stmt->rowCount();
-            }catch(\PDOException $e){
-		$this->_mysqli->rollback();
-		if(self::$_mail)
-                    mail(self::MAIL,'error en delete '.self::TEMA,"Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1));
-		if(self::$_debug)
-		    echo "Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1);
-                return false;
-            }
-        }
     }
+
     public function queryOne($sql,$params = ''){
 
         if($params == ''){

@@ -33,22 +33,15 @@
 
                                         <div class="count" style="font-size: 17px"> <?php echo $Administracion[0]['CICLO']; ?></div>
                                     </div>
-                                    <div class="col-md-2 col-sm-4  tile_stats_count">
-                                        <span class="count_top" style="font-size: 19px"><i class="fa fa-dollar"></i> Monto</span>
 
-                                        <div class="count" style="font-size: 17px">$ <?php echo number_format($Administracion[0]['MONTO']); ?></div>
+                                    <div class="col-md-3 col-sm-4  tile_stats_count">
+                                        <span class="count_top" style="font-size: 19px"><i class="fa fa-clock-o"></i> Sucursal</span>
+                                        <div class="count" style="font-size: 17px"><?php echo $Administracion[0]['ID_SUCURSAL']; ?>|<?php echo $Administracion[0]['SUCURSAL']; ?></div>
                                     </div>
-                                    <div class="col-md-2 col-sm-4  tile_stats_count">
-                                        <span class="count_top" style="font-size: 19px"><i class="fa fa-clock-o"></i> Plazo</span>
-                                        <div class="count" style="font-size: 17px"><?php echo $Administracion[0]['PLAZO']; ?> semanas</div>
-                                    </div>
-                                    <div class="col-md-2 col-sm-4  tile_stats_count">
-                                        <span class="count_top" style="font-size: 19px"><i></i> Parcialidad</span>
-                                        <div class="count" style="font-size: 17px"> $ <?php echo number_format($Administracion[0]['PARCIALIDAD']); ?></div>
-                                    </div>
-                                    <div class="col-md-2 col-sm-4  tile_stats_count">
-                                        <span class="count_top" style="font-size: 19px"><i><i class="fa fa-calendar"></i></i> Día de Pago</span>
-                                        <div class="count" style="font-size: 17px"><?php echo $Administracion[0]['DIA_PAGO']; ?></div>
+
+                                    <div class="col-md-4 col-sm-4  tile_stats_count">
+                                        <span class="count_top" style="font-size: 19px"><i><i class="fa fa-calendar"></i></i> Ejecutivo</span>
+                                        <div class="count" style="font-size: 17px"><?php echo $Administracion[0]['EJECUTIVO']; ?></div>
                                     </div>
                                 </div>
                             </div>
@@ -78,6 +71,38 @@
                                     <table class="table table-striped table-bordered table-hover">
                                         <tbody>
                                         <tr>
+                                            <?php
+                                            if($Administracion[3]['LLAMADA_UNO'] >= 1)
+                                            {
+                                                $visible = 'style= display:none!important;';
+                                                $titulo_estatus = "Finalizada";
+                                                $titulo_color = "Validado en 1 llamada";
+                                                $color = "success";
+                                                $boton_ver_encuesta_fin = 'style= display:none!important;';
+                                                $boton_ver_encuesta = '';
+                                                $titulo_boton_encuesta_fin = "";
+                                                $titulo_ver_expediente = "Fecha de Trabajo";
+                                                $validado_en = "Validado en 1 ";
+                                            }
+                                            else
+                                            {
+                                                //if(pendiente una llamada)
+                                                $visible = '';
+                                                $titulo_estatus = "Pendiente";
+                                                $titulo_color = "Pendiente";
+                                                $color = "danger";
+                                                $boton_ver_encuesta_fin = "";
+                                                $boton_ver_encuesta = 'style= display:none!important;';
+                                                $titulo_boton_encuesta_fin = "Iniciar con la Encuesta (CLIENTE)";
+                                                $titulo_ver_expediente = "Estatus Encuesta";
+                                            }
+
+
+                                            if($Administracion[3]['LLAMADA_UNO'] >= 1)
+                                            {
+
+                                            }
+                                            ?>
                                             <td style="font-size: 18px; background: #787878;color: white" colspan="7">
                                                 <div class="row">
                                                     <div class="col-md-8">
@@ -87,12 +112,11 @@
                                                     </div>
                                                     <div class="col-md-4">
                                                         <strong>
-                                                            <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important;" align="right">Pendiente 1 llamada</span>
+                                                            <span class="label label-<?php echo $color; ?>" style="font-size: 95% !important; border-radius: 50em !important;" align="right"><?php echo $titulo_color ?></span>
                                                         </strong>
                                                     </div>
                                                 </div>
                                             </td>
-
                                         </tr>
                                         <tr>
                                             <td style="font-size: 16px; padding-bottom: 19px !important; padding-top: 19px !important;" colspan="6"><b><?php echo $Administracion[0]['CLIENTE']; ?> (<?php echo $Administracion[0]['ID_CLIENTE']; ?>)</b></td>
@@ -104,21 +128,26 @@
 
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 16px" colspan="1"><strong>Encuesta *</strong></td>
                                             <td style="font-size: 16px" colspan="1"><strong>Contacto</strong></td>
-                                            <td style="font-size: 16px" colspan="5"><strong>Estatus Encuesta</strong></td>
+                                            <td style="font-size: 16px" colspan="1"><strong>Encuesta *</strong></td>
+                                            <td style="font-size: 16px" colspan="5"><strong><?php echo $titulo_ver_expediente ?></strong></td>
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 19px; font: " colspan="1">
-                                                No se ha iniciado
-                                            </td>
+
                                             <td style="font-size: 19px" colspan="1"><i class="fa fa-phone-square"></i> <?php
                                                 $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
                                                 echo $format; ?>
                                             </td>
+                                            <td style="font-size: 19px; font: " colspan="1">
+                                                <?php echo $titulo_estatus ?>
+                                                <button type="button" <?php echo $boton_ver_encuesta ?> class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_ver_encuesta_cliente" data-backdrop="static" data-keyboard="false">
+                                                    <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Ver</label>
+                                                </button>
+                                            </td>
                                             <td style="font-size: 16px" colspan="5">
-                                                <button type="button" class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_cliente" data-backdrop="static" data-keyboard="false" onclick="BotonPago('<?php echo $Administracion['SITUACION_NOMBRE']; ?>');">
-                                                    <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">Iniciar con la Encuesta (CLIENTE)</label>
+                                                <?php echo $Administracion[3]['HORA']; ?>
+                                                <button type="button" <?php echo $boton_ver_encuesta_fin ?> class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_cliente" data-backdrop="static" data-keyboard="false" onclick="BotonPago('<?php echo $Administracion['SITUACION_NOMBRE']; ?>');">
+                                                    <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63"><?php echo $titulo_boton_encuesta_fin ?></label>
                                                 </button>
                                             </td>
                                         </tr>
@@ -141,6 +170,38 @@
                                     <table class="table table-striped table-bordered table-hover">
                                         <tbody>
                                         <tr>
+                                            <?php
+                                            if($Administracion[3]['LLAMADA_UNO'] >= 1)
+                                            {
+                                                $visible = 'style= display:none!important;';
+                                                $titulo_estatus = "Finalizada";
+                                                $titulo_color = "Validado en 1 llamada";
+                                                $color = "success";
+                                                $boton_ver_encuesta_fin = 'style= display:none!important;';
+                                                $boton_ver_encuesta = '';
+                                                $titulo_boton_encuesta_fin = "";
+                                                $titulo_ver_expediente = "Fecha de Trabajo";
+                                                $validado_en = "Validado en 1 ";
+                                            }
+                                            else
+                                            {
+                                                //if(pendiente una llamada)
+                                                $visible = '';
+                                                $titulo_estatus = "Pendiente";
+                                                $titulo_color = "Pendiente";
+                                                $color = "danger";
+                                                $boton_ver_encuesta_fin = "";
+                                                $boton_ver_encuesta = 'style= display:none!important;';
+                                                $titulo_boton_encuesta_fin = "Iniciar con la Encuesta (CLIENTE)";
+                                                $titulo_ver_expediente = "Estatus Encuesta";
+                                            }
+
+
+                                            if($Administracion[3]['LLAMADA_UNO'] >= 1)
+                                            {
+
+                                            }
+                                            ?>
                                             <td style="font-size: 18px; background: #73879C;color: white" colspan="7">
                                                 <div class="row">
                                                     <div class="col-md-8">
@@ -161,17 +222,18 @@
                                             <td style="font-size: 16px; padding-bottom: 19px !important; padding-top: 19px !important;" colspan="7"><?php echo $Administracion[0]['AVAL']; ?> (<?php echo $Administracion[0]['ID_AVAL']; ?>)</td>
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 16px" colspan="1"><strong>Encuesta *</strong></td>
                                             <td style="font-size: 16px" colspan="1"><strong>Contacto</strong></td>
+                                            <td style="font-size: 16px" colspan="1"><strong>Encuesta *</strong></td>
                                             <td style="font-size: 16px" colspan="5"><strong>Estatus Encuesta</strong></td>
+
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 19px" colspan="1">
-                                                Finalizada
-                                            </td>
                                             <td style="font-size: 19px" colspan="1"><i class="fa fa-phone-square"></i> <?php
                                                 $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
                                                 echo $format; ?>
+                                            </td>
+                                            <td style="font-size: 19px" colspan="1">
+                                                Finalizada
                                             </td>
                                             <td style="font-size: 16px" colspan="5">
                                                 <button type="button" class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_aval" data-backdrop="static" data-keyboard="false" onclick="BotonPago('<?php echo $Administracion['SITUACION_NOMBRE']; ?>');">
@@ -481,6 +543,18 @@
                                     </div>
                                 </div>
                             </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="demo activado">
+                                        <input type="radio" name="completo" id="m1" value="1" checked="checked">
+                                        <label for="m1">Llamada exitosa</label>
+                                        <br>
+                                        <input type="radio" name="completo" id="h1" value="0">
+                                        <label for="h1">La llamada no se completo satisfactoriamente</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                 </div>
             </div>
@@ -667,176 +741,254 @@
 </div>
 
 <div class="modal fade" id="modal_expediente" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" style="width: 1300px !important;">
+    <div class="modal-dialog" style="width: 1000px !important;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">AVAL</span>
-                <center><h4 class="modal-title" id="myModalLabel"><?php echo $Administracion[0]['AVAL']; ?></h4></center>
+                <center><h4 class="modal-title" id="myModalLabel">EXPEDIENTE DEL CLIENTE:  <?php echo $Administracion[0]['CLIENTE']; ?>  (NÚMERO DE CRÉDITO: <?php echo $Administracion[0]['NO_CREDITO']; ?>)</h4></center>
             </div>
             <div class="modal-body">
+
                 <div class="container-fluid">
-                    <form onsubmit="enviar_add(); return false" id="Add">
                         <div class="row">
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label for="Fecha">Fecha de trabajo *</label>
-                                    <input onkeydown="return false" type="text" class="form-control" id="Fecha" name="Fecha" value="<?php echo date("d/m/Y h:i:s"); ?>" readonly>
+                            <div class="col-md-2" style="padding-bottom: 40px!important;">
+                                <div class="card-body pb-0 px-0 px-md-12 text-center text-sm-left ">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/4625/4625102.png" height="97" alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png">
+                                </div>
+                            </div>
 
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label>Nombre completo del cliente</label>
+                                    <input onkeydown="return false" type="text" class="form-control"  value="<?php echo $Administracion[0]['CLIENTE']; ?>" readonly>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="movil">Ciclo del Crédito Solicitado*</label>
-                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" readonly placeholder="" value="<?php echo $Administracion[0]['CICLO']; ?>">
+                                    <label>Fecha de nacimiento</label>
+                                    <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[1]['NACIMIENTO']; ?>" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="form-group">
+                                    <label>Edad</label>
+                                    <input onkeydown="return false" type="text" class="form-control"value="<?php echo $Administracion[1]['EDAD']; ?>" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="form-group">
+                                    <label>Genéro</label>
+                                    <input onkeydown="return false" type="text" class="form-control" value="<?php if($Administracion[1]['SEXO'] = 'F'){$sexo='Mujer';}else{$sexo='Hombre';} echo $sexo; ?>" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="form-group">
+                                    <label>Domicilio</label>
+                                    <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[1]['CALLE']; ?>, <?php echo $Administracion[1]['COLONIA']; ?>, <?php echo $Administracion[1]['MUNICIPIO']; ?>, <?php echo $Administracion[1]['ESTADO']; ?>, C.P:<?php echo $Administracion[1]['CP']; ?>." readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Ocupación</label>
+                                    <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[1]['ACT_ECO']; ?>" readonly>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="movil">Núm. telefono del cliente *</label>
-                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="<?php
+                                    <label>Contacto</label>
+                                    <input onkeydown="return false" type="text" class="form-control" value="<?php
                                     $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
-                                    echo $format; ?>">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">Tipo de llamada que esta realizando *</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                        <option selected disabled value="">Seleccione una opción</option>
-                                        <option value="VOZ">VOZ</option>
-                                        <option value="WHATSAPP">WHATSAPP</option>
-                                        <option value="VIDEO LLAMADA">VIDEO LLAMADA</option>
-                                    </select>
+                                    echo $format; ?>" readonly>
                                 </div>
                             </div>
                         </div>
+                        <hr>
                         <div class="row">
+                            <div class="col-md-2" style="padding-bottom: 120px!important;">
+                                <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">DATOS DEL AVAL</span>
+                            </div>
 
-                            <hr>
-                            <h5><b>Preguntas de validación</b></h5>
-                            <hr>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="tipo">1.- ¿Qué edad tiene?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                            <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
-                                        </select>
-                                        <p style="color: #007700"><b>R: <?php echo $Administracion[2]['EDAD']; ?> AÑOS</b></p>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="tipo">2.- ¿Cuál es su fecha de nacimiento?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                            <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
-                                        </select>
-                                        <p style="color: #007700"><b>R: <?php echo $Administracion[2]['NACIMIENTO']; ?></b></p>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tipo">3.- ¿Cuál es su domicilio completo?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                            <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
-                                        </select>
-                                        <p style="color: #007700"><b>R: <?php echo $Administracion[2]['CALLE']; ?>, <?php echo $Administracion[2]['COLONIA']; ?>, <?php echo $Administracion[2]['MUNICIPIO']; ?>, <?php echo $Administracion[2]['ESTADO']; ?>, C.P:<?php echo $Administracion[2]['CP']; ?>.</b></p>
-                                    </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label>Nombre completo del cliente</label>
+                                    <input onkeydown="return false" type="text" class="form-control"  value="<?php echo $Administracion[0]['AVAL']; ?>" readonly>
                                 </div>
                             </div>
-                            <hr style="margin-top: 2px !important; margin-bottom: 2px !important;">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="tipo">4.- ¿Tiempo viviendo en este domicilio?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                            <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
-                                        </select>
-                                        <p style="color: #007700"><b></b></p>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="tipo">5.- Actualmente, ¿Cuál es su principal fuente de ingresos?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                            <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
-                                        </select>
-                                        <p style="color: #007700"><b>R: <?php echo $Administracion[2]['ACT_ECO']; ?> </b></p>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="tipo">6.- ¿Hace cuanto conoce a <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                            <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
-                                        </select>
-                                        <p style="color: #007700"><b></b></p>
-                                    </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Fecha de nacimiento</label>
+                                    <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[2]['NACIMIENTO']; ?>" readonly>
                                 </div>
                             </div>
-                            <hr style="margin-top: 2px !important; margin-bottom: 2px !important;">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="tipo">7.- Mencione, ¿Qué relación directa tiene con <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                            <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
-                                        </select>
-                                        <p style="color: #007700"><b></b></p>
-                                    </div>
+                            <div class="col-md-1">
+                                <div class="form-group">
+                                    <label>Edad</label>
+                                    <input onkeydown="return false" type="text" class="form-control"value="<?php echo $Administracion[2]['EDAD']; ?>" readonly>
                                 </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="tipo">8.- ¿Sabe a que se dedica <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                            <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
-                                        </select>
-                                        <p style="color: #007700"><b>R: <?php echo $Administracion[1]['ACT_ECO']; ?></b></p>
-                                    </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="form-group">
+                                    <label>Genéro</label>
+                                    <input onkeydown="return false" type="text" class="form-control" value="<?php if($Administracion[2]['SEXO'] = 'F'){$sexo='Mujer';}else{$sexo='Hombre';} echo $sexo; ?>" readonly>
                                 </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="tipo">9.- Me proporciona el número telefónico de <?php echo $Administracion[0]['CLIENTE']; ?></label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
-                                            <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
-                                        </select>
-                                        <p style="color: #007700"><b>R: <?php
-                                                $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
-                                                echo $format; ?></b></p>
-                                    </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="form-group">
+                                    <label>Domicilio</label>
+                                    <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[2]['CALLE']; ?>, <?php echo $Administracion[1]['COLONIA']; ?>, <?php echo $Administracion[2]['MUNICIPIO']; ?>, <?php echo $Administracion[2]['ESTADO']; ?>, C.P:<?php echo $Administracion[2]['CP']; ?>." readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Ocupación</label>
+                                    <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[2]['ACT_ECO']; ?>" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Contacto</label>
+                                    <input onkeydown="return false" type="text" class="form-control" value="<?php
+                                    $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
+                                    echo $format; ?>" readonly>
                                 </div>
                             </div>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cerrar Expediente</button>
+                        </div>
+
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
-                </form>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal_ver_encuesta_cliente" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 1000px !important;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <center><h4 class="modal-title" id="myModalLabel">RESUMEN DE LA ENCUESTA DEL CLIENTE:  <?php echo $Administracion[0]['CLIENTE']; ?>  (# DE CLIENTE: <?php echo $Administracion[0]['ID_CLIENTE']; ?>)</h4></center>
+            </div>
+            <div class="modal-body">
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2" style="padding-bottom: 40px!important;">
+                            <div class="card-body pb-0 px-0 px-md-12 text-center text-sm-left ">
+                                <img src="https://cdn-icons-png.flaticon.com/512/4625/4625102.png" height="97" alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png">
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Nombre completo del cliente</label>
+                                <input onkeydown="return false" type="text" class="form-control"  value="<?php echo $Administracion[0]['CLIENTE']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Fecha de nacimiento</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[1]['NACIMIENTO']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label>Edad</label>
+                                <input onkeydown="return false" type="text" class="form-control"value="<?php echo $Administracion[1]['EDAD']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label>Genéro</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php if($Administracion[1]['SEXO'] = 'F'){$sexo='Mujer';}else{$sexo='Hombre';} echo $sexo; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <label>Domicilio</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[1]['CALLE']; ?>, <?php echo $Administracion[1]['COLONIA']; ?>, <?php echo $Administracion[1]['MUNICIPIO']; ?>, <?php echo $Administracion[1]['ESTADO']; ?>, C.P:<?php echo $Administracion[1]['CP']; ?>." readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Ocupación</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[1]['ACT_ECO']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Contacto</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php
+                                $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
+                                echo $format; ?>" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-2" style="padding-bottom: 120px!important;">
+                            <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">DATOS DEL AVAL</span>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Nombre completo del cliente</label>
+                                <input onkeydown="return false" type="text" class="form-control"  value="<?php echo $Administracion[0]['AVAL']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Fecha de nacimiento</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[2]['NACIMIENTO']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label>Edad</label>
+                                <input onkeydown="return false" type="text" class="form-control"value="<?php echo $Administracion[2]['EDAD']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label>Genéro</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php if($Administracion[2]['SEXO'] = 'F'){$sexo='Mujer';}else{$sexo='Hombre';} echo $sexo; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <label>Domicilio</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[2]['CALLE']; ?>, <?php echo $Administracion[1]['COLONIA']; ?>, <?php echo $Administracion[2]['MUNICIPIO']; ?>, <?php echo $Administracion[2]['ESTADO']; ?>, C.P:<?php echo $Administracion[2]['CP']; ?>." readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Ocupación</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[2]['ACT_ECO']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Contacto</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php
+                                $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
+                                echo $format; ?>" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cerrar Expediente</button>
+                    </div>
+
+                </div>
             </div>
 
         </div>
     </div>
 </div>
 
+<style>
+    .activado input[type=radio]:checked + label { color: #2da92d; font-size: 20px}
+</style>
 
 <?php echo $footer; ?>

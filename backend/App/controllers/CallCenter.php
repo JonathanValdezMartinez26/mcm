@@ -67,8 +67,17 @@ html;
              diez = document.getElementById("diez_cl").value; 
              once = document.getElementById("once_cl").value; 
              doce = document.getElementById("doce_cl").value; 
+             completo = document.getElementById("completo").value; 
              
-            if(tipo_cl == '')
+             
+             
+             if(completo == 0)
+                 {
+                     
+                 }
+             else 
+                 {
+                      if(tipo_cl == '')
                 {
                      swal("Seleccione el tipo de llamada que realizo", {icon: "warning",});
                 }else if(uno  == '') {
@@ -112,7 +121,7 @@ html;
                         
                         }
                         else {
-                        $('#modal_agregar_pago').modal('hide')
+                        $('#modal_encuesta_cliente').modal('hide')
                          swal(respuesta, {
                                       icon: "error",
                                     });
@@ -121,6 +130,9 @@ html;
                     }
                     });
                 }
+                 }
+            
+           
     }
     
       </script>
@@ -337,7 +349,6 @@ html;
 html;
         }
 
-
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::set('Analistas', $getAnalistas);
@@ -356,7 +367,7 @@ html;
         $encuesta->_fecha_solicitud = $fecha_solicitud;
 
         $encuesta->_cdgre = MasterDom::getData('cdgre');
-        $encuesta->_cliente = MasterDom::getData('cliente');
+        $encuesta->_cliente = MasterDom::getData('cliente_id');
         $encuesta->_cdgco = MasterDom::getData('cdgco');
         $encuesta->_fecha = MasterDom::getData('fecha_cl');
         $encuesta->_ciclo = MasterDom::getData('ciclo_cl');
@@ -376,7 +387,7 @@ html;
         $encuesta->_doce = MasterDom::getData('doce');
 
         $id = CallCenterDao::insertEncuestaCL($encuesta);
-        //var_dump($id);
+
 
     }
 

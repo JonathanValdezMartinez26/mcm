@@ -123,10 +123,25 @@ sql;
         AND PI.CDGCL = CL.CODIGO 
 sql;
 
+        $desbloqueo_primera=<<<sql
+        select COUNT(ID_SCALL) as LLAMADA_UNO, (DIA_LLAMADA_1_CL ||' '|| HORA_LLAMADA_1_CL) AS HORA  from SOL_CALL_CENTER 
+        WHERE CICLO ='$ciclo' and DIA_LLAMADA_1_CL IS NOT NULL AND CDGCL_CL = '$id_cliente' 
+        GROUP BY ID_SCALL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL
+sql;
+
+
+        $desbloqueo_primeraa=<<<sql
+        select CDGCL_AV as AVAL  from SOL_CALL_CENTER 
+        WHERE CICLO ='$ciclo' and DIA_LLAMADA_1_CL IS NOT NULL AND CDGCL_CL = '$id_cliente' 
+        GROUP BY ID_SCALL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL
+sql;
+
+
         $cliente = $mysqli->queryOne($query2);
         $aval = $mysqli->queryOne($query3);
+        $llamada_uno = $mysqli->queryOne($desbloqueo_primera);
 
-        return [$credito_, $cliente, $aval];
+        return [$credito_, $cliente, $aval, $llamada_uno];
 
     }
 
@@ -205,16 +220,10 @@ sql;
         $query=<<<sql
         INSERT INTO SOL_CALL_CENTER
         (ID_SCALL, CDGRG, FECHA_TRA_CL, FECHA_SOL, CDGCO, CDGPE, CDGCL_CL, CICLO, TEL_CL, TIPO_LLAM_CL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, PRG_UNO_CL, PRG_DOS_CL, PRG_TRES_CL, PRG_CUATRO_CL, PRG_CINCO_CL, PRG_SEIS_CL, PRG_SIETE_CL, PRG_OCHO_CL, PRG_NUEVE_CL, PRG_DIEZ_CL, PRG_ONCE_CL, PRG_DOCE_CL, CDGCL_AV, TEL_AV, FECHA_TRABAJO_AV, TIPO_LLAM_AV, DIA_LLAMADA_1_AV, HORA_LLAMADA_1_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, PRG_UNO_AV, PRG_DOS_AV, PRG_TRES_AV, PRG_CUATRO_AV, PRG_CINCO_AV, PRG_SEIS_AV, PRG_SIETE_AV, PRG_OCHO_AV, PRG_NUEVE_AV, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS, INCIDENCIA_COMERCIAL, VOBO_GERENTE_REGIONAL, CDGPE_ANALISTA, SEMAFORO, LLAMADA_POST_VENTA, RECAPTURADA, CDGPE_ANALISTA_INICIAL)
-        VALUES(sol_call_center_id.nextval, :cdgre, TIMESTAMP '$encuesta->_fecha.000000', TIMESTAMP '$encuesta->_fecha_solicitud.000000', '$encuesta->_cdgco', 'AMGM', '$encuesta->_cdgre', '$encuesta->_cliente', '$encuesta->_movil', '$encuesta->_tipo_llamada', '2023-09-08', '12:32:19.000', NULL, NULL, 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        VALUES(sol_call_center_id.nextval, '$encuesta->_cdgre', TIMESTAMP '$encuesta->_fecha.000000', TIMESTAMP '$encuesta->_fecha_solicitud.000000', '$encuesta->_cdgco', 'AMGM', '$encuesta->_cliente', '$encuesta->_ciclo', '$encuesta->_movil', '$encuesta->_tipo_llamada', '2023-09-08', '12:32:19.000', NULL, NULL, 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
 
 sql;
-
-        $parametros = array(
-            ':cdgre'=>$encuesta->_cdgre
-        );
-
-        var_dump($query);
-        return $mysqli->insert($query, $parametros);
+        return $mysqli->insert($query);
     }
 
 }
