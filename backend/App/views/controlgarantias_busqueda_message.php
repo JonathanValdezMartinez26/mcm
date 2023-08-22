@@ -16,7 +16,7 @@
                 <form class="" action="/Creditos/ControlGarantias/" method="GET">
                     <div class="row">
                         <div class="col-md-4">
-                            <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="number" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
+                            <input class="form-control mr-sm-2" style="font-size: 24px;" autofocus type="number" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
                         </div>
                         <div class="col-md-4">
                             <button class="btn btn-default" type="submit">Buscar</button>

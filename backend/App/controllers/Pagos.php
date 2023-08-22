@@ -803,9 +803,9 @@ html;
         $horaActual = date("H:i:s");
         $dia = date("N");
 
-        if($this->__cdgco == '025' || $this->__cdgco == '026' || $this->__cdgco == '003'  || $this->__cdgco == '014'  || $this->__cdgco == '007'  || $this->__cdgco == '016')
+        if($this->__cdgco == '025' || $this->__cdgco == '026' || $this->__cdgco == '003'  || $this->__cdgco == '014'  || $this->__cdgco == '007'  || $this->__cdgco == '016'|| $this->__cdgco == '004')
         {
-            // 025 - SUC TOLUCA 2// 026 - SUC TOLUCA 3 // 014 - SUC TOLUCA // 007 ZINA // 016
+            // 025 - SUC TOLUCA 2// 026 - SUC TOLUCA 3 // 014 - SUC TOLUCA // 007 ZINA // 016 // 004 APIZACO  // AGREGAR ´PUEBLA(NORTE ES 013), SUR(008)  Y XONA(002)
             if($horaActual <= '11:10:00')
             {
                 if ($dia == 1)
@@ -854,7 +854,6 @@ html;
             }
         }
 
-
         $status = PagosDao::ListaEjecutivosAdmin($credito);
         foreach ($status[0] as $key => $val2) {
             if($status[1] == $val2['ID_EJECUTIVO'])
@@ -871,7 +870,6 @@ html;
 html;
         }
         if ($credito != '') {
-
 
             $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__usuario);
 

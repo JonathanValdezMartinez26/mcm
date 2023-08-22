@@ -16,14 +16,14 @@
                 <form class="" action="/Creditos/ActualizaCredito/" method="GET">
                     <div class="row">
                         <div class="col-md-3">
-                            <select class="form-control mr-sm-3" style="font-size: 25px;" autofocus type="select" id="" name="" placeholder="000000" aria-label="Search">
+                            <select class="form-control mr-sm-3" style="font-size: 24px;" autofocus type="select" id="" name="" placeholder="000000" aria-label="Search">
                                 <option value="credito">Crédito</option>
                                 <option value="fecha">Fecha</option>
                             </select>
                             <span id="availability1"></span>
                         </div>
                         <div class="col-md-4">
-                            <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="number" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
+                            <input class="form-control mr-sm-2" style="font-size: 24px;" autofocus type="number" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
                             <span id="availability1"></span>
                         </div>
                         <div class="col-md-4">

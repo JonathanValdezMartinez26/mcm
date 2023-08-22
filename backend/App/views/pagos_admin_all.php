@@ -22,7 +22,7 @@
                                 <span id="availability1"></span>
                             </div>
                             <div class="col-md-4">
-                                <input class="form-control mr-sm-2" style="font-size: 25px;" autofocus type="text" onKeypress="if (event.keyCode < 9 || event.keyCode > 57) event.returnValue = false;" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
+                                <input class="form-control mr-sm-2" style="font-size: 24px;" autofocus type="text" onKeypress="if (event.keyCode < 9 || event.keyCode > 57) event.returnValue = false;" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
                                 <span id="availability1"></span>
                             </div>
                             <div class="col-md-4">
