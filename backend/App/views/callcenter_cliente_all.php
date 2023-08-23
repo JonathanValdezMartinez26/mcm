@@ -74,7 +74,6 @@
                                             <?php
                                             if($Administracion[3]['LLAMADA_UNO'] == '' && $Administracion[3]['PRG_UNO_CL'] == '' && $Administracion[3]['HORA_LLAMADA_UNO'] == '')
                                             {
-
                                                 $visible = '';
                                                 $titulo_estatus = "PENDIENTE";
                                                 $titulo_color = "Pendiente de validar";
@@ -93,7 +92,7 @@
                                                     {
 
                                                         $visible = 'style= display:none!important;';
-                                                        $titulo_estatus = "Finalizada";
+                                                        $titulo_estatus = "FINALIZADA";
                                                         $titulo_color = "Validado en 1er llamada";
                                                         $color = "success";
                                                         $boton_ver_encuesta_fin = 'style= display:none!important;';
@@ -106,7 +105,7 @@
                                                     else{
 
                                                         $visible = 'style= display:none!important;';
-                                                        $titulo_estatus = "Finalizada";
+                                                        $titulo_estatus = "FINALIZADA";
                                                         $titulo_color = "Validado en 2da llamada";
                                                         $color = "success";
                                                         $boton_ver_encuesta_fin = 'style= display:none!important;';
@@ -139,7 +138,7 @@
                                                     {
 
                                                         $visible = 'style= display:none!important;';
-                                                        $titulo_estatus = "FINALIZADA *(No localizado)";
+                                                        $titulo_estatus = "FINALIZADA";
                                                         $titulo_color = "NO LOCALIZADO (2 llamadas)";
                                                         $color = "danger";
                                                         $boton_ver_encuesta_fin = 'style= display:none!important;';
@@ -156,6 +155,7 @@
                                             <td style="font-size: 18px; background: #787878;color: white" colspan="14">
                                                 <div class="row">
                                                     <div class="col-md-8">
+                                                        <input onkeydown="return false" type="text" class="form-control" id="cliente_encuesta" name="cliente_encuesta" value="<?php echo $titulo_estatus; ?>" readonly>
                                                         <strong>
                                                             Identificación del Cliente
                                                         </strong>
@@ -231,74 +231,137 @@
                                         <tbody>
                                         <tr>
                                             <?php
-                                            if($Administracion[3]['LLAMADA_UNO'] >= 1)
+                                            if($Administracion[4]['LLAMADA_UNO'] == '' && $Administracion[4]['PRG_UNO_AV'] == '' && $Administracion[4]['HORA_LLAMADA_UNO'] == '')
                                             {
-                                                $visible = 'style= display:none!important;';
-                                                $titulo_estatus = "Finalizada";
-                                                $titulo_color = "Validado en 1 llamada";
-                                                $color = "success";
-                                                $boton_ver_encuesta_fin = 'style= display:none!important;';
-                                                $boton_ver_encuesta = '';
-                                                $titulo_boton_encuesta_fin = "";
-                                                $titulo_ver_expediente = "Fecha de Trabajo";
-                                                $validado_en = "Validado en 1 ";
+                                                $visible_a = '';
+                                                $titulo_estatus_a = "PENDIENTE";
+                                                $titulo_color_a = "Pendiente de validar";
+                                                $color_a = "warning";
+                                                $boton_ver_encuesta_fin_a = "";
+                                                $boton_ver_encuesta_a = 'style= display:none!important;';
+                                                $titulo_boton_encuesta_fin_a = "Iniciar Encuesta (AVAL)";
+                                                $titulo_ver_expediente_a = "Estatus Encuesta";
+                                                $hora_a = $Administracion[3]['HORA'];
                                             }
-                                            else
-                                            {
-                                                //if(pendiente una llamada)
-                                                $visible = '';
-                                                $titulo_estatus = "Pendiente";
-                                                $titulo_color = "Pendiente";
-                                                $color = "danger";
-                                                $boton_ver_encuesta_fin = "";
-                                                $boton_ver_encuesta = 'style= display:none!important;';
-                                                $titulo_boton_encuesta_fin = "Iniciar Encuesta (CLIENTE)";
-                                                $titulo_ver_expediente = "Estatus Encuesta";
-                                            }
+                                            else{
+                                                if($Administracion[4]['LLAMADA_UNO'] >= 1 && $Administracion[4]['PRG_UNO_AV'] != '')
+                                                {
+
+                                                    if($Administracion[4]['HORA_LLAMADA_DOS'] == ' ')
+                                                    {
+
+                                                        $visible_a = 'style= display:none!important;';
+                                                        $titulo_estatus_a = "FINALIZADA";
+                                                        $titulo_color_a = "Validado en 1er llamada";
+                                                        $color_a = "success";
+                                                        $boton_ver_encuesta_fin_a = 'style= display:none!important;';
+                                                        $boton_ver_encuesta_a = '';
+                                                        $titulo_boton_encuesta_fin_a = "";
+                                                        $titulo_ver_expediente_a = "Fecha de Trabajo";
+                                                        $validado_en_a = "Validado en 1 ";
+                                                        $hora_a = "Llamada #1: ".$Administracion[3]['HORA_LLAMADA_UNO'];
+                                                    }
+                                                    else{
+
+                                                        $visible_a = 'style= display:none!important;';
+                                                        $titulo_estatus_a = "FINALIZADA";
+                                                        $titulo_color_a = "Validado en 2da llamada";
+                                                        $color_a = "success";
+                                                        $boton_ver_encuesta_fin_a = 'style= display:none!important;';
+                                                        $boton_ver_encuesta_a = '';
+                                                        $titulo_boton_encuesta_fin_a = "";
+                                                        $titulo_ver_expediente_a = "Fecha de Trabajo";
+                                                        $validado_en_a = "Validado en 1 ";
+                                                        $hora_a = "Llamada #1: ".$Administracion[4]['HORA_LLAMADA_UNO']."<br>"."Llamada #2: ".$Administracion[4]['HORA_LLAMADA_DOS'];
+                                                    }
 
 
-                                            if($Administracion[3]['LLAMADA_UNO'] >= 1)
-                                            {
+                                                }
+                                                else
+                                                {
+                                                    if($Administracion[4]['LLAMADA_UNO'] >= 1 && $Administracion[4]['HORA_LLAMADA_DOS'] == ' ')
+                                                    {
+                                                        //&& $Administracion[3]['PRG_UNO_CL'] == NULL && $Administracion[3]['HORA_LLAMADA_UNO'] != '' && $Administracion[3]['HORA_LLAMADA_DOS'] == ''
 
+                                                        $visible_a = '';
+                                                        $titulo_estatus_a = "PENDIENTE";
+                                                        $titulo_color_a = "Pendiente 1 Llamada";
+                                                        $color_a = "warning";
+                                                        $boton_ver_encuesta_fin_a = "";
+                                                        $boton_ver_encuesta_a = 'style= display:none!important;';
+                                                        $titulo_boton_encuesta_fin_a = "Iniciar Encuesta 2° Llamada (AVAL)";
+                                                        $titulo_ver_expediente_a = "Estatus Encuesta";
+                                                        $hora_a = "1° llamada: ".$Administracion[3]['HORA_LLAMADA_UNO'];
+                                                    }
+                                                    else
+                                                    {
+
+                                                        $visible_a = 'style= display:none!important;';
+                                                        $titulo_estatus_a = "FINALIZADA";
+                                                        $titulo_color_ = "NO LOCALIZADO (2 llamadas)";
+                                                        $color_a = "danger";
+                                                        $boton_ver_encuesta_fin_a = 'style= display:none!important;';
+                                                        $boton_ver_encuesta_a = 'style= display:none!important;';
+                                                        $titulo_boton_encuesta_fin_a = "";
+                                                        $titulo_ver_expediente_a = "Fecha de Trabajo";
+                                                        $validado_en_a = "Validado en 1 ";
+                                                        $hora_a = $Administracion[4]['HORA_LLAMADA_DOS'];
+                                                    }
+
+                                                }
                                             }
                                             ?>
-                                            <td style="font-size: 18px; background: #73879C;color: white" colspan="7">
+                                            <td style="font-size: 18px; background: #73879C;color: white" colspan="14">
                                                 <div class="row">
                                                     <div class="col-md-8">
+                                                        <input onkeydown="return false" type="text" class="form-control" id="cliente_encuesta" name="cliente_encuesta" value="<?php echo $titulo_estatus_a; ?>" readonly>
                                                         <strong>
                                                             Identificación del Aval
                                                         </strong>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <strong>
-                                                            <span class="label label-success" style="font-size: 95% !important; border-radius: 50em !important;" align="right">Validado en 1 llamada</span>
+                                                            <span class="label label-<?php echo $color_a; ?>" style="font-size: 95% !important; border-radius: 50em !important;" align="right"><?php echo $titulo_color_a ?></span>
                                                         </strong>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-size: 16px;  !important;" colspan="14">
+                                                <div class="row">
+                                                    <div class="col-md-12" style="padding-top: 11px !important; padding-bottom: 11px !important;">
+                                                        <?php echo $Administracion[0]['AVAL']; ?> (<?php echo $Administracion[0]['ID_AVAL']; ?>)
                                                     </div>
                                                 </div>
                                             </td>
 
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 16px; padding-bottom: 19px !important; padding-top: 19px !important;" colspan="7"><?php echo $Administracion[0]['AVAL']; ?> (<?php echo $Administracion[0]['ID_AVAL']; ?>)</td>
+                                            <td style="font-size: 16px" colspan="10"><strong>Contacto</strong></td>
+                                            <td style="font-size: 16px" colspan="3"><strong>Encuesta *</strong></td>
+                                            <td style="font-size: 16px" colspan="5"><strong><?php echo $titulo_ver_expediente_a ?></strong></td>
                                         </tr>
                                         <tr>
-                                            <td style="font-size: 16px" colspan="1"><strong>Contacto</strong></td>
-                                            <td style="font-size: 16px" colspan="1"><strong>Encuesta *</strong></td>
-                                            <td style="font-size: 16px" colspan="5"><strong>Estatus Encuesta</strong></td>
 
-                                        </tr>
-                                        <tr>
-                                            <td style="font-size: 19px" colspan="1"><i class="fa fa-phone-square"></i> <?php
+                                            <td style="font-size: 19px"; colspan="10">
+                                                <i class="fa fa-phone-square"></i> <?php
                                                 $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
                                                 echo $format; ?>
                                             </td>
-                                            <td style="font-size: 19px" colspan="1">
-                                                Finalizada
-                                            </td>
-                                            <td style="font-size: 16px" colspan="5">
-                                                <button type="button" class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_aval" data-backdrop="static" data-keyboard="false">
-                                                    <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">Iniciar Encuesta (AVAL)</label>
+                                            <td style="font-size: 19px; font: " colspan="3">
+                                                <?php echo $titulo_estatus_a ?>
+                                                <button type="button" <?php echo $boton_ver_encuesta_a ?> class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_ver_encuesta_aval" data-backdrop="static" data-keyboard="false">
+                                                    <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Ver</label>
                                                 </button>
+                                            </td>
+                                            <td style="font-size: 16px;" colspan="5">
+                                                <div><?php echo $hora_a ?></div>
+                                                <div>
+                                                    <button type="button" <?php echo $boton_ver_encuesta_fin_a ?> class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_aval" data-backdrop="static" data-keyboard="false">
+                                                        <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63"><?php echo $titulo_boton_encuesta_fin_a ?></label>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
 
@@ -392,6 +455,7 @@
                 <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">CLIENTE</span>
                 <form onsubmit="enviar_add_cl(); return false" id="Add_cl">
                 <center><h4 class="modal-title"><?php echo $Administracion[0]['CLIENTE']; ?>, LLAMADA #<label id="titulo" name="titulo"><?php if($Administracion[3]['LLAMADA_UNO'] >= 1 && $Administracion[3]['PRG_UNO_CL'] == ''){$pregunta = 2;}else{$pregunta = 1;} echo $pregunta; ?></label></h4></center>
+
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -460,7 +524,7 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tipo">1.- ¿Qué edad tiene? *</label>
+                                        <label for="uno_cl">1.- ¿Qué edad tiene? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="uno_cl" name="uno_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
@@ -471,7 +535,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tipo">2.- ¿Cuál es su fecha de nacimiento? *</label>
+                                        <label for="dos_cl">2.- ¿Cuál es su fecha de nacimiento? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="dos_cl" name="dos_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
@@ -482,7 +546,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="tipo">3.- ¿Cuál es su domicilio completo? *</label>
+                                        <label for="tres_cl">3.- ¿Cuál es su domicilio completo? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="tres_cl" name="tres_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
@@ -496,7 +560,7 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tipo">4.- ¿Tiempo viviendo en este domicilio? *</label>
+                                        <label for="cuatro_cl">4.- ¿Tiempo viviendo en este domicilio? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="cuatro_cl" name="cuatro_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
@@ -507,7 +571,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="tipo">5.- Actualmente, ¿Cuál es su principal fuente de ingresos? *</label>
+                                        <label for="cinco_cl">5.- Actualmente, ¿Cuál es su principal fuente de ingresos? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="cinco_cl" name="cinco_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
@@ -518,7 +582,7 @@
                                 </div>
                                 <div class="col-md-5">
                                     <div class="form-group">
-                                        <label for="tipo">6.- Mencione, ¿Cuál es el nombre completo de su aval? *</label>
+                                        <label for="seis_cl">6.- Mencione, ¿Cuál es el nombre completo de su aval? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="seis_cl" name="seis_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
@@ -532,7 +596,7 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tipo">7.- Mencione, ¿Qué relación directa tiene con su aval? *</label>
+                                        <label for="siete_cl">7.- Mencione, ¿Qué relación directa tiene con su aval? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="siete_cl" name="siete_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
@@ -543,7 +607,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tipo">8.- ¿ Cuál es la actividad económica de su aval? *</label>
+                                        <label for="ocho_cl">8.- ¿ Cuál es la actividad económica de su aval? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="ocho_cl" name="ocho_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
@@ -554,7 +618,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tipo">9.- Me proporciona el número telefónico de su aval *</label>
+                                        <label for="nueve_cl">9.- Me proporciona el número telefónico de su aval *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="nueve_cl" name="nueve_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
@@ -567,7 +631,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tipo">10.- ¿Firmó su solicitud?, ¿Cuándo firmo la solicitud? *</label>
+                                        <label for="diez_cl">10.- ¿Firmó su solicitud?, ¿Cuándo firmo la solicitud? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="diez_cl" name="diez_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
@@ -582,7 +646,7 @@
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tipo">11.- Me puede indicar ¿para qué utilizará su crédito? *</label>
+                                        <label for="once_cl">11.- Me puede indicar ¿para qué utilizará su crédito? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="once_cl" name="once_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
@@ -593,7 +657,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tipo">12.- ¿Compartirá su crédito con alguna otra persona? *</label>
+                                        <label for="doce_cl">12.- ¿Compartirá su crédito con alguna otra persona? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="doce_cl" name="doce_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
@@ -634,11 +698,11 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">AVAL</span>
-                <center><h4 class="modal-title" id="myModalLabel"><?php echo $Administracion[0]['AVAL']; ?></h4></center>
+                <form onsubmit="enviar_add_av(); return false" id="Add_av">
+                    <center><h4 class="modal-title"><?php echo $Administracion[0]['AVAL']; ?>, LLAMADA #<label id="titulo_av" name="titulo_av"><?php if($Administracion[4]['LLAMADA_UNO'] >= 1 && $Administracion[4]['PRG_UNO_AV'] == ''){$pregunta = 2;}else{$pregunta = 1;} echo $pregunta; ?></label></h4></center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form onsubmit="enviar_add_av(); return false" id="Add_av">
                         <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group">
@@ -663,8 +727,8 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="tipo_cl">Tipo de llamada que esta realizando *</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo_cl" name="tipo_cl">
+                                    <label for="tipo_llamada_av">Tipo de llamada que esta realizando *</label>
+                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo_llamada_av" name="tipo_llamada_av">
                                         <option selected disabled value="">Seleccione una opción</option>
                                         <option value="VOZ">VOZ</option>
                                         <option value="WHATSAPP">WHATSAPP</option>
@@ -681,8 +745,8 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tipo">1.- ¿Qué edad tiene?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <label for="uno_av">1.- ¿Qué edad tiene?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="uno_av" name="uno_av">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -692,8 +756,8 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tipo">2.- ¿Cuál es su fecha de nacimiento?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <label for="dos_av">2.- ¿Cuál es su fecha de nacimiento?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="dos_av" name="dos_av">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -703,8 +767,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="tipo">3.- ¿Cuál es su domicilio completo?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <label for="tres_av">3.- ¿Cuál es su domicilio completo?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tres_av" name="tres_av">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -717,8 +781,8 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="tipo">4.- ¿Tiempo viviendo en este domicilio?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <label for="cuatro_av">4.- ¿Tiempo viviendo en este domicilio?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="cuatro_av" name="cuatro_av">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -728,8 +792,8 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="tipo">5.- Actualmente, ¿Cuál es su principal fuente de ingresos?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <label for="cinco_av">5.- Actualmente, ¿Cuál es su principal fuente de ingresos?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="cinco_av" name="cinco_av">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -739,8 +803,8 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="tipo">6.- ¿Hace cuanto conoce a <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <label for="seis_av">6.- ¿Hace cuanto conoce a <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="seis_av" name="seis_av">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -753,8 +817,8 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tipo">7.- Mencione, ¿Qué relación directa tiene con <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <label for="siete_av">7.- Mencione, ¿Qué relación directa tiene con <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="siete_av" name="siete_av">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -764,8 +828,8 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tipo">8.- ¿Sabe a que se dedica <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <label for="ocho_av">8.- ¿Sabe a que se dedica <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="ocho_av" name="ocho_av">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -775,8 +839,8 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tipo">9.- Me proporciona el número telefónico de <?php echo $Administracion[0]['CLIENTE']; ?></label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                        <label for="nueve_av">9.- Me proporciona el número telefónico de <?php echo $Administracion[0]['CLIENTE']; ?></label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="nueve_av" name="nueve_av">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="SI">RESPONDIO CORRECTAMENTE</option>
                                             <option value="NO">NO RESPONDIO</option>
@@ -784,6 +848,18 @@
                                         <p style="color: #007700"><b>R: <?php
                                                 $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
                                                 echo $format; ?></b></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="demo activado">
+                                        <input type="radio" name="completo_av" id="completo1_av" value="1" checked="checked">
+                                        <label for="completo1_av">Llamada exitosa</label>
+                                        <br>
+                                        <input type="radio" name="completo_av" id="completo2_av" value="0">
+                                        <label for="completo2_av">La llamada no se completo satisfactoriamente</label>
                                     </div>
                                 </div>
                             </div>

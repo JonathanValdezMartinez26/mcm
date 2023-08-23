@@ -820,7 +820,7 @@ html;
         $up_credito->_credito = $credito;
 
         $ciclo= MasterDom::getDataAll('ciclo_s');
-        $up_credito->_ciclo = $ciclo;
+        $up_credito->_ciclo_nuevo = $ciclo;
 
         $situacion = MasterDom::getDataAll('situacion_s');
         $up_credito->_situacion = $situacion;

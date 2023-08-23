@@ -40,7 +40,7 @@ sql;
                TO_CHAR(TO_DATE(SYSDATE,'dd-mm-YY'), 'YYYY-MM-DD') AS HOY_ES,
                TO_NUMBER(TO_DATE(SYSDATE,'dd-mm-YY') - TO_DATE('$fec_liq','YY-mm-dd')) as DIAS_SIN_DEVENGO, 
                INTERES_GLOBAL,
-               TO_NUMBER((SELECT DIAS_DEV FROM DEVENGO_DIARIO WHERE CDGEM = 'EMPFIN' AND CDGCLNS = '025107' AND CICLO = '01' AND TO_DATE(FREGISTRO ,'dd-mm-YY') = TO_DATE('2023-08-03','YY-mm-dd')) + (TO_NUMBER(TO_DATE(SYSDATE,'dd-mm-YY') - TO_DATE('2023-08-03','YY-mm-dd')))) * (TO_NUMBER((SELECT DEV_DIARIO FROM DEVENGO_DIARIO WHERE DIAS_DEV = 1 AND CDGCLNS='025107' AND CICLO='01' ))) AS INT_DEV, 
+               TO_NUMBER((SELECT DIAS_DEV FROM DEVENGO_DIARIO WHERE CDGEM = 'EMPFIN' AND CDGCLNS = '$noCredito' AND CICLO = '$noCiclo' AND TO_DATE(FREGISTRO ,'dd-mm-YY') = TO_DATE('$fec_liq','YY-mm-dd')) + (TO_NUMBER(TO_DATE(SYSDATE,'dd-mm-YY') - TO_DATE('$fec_liq','YY-mm-dd')))) * (TO_NUMBER((SELECT DEV_DIARIO FROM DEVENGO_DIARIO WHERE DIAS_DEV = 1 AND CDGCLNS='$noCredito' AND CICLO='$noCiclo' ))) AS INT_DEV, 
                TO_NUMBER((SELECT DEV_DIARIO FROM DEVENGO_DIARIO WHERE DIAS_DEV = 1 AND CDGCLNS='$noCredito' AND CICLO='$noCiclo' )) AS INTERES_DIARIO,
                TO_NUMBER((SELECT PLAZO FROM DEVENGO_DIARIO WHERE DIAS_DEV = 1 AND CDGCLNS='$noCredito' AND CICLO='$noCiclo' )) AS PLAZO,
                (SELECT PLAZO_DIAS  FROM DEVENGO_DIARIO WHERE DIAS_DEV = 1 AND CDGCLNS='$noCredito' AND CICLO='$noCiclo') AS PLAZO_DIAS, 
@@ -51,7 +51,7 @@ sql;
                from TBL_CIERRE_DIA WHERE CDGEM='EMPFIN' AND CDGCLNS='$noCredito' AND CICLO='$noCiclo' AND FECHA_LIQUIDA IS NOT NULL
 sql;
 
-            //var_dump($query2);
+            var_dump("*******".$query2);
 
             $d_datos = $mysqli->queryOne($query2);
             return[$d_liq, $d_datos];

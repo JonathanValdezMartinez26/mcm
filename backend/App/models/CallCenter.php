@@ -121,20 +121,27 @@ sql;
         AND PI.CDGCL = CL.CODIGO 
 sql;
 
-        $desbloqueo=<<<sql
+        $desbloqueo_cl=<<<sql
         select COUNT(ID_SCALL) as LLAMADA_UNO, (DIA_LLAMADA_1_CL ||' '|| HORA_LLAMADA_1_CL) AS HORA_LLAMADA_UNO, (DIA_LLAMADA_2_CL ||' '|| HORA_LLAMADA_2_CL) AS HORA_LLAMADA_DOS, PRG_UNO_CL  from SOL_CALL_CENTER 
         WHERE CICLO ='$ciclo' and DIA_LLAMADA_1_CL IS NOT NULL AND CDGCL_CL = '$id_cliente' 
         GROUP BY ID_SCALL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, PRG_UNO_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL
 sql;
-        //var_dump($desbloqueo);
+
+        $desbloqueo_aval=<<<sql
+        select COUNT(ID_SCALL) as LLAMADA_UNO, (DIA_LLAMADA_1_AV ||' '|| HORA_LLAMADA_1_AV) AS HORA_LLAMADA_UNO, (DIA_LLAMADA_2_AV ||' '|| HORA_LLAMADA_2_AV) AS HORA_LLAMADA_DOS, PRG_UNO_AV  from SOL_CALL_CENTER 
+        WHERE CICLO ='$ciclo' and DIA_LLAMADA_1_AV IS NOT NULL AND CDGCL_CL = '$id_cliente' 
+        GROUP BY ID_SCALL, DIA_LLAMADA_1_AV, HORA_LLAMADA_1_AV, PRG_UNO_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV
+sql;
+        //var_dump($desbloqueo_aval);
 
         $cliente = $mysqli->queryOne($query2);
         $aval = $mysqli->queryOne($query3);
-        $llamada_uno = $mysqli->queryOne($desbloqueo);
+        $llamada_cl = $mysqli->queryOne($desbloqueo_cl);
+        $llamada_av = $mysqli->queryOne($desbloqueo_aval);
 
         //var_dump($desbloqueo);
 
-        return [$credito_, $cliente, $aval, $llamada_uno];
+        return [$credito_, $cliente, $aval, $llamada_cl, $llamada_av];
 
     }
 
