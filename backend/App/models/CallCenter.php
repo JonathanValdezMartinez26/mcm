@@ -265,4 +265,61 @@ sql;
         return $mysqli->insert($query);
     }
 
+    public static function insertEncuestaAV($encuesta){
+
+        $mysqli = Database::getInstance(1);
+
+        if($encuesta->_completo == '1')
+        {
+            if($encuesta->_llamada == '1')
+            {
+                //Agregar un registro completo (Bien) lLAMADA 1
+                $query=<<<sql
+            UPDATE SOL_CALL_CENTER
+            SET CDGCL_AV=NULL, TEL_AV='$encuesta->_movil', FECHA_TRABAJO_AV= TIMESTAMP '2023-08-22 04:21:40.000000', 
+            TIPO_LLAM_1_AV='$encuesta->_tipo_llamada', DIA_LLAMADA_1_AV='2023-09-08', HORA_LLAMADA_1_AV='04:21:40', 
+            PRG_UNO_AV='S', PRG_DOS_AV='S', PRG_TRES_AV='S', PRG_CUATRO_AV='S', PRG_CINCO_AV='S', PRG_SEIS_AV='S', 
+            PRG_SIETE_AV='S', PRG_OCHO_AV='S', PRG_NUEVE_AV='S'
+            WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
+sql;
+            }
+            else
+            { //Agregar un registro completo (Bien) lLAMADA 2
+                $query=<<<sql
+                UPDATE SOL_CALL_CENTER
+            SET CDGCL_AV=NULL, TEL_AV='$encuesta->_movil', 
+            TIPO_LLAM_2_AV='$encuesta->_tipo_llamada', DIA_LLAMADA_2_AV='2023-09-08', HORA_LLAMADA_2_AV='04:21:40', 
+            PRG_UNO_AV='S', PRG_DOS_AV='S', PRG_TRES_AV='S', PRG_CUATRO_AV='S', PRG_CINCO_AV='S', PRG_SEIS_AV='S', 
+            PRG_SIETE_AV='S', PRG_OCHO_AV='S', PRG_NUEVE_AV='S'
+            WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
+sql;
+            }
+
+        }
+        else if($encuesta->_completo == '0')
+        {
+            if($encuesta->_llamada == '1')
+            {
+                //Agregar un registro incompleto
+                $query=<<<sql
+                UPDATE SOL_CALL_CENTER
+                SET FECHA_TRABAJO_AV= TIMESTAMP '2023-08-22 04:21:40.000000', TIPO_LLAM_1_AV='$encuesta->_tipo_llamada', DIA_LLAMADA_1_AV='2023-09-08', HORA_LLAMADA_1_AV='04:21:40'
+                WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
+sql;
+            }
+            else
+            {
+
+                $query=<<<sql
+                UPDATE SOL_CALL_CENTER
+                SET TIPO_LLAM_2_AV='$encuesta->_tipo_llamada', DIA_LLAMADA_2_AV='2023-09-08', HORA_LLAMADA_2_AV='04:21:40'
+                WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
+sql;
+            }
+
+        }
+        //var_dump($query);
+        return $mysqli->insert($query);
+    }
+
 }

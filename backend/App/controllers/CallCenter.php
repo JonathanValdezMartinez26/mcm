@@ -50,6 +50,11 @@ html;
             
         });
          
+         function InfoDesactivaEncuesta()
+         {
+             swal("Atención", "Para continuar con la ENCUESTA del AVAL por favor, es nesesario completar la PRIMER LLAMADA del cliente. ", "warning");
+         }
+         
         function enviar_add_cl(){	
              fecha_trabajo = document.getElementById("fecha_cl").value; 
              ciclo = document.getElementById("ciclo_cl").value; 
@@ -214,7 +219,7 @@ html;
     
         function enviar_add_av(){	
              fecha_trabajo = document.getElementById("fecha_av").value; 
-             num_telefono = document.getElementById("movil_cl").value;  
+             num_telefono = document.getElementById("movil_av").value;  
              tipo_av = document.getElementById("tipo_llamada_av").value; 
              uno = document.getElementById("uno_av").value; 
              dos = document.getElementById("dos_av").value; 
@@ -252,7 +257,7 @@ html;
              if(completo == '0')
                  {
                      
-                      if(tipo_cl == '')
+                      if(tipo_av == '')
                         {
                              swal("Seleccione el tipo de llamada que realizo", {icon: "warning",});
                         }
@@ -269,8 +274,8 @@ html;
                                   if (willDelete) {
                                       $.ajax({
                                             type: 'POST',
-                                            url: '/CallCenter/PagosAddEncuestaCL/',
-                                            data: $('#Add_cl').serialize()+'&contenido='+contenido,
+                                            url: '/CallCenter/PagosAddEncuestaAV/',
+                                            data: $('#Add_av').serialize()+'&contenido_av='+contenido,
                                             success: function(respuesta) {
                                                  if(respuesta=='1'){
                                                  swal("Registro guardado exitosamente", {
@@ -296,7 +301,7 @@ html;
                  }
              else 
                  {
-                      if(tipo_cl == '')
+                      if(tipo_av == '')
                         {
                              swal("Seleccione el tipo de llamada que realizo", {icon: "warning",});
                         }else if(uno  == '') {
@@ -317,13 +322,7 @@ html;
                              swal("Seleccione una opción para la pregunta #8", {icon: "warning",});
                         }else if(nueve  == '') {
                              swal("Seleccione una opción para la pregunta #9", {icon: "warning",});
-                        }else if(diez  == '') {
-                             swal("Seleccione una opción para la pregunta #11", {icon: "warning",});
-                        }else if(once  == '') {
-                             swal("Seleccione una opción para la pregunta #11", {icon: "warning",});
-                        }else if(doce  == '') {
-                             swal("Seleccione una opción para la pregunta #12", {icon: "warning",});
-                        }else
+                        }else 
                         {
                             
                             ////////////////////////////////////777
@@ -338,8 +337,8 @@ html;
                                   if (willDelete) {
                                       $.ajax({
                                         type: 'POST',
-                                        url: '/CallCenter/PagosAddEncuestaCL/',
-                                        data: $('#Add_cl').serialize()+'&contenido='+contenido,
+                                        url: '/CallCenter/PagosAddEncuestaAV/',
+                                        data: $('#Add_av').serialize()+'&contenido_av='+contenido,
                                         success: function(respuesta) {
                                              if(respuesta=='1'){
                                           
@@ -369,6 +368,27 @@ html;
             
            
     }
+    
+        function enviar_resumen_add(){	
+             cliente_encuesta = document.getElementById("cliente_encuesta").value; 
+             cliente_aval = document.getElementById("cliente_aval").value;  
+            
+            if(cliente_encuesta == 'FINALIZADA'){
+                ///////
+                //Puede guardar comentarios iniciales pero no finales
+                ////
+                alert("YA terminaste la encuesta del cliente")
+                
+            }
+            else
+            {
+                swal("Usted debe responder la encuesta del CLIENTE para poder guardar sus comentarios iniciales y poder continuar.", {icon: "warning",});
+            }
+            
+           
+    }
+    
+    
     
       </script>
 html;
@@ -623,6 +643,35 @@ html;
         $encuesta->_completo = MasterDom::getData('completo');
 
         $id = CallCenterDao::insertEncuestaCL($encuesta);
+    }
+
+    public function PagosAddEncuestaAV(){
+        $encuesta = new \stdClass();
+        $fecha_solicitud = MasterDom::getDataAll('fecha_solicitud_av');
+        $encuesta->_fecha_solicitud = $fecha_solicitud;
+        $encuesta->_cdgre = MasterDom::getData('cdgre_av');
+        $encuesta->_cliente = MasterDom::getData('cliente_id_av');
+        $encuesta->_cdgco = MasterDom::getData('cdgco_av');
+        $encuesta->_fecha = MasterDom::getData('fecha_av');
+        $encuesta->_ciclo = MasterDom::getData('ciclo_av');
+
+        $encuesta->_movil = MasterDom::getData('movil_av');
+        $encuesta->_tipo_llamada = MasterDom::getData('tipo_llamada_av');
+        $encuesta->_uno = MasterDom::getData('uno_av');
+        $encuesta->_dos = MasterDom::getData('dos_av');
+        $encuesta->_tres = MasterDom::getData('tres_av');
+        $encuesta->_cuatro = MasterDom::getData('cuatro_av');
+        $encuesta->_cinco = MasterDom::getData('cinco_av');
+        $encuesta->_seis = MasterDom::getData('seis_av');
+        $encuesta->_siete = MasterDom::getData('siete_av');
+        $encuesta->_ocho = MasterDom::getData('ocho_av');
+        $encuesta->_nueve = MasterDom::getData('nueve_av');
+        $encuesta->_llamada = MasterDom::getData('contenido_av');
+        $encuesta->_completo = MasterDom::getData('completo_av');
+
+
+
+        $id = CallCenterDao::insertEncuestaAV($encuesta);
     }
 
 
