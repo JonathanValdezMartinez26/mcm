@@ -372,8 +372,13 @@ html;
         function enviar_resumen_add(){	
              cliente_encuesta = document.getElementById("cliente_encuesta").value; 
              cliente_aval = document.getElementById("cliente_aval").value;  
-            
-            if(cliente_encuesta == 'FINALIZADA'){
+             
+             comentarios_iniciales = document.getElementById("comentarios_iniciales").value;
+             comentarios_finales = document.getElementById("comentarios_finales").value;
+             estatus_solicitud = document.getElementById("estatus_solicitud").value;
+             vobo_gerente = document.getElementById("vobo_gerente").value;
+             
+            if(cliente_encuesta == 'FINALIZADA' || cliente_encuesta == 'PENDIENTE 1 LLAMADA'){
                 ///////
                 //Puede guardar comentarios iniciales pero no finales
                 ////
@@ -401,7 +406,6 @@ html;
         $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo);
 
         if ($credito != '' && $ciclo != '') {
-
 
             if($AdministracionOne[0] == '')
             {
@@ -535,39 +539,36 @@ html;
          
          function enviar_add(){	
              
-                   
-                    $.ajax({
-                    type: 'POST',
-                    url: '/CallCenter/PagosAdd/',
-                    data: $('#Add').serialize()+ "&ejec="+texto,
-                    success: function(respuesta) {
-                         if(respuesta=='1 Proceso realizado exitosamente'){
-                      
-                        document.getElementById("monto").value = "";
-                        
-                         swal("Registro guardado exitosamente", {
-                                      icon: "success",
-                                    });
-                         location.reload();
-                        
-                        }
-                        else {
-                        $('#modal_agregar_pago').modal('hide')
-                         swal(respuesta, {
-                                      icon: "error",
-                                    });
-                            document.getElementById("monto").value = "";
-                        }
-                    }
-                    });
+                    fecha_inicio = new Date(document.getElementById("fecha_inicio").value); 
+                    fecha_fin =  new Date(document.getElementById("fecha_fin").value);
+                    let diferencia = fecha_fin.getTime() - fecha_inicio.getTime();
+                    let diasDeDiferencia = diferencia / 1000 / 60 / 60 / 24;
+                    console.log(diasDeDiferencia); // resultado: 357
+                    
+                    if(diasDeDiferencia == 0)
+                        {swal("Las fechas no pueden ser iguales", {icon: "warning",});}
+                        else if(diasDeDiferencia  <= 0)
+                        {swal("Recuerda que la Fecha de Fin no puede ser menor a la Fecha de Inicio, verifique la información.", {icon: "warning",});
+                        }else if(diasDeDiferencia  > 93)
+                        {swal("No puedes asignar a la analista un periodo mayor a 93 días", {icon: "warning",});
+                        }else if(diasDeDiferencia  <= 90)
+                        {swal("El periodo debe ser mayor a 90 días y menor a 93 días", {icon: "warning",});
+                        }else
+                            {
+                                alert("hola");
+                            }
+                                   
     }
     
       </script>
 html;
 
         $Analistas = CallCenterDao::getAllAnalistas();
+        $Regiones = CallCenterDao::getAllRegiones();
         $getAnalistas = '';
+        $getRegiones = '';
         $opciones = '';
+        $opciones_region = '';
 
         foreach ($Analistas as $key => $val2) {
 
@@ -576,13 +577,31 @@ html;
 html;
         }
 
+        foreach ($Regiones as $key_r => $val_R) {
+
+            $opciones_region .= <<<html
+                <option value="{$val_R['CODIGO']}">({$val_R['CODIGO']}) {$val_R['NOMBRE']}</option>
+html;
+    }
+
         $getAnalistas = <<<html
          <div class="col-md-12">
                 <div class="form-group">
                      <label for="ejecutivo">Ejecutivo *</label>
-                     <select class="form-control" autofocus type="select" id="tipo" name="tipo" aria-label="Search">
+                     <select class="form-control" autofocus type="select" id="ejecutivo" name="ejecutivo" aria-label="Search">
                         {$opciones}
                      </select>
+                </div>
+         </div>
+html;
+        $getRegiones = <<<html
+         <div class="col-md-12">
+                <div class="form-group">
+                     <label for="ejecutivo">Región *</label>
+                     <select class="form-control" autofocus type="select" id="region" name="region" aria-label="Search">
+                        {$opciones_region}
+                     </select>
+                     <small id="emailHelp" class="form-text text-muted">Asignarás todas las sucursales de la Región</small>
                 </div>
          </div>
 html;
@@ -595,7 +614,7 @@ html;
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;">{$value['CDGPE']}</td>
-                    <td style="padding: 0px !important;">{$value['CDGCO']}</td>
+                    <td style="padding: 0px !important;">{$value['CDGRG']}</td>
                     <td style="padding: 0px !important;">{$value['FECHA_INICIO']}</td>
                     <td style="padding: 0px !important;">{$value['FECHA_FIN']}</td>
                     <td style="padding: 0px !important;">{$value['FECHA_ALTA']}</td>
@@ -607,6 +626,7 @@ html;
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::set('Analistas', $getAnalistas);
+            View::set('Regiones', $getRegiones);
             View::set('tabla', $tabla);
             View::render("asignar_sucursales_analistas");
     }

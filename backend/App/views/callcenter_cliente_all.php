@@ -129,7 +129,7 @@
                                                             //&& $Administracion[3]['PRG_UNO_CL'] == NULL && $Administracion[3]['HORA_LLAMADA_UNO'] != '' && $Administracion[3]['HORA_LLAMADA_DOS'] == ''
 
                                                             $visible = '';
-                                                            $titulo_estatus = "PENDIENTE";
+                                                            $titulo_estatus = "PENDIENTE 1 LLAMADA";
                                                             $titulo_color = "Pendiente 1 Llamada";
                                                             $color = "warning";
                                                             $boton_ver_encuesta_fin = "";
@@ -319,7 +319,7 @@
                                                 <td style="font-size: 18px; background: #73879C;color: white" colspan="14">
                                                     <div class="row">
                                                         <div class="col-md-8">
-                                                            <input onkeydown="return false" style="display: none!important;" type="text" class="form-control" id="cliente_aval" name="cliente_aval" value="<?php echo $titulo_estatus_a; ?>" readonly>
+                                                            <input onkeydown="return false" style="display: none!important;"    type="text" class="form-control" id="cliente_aval" name="cliente_aval" value="<?php echo $titulo_estatus_a; ?>" readonly>
                                                             <strong>
                                                                 Identificación del Aval
                                                             </strong>
@@ -414,21 +414,21 @@
                                         <div class="form-group">
                                             <div class="col-lg-3">
                                                 <label for="Fecha">Comentarios Iniciales *</label>
-                                                <textarea name="contenido" id="contenido" class="form-control" rows="7" cols="50" placeholder="Escribe tus comentarios INICIALES una vez que hayas marcado al número del cliente o aval, por primera vez" style="background-color: white; resize: none"></textarea>
+                                                <textarea name="comentarios_iniciales" id="comentarios_iniciales" class="form-control" rows="7" cols="50" placeholder="Escribe tus comentarios INICIALES una vez que hayas marcado al número del cliente o aval, por primera vez" style="background-color: white; resize: none"></textarea>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <div class="col-lg-3">
                                                 <label for="Fecha">Comentarios Finales *</label>
-                                                <textarea name="contenido" id="contenido" class="form-control" rows="7" cols="50" placeholder="Escribe tus comentarios FINALES, una vez que hayas completado el proceso correspondiente" style="background-color: white; resize: none"></textarea>
+                                                <textarea name="comentarios_finales" id="comentarios_finales" class="form-control" rows="7" cols="50" placeholder="Escribe tus comentarios FINALES, una vez que hayas completado el proceso correspondiente" style="background-color: white; resize: none"></textarea>
                                             </div>
                                         </div>
 
                                         <div  class="col-lg-3">
                                             <div class="form-group">
                                                 <div>
-                                                    <label for="tipo"> Estatus Final de la Solicitud *</label>
-                                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                                    <label for="estatus_solicitud"> Estatus Final de la Solicitud *</label>
+                                                    <select class="form-control mr-sm-3"  autofocus type="select" id="estatus_solicitud" name="estatus_solicitud">
                                                         <option selected disabled value="">Seleccione una opción</option>
                                                         <option value="SI">CANCELADA, NO LOCALIZADOS</option>
                                                         <option value="NO">CANCELADA POR CLIENTE</option>
@@ -444,8 +444,8 @@
 
                                             <div class="form-group">
                                                 <div>
-                                                    <label for="tipo"> VoBo Gerente Regional (Opcional)</label>
-                                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                                    <label for="vobo_gerente"> VoBo Gerente Regional (Opcional)</label>
+                                                    <select class="form-control mr-sm-3"  autofocus type="select" id="vobo_gerente" name="vobo_gerente">
                                                         <option selected disabled value="">Seleccione una opción</option>
                                                         <option value="SI">SI</option>
                                                     </select>

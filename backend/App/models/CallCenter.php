@@ -198,6 +198,18 @@ sql;
 
     }
 
+    public static function getAllRegiones(){
+        $mysqli = Database::getInstance();
+
+        $query3=<<<sql
+        SELECT CODIGO, NOMBRE FROM RG 
+			WHERE NOT EXISTS(SELECT CDGRG FROM ASIGNACION_SUC_A WHERE RG.CODIGO = ASIGNACION_SUC_A.CDGRG)
+sql;
+        return $mysqli->queryAll($query3);
+
+
+    }
+
     public static function getAllAnalistasAsignadas(){
 
         $mysqli = Database::getInstance();
