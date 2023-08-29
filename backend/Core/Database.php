@@ -214,7 +214,7 @@ static $_mail;
         $resultado = "";
         $identifica_app = "";
 
-        $query_text = "CALL SPACCIONPAGODIA(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        $query_text = "CALL SPACCIONPAGODIA_PRUEBA(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         //$query_text = "CALL SPACCIONPAGODIA(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         $stmt = $this->_mysqli->prepare($query_text);
         $stmt->bindParam(1,$empresa, PDO::PARAM_STR);
