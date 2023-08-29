@@ -161,7 +161,7 @@ static $_mail;
         $resultado = "";
         $identifica_app = "";
 
-        $query_text = "CALL SPACCIONPAGODIA(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        $query_text = "CALL SPACCIONPAGODIA_PRUEBA(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         ///$query_text = "CALL SPACCIONPAGODIA(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";/////este es el que funciona bien cuando se actualice la base de datos de produccion
         $stmt = $this->_mysqli->prepare($query_text);
         $stmt->bindParam(1,$empresa, PDO::PARAM_STR);

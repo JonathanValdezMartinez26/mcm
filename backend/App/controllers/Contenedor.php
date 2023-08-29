@@ -156,15 +156,19 @@ html;
         }
         if($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL') {
             $menu .= <<<html
-                    <li><a href="/CallCenter/Administracion/">Asignar Sucursales a Analistas</a></li>
+                    <li><a href="/CallCenter/Administracion/">Asignar Sucursales</a></li>
                     <li><a href="/CallCenter/Concentrado/">Concentrado Diario</a></li>
                     
 html;
         }
         if($this->__perfil == 'ADMIN' || $this->__perfil == 'CALLC' || $this->__perfil == 'ACALL') {
+            if($this->__perfil == 'ADMIN')
+            {
+                $titulo = "(Analistas)";
+            }
             $menu .= <<<html
-                   <li><a href="/CallCenter/Pendientes/">if(Mis Pendientes</a></li>
-                   <li><a href="/CallCenter/Historico/">Mis Historicos</a></li>
+                   <li><a href="/CallCenter/Pendientes/">Mis Pendientes $titulo</a></li>
+                   <li><a href="/CallCenter/Historico/">Mis Historicos $titulo</a></li>
                   </ul>
                 </li>
               </ul>

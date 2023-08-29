@@ -490,22 +490,12 @@
                                     <input onkeydown="return false" type="text" class="form-control" id="fecha_solicitud" name="fecha_solicitud" value="<?php echo $Administracion[0]['FECHA_SOL']; ?>" readonly>
                                 </div>
                             </div>
-
-                            <div class="col-md-2" style="display: none;">
-                                <div class="form-group">
-                                    <label for="cdgco">CDGNS *</label>
-                                    <input onkeydown="return false" type="text" class="form-control" id="cdgns" name="cdgns" value="<?php echo $Administracion[0]['NO_CREDITO']; ?>" readonly>
-                                </div>
-                            </div>
-
                             <div class="col-md-2" style="display: none;">
                                 <div class="form-group">
                                     <label for="cdgco">CDGCO *</label>
                                     <input onkeydown="return false" type="text" class="form-control" id="cdgco" name="cdgco" value="<?php echo $suc; ?>" readonly>
                                 </div>
                             </div>
-
-
                             <div class="col-md-2" style="display: none;">
                                 <div class="form-group">
                                     <label for="cdgre">CDGRE *</label>

@@ -136,7 +136,7 @@ html;
                          swal(respuesta, {
                                       icon: "error",
                                     });
-                            location.reload();
+                         
                         }
                     }
                     });
@@ -1049,7 +1049,7 @@ html;
                          swal(respuesta, {
                                       icon: "error",
                                     });
-                            document.getElementById("monto").value = "";
+                           
                         }
                     }
                     });

@@ -474,6 +474,10 @@ html;
          $(document).ready(function(){
             $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
+          "lengthMenu": [
+                    [6, 10, 20, 30, -1],
+                    [6, 10, 20, 30, 'Todos'],
+                ],
                 "columnDefs": [{
                     "orderable": false,
                     "targets": 0
@@ -490,22 +494,432 @@ html;
             var checkAll = 0;
             
         });
+         
+         function InfoDesactivaEncuesta()
+         {
+             swal("Atención", "Para continuar con la ENCUESTA del AVAL por favor, es nesesario completar la PRIMER LLAMADA del cliente. ", "warning");
+         }
+         
+        function enviar_add_cl(){	
+             fecha_trabajo = document.getElementById("fecha_cl").value; 
+             ciclo = document.getElementById("ciclo_cl").value; 
+             num_telefono = document.getElementById("movil_cl").value;  
+             tipo_cl = document.getElementById("tipo_llamada_cl").value; 
+             uno = document.getElementById("uno_cl").value; 
+             dos = document.getElementById("dos_cl").value; 
+             tres = document.getElementById("tres_cl").value; 
+             cuatro = document.getElementById("cuatro_cl").value; 
+             cinco = document.getElementById("cinco_cl").value; 
+             seis = document.getElementById("seis_cl").value; 
+             siete = document.getElementById("siete_cl").value; 
+             ocho = document.getElementById("ocho_cl").value; 
+             nueve = document.getElementById("nueve_cl").value; 
+             diez = document.getElementById("diez_cl").value; 
+             once = document.getElementById("once_cl").value; 
+             doce = document.getElementById("doce_cl").value; 
+             completo = $('input[name="completo"]:checked').val();
+             llamada = document.getElementById("titulo");
+             contenido = llamada.innerHTML;
+             
+             
+             if(contenido == '2')
+                 {
+                     mensaje = "Está es la ultima llamada que podrá realizar al cliente y debera seleccionar un estatus final como: 'CANCELADA: NO LOCALIZADOS.', para terminar con la solicitud.";
+                 }
+             else 
+                 {
+                     if(completo == '1')
+                        {
+                            mensaje = "Usted va a finalizar y guardar la encuesta, no podrá editar esta información en un futuro.";
+                        }
+                     else 
+                         {
+                             mensaje = "Solo podrá intentar contactar una vez más al cliente.";
+                         }
+                     
+                 }
+             
+             
+             
+             if(completo == '0')
+                 {
+                     
+                      if(tipo_cl == '')
+                        {
+                             swal("Seleccione el tipo de llamada que realizo", {icon: "warning",});
+                        }
+                      else 
+                          {
+                                  swal({
+                                  title: "¿Está segura de continuar con una llamada incompleta?",
+                                  text: mensaje,
+                                  icon: "warning",
+                                  buttons: true,
+                                  dangerMode: true
+                                })
+                                .then((willDelete) => {
+                                  if (willDelete) {
+                                      $.ajax({
+                                            type: 'POST',
+                                            url: '/CallCenter/PagosAddEncuestaCL/',
+                                            data: $('#Add_cl').serialize()+'&contenido='+contenido,
+                                            success: function(respuesta) {
+                                                 if(respuesta=='1'){
+                                                 swal("Registro guardado exitosamente", {
+                                                              icon: "success",
+                                                            });
+                                                 location.reload();
+                                                }
+                                                else {
+                                                $('#modal_encuesta_cliente').modal('hide')
+                                                 swal(respuesta, {
+                                                              icon: "error",
+                                                            });
+                                                    document.getElementById("monto").value = "";
+                                                }
+                                            }
+                                            });
+                                  }
+                                  else {
+                                    swal("Continúe con su registro", {icon: "success",});
+                                  }
+                                });
+                         }
+                 }
+             else 
+                 {
+                      if(tipo_cl == '')
+                        {
+                             swal("Seleccione el tipo de llamada que realizo", {icon: "warning",});
+                        }else if(uno  == '') {
+                             swal("Seleccione una opción para la pregunta #1", {icon: "warning",});
+                        }else if(dos  == '') {
+                             swal("Seleccione una opción para la pregunta #2", {icon: "warning",});
+                        }else if(tres  == '') {
+                             swal("Seleccione una opción para la pregunta #3", {icon: "warning",});
+                        }else if(cuatro  == '') {
+                             swal("Seleccione una opción para la pregunta #4", {icon: "warning",});
+                        }else if(cinco  == '') {
+                             swal("Seleccione una opción para la pregunta #5", {icon: "warning",});
+                        }else if(seis  == '') {
+                             swal("Seleccione una opción para la pregunta #6", {icon: "warning",});
+                        }else if(siete  == '') {
+                             swal("Seleccione una opción para la pregunta #7", {icon: "warning",});
+                        }else if(ocho  == '') {
+                             swal("Seleccione una opción para la pregunta #8", {icon: "warning",});
+                        }else if(nueve  == '') {
+                             swal("Seleccione una opción para la pregunta #9", {icon: "warning",});
+                        }else if(diez  == '') {
+                             swal("Seleccione una opción para la pregunta #11", {icon: "warning",});
+                        }else if(once  == '') {
+                             swal("Seleccione una opción para la pregunta #11", {icon: "warning",});
+                        }else if(doce  == '') {
+                             swal("Seleccione una opción para la pregunta #12", {icon: "warning",});
+                        }else
+                        {
+                            
+                            ////////////////////////////////////777
+                            swal({
+                                  title: "¿Está segura de continuar?",
+                                  text: mensaje,
+                                  icon: "warning",
+                                  buttons: true,
+                                  dangerMode: true
+                                })
+                                .then((willDelete) => {
+                                  if (willDelete) {
+                                      $.ajax({
+                                        type: 'POST',
+                                        url: '/CallCenter/PagosAddEncuestaCL/',
+                                        data: $('#Add_cl').serialize()+'&contenido='+contenido,
+                                        success: function(respuesta) {
+                                             if(respuesta=='1'){
+                                          
+                                             swal("Registro guardado exitosamente", {
+                                                          icon: "success",
+                                                        });
+                                             location.reload();
+                                            
+                                            }
+                                            else {
+                                            $('#modal_encuesta_cliente').modal('hide')
+                                             swal(respuesta, {
+                                                          icon: "error",
+                                                        });
+                                                document.getElementById("monto").value = "";
+                                            }
+                                        }
+                                        });
+                                  }
+                                  else {
+                                    swal("Continúe con su registro", {icon: "info",});
+                                  }
+                                });
+                            //////////////////////////////777
+                        }
+                 }
+            
+           
+    }
+    
+        function enviar_add_av(){	
+             fecha_trabajo = document.getElementById("fecha_av").value; 
+             num_telefono = document.getElementById("movil_av").value;  
+             tipo_av = document.getElementById("tipo_llamada_av").value; 
+             uno = document.getElementById("uno_av").value; 
+             dos = document.getElementById("dos_av").value; 
+             tres = document.getElementById("tres_av").value; 
+             cuatro = document.getElementById("cuatro_av").value; 
+             cinco = document.getElementById("cinco_av").value; 
+             seis = document.getElementById("seis_av").value; 
+             siete = document.getElementById("siete_av").value; 
+             ocho = document.getElementById("ocho_av").value; 
+             nueve = document.getElementById("nueve_av").value; 
+             completo = $('input[name="completo_av"]:checked').val();
+             llamada = document.getElementById("titulo_av");
+             contenido = llamada.innerHTML;
+             
+             
+             if(contenido == '2')
+                 {
+                     mensaje = "Está es la ultima llamada que podrá realizar al cliente y debera seleccionar un estatus final como: 'CANCELADA: NO LOCALIZADOS.', para terminar con la solicitud.";
+                 }
+             else 
+                 {
+                     if(completo == '1')
+                        {
+                            mensaje = "Usted va a finalizar y guardar la encuesta, no podrá editar esta información en un futuro.";
+                        }
+                     else 
+                         {
+                             mensaje = "Solo podrá intentar contactar una vez más al cliente.";
+                         }
+                     
+                 }
+             
+             
+             
+             if(completo == '0')
+                 {
+                     
+                      if(tipo_av == '')
+                        {
+                             swal("Seleccione el tipo de llamada que realizo", {icon: "warning",});
+                        }
+                      else 
+                          {
+                                  swal({
+                                  title: "¿Está segura de continuar con una llamada incompleta?",
+                                  text: mensaje,
+                                  icon: "warning",
+                                  buttons: true,
+                                  dangerMode: true
+                                })
+                                .then((willDelete) => {
+                                  if (willDelete) {
+                                      $.ajax({
+                                            type: 'POST',
+                                            url: '/CallCenter/PagosAddEncuestaAV/',
+                                            data: $('#Add_av').serialize()+'&contenido_av='+contenido,
+                                            success: function(respuesta) {
+                                                 if(respuesta=='1'){
+                                                 swal("Registro guardado exitosamente", {
+                                                              icon: "success",
+                                                            });
+                                                 location.reload();
+                                                }
+                                                else {
+                                                $('#modal_encuesta_cliente').modal('hide')
+                                                 swal(respuesta, {
+                                                              icon: "error",
+                                                            });
+                                                    document.getElementById("monto").value = "";
+                                                }
+                                            }
+                                            });
+                                  }
+                                  else {
+                                    swal("Continúe con su registro", {icon: "success",});
+                                  }
+                                });
+                         }
+                 }
+             else 
+                 {
+                      if(tipo_av == '')
+                        {
+                             swal("Seleccione el tipo de llamada que realizo", {icon: "warning",});
+                        }else if(uno  == '') {
+                             swal("Seleccione una opción para la pregunta #1", {icon: "warning",});
+                        }else if(dos  == '') {
+                             swal("Seleccione una opción para la pregunta #2", {icon: "warning",});
+                        }else if(tres  == '') {
+                             swal("Seleccione una opción para la pregunta #3", {icon: "warning",});
+                        }else if(cuatro  == '') {
+                             swal("Seleccione una opción para la pregunta #4", {icon: "warning",});
+                        }else if(cinco  == '') {
+                             swal("Seleccione una opción para la pregunta #5", {icon: "warning",});
+                        }else if(seis  == '') {
+                             swal("Seleccione una opción para la pregunta #6", {icon: "warning",});
+                        }else if(siete  == '') {
+                             swal("Seleccione una opción para la pregunta #7", {icon: "warning",});
+                        }else if(ocho  == '') {
+                             swal("Seleccione una opción para la pregunta #8", {icon: "warning",});
+                        }else if(nueve  == '') {
+                             swal("Seleccione una opción para la pregunta #9", {icon: "warning",});
+                        }else 
+                        {
+                            
+                            ////////////////////////////////////777
+                            swal({
+                                  title: "¿Está segura de continuar?",
+                                  text: mensaje,
+                                  icon: "warning",
+                                  buttons: true,
+                                  dangerMode: true
+                                })
+                                .then((willDelete) => {
+                                  if (willDelete) {
+                                      $.ajax({
+                                        type: 'POST',
+                                        url: '/CallCenter/PagosAddEncuestaAV/',
+                                        data: $('#Add_av').serialize()+'&contenido_av='+contenido,
+                                        success: function(respuesta) {
+                                             if(respuesta=='1'){
+                                          
+                                             swal("Registro guardado exitosamente", {
+                                                          icon: "success",
+                                                        });
+                                             location.reload();
+                                            
+                                            }
+                                            else {
+                                            $('#modal_encuesta_cliente').modal('hide')
+                                             swal(respuesta, {
+                                                          icon: "error",
+                                                        });
+                                                document.getElementById("monto").value = "";
+                                            }
+                                        }
+                                        });
+                                  }
+                                  else {
+                                    swal("Continúe con su registro", {icon: "info",});
+                                  }
+                                });
+                            //////////////////////////////777
+                        }
+                 }
+            
+           
+    }
+    
+        function enviar_resumen_add(){	
+             cliente_encuesta = document.getElementById("cliente_encuesta").value; 
+             cliente_aval = document.getElementById("cliente_aval").value;  
+             
+             comentarios_iniciales = document.getElementById("comentarios_iniciales").value;
+             comentarios_finales = document.getElementById("comentarios_finales").value;
+             estatus_solicitud = document.getElementById("estatus_solicitud").value;
+             vobo_gerente = document.getElementById("vobo_gerente").value;
+             
+            if(cliente_encuesta == 'FINALIZADA' || cliente_encuesta == 'PENDIENTE 1 LLAMADA'){
+                ///////
+                //Puede guardar comentarios iniciales pero no finales
+                ////
+                alert("YA terminaste la encuesta del cliente")
+                
+            }
+            else
+            {
+                swal("Usted debe responder la encuesta del CLIENTE para poder guardar sus comentarios iniciales y poder continuar.", {icon: "warning",});
+            }
+            
+           
+    }
+    
+    
     
       </script>
 html;
 
+        $fechaActual = date('Y-m-d');
+        $credito = $_GET['Credito'];
+        $ciclo = $_GET['Ciclo'];
+        $reg = $_GET['Reg'];
+        $suc = $_GET['Suc'];
+        $opciones_region = "";
 
-        $this->__usuario;
+        $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo);
+        $Regiones = CallCenterDao::getAllRegiones();
 
-        $ListaEjecutivo = CallCenterDao::getAllDescription($credito, $ciclo);
+        $opciones_region .= <<<html
+                <option value="0">(000) TODAS LAS REGIONES</option>
+html;
+        foreach ($Regiones as $key_r => $val_R) {
+            $opciones_region .= <<<html
+                <option value="{$val_R['CODIGO']}">({$val_R['CODIGO']}) {$val_R['NOMBRE']}</option>
+html;
+        }
 
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
 
 
-        View::set('Administracion', $ListaEjecutivo);
-        View::render("callcenter_concentrado_all");
+        if ($credito != '' && $ciclo != '') {
 
+            if($AdministracionOne[0] == '')
+            {
+                View::set('Administracion', $AdministracionOne);
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('credito', $credito);
+                View::set('ciclo', $ciclo);
+
+                View::render("callcenter_cliente_message_all");
+            }
+            else
+            {
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('Administracion', $AdministracionOne);
+                View::set('reg', $reg);
+                View::set('suc', $suc);
+                View::render("callcenter_cliente_all");
+            }
+        } else {
+
+            $Solicitudes = CallCenterDao::getAllSolicitudesConcentrado();
+
+            foreach ($Solicitudes as $key => $value) {
+
+                $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 5px !important;"><label>{$value['CLAVE']}</label></td>
+                    <td style="padding: 10px !important; text-align: left">
+                         <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
+                        <br>
+                         <span class="fa fa-map-marker"></span> SUCURSAL: ({$value['CODIGO_SUCURSAL']}) {$value['NOMBRE_SUCURSAL']}
+                        <br>
+                        <span class="fa fa-briefcase"></span> EJECUTIVO: {$value['EJECUTIVO']}
+                    </td>
+                    <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE_CLIENTE']}</label></td>
+                    <td style="padding-top: 22px !important;"><span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important;">Pendiente</span></td>
+                    <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
+                    <td style="padding-top: 22px !important;">
+                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Reg={$value['CODIGO_REGION']}" class="btn btn-success btn-circle" style="background: #029f3f"><i class="fa fa-edit"></i> Iniciar Validación</a>
+                    </td>
+                </tr>
+html;
+            }
+
+
+            View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
+            View::set('tabla', $tabla);
+            View::set('Region', $opciones_region);
+            View::set('fechaActual', $fechaActual);
+            View::render("callcenter_concentrado_all");
+
+        }
     }
 
     public function Administracion()
@@ -584,6 +998,7 @@ html;
 html;
     }
 
+
         $getAnalistas = <<<html
          <div class="col-md-12">
                 <div class="form-group">
@@ -643,6 +1058,7 @@ html;
         $encuesta->_cdgre = MasterDom::getData('cdgre');
         $encuesta->_cliente = MasterDom::getData('cliente_id');
         $encuesta->_cdgco = MasterDom::getData('cdgco');
+        $encuesta->_cdgns = MasterDom::getData('cdgns');
         $encuesta->_fecha = MasterDom::getData('fecha_cl');
         $encuesta->_ciclo = MasterDom::getData('ciclo_cl');
         $encuesta->_movil = MasterDom::getData('movil_cl');
