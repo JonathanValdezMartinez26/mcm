@@ -173,7 +173,26 @@ sql;
 
     }
 
-    public static function getAllSolicitudesConcentrado(){
+    public static function getAllSolicitudesConcentrado($Fecha, $Region){
+
+        if($Region != '')
+        {
+            if($Region != '0')
+            {
+                $Region_cond = "AND RG.CODIGO = '$Region'";
+            }
+            else
+            {
+                $Region_cond = '';
+            }
+           // $condicional = " AND SOL_CALL_CENTER.FECHA_SOL BETWEEN TO_DATE('$Fecha', 'YY-mm-dd') AND TO_DATE('$Fecha', 'YY-mm-dd') $Region_cond";
+            $condicional = " $Region_cond";
+        }
+        else
+        {
+            $condicional= '';
+        }
+
 
         $mysqli = Database::getInstance();
         $query=<<<sql
@@ -226,9 +245,12 @@ sql;
         INNER JOIN CO ON SOL_CALL_CENTER.CDGCO = CO.CODIGO
         INNER JOIN RG ON CO.CDGRG = RG.CODIGO 
         INNER JOIN PE ON PE.CODIGO = SOL_CALL_CENTER.CDGPE 
+        
+        WHERE CL.CODIGO = SOL_CALL_CENTER.CDGCL_CL
+        $condicional
          
 sql;
-
+    //var_dump($query);
         return $mysqli->queryAll($query);
 
     }
@@ -262,8 +284,9 @@ sql;
         $mysqli = Database::getInstance();
 
         $query3=<<<sql
-        SELECT CODIGO, NOMBRE FROM RG 
-			WHERE NOT EXISTS(SELECT CDGRG FROM ASIGNACION_SUC_A WHERE RG.CODIGO = ASIGNACION_SUC_A.CDGRG) ORDER BY CODIGO
+        SELECT RG.NOMBRE AS REGION, CO.CODIGO, CO.NOMBRE FROM CO
+        INNER JOIN RG ON RG.CODIGO = CO.CDGRG
+        ORDER BY CODIGO
 sql;
         return $mysqli->queryAll($query3);
 
@@ -390,6 +413,20 @@ sql;
             }
 
         }
+        //var_dump($query);
+        return $mysqli->insert($query);
+    }
+
+    public static function insertAsignaSucursal($asigna){
+
+        $mysqli = Database::getInstance(1);
+
+           $query=<<<sql
+            INSERT INTO ASIGNACION_SUC_A
+            (ID_ASIGNACION, CDGEM, CDGPE, CDGCO, FECHA_INICIO, FECHA_FIN, FECHA_ALTA, CDGOCPE)
+            VALUES(SUC_SUCURSALES.nextval, 'EMPFIN', '$asigna->_ejecutivo', '$asigna->_region', TIMESTAMP '$asigna->_fecha_registro', TIMESTAMP '$asigna->_fecha_inicio 00:00:00.000000', TIMESTAMP '$asigna->_fecha_fin 00:00:00.000000', 'AMGM')
+sql;
+
         //var_dump($query);
         return $mysqli->insert($query);
     }

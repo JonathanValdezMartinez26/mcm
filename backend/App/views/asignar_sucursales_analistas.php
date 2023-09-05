@@ -41,18 +41,18 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Agsignar Analista a Sucursales</h4></center>
+                <center><h4 class="modal-title" id="myModalLabel">Asignar Analista a Sucursal</h4></center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form onsubmit="enviar_add(); return false" id="Add">
+                    <form onsubmit="enviar_add(); return false" id="Add_AS">
                         <div class="row">
 
                             <div class="col-md-6">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="exampleInputEmail1">Fecha de Registro</label>
-                                        <input type="text" class="form-control" id="Fecha" aria-describedby="Fecha" disabled placeholder=""  value="<?php $fechaActual = date('d-m-Y H:i:s'); echo $fechaActual; ?>">
+                                        <label for="fecha_registro">Fecha de Registro</label>
+                                        <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" readonly placeholder=""  value="<?php $fechaActual = date('Y-m-d H:i:s'); echo $fechaActual; ?>">
                                         <small id="emailHelp" class="form-text text-muted">Fecha de registro para la asignación.</small>
                                     </div>
                                 </div>
@@ -61,15 +61,15 @@
                             <div class="col-md-12">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="exampleInputEmail1">Fecha de Inicio</label>
-                                        <input type="date" class="form-control" id="fecha_inicio" aria-describedby="fecha_inicio" placeholder="" min="<?php $fechaActual = date('Y-m-d'); echo $fechaActual; ?>" value="<?php $fechaActual = date('Y-m-d'); echo $fechaActual; ?>">
+                                        <label for="fecha_inicio">Fecha de Inicio</label>
+                                        <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" placeholder="" min="<?php $fechaActual = date('Y-m-d'); echo $fechaActual; ?>" value="<?php $fechaActual = date('Y-m-d'); echo $fechaActual; ?>">
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="exampleInputEmail1">Fecha de Fin</label>
-                                        <input type="date" class="form-control" id="fecha_fin" aria-describedby="fecha_fin" placeholder="" min="<?php $fechaActual = date('Y-m-d'); echo $fechaActual; ?>" value="<?php $fechaActual = date('Y-m-d'); echo $fechaActual; ?>">
+                                        <label for="fecha_fin">Fecha de Fin</label>
+                                        <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" placeholder="" min="<?php $fechaActual = date('Y-m-d'); echo $fechaActual; ?>" value="<?php $fechaActual = date('Y-m-d'); echo $fechaActual; ?>">
                                     </div>
                                 </div>
                             </div>

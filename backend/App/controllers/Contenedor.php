@@ -154,10 +154,11 @@ html;
                  <ul class="nav child_menu">
 html;
         }
+        $fechaActual = date('Y-m-d');
         if($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL') {
             $menu .= <<<html
                     <li><a href="/CallCenter/Administracion/">Asignar Sucursales</a></li>
-                    <li><a href="/CallCenter/Concentrado/">Concentrado Diario</a></li>
+                    <li><a href="/CallCenter/Concentrado/?Fec=$fechaActual&Reg=0">Concentrado Diario</a></li>
                     
 html;
         }
@@ -166,9 +167,12 @@ html;
             {
                 $titulo = "(Analistas)";
             }
+            else{
+                $mis = 'Mis';
+            }
             $menu .= <<<html
-                   <li><a href="/CallCenter/Pendientes/">Mis Pendientes $titulo</a></li>
-                   <li><a href="/CallCenter/Historico/">Mis Historicos $titulo</a></li>
+                   <li><a href="/CallCenter/Pendientes/">$mis Pendientes $titulo</a></li>
+                   <li><a href="/CallCenter/Historico/">$mis Historicos $titulo</a></li>
                   </ul>
                 </li>
               </ul>
@@ -186,6 +190,7 @@ if($this->__perfil == 'ADMIN' || $this->__usuario == 'PLD') {
                    <li><a href="/Operaciones/IdentificacionClientes/">Identificación (Clientes)</a></li>
                    <li><a href="/Operaciones/CuentasRelacionadas/">Cuentas Relacionadas</a></li>
                    <li><a href="/Operaciones/PerfilTransaccional/">Perfil Transaccional</a></li>
+                   <li><a href="/Operaciones/UDIS_DOLAR/">Cargar UDIS y DOLAR</a></li>
                   </ul>
                 </li>
               </ul>

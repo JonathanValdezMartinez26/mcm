@@ -10,23 +10,22 @@
             <div class="card card-danger col-md-8" >
 
                 <div class="card-body">
-                    <form class="" id="consulta" action="/Operaciones/ReportePLDPagosNacimiento/" method="GET" onsubmit="return Validar()">
+                    <form class="" id="consulta" action="/CallCenter/Concentrado/" method="GET" onsubmit="return Validar()">
                         <div class="row">
 
-                            <div class="col-md-5 col-sm-8">
+                            <div class="col-md-4 col-sm-8">
                                 <div class="form-group">
-                                    <label for="ejecutivo">Región *</label>
-                                    <select class="form-control" autofocus type="select" id="tipo" name="tipo" aria-label="Search">
+                                    <label for="Reg">Región *</label>
+                                    <select class="form-control" autofocus type="select" id="Reg" name="Reg" aria-label="Search">
                                         <?php echo $Region; ?>
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <label for="ejecutivo">Fecha *</label>
-                                <input class="form-control mr-sm-2"  autofocus type="date" id="fecha" name="fecha" placeholder="000000" aria-label="Search" value="<?php echo $fechaActual; ?>">
+                            <div class="col-md-2">
+                                <label for="Fec">Fecha *</label>
+                                <input class="form-control mr-sm-2"  autofocus type="date" id="Fec" name="Fec" placeholder="000000" aria-label="Search" value="<?php echo $fechaActual; ?>">
                                 <span id="availability1"></span>
                             </div>
-
                             <div class="col-md-3" style="padding-top: 25px !important;">
                                 <div class="col-md-2">
                                     <button class="btn btn-default" type="submit">Buscar</button>
@@ -48,7 +47,6 @@
                             <tr>
                                 <th>-</th>
                                 <th>Región/Agencia</th>
-
                                 <th>Cliente</th>
                                 <th>Estatus</th>
                                 <th>F. Solicitud</th>

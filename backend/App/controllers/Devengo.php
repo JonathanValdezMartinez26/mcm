@@ -85,6 +85,7 @@ html;
         if($credito != '' || $ciclo != '')
         {
             $Administracion = DevengoDao::ConsultaExiste($credito, $ciclo);
+
             if($Administracion[0]['CDGCLNS'] != '')
             {
                 View::set('header', $this->_contenedor->header($extraHeader));

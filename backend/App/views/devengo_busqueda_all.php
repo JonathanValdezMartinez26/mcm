@@ -62,11 +62,6 @@
                             <div class="count" style="font-size: 14px"><i class="fa fa-calendar"></i> FIN: <?php echo $Administracion[0]['FIN']; ?></div>
                         </div>
 
-                        <div class="col-md-2 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i></i> Prestamo</span>
-                            <div class="count" style="font-size: 14px"><i class="fa fa-calendar"></i> FECHA DE CIERRE: <?php echo $Administracion['FECHA_LIQUIDA']; ?></div>
-                        </div>
-
                     </div>
                 </div>
                 <hr style="border-top: 1px solid #787878; margin-top: 5px;">
