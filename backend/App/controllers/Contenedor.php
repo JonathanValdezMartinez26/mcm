@@ -169,10 +169,12 @@ html;
             }
             else{
                 $mis = 'Mis';
+                $opcion = '<li><a href="/CallCenter/Global/">Todos los Pendientes</a></li>';
             }
             $menu .= <<<html
                    <li><a href="/CallCenter/Pendientes/">$mis Pendientes $titulo</a></li>
                    <li><a href="/CallCenter/Historico/">$mis Historicos $titulo</a></li>
+                   $opcion
                   </ul>
                 </li>
               </ul>

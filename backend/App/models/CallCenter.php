@@ -145,10 +145,44 @@ sql;
 
     }
 
-    public static function getAllSolicitudes(){
+    public static function getComboSucursales($CDGPE){
 
         $mysqli = Database::getInstance();
         $query=<<<sql
+           SELECT CO.CODIGO, CO.NOMBRE  FROM ASIGNACION_SUC_A
+           INNER JOIN CO ON CO.CODIGO = ASIGNACION_SUC_A.CDGCO 
+           WHERE ASIGNACION_SUC_A.CDGPE = 'ADMIN'
+           AND CO.CODIGO = ASIGNACION_SUC_A.CDGCO 
+		    
+sql;
+        //var_dump($query);
+        return $mysqli->queryAll($query);
+
+    }
+
+    public static function getAllSolicitudesHistorico($fecha_inicio, $fecha_fin, $cdgco){
+
+        $string_from_array = implode(', ', $cdgco);
+
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+            
+	     SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
+	     WHERE SPR.CDGCO IN($string_from_array)
+	     AND SPR.FECHA_TRABAJO BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
+sql;
+
+        //var_dump($query);
+        return $mysqli->queryAll($query);
+
+    }
+
+    public static function getAllSolicitudes($cdgco){
+
+        $string_from_array = implode(', ', $cdgco);
+
+        $mysqli = Database::getInstance();
+        $query_no_valido=<<<sql
         SELECT SN.CDGNS, SN.CICLO, TO_CHAR(SN.SOLICITUD ,'DD/MM/YYYY HH24:MI:SS') AS FECHA_SOL, SN.INICIO, 
         SN.CDGCO, SC.CDGCL, CL.NOMBRE1 || ' ' ||  CL.NOMBRE2 || ' ' || CL.PRIMAPE || ' ' || CL.SEGAPE NOMBRE, 
         CO.NOMBRE AS NOMBRE_SUCURSAL,CO.CODIGO AS CODIGO_SUCURSAL, RG.NOMBRE AS REGION, RG.CODIGO AS CODIGO_REGION, CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS EJECUTIVO,
@@ -158,17 +192,29 @@ sql;
         INNER JOIN CL ON CL.CODIGO = SC.CDGCL 
         INNER JOIN CO ON SN.CDGCO = CO.CODIGO 
         INNER JOIN RG ON CO.CDGRG = RG.CODIGO 
-        INNER JOIN PE ON PE.CODIGO = SN.CDGOCPE 
-        
-        
+        INNER JOIN PE ON PE.CODIGO = SN.CDGOCPE
         WHERE SN.CICLO = SC.CICLO 
         AND SN.CDGNS = SC.CDGNS 
         AND CL.CODIGO = SC.CDGCL 
         AND SN.SITUACION = 'S' 
         AND SC.CANTSOLIC != '9999'
+        AND CO.CODIGO IN($string_from_array)
         ORDER BY SN.SOLICITUD DESC
 sql;
 
+        $query=<<<sql
+             
+	     SELECT * FROM SOLICITUDES_PENDIENTES SPE
+	     WHERE SPE.CDGCO IN($string_from_array)
+	     AND SPE.SOLICITUD > TIMESTAMP '2023-09-04 00:00:00.000000'
+	     UNION 
+	     SELECT * FROM SOLICITUDES_PROCESADAS SPR
+	     WHERE SPR.CDGCO IN($string_from_array)
+	     AND SPR.SOLICITUD > TIMESTAMP '2023-09-04 00:00:00.000000'
+sql;
+
+
+        //var_dump($query);
         return $mysqli->queryAll($query);
 
     }
@@ -341,8 +387,8 @@ sql;
                 //Agregar un registro incompleto
                 $query=<<<sql
                 INSERT INTO SOL_CALL_CENTER
-                (ID_SCALL, CDGRG, FECHA_TRA_CL, FECHA_SOL, CDGCO, CDGNS, CDGPE, CDGCL_CL, CICLO, TEL_CL, TIPO_LLAM_1_CL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, PRG_UNO_CL, PRG_DOS_CL, PRG_TRES_CL, PRG_CUATRO_CL, PRG_CINCO_CL, PRG_SEIS_CL, PRG_SIETE_CL, PRG_OCHO_CL, PRG_NUEVE_CL, PRG_DIEZ_CL, PRG_ONCE_CL, PRG_DOCE_CL, CDGCL_AV, TEL_AV, FECHA_TRABAJO_AV, TIPO_LLAM_1_AV, DIA_LLAMADA_1_AV, HORA_LLAMADA_1_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, PRG_UNO_AV, PRG_DOS_AV, PRG_TRES_AV, PRG_CUATRO_AV, PRG_CINCO_AV, PRG_SEIS_AV, PRG_SIETE_AV, PRG_OCHO_AV, PRG_NUEVE_AV, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS, INCIDENCIA_COMERCIAL, VOBO_GERENTE_REGIONAL, CDGPE_ANALISTA, SEMAFORO, LLAMADA_POST_VENTA, RECAPTURADA, CDGPE_ANALISTA_INICIAL)
-                VALUES(sol_call_center_id.nextval, '$encuesta->_cdgre', TIMESTAMP '$encuesta->_fecha.000000', TIMESTAMP '$encuesta->_fecha_solicitud.000000', '', '$encuesta->_cdgco', 'AMGM', '$encuesta->_cliente', '$encuesta->_ciclo', '$encuesta->_movil', '$encuesta->_tipo_llamada', '2023-09-08', '12:32:19.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+                (ID_SCALL, CDGRG, FECHA_TRA_CL, FECHA_SOL, CDGNS, CDGCO, CDGPE, CDGCL_CL, CICLO, TEL_CL, TIPO_LLAM_1_CL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, PRG_UNO_CL, PRG_DOS_CL, PRG_TRES_CL, PRG_CUATRO_CL, PRG_CINCO_CL, PRG_SEIS_CL, PRG_SIETE_CL, PRG_OCHO_CL, PRG_NUEVE_CL, PRG_DIEZ_CL, PRG_ONCE_CL, PRG_DOCE_CL, CDGCL_AV, TEL_AV, FECHA_TRABAJO_AV, TIPO_LLAM_1_AV, DIA_LLAMADA_1_AV, HORA_LLAMADA_1_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, PRG_UNO_AV, PRG_DOS_AV, PRG_TRES_AV, PRG_CUATRO_AV, PRG_CINCO_AV, PRG_SEIS_AV, PRG_SIETE_AV, PRG_OCHO_AV, PRG_NUEVE_AV, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS, INCIDENCIA_COMERCIAL, VOBO_GERENTE_REGIONAL, CDGPE_ANALISTA, SEMAFORO, LLAMADA_POST_VENTA, RECAPTURADA, CDGPE_ANALISTA_INICIAL)
+                VALUES(sol_call_center_id.nextval, '$encuesta->_cdgre', TIMESTAMP '$encuesta->_fecha.000000', TIMESTAMP '$encuesta->_fecha_solicitud.000000', '$encuesta->_cdgns', '$encuesta->_cdgco', 'AMGM', '$encuesta->_cliente', '$encuesta->_ciclo', '$encuesta->_movil', '$encuesta->_tipo_llamada', '2023-09-08', '12:32:19.000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
 sql;
             }
             else

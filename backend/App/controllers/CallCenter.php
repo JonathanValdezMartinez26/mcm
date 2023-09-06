@@ -130,7 +130,7 @@ html;
                                                  swal(respuesta, {
                                                               icon: "error",
                                                             });
-                                                    document.getElementById("monto").value = "";
+                                                  
                                                 }
                                             }
                                             });
@@ -201,7 +201,7 @@ html;
                                              swal(respuesta, {
                                                           icon: "error",
                                                         });
-                                                document.getElementById("monto").value = "";
+                                                
                                             }
                                         }
                                         });
@@ -402,6 +402,22 @@ html;
         $ciclo = $_GET['Ciclo'];
         $reg = $_GET['Reg'];
         $suc = $_GET['Suc'];
+        $opciones_suc = '';
+        $cdgco = array();
+
+        //var_dump( $this->usuario, $this->__usuario);
+        $ComboSucursales = CallCenterDao::getComboSucursales($this->__usuario);
+
+        $opciones_suc .= <<<html
+                <option  value="000">(000) TODAS MIS SUCURSALES</option>
+html;
+        foreach ($ComboSucursales as $key => $val2) {
+
+            $opciones_suc .= <<<html
+                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+html;
+            array_push($cdgco, $val2['CODIGO']);
+        }
 
         $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo);
 
@@ -409,12 +425,11 @@ html;
 
             if($AdministracionOne[0] == '')
             {
-                View::set('Administracion', $AdministracionOne);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('Administracion', $AdministracionOne);
                 View::set('credito', $credito);
                 View::set('ciclo', $ciclo);
-
                 View::render("callcenter_cliente_message_all");
             }
             else
@@ -429,9 +444,64 @@ html;
             }
         } else {
 
-            $Solicitudes = CallCenterDao::getAllSolicitudes();
+            $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco);
 
             foreach ($Solicitudes as $key => $value) {
+                if($value['ESTATUS_CL'] == 'PENDIENTE UNA LLAMADA')
+                {
+                    $color = 'warning';
+                    $icon = 'fa-clock-o';
+                }
+                else if($value['ESTATUS_CL'] == 'NO LOCALIZADO (CANCELAR)')
+                {
+                    $color = 'danger';
+                    $icon = 'fa-exclamation-triangle';
+                }
+                else if($value['ESTATUS_CL'] == 'VALIDADO EN UNA LLAMADA' || $value['ESTATUS_CL'] == 'VALIDADO EN SEGUNDA LLAMADA')
+                {
+                    $color = 'success';
+                    $icon = 'fa-check';
+                }
+                else if($value['ESTATUS_CL'] == 'PENDIENTE')
+                {
+                    $color = 'primary';
+                    $icon = 'fa-frown-o';
+                }
+
+                if($value['ESTATUS_AV'] == 'PENDIENTE UNA LLAMADA')
+                {
+                    $color_av = 'warning';
+                    $icon_av = 'fa-clock-o';
+                }
+                else if($value['ESTATUS_AV'] == 'NO LOCALIZADO (CANCELAR)')
+                {
+                    $color_av = 'danger';
+                    $icon_av = 'fa-exclamation-triangle';
+                }
+                else if($value['ESTATUS_AV'] == 'VALIDADO EN UNA LLAMADA' || $value['ESTATUS_AV'] == 'VALIDADO EN SEGUNDA LLAMADA')
+                {
+                    $color_av = 'success';
+                    $icon_av = 'fa-check';
+                }
+                else if($value['ESTATUS_AV'] == 'PENDIENTE')
+                {
+                    $color_av = 'primary';
+                    $icon_av = 'fa-frown-o';
+                }
+
+
+                if($value['ESTATUS_CL'] == 'PENDIENTE' || $value['ESTATUS_AV'] == 'PENDIENTE')
+                {
+                    $titulo_boton = 'Iniciar Validación';
+                    $color_boton = '#029f3f';
+                }else
+                {
+                    $titulo_boton = 'Reanuda Validación';
+
+                    $color_boton = '#F0AD4E';
+                }
+
+
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
@@ -444,10 +514,14 @@ html;
                         <span class="fa fa-briefcase"></span> EJECUTIVO: {$value['EJECUTIVO']}
                     </td>
                     <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label></td>
-                    <td style="padding-top: 22px !important;"><span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important;">Pendiente</span></td>
+                    <td style="padding-top: 22px !important;">
+                        <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
+                        <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_av" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_av"></span> </span></div>
+                    </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
                     <td style="padding-top: 22px !important;">
-                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Reg={$value['CODIGO_REGION']}" class="btn btn-success btn-circle" style="background: #029f3f"><i class="fa fa-edit"></i> Iniciar Validación</a>
+                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Reg={$value['CODIGO_REGION']}" class="btn btn-primary btn-circle" style="background: $color_boton"><i class="fa fa-edit"></i> $titulo_boton
+                        </a>
                     </td>
                 </tr>
 html;
@@ -457,10 +531,12 @@ html;
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::set('tabla', $tabla);
+            View::set('sucursal', $opciones_suc);
             View::render("callcenter_pendientes_all");
 
         }
     }
+
 
     public function Concentrado()
     {
@@ -741,7 +817,252 @@ html;
 
     public function Historico()
     {
+        $extraHeader = <<<html
+        <title>Consulta de Encuestas Terminadas</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
 
+        $extraFooter = <<<html
+      <script>
+      
+      function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+             
+         $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+                  "lengthMenu": [
+                    [13, 50, -1],
+                    [132, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
+             $("#export_excel_consulta").click(function(){
+              $('#all').attr('action', '/Operaciones/generarExcelPagosF/?Inicial='+fecha1+'&Final='+fecha2);
+              $('#all').attr('target', '_blank');
+              $("#all").submit();
+            });
+             
+             
+        });
+      
+            function Validar(){
+                
+                fecha1 = moment(document.getElementById("Inicial").innerHTML = inputValue);
+                fecha2 = moment(document.getElementById("Final").innerHTML = inputValue);
+                
+                dias = fecha2.diff(fecha1, 'days');alert(dias);
+                
+                if(dias == 1)
+                    {
+                        alert("si es");
+                        return false;
+                    }
+                return false;
+          }
+      
+         Inicial.max = new Date().toISOString().split("T")[0];
+         Final.max = new Date().toISOString().split("T")[0];
+          
+         function InfoAdmin()
+         {
+             swal("Info", "Este registro fue capturado por una administradora en caja", "info");
+         }
+         function InfoPhone()
+         {
+             swal("Info", "Este registro fue capturado por un ejecutivo en campo y procesado por una administradora", "info");
+         }
+    
+      </script>
+html;
+
+        $fechaActual = date('Y-m-d');
+        $Inicial = $_GET['Inicial'];
+        $Final = $_GET['Final'];
+
+
+
+        if ($Inicial != '' || $Final != '') {
+            $Consulta = OperacionesDao::ConsultarPagosNacimiento($Inicial, $Final);
+
+            foreach ($Consulta as $key => $value) {
+
+                $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;">{$value['LOCALIDAD']}</td>
+                    <td style="padding: 0px !important;">{$value['SUCURSAL']}</td>
+                    <td style="padding: 0px !important;">{$value['TIPO_OPERACION']}</td>
+                    <td style="padding: 0px !important;">{$value['ID_CLIENTE']}</td>
+                    <td style="padding: 0px !important;">{$value['NUM_CUENTA']}</td>
+                    <td style="padding: 0px !important;">{$value['INSTRUMENTO_MONETARIO']}</td>
+                    <td style="padding: 0px !important;">{$value['MONEDA']}</td>
+                    <td style="padding: 0px !important;">$ {$value['MONTO']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_OPERACION']}</td>
+                    <td style="padding: 0px !important;">{$value['TIPO_RECEPTOR']}</td>
+                    <td style="padding: 0px !important;">{$value['CLAVE_RECEPTOR']}</td>
+                    <td style="padding: 0px !important;">{$value['NUM_CAJA']}</td>
+                    <td style="padding: 0px !important;">{$value['ID_CAJERO']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_HORA']}</td>
+                    <td style="padding: 0px !important;">{$value['NOTARJETA_CTA']}</td>
+                    <td style="padding: 0px !important;">{$value['TIPOTARJETA']}</td>
+                    <td style="padding: 0px !important;">{$value['COD_AUTORIZACION']}</td>
+                    <td style="padding: 0px !important;">{$value['ATRASO']}</td>
+                    <td style="padding: 0px !important;">{$value['OFICINA_CLIENTE']}</td>
+                    <td style="padding: 0px !important;">{$value['FEC_NAC']}</td>
+                    <td style="padding: 0px !important;">{$value['EDAD']}</td>
+                    <td style="padding: 0px !important;">{$value['CICLO']}</td>
+                </tr>
+html;
+            }
+            if($Consulta[0] == '')
+            {
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('fechaActual', $fechaActual);
+                View::render("pagos_cobrados_consulta_cultiva_busqueda_message_F");
+            }
+            else
+            {
+                View::set('tabla', $tabla);
+                View::set('Inicial', $Inicial);
+                View::set('Final', $Final);
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::render("pagos_cobrados_consulta_cultiva_busqueda_F");
+            }
+
+        } else {
+
+            $cdgco = array();
+
+            $ComboSucursales = CallCenterDao::getComboSucursales($this->__usuario);
+
+            foreach ($ComboSucursales as $key => $val2) {
+                array_push($cdgco, $val2['CODIGO']);
+            }
+
+
+            $Consulta = CallCenterDao::getAllSolicitudesHistorico($fechaActual, $fechaActual, $cdgco);
+
+            foreach ($Consulta as $key => $value) {
+
+                if($value['ESTATUS_CL'] == 'PENDIENTE UNA LLAMADA')
+                {
+                    $color = 'warning';
+                    $icon = 'fa-clock-o';
+                }
+                else if($value['ESTATUS_CL'] == 'NO LOCALIZADO (CANCELAR)')
+                {
+                    $color = 'danger';
+                    $icon = 'fa-exclamation-triangle';
+                }
+                else if($value['ESTATUS_CL'] == 'VALIDADO EN UNA LLAMADA' || $value['ESTATUS_CL'] == 'VALIDADO EN SEGUNDA LLAMADA')
+                {
+                    $color = 'success';
+                    $icon = 'fa-check';
+                }
+                else if($value['ESTATUS_CL'] == 'PENDIENTE')
+                {
+                    $color = 'primary';
+                    $icon = 'fa-frown-o';
+                }
+
+                if($value['ESTATUS_AV'] == 'PENDIENTE UNA LLAMADA')
+                {
+                    $color_av = 'warning';
+                    $icon_av = 'fa-clock-o';
+                }
+                else if($value['ESTATUS_AV'] == 'NO LOCALIZADO (CANCELAR)')
+                {
+                    $color_av = 'danger';
+                    $icon_av = 'fa-exclamation-triangle';
+                }
+                else if($value['ESTATUS_AV'] == 'VALIDADO EN UNA LLAMADA' || $value['ESTATUS_AV'] == 'VALIDADO EN SEGUNDA LLAMADA')
+                {
+                    $color_av = 'success';
+                    $icon_av = 'fa-check';
+                }
+                else if($value['ESTATUS_AV'] == 'PENDIENTE')
+                {
+                    $color_av = 'primary';
+                    $icon_av = 'fa-frown-o';
+                }
+
+
+                if($value['ESTATUS_CL'] == 'PENDIENTE' || $value['ESTATUS_AV'] == 'PENDIENTE')
+                {
+                    $titulo_boton = 'Iniciar Validación';
+                    $color_boton = '#029f3f';
+                }else
+                {
+                    $titulo_boton = 'Reanuda Validación';
+
+                    $color_boton = '#F0AD4E';
+                }
+
+
+
+                $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 5px !important;"><label>{$value['CDGNS']}-{$value['CICLO']}</label></td>
+                    <td style="padding: 10px !important; text-align: left">
+                         <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
+                        <br>
+                         <span class="fa fa-map-marker"></span> SUCURSAL: ({$value['CODIGO_SUCURSAL']}) {$value['NOMBRE_SUCURSAL']}
+                        <br>
+                        <span class="fa fa-briefcase"></span> EJECUTIVO: {$value['EJECUTIVO']}
+                    </td>
+                    <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label></td>
+                    <td style="padding-top: 22px !important;">
+                        <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
+                        <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_av" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_av"></span> </span></div>
+                    </td>
+                    <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
+                    <td style="padding-top: 22px !important;">
+                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Reg={$value['CODIGO_REGION']}" class="btn btn-primary btn-circle" style="background: $color_boton"><i class="fa fa-edit"></i> $titulo_boton
+                        </a>
+                    </td>
+                </tr>
+html;
+            }
+            if($Consulta[0] == '')
+            {
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('fechaActual', $fechaActual);
+                View::render("pagos_cobrados_consulta_cultiva_busqueda_message_F");
+            }
+            else
+            {
+                View::set('tabla', $tabla);
+                View::set('Inicial', $Inicial);
+                View::set('Final', $Final);
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::render("Historico_Call_Center");
+            }
+
+        }
     }
 
     public function PagosAddEncuestaCL(){
