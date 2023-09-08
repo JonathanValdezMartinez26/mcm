@@ -117,7 +117,7 @@
                                                             $titulo_ver_expediente = "Fecha de Trabajo";
                                                             $validado_en = "Validado en 1 ";
                                                             $hora = "Llamada #1: ".$Administracion[3]['HORA_LLAMADA_UNO']."<br>"."Llamada #2: ".$Administracion[3]['HORA_LLAMADA_DOS'];
-                                                            $desactivar_aval = 'true';
+                                                            $desactivar_aval = 'false';
                                                         }
 
 
@@ -151,7 +151,7 @@
                                                             $titulo_ver_expediente = "Fecha de Trabajo";
                                                             $validado_en = "Validado en 1 ";
                                                             $hora = $Administracion[3]['HORA_LLAMADA_DOS'];
-                                                            $desactivar_aval = 'true';
+                                                            $desactivar_aval = 'false';
                                                         }
 
                                                     }

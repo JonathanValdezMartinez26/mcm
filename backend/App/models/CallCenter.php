@@ -160,6 +160,18 @@ sql;
 
     }
 
+    public static function getComboSucursalesGlobales(){
+
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+           SELECT CO.CODIGO, CO.NOMBRE  FROM CO
+		    
+sql;
+        //var_dump($query);
+        return $mysqli->queryAll($query);
+
+    }
+
     public static function getAllSolicitudesHistorico($fecha_inicio, $fecha_fin, $cdgco){
 
         $string_from_array = implode(', ', $cdgco);
@@ -182,33 +194,14 @@ sql;
         $string_from_array = implode(', ', $cdgco);
 
         $mysqli = Database::getInstance();
-        $query_no_valido=<<<sql
-        SELECT SN.CDGNS, SN.CICLO, TO_CHAR(SN.SOLICITUD ,'DD/MM/YYYY HH24:MI:SS') AS FECHA_SOL, SN.INICIO, 
-        SN.CDGCO, SC.CDGCL, CL.NOMBRE1 || ' ' ||  CL.NOMBRE2 || ' ' || CL.PRIMAPE || ' ' || CL.SEGAPE NOMBRE, 
-        CO.NOMBRE AS NOMBRE_SUCURSAL,CO.CODIGO AS CODIGO_SUCURSAL, RG.NOMBRE AS REGION, RG.CODIGO AS CODIGO_REGION, CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS EJECUTIVO,
-            PE.CODIGO ID_EJECUTIVO, TO_CHAR(SN.SOLICITUD) AS FECHA
-        FROM SN 
-        INNER JOIN SC ON SN.CDGNS = SC.CDGNS 
-        INNER JOIN CL ON CL.CODIGO = SC.CDGCL 
-        INNER JOIN CO ON SN.CDGCO = CO.CODIGO 
-        INNER JOIN RG ON CO.CDGRG = RG.CODIGO 
-        INNER JOIN PE ON PE.CODIGO = SN.CDGOCPE
-        WHERE SN.CICLO = SC.CICLO 
-        AND SN.CDGNS = SC.CDGNS 
-        AND CL.CODIGO = SC.CDGCL 
-        AND SN.SITUACION = 'S' 
-        AND SC.CANTSOLIC != '9999'
-        AND CO.CODIGO IN($string_from_array)
-        ORDER BY SN.SOLICITUD DESC
-sql;
 
         $query=<<<sql
              
-	     SELECT * FROM SOLICITUDES_PENDIENTES SPE
+	     SELECT DISTINCT * FROM SOLICITUDES_PENDIENTES SPE
 	     WHERE SPE.CDGCO IN($string_from_array)
 	     AND SPE.SOLICITUD > TIMESTAMP '2023-09-04 00:00:00.000000'
 	     UNION 
-	     SELECT * FROM SOLICITUDES_PROCESADAS SPR
+	     SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
 	     WHERE SPR.CDGCO IN($string_from_array)
 	     AND SPR.SOLICITUD > TIMESTAMP '2023-09-04 00:00:00.000000'
 sql;

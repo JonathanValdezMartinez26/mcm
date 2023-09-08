@@ -3,7 +3,7 @@
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
             <div class="x_title">
-                <h3> Mis pendientes CallCenter</h3>
+                <h3> <?php echo $pendientes; ?> pendientes CallCenter</h3>
                 <div class="clearfix"></div>
             </div>
 
@@ -46,6 +46,7 @@
                                 <th>Cliente</th>
                                 <th>Estatus Encuesta</th>
                                 <th>F. Solicitud</th>
+                                <th>Bitácora</th>
                                 <th>Acciones</th>
                             </tr>
                             </thead>
