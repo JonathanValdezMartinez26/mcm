@@ -54,6 +54,33 @@ sql;
       return $mysqli->queryAll($query);
     }
 
+    public static function insertHorarios($horario){
+
+        $mysqli = Database::getInstance(1);
+
+        //Agregar un registro completo (Bien) lLAMADA 1
+        $query=<<<sql
+           INSERT INTO CIERRE_HORARIO
+            (ID_CIERRE_HORARIO, HORA_CIERRE, HORA_PRORROGA, CDGCO, CDGPE, FECHA_ALTA)
+            VALUES(CIERRE_HORARIO_SECUENCIA.nextval, '$horario->_hora', 'NULL', '$horario->_sucursal', 'AMGM', '$horario->_fecha_registro')
+             
+sql;
+//var_dump($query);
+        return $mysqli->insert($query);
+    }
+
+    public static function ConsultarHorarios(){
+
+        $query=<<<sql
+        SELECT * FROM CIERRE_HORARIO
+        INNER JOIN CO ON CO.CODIGO = CIERRE_HORARIO.CDGCO
+        ORDER BY CIERRE_HORARIO.FECHA_ALTA ASC 
+sql;
+
+        $mysqli = Database::getInstance();
+        return $mysqli->queryAll($query);
+    }
+
     public static function ConsultarPagosFechaSucursal($id_sucursal, $Inicial, $Final){
 
         if($id_sucursal)

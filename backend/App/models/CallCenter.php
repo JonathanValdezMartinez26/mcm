@@ -172,6 +172,19 @@ sql;
 
     }
 
+    public static function getComboSucursalesHorario(){
+
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+           SELECT CO.CODIGO, CO.NOMBRE  FROM CO
+           WHERE NOT EXISTS(SELECT CDGCO FROM CIERRE_HORARIO WHERE CIERRE_HORARIO.CDGCO = CO.CODIGO)
+		    
+sql;
+        //var_dump($query);
+        return $mysqli->queryAll($query);
+
+    }
+
     public static function getAllSolicitudesHistorico($fecha_inicio, $fecha_fin, $cdgco){
 
         $string_from_array = implode(', ', $cdgco);

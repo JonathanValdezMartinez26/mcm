@@ -6,6 +6,8 @@ use \Core\View;
 use \Core\MasterDom;
 use \Core\Controller;
 use \App\models\Pagos AS PagosDao;
+use \App\models\CallCenter AS CallCenterDao;
+
 
 
 class Pagos extends Controller
@@ -359,6 +361,131 @@ html;
         }
     }
 
+    public function AjusteHoraCierre()
+    {
+        $extraHeader = <<<html
+        <title>Ajuste Cierre Caja</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
+        $extraFooter = <<<html
+      <script>
+      
+       $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+           "lengthMenu": [
+                    [22, 50, -1],
+                    [22, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+        });
+       
+        function enviar_add_horario(){	
+             sucursal = document.getElementById("sucursal").value; 
+             
+            if(sucursal == '')
+                {
+                    
+                      swal("Atención", "Ingrese un monto mayor a $0", "warning");
+                      document.getElementById("monto").focus();
+                        
+                }
+            else
+                {
+                    
+                    $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/HorariosAdd/',
+                    data: $('#Add_AHC').serialize(),
+                    success: function(respuesta) {
+                         if(respuesta=='1'){
+                      
+                         swal("Registro guardado exitosamente", {
+                                      icon: "success",
+                                    });
+                        location.reload();
+                        }
+                        else {
+                         swal(respuesta, {
+                                      icon: "error",
+                                    });
+                         //location.reload();
+                         
+                        }
+                    }
+                    });
+                }
+    }
+      
+      
+      </script>
+html;
+
+        $tabla = '';
+        $horaActual = date("H:i:s");
+        $opciones_suc = '';
+
+        $ComboSucursales = CallCenterDao::getComboSucursalesHorario();
+
+
+        foreach ($ComboSucursales as $key => $val2) {
+
+            $opciones_suc .= <<<html
+                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+html;
+        }
+
+        $Administracion = PagosDao::ConsultarHorarios();
+
+
+        foreach ($Administracion as $key => $value) {
+
+            if($value['HORA_PRORROGA'] == 'NULL')
+            {
+                $prorroga = 'NO TIENE';
+            }
+            else
+            {
+                $prorroga = $value['HORA_PRORROGA'];
+            }
+
+            $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;">{$value['CODIGO']}</td>
+                    <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
+                    <td style="padding: 0px !important;">De (08:00:00 a.m) A ({$value['HORA_CIERRE']} a.m)</td>
+                    <td style="padding: 0px !important;">$prorroga</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_ALTA']} a.m</td>
+                     <td style="padding: 0px !important;"></td>
+                </tr>
+html;
+        }
+
+        View::set('tabla', $tabla);
+        View::set('usuario', $this->__usuario);
+        View::set('opciones_suc', $opciones_suc);
+
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("horarios_caja_sucursal");
+
+    }
+
     public function PagosConsulta()
     {
         $extraHeader = <<<html
@@ -564,6 +691,21 @@ html;
         $pagos->_ejecutivo_nombre = MasterDom::getData('ejec');
 
         $id = PagosDao::insertProcedure($pagos);
+        return $id;
+    }
+
+    public function HorariosAdd(){
+        $pagos = new \stdClass();
+        $fecha_registro = MasterDom::getDataAll('fecha_registro');
+        $pagos->_fecha_registro = $fecha_registro;
+
+        $sucursal = MasterDom::getDataAll('sucursal');
+        $pagos->_sucursal = $sucursal;
+
+        $hora = MasterDom::getDataAll('hora');
+        $pagos->_hora = $hora;
+
+        $id = PagosDao::insertHorarios($pagos);
         return $id;
     }
 
@@ -803,9 +945,10 @@ html;
         $horaActual = date("H:i:s");
         $dia = date("N");
 
-        if($this->__cdgco == '025' || $this->__cdgco == '026' || $this->__cdgco == '003'  || $this->__cdgco == '014'  || $this->__cdgco == '007'  || $this->__cdgco == '016'|| $this->__cdgco == '004')
+        if($this->__cdgco == '025' || $this->__cdgco == '026' || $this->__cdgco == '003'  || $this->__cdgco == '014'  || $this->__cdgco == '007'  || $this->__cdgco == '016' || $this->__cdgco == '004' || $this->__cdgco == '020' || $this->__cdgco == '027' || $this->__cdgco == '019' || $this->__cdgco == '011' || $this->__cdgco == '029' || $this->__cdgco == '010' )
         {
-            // 025 - SUC TOLUCA 2// 026 - SUC TOLUCA 3 // 003 - Cholula //014 - SUC TOLUCA // 007 - ZINA // ZINA 2-  016 // 004 - APIZACO  // AGREGAR ´PUEBLA(NORTE ES 013), SUR(008)  Y XONA(002)
+            // 025 - SUC TOLUCA 2// 026 - SUC TOLUCA 3 // 003 - Cholula //014 - SUC TOLUCA // 007 - ZINA // ZINA 2-  016 // 004 - APIZACO  // AGREGAR ´PUEBLA(NORTE ES 013), SUR(008)  Y XONA(002)  //VILLA VICTORIA - 020
+            // 027 ZITACUARO // 019 SAN MARTIN // 011	ATLIXCO // 029 TLAXCALA // 010	SANTA ANA
             if($horaActual <= '11:00:00')
             {
                 if ($dia == 1)
