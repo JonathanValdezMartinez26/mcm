@@ -72,15 +72,15 @@
                                         <label for="hora">Horario de Cierre *</label>
                                         <select class="form-control" autofocus type="select" id="hora" name="hora">
                                             <option value="10:00:00">10:00 a.m</option>
-                                            <option value="10:00:00">10:10 a.m</option>
-                                            <option value="10:00:00">10:15 a.m</option>
+                                            <option value="10:10:00">10:10 a.m</option>
+                                            <option value="10:15:00">10:15 a.m</option>
                                             <option value="10:30:00">10:30 a.m</option>
                                             <option value="11:00:00">11:00 a.m</option>
-                                            <option value="11:30:00">11:10 a.m</option>
-                                            <option value="11:30:00">11:15 a.m</option>
+                                            <option value="11:10:00">11:10 a.m</option>
+                                            <option value="11:15:00">11:15 a.m</option>
                                             <option value="11:30:00">11:30 a.m</option>
-                                            <option value="11:30:00">11:40 a.m</option>
-                                            <option value="11:30:00">11:50 a.m</option>
+                                            <option value="11:40:00">11:40 a.m</option>
+                                            <option value="11:50:00">11:50 a.m</option>
                                         </select>
                                     </div>
                                 </div>
@@ -131,15 +131,15 @@
                                         <label for="hora_e">Nuevo Horario *</label>
                                         <select class="form-control" autofocus type="select" id="hora_e" name="hora_e">
                                             <option value="10:00:00">10:00 a.m</option>
-                                            <option value="10:00:00">10:10 a.m</option>
-                                            <option value="10:00:00">10:15 a.m</option>
+                                            <option value="10:10:00">10:10 a.m</option>
+                                            <option value="10:15:00">10:15 a.m</option>
                                             <option value="10:30:00">10:30 a.m</option>
                                             <option value="11:00:00">11:00 a.m</option>
-                                            <option value="11:30:00">11:10 a.m</option>
-                                            <option value="11:30:00">11:15 a.m</option>
+                                            <option value="11:10:00">11:10 a.m</option>
+                                            <option value="11:15:00">11:15 a.m</option>
                                             <option value="11:30:00">11:30 a.m</option>
-                                            <option value="11:30:00">11:40 a.m</option>
-                                            <option value="11:30:00">11:50 a.m</option>
+                                            <option value="11:40:00">11:40 a.m</option>
+                                            <option value="11:50:00">11:50 a.m</option>
                                         </select>
                                     </div>
                                 </div>

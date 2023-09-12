@@ -496,7 +496,7 @@ html;
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;">{$value['CODIGO']}</td>
                     <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
-                    <td style="padding: 0px !important;">De (08:00:00 a.m) A ({$value['HORA_CIERRE']} a.m)</td>
+                    <td style="padding: 0px !important;">De (08:00:00 a.m) A (<strong>{$value['HORA_CIERRE']}</strong> a.m)</td>
                     <td style="padding: 0px !important;">$prorroga</td>
                     <td style="padding: 0px !important;">{$value['FECHA_ALTA']}</td>
                      <td style="padding: 0px !important;">
