@@ -434,6 +434,31 @@ html;
                     });
                 }
     }
+    
+        function enviar_update_horario(){	
+          
+                    $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/HorariosUpdate/',
+                    data: $('#Update_AHC').serialize(),
+                    success: function(respuesta) {
+                         if(respuesta=='1'){
+                      
+                         swal("Registro actualizado exitosamente", {
+                                      icon: "success",
+                                    });
+                        location.reload();
+                        }
+                        else {
+                         swal(respuesta, {
+                                      icon: "error",
+                                    });
+                         //location.reload();
+                         
+                        }
+                    }
+                    });
+    }
       
       
       </script>
@@ -473,8 +498,10 @@ html;
                     <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
                     <td style="padding: 0px !important;">De (08:00:00 a.m) A ({$value['HORA_CIERRE']} a.m)</td>
                     <td style="padding: 0px !important;">$prorroga</td>
-                    <td style="padding: 0px !important;">{$value['FECHA_ALTA']} a.m</td>
-                     <td style="padding: 0px !important;"></td>
+                    <td style="padding: 0px !important;">{$value['FECHA_ALTA']}</td>
+                     <td style="padding: 0px !important;">
+                        <button type="button" class="btn btn-success btn-circle" onclick="EditarHorario('{$value['CDGCO']}', '{$value['NOMBRE']}' , '{$value['HORA_CIERRE']}');"><i class="fa fa-edit"></i></button>
+                     </td>
                 </tr>
 html;
         }
@@ -709,6 +736,19 @@ html;
         $pagos->_hora = $hora;
 
         $id = PagosDao::insertHorarios($pagos);
+        return $id;
+    }
+
+    public function HorariosUpdate(){
+        $horario = new \stdClass();
+
+        $sucursal = MasterDom::getDataAll('sucursal_e');
+        $horario->_sucursal = $sucursal;
+
+        $hora = MasterDom::getDataAll('hora_e');
+        $horario->_hora = $hora;
+
+        $id = PagosDao::updateHorarios($horario);
         return $id;
     }
 

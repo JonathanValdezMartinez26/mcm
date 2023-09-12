@@ -73,6 +73,20 @@ sql;
         return $mysqli->insert($query);
     }
 
+    public static function updateHorarios($horario){
+
+        $mysqli = Database::getInstance(1);
+
+        //Agregar un registro completo (Bien) lLAMADA 1
+        $query=<<<sql
+        UPDATE CIERRE_HORARIO
+        SET HORA_CIERRE='$horario->_hora'
+        WHERE CDGCO='$horario->_sucursal'
+sql;
+//var_dump($query);
+        return $mysqli->insert($query);
+    }
+
     public static function ConsultarHorarios(){
 
         $query=<<<sql
