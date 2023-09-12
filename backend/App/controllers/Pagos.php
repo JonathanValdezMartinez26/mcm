@@ -219,6 +219,7 @@ html;
 
         $fechaActual = date("Y-m-d");
         $horaActual = date("H:i:s");
+
         $dia = date("N");
 
 
@@ -259,8 +260,10 @@ html;
         if ($credito != '') {
             $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__usuario);
 
+            $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
 
-            if($AdministracionOne['NO_CREDITO'] == '')
+
+            if($AdministracionOne[0]['NO_CREDITO'] == '')
             {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -272,7 +275,7 @@ html;
             }
             else
             {
-            $Administracion = PagosDao::ConsultarPagosAdministracion($credito);
+            $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $hora_cierre);
             foreach ($Administracion as $key => $value) {
 
                 if($value['FIDENTIFICAPP'] ==  NULL)
@@ -945,37 +948,23 @@ html;
         $horaActual = date("H:i:s");
         $dia = date("N");
 
-        if($this->__cdgco == '025' || $this->__cdgco == '026' || $this->__cdgco == '003'  || $this->__cdgco == '014'  || $this->__cdgco == '007'  || $this->__cdgco == '016' || $this->__cdgco == '004' || $this->__cdgco == '020' || $this->__cdgco == '027' || $this->__cdgco == '019' || $this->__cdgco == '011' || $this->__cdgco == '029' || $this->__cdgco == '010' )
+        $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__usuario);
+
+        $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
+        if($hora_cierre == '')
         {
-            // 025 - SUC TOLUCA 2// 026 - SUC TOLUCA 3 // 003 - Cholula //014 - SUC TOLUCA // 007 - ZINA // ZINA 2-  016 // 004 - APIZACO  // AGREGAR ´PUEBLA(NORTE ES 013), SUR(008)  Y XONA(002)  //VILLA VICTORIA - 020
-            // 027 ZITACUARO // 019 SAN MARTIN // 011	ATLIXCO // 029 TLAXCALA // 010	SANTA ANA
-            if($horaActual <= '11:00:00')
-            {
-                if ($dia == 1)
-                {
-                    $date_past = strtotime('-3 days', strtotime($fechaActual));
-                    $date_past = date('Y-m-d', $date_past);
-                }
-                else
-                {
-                    $date_past = strtotime('-1 days', strtotime($fechaActual));
-                    $date_past = date('Y-m-d', $date_past);
-                }
-
-                $inicio_f = $date_past;
-                $fin_f = $fechaActual;
-            }
-            else
-            {
-                $inicio_f = $fechaActual;
-                $fin_f = $fechaActual;
-            }
-
+            $hora_cierre = '10:00:00';
         }
         else
         {
-            if($horaActual <= '10:00:00')
+            $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
+        }
+
+
+
+            if($horaActual <= $hora_cierre)
             {
+                //var_dump("Hola");
                 if ($dia == 1)
                 {
                     $date_past = strtotime('-3 days', strtotime($fechaActual));
@@ -995,7 +984,7 @@ html;
                 $inicio_f = $fechaActual;
                 $fin_f = $fechaActual;
             }
-        }
+
 
         $status = PagosDao::ListaEjecutivosAdmin($credito);
         foreach ($status[0] as $key => $val2) {
@@ -1014,10 +1003,7 @@ html;
         }
         if ($credito != '') {
 
-            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__usuario);
-
-
-            if($AdministracionOne['NO_CREDITO'] == '')
+            if($AdministracionOne[0]['NO_CREDITO'] == '')
             {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -1028,7 +1014,7 @@ html;
             }
             else
             {
-                $Administracion = PagosDao::ConsultarPagosAdministracion($credito);
+                $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $hora_cierre);
                 foreach ($Administracion as $key => $value) {
 
                     if($value['FIDENTIFICAPP'] ==  NULL)

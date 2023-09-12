@@ -34,7 +34,7 @@
             </div>
             <div class="card col-md-12">
                 <hr style="border-top: 1px solid #e5e5e5; margin-top: 5px;">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_pago" onclick="BotonPago('<?php echo $Administracion['SITUACION_NOMBRE']; ?>');">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_pago" onclick="BotonPago('<?php echo $Administracion[0]['SITUACION_NOMBRE']; ?>');">
                      <i class="fa fa-plus"></i> Agregar Pago
                 </button>
                 <hr style="border-top: 1px solid #787878; margin-top: 5px;">
@@ -43,32 +43,32 @@
                         <div class="col-md-3 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Cliente</span>
 
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion['CLIENTE']; ?></div>
-                            <span class="count_top badge" style="padding: 1px 1px; background: <?php echo $Administracion['COLOR']; ?>"><h5><b><i class="">SITUACIÓN: <?php echo $Administracion['SITUACION_NOMBRE']; ?></i></b></h5></span>
+                            <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['CLIENTE']; ?></div>
+                            <span class="count_top badge" style="padding: 1px 1px; background: <?php echo $Administracion[0]['COLOR']; ?>"><h5><b><i class="">SITUACIÓN: <?php echo $Administracion[0]['SITUACION_NOMBRE']; ?></i></b></h5></span>
                         </div>
                         <div class="col-md-1 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-clock-o"></i> Ciclo</span>
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion['CICLO']; ?> </div>
+                            <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['CICLO']; ?> </div>
                         </div>
                         <div class="col-md-1 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i></i> Prestamo</span>
-                            <div class="count" style="font-size: 14px"> $ <?php echo number_format($Administracion['MONTO']); ?></div>
+                            <div class="count" style="font-size: 14px"> $ <?php echo number_format($Administracion[0]['MONTO']); ?></div>
                         </div>
                         <div class="col-md-1 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i></i> Día de Pago</span>
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion['DIA_PAGO']; ?></div>
+                            <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['DIA_PAGO']; ?></div>
                         </div>
                         <div class="col-md-1 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i></i> Parcialidad</span>
-                            <div class="count" style="font-size: 14px">$ <?php echo number_format($Administracion['PARCIALIDAD']); ?></div>
+                            <div class="count" style="font-size: 14px">$ <?php echo number_format($Administracion[0]['PARCIALIDAD']); ?></div>
                         </div>
                         <div class="col-md-2 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i></i> Sucursal</span>
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion['SUCURSAL']; ?></div>
+                            <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['SUCURSAL']; ?></div>
                         </div>
                         <div class="col-md-2 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i></i> Ejecutivo de cuenta</span>
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion['EJECUTIVO']; ?> </div>
+                            <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['EJECUTIVO']; ?> </div>
                         </div>
                     </div>
                 </div>
@@ -141,14 +141,14 @@
                             <div class="col-md-10">
                                 <div class="form-group">
                                     <label for="nombre">Nombre del Cliente</label>
-                                    <input type="text" class="form-control" id="nombre" name="nombre" readonly value="<?php echo $Administracion['CLIENTE']; ?>">
+                                    <input type="text" class="form-control" id="nombre" name="nombre" readonly value="<?php echo $Administracion[0]['CLIENTE']; ?>">
                                 </div>
                             </div>
 
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="ciclo">Ciclo</label>
-                                    <input type="number" class="form-control" id="ciclo" name="ciclo" min="1" value="<?php echo $Administracion['CICLO']; ?>">
+                                    <input type="number" class="form-control" id="ciclo" name="ciclo" min="1" value="<?php echo $Administracion[0]['CICLO']; ?>">
                                 </div>
                             </div>
 

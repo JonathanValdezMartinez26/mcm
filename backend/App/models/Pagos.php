@@ -6,7 +6,7 @@ use \Core\Database;
 
 class Pagos{
 
-    public static function ConsultarPagosAdministracion($noCredito){
+    public static function ConsultarPagosAdministracion($noCredito, $hora){
 
         $query=<<<sql
         SELECT
@@ -30,7 +30,10 @@ class Pagos{
         TRUNC(FECHA) AS DE,
         TRUNC(FECHA) + 1 + 10/24 +  10/1440 AS HASTA,
         CASE
-        WHEN SYSDATE BETWEEN (FECHA) AND (TRUNC(FECHA) + 1 + 10/24 + 10/1440) THEN 'SI'
+            WHEN SYSDATE 
+            BETWEEN (FECHA) 
+            AND TO_DATE((TO_CHAR((TRUNC(FECHA) + 1),  'YYYY-MM-DD') || ' ' || '$hora'), 'YYYY-MM-DD HH24:MI:SS')
+            THEN 'SI'
         Else 'NO'
         END AS DESIGNATION,
         CASE
@@ -50,6 +53,7 @@ class Pagos{
         FREGISTRO DESC, SECUENCIA
 sql;
 
+        //var_dump($query);
       $mysqli = Database::getInstance();
       return $mysqli->queryAll($query);
     }
@@ -207,9 +211,25 @@ sql;
 		AND SC.CANTSOLIC <> '9999' order by SC.SOLICITUD  desc
 sql;
         //var_dump($query);
+
+
+
         $mysqli = Database::getInstance();
+        $consulta = $mysqli->queryOne($query);
+
+        $cdgco = $consulta['ID_SUCURSAL'];
+
+        $query_horario=<<<sql
+        SELECT * FROM CIERRE_HORARIO WHERE CDGCO = '$cdgco'
+sql;
+
+        $consulta_horario = $mysqli->queryOne($query_horario);
+
+
+        return[$consulta, $consulta_horario];
+
         //var_dump($mysqli->queryOne($query));
-        return $mysqli->queryOne($query);
+
     }
 
     public static function ActualizacionCredito($noCredito){

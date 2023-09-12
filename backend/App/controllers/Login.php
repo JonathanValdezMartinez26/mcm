@@ -99,11 +99,11 @@ html;
                                     $("#login").append('<input type="hidden" name="nombre" id="nombre" value="'+usuario.nombre+'"/>');
                                     $("#login").submit();
                             }else{
-                                      swal("Error de autenticación ", "El usuario o contraseña son incorrectos", "error");
+                                      swal("Error de autenticación ", "El usuario o contraseña son incorrectos, consulte al administrador", "error");
                                
                             }
                             }else{
-                                 swal("Error de autenticación ", "El usuario o contraseña son incorrectos", "error");
+                                  swal("Error de autenticación ", "El usuario o contraseña son incorrectos, consulte al administrador", "error");
                             }
                         }
                     });
