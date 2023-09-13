@@ -108,25 +108,18 @@ html;
 html;
         }
 
-            if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA')
-            {
-$menu.=<<<html
-                    <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
-                   <li><a href="/Pagos/PagosRegistro/">Registro Pagos</a></li>
-                
-html;
-        }
-
-        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil== 'GTOCA' || $this->__perfil== 'AMOCA' || $this->__perfil== 'OCOF' || $this->__perfil== 'CPAGO')
+        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil== 'GTOCA' || $this->__perfil== 'AMOCA' || $this->__perfil== 'OCOF' )
         {
             $menu.=<<<html
                     <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
+                   <li><a href="/Pagos/PagosRegistro/">Registro Pagos</a></li>
                    <li><a href="/Pagos/PagosConsulta/">Consulta Pagos</a></li>
+           
                   </ul>
-                  </li>
                 </li>
 html;
         }
+        
         if($this->__perfil== 'ADMIN' || $this->__perfil== 'GARAN' || $this->__perfil== 'CAMAG') {
             $menu .= <<<html
                 <li><a><i class="fa fa-users"> </i>&nbsp; Creditos <span class="fa fa-chevron-down"></span></a>
