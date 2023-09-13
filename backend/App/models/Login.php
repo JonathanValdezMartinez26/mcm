@@ -38,10 +38,10 @@ WHERE
     AND PE.CODIGO = :usuario
     AND PE.CLAVE LIKE :password 
     AND (UT.CDGTUS = 'ADMIN' ------ USUARIO ADMIN
-    OR UT.CDGTUS = 'CAJA' ------- USUARIO CAJA
+    OR UT.CDGTUS = 'CAJA' ------- USUARIO CAJA (EXTRA)
     OR UT.CDGTUS = 'OCOF' ----- USUARIO OCOF
     OR UT.CDGTUS = 'GTOCA' ------ USUARIO GERENTE SUCURSAL
-    OR UT.CDGTUS = 'AMOCA' ------ 
+    OR UT.CDGTUS = 'AMOCA' ------ PERFIL DE CAJAS
     OR UT.CDGTUS = 'GARAN' ------ USUARIO PARA REGISTRAR GARANTIAS
     OR UT.CDGTUS = 'CAMAG' ------ 
     OR UT.CDGTUS = 'CALLC' ------ USUARIO 
@@ -57,6 +57,8 @@ sql;
             ':password'=>$pass['PASS']
         );
 
+
+        //var_dump($query1);
         return $mysqli->queryOne($query1,$params1);
 
 
