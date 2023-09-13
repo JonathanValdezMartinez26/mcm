@@ -33,9 +33,13 @@
                 </div>
 
             </div>
-            <div class="card card-danger col-md-5" >
+            <div class="card card-danger col-md-7">
                 <ul class="nav navbar-nav navbar-right">
-                    //
+                    <b style="font-size: 20px; color: red;">Su horario de cierre es: | <?php echo $Administracion[1]['HORA_CIERRE']; ?> a.m. |</b>
+                    <br>
+                    <b>Si su horario es incorrecto o necesita más tiempo, comuníquelo</b>
+                    <br>
+                    <b>al área correspondiente.</b>
                 </ul>
             </div>
             <div class="card col-md-12">
