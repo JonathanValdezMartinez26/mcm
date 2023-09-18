@@ -196,7 +196,6 @@ sql;
 	     WHERE SPR.CDGCO IN($string_from_array)
 	     AND SPR.FECHA_TRABAJO BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
 sql;
-
         //var_dump($query);
         return $mysqli->queryAll($query);
 

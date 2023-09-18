@@ -1210,11 +1210,8 @@ html;
             $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
         }
 
-
-
             if($horaActual <= $hora_cierre)
             {
-                //var_dump("Hola");
                 if ($dia == 1)
                 {
                     $date_past = strtotime('-3 days', strtotime($fechaActual));
@@ -1305,7 +1302,7 @@ html;
 
                         if($inicio_b == $fecha_base)
                         {
-                            if($horaActual <= '10:05:00')
+                            if($horaActual <= $hora_cierre)
                             {
                                 $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>

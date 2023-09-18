@@ -6,13 +6,11 @@
                 <h3> <?php echo $pendientes; ?> pendientes CallCenter</h3>
                 <div class="clearfix"></div>
             </div>
-
             <div class="card card-danger col-md-8" >
 
                 <div class="card-body">
                     <form class="" id="consulta" action="/Operaciones/ReportePLDPagosNacimiento/" method="GET" onsubmit="return Validar()">
                         <div class="row">
-
                             <div class="col-md-4 col-sm-8">
                                 <div class="form-group">
                                     <label for="ejecutivo">Sucursal </label>
