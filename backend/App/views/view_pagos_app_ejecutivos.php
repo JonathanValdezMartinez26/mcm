@@ -1,0 +1,57 @@
+<?php echo $header; ?>
+<div class="right_col">
+    <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
+        <div class="panel panel-body">
+            <div class="x_title">
+                <h3> Recepción de pagos capturados en Campo (App) <span class="fa fa-mobile"></span></h3>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="card col-md-12">
+                <div class="card card-danger col-md-12">
+                    <ul class="nav navbar-nav navbar-right">
+                        <b style="font-size: 20px; color: red;">Pagos capturados en campo por los ejecutivos</b>
+                        <br>
+                        <b>Si su horario es incorrecto o necesita más tiempo, comuníquelo</b>
+                        <br>
+                        <br>
+                        <br>
+                    </ul>
+                </div>
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_horario" >
+                    <i class="fa fa-plus"></i> Reactivar Pago
+                </button>
+
+                <hr style="border-top: 1px solid #787878; margin-top: 5px;">
+
+                <div class="dataTable_wrapper">
+                    <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
+                        <thead>
+                        <tr>
+                            <th>Sucursal</th>
+                            <th>Pagos Cobrados</th>
+                            <th>Ejecutivo</th>
+                            <th>Cobro</th>
+                            <th>Pagos</th>
+                            <th>Multas</th>
+                            <th>Ref</th>
+                            <th>Des</th>
+                            <th>Gar</th>
+                            <th>Monto Total Recolectado (Entregar)</th>
+                            <th>Acciones</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?= $tabla; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<?php echo $footer; ?>

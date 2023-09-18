@@ -15,6 +15,7 @@ class Pagos extends Controller
 
     private $_contenedor;
 
+
     function __construct()
     {
         parent::__construct();
@@ -243,6 +244,8 @@ html;
         $status = PagosDao::ListaEjecutivosAdmin($credito);
         $getStatus = '';
 
+
+
         foreach ($status[0] as $key => $val2) {
             if($status[1] == $val2['ID_EJECUTIVO'])
             {
@@ -344,7 +347,8 @@ html;
                 </tr>
 html;
             }
-
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('tabla', $tabla);
                 View::set('Administracion', $AdministracionOne);
                 View::set('credito', $credito);
@@ -352,8 +356,6 @@ html;
                 View::set('fin_f', $fin_f);
                 View::set('status', $getStatus);
                 View::set('usuario', $this->__usuario);
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::render("pagos_admin_busqueda");
             }
 
@@ -513,6 +515,214 @@ html;
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::render("horarios_caja_sucursal");
+
+    }
+
+    public function CorteEjecutivo()
+    {
+        $extraHeader = <<<html
+        <title>Corte de Pagos App</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
+        $extraFooter = <<<html
+      <script>
+      
+       $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+           "lengthMenu": [
+                    [30, 50, -1],
+                    [30, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+        });
+       
+        function enviar_add_horario(){	
+             sucursal = document.getElementById("sucursal").value; 
+             
+            if(sucursal == '')
+                {
+                    
+                      swal("Atención", "Ingrese un monto mayor a $0", "warning");
+                      document.getElementById("monto").focus();
+                        
+                }
+            else
+                {
+                    
+                    $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/HorariosAdd/',
+                    data: $('#Add_AHC').serialize(),
+                    success: function(respuesta) {
+                         if(respuesta=='1'){
+                      
+                         swal("Registro guardado exitosamente", {
+                                      icon: "success",
+                                    });
+                        location.reload();
+                        }
+                        else {
+                         swal(respuesta, {
+                                      icon: "error",
+                                    });
+                         //location.reload();
+                         
+                        }
+                    }
+                    });
+                }
+    }
+    
+        function enviar_update_horario(){	
+          
+                    $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/HorariosUpdate/',
+                    data: $('#Update_AHC').serialize(),
+                    success: function(respuesta) {
+                         if(respuesta=='1'){
+                      
+                         swal("Registro actualizado exitosamente", {
+                                      icon: "success",
+                                    });
+                        location.reload();
+                        }
+                        else {
+                         swal(respuesta, {
+                                      icon: "error",
+                                    });
+                         //location.reload();
+                         
+                        }
+                    }
+                    });
+    }
+    
+        function check_pagos()
+        {
+            alert("Hola");
+        }
+      
+      
+      </script>
+html;
+
+        $tabla = '';
+
+        $ejecutivo = $_GET['MTYQW'];
+        $fecha = $_GET['FEC'];
+
+        if($ejecutivo == '' && $fecha == '')
+        {
+            $Administracion = PagosDao::ConsultarPagosApp();
+
+            foreach ($Administracion as $key => $value) {
+                $pago = number_format($value['TOTAL_PAGOS'], 2);
+                $multa = number_format($value['TOTAL_MULTA'], 2);
+                $refinanciamiento = number_format($value['TOTAL_REFINANCIAMIENTO'], 2);
+                $descuento = number_format($value['TOTAL_DESCUENTO'], 2);
+                $garantia = number_format($value['GARANTIA'], 2);
+                $monto_total = number_format($value['MONTO_TOTAL'], 2);
+
+
+
+
+
+                $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;"></td>
+                    <td style="padding: 0px !important;">{$value['NUM_PAGOS']}</td>
+                    <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
+                    <td style="padding: 0px !important;"><strong>{$value['FECHA_D']}</strong></td>
+                    <td style="padding: 0px !important;">$ {$pago}</td>
+                    <td style="padding: 0px !important;">$ {$multa}</td>
+                    <td style="padding: 0px !important;">$ {$refinanciamiento}</td>
+                    <td style="padding: 0px !important;">$ {$descuento}</td>
+                    <td style="padding: 0px !important;">$ {$garantia}</td>
+                    <td style="padding: 0px !important;">$ {$monto_total}</td>
+                    <td style="padding: 0px !important;">
+                        <a href="/Pagos/CorteEjecutivo/?MTYQW={$value['CDGOCPE']}&FEC={$value['FECHA']}" type="button" class="btn btn-success btn-circle"><i class="fa fa-edit"></i> Procesar Pagos</a>
+                     </td>
+                </tr>
+html;
+            }
+            View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
+            View::set('tabla', $tabla);
+            View::render("view_pagos_app_ejecutivos");
+        }
+        else
+        {
+            $Administracion = PagosDao::ConsultarPagosAppDetalle($ejecutivo, $fecha);
+
+            foreach ($Administracion as $key => $value) {
+
+                if($value['TIPO'] == 'P'){$tipo_pago = 'PAGO';}
+                else if($value['TIPO'] == 'M'){$tipo_pago = 'MULTA';}
+                else if($value['TIPO'] == 'G'){$tipo_pago = 'GARANTIA';}
+                else if($value['TIPO'] == 'D'){$tipo_pago = 'MULTA';}
+                else if($value['TIPO'] == 'R'){$tipo_pago = 'REFINANCIAMIENTO';}
+
+                $monto = number_format($value['MONTO'], 2);
+                $id_check = $value['CORTECAJA_PAGOSDIA_PK'];
+                if($value['TIPO'] == 'P' || $value['TIPO'] == 'M')
+                {
+                    $color_celda = "";
+                    $boton_visible = "";
+                }
+                else
+                {
+                    $color_celda = "background-color: #FFC733 !important;";
+                    $boton_visible = "disabled";
+                }
+                $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                
+                    <td style="padding: 10px !important; $color_celda">{$value['CORTECAJA_PAGOSDIA_PK']}</td>
+                    <td style="padding: 10px !important; text-align: left; $color_celda">
+                        <div>NOMBRE: <b>{$value['NOMBRE']}</b></div>
+                        <div>#CRÉDITO: <b>{$value['CICLO']}</b></div>
+                        <div>CICLO: <b>{$value['CICLO']}</b></div>
+                        <div>FECHA DE PAGO: <b>{$value['FECHA']}</b></div>
+                    </td>
+                    <td style="padding: 10px !important; $color_celda">{$tipo_pago}</td>
+                    <td style="padding: 10px !important; $color_celda"><div style="font-size: 25px!important;"> $ {$monto}</div>
+                         <input class="form-check-input" type="checkbox" value="" id="$id_check">
+                          <label class="form-check-label" for="flexCheckDefault">
+                            Validado
+                         </label>
+                    </td>
+                    <td style="padding: 10px !important; $color_celda">{$value['COMENTARIO_INCIDENCIA']}</td>
+                    <td style="padding: 10px !important; $color_celda">{$value['FIDENTIFICAPP']}</td>
+                    
+                     <td style="padding: 0px !important;">
+                        <button $boton_visible type="button" class="btn btn-success btn-circle" onclick="EditarHorario('{$value['CDGCO']}', '{$value['NOMBRE']}' , '{$value['HORA_CIERRE']}');"><i class="fa fa-edit"></i> Procesar Pagos</button>
+                     </td>
+                </tr>
+html;
+            }
+            View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
+            View::set('tabla', $tabla);
+            View::render("view_pagos_app_detalle");
+        }
+
 
     }
 

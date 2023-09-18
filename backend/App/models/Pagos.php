@@ -99,6 +99,56 @@ sql;
         return $mysqli->queryAll($query);
     }
 
+    public static function ConsultarPagosApp(){
+
+        $query=<<<sql
+        SELECT COUNT(NOMBRE) AS NUM_PAGOS, NOMBRE, FECHA_D, FECHA, 
+        FECHA_REGISTRO, CDGOCPE,
+        SUM(PAGOS) AS TOTAL_PAGOS, 
+        SUM(MULTA) AS TOTAL_MULTA, 
+        SUM(REFINANCIAMIENTO) AS TOTAL_REFINANCIAMIENTO, 
+        SUM(DESCUENTO) AS TOTAL_DESCUENTO, 
+        SUM(GARANTIA) AS GARANTIA, 
+        SUM(MONTO) AS MONTO_TOTAL
+        FROM
+        (
+        SELECT CORTECAJA_PAGOSDIA.EJECUTIVO AS NOMBRE, 
+        TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH') || '- ' || TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MON-YYYY' ) AS FECHA_D ,
+        TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) AS FECHA,
+        TO_CHAR(CORTECAJA_PAGOSDIA.FREGISTRO) AS FECHA_REGISTRO,
+        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'P' THEN MONTO END PAGOS,
+        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'M' THEN MONTO END MULTA,
+        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'R' THEN MONTO END REFINANCIAMIENTO,
+        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'D' THEN MONTO END DESCUENTO,
+        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'G' THEN MONTO END GARANTIA, 
+        CORTECAJA_PAGOSDIA.MONTO, CORTECAJA_PAGOSDIA.CDGOCPE
+        FROM CORTECAJA_PAGOSDIA
+        )
+        GROUP BY NOMBRE, FECHA_D, FECHA, CDGOCPE, FECHA_REGISTRO
+        ORDER BY FECHA ASC
+sql;
+
+        $mysqli = Database::getInstance();
+        return $mysqli->queryAll($query);
+    }
+    public static function ConsultarPagosAppDetalle($ejecutivo, $fecha){
+
+        $query=<<<sql
+        SELECT * FROM CORTECAJA_PAGOSDIA WHERE CDGOCPE = '$ejecutivo' 
+        AND TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) = '$fecha'
+        ORDER BY decode(TIPO ,
+                        'P',1,
+                        'M',2,
+                        'G',3,
+                        'D', 4,
+                        'R', 5
+                        ) asc
+sql;
+
+        $mysqli = Database::getInstance();
+        return $mysqli->queryAll($query);
+    }
+
     public static function ConsultarPagosFechaSucursal($id_sucursal, $Inicial, $Final){
 
         if($id_sucursal)

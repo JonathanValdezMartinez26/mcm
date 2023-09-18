@@ -73,6 +73,7 @@ sql;
                
 sql;
 
+        //var_dump($query);
         try {
             $mysqli = Database_cultiva::getInstance();
             return $mysqli->queryAll($query);

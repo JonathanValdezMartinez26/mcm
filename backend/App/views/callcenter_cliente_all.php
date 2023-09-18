@@ -235,7 +235,7 @@
                                             <tbody>
                                             <tr>
                                                 <?php
-                                                if($Administracion[4]['LLAMADA_UNO'] == '' && $Administracion[4]['PRG_UNO_AV'] == '' && $Administracion[4]['HORA_LLAMADA_UNO'] == '')
+                                                if($Administracion[4]['LLAMADA_UNO'] == '' && $Administracion[4]['NUMERO_INTENTOS_CL'] == '')
                                                 {
 
                                                     $visible_a = '';
@@ -703,7 +703,7 @@
                             </div>
                             <hr>
                             <div class="row">
-                                <div class="col-md-8">
+                                <div class="col-md-5">
                                     <div class="demo activado">
                                         <input type="radio" name="completo" id="completo1" value="1" checked="checked">
                                         <label for="completo1">Llamada exitosa</label>
@@ -712,7 +712,20 @@
                                         <label for="completo2">La llamada no se completo satisfactoriamente</label>
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="tipo_llamada_cl">¿Porqué no se completo satisfactoriamente la llamada? *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo_llamada_cl" name="tipo_llamada_cl">
+                                            <option selected disabled value="">Seleccione una opción</option>
+                                            <option value="VOZ">EL cliente no respondio al llamado</option>
+                                            <option value="WHATSAPP">Respondio una persona que no es el cliente</option>
+                                            <option value="VIDEO LLAMADA">Se corto la comunicación</option>
+                                            <option value="VIDEO LLAMADA">Compartira su crédito y no cumple con politicas</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
+
                         </div>
                 </div>
             </div>

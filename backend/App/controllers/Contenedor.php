@@ -102,9 +102,10 @@ html;
         if($this->__perfil== 'ADMIN')
         {
             $menu.=<<<html
-            <li><a href="/Pagos/">Administración</a></li>
-            <li><a href="/Pagos/AdminBitacora">Administración Bitácora</a></li>
-            <li><a href="/Pagos/Layout/">Layout</a></li> 
+            <li><a href="/Pagos/">Administración Pagos</a></li>
+            
+            <li><a href="/Pagos/Layout/">Layout Contable</a></li> 
+            <li><a href="/Pagos/CorteEjecutivo/">Recepción Pagos App</a></li> 
 html;
         }
 
@@ -112,7 +113,7 @@ html;
         {
             $menu.=<<<html
                     <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
-                   <li><a href="/Pagos/PagosRegistro/">Registro Pagos</a></li>
+                   <li><a href="/Pagos/PagosRegistro/">Registro Pagos Caja</a></li>
 html;
         }
 
@@ -120,7 +121,7 @@ html;
         {
             $menu.=<<<html
                     <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
-                   <li><a href="/Pagos/PagosConsulta/">Consulta Pagos</a></li>
+                   <li><a href="/Pagos/PagosConsulta/">Consultar Pagos</a></li>
 html;
         }
         $menu.=<<<html
