@@ -94,7 +94,7 @@ $menu.=<<<html
               <h3>General </h3>
               <ul class="nav side-menu">       
 html;
-        if($this->__perfil== 'ADMIN' || $this->__perfil== 'CAJA' || $this->__perfil== 'GTOCA' || $this->__perfil== 'AMOCA' || $this->__perfil== 'OCOF' || $this->__perfil== 'CPAGO'|| $this->__perfil== 'ACALL' ) {
+        if($this->__perfil== 'ADMIN' || $this->__perfil== 'CAJA' || $this->__perfil== 'GTOCA' || $this->__perfil== 'AMOCA' || $this->__perfil== 'OCOF' || $this->__perfil== 'CPAGO' || $this->__perfil== 'ACALL' || $this->__perfil== 'LAYOU') {
 
             $menu .= <<<html
                 <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
