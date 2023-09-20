@@ -58,12 +58,12 @@ class Contenedor extends Controller{
             <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet">
           	<link href="/css/font-awesome.min.css" rel="stylesheet">
             <link href="/css/menu/menu5custom.min.css" rel="stylesheet">
-            <link href="/css/green.css" rel="stylesheet">
+            <link href="/css/green.css" rel="stylesheet"> 
             <link href="/css/custom.min.css" rel="stylesheet">
 
             <link href="/librerias/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css" rel="stylesheet">
             <link rel="stylesheet" type="text/css" href="/librerias/vintage_flip_clock/jquery.flipcountdown.css" />
-        </head>
+        </head> 
 html;
 $menu =<<<html
 <body class="nav-md" >
