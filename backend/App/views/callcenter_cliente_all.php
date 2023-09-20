@@ -61,8 +61,7 @@
                     </div>
                 </div>
             </div>
-            <form onsubmit="enviar_resumen_add(); return false" id="Add_resumen">
-                <div class="col-md-6">
+            <div class="col-md-6">
                     <div class="panel panel-body" style="margin-bottom: 7px;">
                         <div class="x_content">
                             <div class="col-sm-12">
@@ -72,102 +71,64 @@
                                             <tbody>
                                             <tr>
                                                 <?php
-                                                if($Administracion[3]['LLAMADA_UNO'] == '' && $Administracion[3]['PRG_UNO_CL'] == '' && $Administracion[3]['HORA_LLAMADA_UNO'] == '')
-                                                {
 
-                                                    $visible = '';
-                                                    $titulo_estatus = "PENDIENTE";
-                                                    $titulo_color = "Pendiente de validar";
-                                                    $color = "warning";
-                                                    $boton_ver_encuesta_fin = "";
-                                                    $boton_ver_encuesta = 'style= display:none!important;';
-                                                    $titulo_boton_encuesta_fin = "Iniciar Encuesta (CLIENTE)";
-                                                    $titulo_ver_expediente = "Estatus Encuesta";
-                                                    $hora = $Administracion[3]['HORA'];
+                                                if($Administracion[3]['LLAMADA_UNO'] == NULL)
+                                                {
+                                                    $titulo_l1 = "Pendiente de validar";
+                                                    $color_titulo_l1 = "warning";
+                                                    //-----
+                                                    $titulo_l3 = "Estatus Encuesta";
+                                                    //-----
+                                                    $titulo_l4 = "PENDIENTE";
+                                                    $boton_ver_encuesta_l4 = 'style= display:none!important;';
+                                                    $hora_l4 = $Administracion[3]['HORA'];
+                                                    $titulo_boton_l4 = "Iniciar Encuesta (CLIENTE)";
+                                                    $ocultar_boton_l4_iniciar = '';
+                                                    //------
                                                     $desactivar_aval = 'true';
                                                 }
-                                                else{
-                                                    if($Administracion[3]['LLAMADA_UNO'] >= 1 && $Administracion[3]['PRG_UNO_CL'] != '')
-                                                    {
 
-                                                        if($Administracion[3]['HORA_LLAMADA_DOS'] == ' ')
-                                                        {
+                                                else if($Administracion[3]['FINALIZADA'] == '0')
+                                                {
+                                                    $titulo_l1 = "Pendiente de validar";
+                                                    $color_titulo_l1 = "warning";
+                                                    //-----
+                                                    $titulo_l3 = "Estatus Encuesta";
+                                                    //-----
+                                                    $titulo_l4 = "EN ESPERA";
+                                                    $boton_ver_encuesta_l4 = 'style= display:none!important;';
+                                                    $hora_l4 = $Administracion[3]['HORA'];
+                                                    $titulo_boton_l4 = "Reintentar Encuesta (CLIENTE)";
+                                                    $ocultar_boton_l4_iniciar = '';
+                                                    //------
+                                                    $desactivar_aval = 'false';
 
-                                                            $visible = 'style= display:none!important;';
-                                                            $titulo_estatus = "FINALIZADA";
-                                                            $titulo_color = "Validado en 1er llamada";
-                                                            $color = "success";
-                                                            $boton_ver_encuesta_fin = 'style= display:none!important;';
-                                                            $boton_ver_encuesta = '';
-                                                            $titulo_boton_encuesta_fin = "";
-                                                            $titulo_ver_expediente = "Fecha de Trabajo";
-                                                            $validado_en = "Validado en 1 ";
-                                                            $hora = "Llamada #1: ".$Administracion[3]['HORA_LLAMADA_UNO'];
-                                                            $desactivar_aval = 'false';
-                                                        }
-                                                        else{
-
-                                                            $visible = 'style= display:none!important;';
-                                                            $titulo_estatus = "FINALIZADA";
-                                                            $titulo_color = "Validado en 2da llamada";
-                                                            $color = "success";
-                                                            $boton_ver_encuesta_fin = 'style= display:none!important;';
-                                                            $boton_ver_encuesta = '';
-                                                            $titulo_boton_encuesta_fin = "";
-                                                            $titulo_ver_expediente = "Fecha de Trabajo";
-                                                            $validado_en = "Validado en 1 ";
-                                                            $hora = "Llamada #1: ".$Administracion[3]['HORA_LLAMADA_UNO']."<br>"."Llamada #2: ".$Administracion[3]['HORA_LLAMADA_DOS'];
-                                                            $desactivar_aval = 'false';
-                                                        }
-
-
-                                                    }
-                                                    else
-                                                    {
-                                                        if($Administracion[3]['LLAMADA_UNO'] >= 1 && $Administracion[3]['HORA_LLAMADA_DOS'] == ' ')
-                                                        {
-                                                            //&& $Administracion[3]['PRG_UNO_CL'] == NULL && $Administracion[3]['HORA_LLAMADA_UNO'] != '' && $Administracion[3]['HORA_LLAMADA_DOS'] == ''
-
-                                                            $visible = '';
-                                                            $titulo_estatus = "PENDIENTE 1 LLAMADA";
-                                                            $titulo_color = "Pendiente 1 Llamada";
-                                                            $color = "warning";
-                                                            $boton_ver_encuesta_fin = "";
-                                                            $boton_ver_encuesta = 'style= display:none!important;';
-                                                            $titulo_boton_encuesta_fin = "Iniciar Encuesta 2° Llamada (CLIENTE)";
-                                                            $titulo_ver_expediente = "Estatus Encuesta";
-                                                            $hora = "1° llamada: ".$Administracion[3]['HORA_LLAMADA_UNO'];
-                                                            $desactivar_aval = 'false';
-                                                        }
-                                                        else
-                                                        {
-                                                            $visible = 'style= display:none!important;';
-                                                            $titulo_estatus = "FINALIZADA";
-                                                            $titulo_color = "NO LOCALIZADO (2 llamadas)";
-                                                            $color = "danger";
-                                                            $boton_ver_encuesta_fin = 'style= display:none!important;';
-                                                            $boton_ver_encuesta = 'style= display:none!important;';
-                                                            $titulo_boton_encuesta_fin = "";
-                                                            $titulo_ver_expediente = "Fecha de Trabajo";
-                                                            $validado_en = "Validado en 1 ";
-                                                            $hora = $Administracion[3]['HORA_LLAMADA_DOS'];
-                                                            $desactivar_aval = 'false';
-                                                        }
-
-                                                    }
+                                                }else if($Administracion[3]['FINALIZADA'] == '1')
+                                                {
+                                                    $titulo_l1 = "Marcada como validada";
+                                                    $color_titulo_l1 = "success";
+                                                    //-----
+                                                    $titulo_l3 = "Detalle Encuesta";
+                                                    //-----
+                                                    $titulo_l4 = "FINALIZADA";
+                                                    $boton_ver_encuesta_l4 = 'style= display:none!important;';
+                                                    $titulo_boton_l4 = "Reintentar Encuesta (CLIENTE)";
+                                                    $ocultar_boton_l4_iniciar = 'style= display:none!important;';
+                                                    $hora_l4 = "Primer llamada: ".$Administracion[3]['HORA_LLAMADA_UNO']."<br>"."Última Llamada: ".$Administracion[3]['HORA_LLAMADA_DOS'];
+                                                    //------
+                                                    $desactivar_aval = 'false';
                                                 }
                                                 ?>
                                                 <td style="font-size: 18px; background: #787878;color: white" colspan="14">
                                                     <div class="row">
                                                         <div class="col-md-8">
-                                                            <input style="display: none!important;" onkeydown="return false" type="text" class="form-control" id="cliente_encuesta" name="cliente_encuesta" value="<?php echo $titulo_estatus; ?>" readonly>
                                                             <strong>
                                                                 Identificación del Cliente
                                                             </strong>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <strong>
-                                                                <span class="label label-<?php echo $color; ?>" style="font-size: 95% !important; border-radius: 50em !important;" align="right"><?php echo $titulo_color ?></span>
+                                                                <span class="label label-<?php echo $color_titulo_l1; ?>" style="font-size: 95% !important; border-radius: 50em !important;" align="right"><?php echo $titulo_l1 ?></span>
                                                             </strong>
                                                         </div>
                                                     </div>
@@ -192,27 +153,44 @@
                                             <tr>
                                                 <td style="font-size: 16px" colspan="10"><strong>Contacto</strong></td>
                                                 <td style="font-size: 16px" colspan="3"><strong>Encuesta *</strong></td>
-                                                <td style="font-size: 16px" colspan="5"><strong><?php echo $titulo_ver_expediente ?></strong></td>
+                                                <td style="font-size: 16px" colspan="5"><strong><?php echo $titulo_l3 ?></strong></td>
                                             </tr>
                                             <tr>
-
                                                 <td style="font-size: 19px"; colspan="10">
                                                     <i class="fa fa-phone-square"></i> <?php
                                                     $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
                                                     echo $format; ?>
                                                 </td>
                                                 <td style="font-size: 19px; font: " colspan="3">
-                                                    <?php echo $titulo_estatus ?>
-                                                    <button type="button" <?php echo $boton_ver_encuesta ?> class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_ver_encuesta_cliente" data-backdrop="static" data-keyboard="false">
+                                                    <?php echo $titulo_l4 ?>
+                                                    <button type="button" <?php echo $boton_ver_encuesta_l4 ?> class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_ver_encuesta_cliente" data-backdrop="static" data-keyboard="false">
                                                         <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Ver</label>
                                                     </button>
                                                 </td>
                                                 <td style="font-size: 16px;" colspan="5">
-                                                    <div><?php echo $hora ?></div>
                                                     <div>
-                                                    <button type="button" <?php echo $boton_ver_encuesta_fin ?> class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_cliente" data-backdrop="static" data-keyboard="false">
-                                                        <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63"><?php echo $titulo_boton_encuesta_fin ?></label>
-                                                    </button>
+                                                        <?php echo $hora_l4 ?>
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" <?php echo $ocultar_boton_l4_iniciar?> id="boton_iniciar" class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_cliente" data-backdrop="static" data-keyboard="false">
+                                                            <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63"><?php echo $titulo_boton_l4 ?></label>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 18px; background: #cccccc;color: #707070" colspan="14">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            Usted a registrado <strong>
+                                                                <span class="label label-<?php echo $color_titulo_l1; ?>" style="font-size: 95% !important; border-radius: 50em !important;" align="right"><?php  if($Administracion[3]['NUMERO_INTENTOS_CL'] == NULL){$num = '0';}else {$num = $Administracion[3]['NUMERO_INTENTOS_CL'];} echo $num;?></span>
+                                                            </strong>
+                                                            intentos de llamada al CLIENTE.
+                                                        </div>
+
+                                                        <div class="col-md-4">
+
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -225,7 +203,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
+            <div class="col-md-6">
                     <div class="panel panel-body" style="margin-bottom: 7px;">
                         <div class="x_content">
                             <div class="col-sm-12">
@@ -235,98 +213,62 @@
                                             <tbody>
                                             <tr>
                                                 <?php
-                                                if($Administracion[4]['LLAMADA_UNO'] == '' && $Administracion[4]['NUMERO_INTENTOS_CL'] == '')
+
+                                                if($Administracion[4]['LLAMADA_UNO'] == NULL)
                                                 {
-
-                                                    $visible_a = '';
-                                                    $titulo_estatus_a = "PENDIENTE";
-                                                    $titulo_color_a = "Pendiente de validar";
-                                                    $color_a = "warning";
-                                                    $boton_ver_encuesta_fin_a = "";
-                                                    $boton_ver_encuesta_a = 'style= display:none!important;';
-                                                    $titulo_boton_encuesta_fin_a = "Iniciar Encuesta (AVAL)";
-                                                    $titulo_ver_expediente_a = "Estatus Encuesta";
-                                                    $hora_a = $Administracion[3]['HORA'];
+                                                    $titulo_l1_a = "Pendiente de validar";
+                                                    $color_titulo_l1_a = "warning";
+                                                    //-----
+                                                    $titulo_l3_a = "Estatus Encuesta";
+                                                    //-----
+                                                    $titulo_l4_a = "PENDIENTE";
+                                                    $boton_ver_encuesta_l4_a = 'style= display:none!important;';
+                                                    $hora_l4_a = $Administracion[3]['HORA'];
+                                                    $titulo_boton_l4_a = "Iniciar Encuesta (CLIENTE)";
+                                                    $ocultar_boton_l4_iniciar_a = '';
+                                                    //------
                                                 }
-                                                else{
-                                                    if($Administracion[4]['LLAMADA_UNO'] >= 1 && $Administracion[4]['PRG_UNO_AV'] != '')
-                                                    {
 
-                                                        if($Administracion[4]['HORA_LLAMADA_DOS'] == ' ')
-                                                        {
+                                                else if($Administracion[4]['FINALIZADA'] == '0')
+                                                {
+                                                    $titulo_l1_a = "Pendiente de validar";
+                                                    $color_titulo_l1_a = "warning";
+                                                    //-----
+                                                    $titulo_l3_a = "Estatus Encuesta";
+                                                    //-----
+                                                    $titulo_l4_a = "EN ESPERA";
+                                                    $boton_ver_encuesta_l4_a = 'style= display:none!important;';
+                                                    $hora_l4_a = $Administracion[3]['HORA'];
+                                                    $titulo_boton_l4_a = "Reintentar Encuesta (CLIENTE)";
+                                                    $ocultar_boton_l4_iniciar_a = '';
+                                                    //------
 
-                                                            $visible_a = 'style= display:none!important;';
-                                                            $titulo_estatus_a = "FINALIZADA";
-                                                            $titulo_color_a = "Validado en 1er llamada";
-                                                            $color_a = "success";
-                                                            $boton_ver_encuesta_fin_a = 'style= display:none!important;';
-                                                            $boton_ver_encuesta_a = '';
-                                                            $titulo_boton_encuesta_fin_a = "";
-                                                            $titulo_ver_expediente_a = "Fecha de Trabajo";
-                                                            $validado_en_a = "Validado en 1 ";
-                                                            $hora_a = "Llamada #1: ".$Administracion[3]['HORA_LLAMADA_UNO'];
-                                                        }
-                                                        else{
-
-                                                            $visible_a = 'style= display:none!important;';
-                                                            $titulo_estatus_a = "FINALIZADA";
-                                                            $titulo_color_a = "Validado en 2da llamada";
-                                                            $color_a = "success";
-                                                            $boton_ver_encuesta_fin_a = 'style= display:none!important;';
-                                                            $boton_ver_encuesta_a = '';
-                                                            $titulo_boton_encuesta_fin_a = "";
-                                                            $titulo_ver_expediente_a = "Fecha de Trabajo";
-                                                            $validado_en_a = "Validado en 1 ";
-                                                            $hora_a = "Llamada #1: ".$Administracion[4]['HORA_LLAMADA_UNO']."<br>"."Llamada #2: ".$Administracion[4]['HORA_LLAMADA_DOS'];
-                                                        }
-
-
-                                                    }
-                                                    else
-                                                    {
-                                                        if($Administracion[4]['LLAMADA_UNO'] >= 1 && $Administracion[4]['HORA_LLAMADA_DOS'] == ' ')
-                                                        {
-                                                            //&& $Administracion[3]['PRG_UNO_CL'] == NULL && $Administracion[3]['HORA_LLAMADA_UNO'] != '' && $Administracion[3]['HORA_LLAMADA_DOS'] == ''
-
-                                                            $visible_a = '';
-                                                            $titulo_estatus_a = "PENDIENTE";
-                                                            $titulo_color_a = "Pendiente 1 Llamada";
-                                                            $color_a = "warning";
-                                                            $boton_ver_encuesta_fin_a = "";
-                                                            $boton_ver_encuesta_a = 'style= display:none!important;';
-                                                            $titulo_boton_encuesta_fin_a = "Iniciar Encuesta 2° Llamada (AVAL)";
-                                                            $titulo_ver_expediente_a = "Estatus Encuesta";
-                                                            $hora_a = "1° llamada: ".$Administracion[3]['HORA_LLAMADA_UNO'];
-                                                        }
-                                                        else
-                                                        {
-
-                                                            $visible_a = 'style= display:none!important;';
-                                                            $titulo_estatus_a = "FINALIZADA";
-                                                            $titulo_color_a = "NO LOCALIZADO (2 llamadas)";
-                                                            $color_a = "danger";
-                                                            $boton_ver_encuesta_fin_a = 'style= display:none!important;';
-                                                            $boton_ver_encuesta_a = 'style= display:none!important;';
-                                                            $titulo_boton_encuesta_fin_a = "";
-                                                            $titulo_ver_expediente_a = "Fecha de Trabajo";
-                                                            $validado_en_a = "Validado en 1 ";
-                                                            $hora_a = "Llamada #1: ".$Administracion[4]['HORA_LLAMADA_UNO']."<br>"."Llamada #2: ".$Administracion[4]['HORA_LLAMADA_DOS'];
-                                                        }
-
-                                                    }
+                                                }else if($Administracion[4]['FINALIZADA'] == '1')
+                                                {
+                                                    $titulo_l1_a = "Marcada como validada";
+                                                    $color_titulo_l1_a = "success";
+                                                    //-----
+                                                    $titulo_l3_a = "Detalle Encuesta";
+                                                    //-----
+                                                    $titulo_l4_a = "FINALIZADA";
+                                                    $boton_ver_encuesta_l4_a = 'style= display:none!important;';
+                                                    $titulo_boton_l4_a = "Reintentar Encuesta (CLIENTE)";
+                                                    $ocultar_boton_l4_iniciar_a = 'style= display:none!important;';
+                                                    $hora_l4_a = "Primer llamada: ".$Administracion[3]['HORA_LLAMADA_UNO']."<br>"."Última Llamada: ".$Administracion[3]['HORA_LLAMADA_DOS'];
+                                                    //------
                                                 }
                                                 ?>
                                                 <td style="font-size: 18px; background: #73879C;color: white" colspan="14">
                                                     <div class="row">
                                                         <div class="col-md-8">
-                                                            <input onkeydown="return false" style="display: none!important;"    type="text" class="form-control" id="cliente_aval" name="cliente_aval" value="<?php echo $titulo_estatus_a; ?>" readonly>
+
                                                             <strong>
                                                                 Identificación del Aval
                                                             </strong>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <strong>
-                                                                <span class="label label-<?php echo $color_a; ?>" style="font-size: 95% !important; border-radius: 50em !important;" align="right"><?php echo $titulo_color_a ?></span>
+                                                                <span class="label label-<?php echo $color_titulo_l1_a; ?>" style="font-size: 95% !important; border-radius: 50em !important;" align="right"><?php echo $titulo_l1_a;?></span>
                                                             </strong>
                                                         </div>
                                                     </div>
@@ -345,7 +287,7 @@
                                             <tr>
                                                 <td style="font-size: 16px" colspan="10"><strong>Contacto</strong></td>
                                                 <td style="font-size: 16px" colspan="3"><strong>Encuesta *</strong></td>
-                                                <td style="font-size: 16px" colspan="5"><strong><?php echo $titulo_ver_expediente_a ?></strong></td>
+                                                <td style="font-size: 16px" colspan="5"><strong><?php echo $titulo_l3_a; ?></strong> </td>
                                             </tr>
                                             <tr>
 
@@ -355,20 +297,20 @@
                                                     echo $format; ?>
                                                 </td>
                                                 <td style="font-size: 19px; font: " colspan="3">
-                                                    <?php echo $titulo_estatus_a ?>
-                                                    <button type="button" <?php echo $boton_ver_encuesta_a ?> class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_ver_encuesta_aval" data-backdrop="static" data-keyboard="false">
+                                                    <?php echo $titulo_l4_a ?>
+                                                    <button type="button" <?php echo $boton_ver_encuesta_l4_a; ?> class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_ver_encuesta_aval" data-backdrop="static" data-keyboard="false">
                                                         <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Ver</label>
                                                     </button>
                                                 </td>
                                                 <td style="font-size: 16px;" colspan="5">
-                                                    <div><?php echo $hora_a ?></div>
+                                                    <div><?php echo  $hora_l4_a ?></div>
                                                     <div>
                                                         <?php
                                                         if($desactivar_aval == 'false')
                                                         {
                                                             $tabla = <<<html
-                                                            <button type="button" $boton_ver_encuesta_fin_a class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_aval" data-backdrop="static" data-keyboard="false">
-                                                                <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">$titulo_boton_encuesta_fin_a </label>
+                                                            <button type="button" class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_aval" data-backdrop="static" data-keyboard="false">
+                                                                <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">$titulo_boton_l4_a </label>
                                                             </button>
     html;
 
@@ -377,14 +319,26 @@
                                                         {
                                                             $tabla = <<<html
                                                             <button type="button" class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-backdrop="static" data-keyboard="false" onclick="InfoDesactivaEncuesta();">
-                                                                <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">$titulo_boton_encuesta_fin_a </label>
+                                                                <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">$titulo_boton_l4_a </label>
                                                             </button>
     html;
                                                         }
 
                                                         echo $tabla;
                                                         ?>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-size: 18px; background: #cccccc;color: #707070" colspan="14">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            Usted a registrado <strong>
+                                                                <span class="label label-<?php echo $color_titulo_l1; ?>" style="font-size: 95% !important; border-radius: 50em !important;" align="right"><?php  if($Administracion[4]['NUMERO_INTENTOS_AV'] == NULL){$num = '0';}else {$num = $Administracion[4]['NUMERO_INTENTOS_AV'];} echo $num;?></span>                                                            </strong>
+                                                            intentos de llamada al AVAL del cliente.
+                                                        </div>
+                                                        <div class="col-md-4">
 
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -397,6 +351,8 @@
                         </div>
                     </div>
                 </div>
+
+
                 <div class="col-md-12">
                     <div class="panel panel-body" style="margin-bottom: 7px; margin-top: 15px;">
                         <div class="x_content">
@@ -411,18 +367,29 @@
                                             </tbody>
                                         </table>
 
-                                        <div class="form-group">
-                                            <div class="col-lg-3">
-                                                <label for="Fecha">Comentarios Iniciales *</label>
-                                                <textarea name="comentarios_iniciales" id="comentarios_iniciales" class="form-control" rows="7" cols="50" placeholder="Escribe tus comentarios INICIALES una vez que hayas marcado al número del cliente o aval, por primera vez" style="background-color: white; resize: none"></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="col-lg-3">
-                                                <label for="Fecha">Comentarios Finales *</label>
-                                                <textarea name="comentarios_finales" id="comentarios_finales" class="form-control" rows="7" cols="50" placeholder="Escribe tus comentarios FINALES, una vez que hayas completado el proceso correspondiente" style="background-color: white; resize: none"></textarea>
-                                            </div>
-                                        </div>
+                                        <input style="display: none!important;" onkeydown="return false" type="text" class="form-control" id="cliente_encuesta" name="cliente_encuesta" value="<?php echo $titulo_l4; ?>" readonly>
+                                        <input style="display: none!important;" onkeydown="return false"   type="text" class="form-control" id="cliente_aval" name="cliente_aval" value="<?php echo $titulo_l4_a; ?>" readonly>
+
+                                        <form onsubmit="enviar_comentarios_add(); return false" id="Add_comentarios" class="col-sm-9">
+
+                                            <div class="col-lg-6">
+                                                    <label for="Fecha">Comentarios Iniciales *</label>
+                                                    <textarea name="comentarios_iniciales" id="comentarios_iniciales" class="form-control" rows="7" cols="50" placeholder="Escribe tus comentarios INICIALES una vez que hayas marcado al número del cliente o aval, por primera vez" style="background-color: white; resize: none"><?php echo $Administracion[3]['COMENTARIO_INICIAL']; ?></textarea>
+
+                                                    <button type="submit" name="agregar_resumen" value="enviar_resumen" class="btn btn-primary">
+                                                        <i class="fa fa-save"></i> <b>Guardar</b>
+                                                    </button>
+                                                </div>
+
+                                                <div class="col-lg-6">
+                                                    <label for="Fecha">Comentarios Finales *</label>
+                                                    <textarea name="comentarios_finales" id="comentarios_finales" class="form-control" rows="7" cols="50" placeholder="Escribe tus comentarios FINALES, una vez que hayas completado el proceso correspondiente" style="background-color: white; resize: none"><?php echo $Administracion[3]['COMENTARIO_FINAL']; ?></textarea>
+
+                                                    <button type="submit" name="agregar_resumen" value="enviar_resumen" class="btn btn-primary">
+                                                        <i class="fa fa-save"></i> <b>Guardar</b>
+                                                    </button>
+                                                </div>
+                                        </form>
 
                                         <div  class="col-lg-3">
                                             <div class="form-group">
@@ -453,9 +420,13 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-3">
-                                            <button type="submit" name="agregar_resumen" value="enviar_resumen" class="btn btn-success btn-lg" style="background: #2da92d; color: #ffffff; border: #1c4e63 4px solid; ">
-                                                Terminar proceso de validación<br> y enviar estatus de la solicitud a Sucursal<br>Clic aquí <i class="fa fa-hand-pointer-o" style="color: #ffffff"></i>
-                                            </button>
+                                            <div class="card card-danger col-md-12">
+                                                <ul class="nav navbar-nav navbar-right">
+                                                    <button type="submit" name="agregar_resumen" value="enviar_resumen" class="btn btn-success btn-lg" style="background: #2da92d; color: #ffffff; ">
+                                                        Terminar Solicitud <i class="fa fa-hand-pointer-o" style="color: #ffffff"></i>
+                                                    </button>
+                                                </ul>
+                                            </div>
                                         </div>
 
 
@@ -465,7 +436,7 @@
                         </div>
                     </div>
                 </div>
-            </form>
+
         </div>
 
 
@@ -478,7 +449,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">CLIENTE</span>
                 <form onsubmit="enviar_add_cl(); return false" id="Add_cl">
-                <center><h4 class="modal-title"><?php echo $Administracion[0]['CLIENTE']; ?>, LLAMADA #<label id="titulo" name="titulo"><?php if($Administracion[3]['LLAMADA_UNO'] >= 1 && $Administracion[3]['PRG_UNO_CL'] == ''){$pregunta = 2;}else{$pregunta = 1;} echo $pregunta; ?></label></h4></center>
+                <center><h4 class="modal-title"><?php echo $Administracion[0]['CLIENTE']; ?>, LLAMADA #<label id="titulo" name="titulo"><?php  if($Administracion[3]['NUMERO_INTENTOS_CL'] == NULL){$num = '0';}else {$num = $Administracion[3]['NUMERO_INTENTOS_CL'] + 1;} echo $num;?></label></h4></center>
 
             </div>
             <div class="modal-body">
@@ -712,10 +683,10 @@
                                         <label for="completo2">La llamada no se completo satisfactoriamente</label>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-4" id="jus" name="jus" >
                                     <div class="form-group">
-                                        <label for="tipo_llamada_cl">¿Porqué no se completo satisfactoriamente la llamada? *</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="tipo_llamada_cl" name="tipo_llamada_cl">
+                                        <label for="justificante_cl">¿Porqué no se completo satisfactoriamente la llamada? *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="justificante_cl" name="justificante_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
                                             <option value="VOZ">EL cliente no respondio al llamado</option>
                                             <option value="WHATSAPP">Respondio una persona que no es el cliente</option>
@@ -746,7 +717,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">AVAL</span>
                 <form onsubmit="enviar_add_av(); return false" id="Add_av">
-                    <center><h4 class="modal-title"><?php echo $Administracion[0]['AVAL']; ?>, LLAMADA #<label id="titulo_av" name="titulo_av"><?php if($Administracion[4]['LLAMADA_UNO'] >= 1 && $Administracion[4]['PRG_UNO_AV'] == ''){$pregunta = 2;}else{$pregunta = 1;} echo $pregunta; ?></label></h4></center>
+                    <center><h4 class="modal-title"><?php echo $Administracion[0]['AVAL']; ?>, LLAMADA #<label id="titulo_av" name="titulo_av"><?php  if($Administracion[4]['NUMERO_INTENTOS_AV'] == NULL){$num = '0';}else {$num = $Administracion[4]['NUMERO_INTENTOS_AV']+1;} echo $num;?></label></h4></center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -1194,8 +1165,134 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal_comentarios_fin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 1000px !important;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <center><h4 class="modal-title" id="myModalLabel">EXPEDIENTE DEL CLIENTE:  <?php echo $Administracion[0]['CLIENTE']; ?>  (NÚMERO DE CRÉDITO: <?php echo $Administracion[0]['NO_CREDITO']; ?>)</h4></center>
+            </div>
+            <div class="modal-body">
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-2" style="padding-bottom: 40px!important;">
+                            <div class="card-body pb-0 px-0 px-md-12 text-center text-sm-left ">
+                                <img src="https://cdn-icons-png.flaticon.com/512/4625/4625102.png" height="97" alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png">
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Nombre completo del cliente</label>
+                                <input onkeydown="return false" type="text" class="form-control"  value="<?php echo $Administracion[0]['CLIENTE']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Fecha de nacimiento</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[1]['NACIMIENTO']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label>Edad</label>
+                                <input onkeydown="return false" type="text" class="form-control"value="<?php echo $Administracion[1]['EDAD']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label>Genéro</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php if($Administracion[1]['SEXO'] = 'F'){$sexo='Mujer';}else{$sexo='Hombre';} echo $sexo; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <label>Domicilio</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[1]['CALLE']; ?>, <?php echo $Administracion[1]['COLONIA']; ?>, <?php echo $Administracion[1]['MUNICIPIO']; ?>, <?php echo $Administracion[1]['ESTADO']; ?>, C.P:<?php echo $Administracion[1]['CP']; ?>." readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Ocupación</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[1]['ACT_ECO']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Contacto</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php
+                                $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
+                                echo $format; ?>" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-2" style="padding-bottom: 120px!important;">
+                            <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">DATOS DEL AVAL</span>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Nombre completo del cliente</label>
+                                <input onkeydown="return false" type="text" class="form-control"  value="<?php echo $Administracion[0]['AVAL']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Fecha de nacimiento</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[2]['NACIMIENTO']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label>Edad</label>
+                                <input onkeydown="return false" type="text" class="form-control"value="<?php echo $Administracion[2]['EDAD']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label>Genéro</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php if($Administracion[2]['SEXO'] = 'F'){$sexo='Mujer';}else{$sexo='Hombre';} echo $sexo; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <label>Domicilio</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[2]['CALLE']; ?>, <?php echo $Administracion[1]['COLONIA']; ?>, <?php echo $Administracion[2]['MUNICIPIO']; ?>, <?php echo $Administracion[2]['ESTADO']; ?>, C.P:<?php echo $Administracion[2]['CP']; ?>." readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Ocupación</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php echo $Administracion[2]['ACT_ECO']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Contacto</label>
+                                <input onkeydown="return false" type="text" class="form-control" value="<?php
+                                $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
+                                echo $format; ?>" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cerrar Expediente</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <style>
-    .activado input[type=radio]:checked + label { color: #2da92d; font-size: 20px}
+    .activado input[type=radio]:checked + label {
+        color: #2da92d; font-size: 20px;
+    }
 </style>
 
 <?php echo $footer; ?>

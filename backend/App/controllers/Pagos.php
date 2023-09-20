@@ -827,7 +827,7 @@ html;
 
         $sucursales = PagosDao::ListaSucursales($this->__usuario);
         $getSucursales = '';
-        if($this->__perfil == 'ADMIN')
+        if($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL')
             {
                 $getSucursales .= <<<html
                 <option value="">TODAS</option>

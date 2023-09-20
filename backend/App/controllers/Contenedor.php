@@ -30,6 +30,8 @@ class Contenedor extends Controller{
         $sucursal = $this->__cdgco;
         $perfil = $this->__perfil;
 
+        //var_dump($this->__perfil);
+
 
      $header =<<<html
 
@@ -92,7 +94,7 @@ $menu.=<<<html
               <h3>General </h3>
               <ul class="nav side-menu">       
 html;
-        if($this->__perfil== 'ADMIN' || $this->__perfil== 'CAJA' || $this->__perfil== 'GTOCA' || $this->__perfil== 'AMOCA' || $this->__perfil== 'OCOF' || $this->__perfil== 'CPAGO' ) {
+        if($this->__perfil== 'ADMIN' || $this->__perfil== 'CAJA' || $this->__perfil== 'GTOCA' || $this->__perfil== 'AMOCA' || $this->__perfil== 'OCOF' || $this->__perfil== 'CPAGO'|| $this->__perfil== 'ACALL' ) {
 
             $menu .= <<<html
                 <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
@@ -103,21 +105,25 @@ html;
         {
             $menu.=<<<html
             <li><a href="/Pagos/">Administración Pagos</a></li>
-            
-            <li><a href="/Pagos/Layout/">Layout Contable</a></li> 
             <li><a href="/Pagos/CorteEjecutivo/">Recepción Pagos App</a></li> 
 html;
         }
-
-        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil == 'AMOCA')
+        if($this->__perfil== 'ADMIN' || $this->__perfil== 'ACALL' || $this->__perfil== 'LAYOU')
         {
             $menu.=<<<html
-                    <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
-                   <li><a href="/Pagos/PagosRegistro/">Registro Pagos Caja</a></li>
+            <li><a href="/Pagos/Layout/">Layout Contable</a></li> 
 html;
         }
 
-        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil== 'GTOCA' || $this->__perfil== 'AMOCA' || $this->__perfil== 'OCOF' || $this->__perfil== 'CPAGO')
+        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA')
+        {
+            $menu.=<<<html
+                    <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
+                   <li><a href="/Pagos/PagosRegistro/">Registro de Pagos Caja</a></li>
+html;
+        }
+
+        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil== 'GTOCA' || $this->__perfil== 'AMOCA' || $this->__perfil== 'OCOF' || $this->__perfil== 'CPAGO' || $this->__perfil == 'ACALL' )
         {
             $menu.=<<<html
                     <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
@@ -171,6 +177,7 @@ html;
             $menu .= <<<html
                     <li><a href="/CallCenter/Administracion/">Asignar Sucursales</a></li>
                     <li><a href="/CallCenter/Concentrado/?Fec=$fechaActual&Reg=0">Concentrado Diario</a></li>
+                    <li><a href="/CallCenter/Concentrado/?Fec=$fechaActual&Reg=0">Solicitudes de Prorroga</a></li>
                     
 html;
         }
