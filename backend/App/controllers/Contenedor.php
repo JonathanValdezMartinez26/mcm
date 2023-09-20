@@ -58,12 +58,12 @@ class Contenedor extends Controller{
             <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet">
           	<link href="/css/font-awesome.min.css" rel="stylesheet">
             <link href="/css/menu/menu5custom.min.css" rel="stylesheet">
-            <link href="/css/green.css" rel="stylesheet"> 
+            <link href="/css/green.css" rel="stylesheet">
             <link href="/css/custom.min.css" rel="stylesheet">
 
             <link href="/librerias/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css" rel="stylesheet">
             <link rel="stylesheet" type="text/css" href="/librerias/vintage_flip_clock/jquery.flipcountdown.css" />
-        </head> 
+        </head>
 html;
 $menu =<<<html
 <body class="nav-md" >
@@ -221,7 +221,8 @@ html;
         if($this->__perfil == 'ADMIN') {
             $menu .= <<<html
               <ul class="nav side-menu">
-                <li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>
+                <li><a><i class="glyphicon glyphicon glyphicon-cog	
+"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
                    <li><a href="/Pagos/AjusteHoraCierre/">Ajustar Hora de Cierre</a></li>
                    <li><a href="/">Gestionar Días Festivos</a></li>
@@ -295,7 +296,12 @@ html;
         <script src="/js/tabla/dataTables.bootstrap.min.js"></script>
         <script src="/js/tabla/jquery.tablesorter.js"></script>
 
-      
+        <!-- EXTENCIONES DE DATATABLE() PARA EXPORTAR  -->
+        <script src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js" ></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js" ></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js" ></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js" ></script>
+        <script src="//cdn.datatables.net/buttons/1.4.2/js/buttons.html5.min.js" ></script>
 
         <script src="/librerias/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
         <script type="text/javascript" src="/librerias/vintage_flip_clock/jquery.flipcountdown.js"></script>
