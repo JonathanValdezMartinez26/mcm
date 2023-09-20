@@ -16,7 +16,7 @@
                 <form class="" action="/Pagos/PagosRegistro/" method="GET">
                     <div class="row">
                         <div class="col-md-4">
-                            <select class="form-control mr-sm-3" style="font-size: 18px;" autofocus type="select" placeholder="000000" aria-label="Search">
+                            <select class="form-control mr-sm-3" style="font-size: 18px;" autofocus type="select" placeholder="000000" >
                                 <option value="credito">Crédito</option>
                             </select>
                             <span id="availability1"></span>
