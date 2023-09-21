@@ -607,6 +607,11 @@ html;
                     $titulo_boton = 'Seguir';
                     $color_boton = '#F0AD4E';
                     $fuente = '#0D0A0A';
+                }else if($value['FIN_CL'] != '' || $value['FIN_AV'] != '')
+                {
+                    $titulo_boton = 'Acabar';
+                    $color_boton = '#0D0A0A';
+                    $fuente = '';
                 }else
                 {
                     $titulo_boton = 'Iniciar';
@@ -667,11 +672,11 @@ html;
                     <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label></td>
                     <td style="padding-top: 22px !important; text-align: left">
                         <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
-                        <hr>
+                        
                         <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
-                    <td style="padding: 10px !important; text-align: left; width:190px !important;">
+                    <td style="padding: 10px !important; text-align: left; width:165px !important;">
                     <div><span class="label label-$color_ci" ><span class="fa $icon_ci"></span></span> Comentarios Iniciales</div>
                     <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span> Comentarios Finales</div>
                     <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud

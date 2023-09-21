@@ -685,18 +685,7 @@
                                         <label for="completo2">La llamada no se completo satisfactoriamente</label>
                                     </div>
                                 </div>
-                                <div class="col-md-4" id="jus" name="jus" >
-                                    <div class="form-group">
-                                        <label for="justificante_cl">¿Porqué no se completo satisfactoriamente la llamada? *</label>
-                                        <select class="form-control mr-sm-3"  autofocus type="select" id="justificante_cl" name="justificante_cl">
-                                            <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="VOZ">EL cliente no respondio al llamado</option>
-                                            <option value="WHATSAPP">Respondio una persona que no es el cliente</option>
-                                            <option value="VIDEO LLAMADA">Se corto la comunicación</option>
-                                            <option value="VIDEO LLAMADA">Compartira su crédito y no cumple con politicas</option>
-                                        </select>
-                                    </div>
-                                </div>
+
                             </div>
 
                         </div>
