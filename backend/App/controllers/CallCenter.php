@@ -35,7 +35,7 @@ html;        $extraFooter = <<<html
         }
         
         $('#doce_cl').on('change', function() {
-          if(this.value == 'NO')
+          if(this.value == 'N')
               {
                   swal("Atención", "Al finalizar la encuesta cancele la solicitud, no cumple con la política de seguridad de la pregunta #12", "warning");
               }
