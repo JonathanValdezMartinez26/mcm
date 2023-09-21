@@ -9,7 +9,7 @@
 
             <div class="card card-danger col-md-8" >
                 <div class="card-header">
-                    <h5 class="card-title">Seleccione el rango de fechas a generar el reporte</h5>
+                    <h5 class="card-title">Seleccione la sucursal y el rango de la fecha a generar el reporte </h5>
                 </div>
 
                 <div class="card-body">
@@ -34,32 +34,24 @@
                 </div>
             </div>
             <div class="card col-md-12">
-                <hr style="border-top: 1px solid #e5e5e5; margin-top: 5px;">
-                <form name="all" id="all" method="POST">
-                    <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
-                    <hr style="border-top: 1px solid #787878; margin-top: 5px;">
-
-                    <div class="dataTable_wrapper">
-                        <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
-                            <thead>
-                            <tr>
-                                <th>-</th>
-                                <th>Región/Agencia</th>
-                                <th>Cliente</th>
-                                <th>Detalle Encuesta</th>
-                                <th>F. Solicitud</th>
-                                <th>Acciones</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <?= $tabla; ?>
-                            </tbody>
-                        </table>
+                <hr style="border-top: 1px solid #787878; margin-top: 5px;">
+                <div class="row" >
+                    <div class="tile_count float-right col-sm-12" style="margin-bottom: 1px; margin-top: 1px">
+                        <div class="x_content">
+                            <br />
+                            <div class="alert alert-warning alert-dismissable">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                <label style="font-size: 14px; color: black;">Usted no tiene registros finalizados con fecha de trabajo en el rango que selecciono:</label> <li style="color: black;">Valide que las fechas que desea consultar sean correctas</li> <li style="color: black;">Si el problema persiste, comuníquese con soporte técnico</li>
+                                <br>
+                                <a href="/Operaciones/ReportePLDPagos/" class="alert-link">Regresar</a>.
+                            </div>
+                        </div>
                     </div>
+                </div>
             </div>
-
         </div>
     </div>
+</div>
 </div>
 
 <?php echo $footer; ?>
