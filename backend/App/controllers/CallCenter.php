@@ -427,6 +427,87 @@ html;        $extraFooter = <<<html
            
     }
     
+        function enviar_resumen_add(){	
+             cliente_encuesta = document.getElementById("cliente_encuesta").value; 
+             cliente_aval = document.getElementById("cliente_aval").value;
+             comentarios_iniciales = document.getElementById("comentarios_iniciales").value;
+             comentarios_finales = document.getElementById("comentarios_finales").value;
+             estatus_solicitud = document.getElementById("estatus_solicitud").value;
+             vobo_gerente = document.getElementById("vobo_gerente").value;
+            
+             
+             
+             cliente_id = document.getElementById("cliente_id").value; 
+             cdgco_res = getParameterByName('Suc');
+             ciclo_cl_res = getParameterByName('Ciclo');
+             
+             if(comentarios_iniciales == ''){
+                swal("Necesita ingresar los comentarios inicales para la solicitud del cliente", {icon: "warning",});
+             }
+            else
+                {
+                     if(comentarios_finales == '')
+                     {
+                        swal("Necesita ingresar los comentarios finales para la solicitud del cliente", {icon: "warning",});
+                     }
+                    else
+                    {
+                        if(cliente_encuesta == 'PENDIENTE'){
+                            swal("La encuesta del cliente no está marcada como validada", {icon: "danger",});
+                        }
+                        else
+                        {
+                            if(cliente_aval == 'PENDIENTE')
+                                {
+                                    swal("La encuesta del aval no está marcada como validada", {icon: "warning",});
+                                }
+                                else
+                                {
+                                    if(estatus_solicitud == '')
+                                    {
+                                        swal("Necesita seleccionar el estatus final de la solicitud", {icon: "warning",});
+                                    }
+                                    else
+                                    {
+                                        $.ajax({
+                                        type: 'POST',
+                                        url: '/CallCenter/ResumenEjecutivo/',
+                                        data: $('#Add_comentarios').serialize()+ "&cdgco_res="+cdgco_res+ "&ciclo_cl_res="+ciclo_cl_res+ "&cliente_id_res="+cliente_id+ "&comentarios_iniciales="+comentarios_iniciales+ "&comentarios_finales="+comentarios_finales+ "&estatus_solicitud="+estatus_solicitud+ "&vobo_gerente="+vobo_gerente ,
+                                        success: function(respuesta) 
+                                        {
+                                            if(respuesta=='1')
+                                            {               
+                                               swal("Registro guardado exitosamente", {
+                                                        icon: "success",
+                                                   });
+                                               location.reload();
+                                            }
+                                            else 
+                                            {
+                                                $('#modal_encuesta_cliente').modal('hide')
+                                                swal(respuesta, {
+                                                icon: "error",
+                                                });
+                                                document.getElementById("monto").value = "";
+                                            }
+                                        }
+                                       });
+                                    }                    
+                                }
+                        }    
+                    }
+                }
+             
+            
+            
+            
+            
+            
+            
+             
+           
+    }
+    
     
     
       </script>
@@ -454,6 +535,8 @@ html;
 
         $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo);
 
+        //var_dump($AdministracionOne[4]['NUMERO_INTENTOS_AV']);
+
         if ($credito != '' && $ciclo != '') {
 
             if($AdministracionOne[0] == '')
@@ -480,57 +563,55 @@ html;
             $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco);
 
             foreach ($Solicitudes as $key => $value) {
-                if($value['ESTATUS_CL'] == 'PENDIENTE UNA LLAMADA')
-                {
-                    $color = 'warning';
-                    $icon = 'fa-clock-o';
-                }
-                else if($value['ESTATUS_CL'] == 'NO LOCALIZADO (CANCELAR)')
-                {
-                    $color = 'danger';
-                    $icon = 'fa-exclamation-triangle';
-                }
-                else if($value['ESTATUS_CL'] == 'VALIDADO EN UNA LLAMADA' || $value['ESTATUS_CL'] == 'VALIDADO EN SEGUNDA LLAMADA')
-                {
-                    $color = 'success';
-                    $icon = 'fa-check';
-                }
-                else if($value['ESTATUS_CL'] == 'PENDIENTE')
+               if($value['ESTATUS_CL'] == 'PENDIENTE')
                 {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
                 }
-
-                if($value['ESTATUS_AV'] == 'PENDIENTE UNA LLAMADA')
+                else if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO')
                 {
-                    $color_av = 'warning';
-                    $icon_av = 'fa-clock-o';
+                    $color = 'warning';
+                    $icon = 'fa-clock-o';
                 }
-                else if($value['ESTATUS_AV'] == 'NO LOCALIZADO (CANCELAR)')
+                else
                 {
-                    $color_av = 'danger';
-                    $icon_av = 'fa-exclamation-triangle';
-                }
-                else if($value['ESTATUS_AV'] == 'VALIDADO EN UNA LLAMADA' || $value['ESTATUS_AV'] == 'VALIDADO EN SEGUNDA LLAMADA')
-                {
-                    $color_av = 'success';
-                    $icon_av = 'fa-check';
-                }
-                else if($value['ESTATUS_AV'] == 'PENDIENTE')
-                {
-                    $color_av = 'primary';
-                    $icon_av = 'fa-frown-o';
+                    $color = 'success';
+                    $icon = 'fa-check';
                 }
 
+                if($value['ESTATUS_AV'] == 'PENDIENTE')
+                {
+                    $color_a = 'primary';
+                    $icon_a = 'fa-frown-o';
+                }
+                else if($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
+                {
+                    $color_a = 'warning';
+                    $icon_a = 'fa-clock-o';
+                }
+                else
+                {
+                    $color_a = 'success';
+                    $icon_a = 'fa-check';
+                }
 
-                if($value['ESTATUS_CL'] == 'PENDIENTE' || $value['ESTATUS_AV'] == 'PENDIENTE')
+
+
+
+
+
+
+
+                if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
+                {
+                    $titulo_boton = 'Seguir';
+                    $color_boton = '#F0AD4E';
+                    $fuente = '#0D0A0A';
+                }else
                 {
                     $titulo_boton = 'Iniciar';
                     $color_boton = '#029f3f';
-                }else
-                {
-                    $titulo_boton = 'Continuar';
-                    $color_boton = '#F0AD4E';
+                    $fuente = '';
                 }
 
                 if($value['COMENTARIO_INICIAL'] == '')
@@ -557,19 +638,19 @@ html;
                     $color_ef = 'danger';
                 }
                 else{
-                    $icon_ef = 'fa-check';
-                    $color_ef = 'success';
+                    $icon_ef = 'fa-clock-o';
+                    $color_ef = 'warning';
                 }
 
-                if($value['VOBO_GERENTE_REGIONAL'] == '')
+                if($value['VOBO_REG'] == NULL)
                 {
-                    $icon_vo = 'fa-close';
-                    $color_vo = 'danger';
+                    $vobo = '';
                 }
                 else{
-                    $icon_vo = 'fa-check';
-                    $color_vo = 'success';
+                    $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
+
                 }
+                //var_dump($vobo);
 
 
 
@@ -586,17 +667,20 @@ html;
                     <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label></td>
                     <td style="padding-top: 22px !important; text-align: left">
                         <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
-                        <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_av" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_av"></span> </span></div>
+                        <hr>
+                        <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
                     <td style="padding: 10px !important; text-align: left; width:190px !important;">
                     <div><span class="label label-$color_ci" ><span class="fa $icon_ci"></span></span> Comentarios Iniciales</div>
                     <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span> Comentarios Finales</div>
-                    <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud</div>
-                    <div><span class="label label-$color_vo"><span class="fa $icon_vo"></span></span> VoBo Gerente Regional</div>
+                    <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud
+                    <br>
+                    </div>
+                    $vobo
                     </td>
                     <td style="padding-top: 22px !important;">
-                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}" class="btn btn-primary btn-circle" style="background: $color_boton"><i class="fa fa-edit"></i> $titulo_boton
+                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}" class="btn btn-primary btn-circle" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>$titulo_boton</b>
                         </a>
                     </td>
                 </tr>
@@ -1503,10 +1587,21 @@ html;
         $encuesta->_ciclo = MasterDom::getData('ciclo_cl_res');
         $encuesta->_comentarios_iniciales = MasterDom::getDataAll('comentarios_iniciales');
         $encuesta->_comentarios_finales = MasterDom::getData('comentarios_finales');
-        $encuesta->_estatus_solicitud = MasterDom::getData('estatus_solicitud');
-        $encuesta->_estatus_solicitud = MasterDom::getData('vobo_gerente');
 
         $id = CallCenterDao::UpdateResumen($encuesta);
+    }
+
+    public function ResumenEjecutivo(){
+        $encuesta = new \stdClass();
+        $encuesta->_cdgco = MasterDom::getData('cdgco_res');
+        $encuesta->_cliente = MasterDom::getData('cliente_id_res');
+        $encuesta->_ciclo = MasterDom::getData('ciclo_cl_res');
+        $encuesta->_comentarios_iniciales = MasterDom::getDataAll('comentarios_iniciales');
+        $encuesta->_comentarios_finales = MasterDom::getData('comentarios_finales');
+        $encuesta->_estatus_solicitud = MasterDom::getData('estatus_solicitud');
+        $encuesta->_vobo_gerente = MasterDom::getData('vobo_gerente');
+
+        $id = CallCenterDao::UpdateResumenFinal($encuesta);
     }
 
     public function AsignarSucursal(){

@@ -88,7 +88,7 @@
                                                     $desactivar_aval = 'true';
                                                 }
 
-                                                else if($Administracion[3]['FINALIZADA'] == '0')
+                                                else if($Administracion[3]['FINALIZADA'] == '')
                                                 {
                                                     $titulo_l1 = "Pendiente de validar";
                                                     $color_titulo_l1 = "warning";
@@ -229,7 +229,7 @@
                                                     //------
                                                 }
 
-                                                else if($Administracion[4]['FINALIZADA'] == '0')
+                                                else if($Administracion[4]['FINALIZADA'] == '')
                                                 {
                                                     $titulo_l1_a = "Pendiente de validar";
                                                     $color_titulo_l1_a = "warning";
@@ -333,7 +333,7 @@
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             Usted a registrado <strong>
-                                                                <span class="label label-<?php echo $color_titulo_l1; ?>" style="font-size: 95% !important; border-radius: 50em !important;" align="right"><?php  if($Administracion[4]['NUMERO_INTENTOS_AV'] == NULL){$num = '0';}else {$num = $Administracion[4]['NUMERO_INTENTOS_AV'];} echo $num;?></span>                                                            </strong>
+                                                                <span class="label label-<?php echo $color_titulo_l1_a; ?>" style="font-size: 95% !important; border-radius: 50em !important;" align="right"><?php  if($Administracion[4]['NUMERO_INTENTOS_AV'] == NULL){$num = '0';}else {$num = $Administracion[4]['NUMERO_INTENTOS_AV'];} echo $num;?></span>                                                            </strong>
                                                             intentos de llamada al AVAL del cliente.
                                                         </div>
                                                         <div class="col-md-4">
@@ -370,7 +370,7 @@
                                         <input style="display: none!important;" onkeydown="return false" type="text" class="form-control" id="cliente_encuesta" name="cliente_encuesta" value="<?php echo $titulo_l4; ?>" readonly>
                                         <input style="display: none!important;" onkeydown="return false"   type="text" class="form-control" id="cliente_aval" name="cliente_aval" value="<?php echo $titulo_l4_a; ?>" readonly>
 
-                                        <form onsubmit="enviar_comentarios_add(); return false" id="Add_comentarios" class="col-sm-9">
+                                        <form onsubmit="enviar_comentarios_add(); return false" id="Add_comentarios" class="col-sm-8">
 
                                             <div class="col-lg-6">
                                                     <label for="Fecha">Comentarios Iniciales *</label>
@@ -391,43 +391,45 @@
                                                 </div>
                                         </form>
 
-                                        <div  class="col-lg-3">
-                                            <div class="form-group">
-                                                <div>
-                                                    <label for="estatus_solicitud"> Estatus Final de la Solicitud *</label>
-                                                    <select class="form-control mr-sm-3"  autofocus type="select" id="estatus_solicitud" name="estatus_solicitud">
-                                                        <option selected disabled value="">Seleccione una opción</option>
-                                                        <option value="SI">CANCELADA, NO LOCALIZADOS</option>
-                                                        <option value="NO">CANCELADA POR CLIENTE</option>
-                                                        <option value="NO">CANCELADA POR GERENTE</option>
-                                                        <option value="NO">CANCELADA POR POLÍTICAS</option>
-                                                        <option value="NO">CANCELADA POR GERENTE</option>
-                                                        <option value="NO">LISTA CON OBSERVACIÓN</option>
-                                                        <option value="NO">LISTA SIN INCIDENCIA</option>
-                                                        <option value="NO">PENDIENTE</option>
-                                                    </select>
+                                        <form onsubmit="enviar_resumen_add(); return false" id="Add_comentarios" class="col-sm-4">
+                                            <div  class="col-lg-8">
+                                                <div class="form-group">
+                                                    <div>
+                                                        <label for="estatus_solicitud"> Estatus Final de la Solicitud *</label>
+                                                        <select class="form-control mr-sm-4"  autofocus type="select" id="estatus_solicitud" name="estatus_solicitud">
+                                                            <option selected disabled value="">Seleccione una opción</option>
+                                                            <option value="CANCELADA, NO LOCALIZADOS">CANCELADA, NO LOCALIZADOS</option>
+                                                            <option value="CANCELADA POR CLIENTE">CANCELADA POR CLIENTE</option>
+                                                            <option value="CANCELADA POR GERENTE">CANCELADA POR GERENTE</option>
+                                                            <option value="CANCELADA POR POLÍTICAS">CANCELADA POR POLÍTICAS</option>
+                                                            <option value="CANCELADA POR GERENTE">CANCELADA POR GERENTE</option>
+                                                            <option value="LISTA CON OBSERVACION">LISTA CON OBSERVACIÓN</option>
+                                                            <option value="LISTA SIN INCIDENCIA">LISTA SIN INCIDENCIA</option>
+                                                            <option value="PENDIENTE">PENDIENTE</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="form-group">
-                                                <div>
-                                                    <label for="vobo_gerente"> VoBo Gerente Regional (Opcional)</label>
-                                                    <select class="form-control mr-sm-3"  autofocus type="select" id="vobo_gerente" name="vobo_gerente">
-                                                        <option selected disabled value="">Seleccione una opción</option>
-                                                        <option value="SI">SI</option>
-                                                    </select>
+                                                <div class="form-group">
+                                                    <div>
+                                                        <label for="vobo_gerente"> VoBo Gerente Regional (Opcional)</label>
+                                                        <select class="form-control mr-sm-3"  autofocus type="select" id="vobo_gerente" name="vobo_gerente">
+                                                            <option selected disabled value="">Seleccione una opción</option>
+                                                            <option value="S">SI</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-lg-3">
-                                            <div class="card card-danger col-md-12">
-                                                <ul class="nav navbar-nav navbar-right">
-                                                    <button type="submit" name="agregar_resumen" value="enviar_resumen" class="btn btn-success btn-lg" style="background: #2da92d; color: #ffffff; ">
-                                                        Terminar Solicitud <i class="fa fa-hand-pointer-o" style="color: #ffffff"></i>
-                                                    </button>
-                                                </ul>
+                                            <div class="col-lg-8">
+                                                <div class="card card-danger col-md-12">
+                                                    <ul class="nav navbar-nav navbar-right">
+                                                        <button type="submit" class="btn btn-success btn-lg" style="background: #2da92d; color: #ffffff; ">
+                                                            Terminar Solicitud <i class="fa fa-hand-pointer-o" style="color: #ffffff"></i>
+                                                        </button>
+                                                    </ul>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </form>
 
 
                                     </div>
@@ -449,7 +451,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">CLIENTE</span>
                 <form onsubmit="enviar_add_cl(); return false" id="Add_cl">
-                <center><h4 class="modal-title"><?php echo $Administracion[0]['CLIENTE']; ?>, LLAMADA #<label id="titulo" name="titulo"><?php  if($Administracion[3]['NUMERO_INTENTOS_CL'] == NULL){$num = '0';}else {$num = $Administracion[3]['NUMERO_INTENTOS_CL'] + 1;} echo $num;?></label></h4></center>
+                <center><h4 class="modal-title"><?php echo $Administracion[0]['CLIENTE']; ?>, LLAMADA #<label id="titulo" name="titulo"><?php  if($Administracion[3]['NUMERO_INTENTOS_CL'] == NULL){$num = '1';}else {$num = $Administracion[3]['NUMERO_INTENTOS_CL'] + 1;} echo $num;?></label></h4></center>
 
             </div>
             <div class="modal-body">
@@ -532,8 +534,8 @@
                                         <label for="uno_cl">1.- ¿Qué edad tiene? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="uno_cl" name="uno_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php echo $Administracion[1]['EDAD']; ?> AÑOS</b></p>
                                     </div>
@@ -543,8 +545,8 @@
                                         <label for="dos_cl">2.- ¿Cuál es su fecha de nacimiento? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="dos_cl" name="dos_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php echo $Administracion[1]['NACIMIENTO']; ?></b></p>
                                     </div>
@@ -554,8 +556,8 @@
                                         <label for="tres_cl">3.- ¿Cuál es su domicilio completo? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="tres_cl" name="tres_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php echo $Administracion[1]['CALLE']; ?>, <?php echo $Administracion[1]['COLONIA']; ?>, <?php echo $Administracion[1]['MUNICIPIO']; ?>, <?php echo $Administracion[1]['ESTADO']; ?>, C.P:<?php echo $Administracion[1]['CP']; ?>.</b></p>
                                     </div>
@@ -568,8 +570,8 @@
                                         <label for="cuatro_cl">4.- ¿Tiempo viviendo en este domicilio? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="cuatro_cl" name="cuatro_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b></b></p>
                                     </div>
@@ -579,8 +581,8 @@
                                         <label for="cinco_cl">5.- Actualmente, ¿Cuál es su principal fuente de ingresos? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="cinco_cl" name="cinco_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php echo $Administracion[1]['ACT_ECO']; ?></b></p>
                                     </div>
@@ -590,8 +592,8 @@
                                         <label for="seis_cl">6.- Mencione, ¿Cuál es el nombre completo de su aval? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="seis_cl" name="seis_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php echo $Administracion[0]['AVAL']; ?></b></p>
                                     </div>
@@ -604,8 +606,8 @@
                                         <label for="siete_cl">7.- Mencione, ¿Qué relación directa tiene con su aval? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="siete_cl" name="siete_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b></b></p>
                                     </div>
@@ -615,8 +617,8 @@
                                         <label for="ocho_cl">8.- ¿ Cuál es la actividad económica de su aval? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="ocho_cl" name="ocho_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php echo $Administracion[2]['ACT_ECO']; ?></b></p>
                                     </div>
@@ -626,8 +628,8 @@
                                         <label for="nueve_cl">9.- Me proporciona el número telefónico de su aval *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="nueve_cl" name="nueve_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php
                                                 $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
@@ -639,8 +641,8 @@
                                         <label for="diez_cl">10.- ¿Firmó su solicitud?, ¿Cuándo firmo la solicitud? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="diez_cl" name="diez_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b></b></p>
                                     </div>
@@ -654,8 +656,8 @@
                                         <label for="once_cl">11.- Me puede indicar ¿para qué utilizará su crédito? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="once_cl" name="once_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b></b></p>
                                     </div>
@@ -665,8 +667,8 @@
                                         <label for="doce_cl">12.- ¿Compartirá su crédito con alguna otra persona? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="doce_cl" name="doce_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b></b></p>
                                     </div>
@@ -717,7 +719,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">AVAL</span>
                 <form onsubmit="enviar_add_av(); return false" id="Add_av">
-                    <center><h4 class="modal-title"><?php echo $Administracion[0]['AVAL']; ?>, LLAMADA #<label id="titulo_av" name="titulo_av"><?php  if($Administracion[4]['NUMERO_INTENTOS_AV'] == NULL){$num = '0';}else {$num = $Administracion[4]['NUMERO_INTENTOS_AV']+1;} echo $num;?></label></h4></center>
+                    <center><h4 class="modal-title"><?php echo $Administracion[0]['AVAL']; ?>, LLAMADA #<label id="titulo_av" name="titulo_av"><?php  if($Administracion[4]['NUMERO_INTENTOS_AV'] == NULL){$num = '1';}else {$num = $Administracion[4]['NUMERO_INTENTOS_AV']+1;} echo $num;?></label></h4></center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -790,8 +792,8 @@
                                         <label for="uno_av">1.- ¿Qué edad tiene?</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="uno_av" name="uno_av">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php echo $Administracion[2]['EDAD']; ?> AÑOS</b></p>
                                     </div>
@@ -801,8 +803,8 @@
                                         <label for="dos_av">2.- ¿Cuál es su fecha de nacimiento?</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="dos_av" name="dos_av">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php echo $Administracion[2]['NACIMIENTO']; ?></b></p>
                                     </div>
@@ -812,8 +814,8 @@
                                         <label for="tres_av">3.- ¿Cuál es su domicilio completo?</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="tres_av" name="tres_av">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php echo $Administracion[2]['CALLE']; ?>, <?php echo $Administracion[2]['COLONIA']; ?>, <?php echo $Administracion[2]['MUNICIPIO']; ?>, <?php echo $Administracion[2]['ESTADO']; ?>, C.P:<?php echo $Administracion[2]['CP']; ?>.</b></p>
                                     </div>
@@ -826,8 +828,8 @@
                                         <label for="cuatro_av">4.- ¿Tiempo viviendo en este domicilio?</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="cuatro_av" name="cuatro_av">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b></b></p>
                                     </div>
@@ -837,8 +839,8 @@
                                         <label for="cinco_av">5.- Actualmente, ¿Cuál es su principal fuente de ingresos?</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="cinco_av" name="cinco_av">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php echo $Administracion[2]['ACT_ECO']; ?> </b></p>
                                     </div>
@@ -848,8 +850,8 @@
                                         <label for="seis_av">6.- ¿Hace cuanto conoce a <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="seis_av" name="seis_av">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b></b></p>
                                     </div>
@@ -862,8 +864,8 @@
                                         <label for="siete_av">7.- Mencione, ¿Qué relación directa tiene con <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="siete_av" name="siete_av">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b></b></p>
                                     </div>
@@ -873,8 +875,8 @@
                                         <label for="ocho_av">8.- ¿Sabe a que se dedica <?php echo $Administracion[0]['CLIENTE']; ?>?</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="ocho_av" name="ocho_av">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php echo $Administracion[1]['ACT_ECO']; ?></b></p>
                                     </div>
@@ -884,8 +886,8 @@
                                         <label for="nueve_av">9.- Me proporciona el número telefónico de <?php echo $Administracion[0]['CLIENTE']; ?></label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="nueve_av" name="nueve_av">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="SI">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="NO">NO RESPONDIO</option>
+                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
+                                            <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php
                                                 $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);

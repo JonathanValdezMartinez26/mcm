@@ -42,7 +42,7 @@
                                 <th>-</th>
                                 <th>Región/Agencia</th>
                                 <th>Cliente</th>
-                                <th>Estatus Encuesta</th>
+                                <th>detalle Encuesta</th>
                                 <th>F. Solicitud</th>
                                 <th>Bitácora</th>
                                 <th>Acciones</th>
