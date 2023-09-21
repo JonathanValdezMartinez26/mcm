@@ -9,12 +9,12 @@
             <div class="card card-danger col-md-8" >
 
                 <div class="card-body">
-                    <form class="" id="consulta" action="/Operaciones/ReportePLDPagosNacimiento/" method="GET" onsubmit="return Validar()">
+                    <form class="" id="consulta" action="/CallCenter/Pendientes/" method="GET" onsubmit="return Validar()">
                         <div class="row">
                             <div class="col-md-4 col-sm-8">
                                 <div class="form-group">
-                                    <label for="ejecutivo">Sucursal </label>
-                                    <select class="form-control" autofocus type="select" id="tipo" name="tipo" aria-label="Search">
+                                    <label for="ejecutivosuc">Sucursal </label>
+                                    <select class="form-control" autofocus type="select" id="Suc" name="Suc" aria-label="Search">
                                         <?php echo $sucursal; ?>
                                     </select>
                                 </div>
@@ -31,9 +31,6 @@
             </div>
             <div class="card col-md-12">
                 <hr style="border-top: 1px solid #e5e5e5; margin-top: 5px;">
-                <form name="all" id="all" method="POST">
-                    <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
-                    <hr style="border-top: 1px solid #787878; margin-top: 5px;">
 
                     <div class="dataTable_wrapper">
                         <table class="table table-striped table-bordered table-hover" id="muestra-cupones">

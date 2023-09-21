@@ -157,7 +157,7 @@ sql;
         $query=<<<sql
            SELECT CO.CODIGO, CO.NOMBRE  FROM ASIGNACION_SUC_A
            INNER JOIN CO ON CO.CODIGO = ASIGNACION_SUC_A.CDGCO 
-           WHERE ASIGNACION_SUC_A.CDGPE = 'ADMIN'
+           WHERE ASIGNACION_SUC_A.CDGPE = '$CDGPE'
            AND CO.CODIGO = ASIGNACION_SUC_A.CDGCO 
 		    
 sql;
@@ -211,6 +211,7 @@ sql;
     public static function getAllSolicitudes($cdgco){
 
         $string_from_array = implode(', ', $cdgco);
+        //var_dump($string_from_array);
 
         $mysqli = Database::getInstance();
 
@@ -332,7 +333,6 @@ sql;
             AND PE.ACTIVO = 'S'
             AND (PE.BLOQUEO = 'N' OR PE.BLOQUEO IS NULL)
             AND UT.CDGTUS = 'CALLC'
-			AND NOT EXISTS(SELECT CDGPE FROM ASIGNACION_SUC_A WHERE PE.CODIGO = ASIGNACION_SUC_A.CDGPE)
 sql;
         return $mysqli->queryAll($query3);
 
@@ -344,11 +344,16 @@ sql;
 
         $query3=<<<sql
         SELECT RG.NOMBRE AS REGION, CO.CODIGO, CO.NOMBRE FROM CO
-        INNER JOIN RG ON RG.CODIGO = CO.CDGRG
+        INNER JOIN RG ON RG.CODIGO = CO.CDGRG                                                          
+        WHERE NOT EXISTS(SELECT CDGCO FROM ASIGNACION_SUC_A WHERE ASIGNACION_SUC_A.CDGCO = CO.CODIGO)
         ORDER BY CODIGO
 sql;
         return $mysqli->queryAll($query3);
-
+/////
+///
+///
+/// SELECT CO.CODIGO, CO.NOMBRE  FROM CO
+//           WHERE NOT EXISTS(SELECT CDGCO FROM CIERRE_HORARIO WHERE CIERRE_HORARIO.CDGCO = CO.CODIGO)
 
     }
 
@@ -357,10 +362,16 @@ sql;
         $mysqli = Database::getInstance();
 
         $query3=<<<sql
-         SELECT
-           *
+         SELECT ASIGNACION_SUC_A.CDGPE, ASIGNACION_SUC_A.CDGCO, CO.NOMBRE, ASIGNACION_SUC_A.FECHA_INICIO, 
+                ASIGNACION_SUC_A.FECHA_FIN, ASIGNACION_SUC_A.FECHA_ALTA, ASIGNACION_SUC_A.CDGOCPE, 
+                PE.NOMBRE1 || ' ' || PE.NOMBRE2 || ' ' || PE.PRIMAPE || ' ' || PE.SEGAPE AS NOMBRE_EJEC
+           
         FROM
            ASIGNACION_SUC_A
+        INNER JOIN CO ON CO.CODIGO = ASIGNACION_SUC_A.CDGCO
+        INNER JOIN PE ON PE.CODIGO = ASIGNACION_SUC_A.CDGPE
+        ORDER BY ASIGNACION_SUC_A.CDGPE ASC
+        
                
 sql;
         return $mysqli->queryAll($query3);

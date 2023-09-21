@@ -18,12 +18,15 @@
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
                         <tr>
-                                    <th>Usuario</th>
+                                    <th>Analista</th>
                                     <th>Nombre</th>
+                                    <th>Código</th>
+                                    <th>Sucursal</th>
                                     <th>Fecha Inicio</th>
                                     <th>Fecha Fin</th>
                                     <th>Fecha de Registro</th>
                                     <th>ADMIN</th>
+                                    <th>Acciones</th>
                                 </tr>
                                 </thead>
                                 <tbody>

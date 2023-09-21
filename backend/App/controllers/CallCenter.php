@@ -4,17 +4,19 @@ defined("APPPATH") OR die("Access denied");
 
 use \Core\View;
 use \Core\MasterDom;
-use \App\controllers\Contenedor;
+use \Core\Controller;
 use \App\models\CallCenter AS CallCenterDao;
 
-class CallCenter{
+class CallCenter extends Controller{
 
     private $_contenedor;
 
-    function __construct(){
+    function __construct()
+    {
+        parent::__construct();
         $this->_contenedor = new Contenedor;
-        View::set('header',$this->_contenedor->header());
-        View::set('footer',$this->_contenedor->footer());
+        View::set('header', $this->_contenedor->header());
+        View::set('footer', $this->_contenedor->footer());
     }
 
     public function Pendientes()
@@ -122,8 +124,8 @@ html;        $extraFooter = <<<html
                                   title: "¿Está segura de continuar con una llamada incompleta?",
                                   text: mensaje,
                                   icon: "warning",
-                                  buttons: true,
-                                  dangerMode: true
+                                  buttons: ["Cancelar", "Continuar"],
+                                  dangerMode: false
                                 })
                                 .then((willDelete) => {
                                   if (willDelete) {
@@ -191,8 +193,8 @@ html;        $extraFooter = <<<html
                                   title: "¿Está segura de continuar?",
                                   text: mensaje,
                                   icon: "warning",
-                                  buttons: true,
-                                  dangerMode: true
+                                  buttons: ["Cancelar", "Continuar"],
+                                  dangerMode: false
                                 })
                                 .then((willDelete) => {
                                   if (willDelete) {
@@ -229,7 +231,6 @@ html;        $extraFooter = <<<html
             
            
     }
-    
         function enviar_add_av(){	
              fecha_trabajo = document.getElementById("fecha_av").value; 
              num_telefono = document.getElementById("movil_av").value;  
@@ -280,8 +281,8 @@ html;        $extraFooter = <<<html
                                   title: "¿Está segura de continuar con una llamada incompleta?",
                                   text: mensaje,
                                   icon: "warning",
-                                  buttons: true,
-                                  dangerMode: true
+                                  buttons: ["Cancelar", "Continuar"],
+                                  dangerMode: false
                                 })
                                 .then((willDelete) => {
                                   if (willDelete) {
@@ -307,7 +308,7 @@ html;        $extraFooter = <<<html
                                             });
                                   }
                                   else {
-                                    swal("Continúe con su registro", {icon: "success",});
+                                    swal("Continúe con su registro", {icon: "info",});
                                   }
                                 });
                          }
@@ -343,8 +344,8 @@ html;        $extraFooter = <<<html
                                   title: "¿Está segura de continuar?",
                                   text: mensaje,
                                   icon: "warning",
-                                  buttons: true,
-                                  dangerMode: true
+                                  buttons: ["Cancelar", "Continuar"],
+                                  dangerMode: false
                                 })
                                 .then((willDelete) => {
                                   if (willDelete) {
@@ -381,7 +382,6 @@ html;        $extraFooter = <<<html
             
            
     }
-    
         function enviar_comentarios_add(){	
              cliente_encuesta = document.getElementById("cliente_encuesta").value; 
              cliente_id = document.getElementById("cliente_id").value; 
@@ -426,7 +426,6 @@ html;        $extraFooter = <<<html
             
            
     }
-    
         function enviar_resumen_add(){	
              cliente_encuesta = document.getElementById("cliente_encuesta").value; 
              cliente_aval = document.getElementById("cliente_aval").value;
@@ -477,10 +476,24 @@ html;        $extraFooter = <<<html
                                         {
                                             if(respuesta=='1')
                                             {               
-                                               swal("Registro guardado exitosamente", {
-                                                        icon: "success",
-                                                   });
-                                               location.reload();
+                                              swal("Se guardo correctamente la información.",
+                                              {
+                                              icon: "success",
+                                              buttons: {
+                                                catch: {
+                                                  text: "Aceptar",
+                                                  value: "catch",
+                                                }
+                                              },
+                                              
+                                            })
+                                            .then((value) => {
+                                              switch (value) {
+                                                case "catch":
+                                                 window.location.href = '/CallCenter/Pendientes/'; //Will take you to Google.
+                                                 break;
+                                              }
+                                            });
                                             }
                                             else 
                                             {
@@ -508,8 +521,6 @@ html;        $extraFooter = <<<html
            
     }
     
-    
-    
       </script>
 html;
 
@@ -517,9 +528,9 @@ html;
         $ciclo = $_GET['Ciclo'];
         $suc = $_GET['Suc'];
         $opciones_suc = '';
-        $cdgco = array();
+        $cdgco_all = array();
+        $cdgco_suc = array();
 
-        //var_dump( $this->usuario, $this->__usuario);
         $ComboSucursales = CallCenterDao::getComboSucursales($this->__usuario);
 
         $opciones_suc .= <<<html
@@ -530,7 +541,7 @@ html;
             $opciones_suc .= <<<html
                 <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
 html;
-            array_push($cdgco, $val2['CODIGO']);
+            array_push($cdgco_all, $val2['CODIGO']);
         }
 
         $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo);
@@ -560,7 +571,23 @@ html;
             }
         } else {
 
-            $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco);
+            if($credito == '' && $ciclo == '' && $suc != '')
+            {
+                if($suc == '000')
+                {
+                    $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_all);
+                }
+                else
+                {
+                    array_push($cdgco_suc, $suc);
+                    $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_suc);
+                }
+            }
+            else
+            {
+                $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_all);
+            }
+
 
             foreach ($Solicitudes as $key => $value) {
                if($value['ESTATUS_CL'] == 'PENDIENTE')
@@ -1072,6 +1099,10 @@ html;
          $(document).ready(function(){
             $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
+          "lengthMenu": [
+                    [30, 50, -1],
+                    [30, 50, 'Todos'],
+                ],
                 "columnDefs": [{
                     "orderable": false,
                     "targets": 0
@@ -1164,11 +1195,11 @@ html;
         $getRegiones = <<<html
          <div class="col-md-12">
                 <div class="form-group">
-                     <label for="region">Región *</label>
+                     <label for="region">Sucursal *</label>
                      <select class="form-control" autofocus type="select" id="region" name="region">
                         {$opciones_region}
                      </select>
-                     <small id="emailHelp" class="form-text text-muted">Asignarás todas las sucursales de la Región</small>
+                     <small id="emailHelp" class="form-text text-muted">Selecciona la sucursal que deseas asignar</small>
                 </div>
          </div>
 html;
@@ -1180,12 +1211,17 @@ html;
 
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;">{$value['CDGPE']}</td>
-                    <td style="padding: 0px !important;">{$value['CDGCO']}</td>
-                    <td style="padding: 0px !important;">{$value['FECHA_INICIO']}</td>
-                    <td style="padding: 0px !important;">{$value['FECHA_FIN']}</td>
-                    <td style="padding: 0px !important;">{$value['FECHA_ALTA']}</td>
-                    <td style="padding: 0px !important;">{$value['CDGOCPE']}</td>
+                    <td>{$value['CDGPE']}</td>
+                    <td>{$value['NOMBRE_EJEC']}</td>
+                    <td>{$value['CDGCO']}</td>
+                    <td style="text-align: left;"><b>{$value['NOMBRE']}</b></td>
+                    <td>{$value['FECHA_INICIO']}</td>
+                    <td>{$value['FECHA_FIN']}</td>
+                    <td>{$value['FECHA_ALTA']}</td>
+                    <td>{$value['CDGOCPE']}</td>
+                    <td style="padding: 0px !important;">
+                       <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                    </td>
                 </tr>
 html;
         }
@@ -1389,8 +1425,7 @@ html;
             {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::set('Inicial', $fechaActual);
-                View::set('Final', $fechaActual);
+                View::set('fechaActual', $fechaActual);
                 View::render("historico_call_center_message_f");
             }
             else
