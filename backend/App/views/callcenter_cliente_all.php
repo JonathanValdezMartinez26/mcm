@@ -667,8 +667,8 @@
                                         <label for="doce_cl">12.- ¿Compartirá su crédito con alguna otra persona? *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="doce_cl" name="doce_cl">
                                             <option selected disabled value="">Seleccione una opción</option>
-                                            <option value="S">RESPONDIO CORRECTAMENTE</option>
-                                            <option value="N">NO RESPONDIO</option>
+                                            <option value="S">NO LO COMPARTIRA</option>
+                                            <option value="N">SI LO COMPARTIRA</option>
                                         </select>
                                         <p style="color: #007700"><b></b></p>
                                     </div>

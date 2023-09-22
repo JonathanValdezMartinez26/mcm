@@ -814,57 +814,53 @@ html;
             $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco);
 
             foreach ($Solicitudes as $key => $value) {
-                if($value['ESTATUS_CL'] == 'PENDIENTE UNA LLAMADA')
-                {
-                    $color = 'warning';
-                    $icon = 'fa-clock-o';
-                }
-                else if($value['ESTATUS_CL'] == 'NO LOCALIZADO (CANCELAR)')
-                {
-                    $color = 'danger';
-                    $icon = 'fa-exclamation-triangle';
-                }
-                else if($value['ESTATUS_CL'] == 'VALIDADO EN UNA LLAMADA' || $value['ESTATUS_CL'] == 'VALIDADO EN SEGUNDA LLAMADA')
-                {
-                    $color = 'success';
-                    $icon = 'fa-check';
-                }
-                else if($value['ESTATUS_CL'] == 'PENDIENTE')
+                if($value['ESTATUS_CL'] == 'PENDIENTE')
                 {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
                 }
-
-                if($value['ESTATUS_AV'] == 'PENDIENTE UNA LLAMADA')
+                else if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO')
                 {
-                    $color_av = 'warning';
-                    $icon_av = 'fa-clock-o';
+                    $color = 'warning';
+                    $icon = 'fa-clock-o';
                 }
-                else if($value['ESTATUS_AV'] == 'NO LOCALIZADO (CANCELAR)')
+                else
                 {
-                    $color_av = 'danger';
-                    $icon_av = 'fa-exclamation-triangle';
-                }
-                else if($value['ESTATUS_AV'] == 'VALIDADO EN UNA LLAMADA' || $value['ESTATUS_AV'] == 'VALIDADO EN SEGUNDA LLAMADA')
-                {
-                    $color_av = 'success';
-                    $icon_av = 'fa-check';
-                }
-                else if($value['ESTATUS_AV'] == 'PENDIENTE')
-                {
-                    $color_av = 'primary';
-                    $icon_av = 'fa-frown-o';
+                    $color = 'success';
+                    $icon = 'fa-check';
                 }
 
+                if($value['ESTATUS_AV'] == 'PENDIENTE')
+                {
+                    $color_a = 'primary';
+                    $icon_a = 'fa-frown-o';
+                }
+                else if($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
+                {
+                    $color_a = 'warning';
+                    $icon_a = 'fa-clock-o';
+                }
+                else
+                {
+                    $color_a = 'success';
+                    $icon_a = 'fa-check';
+                }
 
-                if($value['ESTATUS_CL'] == 'PENDIENTE' || $value['ESTATUS_AV'] == 'PENDIENTE')
+                if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
+                {
+                    $titulo_boton = 'Seguir';
+                    $color_boton = '#F0AD4E';
+                    $fuente = '#0D0A0A';
+                }else if($value['FIN_CL'] != '' || $value['FIN_AV'] != '')
+                {
+                    $titulo_boton = 'Acabar';
+                    $color_boton = '#0D0A0A';
+                    $fuente = '';
+                }else
                 {
                     $titulo_boton = 'Iniciar';
                     $color_boton = '#029f3f';
-                }else
-                {
-                    $titulo_boton = 'Continuar';
-                    $color_boton = '#F0AD4E';
+                    $fuente = '';
                 }
 
                 if($value['COMENTARIO_INICIAL'] == '')
@@ -891,19 +887,19 @@ html;
                     $color_ef = 'danger';
                 }
                 else{
-                    $icon_ef = 'fa-check';
-                    $color_ef = 'success';
+                    $icon_ef = 'fa-clock-o';
+                    $color_ef = 'warning';
                 }
 
-                if($value['VOBO_GERENTE_REGIONAL'] == '')
+                if($value['VOBO_REG'] == NULL)
                 {
-                    $icon_vo = 'fa-close';
-                    $color_vo = 'danger';
+                    $vobo = '';
                 }
                 else{
-                    $icon_vo = 'fa-check';
-                    $color_vo = 'success';
+                    $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
+
                 }
+                //var_dump($vobo);
 
 
 
@@ -920,17 +916,18 @@ html;
                     <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label></td>
                     <td style="padding-top: 22px !important; text-align: left">
                         <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
-                        <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_av" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_av"></span> </span></div>
+                        
+                        <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
-                    <td style="padding: 10px !important; text-align: left; width:190px !important;">
+                    <td style="padding: 10px !important; text-align: left; width:165px !important;">
                     <div><span class="label label-$color_ci" ><span class="fa $icon_ci"></span></span> Comentarios Iniciales</div>
                     <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span> Comentarios Finales</div>
                     <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud</div>
-                    <div><span class="label label-$color_vo"><span class="fa $icon_vo"></span></span> VoBo Gerente Reg</div>
+                    $vobo
                     </td>
                     <td style="padding-top: 22px !important;">
-                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Reg={$value['CODIGO_REGION']}" class="btn btn-primary btn-circle" style="background: $color_boton"><i class="fa fa-edit"></i> $titulo_boton
+                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}" class="btn btn-primary btn-circle" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>$titulo_boton</b>
                         </a>
                     </td>
                 </tr>
