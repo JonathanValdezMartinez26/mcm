@@ -677,6 +677,14 @@ html;
                     $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
 
                 }
+                if($value['PRORROGA'] == NULL)
+                {
+                    $prorroga = '';
+                }
+                else{
+                    $prorroga = '<div><span class="label label-success"><span class="fa fa-check"></span></span> Tiene activa la prorroga</div>';
+
+                }
                 //var_dump($vobo);
 
 
@@ -696,6 +704,7 @@ html;
                         <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
                         
                         <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
+                        $prorroga
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
                     <td style="padding: 10px !important; text-align: left; width:165px !important;">
@@ -730,6 +739,61 @@ html;
         <link rel="shortcut icon" href="/img/logo.png">
 html;        $extraFooter = <<<html
       <script>
+      
+      function ProrrogaAutorizar(id_call)
+         {
+              swal({
+              title: "¿Está segura de autorizar la prorroga?",
+              text: '',
+              icon: "warning",
+              buttons: ["Denegar Solicitud", "Autorizar"],
+              dangerMode: false
+            })
+            .then((willDelete) => {
+              if (willDelete) {
+                  $.ajax({
+                        type: 'POST',
+                        url: '/CallCenter/ProrrogaUpdate/',
+                        data: 'prorroga=2'+'&id_call='+id_call,
+                        success: function(respuesta) {
+                             if(respuesta=='1'){
+                             swal("Prorroga Autorizada", {
+                                          icon: "success",
+                                        });
+                             location.reload();
+                            }
+                            else {
+                           
+                             swal(respuesta, {
+                                          icon: "error",
+                                        });
+                            }
+                        }
+                        });
+              }
+              else {
+                 $.ajax({
+                        type: 'POST',
+                        url: '/CallCenter/ProrrogaUpdate/',
+                        data: 'prorroga=3'+'&id_call='+id_call,
+                        success: function(respuesta) {
+                             if(respuesta=='1'){
+                             swal("Prorroga Denegada", {
+                                          icon: "success",
+                                        });
+                             location.reload();
+                            }
+                            else {
+                           
+                             swal(respuesta, {
+                                          icon: "error",
+                                        });
+                            }
+                        }
+                        });
+              }
+            });
+         }
       
        function getParameterByName(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -1239,7 +1303,7 @@ html;
         //var_dump($ComboSucursales);
 
         $opciones_suc .= <<<html
-                <option  value="000">(000) TODAS MIS SUCURSALES</option>
+                <option  value="000">(000) TODAS LAS SUCURSALES</option>
 html;
         foreach ($ComboSucursales as $key => $val2) {
 
@@ -1280,17 +1344,17 @@ html;
             {
                 if($suc == '000')
                 {
-                    $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_all);
+                    $Solicitudes = CallCenterDao::getAllSolicitudesProrroga($cdgco_all);
                 }
                 else
                 {
                     array_push($cdgco_suc, $suc);
-                    $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_suc);
+                    $Solicitudes = CallCenterDao::getAllSolicitudesProrroga($cdgco_suc);
                 }
             }
             else
             {
-                $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_all);
+                $Solicitudes = CallCenterDao::getAllSolicitudesProrroga($cdgco_all);
                 //var_dump($Solicitudes);
             }
 
@@ -1409,7 +1473,7 @@ html;
                     $vobo
                     </td>
                     <td style="padding-top: 22px !important;">
-                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}" class="btn btn-primary btn-circle" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>$titulo_boton</b>
+                        <a type="button" class="btn btn-primary btn-circle" onclick="ProrrogaAutorizar('{$value['ID_SCALL']}');" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>Autorizar Prorroga</b>
                         </a>
                     </td>
                 </tr>
@@ -1421,8 +1485,7 @@ html;
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::set('tabla', $tabla);
             View::set('sucursal', $opciones_suc);
-            View::set('pendientes', 'Mis ');
-            View::render("callcenter_pendientes_all");
+            View::render("callcenter_prorroga_all");
 
         }
     }
@@ -1850,7 +1913,7 @@ html;
              
         });
       
-      function Prorroga(id_call)
+      function ProrrogaPedir(id_call)
          {
               swal({
               title: "¿Está segura de solicitar a su administradora prorroga para esta solicitud?",
@@ -1870,14 +1933,13 @@ html;
                              swal("Registro guardado exitosamente", {
                                           icon: "success",
                                         });
-                             location.reload();
+                             //location.reload();
                             }
                             else {
-                            $('#modal_encuesta_cliente').modal('hide')
+                           
                              swal(respuesta, {
                                           icon: "error",
                                         });
-                                document.getElementById("monto").value = "";
                             }
                         }
                         });
@@ -2018,7 +2080,7 @@ html;
                     $vobo
                     </td>
                     <td style="padding-top: 22px !important;">
-                        <a type="button" class="btn btn-primary btn-circle" onclick="Prorroga('{$value['ID_SCALL']}');" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>Prorroga</b>
+                        <a type="button" class="btn btn-primary btn-circle" onclick="ProrrogaPedir('{$value['ID_SCALL']}');" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>Prorroga</b>
                         </a>
                         <br>
                             <a type="button" class="btn btn-primary btn-circle" style="background: #ffbcbc; color: #0D0A0A"><i class="fa fa-repeat"></i> <b>Reactivar</b>
@@ -2270,7 +2332,7 @@ html;
         $encuesta->_prorroga = MasterDom::getData('prorroga');
         $encuesta->_id_call = MasterDom::getData('id_call');
 
-        $id = CallCenterDao::UpdateResumen($encuesta);
+        $id = CallCenterDao::UpdateProrroga($encuesta);
     }
 
     public function ResumenEjecutivo(){

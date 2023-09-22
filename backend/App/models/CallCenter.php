@@ -249,6 +249,34 @@ sql;
 
     }
 
+    public static function getAllSolicitudesProrroga($cdgco){
+
+        $string_from_array = implode(', ', $cdgco);
+        //var_dump($string_from_array);
+
+        if($string_from_array != '')
+        {
+            $in = 'SPE.CDGCO IN('.$string_from_array.') AND';
+            $in_1 = 'SPR.CDGCO IN('.$string_from_array.') AND';
+        }
+        else
+        {
+            $in = '';
+            $in_1 = '';
+        }
+
+        $mysqli = Database::getInstance();
+
+        $query=<<<sql
+	    SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
+	    WHERE SEMAFORO = '1' AND PRORROGA = '1'
+sql;
+
+        //var_dump($query);
+        return $mysqli->queryAll($query);
+
+    }
+
     public static function getAllSolicitudesConcentrado($Fecha, $Region){
 
         if($Region != '')
@@ -411,9 +439,17 @@ sql;
     public static function UpdateProrroga($prorroga){
         $mysqli = Database::getInstance();
 
+        if($prorroga->_prorroga == '2')
+        {
+            $q= ", ESTATUS_FINAL = NULL, SEMAFORO = NULL ";
+        }else
+        {
+            $q = "";
+        }
+
         $query=<<<sql
                 UPDATE SOL_CALL_CENTER
-                SET PRORROGA='$prorroga->_prorroga'
+                SET PRORROGA='$prorroga->_prorroga' $q
                 WHERE ID_SCALL='$prorroga->_id_call'
 sql;
 
