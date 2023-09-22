@@ -18,7 +18,7 @@
                             <div class="col-md-12">
 
                                 <div class="col-md-3">
-                                    <input class="form-control mr-sm-2"  autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $Inicial; ?>" min="" max="<?php echo $Final; ?>">
+                                    <input class="form-control mr-sm-2"  autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $Inicial; ?>" min="" max="<?php echo $Inicial; ?>">
                                     <span id="availability1">Desde</span>
                                 </div>
                                 <div class="col-md-3">

@@ -176,8 +176,8 @@ html;
         if($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL') {
             $menu .= <<<html
                     <li><a href="/CallCenter/Administracion/">Asignar Sucursales</a></li>
-                    <li><a href="/CallCenter/Concentrado/?Fec=$fechaActual&Reg=0">Concentrado Diario</a></li>
-                    <li><a href="/CallCenter/Concentrado/?Fec=$fechaActual&Reg=0">Solicitudes de Prorroga</a></li>
+                    <li><a href="/CallCenter/Prorroga/">Solicitudes de Prorroga</a></li>
+                    <li><a href="/CallCenter/Reactivar/">Reactivar Solicitudes</a></li>
                     
 html;
         }

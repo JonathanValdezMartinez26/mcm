@@ -220,17 +220,26 @@ sql;
         $string_from_array = implode(', ', $cdgco);
         //var_dump($string_from_array);
 
+        if($string_from_array != '')
+        {
+            $in = 'SPE.CDGCO IN('.$string_from_array.') AND';
+            $in_1 = 'SPR.CDGCO IN('.$string_from_array.') AND';
+        }
+        else
+        {
+            $in = '';
+            $in_1 = '';
+        }
+
         $mysqli = Database::getInstance();
 
         $query=<<<sql
              
 	     SELECT DISTINCT * FROM SOLICITUDES_PENDIENTES SPE
-	     WHERE SPE.CDGCO IN($string_from_array)
-	     AND SPE.SOLICITUD > TIMESTAMP '2023-09-04 00:00:00.000000'
+	     WHERE $in SPE.SOLICITUD > TIMESTAMP '2023-09-20 00:00:00.000000'
 	     UNION 
 	     SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
-	     WHERE SPR.CDGCO IN($string_from_array)
-	     AND SPR.SOLICITUD > TIMESTAMP '2023-09-04 00:00:00.000000'
+	     WHERE $in_1 SPR.SOLICITUD > TIMESTAMP '2023-09-20 00:00:00.000000'
          AND (ESTATUS_FINAL IS NULL OR ESTATUS_FINAL = 'PENDIENTE')
 sql;
 
@@ -399,6 +408,18 @@ sql;
         return $mysqli->insert($query);
     }
 
+    public static function UpdateProrroga($prorroga){
+        $mysqli = Database::getInstance();
+
+        $query=<<<sql
+                UPDATE SOL_CALL_CENTER
+                SET PRORROGA='$prorroga->_prorroga'
+                WHERE ID_SCALL='$prorroga->_id_call'
+sql;
+
+        return $mysqli->insert($query);
+    }
+
     public static function UpdateResumenFinal($encuesta){
         $mysqli = Database::getInstance();
 
@@ -424,7 +445,7 @@ sql;
                 //Agregar un registro completo (Bien) lLAMADA 1
                 $query=<<<sql
             INSERT INTO SOL_CALL_CENTER
-            (ID_SCALL, CDGRG, FECHA_TRA_CL, FECHA_SOL, CDGNS, CDGCO, CDGPE, CDGCL_CL, CICLO, TEL_CL, TIPO_LLAM_1_CL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, PRG_UNO_CL, PRG_DOS_CL, PRG_TRES_CL, PRG_CUATRO_CL, PRG_CINCO_CL, PRG_SEIS_CL, PRG_SIETE_CL, PRG_OCHO_CL, PRG_NUEVE_CL, PRG_DIEZ_CL, PRG_ONCE_CL, PRG_DOCE_CL, CDGCL_AV, TEL_AV, FECHA_TRABAJO_AV, TIPO_LLAM_1_AV, DIA_LLAMADA_1_AV, HORA_LLAMADA_1_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, PRG_UNO_AV, PRG_DOS_AV, PRG_TRES_AV, PRG_CUATRO_AV, PRG_CINCO_AV, PRG_SEIS_AV, PRG_SIETE_AV, PRG_OCHO_AV, PRG_NUEVE_AV, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS, INCIDENCIA_COMERCIAL, VOBO_GERENTE_REGIONAL, CDGPE_ANALISTA, SEMAFORO, LLAMADA_POST_VENTA, RECAPTURADA, CDGPE_ANALISTA_INICIAL, NUMERO_INTENTOS_CL, NUMERO_INTENTOS_AV, FIN_CL, FIN_AV)
+            (ID_SCALL, CDGRG, FECHA_TRA_CL, FECHA_SOL, CDGNS, CDGCO, CDGPE, CDGCL_CL, CICLO, TEL_CL, TIPO_LLAM_1_CL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, PRG_UNO_CL, PRG_DOS_CL, PRG_TRES_CL, PRG_CUATRO_CL, PRG_CINCO_CL, PRG_SEIS_CL, PRG_SIETE_CL, PRG_OCHO_CL, PRG_NUEVE_CL, PRG_DIEZ_CL, PRG_ONCE_CL, PRG_DOCE_CL, CDGCL_AV, TEL_AV, FECHA_TRABAJO_AV, TIPO_LLAM_1_AV, DIA_LLAMADA_1_AV, HORA_LLAMADA_1_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, PRG_UNO_AV, PRG_DOS_AV, PRG_TRES_AV, PRG_CUATRO_AV, PRG_CINCO_AV, PRG_SEIS_AV, PRG_SIETE_AV, PRG_OCHO_AV, PRG_NUEVE_AV, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS, INCIDENCIA_COMERCIAL, VOBO_GERENTE_REGIONAL, CDGPE_ANALISTA, SEMAFORO, LLAMADA_POST_VENTA, PRORROGA, CDGPE_ANALISTA_INICIAL, NUMERO_INTENTOS_CL, NUMERO_INTENTOS_AV, FIN_CL, FIN_AV)
             VALUES(sol_call_center_id.nextval, '$encuesta->_cdgre', TIMESTAMP '$encuesta->_fecha.000000', TIMESTAMP '$encuesta->_fecha_solicitud.000000', '$encuesta->_cdgns','$encuesta->_cdgco', 'AMGM', '$encuesta->_cliente', '$encuesta->_ciclo', '$encuesta->_movil', '$encuesta->_tipo_llamada', '2023-09-08', '12:32:19.000', NULL, NULL, '$encuesta->_uno', '$encuesta->_dos', '$encuesta->_tres', '$encuesta->_cuatro', '$encuesta->_cinco', '$encuesta->_seis', '$encuesta->_siete', '$encuesta->_ocho', '$encuesta->_nueve', '$encuesta->_diez', '$encuesta->_once', '$encuesta->_doce', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '1', NULL)
 sql;
             }
@@ -432,7 +453,7 @@ sql;
             { //Agregar un registro completo (Bien) lLAMADA 2
                 $query=<<<sql
                 UPDATE SOL_CALL_CENTER
-                SET TIPO_LLAM_2_CL='$encuesta->_tipo_llamada', DIA_LLAMADA_2_CL='2023-09-08', HORA_LLAMADA_2_CL='12:32:19.000', PRG_UNO_CL='$encuesta->_uno', PRG_DOS_CL='$encuesta->_dos', PRG_TRES_CL='$encuesta->_tres', PRG_CUATRO_CL='$encuesta->_cuatro', PRG_CINCO_CL='$encuesta->_cinco', PRG_SEIS_CL='$encuesta->_seis', PRG_SIETE_CL='$encuesta->_siete', PRG_OCHO_CL='$encuesta->_ocho', PRG_NUEVE_CL='$encuesta->_nueve', PRG_DIEZ_CL='$encuesta->_diez', PRG_ONCE_CL='$encuesta->_once', PRG_DOCE_CL='$encuesta->_doce', CDGCL_AV=NULL, TEL_AV=NULL, FECHA_TRABAJO_AV=NULL, TIPO_LLAM_1_AV=NULL, DIA_LLAMADA_1_AV=NULL, HORA_LLAMADA_1_AV=NULL, TIPO_LLAM_2_AV=NULL, DIA_LLAMADA_2_AV=NULL, HORA_LLAMADA_2_AV=NULL, PRG_UNO_AV=NULL, PRG_DOS_AV=NULL, PRG_TRES_AV=NULL, PRG_CUATRO_AV=NULL, PRG_CINCO_AV=NULL, PRG_SEIS_AV=NULL, PRG_SIETE_AV=NULL, PRG_OCHO_AV=NULL, PRG_NUEVE_AV=NULL, COMENTARIO_INICIAL=NULL, COMENTARIO_FINAL=NULL, ESTATUS=NULL, INCIDENCIA_COMERCIAL=NULL, VOBO_GERENTE_REGIONAL=NULL, CDGPE_ANALISTA=NULL, SEMAFORO=NULL, LLAMADA_POST_VENTA=NULL, RECAPTURADA=NULL, CDGPE_ANALISTA_INICIAL=NULL
+                SET TIPO_LLAM_2_CL='$encuesta->_tipo_llamada', DIA_LLAMADA_2_CL='2023-09-08', HORA_LLAMADA_2_CL='12:32:19.000', PRG_UNO_CL='$encuesta->_uno', PRG_DOS_CL='$encuesta->_dos', PRG_TRES_CL='$encuesta->_tres', PRG_CUATRO_CL='$encuesta->_cuatro', PRG_CINCO_CL='$encuesta->_cinco', PRG_SEIS_CL='$encuesta->_seis', PRG_SIETE_CL='$encuesta->_siete', PRG_OCHO_CL='$encuesta->_ocho', PRG_NUEVE_CL='$encuesta->_nueve', PRG_DIEZ_CL='$encuesta->_diez', PRG_ONCE_CL='$encuesta->_once', PRG_DOCE_CL='$encuesta->_doce', CDGCL_AV=NULL, TEL_AV=NULL, FECHA_TRABAJO_AV=NULL, TIPO_LLAM_1_AV=NULL, DIA_LLAMADA_1_AV=NULL, HORA_LLAMADA_1_AV=NULL, TIPO_LLAM_2_AV=NULL, DIA_LLAMADA_2_AV=NULL, HORA_LLAMADA_2_AV=NULL, PRG_UNO_AV=NULL, PRG_DOS_AV=NULL, PRG_TRES_AV=NULL, PRG_CUATRO_AV=NULL, PRG_CINCO_AV=NULL, PRG_SEIS_AV=NULL, PRG_SIETE_AV=NULL, PRG_OCHO_AV=NULL, PRG_NUEVE_AV=NULL, COMENTARIO_INICIAL=NULL, COMENTARIO_FINAL=NULL, ESTATUS=NULL, INCIDENCIA_COMERCIAL=NULL, VOBO_GERENTE_REGIONAL=NULL, CDGPE_ANALISTA=NULL, SEMAFORO=NULL, LLAMADA_POST_VENTA=NULL, PRORROGA=NULL, CDGPE_ANALISTA_INICIAL=NULL
                 , NUMERO_INTENTOS_CL ='$encuesta->_llamada', FIN_CL = '1' 
                 WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
 sql;
@@ -446,7 +467,7 @@ sql;
                 //Agregar un registro incompleto
                 $query=<<<sql
                 INSERT INTO SOL_CALL_CENTER
-                (ID_SCALL, CDGRG, FECHA_TRA_CL, FECHA_SOL, CDGNS, CDGCO, CDGPE, CDGCL_CL, CICLO, TEL_CL, TIPO_LLAM_1_CL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, PRG_UNO_CL, PRG_DOS_CL, PRG_TRES_CL, PRG_CUATRO_CL, PRG_CINCO_CL, PRG_SEIS_CL, PRG_SIETE_CL, PRG_OCHO_CL, PRG_NUEVE_CL, PRG_DIEZ_CL, PRG_ONCE_CL, PRG_DOCE_CL, CDGCL_AV, TEL_AV, FECHA_TRABAJO_AV, TIPO_LLAM_1_AV, DIA_LLAMADA_1_AV, HORA_LLAMADA_1_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, PRG_UNO_AV, PRG_DOS_AV, PRG_TRES_AV, PRG_CUATRO_AV, PRG_CINCO_AV, PRG_SEIS_AV, PRG_SIETE_AV, PRG_OCHO_AV, PRG_NUEVE_AV, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS, INCIDENCIA_COMERCIAL, VOBO_GERENTE_REGIONAL, CDGPE_ANALISTA, SEMAFORO, LLAMADA_POST_VENTA, RECAPTURADA, CDGPE_ANALISTA_INICIAL, NUMERO_INTENTOS_CL, NUMERO_INTENTOS_AV, FIN_CL, FIN_AV)
+                (ID_SCALL, CDGRG, FECHA_TRA_CL, FECHA_SOL, CDGNS, CDGCO, CDGPE, CDGCL_CL, CICLO, TEL_CL, TIPO_LLAM_1_CL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, PRG_UNO_CL, PRG_DOS_CL, PRG_TRES_CL, PRG_CUATRO_CL, PRG_CINCO_CL, PRG_SEIS_CL, PRG_SIETE_CL, PRG_OCHO_CL, PRG_NUEVE_CL, PRG_DIEZ_CL, PRG_ONCE_CL, PRG_DOCE_CL, CDGCL_AV, TEL_AV, FECHA_TRABAJO_AV, TIPO_LLAM_1_AV, DIA_LLAMADA_1_AV, HORA_LLAMADA_1_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, PRG_UNO_AV, PRG_DOS_AV, PRG_TRES_AV, PRG_CUATRO_AV, PRG_CINCO_AV, PRG_SEIS_AV, PRG_SIETE_AV, PRG_OCHO_AV, PRG_NUEVE_AV, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS, INCIDENCIA_COMERCIAL, VOBO_GERENTE_REGIONAL, CDGPE_ANALISTA, SEMAFORO, LLAMADA_POST_VENTA, PRORROGA, CDGPE_ANALISTA_INICIAL, NUMERO_INTENTOS_CL, NUMERO_INTENTOS_AV, FIN_CL, FIN_AV)
                 VALUES(sol_call_center_id.nextval, '$encuesta->_cdgre', TIMESTAMP '$encuesta->_fecha.000000', TIMESTAMP '$encuesta->_fecha_solicitud.000000', '$encuesta->_cdgns', '$encuesta->_cdgco', 'AMGM', '$encuesta->_cliente', '$encuesta->_ciclo', '$encuesta->_movil', '$encuesta->_tipo_llamada', '2023-09-08', '12:32:19.000', NULL, NULL, '$encuesta->_uno', '$encuesta->_dos', '$encuesta->_tres', '$encuesta->_cuatro', '$encuesta->_cinco', '$encuesta->_seis', '$encuesta->_siete', '$encuesta->_ocho', '$encuesta->_nueve', '$encuesta->_diez', '$encuesta->_once', '$encuesta->_doce', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL)
 sql;
             }
@@ -455,7 +476,7 @@ sql;
 
                 $query=<<<sql
                 UPDATE SOL_CALL_CENTER
-                SET TIPO_LLAM_2_CL='$encuesta->_tipo_llamada', DIA_LLAMADA_2_CL='2023-09-08', HORA_LLAMADA_2_CL='12:32:19.000', PRG_UNO_CL='$encuesta->_uno', PRG_DOS_CL='$encuesta->_dos', PRG_TRES_CL='$encuesta->_tres', PRG_CUATRO_CL='$encuesta->_cuatro', PRG_CINCO_CL='$encuesta->_cinco', PRG_SEIS_CL='$encuesta->_seis', PRG_SIETE_CL='$encuesta->_siete', PRG_OCHO_CL='$encuesta->_ocho', PRG_NUEVE_CL='$encuesta->_nueve', PRG_DIEZ_CL='$encuesta->_diez', PRG_ONCE_CL='$encuesta->_once', PRG_DOCE_CL='$encuesta->_doce', CDGCL_AV=NULL, TEL_AV=NULL, FECHA_TRABAJO_AV=NULL, TIPO_LLAM_1_AV=NULL, DIA_LLAMADA_1_AV=NULL, HORA_LLAMADA_1_AV=NULL, TIPO_LLAM_2_AV=NULL, DIA_LLAMADA_2_AV=NULL, HORA_LLAMADA_2_AV=NULL, PRG_UNO_AV=NULL, PRG_DOS_AV=NULL, PRG_TRES_AV=NULL, PRG_CUATRO_AV=NULL, PRG_CINCO_AV=NULL, PRG_SEIS_AV=NULL, PRG_SIETE_AV=NULL, PRG_OCHO_AV=NULL, PRG_NUEVE_AV=NULL, COMENTARIO_INICIAL=NULL, COMENTARIO_FINAL=NULL, ESTATUS=NULL, INCIDENCIA_COMERCIAL=NULL, VOBO_GERENTE_REGIONAL=NULL, CDGPE_ANALISTA=NULL, SEMAFORO=NULL, LLAMADA_POST_VENTA=NULL, RECAPTURADA=NULL, CDGPE_ANALISTA_INICIAL=NULL,
+                SET TIPO_LLAM_2_CL='$encuesta->_tipo_llamada', DIA_LLAMADA_2_CL='2023-09-08', HORA_LLAMADA_2_CL='12:32:19.000', PRG_UNO_CL='$encuesta->_uno', PRG_DOS_CL='$encuesta->_dos', PRG_TRES_CL='$encuesta->_tres', PRG_CUATRO_CL='$encuesta->_cuatro', PRG_CINCO_CL='$encuesta->_cinco', PRG_SEIS_CL='$encuesta->_seis', PRG_SIETE_CL='$encuesta->_siete', PRG_OCHO_CL='$encuesta->_ocho', PRG_NUEVE_CL='$encuesta->_nueve', PRG_DIEZ_CL='$encuesta->_diez', PRG_ONCE_CL='$encuesta->_once', PRG_DOCE_CL='$encuesta->_doce', CDGCL_AV=NULL, TEL_AV=NULL, FECHA_TRABAJO_AV=NULL, TIPO_LLAM_1_AV=NULL, DIA_LLAMADA_1_AV=NULL, HORA_LLAMADA_1_AV=NULL, TIPO_LLAM_2_AV=NULL, DIA_LLAMADA_2_AV=NULL, HORA_LLAMADA_2_AV=NULL, PRG_UNO_AV=NULL, PRG_DOS_AV=NULL, PRG_TRES_AV=NULL, PRG_CUATRO_AV=NULL, PRG_CINCO_AV=NULL, PRG_SEIS_AV=NULL, PRG_SIETE_AV=NULL, PRG_OCHO_AV=NULL, PRG_NUEVE_AV=NULL, COMENTARIO_INICIAL=NULL, COMENTARIO_FINAL=NULL, ESTATUS=NULL, INCIDENCIA_COMERCIAL=NULL, VOBO_GERENTE_REGIONAL=NULL, CDGPE_ANALISTA=NULL, SEMAFORO=NULL, LLAMADA_POST_VENTA=NULL, PRORROGA=NULL, CDGPE_ANALISTA_INICIAL=NULL,
                 NUMERO_INTENTOS_CL ='$encuesta->_llamada'
                 WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
 sql;
