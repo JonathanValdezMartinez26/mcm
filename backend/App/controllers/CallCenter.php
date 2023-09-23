@@ -674,8 +674,8 @@ html;
                     $color_cp_a = 'danger';
                 }
                 else{
-                    $icon_cp_a = 'fa-clock-o';
-                    $color_cp_a = 'warning';
+                    $icon_cp_a = 'fa-check';
+                    $color_cp_a = 'success';
                 }
 
                 if($value['VOBO_REG'] == NULL)
@@ -686,18 +686,24 @@ html;
                     $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
 
                 }
-                if($value['PRORROGA'] == NULL)
+                if($value['PRORROGA'] == 2)
                 {
-                    $prorroga = '';
-                    $comentario_prorroga = '';
-                }
-                else{
                     $prorroga = '<hr><div><b>TIENE ACTIVA LA PRORROGA </b><span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #9101b2"><span class="fa fa-bell"> </span> </span></div><hr>';
                     $comentario_prorroga = '<div><span class="label label-'.$color_cp_a.'"><span class="fa '.$icon_cp_a.'"></span></span> Comentarios Prorroga</div>';
                 }
+                else{
+                    $prorroga = '';
+                    $comentario_prorroga = '';
+                }
+
+                if($value['REACTIVACION'] != '400')
+                {
+                    $reactivacion = '';
+                }
+                else{
+                    $reactivacion = '<hr><div><b>SE REACTIVO LA SOLICITUD </b><span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #006c75"><span class="fa fa-bell"> </span> </span></div><hr>';
+                }
                 //var_dump($vobo);
-
-
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
@@ -715,6 +721,7 @@ html;
                         
                         <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
                         $prorroga
+                        $reactivacion
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
                     <td style="padding: 10px !important; text-align: left; width:165px !important;">
@@ -2428,6 +2435,15 @@ html;
                     $icon_ef = 'fa-clock-o';
                     $color_ef = 'warning';
                 }
+                if($value['COMENTARIO_PRORROGA'] == '')
+                {
+                    $icon_cp_a = 'fa-close';
+                    $color_cp_a = 'danger';
+                }
+                else{
+                    $icon_cp_a = 'fa-check';
+                    $color_cp_a = 'success';
+                }
 
                 if($value['VOBO_REG'] == NULL)
                 {
@@ -2436,24 +2452,16 @@ html;
                 else{
                     $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
 
-                }if($value['PRORROGA'] == NULL)
-                {
-                    $prorroga = '';
-                    $comentario_prorroga = '';
-                }
-                else{
-                    $prorroga = '<hr><div><b>TIENE ACTIVA LA PRORROGA </b><span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #9101b2"><span class="fa fa-bell"> </span> </span></div><hr>';
-                    $comentario_prorroga = '<div><span class="label label-'.$color_cp_a.'"><span class="fa '.$icon_cp_a.'"></span></span> Comentarios Prorroga</div>';
                 }
 
-                if($value['PRORROGA'] == NULL)
+                if($value['PRORROGA'] == 2)
                 {
-                    $prorroga = '';
-                    $comentario_prorroga = '';
-                }
-                else{
                     $prorroga = '<hr><div><b>TIENE ACTIVA LA PRORROGA </b><span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #9101b2"><span class="fa fa-bell"> </span> </span></div><hr>';
                     $comentario_prorroga = '<div><span class="label label-'.$color_cp_a.'"><span class="fa '.$icon_cp_a.'"></span></span> Comentarios Prorroga</div>';
+                }
+                else{
+                    $prorroga = '';
+                    $comentario_prorroga = '';
                 }
                 //var_dump($vobo);
 
@@ -3150,6 +3158,7 @@ html;
         $encuesta->_ciclo = MasterDom::getData('ciclo_cl_res');
         $encuesta->_comentarios_iniciales = MasterDom::getDataAll('comentarios_iniciales');
         $encuesta->_comentarios_finales = MasterDom::getData('comentarios_finales');
+        $encuesta->_comentarios_prorroga = MasterDom::getData('comentarios_prorroga');
 
         $id = CallCenterDao::UpdateResumen($encuesta);
     }

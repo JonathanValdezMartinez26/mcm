@@ -371,8 +371,28 @@
                                         <input style="display: none!important;" onkeydown="return false"   type="text" class="form-control" id="cliente_aval" name="cliente_aval" value="<?php echo $titulo_l4_a; ?>" readonly>
 
                                         <form onsubmit="enviar_comentarios_add(); return false" id="Add_comentarios" class="col-sm-8">
+                                        <?php
+                                            if($Administracion[3]['PRORROGA'] == 2)
+                                            {
+                                                $com_prorroga = $Administracion[3]['COMENTARIO_PRORROGA'];
+                                                $comentario_prorroga = <<<html
+                                                    <div class="col-lg-4">
+                                                    <label for="comentarios_prorroga">Comentarios de Prorroga *</label>
+                                                    <textarea name="comentarios_prorroga" id="comentarios_prorroga" class="form-control" rows="7" cols="50" placeholder="Escribe tus comentarios FINALES, una vez que hayas completado el proceso correspondiente" style="background-color: white; resize: none"> $com_prorroga</textarea>
 
-                                            <div class="col-lg-6">
+                                                    <button type="submit" name="agregar_resumen" value="enviar_resumen" class="btn btn-primary">
+                                                        <i class="fa fa-save"></i> <b>Guardar</b>
+                                                    </button>
+                                                </div>
+html;
+                                                $tamaño_col ='4';
+                                            }
+                                            else
+                                            {
+                                                $tamaño_col ='6';
+                                            }
+                                        ?>
+                                            <div class="col-lg-<?php echo $tamaño_col; ?>">
                                                     <label for="Fecha">Comentarios Iniciales *</label>
                                                     <textarea name="comentarios_iniciales" id="comentarios_iniciales" class="form-control" rows="7" cols="50" placeholder="Escribe tus comentarios INICIALES una vez que hayas marcado al número del cliente o aval, por primera vez" style="background-color: white; resize: none"><?php echo $Administracion[3]['COMENTARIO_INICIAL']; ?></textarea>
 
@@ -381,7 +401,7 @@
                                                     </button>
                                                 </div>
 
-                                                <div class="col-lg-6">
+                                               <div class="col-lg-<?php echo $tamaño_col; ?>">
                                                     <label for="Fecha">Comentarios Finales *</label>
                                                     <textarea name="comentarios_finales" id="comentarios_finales" class="form-control" rows="7" cols="50" placeholder="Escribe tus comentarios FINALES, una vez que hayas completado el proceso correspondiente" style="background-color: white; resize: none"><?php echo $Administracion[3]['COMENTARIO_FINAL']; ?></textarea>
 
@@ -389,6 +409,9 @@
                                                         <i class="fa fa-save"></i> <b>Guardar</b>
                                                     </button>
                                                 </div>
+
+                                                <?php echo $comentario_prorroga; ?>
+
                                         </form>
 
                                         <form onsubmit="enviar_resumen_add(); return false" id="Add_comentarios" class="col-sm-4">
