@@ -567,6 +567,7 @@ html;
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('Administracion', $AdministracionOne);
                 View::set('suc', $suc);
+                View::set('cdgpe', $this->__usuario);
                 View::set('pendientes', 'Mis ');
                 View::render("callcenter_cliente_all");
             }
@@ -743,6 +744,7 @@ html;
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::set('tabla', $tabla);
+            View::set('cdgpe', $this->__usuario);
             View::set('sucursal', $opciones_suc);
             View::set('pendientes', 'Mis ');
             View::render("callcenter_pendientes_all");

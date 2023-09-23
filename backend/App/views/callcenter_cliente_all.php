@@ -501,7 +501,12 @@ html;
                                 </div>
                             </div>
 
-
+                            <div class="col-md-2" style="display: none;">
+                                <div class="form-group">
+                                    <label for="cdgre">CDGPE *</label>
+                                    <input onkeydown="return false" type="text" class="form-control" id="cdgpe" name="cdgpe" value="<?php echo $cdgpe; ?>" readonly>
+                                </div>
+                            </div>
                             <div class="col-md-2" style="display: none;">
                                 <div class="form-group">
                                     <label for="cdgre">CDGRE *</label>
