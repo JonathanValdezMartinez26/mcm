@@ -195,12 +195,9 @@ sql;
     public static function getAllSolicitudesHistorico($fecha_inicio, $fecha_fin, $cdgco, $cdgpe){
 
         $string_from_array = implode(', ', $cdgco);
-        $mysqli = Database::getInstance();
-
-
         if($string_from_array != '')
         {
-
+            $mysqli = Database::getInstance();
             $query=<<<sql
              SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
              WHERE SPR.CDGCO IN($string_from_array)
@@ -214,13 +211,13 @@ sql;
         {
             if($cdgpe == 'ADMIN')
             {
-
+                $mysqli = Database::getInstance();
                 $query=<<<sql
              SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
              WHERE SPR.FECHA_TRABAJO BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
              AND SEMAFORO = '1'
 sql;
-                //var_dump($query);
+                var_dump($query);
                 return $mysqli->queryAll($query);
             }
             else
@@ -233,6 +230,8 @@ sql;
     }
 
     public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $cdgpe){
+
+        $cdgpe = 'ADMIN';
 
         $string_from_array = implode(', ', $cdgco);
         if($string_from_array != '')
@@ -249,8 +248,60 @@ sql;
         }
         else
         {
+            if($cdgpe == 'ADMIN')
+            {
+                $mysqli = Database::getInstance();
+                $query=<<<sql
+                 SELECT DISTINCT (CDGNS || '-' || CICLO) AS A, REGION AS B, FECHA_TRABAJO AS C,  
+                 FECHA_SOL AS D, '' AS E, NOMBRE_SUCURSAL AS F, EJECUTIVO AS G, CDGCL AS H, NOMBRE AS I,
+                 CICLO AS J, TEL_CL AS K, TIPO_LLAM_1_CL AS L, PRG_UNO_CL AS M,	PRG_DOS_CL AS N, 
+                 PRG_TRES_CL AS O, PRG_CUATRO_CL AS P, 	
+                 PRG_CINCO_CL AS Q,	PRG_SEIS_CL	AS R, PRG_SIETE_CL AS S, PRG_OCHO_CL AS T,
+                 PRG_NUEVE_CL AS U, 	
+                 PRG_DIEZ_CL AS V, 	PRG_ONCE_CL	 AS W, PRG_DOCE_CL AS X, 
+                 
+                 CDGCL_AV AS Y, TEL_AV AS Z, TIPO_LLAM_1_AV AS AA, 
+                 PRG_UNO_AV	AS AB,
+                 PRG_DOS_AV AS AC,
+                 PRG_TRES_AV AS AD,
+                 PRG_CUATRO_AV AS AE,
+                 PRG_CINCO_AV AS AF,
+                 PRG_SEIS_AV AS AG,
+                 PRG_SIETE_AV AS AH,
+                 PRG_OCHO_AV AS AI,
+                 PRG_NUEVE_AV AS AJ, 
+                 '' AS AK, 
+                 '' AS AL, 
+                 '' AS AM, 
+                 '' AS AN, 
+                 COMENTARIO_INICIAL AS AO, 
+                 COMENTARIO_FINAL AS AP, 
+                 ESTATUS_FINAL AS AQ, 
+                 PRORROGA AS AR, 
+                 VOBO_REG AS ASS,
+                 SEMAFORO AS AU, 
+                 '' AS AV, 
+                 '' AS AW,
+                 '' AS AX, 
+                 '' AS AY, 
+                 '' AS AZ, 
+                 '' AS BA, 
+                 '' AS BB, 
+                 '' AS BC, 
+                 '' AS BD
+             
+                 FROM SOLICITUDES_PROCESADAS SPR
+                 WHERE SPR.FECHA_TRABAJO BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
+                 AND SEMAFORO = '1'
+sql;
+                //var_dump($query);
+                return $mysqli->queryAll($query);
+            }
+            else
+            {
+                return false;
+            }
 
-            return false;
         }
 
     }
