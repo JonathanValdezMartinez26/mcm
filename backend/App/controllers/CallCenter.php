@@ -2929,7 +2929,8 @@ html;
             {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::set('fechaActual', $fechaActual);
+                View::set('Inicial', $fechaActual);
+                View::set('Final', $fechaActual);
                 View::render("historico_call_center_message_f");
             }
             else
