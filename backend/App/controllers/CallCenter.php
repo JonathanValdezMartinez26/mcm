@@ -527,6 +527,7 @@ html;
         $credito = $_GET['Credito'];
         $ciclo = $_GET['Ciclo'];
         $suc = $_GET['Suc'];
+        $reg = $_GET['Reg'];
         $opciones_suc = '';
         $cdgco_all = array();
         $cdgco_suc = array();
@@ -567,6 +568,7 @@ html;
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('Administracion', $AdministracionOne);
                 View::set('suc', $suc);
+                View::set('reg', $reg);
                 View::set('cdgpe', $this->__usuario);
                 View::set('pendientes', 'Mis ');
                 View::render("callcenter_cliente_all");
@@ -733,7 +735,7 @@ html;
                     $vobo
                     </td>
                     <td style="padding-top: 22px !important;">
-                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}" class="btn btn-primary btn-circle" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>$titulo_boton</b>
+                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Reg={$value['CODIGO_REGION']}" class="btn btn-primary btn-circle" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>$titulo_boton</b>
                         </a>
                     </td>
                 </tr>
@@ -2495,7 +2497,7 @@ html;
                     $vobo
                     </td>
                     <td style="padding-top: 22px !important;">
-                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}" class="btn btn-primary btn-circle" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>$titulo_boton</b>
+                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Reg={$value['CODIGO_REGION']}" class="btn btn-primary btn-circle" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>$titulo_boton</b>
                         </a>
                     </td>
                 </tr>
@@ -2664,7 +2666,7 @@ html;
     public function Historico()
     {
         $extraHeader = <<<html
-        <title>Consulta de Encuestas Terminadas</title>
+        <title>Histórico de Llamadas</title>
         <link rel="shortcut icon" href="/img/logo.png">
 html;
 
@@ -2704,7 +2706,7 @@ html;
             fecha2 = getParameterByName('Final');
             
              $("#export_excel_consulta").click(function(){
-              $('#all').attr('action', '/Operaciones/generarExcelPagosF/?Inicial='+fecha1+'&Final='+fecha2);
+              $('#all').attr('action', '/CallCenter/HistorialGenera/?Inicial='+fecha1+'&Final='+fecha2);
               $('#all').attr('target', '_blank');
               $("#all").submit();
             });
@@ -2804,7 +2806,7 @@ html;
 
         if ($Inicial != '' || $Final != '') {
             /////////////////////////////////
-            $Consulta = CallCenterDao::getAllSolicitudesHistorico($Inicial, $Final, $cdgco);
+            $Consulta = CallCenterDao::getAllSolicitudesHistorico($Inicial, $Final, $cdgco, $this->__perfil);
             foreach ($Consulta as $key => $value) {
                 if($value['ESTATUS_CL'] == 'PENDIENTE')
                 {
@@ -2945,7 +2947,7 @@ html;
         }
         else {
 
-            $Consulta = CallCenterDao::getAllSolicitudesHistorico($fechaActual, $fechaActual, $cdgco);
+            $Consulta = CallCenterDao::getAllSolicitudesHistorico($fechaActual, $fechaActual, $cdgco, $this->__perfil);
 
             foreach ($Consulta as $key => $value) {
 
@@ -3213,6 +3215,105 @@ html;
         $asigna->_region = MasterDom::getData('region');
 
         $id = CallCenterDao::insertAsignaSucursal($asigna);
+    }
+
+    public function HistorialGenera(){
+
+        $fecha_inicio = $_GET['Inicial'];
+        $fecha_fin = $_GET['Final'];
+
+        $objPHPExcel = new \PHPExcel();
+        $objPHPExcel->getProperties()->setCreator("jma");
+        $objPHPExcel->getProperties()->setLastModifiedBy("jma");
+        $objPHPExcel->getProperties()->setTitle("Reporte");
+        $objPHPExcel->getProperties()->setSubject("Reorte");
+        $objPHPExcel->getProperties()->setDescription("Descripcion");
+        $objPHPExcel->setActiveSheetIndex(0);
+
+
+
+        $estilo_titulo = array(
+            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+        );
+
+        $estilo_encabezado = array(
+            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+        );
+
+        $estilo_celda = array(
+            'font' => array('bold' => false,'name'=>'Calibri','size'=>11,'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+
+        );
+
+
+        $fila = 1;
+        $adaptarTexto = true;
+
+        $controlador = "CallCenter";
+        $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N','O', 'P', 'Q', 'R', 'S', 'T', 'U','V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD');
+        $nombreColumna = array('-','NOMBRE REGION','FECHA DE TRABAJO','SOLICITUD','INICIO','AGENCIA','EJECUTIVO','CLIENTE','NOMBRE DE CLIENTE','CICLO','TELEFONO CLIENTE','TIPO DE LLAMADA','¿Qué edad tiene?','¿Cuál es su fecha de nacimiento?','Me proporciona su domicilio completo por favor','¿Qué tiempo tiene viviendo en este domicilio?','Actualmente ¿cual es su principal fuente de ingresos?,¿Cuál es el nombre de su aval?,¿Que Relación tiene con su aval?,¿ Cual es la actividad económica de su aval?','Por favor me proporciona el número telefónico de su aval','¿Firmó su solicitud? ¿Cuando?','Me puede indicar ¿para qué utilizará su crédito?','¿Compartirá su crédito con alguna otra persona?','NOMBRE DEL AVAL,TELEFONO DE AVAL','TIPO DE LLAMADA','¿Qué edad tiene?','Me indica su fecha de nacimiento por favor','¿Cuál es su domicilio?','¿Qué tiempo lleva viviendo en este domicilio?','Actualmente  ¿cual es su principal fuente de ingresos?','¿Hace cuanto conoce a  “Nombre del cliente”?','¿Qué Relación tiene con “Nombre del cliente”?','¿Sabe a que se dedica el Sr. (nombre de cliente)?','Me puede proporcionar el numero telefónico de “cliente”','DIA DE LLAMADA 1','HORA DE LLAMADA 1','DIA DE LLAMADA 2','HORA DE LLAMADA 2','COMENTARIO INICIAL','COMENTARIO FINAL','ESTATUS','INCIDENCIA COMERCIAL - ADMINISTRACION','Vo Bo GERENTE REGIONAL','ANALISTA','SEMAFORO,FECHA DE DESEMBOLSO','$ ENTREGADA','$ PARCIALIDAD','MORA AL CORTE','#  SEMANAS CON ATRASO','MES','LLAMADA POSTVENTA','RECAPTURADA SI-NO','ANALISTA INICIAL');
+        $nombreCampo = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+            'N','O', 'P', 'Q', 'R', 'S', 'T', 'U','V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD',
+            'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS',
+            'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD'
+        );
+
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'Reporte de Solicitudes');
+        $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
+        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
+        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
+
+        $fila +=1;
+
+        /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
+        foreach ($nombreColumna as $key => $value) {
+            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, $value);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_encabezado);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
+        }
+        $fila +=1; //fila donde comenzaran a escribirse los datos
+
+        /* FILAS DEL ARCHIVO EXCEL */
+
+        $Layoutt = CallCenterDao::ConsultarPagos($fecha_inicio, $fecha_fin);
+        foreach ($Layoutt as $key => $value) {
+            foreach ($nombreCampo as $key => $campo) {
+                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_celda);
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            }
+            $fila +=1;
+        }
+
+
+        $objPHPExcel->getActiveSheet()->getStyle('A1:'.$columna[count($columna)-1].$fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        for ($i=0; $i <$fila ; $i++) {
+            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(20);
+        }
+
+
+        $objPHPExcel->getActiveSheet()->setTitle('Reporte');
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Consulta de Pagos Cultiva '.$controlador.'.xlsx"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+        header ('Cache-Control: cache, must-revalidate');
+        header ('Pragma: public');
+
+        \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
     }
 
 

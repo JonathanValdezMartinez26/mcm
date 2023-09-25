@@ -192,7 +192,47 @@ sql;
 
     }
 
-    public static function getAllSolicitudesHistorico($fecha_inicio, $fecha_fin, $cdgco){
+    public static function getAllSolicitudesHistorico($fecha_inicio, $fecha_fin, $cdgco, $cdgpe){
+
+        $string_from_array = implode(', ', $cdgco);
+        $mysqli = Database::getInstance();
+
+
+        if($string_from_array != '')
+        {
+
+            $query=<<<sql
+             SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
+             WHERE SPR.CDGCO IN($string_from_array)
+             AND SPR.FECHA_TRABAJO BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
+             AND SEMAFORO = '1'
+sql;
+            //var_dump($query);
+            return $mysqli->queryAll($query);
+        }
+        else
+        {
+            if($cdgpe == 'ADMIN')
+            {
+
+                $query=<<<sql
+             SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
+             WHERE SPR.FECHA_TRABAJO BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
+             AND SEMAFORO = '1'
+sql;
+                //var_dump($query);
+                return $mysqli->queryAll($query);
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+    }
+
+    public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $cdgpe){
 
         $string_from_array = implode(', ', $cdgco);
         if($string_from_array != '')
@@ -209,10 +249,9 @@ sql;
         }
         else
         {
+
             return false;
         }
-
-
 
     }
 
