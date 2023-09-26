@@ -192,7 +192,7 @@ sql;
 
     }
 
-    public static function getAllSolicitudesHistorico($fecha_inicio, $fecha_fin, $cdgco, $cdgpe){
+    public static function getAllSolicitudesHistorico($fecha_inicio, $fecha_fin, $cdgco, $cdgpe, $perfil){
 
         $string_from_array = implode(', ', $cdgco);
         if($string_from_array != '')
@@ -209,7 +209,7 @@ sql;
         }
         else
         {
-            if($cdgpe == 'ADMIN')
+            if($perfil == 'ADMIN')
             {
                 $mysqli = Database::getInstance();
                 $query=<<<sql
@@ -229,9 +229,9 @@ sql;
 
     }
 
-    public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $cdgpe){
+    public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $cdgpe, $perfil){
 
-        $cdgpe = 'ADMIN';
+
 
         $string_from_array = implode(', ', $cdgco);
         if($string_from_array != '')
@@ -248,7 +248,7 @@ sql;
         }
         else
         {
-            if($cdgpe == 'ADMIN')
+            if($perfil == 'ADMIN')
             {
                 $mysqli = Database::getInstance();
                 $query=<<<sql

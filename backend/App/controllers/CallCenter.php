@@ -2711,7 +2711,6 @@ html;
             usuario = getParameterByName('Was');
             
              $("#export_excel_consulta").click(function(){
-                 alert("Hola");
               $('#all').attr('action', '/CallCenter/HistorialGenera/?Inicial='+fecha1+'&Final='+fecha2+'&Suc='+cdgco+'&was='+usuario);
               $('#all').attr('target', '_blank');
               $("#all").submit();
@@ -2843,7 +2842,7 @@ html;
 
         if ($Inicial != '' || $Final != '') {
             /////////////////////////////////
-            $Consulta = CallCenterDao::getAllSolicitudesHistorico($Inicial, $Final, $cdgco, $this->__usuario);
+            $Consulta = CallCenterDao::getAllSolicitudesHistorico($Inicial, $Final, $cdgco, $this->__usuario, $this->__perfil);
             foreach ($Consulta as $key => $value) {
                 if($value['ESTATUS_CL'] == 'PENDIENTE')
                 {
@@ -3004,7 +3003,7 @@ html;
         }
         else {
 
-            $Consulta = CallCenterDao::getAllSolicitudesHistorico($fechaActual, $fechaActual, $cdgco, $this->__usuario);
+            $Consulta = CallCenterDao::getAllSolicitudesHistorico($fechaActual, $fechaActual, $cdgco, $this->__usuario, $this->__perfil);
 
             foreach ($Consulta as $key => $value) {
 
@@ -3313,8 +3312,15 @@ html;
 
         $fecha_inicio = $_GET['Inicial'];
         $fecha_fin = $_GET['Final'];
-        $cdgco = $_GET['Final'];
-        $cdgpe = $_GET['Final'];
+        //$cdgco = $_GET['Final'];
+        //$cdgpe = $_GET['Final'];
+
+        if($fecha_fin == '' || $fecha_fin == '')
+        {
+            $fechaActual = date('Y-m-d');
+            $fecha_inicio = $fechaActual;
+            $fecha_fin = $fechaActual;
+        }
 
 
         $objPHPExcel = new \PHPExcel();
@@ -3391,7 +3397,7 @@ html;
 
         /* FILAS DEL ARCHIVO EXCEL */
 
-        $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $cdgpe);
+        $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $cdgpe, $this->__perfil);
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
