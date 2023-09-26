@@ -3,7 +3,7 @@
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
             <div class="x_title">
-                <h3> Solicitudes Activas que el Ejecutivo Eolicita Reactivar</h3>
+                <h3> Solicitudes Activas que el Ejecutivo Solicita Reactivar</h3>
                 <div class="clearfix"></div>
             </div>
             <div class="card card-danger col-md-8" >

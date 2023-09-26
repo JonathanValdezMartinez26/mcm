@@ -194,6 +194,7 @@ sql;
 sql;
         $mysqli = Database::getInstance();
 
+        //var_dump($query);
         return $mysqli->queryAll($query);
     }
 

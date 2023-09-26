@@ -1455,8 +1455,8 @@ html;
                     $color_ef = 'danger';
                 }
                 else{
-                    $icon_ef = 'fa-clock-o';
-                    $color_ef = 'warning';
+                    $icon_ef = 'fa-check';
+                    $color_ef = 'success';
                 }
 
                 if($value['VOBO_REG'] == NULL)
@@ -2213,8 +2213,8 @@ html;
                     $color_ef = 'danger';
                 }
                 else{
-                    $icon_ef = 'fa-clock-o';
-                    $color_ef = 'warning';
+                    $icon_ef = 'fa-check';
+                    $color_ef = 'success';
                 }
 
                 if($value['VOBO_REG'] == NULL)
@@ -2253,7 +2253,7 @@ html;
                     $vobo
                     </td>
                     <td style="padding-top: 22px !important;">
-                        <a type="button" class="btn btn-primary btn-circle" onclick="ReactivarAutorizar('{$value['ID_SCALL']}');" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>Autorizar Prorroga</b>
+                        <a type="button" class="btn btn-primary btn-circle" onclick="ReactivarAutorizar('{$value['ID_SCALL']}');" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>Autorizar Reactivación</b>
                         </a>
                     </td>
                 </tr>
@@ -2650,6 +2650,7 @@ html;
                     <td>{$value['CDGOCPE']}</td>
                     <td style="padding: 0px !important;">
                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                       <button type="button" class="btn btn-success btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-edit"></i></button>
                     </td>
                 </tr>
 html;
@@ -2716,8 +2717,24 @@ html;
               $("#all").submit();
             });
       
-      function ProrrogaPedir(id_call)
+      function ProrrogaPedir(id_call, estatus, reactivacion)
          {
+                if(reactivacion == '1')
+                 {
+                      swal("Actualmente tiene una REACTIVACION en espera de validación", {icon: "warning",});
+                      return;   
+                 }
+                
+                 if(estatus == '1')
+                 {
+                      swal("Su solicitud de PRORROGA esta siendo validada", {icon: "warning",});
+                      return;
+                      
+                 }else if(estatus == '3'){
+                    swal("Su solicitud de PRORROGA fue declinada", {icon: "warning",});
+                    return;
+                 }
+                     
               swal({
               title: "¿Está segura de solicitar a su administradora prorroga para esta solicitud?",
               text: '',
@@ -2736,7 +2753,7 @@ html;
                              swal("Registro guardado exitosamente", {
                                           icon: "success",
                                         });
-                             //location.reload();
+                             location.reload();
                             }
                             else {
                            
@@ -2753,8 +2770,26 @@ html;
             });
          }
          
-      function ReactivarSolicitud(id_call)
+      function ReactivarSolicitud(id_call, estatus, reactivacion )
          {
+             
+             if(estatus == '1')
+                 {
+                      swal("Actualmente tiene una PRORROGA en espera de validación", {icon: "warning",});
+                      return;   
+                 }
+                
+                 if(reactivacion == '1')
+                 {
+                      swal("Su solicitud de REACTIVACIÓN esta siendo validada", {icon: "warning",});
+                      return;
+                      
+                 }else if(reactivacion == '3'){
+                    swal("Su solicitud de REACTIVACIÓN fue declinada", {icon: "warning",});
+                    return;
+                 }
+                 
+                 
               swal({
               title: "¿Está segura de solicitar la reactivación de la solicitud?",
               text: 'Usted podrá seguir editando la solicitud',
@@ -2773,7 +2808,7 @@ html;
                              swal("Registro guardado exitosamente", {
                                           icon: "success",
                                         });
-                             //location.reload();
+                             location.reload();
                             }
                             else {
                            
@@ -2896,6 +2931,26 @@ html;
 
                 }
 
+                if($value['PRORROGA'] == NULL)
+                {
+                    $boton_titulo_prorroga = 'Prorroga';
+                }
+                else{
+                    if($value['PRORROGA'] == '1')
+                    {
+                        $boton_titulo_prorroga = 'Prorroga <br> Pendiente';
+                    }else if($value['PRORROGA'] == '2')
+                    {
+                    $boton_titulo_prorroga = 'Prorroga <br> Aceptada';
+                    }else if($value['PRORROGA'] == '3')
+                    {
+                        $boton_titulo_prorroga = 'Prorroga <br> Declinada';
+                    }
+
+                }
+
+                var_dump($value['PRORROGA']);
+
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 5px !important;"><label>{$value['CDGNS']}-{$value['CICLO']}</label></td>
@@ -2919,11 +2974,11 @@ html;
                     <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud</div>
                     $vobo
                     </td>
-                     <td style="padding-top: 22px !important;">
-                        <a type="button" class="btn btn-primary btn-circle" onclick="ProrrogaPedir('{$value['ID_SCALL']}');" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>Prorroga</b>
+                      <td style="padding-top: 22px !important;">
+                        <a type="button" class="btn btn-primary btn-circle" onclick="ProrrogaPedir('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>$boton_titulo_prorroga</b>
                         </a>
                         <br>
-                        <a type="button" class="btn btn-warning btn-circle" onclick="ReactivarSolicitud('{$value['ID_SCALL']}');" style="background: #ffbcbc; color: #0D0A0A"><i class="fa fa-repeat"></i> <b>Reactivar</b>
+                        <a type="button" class="btn btn-warning btn-circle" onclick="ReactivarSolicitud('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: #ffbcbc; color: #0D0A0A"><i class="fa fa-repeat"></i> <b>Reactivar</b>
                         </a>
                     </td>
                 </tr>
@@ -3038,6 +3093,41 @@ html;
                     $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
                 }
 
+                if($value['PRORROGA'] == NULL)
+                {
+                    $boton_titulo_prorroga = 'Prorroga';
+                    $des_prorroga = '';
+                    $boton_reactivar = '';
+                }
+                else
+                {
+                    if ($value['PRORROGA'] == '1') {
+                        $boton_titulo_prorroga = 'Prorroga <br>Pendiente';
+                    }else if ($value['PRORROGA'] == '2') {
+                        $boton_titulo_prorroga = 'Prorroga <br>Aceptada';
+                    }else if($value['PRORROGA'] == '3'){
+                        $boton_titulo_prorroga = 'Prorroga <br>Declinada';
+                    }else if($value['PRORROGA'] == '4'){
+                        $boton_titulo_prorroga = 'Prorroga';
+                    }
+                }
+
+                if($value['REACTIVACION'] == NULL)
+                {
+                    $boton_titulo_reactivar = 'Reactivar';
+                }
+                else {
+
+                    if ($value['REACTIVACION'] == '1') {
+                        $boton_titulo_reactivar = 'Reactivar <br>Pendiente';
+                    }else if ($value['REACTIVACION'] == '2') {
+                        $boton_titulo_reactivar = 'Reactivar <br>Aceptado';
+                    }else if($value['REACTIVACION'] == '3')
+                    {
+                        $boton_titulo_reactivar = 'Reactivar Declinado';
+                    }
+                }
+
 
 
                 $tabla .= <<<html
@@ -3068,10 +3158,10 @@ html;
                     </td>
                    
                      <td style="padding-top: 22px !important;">
-                        <a type="button" class="btn btn-primary btn-circle" onclick="ProrrogaPedir('{$value['ID_SCALL']}');" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>Prorroga</b>
+                        <a type="button" class="btn btn-primary btn-circle" onclick="ProrrogaPedir('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: $color_boton; color: $fuente " $des_prorroga><i class="fa fa-edit"></i> <b>$boton_titulo_prorroga</b>
                         </a>
                         <br>
-                        <a type="button" class="btn btn-warning btn-circle" onclick="ReactivarSolicitud('{$value['ID_SCALL']}');" style="background: #ffbcbc; color: #0D0A0A"><i class="fa fa-repeat"></i> <b>Reactivar</b>
+                        <a type="button" class="btn btn-warning btn-circle" onclick="ReactivarSolicitud('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: #ffbcbc; color: #0D0A0A" ><i class="fa fa-repeat"></i> <b>$boton_titulo_reactivar</b>
                         </a>
                     </td>
                 </tr>
@@ -3311,16 +3401,11 @@ html;
             $fila +=1;
         }
 
-        $objPHPExcel->getActiveSheet()->freezePaneByColumnAndRow(2,4);
 
-
-        $objPHPExcel->getActiveSheet()->getStyle('A1:'.$columna[count($columna)-1].$fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        for ($i=0; $i <$fila ; $i++) {
-            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(54);
-        }
-
-
+        $objPHPExcel->getActiveSheet()->freezePane('A3');
         $objPHPExcel->getActiveSheet()->setTitle('Reporte');
+
+
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="Reporte Llamadas Finalizadas '.$fecha_inicio. ' al '.$fecha_fin.'.xlsx"');

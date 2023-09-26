@@ -217,7 +217,7 @@ sql;
              WHERE SPR.FECHA_TRABAJO BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
              AND SEMAFORO = '1'
 sql;
-                var_dump($query);
+                //var_dump($query);
                 return $mysqli->queryAll($query);
             }
             else
@@ -588,7 +588,7 @@ sql;
 
         $query=<<<sql
                 UPDATE SOL_CALL_CENTER
-                SET COMENTARIO_INICIAL='$encuesta->_comentarios_iniciales', COMENTARIO_FINAL='$encuesta->_comentarios_finales', SEMAFORO = '1', ESTATUS = '$encuesta->_estatus_solicitud', VOBO_GERENTE_REGIONAL = '$encuesta->_vobo_gerente'
+                SET COMENTARIO_INICIAL='$encuesta->_comentarios_iniciales', COMENTARIO_FINAL='$encuesta->_comentarios_finales', SEMAFORO = '1', ESTATUS = '$encuesta->_estatus_solicitud', VOBO_GERENTE_REGIONAL = '$encuesta->_vobo_gerente', PRORROGA = '4', REACTIVACION = NULL  
                 WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
 sql;
 
