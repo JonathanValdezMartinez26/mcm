@@ -252,34 +252,55 @@ sql;
             {
                 $mysqli = Database::getInstance();
                 $query=<<<sql
-                 SELECT DISTINCT (CDGNS || '-' || CICLO) AS A, REGION AS B, FECHA_TRABAJO AS C,  
-                 FECHA_SOL AS D, '' AS E, NOMBRE_SUCURSAL AS F, EJECUTIVO AS G, CDGCL AS H, NOMBRE AS I,
-                 CICLO AS J, TEL_CL AS K, TIPO_LLAM_1_CL AS L, PRG_UNO_CL AS M,	PRG_DOS_CL AS N, 
-                 PRG_TRES_CL AS O, PRG_CUATRO_CL AS P, 	
-                 PRG_CINCO_CL AS Q,	PRG_SEIS_CL	AS R, PRG_SIETE_CL AS S, PRG_OCHO_CL AS T,
-                 PRG_NUEVE_CL AS U, 	
-                 PRG_DIEZ_CL AS V, 	PRG_ONCE_CL	 AS W, PRG_DOCE_CL AS X, 
+                 SELECT DISTINCT (SPR.CDGNS || '-' || SPR.CICLO) AS A, SPR.REGION AS B, SPR.FECHA_TRABAJO AS C,  
+                 SPR.FECHA_SOL AS D, '' AS E, SPR.NOMBRE_SUCURSAL AS F, SPR.EJECUTIVO AS G, SPR.CDGCL AS H, SPR.NOMBRE AS I,
+                 SPR.CICLO AS J, SPR.TEL_CL AS K, SPR.TIPO_LLAM_1_CL AS L, 
+                 CASE WHEN SPR.PRG_UNO_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_UNO_CL END AS M,
+                  CASE WHEN SPR.PRG_DOS_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_DOS_CL END AS N,
+                  CASE WHEN SPR.PRG_TRES_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_TRES_CL END AS O,
+                  CASE WHEN SPR.PRG_CUATRO_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_CUATRO_CL END AS P,
+                  CASE WHEN SPR.PRG_CINCO_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_CINCO_CL END AS Q,
+                  CASE WHEN SPR.PRG_SEIS_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_SEIS_CL END AS R,
+                  CASE WHEN SPR.PRG_SIETE_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_SIETE_CL END AS S,
+                  CASE WHEN SPR.PRG_OCHO_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_OCHO_CL END AS T,
+                  CASE WHEN SPR.PRG_NUEVE_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_NUEVE_CL END AS U,
+                  CASE WHEN SPR.PRG_DIEZ_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_DIEZ_CL END AS V,
+                  CASE WHEN SPR.PRG_ONCE_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_ONCE_CL END AS W,
+                 CASE WHEN SPR.PRG_DOCE_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_DOCE_CL END AS X,
                  
-                 CDGCL_AV AS Y, TEL_AV AS Z, TIPO_LLAM_1_AV AS AA, 
-                 PRG_UNO_AV	AS AB,
-                 PRG_DOS_AV AS AC,
-                 PRG_TRES_AV AS AD,
-                 PRG_CUATRO_AV AS AE,
-                 PRG_CINCO_AV AS AF,
-                 PRG_SEIS_AV AS AG,
-                 PRG_SIETE_AV AS AH,
-                 PRG_OCHO_AV AS AI,
-                 PRG_NUEVE_AV AS AJ, 
+                 
+                 SPR.CDGCL_AV AS Y, SPR.TEL_AV AS Z, SPR.TIPO_LLAM_1_AV AS AA, 
+                 SPR.PRG_UNO_AV	AS AB,
+                 SPR.PRG_DOS_AV AS AC,
+                 SPR.PRG_TRES_AV AS AD,
+                 SPR.PRG_CUATRO_AV AS AE,
+                 SPR.PRG_CINCO_AV AS AF,
+                 SPR.PRG_SEIS_AV AS AG,
+                 SPR.PRG_SIETE_AV AS AH,
+                 SPR.PRG_OCHO_AV AS AI,
+                 SPR.PRG_NUEVE_AV AS AJ, 
                  '' AS AK, 
                  '' AS AL, 
                  '' AS AM, 
                  '' AS AN, 
-                 COMENTARIO_INICIAL AS AO, 
-                 COMENTARIO_FINAL AS AP, 
-                 ESTATUS_FINAL AS AQ, 
-                 PRORROGA AS AR, 
-                 VOBO_REG AS ASS,
-                 SEMAFORO AS AU, 
+                 SPR.COMENTARIO_INICIAL AS AO, 
+                 SPR.COMENTARIO_FINAL AS AP, 
+                 SPR.ESTATUS_FINAL AS AQ, 
+                 SPR.PRORROGA AS AR, 
+                 SPR.VOBO_REG AS ASS,
+                 SPR.SEMAFORO AS AU, 
                  '' AS AV, 
                  '' AS AW,
                  '' AS AX, 
