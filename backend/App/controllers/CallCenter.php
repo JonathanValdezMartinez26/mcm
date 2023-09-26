@@ -3361,7 +3361,7 @@ html;
 
         $controlador = "CallCenter";
         $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N','O', 'P', 'Q', 'R', 'S', 'T', 'U','V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD');
-        $nombreColumna = array('-','NOMBRE REGION','FECHA DE TRABAJO','SOLICITUD','INICIO','AGENCIA','EJECUTIVO','CLIENTE','NOMBRE DE CLIENTE','CICLO','TELEFONO CLIENTE','TIPO DE LLAMADA','¿Qué edad tiene?','¿Cuál es su fecha de nacimiento?','Me proporciona su domicilio completo por favor','¿Qué tiempo tiene viviendo en este domicilio?','Actualmente ¿cual es su principal fuente de ingresos?,¿Cuál es el nombre de su aval?,¿Que Relación tiene con su aval?,¿ Cual es la actividad económica de su aval?','Por favor me proporciona el número telefónico de su aval','¿Firmó su solicitud? ¿Cuando?','Me puede indicar ¿para qué utilizará su crédito?','¿Compartirá su crédito con alguna otra persona?','NOMBRE DEL AVAL,TELEFONO DE AVAL','TIPO DE LLAMADA','¿Qué edad tiene?','Me indica su fecha de nacimiento por favor','¿Cuál es su domicilio?','¿Qué tiempo lleva viviendo en este domicilio?','Actualmente  ¿cual es su principal fuente de ingresos?','¿Hace cuanto conoce a  “Nombre del cliente”?','¿Qué Relación tiene con “Nombre del cliente”?','¿Sabe a que se dedica el Sr. (nombre de cliente)?','Me puede proporcionar el numero telefónico de “cliente”','DIA DE LLAMADA 1','HORA DE LLAMADA 1','DIA DE LLAMADA 2','HORA DE LLAMADA 2','COMENTARIO INICIAL','COMENTARIO FINAL','ESTATUS','INCIDENCIA COMERCIAL - ADMINISTRACION','Vo Bo GERENTE REGIONAL','ANALISTA','SEMAFORO,FECHA DE DESEMBOLSO','$ ENTREGADA','$ PARCIALIDAD','MORA AL CORTE','#  SEMANAS CON ATRASO','MES','LLAMADA POSTVENTA','RECAPTURADA SI-NO','ANALISTA INICIAL');
+        $nombreColumna = array('-','NOMBRE REGION','FECHA DE TRABAJO','SOLICITUD','INICIO','AGENCIA','EJECUTIVO','CLIENTE','NOMBRE DE CLIENTE','CICLO','TELEFONO CLIENTE','TIPO DE LLAMADA','¿Qué edad tiene?','¿Cuál es su fecha de nacimiento?','Me proporciona su domicilio completo por favor','¿Qué tiempo tiene viviendo en este domicilio?','Actualmente ¿cual es su principal fuente de ingresos?','¿Cuál es el nombre de su aval?','¿Que Relación tiene con su aval?','¿ Cual es la actividad económica de su aval?','Por favor me proporciona el número telefónico de su aval','¿Firmó su solicitud? ¿Cuando?','Me puede indicar ¿para qué utilizará su crédito?','¿Compartirá su crédito con alguna otra persona?','NOMBRE DEL AVAL','TELEFONO DE AVAL','TIPO DE LLAMADA','¿Qué edad tiene?','Me indica su fecha de nacimiento por favor','¿Cuál es su domicilio?','¿Qué tiempo lleva viviendo en este domicilio?','Actualmente  ¿cual es su principal fuente de ingresos?','¿Hace cuanto conoce a  “Nombre del cliente”?','¿Qué Relación tiene con “Nombre del cliente”?','¿Sabe a que se dedica el Sr. (nombre de cliente)?','Me puede proporcionar el numero telefónico de “cliente”','DIA DE LLAMADA 1','HORA DE LLAMADA 1','DIA DE LLAMADA 2','HORA DE LLAMADA 2','COMENTARIO INICIAL','COMENTARIO FINAL','ESTATUS','INCIDENCIA COMERCIAL - ADMINISTRACION','Vo Bo GERENTE REGIONAL','ANALISTA','SEMAFORO','FECHA DE DESEMBOLSO','$ ENTREGADA','$ PARCIALIDAD','MORA AL CORTE','#  SEMANAS CON ATRASO','MES','LLAMADA POSTVENTA','RECAPTURADA SI-NO','ANALISTA INICIAL');
         $nombreCampo = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
             'N','O', 'P', 'Q', 'R', 'S', 'T', 'U','V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD',
             'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS',
@@ -3382,6 +3382,18 @@ html;
             array('fill' => array( 'type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => '0070C0'))) );
         $objPHPExcel->getActiveSheet()->getStyle('M2:X2')->applyFromArray(
             array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'C5D9F1'))));
+        $objPHPExcel->getActiveSheet()->getStyle('Y2:AA2')->applyFromArray(
+            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => '0070C0'))));
+
+
+        $objPHPExcel->getActiveSheet()->getStyle('AB2:AJ2')->applyFromArray(
+            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'C5D9F1'))));
+        $objPHPExcel->getActiveSheet()->getStyle('AK2:AN2')->applyFromArray(
+            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => '0070C0'))));
+        $objPHPExcel->getActiveSheet()->getStyle('AO2:AU2')->applyFromArray(
+            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'C00000'))));
+        $objPHPExcel->getActiveSheet()->getStyle('AV2:BD2')->applyFromArray(
+            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'FFFFCC'))));
 
 
         $fila +=1;
@@ -3397,7 +3409,7 @@ html;
 
         /* FILAS DEL ARCHIVO EXCEL */
 
-        $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $cdgpe, $this->__perfil);
+        $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, '', '', $this->__perfil);
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
