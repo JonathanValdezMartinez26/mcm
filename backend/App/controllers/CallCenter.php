@@ -3238,23 +3238,26 @@ html;
 
 
         $estilo_titulo = array(
-            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true,'name'=>'Calibri','size'=>10, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_encabezado = array(
-            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true,'name'=>'Calibri','size'=>10, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_celda = array(
-            'font' => array('bold' => false,'name'=>'Calibri','size'=>11,'color' => array('rgb' => '060606')),
+            'font' => array('bold' => false,'name'=>'Calibri','size'=>9,'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
 
         );
+
+
+
 
 
         $fila = 1;
@@ -3274,6 +3277,16 @@ html;
         $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
         $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
         $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
+
+        $objPHPExcel->getActiveSheet()->getStyle('A2:A2')->applyFromArray(
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'FFC7CE'))) );
+        $objPHPExcel->getActiveSheet()->getStyle('B2:D2')->applyFromArray(
+            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'C5D9F1'))));
+        $objPHPExcel->getActiveSheet()->getStyle('E2:L2')->applyFromArray(
+            array('fill' => array( 'type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => '0070C0'))) );
+        $objPHPExcel->getActiveSheet()->getStyle('M2:X2')->applyFromArray(
+            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'C5D9F1'))));
+
 
         $fila +=1;
 
@@ -3298,17 +3311,19 @@ html;
             $fila +=1;
         }
 
+        $objPHPExcel->getActiveSheet()->freezePaneByColumnAndRow(2,4);
+
 
         $objPHPExcel->getActiveSheet()->getStyle('A1:'.$columna[count($columna)-1].$fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
         for ($i=0; $i <$fila ; $i++) {
-            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(20);
+            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(70);
         }
 
 
         $objPHPExcel->getActiveSheet()->setTitle('Reporte');
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Consulta de Pagos Cultiva '.$controlador.'.xlsx"');
+        header('Content-Disposition: attachment;filename="Reporte Llamadas Finalizadas '.$fecha_inicio. ' al '.$fecha_fin.'.xlsx"');
         header('Cache-Control: max-age=0');
         header('Cache-Control: max-age=1');
         header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
