@@ -3316,7 +3316,7 @@ html;
 
         $objPHPExcel->getActiveSheet()->getStyle('A1:'.$columna[count($columna)-1].$fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
         for ($i=0; $i <$fila ; $i++) {
-            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(70);
+            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(54);
         }
 
 
