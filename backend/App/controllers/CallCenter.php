@@ -2843,7 +2843,7 @@ html;
 
         if ($Inicial != '' || $Final != '') {
             /////////////////////////////////
-            $Consulta = CallCenterDao::getAllSolicitudesHistorico($Inicial, $Final, $cdgco, $this->__perfil);
+            $Consulta = CallCenterDao::getAllSolicitudesHistorico($Inicial, $Final, $cdgco, $this->__usuario);
             foreach ($Consulta as $key => $value) {
                 if($value['ESTATUS_CL'] == 'PENDIENTE')
                 {
@@ -3004,7 +3004,7 @@ html;
         }
         else {
 
-            $Consulta = CallCenterDao::getAllSolicitudesHistorico($fechaActual, $fechaActual, $cdgco, $this->__perfil);
+            $Consulta = CallCenterDao::getAllSolicitudesHistorico($fechaActual, $fechaActual, $cdgco, $this->__usuario);
 
             foreach ($Consulta as $key => $value) {
 

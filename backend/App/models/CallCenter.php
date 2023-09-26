@@ -200,7 +200,7 @@ sql;
             $mysqli = Database::getInstance();
             $query=<<<sql
              SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
-             WHERE SPR.CDGCO IN($string_from_array)
+             WHERE SPR.CDGPE = '$cdgpe'
              AND SPR.FECHA_TRABAJO BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
              AND SEMAFORO = '1'
 sql;
