@@ -214,7 +214,7 @@
                                             <tr>
                                                 <?php
 
-                                                if($Administracion[4]['LLAMADA_UNO'] == NULL)
+                                                if($Administracion[4]['NUM_LLAM'] == NULL)
                                                 {
                                                     $titulo_l1_a = "Pendiente de validar";
                                                     $color_titulo_l1_a = "warning";
@@ -252,7 +252,7 @@
                                                     //-----
                                                     $titulo_l4_a = "FINALIZADA";
                                                     $boton_ver_encuesta_l4_a = 'style= display:none!important;';
-                                                    $titulo_boton_l4_a = "Reintentar Encuesta (CLIENTE)";
+                                                    $titulo_boton_l4_a = ""; //// este por si quiere que se quede activa
                                                     $ocultar_boton_l4_iniciar_a = 'style= display:none!important;';
                                                     $hora_l4_a = "Primer llamada: ".$Administracion[3]['HORA_LLAMADA_UNO']."<br>"."Última Llamada: ".$Administracion[3]['HORA_LLAMADA_DOS'];
                                                     //------
@@ -318,7 +318,7 @@
                                                         else
                                                         {
                                                             $tabla = <<<html
-                                                            <button type="button" class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-backdrop="static" data-keyboard="false" onclick="InfoDesactivaEncuesta();">
+                                                            <button type="button" <?php echo $ocultar_boton_l4_iniciar_a; ?> class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-backdrop="static" data-keyboard="false" onclick="InfoDesactivaEncuesta();">
                                                                 <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">$titulo_boton_l4_a </label>
                                                             </button>
     html;
@@ -626,6 +626,25 @@ html;
                                         <p style="color: #007700"><b>R: <?php echo $Administracion[0]['AVAL']; ?></b></p>
                                     </div>
                                 </div>
+
+                                <div class="col-md-2" style="display: none">
+                                    <div class="form-group">NOMBRE AVAL *</label>
+                                        <input onkeydown="return false" type="text" class="form-control" id="nombre_aval_cl" name="nombre_aval_cl" value="<?php echo $Administracion[0]['AVAL']; ?>" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-2" style="display: none">
+                                    <div class="form-group">ID AVAL *</label>
+                                        <input onkeydown="return false" type="text" class="form-control" id="id_aval_cl" name="id_aval_cl" value="<?php echo $Administracion[0]['ID_AVAL']; ?>" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-2" style="display: none">
+                                    <div class="form-group">TELEFONO *</label>
+                                        <input onkeydown="return false" type="text" class="form-control" id="telefono_aval_cl" name="telefono_aval_cl" value="<?php
+                                        $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
+                                        echo $format; ?>" readonly>
+                                    </div>
+                                </div>
+
                             </div>
                             <hr style="margin-top: 2px !important; margin-bottom: 2px !important;">
                             <div class="row">
@@ -781,7 +800,7 @@ html;
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="movil_av">Núm. telefono del cliente *</label>
-                                    <input type="text" class="form-control" id="movil_av" aria-describedby="movil_av" disabled placeholder="" value="<?php
+                                    <input type="text" class="form-control" id="movil_av" aria-describedby="movil_av" readonly placeholder="" value="<?php
                                     $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
                                     echo $format; ?>">
                                 </div>

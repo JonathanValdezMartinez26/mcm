@@ -87,6 +87,10 @@ html;        $extraFooter = <<<html
              diez = document.getElementById("diez_cl").value; 
              once = document.getElementById("once_cl").value; 
              doce = document.getElementById("doce_cl").value; 
+             
+             nombre_aval_cl = document.getElementById("nombre_aval_cl").value; 
+             id_aval_cl = document.getElementById("id_aval_cl").value; 
+             
              completo = $('input[name="completo"]:checked').val();
              llamada = document.getElementById("titulo");
              contenido = llamada.innerHTML;
@@ -94,7 +98,7 @@ html;        $extraFooter = <<<html
              
              if(contenido == '2')
                  {
-                     mensaje = "Está es la ultima llamada que podrá realizar al cliente y debera seleccionar un estatus final como: 'CANCELADA: NO LOCALIZADOS.', para terminar con la solicitud.";
+                     mensaje = "";
                  }
              else 
                  {
@@ -104,7 +108,7 @@ html;        $extraFooter = <<<html
                         }
                      else 
                          {
-                             mensaje = "Solo podrá intentar contactar una vez más al cliente.";
+                             mensaje = "";
                          }
                      
                  }
@@ -232,7 +236,7 @@ html;        $extraFooter = <<<html
            
     }
         function enviar_add_av(){	
-             fecha_trabajo = document.getElementById("fecha_av").value; 
+             fecha_trabajo = document.getElementById("fecha_solicitud_av").value; 
              num_telefono = document.getElementById("movil_av").value;  
              tipo_av = document.getElementById("tipo_llamada_av").value; 
              uno = document.getElementById("uno_av").value; 
@@ -251,7 +255,7 @@ html;        $extraFooter = <<<html
              
              if(contenido == '2')
                  {
-                     mensaje = "Está es la ultima llamada que podrá realizar al cliente y debera seleccionar un estatus final como: 'CANCELADA: NO LOCALIZADOS.', para terminar con la solicitud.";
+                     mensaje = "";
                  }
              else 
                  {
@@ -261,7 +265,7 @@ html;        $extraFooter = <<<html
                         }
                      else 
                          {
-                             mensaje = "Solo podrá intentar contactar una vez más al cliente.";
+                             mensaje = "";
                          }
                      
                  }
@@ -884,7 +888,7 @@ html;        $extraFooter = <<<html
              
              if(contenido == '2')
                  {
-                     mensaje = "Está es la ultima llamada que podrá realizar al cliente y debera seleccionar un estatus final como: 'CANCELADA: NO LOCALIZADOS.', para terminar con la solicitud.";
+                     mensaje = "";
                  }
              else 
                  {
@@ -894,7 +898,7 @@ html;        $extraFooter = <<<html
                         }
                      else 
                          {
-                             mensaje = "Solo podrá intentar contactar una vez más al cliente.";
+                             mensaje = "";
                          }
                      
                  }
@@ -1041,7 +1045,7 @@ html;        $extraFooter = <<<html
              
              if(contenido == '2')
                  {
-                     mensaje = "Está es la ultima llamada que podrá realizar al cliente y debera seleccionar un estatus final como: 'CANCELADA: NO LOCALIZADOS.', para terminar con la solicitud.";
+                     mensaje = "";
                  }
              else 
                  {
@@ -1051,7 +1055,7 @@ html;        $extraFooter = <<<html
                         }
                      else 
                          {
-                             mensaje = "Solo podrá intentar contactar una vez más al cliente.";
+                             mensaje = "";
                          }
                      
                  }
@@ -1642,7 +1646,7 @@ html;        $extraFooter = <<<html
              
              if(contenido == '2')
                  {
-                     mensaje = "Está es la ultima llamada que podrá realizar al cliente y debera seleccionar un estatus final como: 'CANCELADA: NO LOCALIZADOS.', para terminar con la solicitud.";
+                     mensaje = "";
                  }
              else 
                  {
@@ -1652,7 +1656,7 @@ html;        $extraFooter = <<<html
                         }
                      else 
                          {
-                             mensaje = "Solo podrá intentar contactar una vez más al cliente.";
+                             mensaje = "";
                          }
                      
                  }
@@ -1799,7 +1803,7 @@ html;        $extraFooter = <<<html
              
              if(contenido == '2')
                  {
-                     mensaje = "Está es la ultima llamada que podrá realizar al cliente y debera seleccionar un estatus final como: 'CANCELADA: NO LOCALIZADOS.', para terminar con la solicitud.";
+                     mensaje = "";
                  }
              else 
                  {
@@ -1809,7 +1813,7 @@ html;        $extraFooter = <<<html
                         }
                      else 
                          {
-                             mensaje = "Solo podrá intentar contactar una vez más al cliente.";
+                             mensaje = "";
                          }
                      
                  }
@@ -3212,16 +3216,21 @@ html;
         $encuesta->_diez = MasterDom::getData('diez_cl');
         $encuesta->_once = MasterDom::getData('once_cl');
         $encuesta->_doce = MasterDom::getData('doce_cl');
+
+        $encuesta->_nombre_aval_cl = MasterDom::getData('nombre_aval_cl');
+        $encuesta->_id_aval_cl = MasterDom::getData('id_aval_cl');
+        $encuesta->_telefono_aval_cl = MasterDom::getData('telefono_aval_cl');
+
         $encuesta->_llamada = MasterDom::getData('contenido');
         $encuesta->_completo = MasterDom::getData('completo');
+        $encuesta->_cdgpe = $this->__usuario;
 
         $id = CallCenterDao::insertEncuestaCL($encuesta);
     }
 
     public function PagosAddEncuestaAV(){
         $encuesta = new \stdClass();
-        $fecha_solicitud = MasterDom::getDataAll('fecha_solicitud_av');
-        $encuesta->_fecha_solicitud = $fecha_solicitud;
+        $encuesta->_fecha_solicitud = MasterDom::getDataAll('fecha_solicitud_av');
         $encuesta->_cdgre = MasterDom::getData('cdgre_av');
         $encuesta->_cliente = MasterDom::getData('cliente_id_av');
         $encuesta->_cdgco = MasterDom::getData('cdgco_av');
