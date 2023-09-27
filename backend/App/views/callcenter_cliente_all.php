@@ -318,7 +318,7 @@
                                                         else
                                                         {
                                                             $tabla = <<<html
-                                                            <button type="button" <?php echo $ocultar_boton_l4_iniciar_a; ?> class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-backdrop="static" data-keyboard="false" onclick="InfoDesactivaEncuesta();">
+                                                            <button type="button" $ocultar_boton_l4_iniciar_a; class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-backdrop="static" data-keyboard="false" onclick="InfoDesactivaEncuesta();">
                                                                 <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">$titulo_boton_l4_a </label>
                                                             </button>
     html;
