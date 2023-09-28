@@ -712,7 +712,13 @@ html;
                 }
                 //var_dump($vobo);
 
-                $format = "(".substr($value['TEL_CL'],0,3).")"." ".substr($value['TEL_CL'],5,3)." - ".substr($value['TEL_CL'],6,4);
+                if(substr($value['TEL_CL'],0,1) == '(')
+                {
+                    $format = $value['TEL_CL'];
+                }
+                else{
+                    $format = "(".substr($value['TEL_CL'],0,3).")"." ".substr($value['TEL_CL'],5,3)." - ".substr($value['TEL_CL'],6,4);
+                }
 
 
                 $tabla .= <<<html
