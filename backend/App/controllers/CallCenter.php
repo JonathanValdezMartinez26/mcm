@@ -725,7 +725,7 @@ html;
                         <br>
                         <span class="fa fa-briefcase"></span> EJECUTIVO: {$value['EJECUTIVO']}
                     </td>
-                    <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']} | {$format}</label></td>
+                    <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label> <br><label><span class="fa fa-phone"></span> {$format}</label></td>
                     <td style="padding-top: 22px !important; text-align: left">
                         <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
                         
