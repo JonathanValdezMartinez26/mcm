@@ -712,6 +712,9 @@ html;
                 }
                 //var_dump($vobo);
 
+                $format = "".substr($value['TEL_CL'],0,3).""."-".substr($value['TEL_CL'],5,3)."-".substr($value['TEL_CL'],6,4);
+
+
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 5px !important;"><label>{$value['CDGNS']}-{$value['CICLO']}</label></td>
@@ -722,7 +725,7 @@ html;
                         <br>
                         <span class="fa fa-briefcase"></span> EJECUTIVO: {$value['EJECUTIVO']}
                     </td>
-                    <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label></td>
+                    <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']} | {$format}</label></td>
                     <td style="padding-top: 22px !important; text-align: left">
                         <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
                         
@@ -2487,7 +2490,7 @@ html;
                     </td>
                     <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label></td>
                     <td style="padding-top: 22px !important; text-align: left">
-                        <div><b>CLIEdddddddNTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
+                        <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
                         
                         <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
                         $prorroga
