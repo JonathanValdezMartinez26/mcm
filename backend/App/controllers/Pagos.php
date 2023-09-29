@@ -1607,7 +1607,7 @@ html;
                 View::set('status', $getStatus);
                 View::set('credito', $credito);
                 View::set('usuario', $this->__usuario);
-                View::render("pagos_registro_busqueda_message");
+                View::render("pagos_consulta_p_busqueda_message");
             }
             else
             {
@@ -1656,13 +1656,13 @@ html;
                 View::set('usuario', $this->__usuario);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::render("pagos_registro_busqueda");
+                View::render("pagos_consulta_p_busqueda");
             }
 
         } else {
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
-            View::render("pagos_registro_all");
+            View::render("pagos_consulta_p_all");
         }
     }
 
