@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form class="" action="/Pagos//PagosConsultaUsuarios/" method="GET">
+                    <form class="" action="/Pagos/PagosConsultaUsuarios/" method="GET">
                         <div class="row">
                             <div class="col-md-4">
                                 <select class="form-control mr-sm-3" style="font-size: 18px;" autofocus type="select" placeholder="000000" aria-label="Search">
