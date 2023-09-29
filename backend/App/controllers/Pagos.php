@@ -1625,57 +1625,10 @@ html;
                         $mensaje = 'InfoPhone();';
                     }
 
-                    if($value['DESIGNATION'] == 'SI')
-                    {
-                        /////
-                        /// /
-                        ///
-                        ///
-                        /// aqui poner que si los pagos son de app no se pueden modificar, consulte con operaciones
-                        ///
-                        ///
-                        ///
-                        $editar = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
-html;
-                    }
-                    else
-                    {
-                        $date_past_b = strtotime('-3 days', strtotime($fechaActual));
-                        $date_past_b = date('Y-m-d', $date_past_b);
-
-                        $fecha_base = strtotime($value['FECHA']);
-                        $fecha_base = date('Y-m-d', $fecha_base);
-
-                        $inicio_b = $date_past_b;
-
-                        if($inicio_b == $fecha_base)
-                        {
-                            if($horaActual <= $hora_cierre)
-                            {
-                                $editar = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
-html;
-                            }
-                            else
-                            {
-                                $editar = <<<html
+                    $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
                     <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
 html;
-                            }
-
-                        }
-                        else
-                        {
-                            $editar = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
-html;
-                        }
-                    }
 
                     $monto = number_format($value['MONTO'], 2);
                     $tabla .= <<<html
@@ -1688,7 +1641,7 @@ html;
                     <td style="padding: 0px !important;">$ {$monto}</td>
                     <td style="padding: 0px !important;">{$value['TIPO']}</td>
                     <td style="padding: 0px !important;">{$value['EJECUTIVO']}</td>
-                    <td style="padding: 0px !important;" class="center"> - </td>
+                    <td style="padding: 0px !important;" class="center">{$editar}</td>
                 </tr>
 html;
                 }
