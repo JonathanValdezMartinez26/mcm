@@ -123,6 +123,14 @@ html;
 html;
         }
 
+        if($this->__perfil == 'ACALL')
+        {
+            $menu.=<<<html
+                    <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
+                   <li><a href="/Pagos/PagosConsulta/">Consulta de Pagos Caja</a></li>
+html;
+        }
+
         if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil== 'GTOCA' || $this->__perfil== 'AMOCA' || $this->__perfil== 'OCOF' || $this->__perfil== 'CPAGO' || $this->__perfil == 'ACALL' )
         {
             $menu.=<<<html
