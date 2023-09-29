@@ -1688,7 +1688,7 @@ html;
                     <td style="padding: 0px !important;">$ {$monto}</td>
                     <td style="padding: 0px !important;">{$value['TIPO']}</td>
                     <td style="padding: 0px !important;">{$value['EJECUTIVO']}</td>
-                    <td style="padding: 0px !important;" class="center">{$editar}</td>
+                    <td style="padding: 0px !important;" class="center"> - </td>
                 </tr>
 html;
                 }

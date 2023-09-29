@@ -127,7 +127,7 @@ html;
         {
             $menu.=<<<html
                     <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
-                   <li><a href="/Pagos/PagosConsultaUsuarios/">Consulta de Pagos Caja</a></li>
+                   <li><a href="/Pagos/PagosConsultaUsuarios/">Consulta de Pagos Cliente</a></li>
 html;
         }
 
