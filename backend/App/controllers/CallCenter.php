@@ -596,9 +596,10 @@ html;
                 $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_all);
                 //var_dump($Solicitudes);
             }
-
+            //var_dump($Solicitudes);
 
             foreach ($Solicitudes as $key => $value) {
+
                if($value['ESTATUS_CL'] == 'PENDIENTE')
                 {
                     $color = 'primary';
@@ -717,8 +718,10 @@ html;
                     $format = $value['TEL_CL'];
                 }
                 else{
-                    $format = "(".substr($value['TEL_CL'],0,3).")"." ".substr($value['TEL_CL'],5,3)." - ".substr($value['TEL_CL'],6,4);
+                    $format = "(".substr($value['TEL_CL'],0,3).")"." ".substr($value['TEL_CL'],3,3)." - ".substr($value['TEL_CL'],6,4);
+
                 }
+                //var_dump($value['TEL_CL']);
 
 
                 $tabla .= <<<html
