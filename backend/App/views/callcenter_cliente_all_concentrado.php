@@ -351,7 +351,7 @@
 
                                                 <td style="font-size: 19px"; colspan="10">
                                                     <i class="fa fa-phone-square"></i> <?php
-                                                    $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
+                                                    $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],3,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
                                                     echo $format; ?>
                                                 </td>
                                                 <td style="font-size: 19px; font: " colspan="3">
@@ -649,7 +649,7 @@
                                             <option value="NO">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php
-                                                $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
+                                                $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],3,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
                                                 echo $format; ?></b></p>
                                     </div>
                                 </div>
@@ -769,7 +769,7 @@
                                 <div class="form-group">
                                     <label for="movil_av">Núm. telefono del cliente *</label>
                                     <input type="text" class="form-control" id="movil_av" aria-describedby="movil_av" disabled placeholder="" value="<?php
-                                    $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
+                                    $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],3,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
                                     echo $format; ?>">
                                 </div>
                             </div>
@@ -1032,7 +1032,7 @@
                                 <div class="form-group">
                                     <label>Contacto</label>
                                     <input onkeydown="return false" type="text" class="form-control" value="<?php
-                                    $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
+                                    $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],3,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
                                     echo $format; ?>" readonly>
                                 </div>
                             </div>
@@ -1155,7 +1155,7 @@
                             <div class="form-group">
                                 <label>Contacto</label>
                                 <input onkeydown="return false" type="text" class="form-control" value="<?php
-                                $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],5,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
+                                $format = "(".substr($Administracion[2]['TELEFONO'],0,3).")"." ".substr($Administracion[2]['TELEFONO'],3,3)." - ".substr($Administracion[2]['TELEFONO'],6,4);
                                 echo $format; ?>" readonly>
                             </div>
                         </div>
