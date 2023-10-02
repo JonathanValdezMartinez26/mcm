@@ -535,7 +535,7 @@ html;
                                 <div class="form-group">
                                     <label for="movil_cl">Núm. telefono del cliente *</label>
                                     <input type="text" class="form-control" id="movil_cl" name="movil_cl" aria-describedby="movil_cl" readonly placeholder="" value="<?php
-                                    $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
+                                    $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],3,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
                                     echo $format; ?>">
                                 </div>
                             </div>
@@ -926,7 +926,7 @@ html;
                                             <option value="N">NO RESPONDIO</option>
                                         </select>
                                         <p style="color: #007700"><b>R: <?php
-                                                $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],5,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
+                                                $format = "(".substr($Administracion[1]['TELEFONO'],0,3).")"." ".substr($Administracion[1]['TELEFONO'],3,3)." - ".substr($Administracion[1]['TELEFONO'],6,4);
                                                 echo $format; ?></b></p>
                                     </div>
                                 </div>
