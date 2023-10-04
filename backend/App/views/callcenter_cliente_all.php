@@ -255,7 +255,7 @@
                                                     $boton_ver_encuesta_l4_a = 'style= display:none!important;';
                                                     $titulo_boton_l4_a = ""; //// este por si quiere que se quede activa
                                                     $ocultar_boton_l4_iniciar_a = 'style= display:none!important;';
-                                                    $hora_l4_a = "Primer llamada: ".$Administracion[3]['HORA_LLAMADA_UNO']."<br>"."Última Llamada: ".$Administracion[3]['HORA_LLAMADA_DOS'];
+                                                    $hora_l4_a = "Primer llamada: ".$Administracion[4]['HORA_LLAMADA_UNO']."<br>"."Última Llamada: ".$Administracion[4]['HORA_LLAMADA_DOS'];
                                                     //------
                                                 }
                                                 ?>
