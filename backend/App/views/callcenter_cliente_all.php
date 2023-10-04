@@ -82,7 +82,7 @@
                                                     $titulo_l4 = "PENDIENTE";
                                                     $boton_ver_encuesta_l4 = 'style= display:none!important;';
                                                     $hora_l4 = $Administracion[3]['HORA'];
-                                                    $titulo_boton_l4 = "Iniciar Encuesta (CLIENTE)";
+                                                    $titulo_boton_l4 = "Iniciar";
                                                     $ocultar_boton_l4_iniciar = '';
                                                     //------
                                                     $desactivar_aval = 'true';
@@ -98,21 +98,21 @@
                                                     $titulo_l4 = "EN ESPERA";
                                                     $boton_ver_encuesta_l4 = 'style= display:none!important;';
                                                     $hora_l4 = $Administracion[3]['HORA'];
-                                                    $titulo_boton_l4 = "Reintentar Encuesta (CLIENTE)";
+                                                    $titulo_boton_l4 = "Reintentar";
                                                     $ocultar_boton_l4_iniciar = '';
                                                     //------
                                                     $desactivar_aval = 'false';
 
                                                 }else if($Administracion[3]['FINALIZADA'] == '1')
                                                 {
-                                                    $titulo_l1 = "Marcada como validada";
+                                                    $titulo_l1 = "Validada";
                                                     $color_titulo_l1 = "success";
                                                     //-----
                                                     $titulo_l3 = "Detalle Encuesta";
                                                     //-----
                                                     $titulo_l4 = "FINALIZADA";
                                                     $boton_ver_encuesta_l4 = 'style= display:none!important;';
-                                                    $titulo_boton_l4 = "Reintentar Encuesta (CLIENTE)";
+                                                    $titulo_boton_l4 = "Reintentar";
                                                     $ocultar_boton_l4_iniciar = 'style= display:none!important;';
                                                     $hora_l4 = "Primer llamada: ".$Administracion[3]['HORA_LLAMADA_UNO']."<br>"."Última Llamada: ".$Administracion[3]['HORA_LLAMADA_DOS'];
                                                     //------
@@ -143,7 +143,7 @@
 
                                                         <div class="col-md-2">
                                                             <button type="button" class="btn btn-primary" style="border: 1px solid #c4a603; background: #FFFFFF" data-toggle="modal" data-target="#modal_expediente" data-backdrop="static" data-keyboard="false">
-                                                                <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Ver Expediente (CLIENTE)</label>
+                                                                <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Expediente</label>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -224,7 +224,7 @@
                                                     $titulo_l4_a = "PENDIENTE";
                                                     $boton_ver_encuesta_l4_a = 'style= display:none!important;';
                                                     $hora_l4_a = $Administracion[3]['HORA'];
-                                                    $titulo_boton_l4_a = "Iniciar Encuesta (CLIENTE)";
+                                                    $titulo_boton_l4_a = "Iniciar";
                                                     $ocultar_boton_l4_iniciar_a = '';
                                                     //------
                                                 }
@@ -239,13 +239,14 @@
                                                     $titulo_l4_a = "EN ESPERA";
                                                     $boton_ver_encuesta_l4_a = 'style= display:none!important;';
                                                     $hora_l4_a = $Administracion[3]['HORA'];
-                                                    $titulo_boton_l4_a = "Reintentar Encuesta (CLIENTE)";
+                                                    $titulo_boton_l4_a = "Reintentar";
                                                     $ocultar_boton_l4_iniciar_a = '';
                                                     //------
 
                                                 }else if($Administracion[4]['FINALIZADA'] == '1')
                                                 {
-                                                    $titulo_l1_a = "Marcada como validada";
+                                                    //var_dump("Holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                                                    $titulo_l1_a = "Validada";
                                                     $color_titulo_l1_a = "success";
                                                     //-----
                                                     $titulo_l3_a = "Detalle Encuesta";
@@ -309,7 +310,7 @@
                                                         if($desactivar_aval == 'false')
                                                         {
                                                             $tabla = <<<html
-                                                            <button type="button" class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_aval" data-backdrop="static" data-keyboard="false">
+                                                            <button type="button" $ocultar_boton_l4_iniciar_a class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_aval" data-backdrop="static" data-keyboard="false">
                                                                 <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">$titulo_boton_l4_a </label>
                                                             </button>
 html;
@@ -318,7 +319,7 @@ html;
                                                         else
                                                         {
                                                             $tabla = <<<html
-                                                            <button type="button" $ocultar_boton_l4_iniciar_a; class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-backdrop="static" data-keyboard="false" onclick="InfoDesactivaEncuesta();">
+                                                            <button type="button" $ocultar_boton_l4_iniciar_a class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-backdrop="static" data-keyboard="false" onclick="InfoDesactivaEncuesta();">
                                                                 <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">$titulo_boton_l4_a </label>
                                                             </button>
 html;
