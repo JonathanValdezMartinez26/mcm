@@ -614,11 +614,42 @@ html;
                     });
     }
     
-        function check_pagos()
+        function check_pagos(id)
         {
-            alert("Hola");
+          
+            var checkbox = document.getElementById(id);
+            var isChecked = document.getElementById(id).checked;
+            if(isChecked == false)
+                {
+                    var returnVal = confirm("¿Estas seguro de que deseas desactivar esta casilla?");
+                    if(returnVal == true)
+                    {
+                        alert("desactivada");
+                        return false;
+                    }
+                    else 
+                    {
+                       alert("No paso nada");
+                       return false;
+                    }
+                }
+                else 
+                {
+                   var returnVal = confirm("Estas seguro de Calcular?");
+                   if(returnVal == true)
+                       {
+                           alert("listo");
+                           return false;
+                       }
+                   else 
+                       {
+                           document.getElementById(id).checked = false;
+                           return false;
+                       }
+                    }
+            
         }
-      
+       
       
       </script>
 html;
@@ -639,9 +670,6 @@ html;
                 $descuento = number_format($value['TOTAL_DESCUENTO'], 2);
                 $garantia = number_format($value['GARANTIA'], 2);
                 $monto_total = number_format($value['MONTO_TOTAL'], 2);
-
-
-
 
 
                 $tabla .= <<<html
@@ -703,7 +731,7 @@ html;
                     </td>
                     <td style="padding: 10px !important; $color_celda">{$tipo_pago}</td>
                     <td style="padding: 10px !important; $color_celda"><div style="font-size: 25px!important;"> $ {$monto}</div>
-                         <input class="form-check-input" type="checkbox" value="" id="$id_check">
+                         <input class="form-check-input" type="checkbox" value="" id="$id_check" name="$id_check" onclick="check_pagos('$id_check');">
                           <label class="form-check-label" for="flexCheckDefault">
                             Validado
                          </label>
@@ -711,8 +739,8 @@ html;
                     <td style="padding: 10px !important; $color_celda">{$value['COMENTARIO_INCIDENCIA']}</td>
                     <td style="padding: 10px !important; $color_celda">{$value['FIDENTIFICAPP']}</td>
                     
-                     <td style="padding: 0px !important;">
-                        <button $boton_visible type="button" class="btn btn-success btn-circle" onclick="EditarHorario('{$value['CDGCO']}', '{$value['NOMBRE']}' , '{$value['HORA_CIERRE']}');"><i class="fa fa-edit"></i> Procesar Pagos</button>
+                     <td style="padding-top: 30px !important;">
+                        <button $boton_visible type="button" class="btn btn-success btn-circle" onclick="EditarHorario('{$value['CDGCO']}', '{$value['NOMBRE']}' , '{$value['HORA_CIERRE']}');"><i class="fa fa-edit"></i> Editar Pago</button>
                      </td>
                 </tr>
 html;

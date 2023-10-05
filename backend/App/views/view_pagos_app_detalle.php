@@ -2,33 +2,38 @@
 <div class="right_col">
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
-            <div class="x_title">
-                <h3> Pagos Cobrados por el Ejecutivo <span class="fa fa-mobile"></span></h3>
-                <div class="clearfix"></div>
-            </div>
+
 
             <div class="card col-md-12">
-                <div class="card card-danger col-md-12">
-                    <ul class="nav navbar-nav navbar-right">
-                        <b style="font-size: 20px; color: red;">Pagos capturados en campo por los ejecutivos</b>
-                        <br>
-                        <b>Si su horario es incorrecto o necesita más tiempo, comuníquelo</b>
-                        <br>
-                        <br>
-                        <br>
-                    </ul>
+
+                <div class="row" >
+                    <div class="tile_count float-right col-sm-12" style="margin-bottom: 1px; margin-top: 1px">
+                        <div class="col-md-3 col-sm-4  tile_stats_count">
+                            <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Ejecutivo</span>
+
+                            <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['CLIENTE']; ?></div>
+                            <span class="count_top badge" style="padding: 1px 1px; background: <?php echo $Administracion[0]['COLOR']; ?>"><h5><b><i class="">SITUACIÓN: <?php echo $Administracion[0]['SITUACION_NOMBRE']; ?></i></b></h5></span>
+                        </div>
+                        <div class="col-md-2 col-sm-2  tile_stats_count">
+                            <span class="count_top" style="font-size: 15px"><i>#</i> de Pagos Validados</span>
+                            <div class="count" style="font-size: 35px; color: #030303">13 de 15</div>
+                        </div>
+                        <div class="col-md-3 col-sm-4  tile_stats_count">
+                            <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Monto Validado</span>
+                            <div class="count" style="font-size: 35px; color: #368a05">$40,000.00</div>
+                        </div>
+                        <div class="col-md-3 col-sm-4  tile_stats_count">
+                            <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Ejecutivo</span>
+                            <div class="count" style="font-size: 35px; color: #368a05">$40,000.00</div>
+                        </div>
+
+
+                    </div>
                 </div>
-
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_horario" >
-                    <i class="fa fa-plus"></i> Reactivar Pago
-                </button>
-
-                <hr style="border-top: 1px solid #787878; margin-top: 5px;">
-
                 <div class="dataTable_wrapper">
-
+                    <hr>
                     <p><b><span class="fa fa-sticky-note"></span> Nota:Si ya valido el pago y es correcto marque la casilla (Validado)</b></p>
-                    <br>
+                    <hr style="border-top: 1px solid #787878; margin-top: 5px;">
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
                         <tr>
