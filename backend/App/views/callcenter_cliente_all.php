@@ -112,8 +112,15 @@
                                                     //-----
                                                     $titulo_l4 = "FINALIZADA";
                                                     $boton_ver_encuesta_l4 = 'style= display:none!important;';
-                                                    $titulo_boton_l4 = "Reintentar";
-                                                    $ocultar_boton_l4_iniciar = 'style= display:none!important;';
+                                                    if($Administracion[3]['REACTIVACION'])
+                                                    {
+                                                        $titulo_boton_l4 = "Reintentar (Reactivada)";
+                                                        $ocultar_boton_l4_iniciar = '';
+                                                    }
+                                                    else{
+                                                        $titulo_boton_l4 = "Reintentar";
+                                                        $ocultar_boton_l4_iniciar = 'style= display:none!important;';
+                                                    }
                                                     $hora_l4 = "Primer llamada: ".$Administracion[3]['HORA_LLAMADA_UNO']."<br>"."Última Llamada: ".$Administracion[3]['HORA_LLAMADA_DOS'];
                                                     //------
                                                     $desactivar_aval = 'false';
@@ -253,8 +260,18 @@
                                                     //-----
                                                     $titulo_l4_a = "FINALIZADA";
                                                     $boton_ver_encuesta_l4_a = 'style= display:none!important;';
-                                                    $titulo_boton_l4_a = ""; //// este por si quiere que se quede activa
-                                                    $ocultar_boton_l4_iniciar_a = 'style= display:none!important;';
+
+                                                    if($Administracion[3]['REACTIVACION'])
+                                                    {
+                                                        $titulo_boton_l4_a = "Reintentar (Reactivada)";
+                                                        $ocultar_boton_l4_iniciar_a = '';
+                                                    }
+                                                    else{
+                                                        $titulo_boton_l4_a = "Reintentar";
+                                                        $ocultar_boton_l4_iniciar_a = 'style= display:none!important;';
+                                                    }
+
+
                                                     $hora_l4_a = "Primer llamada: ".$Administracion[4]['HORA_LLAMADA_UNO']."<br>"."Última Llamada: ".$Administracion[4]['HORA_LLAMADA_DOS'];
                                                     //------
                                                 }

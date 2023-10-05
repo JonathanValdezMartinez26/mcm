@@ -2701,7 +2701,7 @@ html;
           var oTable = $('#muestra-cupones').DataTable({
                   "lengthMenu": [
                     [13, 50, -1],
-                    [132, 50, 'Todos'],
+                    [13, 50, 'Todos'],
                 ],
                 "columnDefs": [{
                     "orderable": false,
