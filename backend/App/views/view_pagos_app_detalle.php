@@ -11,20 +11,24 @@
                         <div class="col-md-3 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Ejecutivo</span>
 
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['CLIENTE']; ?></div>
+                            <div class="count" style="font-size: 14px">NOMBRE DEL EJECUTIVO</div>
                             <span class="count_top badge" style="padding: 1px 1px; background: <?php echo $Administracion[0]['COLOR']; ?>"><h5><b><i class="">SITUACIÓN: <?php echo $Administracion[0]['SITUACION_NOMBRE']; ?></i></b></h5></span>
                         </div>
                         <div class="col-md-2 col-sm-2  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i>#</i> de Pagos Validados</span>
-                            <div class="count" style="font-size: 35px; color: #030303">13 de 15</div>
+                            <div class="count" style="font-size: 30px; color: #030303"><?php echo $DetalleGlobal[0]['TOTAL_VALIDADOS']; ?> DE <?php echo $DetalleGlobal[0]['TOTAL_PAGOS']; ?></div>
                         </div>
                         <div class="col-md-3 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Monto Validado</span>
-                            <div class="count" style="font-size: 35px; color: #368a05">$40,000.00</div>
+                            <div class="count" style="font-size: 35px; color: #368a05">$<?php echo number_format($DetalleGlobal[0]['TOTAL'],2); ?></div>
                         </div>
                         <div class="col-md-3 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Ejecutivo</span>
-                            <div class="count" style="font-size: 35px; color: #368a05">$40,000.00</div>
+                            <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Terminar Validación</span>
+                            <div class="count" style="font-size: 35px; color: #368a05">
+                                <button type="button" class="btn btn-primary" style="border: 1px solid #c4a603; background: #FFFFFF" data-toggle="modal" data-target="#modal_expediente" data-backdrop="static" data-keyboard="false">
+                                    <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Procesar Pagos Validados</label>
+                                </button>
+                            </div>
                         </div>
 
 

@@ -145,8 +145,54 @@ sql;
                         ) asc
 sql;
 
+        $query2=<<<sql
+        SELECT
+        SUM(CASE 
+        WHEN (ESTATUS_CAJA = 1 AND TIPO = 'P' AND ESTATUS = 'A') THEN 1
+        ELSE 0
+        END) AS TOTAL_VALIDADOS, 
+        
+        SUM(CASE 
+        WHEN (TIPO = 'P' AND ESTATUS = 'A') THEN 1
+        ELSE 0
+        END) AS TOTAL_PAGOS,
+    
+        SUM(CASE 
+        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA = 1 AND TIPO = 'P' AND ESTATUS = 'A') THEN NUEVO_MONTO 
+        ELSE 0
+        END) AS TOTAL_NUEVOS_MONTOS, 
+        
+        SUM(CASE 
+        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA IS NULL AND TIPO = 'P' AND ESTATUS = 'A') THEN MONTO
+        ELSE 0
+        END) AS TOTAL_MONT_SIN_MOD, 
+        
+        
+        (SUM(CASE 
+        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA = 1 AND TIPO = 'P' AND ESTATUS = 'A') THEN NUEVO_MONTO 
+        ELSE 0
+        END) + SUM(CASE 
+        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA IS NULL AND TIPO = 'P' AND ESTATUS = 'A') THEN MONTO
+        ELSE 0
+        END)) AS TOTAL
+        FROM CORTECAJA_PAGOSDIA
+        WHERE CDGOCPE = '$ejecutivo' 
+        AND TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) = '$fecha'
+        ORDER BY decode(TIPO ,
+                        'P',1,
+                        'M',2,
+                        'G',3,
+                        'D', 4,
+                        'R', 5
+                        ) asc
+sql;
+
+
+        //var_dump($query2);
         $mysqli = Database::getInstance();
-        return $mysqli->queryAll($query);
+        $res1 = $mysqli->queryAll($query);
+        $res2 = $mysqli->queryAll($query2);
+        return [$res1, $res2];
     }
 
     public static function ConsultarPagosFechaSucursal($id_sucursal, $Inicial, $Final){

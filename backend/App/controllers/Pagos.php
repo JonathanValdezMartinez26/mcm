@@ -699,7 +699,7 @@ html;
         {
             $Administracion = PagosDao::ConsultarPagosAppDetalle($ejecutivo, $fecha);
 
-            foreach ($Administracion as $key => $value) {
+            foreach ($Administracion[0] as $key => $value) {
 
                 if($value['TIPO'] == 'P'){$tipo_pago = 'PAGO';}
                 else if($value['TIPO'] == 'M'){$tipo_pago = 'MULTA';}
@@ -748,6 +748,7 @@ html;
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::set('tabla', $tabla);
+            View::set('DetalleGlobal', $Administracion[1]);
             View::render("view_pagos_app_detalle");
         }
 
