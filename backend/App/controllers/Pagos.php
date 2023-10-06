@@ -614,6 +614,11 @@ html;
                     });
     }
     
+        function editar_pago(id)
+        {
+            $('#modal_agregar_horario').modal('show');
+        }
+        
         function check_pagos(id)
         {
           
@@ -740,7 +745,7 @@ html;
                     <td style="padding: 10px !important; $color_celda">{$value['FIDENTIFICAPP']}</td>
                     
                      <td style="padding-top: 30px !important;">
-                        <button $boton_visible type="button" class="btn btn-success btn-circle" onclick="EditarHorario('{$value['CDGCO']}', '{$value['NOMBRE']}' , '{$value['HORA_CIERRE']}');"><i class="fa fa-edit"></i> Editar Pago</button>
+                        <button $boton_visible type="button" class="btn btn-success btn-circle" onclick="editar_pago('{$value['CORTECAJA_PAGOSDIA_PK']}');"><i class="fa fa-edit"></i> Editar Pago</button>
                      </td>
                 </tr>
 html;

@@ -66,7 +66,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Asignar Horario de Cierre a Sucursal</h4></center>
+                <center><h4 class="modal-title" id="myModalLabel">Editar Pago de Ejecutivo (App)</h4></center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -76,7 +76,39 @@
                             <div class="col-md-6">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Fecha de Registro</label>
+                                        <label for="fecha_registro">Fecha de Actualización</label>
+                                        <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" readonly placeholder=""  value="<?php $fechaActual = date('Y-m-d H:i:s'); echo $fechaActual; ?>">
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="sucursal">Tipo de Pago *</label>
+                                        <select class="form-control" autofocus type="select" id="sucursal" name="sucursal">
+                                            <?php echo $opciones_suc; ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="fecha_registro">Monto Registrado *</label>
+                                        <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" readonly placeholder=""  value="<?php $fechaActual = date('Y-m-d H:i:s'); echo $fechaActual; ?>">
+                                        <small id="emailHelp" class="form-text text-muted">Fecha de registro para la asignación.</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="fecha_registro">Nuevo Monto *</label>
                                         <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" readonly placeholder=""  value="<?php $fechaActual = date('Y-m-d H:i:s'); echo $fechaActual; ?>">
                                         <small id="emailHelp" class="form-text text-muted">Fecha de registro para la asignación.</small>
                                     </div>
@@ -84,30 +116,11 @@
                             </div>
 
                             <div class="col-md-12">
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="sucursal">Sucursal *</label>
-                                        <select class="form-control" autofocus type="select" id="sucursal" name="sucursal">
-                                            <?php echo $opciones_suc; ?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="hora">Horario de Cierre *</label>
-                                        <select class="form-control" autofocus type="select" id="hora" name="hora">
-                                            <option value="10:00:00">10:00 a.m</option>
-                                            <option value="10:10:00">10:10 a.m</option>
-                                            <option value="10:15:00">10:15 a.m</option>
-                                            <option value="10:30:00">10:30 a.m</option>
-                                            <option value="11:00:00">11:00 a.m</option>
-                                            <option value="11:10:00">11:10 a.m</option>
-                                            <option value="11:15:00">11:15 a.m</option>
-                                            <option value="11:30:00">11:30 a.m</option>
-                                            <option value="11:40:00">11:40 a.m</option>
-                                            <option value="11:50:00">11:50 a.m</option>
-                                            <option value="11:59:00">11:59 p.m</option>
-                                        </select>
+                                        <label for="fecha_registro">Comentario (motivo de cambio) *</label>
+                                        <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" readonly placeholder=""  value="<?php $fechaActual = date('Y-m-d H:i:s'); echo $fechaActual; ?>">
+                                        <small id="emailHelp" class="form-text text-muted">Fecha de registro para la asignación.</small>
                                     </div>
                                 </div>
                             </div>
@@ -125,19 +138,6 @@
     </div>
 </div>
 
-<script>
-    function EditarHorario(sucursal, nombre_suc, hora_actual) {
 
-
-        var o = new Option(nombre_suc, sucursal);
-        $(o).html(nombre_suc);
-        $("#sucursal_e").append(o);
-
-        document.getElementById("hora_ae").value = hora_actual;
-
-        $('#modal_update_horario').modal('show');
-
-    }
-</script>
 
 <?php echo $footer; ?>

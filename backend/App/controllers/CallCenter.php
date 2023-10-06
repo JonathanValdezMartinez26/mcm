@@ -460,18 +460,12 @@ html;        $extraFooter = <<<html
                         }
                         else
                         {
-                            if(cliente_aval == 'PENDIENTE')
-                                {
-                                    swal("La encuesta del aval no está marcada como validada", {icon: "warning",});
-                                }
-                                else
-                                {
-                                    if(estatus_solicitud == '')
-                                    {
-                                        swal("Necesita seleccionar el estatus final de la solicitud", {icon: "warning",});
-                                    }
-                                    else
-                                    {
+                            if(estatus_solicitud == '')
+                               {
+                                  swal("Necesita seleccionar el estatus final de la solicitud", {icon: "warning",});
+                               }
+                               else
+                                   {
                                         $.ajax({
                                         type: 'POST',
                                         url: '/CallCenter/ResumenEjecutivo/',
@@ -510,7 +504,7 @@ html;        $extraFooter = <<<html
                                         }
                                        });
                                     }                    
-                                }
+                                
                         }    
                     }
                 }
