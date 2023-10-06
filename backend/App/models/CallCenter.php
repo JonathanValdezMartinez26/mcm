@@ -83,7 +83,9 @@ sql;
         AND MU.CODIGO = COL.CDGMU 
         AND LO.CODIGO = COL.CDGLO
         AND PI.CDGCL = CL.CODIGO 
+        ORDER BY PI.ACTUALIZA DESC
 sql;
+        //var_dump($query2);
         $query3=<<<sql
          SELECT
         CONCATENA_NOMBRE(CL.NOMBRE1,CL.NOMBRE2,CL.PRIMAPE,CL.SEGAPE) NOMBRE,
@@ -119,6 +121,7 @@ sql;
         AND MU.CODIGO = COL.CDGMU 
         AND LO.CODIGO = COL.CDGLO
         AND PI.CDGCL = CL.CODIGO 
+        ORDER BY PI.ACTUALIZA DESC
 sql;
 
         $desbloqueo_cl=<<<sql
@@ -146,7 +149,7 @@ sql;
         //var_dump($llamada_cl);
         $llamada_av = $mysqli->queryOne($desbloqueo_aval);
 
-        //var_dump($desbloqueo_cl);
+        var_dump($query2);
 
         return [$credito_, $cliente, $aval, $llamada_cl, $llamada_av];
 
