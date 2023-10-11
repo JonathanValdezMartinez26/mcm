@@ -149,7 +149,7 @@ sql;
         //var_dump($llamada_cl);
         $llamada_av = $mysqli->queryOne($desbloqueo_aval);
 
-        //var_dump($query3);
+
 
         return [$credito_, $cliente, $aval, $llamada_cl, $llamada_av];
 

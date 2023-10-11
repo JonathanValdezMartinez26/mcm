@@ -629,7 +629,30 @@ html;
                     var returnVal = confirm("¿Estas seguro de que deseas desactivar esta casilla?");
                     if(returnVal == true)
                     {
-                        alert("desactivada");
+                        estatus = 0;
+                           //////////////////////////
+                           $.ajax({
+                            type: 'POST',
+                            url: '/Pagos/ValidaCorrectoPago/',
+                            data: 'estatus='+estatus+'&id_check='+id,
+                            success: function(respuesta) {
+                                 if(respuesta=='1'){
+                              
+                                 swal("Registro desactivado exitosamente", {
+                                              icon: "success",
+                                            });
+                                location.reload();
+                                return false;
+                                }
+                                else {
+                                 swal(respuesta, {
+                                              icon: "error",
+                                            });
+                                 location.reload();
+                                }
+                            }
+                            });
+                           //////////////////////////
                         return false;
                     }
                     else 
@@ -643,8 +666,31 @@ html;
                    var returnVal = confirm("Estas seguro de Calcular?");
                    if(returnVal == true)
                        {
-                           alert("listo");
-                           return false;
+                           estatus = 1;
+                           //////////////////////////
+                           $.ajax({
+                            type: 'POST',
+                            url: '/Pagos/ValidaCorrectoPago/',
+                            data: 'estatus='+estatus+'&id_check='+id,
+                            success: function(respuesta) {
+                                 if(respuesta=='1'){
+                              
+                                 swal("Registro actualizado exitosamente", {
+                                              icon: "success",
+                                            });
+                                location.reload();
+                                //return false;
+                                }
+                                else {
+                                 swal(respuesta, {
+                                              icon: "error",
+                                            });
+                                 //location.reload();
+                                }
+                            }
+                            });
+                           //////////////////////////
+                           
                        }
                    else 
                        {
@@ -724,9 +770,17 @@ html;
                     $color_celda = "background-color: #FFC733 !important;";
                     $boton_visible = "disabled";
                 }
+
+                if($value['ESTATUS_CAJA'] == 1)
+                {
+                    $selected = 'checked';
+                }
+                else
+                {
+                    $selected= '';
+                }
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                
                     <td style="padding: 10px !important; $color_celda">{$value['CORTECAJA_PAGOSDIA_PK']}</td>
                     <td style="padding: 10px !important; text-align: left; $color_celda">
                         <div>NOMBRE: <b>{$value['NOMBRE']}</b></div>
@@ -736,7 +790,7 @@ html;
                     </td>
                     <td style="padding: 10px !important; $color_celda">{$tipo_pago}</td>
                     <td style="padding: 10px !important; $color_celda"><div style="font-size: 25px!important;"> $ {$monto}</div>
-                         <input class="form-check-input" type="checkbox" value="" id="$id_check" name="$id_check" onclick="check_pagos('$id_check');">
+                         <input class="form-check-input" type="checkbox" value="" id="$id_check" name="$id_check" onclick="check_pagos('$id_check');" $selected>
                           <label class="form-check-label" for="flexCheckDefault">
                             Validado
                          </label>
@@ -993,6 +1047,19 @@ html;
         $horario->_hora = $hora;
 
         $id = PagosDao::updateHorarios($horario);
+        return $id;
+    }
+
+    public function ValidaCorrectoPago(){
+        $update = new \stdClass();
+
+        $estatus = MasterDom::getDataAll('estatus');
+        $update->_estatus = $estatus;
+
+        $id_check = MasterDom::getDataAll('id_check');
+        $update->_id_check = $id_check;
+
+        $id = PagosDao::updateEstatusValidaPago($update);
         return $id;
     }
 

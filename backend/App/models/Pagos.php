@@ -87,6 +87,19 @@ sql;
         return $mysqli->insert($query);
     }
 
+    public static function updateEstatusValidaPago($update){
+
+        $mysqli = Database::getInstance(1);
+
+        //Agregar un registro completo (Bien) lLAMADA 1
+        $query=<<<sql
+        UPDATE CORTECAJA_PAGOSDIA
+        SET ESTATUS_CAJA='$update->_estatus'
+        WHERE CORTECAJA_PAGOSDIA_PK='$update->_id_check'
+sql;
+        return $mysqli->insert($query);
+    }
+
     public static function ConsultarHorarios(){
 
         $query=<<<sql
