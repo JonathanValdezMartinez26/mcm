@@ -100,6 +100,21 @@ sql;
         return $mysqli->insert($query);
     }
 
+
+    public static function updatePagoApp($update){
+
+        $mysqli = Database::getInstance(1);
+
+        //Agregar un registro completo (Bien) lLAMADA 1
+        $query=<<<sql
+        UPDATE CORTECAJA_PAGOSDIA
+        SET INCIDENCIA='1', NUEVO_MONTO = '$update->_nuevo_monto', COMENTARIO_INCIDENCIA = '$update->_comentario_detalle', ESTATUS_CAJA = '0', TIPO = '$update->_tipo_pago'
+        WHERE CORTECAJA_PAGOSDIA_PK='$update->_id_registro'
+sql;
+        //var_dump($query);
+        return $mysqli->insert($query);
+    }
+
     public static function ConsultarHorarios(){
 
         $query=<<<sql
@@ -161,31 +176,31 @@ sql;
         $query2=<<<sql
         SELECT
         SUM(CASE 
-        WHEN (ESTATUS_CAJA = 1 AND TIPO = 'P' AND ESTATUS = 'A') THEN 1
+        WHEN (ESTATUS_CAJA = 1 AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN 1
         ELSE 0
         END) AS TOTAL_VALIDADOS, 
         
         SUM(CASE 
-        WHEN (TIPO = 'P' AND ESTATUS = 'A') THEN 1
+        WHEN ((TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN 1
         ELSE 0
         END) AS TOTAL_PAGOS,
     
         SUM(CASE 
-        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA = 1 AND TIPO = 'P' AND ESTATUS = 'A') THEN NUEVO_MONTO 
+        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA = 1 AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN NUEVO_MONTO 
         ELSE 0
         END) AS TOTAL_NUEVOS_MONTOS, 
         
         SUM(CASE 
-        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA IS NULL AND TIPO = 'P' AND ESTATUS = 'A') THEN MONTO
+        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA IS NULL AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN MONTO
         ELSE 0
         END) AS TOTAL_MONT_SIN_MOD, 
         
         
         (SUM(CASE 
-        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA = 1 AND TIPO = 'P' AND ESTATUS = 'A') THEN NUEVO_MONTO 
+        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA = 1 AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN NUEVO_MONTO 
         ELSE 0
         END) + SUM(CASE 
-        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA IS NULL AND TIPO = 'P' AND ESTATUS = 'A') THEN MONTO
+        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA IS NULL AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN MONTO
         ELSE 0
         END)) AS TOTAL
         FROM CORTECAJA_PAGOSDIA

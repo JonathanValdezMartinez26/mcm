@@ -525,6 +525,7 @@ html;
         <link rel="shortcut icon" href="/img/logo.png">
 html;
 
+
         $extraFooter = <<<html
       <script>
       
@@ -614,10 +615,73 @@ html;
                     });
     }
     
-        function editar_pago(id)
+        function editar_pago(id, comentario, tipo, monto, nuevo_monto, incidencia)
         {
-            $('#modal_agregar_horario').modal('show');
+                 let USDollar = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+            });
+
+             
+                 if(incidencia == 1)
+                     {
+                         document.getElementById("nuevo_monto").value = nuevo_monto;
+                     }
+                 else 
+                     {
+                         document.getElementById("nuevo_monto").value = monto;
+                     }
+                document.getElementById("monto_detalle").value = USDollar.format(monto);
+                document.getElementById("comentario_detalle").value = comentario;
+                document.getElementById("id_registro").value = id;
+        
+                 select = document.querySelector('#tipo_pago_detalle');
+                 select.value = tipo;
+        
+                $('#modal_agregar_horario').modal('show');
         }
+        
+        function enviar_add_edit_app(){	
+             nuevo_monto = document.getElementById("nuevo_monto").value; 
+             
+            if(nuevo_monto == '')
+                {
+                    if(nuevo_monto == 0)
+                        {
+                             swal("Atención", "Ingrese un monto mayor a $0", "warning");
+                             document.getElementById("monto").focus();
+                             
+                        }
+                }
+            else
+                {
+                    $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/PagosEditApp/',
+                    data: $('#Add_Edit_Pago').serialize(),
+                    success: function(respuesta) {
+                         if(respuesta=='1'){
+                      
+                        document.getElementById("nuevo_monto").value = "";
+                        
+                         swal("Registro editado exitosamente", {
+                                      icon: "success",
+                                    });
+                         location.reload();
+                         
+                        
+                        }
+                        else {
+                        $('#modal_agregar_pago').modal('hide')
+                         swal(respuesta, {
+                                      icon: "error",
+                                    });
+                            document.getElementById("monto").value = "";
+                        }
+                    }
+                    });
+                }
+    }
         
         function check_pagos(id)
         {
@@ -723,6 +787,8 @@ html;
                 $monto_total = number_format($value['MONTO_TOTAL'], 2);
 
 
+
+
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;"></td>
@@ -758,7 +824,10 @@ html;
                 else if($value['TIPO'] == 'D'){$tipo_pago = 'MULTA';}
                 else if($value['TIPO'] == 'R'){$tipo_pago = 'REFINANCIAMIENTO';}
 
+
+
                 $monto = number_format($value['MONTO'], 2);
+                $nuevo_monto = number_format($value['NUEVO_MONTO'], 2);
                 $id_check = $value['CORTECAJA_PAGOSDIA_PK'];
                 if($value['TIPO'] == 'P' || $value['TIPO'] == 'M')
                 {
@@ -779,6 +848,15 @@ html;
                 {
                     $selected= '';
                 }
+
+                if($value['INCIDENCIA'] == 1)
+                {
+                    $campo = '<div><del>$'.$monto.'</del></div> <div style="font-size: 20px!important;"> $'.$nuevo_monto.'</div>';
+                }
+                else
+                {
+                    $campo = '<div style="font-size: 20px!important;">$'.$monto.'</div>';
+                }
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 10px !important; $color_celda">{$value['CORTECAJA_PAGOSDIA_PK']}</td>
@@ -789,7 +867,8 @@ html;
                         <div>FECHA DE PAGO: <b>{$value['FECHA']}</b></div>
                     </td>
                     <td style="padding: 10px !important; $color_celda">{$tipo_pago}</td>
-                    <td style="padding: 10px !important; $color_celda"><div style="font-size: 25px!important;"> $ {$monto}</div>
+                    <td style="padding: 10px !important; $color_celda">
+                        {$campo}
                          <input class="form-check-input" type="checkbox" value="" id="$id_check" name="$id_check" onclick="check_pagos('$id_check');" $selected>
                           <label class="form-check-label" for="flexCheckDefault">
                             Validado
@@ -799,7 +878,7 @@ html;
                     <td style="padding: 10px !important; $color_celda">{$value['FIDENTIFICAPP']}</td>
                     
                      <td style="padding-top: 30px !important;">
-                        <button $boton_visible type="button" class="btn btn-success btn-circle" onclick="editar_pago('{$value['CORTECAJA_PAGOSDIA_PK']}');"><i class="fa fa-edit"></i> Editar Pago</button>
+                        <button $boton_visible type="button" class="btn btn-success btn-circle" onclick="editar_pago('{$value['CORTECAJA_PAGOSDIA_PK']}', '{$value['COMENTARIO_INCIDENCIA']}', '{$value['TIPO']}', '{$value['MONTO']}', '{$value['NUEVO_MONTO']}', '{$value['INCIDENCIA']}');"><i class="fa fa-edit"></i> Editar Pago</button>
                      </td>
                 </tr>
 html;
@@ -1113,7 +1192,21 @@ html;
         return $id;
 
     }
+    public function PagosEditApp(){
 
+        $edit = new \stdClass();
+
+        $edit->_id_registro = $_POST['id_registro'];
+        $edit->_fecha_registro = $_POST['fecha_registro'];
+        $edit->_tipo_pago_detalle = $_POST['tipo_pago_detalle'];
+        $edit->_nuevo_monto = $_POST['nuevo_monto'];
+        $edit->_comentario_detalle = $_POST['comentario_detalle'];
+        $edit->_tipo_pago = $_POST['tipo_pago_detalle'];
+
+        $id = PagosDao::updatePagoApp($edit);
+        //return $id;
+
+    }
     public function PagosRegistro()
     {
         $extraHeader = <<<html
@@ -1235,6 +1328,9 @@ html;
                     });
                 }
     }
+    
+        
+    
         function enviar_edit(){	
            
              monto = document.getElementById("monto_e").value; 

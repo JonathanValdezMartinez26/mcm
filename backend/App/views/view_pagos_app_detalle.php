@@ -66,12 +66,23 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Editar Pago de Ejecutivo (App)</h4></center>
+                <center><h4 class="modal-title" id="myModalLabel">Editar el Pago del Ejecutivo (App)</h4></center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form onsubmit="enviar_add_horario(); return false" id="Add_AHC">
+                    <form onsubmit="enviar_add_edit_app(); return false" id="Add_Edit_Pago">
                         <div class="row">
+
+
+                            <div class="col-md-6" style="display: none">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="id_registro">ID</label>
+                                        <input type="text" class="form-control" id="id_registro" name="id_registro">
+
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="col-md-6">
                                 <div class="col-md-12">
@@ -87,9 +98,11 @@
                             <div class="col-md-6">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="sucursal">Tipo de Pago *</label>
-                                        <select class="form-control" autofocus type="select" id="sucursal" name="sucursal">
-                                            <?php echo $opciones_suc; ?>
+                                        <label for="tipo_pago_detalle">Tipo de Pago *</label>
+                                        <select class="form-control" autofocus type="select" id="tipo_pago_detalle" name="tipo_pago_detalle">
+                                            <option value="0" disabled>Seleccione una opción</option>
+                                            <option value="P">Pago</option>
+                                            <option value="M">Multa</option>
                                         </select>
                                     </div>
                                 </div>
@@ -98,8 +111,8 @@
                             <div class="col-md-6">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Monto Registrado *</label>
-                                        <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" readonly placeholder=""  value="<?php $fechaActual = date('Y-m-d H:i:s'); echo $fechaActual; ?>">
+                                        <label for="monto_detalle">Monto Registrado *</label>
+                                        <input type="text" class="form-control" id="monto_detalle" readonly name="monto_detalle" placeholder=""  value="">
                                         <small id="emailHelp" class="form-text text-muted">Fecha de registro para la asignación.</small>
                                     </div>
                                 </div>
@@ -108,8 +121,8 @@
                             <div class="col-md-6">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Nuevo Monto *</label>
-                                        <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" readonly placeholder=""  value="<?php $fechaActual = date('Y-m-d H:i:s'); echo $fechaActual; ?>">
+                                        <label for="nuevo_monto">Nuevo Monto *</label>
+                                        <input type="text" class="form-control" id="nuevo_monto" name="nuevo_monto" placeholder=""  value="">
                                         <small id="emailHelp" class="form-text text-muted">Fecha de registro para la asignación.</small>
                                     </div>
                                 </div>
@@ -118,9 +131,9 @@
                             <div class="col-md-12">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Comentario (motivo de cambio) *</label>
-                                        <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" readonly placeholder=""  value="<?php $fechaActual = date('Y-m-d H:i:s'); echo $fechaActual; ?>">
-                                        <small id="emailHelp" class="form-text text-muted">Fecha de registro para la asignación.</small>
+                                        <label for="comentario_detalle">Comentario (motivo de cambio) *</label>
+                                        <textarea  class="form-control" id="comentario_detalle" name="comentario_detalle" placeholder="" ></textarea>
+                                        <small id="emailHelp" class="form-text text-muted">Detalle el motivo del cambio, para el tipo de pago o el nuevo monto</small>
                                     </div>
                                 </div>
                             </div>
@@ -130,7 +143,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
+                <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Actualizar Registro</button>
                 </form>
             </div>
 
