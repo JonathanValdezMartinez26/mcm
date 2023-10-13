@@ -899,7 +899,6 @@ html;
         <title>Consulta de Pagos</title>
         <link rel="shortcut icon" href="/img/logo.png">
 html;
-
         $extraFooter = <<<html
       <script>
       
@@ -991,7 +990,6 @@ html;
         $Inicial = $_GET['Inicial'];
         $Final = $_GET['Final'];
 
-
         $sucursales = PagosDao::ListaSucursales($this->__usuario);
         $getSucursales = '';
         if($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL')
@@ -1000,7 +998,6 @@ html;
                 <option value="">TODAS</option>
 html;
             }
-
 
         foreach ($sucursales as $key => $val2) {
             $getSucursales .= <<<html
