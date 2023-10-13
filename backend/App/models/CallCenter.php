@@ -237,17 +237,87 @@ sql;
 
     public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $cdgpe, $perfil){
 
-
-
         $string_from_array = implode(', ', $cdgco);
         if($string_from_array != '')
         {
             $mysqli = Database::getInstance();
             $query=<<<sql
-             SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
-             WHERE SPR.CDGCO IN($string_from_array)
-             AND SPR.FECHA_TRABAJO BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
-             AND SEMAFORO = '1'
+             SELECT DISTINCT (SPR.CDGNS || '-' || SPR.CICLO) AS A, SPR.REGION AS B, SPR.FECHA_TRABAJO AS C,  
+                 SPR.FECHA_SOL AS D, '' AS E, SPR.NOMBRE_SUCURSAL AS F, SPR.EJECUTIVO AS G, SPR.CDGCL AS H, SPR.NOMBRE AS I,
+                 SPR.CICLO AS J, SPR.TEL_CL AS K, SPR.TIPO_LLAM_1_CL AS L, 
+                 CASE WHEN SPR.PRG_UNO_CL IS NULL THEN '- *'
+                 ELSE SPR.PRG_UNO_CL END AS M,
+                  CASE WHEN SPR.PRG_DOS_CL IS NULL THEN '- *'
+                 ELSE SPR.PRG_DOS_CL END AS N,
+                  CASE WHEN SPR.PRG_TRES_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_TRES_CL END AS O,
+                  CASE WHEN SPR.PRG_CUATRO_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_CUATRO_CL END AS P,
+                  CASE WHEN SPR.PRG_CINCO_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_CINCO_CL END AS Q,
+                  CASE WHEN SPR.PRG_SEIS_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_SEIS_CL END AS R,
+                  CASE WHEN SPR.PRG_SIETE_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_SIETE_CL END AS S,
+                  CASE WHEN SPR.PRG_OCHO_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_OCHO_CL END AS T,
+                  CASE WHEN SPR.PRG_NUEVE_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_NUEVE_CL END AS U,
+                  CASE WHEN SPR.PRG_DIEZ_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_DIEZ_CL END AS V,
+                  CASE WHEN SPR.PRG_ONCE_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_ONCE_CL END AS W,
+                 CASE WHEN SPR.PRG_DOCE_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_DOCE_CL END AS X,
+                 GET_NOMBRE_CLIENTE(SPR.CDGCL_AV) AS Y,
+                 SPR.TEL_AV AS Z, 
+                 SPR.TIPO_LLAM_1_AV AS AA, 
+                 
+                 CASE WHEN SPR.PRG_UNO_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_UNO_AV END AS AB,
+                  CASE WHEN SPR.PRG_TRES_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_TRES_AV END AS AC,
+                  CASE WHEN SPR.PRG_TRES_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_TRES_AV END AS AD,
+                  CASE WHEN SPR.PRG_CUATRO_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_CUATRO_AV END AS AE,
+                  CASE WHEN SPR.PRG_CINCO_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_CINCO_AV END AS AF,
+                  CASE WHEN SPR.PRG_SEIS_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_SEIS_AV END AS AG,
+                  CASE WHEN SPR.PRG_SIETE_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_SIETE_AV END AS AH,
+                  CASE WHEN SPR.PRG_OCHO_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_OCHO_AV END AS AI,
+                  CASE WHEN SPR.PRG_NUEVE_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_NUEVE_AV END AS AJ,
+                 TO_CHAR(SPR.DIA_LLAMADA_1_CL ,'DD/MM/YYYY HH24:MI:SS') AS AK, 
+                 TO_CHAR(SPR.DIA_LLAMADA_2_CL ,'DD/MM/YYYY HH24:MI:SS') AS AL, 
+                 TO_CHAR(SPR.DIA_LLAMADA_1_AV ,'DD/MM/YYYY HH24:MI:SS') AS AM, 
+                 TO_CHAR(SPR.DIA_LLAMADA_2_AV ,'DD/MM/YYYY HH24:MI:SS') AS AN, 
+                 SPR.COMENTARIO_INICIAL AS AO, 
+                 SPR.COMENTARIO_FINAL AS AP, 
+                 SPR.ESTATUS_FINAL AS AQ, 
+                  CASE WHEN SPR.COMENTARIO_PRORROGA IS NULL THEN 'N'
+                  ELSE 'S' END AS AR,
+                 SPR.VOBO_REG AS ASS,
+                 PE.NOMBRE1 || ' ' || PE.NOMBRE2 || ' ' || PE.PRIMAPE || ' ' || PE.SEGAPE AS ATT,
+                 SPR.SEMAFORO AS AU, 
+                 '' AS AV, 
+                 '' AS AW,
+                 '' AS AX, 
+                 '' AS AY, 
+                 '' AS AZ, 
+                 '' AS BA, 
+                 '' AS BB, 
+                 '' AS BC, 
+                 '' AS BD
+             
+                 FROM SOLICITUDES_PROCESADAS SPR
+                 INNER JOIN PE ON PE.CODIGO = SPR.CDGPE 
+                 WHERE SPR.CDGCO IN($string_from_array)
+                 AND SPR.FECHA_TRABAJO BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
+                 AND SEMAFORO = '1'
 sql;
             //var_dump($query);
             return $mysqli->queryAll($query);
