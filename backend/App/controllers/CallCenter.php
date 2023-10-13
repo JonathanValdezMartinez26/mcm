@@ -2991,6 +2991,9 @@ html;
                         <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
                         
                         <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
+                        <hr>
+                        <div><b>VALIDO:</b> {$value['NOMBRE1']} {$value['PRIMAPE']} {$value['SEGAPE']}</div>
+
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
                     <td style="padding: 10px !important; text-align: left; width:165px !important;">
@@ -3174,6 +3177,9 @@ html;
                         <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
                         
                         <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
+                        <hr>
+                        <div><b>VALIDO:</b> {$value['NOMBRE1']} {$value['PRIMAPE']} {$value['SEGAPE']}</div>
+                    
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
                     <td style="padding: 10px !important; text-align: left; width:165px !important;">
