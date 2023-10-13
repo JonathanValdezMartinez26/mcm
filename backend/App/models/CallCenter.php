@@ -307,23 +307,17 @@ sql;
                  ELSE SPR.PRG_OCHO_AV END AS AI,
                   CASE WHEN SPR.PRG_NUEVE_AV IS NULL THEN '-'
                  ELSE SPR.PRG_NUEVE_AV END AS AJ,
-                     
-                    
-                 
-                 
-                 
-                 
-                 
-                 
-                 '' AS AK, 
-                 '' AS AL, 
-                 '' AS AM, 
-                 '' AS AN, 
+                 TO_CHAR(SPR.DIA_LLAMADA_1_CL ,'DD/MM/YYYY HH24:MI:SS') AS AK, 
+                 TO_CHAR(SPR.DIA_LLAMADA_2_CL ,'DD/MM/YYYY HH24:MI:SS') AS AL, 
+                 TO_CHAR(SPR.DIA_LLAMADA_1_AV ,'DD/MM/YYYY HH24:MI:SS') AS AM, 
+                 TO_CHAR(SPR.DIA_LLAMADA_2_AV ,'DD/MM/YYYY HH24:MI:SS') AS AN, 
                  SPR.COMENTARIO_INICIAL AS AO, 
                  SPR.COMENTARIO_FINAL AS AP, 
                  SPR.ESTATUS_FINAL AS AQ, 
-                 SPR.PRORROGA AS AR, 
+                  CASE WHEN SPR.COMENTARIO_PRORROGA IS NULL THEN 'N'
+                  ELSE 'S' END AS AR,
                  SPR.VOBO_REG AS ASS,
+                 PE.NOMBRE1 || ' ' || PE.NOMBRE2 || ' ' || PE.PRIMAPE || ' ' || PE.SEGAPE AS ATT,
                  SPR.SEMAFORO AS AU, 
                  '' AS AV, 
                  '' AS AW,
@@ -336,6 +330,7 @@ sql;
                  '' AS BD
              
                  FROM SOLICITUDES_PROCESADAS SPR
+                 INNER JOIN PE ON PE.CODIGO = SPR.CDGPE 
                  WHERE SPR.FECHA_TRABAJO BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
                  AND SEMAFORO = '1'
 sql;
@@ -645,6 +640,7 @@ sql;
 
     public static function insertEncuestaCL($encuesta){
 
+        //var_dump($encuesta->_cdgpe);
         $mysqli = Database::getInstance(1);
 
         if($encuesta->_completo == '1')
@@ -690,6 +686,7 @@ sql;
                 WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
 sql;
             }
+
 
         }
         //var_dump($query);

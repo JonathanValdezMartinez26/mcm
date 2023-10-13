@@ -3251,6 +3251,7 @@ html;
         $encuesta->_completo = MasterDom::getData('completo');
         $encuesta->_cdgpe = $this->__usuario;
 
+
         $id = CallCenterDao::insertEncuestaCL($encuesta);
     }
 
@@ -3396,11 +3397,11 @@ html;
 
         $controlador = "CallCenter";
         $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N','O', 'P', 'Q', 'R', 'S', 'T', 'U','V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD');
-        $nombreColumna = array('-','NOMBRE REGION','FECHA DE TRABAJO','SOLICITUD','INICIO','AGENCIA','EJECUTIVO','CLIENTE','NOMBRE DE CLIENTE','CICLO','TELEFONO CLIENTE','TIPO DE LLAMADA','¿Qué edad tiene?','¿Cuál es su fecha de nacimiento?','Me proporciona su domicilio completo por favor','¿Qué tiempo tiene viviendo en este domicilio?','Actualmente ¿cual es su principal fuente de ingresos?','¿Cuál es el nombre de su aval?','¿Que Relación tiene con su aval?','¿ Cual es la actividad económica de su aval?','Por favor me proporciona el número telefónico de su aval','¿Firmó su solicitud? ¿Cuando?','Me puede indicar ¿para qué utilizará su crédito?','¿Compartirá su crédito con alguna otra persona?','NOMBRE DEL AVAL','TELEFONO DE AVAL','TIPO DE LLAMADA','¿Qué edad tiene?','Me indica su fecha de nacimiento por favor','¿Cuál es su domicilio?','¿Qué tiempo lleva viviendo en este domicilio?','Actualmente  ¿cual es su principal fuente de ingresos?','¿Hace cuanto conoce a  “Nombre del cliente”?','¿Qué Relación tiene con “Nombre del cliente”?','¿Sabe a que se dedica el Sr. (nombre de cliente)?','Me puede proporcionar el numero telefónico de “cliente”','DIA DE LLAMADA 1','HORA DE LLAMADA 1','DIA DE LLAMADA 2','HORA DE LLAMADA 2','COMENTARIO INICIAL','COMENTARIO FINAL','ESTATUS','INCIDENCIA COMERCIAL - ADMINISTRACION','Vo Bo GERENTE REGIONAL','ANALISTA','SEMAFORO','FECHA DE DESEMBOLSO','$ ENTREGADA','$ PARCIALIDAD','MORA AL CORTE','#  SEMANAS CON ATRASO','MES','LLAMADA POSTVENTA','RECAPTURADA SI-NO','ANALISTA INICIAL');
+        $nombreColumna = array('-','NOMBRE REGION','FECHA DE TRABAJO','SOLICITUD','INICIO','AGENCIA','EJECUTIVO','CLIENTE','NOMBRE DE CLIENTE','CICLO','TELEFONO CLIENTE','TIPO DE LLAMADA','¿Qué edad tiene?','¿Cuál es su fecha de nacimiento?','Me proporciona su domicilio completo por favor','¿Qué tiempo tiene viviendo en este domicilio?','Actualmente ¿cual es su principal fuente de ingresos?','¿Cuál es el nombre de su aval?','¿Que Relación tiene con su aval?','¿ Cual es la actividad económica de su aval?','Por favor me proporciona el número telefónico de su aval','¿Firmó su solicitud? ¿Cuando?','Me puede indicar ¿para qué utilizará su crédito?','¿Compartirá su crédito con alguna otra persona?','NOMBRE DEL AVAL','TELEFONO DE AVAL','TIPO DE LLAMADA','¿Qué edad tiene?','Me indica su fecha de nacimiento por favor','¿Cuál es su domicilio?','¿Qué tiempo lleva viviendo en este domicilio?','Actualmente  ¿cual es su principal fuente de ingresos?','¿Hace cuanto conoce a  “Nombre del cliente”?','¿Qué Relación tiene con “Nombre del cliente”?','¿Sabe a que se dedica el Sr. (nombre de cliente)?','Me puede proporcionar el numero telefónico de “cliente”','DIA/HORA DE LLAMADA 1 CL','DIA/HORA DE LLAMADA 2 CL','DIA/HORA DE LLAMADA 1 AV','DIA/HORA DE LLAMADA 1 AV','COMENTARIO INICIAL','COMENTARIO FINAL','ESTATUS','INCIDENCIA COMERCIAL - ADMINISTRACION','Vo Bo GERENTE REGIONAL','ANALISTA','SEMAFORO','FECHA DE DESEMBOLSO','$ ENTREGADA','$ PARCIALIDAD','MORA AL CORTE','#  SEMANAS CON ATRASO','MES','LLAMADA POSTVENTA','RECAPTURADA SI-NO','ANALISTA INICIAL');
         $nombreCampo = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
             'N','O', 'P', 'Q', 'R', 'S', 'T', 'U','V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD',
-            'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS',
-            'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD'
+            'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'ASS',
+            'ATT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD'
         );
 
 
