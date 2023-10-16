@@ -526,6 +526,10 @@ html;
         $ciclo = $_GET['Ciclo'];
         $suc = $_GET['Suc'];
         $reg = $_GET['Reg'];
+        $fec = $_GET['Fech'];
+
+        var_dump($fec);
+
         $opciones_suc = '';
         $cdgco_all = array();
         $cdgco_suc = array();
@@ -718,6 +722,8 @@ html;
                 //var_dump($value['TEL_CL']);
 
 
+
+
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 5px !important;"><label>{$value['CDGNS']}-{$value['CICLO']}</label></td>
@@ -744,7 +750,7 @@ html;
                     $vobo
                     </td>
                     <td style="padding-top: 22px !important;">
-                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Reg={$value['CODIGO_REGION']}" class="btn btn-primary btn-circle" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>$titulo_boton</b>
+                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>$titulo_boton</b>
                         </a>
                     </td>
                 </tr>
@@ -2778,6 +2784,12 @@ html;
             });
          }
          
+      function VerResumen()
+         {
+               alert("Hola");
+         }
+         
+         
       function ReactivarSolicitud(id_call, estatus, reactivacion )
          {
              
@@ -3188,8 +3200,9 @@ html;
                     <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud</div>
                     $vobo
                     <hr>
-                    <div><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen</div>
-
+                       
+                            <button onclick="VerResumen();"><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen</button>
+                     
                     </td>
                    
                      <td style="padding-top: 22px !important;">
