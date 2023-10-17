@@ -181,7 +181,7 @@ html;
 html;
         }
         $fechaActual = date('Y-m-d');
-        if($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL') {
+        if($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL' || $this->__usuario == 'ESMM') {
             $menu .= <<<html
                     <li><a href="/CallCenter/Administracion/">Asignar Sucursales</a></li>
                     <li><a href="/CallCenter/Prorroga/">Solicitudes de Prorroga</a></li>
