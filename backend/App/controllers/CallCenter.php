@@ -133,6 +133,10 @@ html;        $extraFooter = <<<html
                                 })
                                 .then((willDelete) => {
                                   if (willDelete) {
+                                     
+                                      const agregar_CL = document.getElementById('agregar_CL');
+                                      agregar_CL.disabled = true; 
+                                      
                                       $.ajax({
                                             type: 'POST',
                                             url: '/CallCenter/PagosAddEncuestaCL/',
@@ -202,6 +206,9 @@ html;        $extraFooter = <<<html
                                 })
                                 .then((willDelete) => {
                                   if (willDelete) {
+                                      const agregar_CL = document.getElementById('agregar_CL');
+                                      agregar_CL.disabled = true; 
+                                      
                                       $.ajax({
                                         type: 'POST',
                                         url: '/CallCenter/PagosAddEncuestaCL/',
@@ -290,6 +297,8 @@ html;        $extraFooter = <<<html
                                 })
                                 .then((willDelete) => {
                                   if (willDelete) {
+                                      const agregar_AV = document.getElementById('agregar_av');
+                                      agregar_AV.disabled = true; 
                                       $.ajax({
                                             type: 'POST',
                                             url: '/CallCenter/PagosAddEncuestaAV/',
@@ -353,6 +362,9 @@ html;        $extraFooter = <<<html
                                 })
                                 .then((willDelete) => {
                                   if (willDelete) {
+                                      const agregar_AV = document.getElementById('agregar_av');
+                                      agregar_AV.disabled = true; 
+                                      
                                       $.ajax({
                                         type: 'POST',
                                         url: '/CallCenter/PagosAddEncuestaAV/',
@@ -398,6 +410,8 @@ html;        $extraFooter = <<<html
                 ///////
                 //Puede guardar comentarios iniciales pero no finales
                 ////
+                
+                                      
                 $.ajax({
                 type: 'POST',
                 url: '/CallCenter/Resumen/',
@@ -466,6 +480,9 @@ html;        $extraFooter = <<<html
                                }
                                else
                                    {
+                                       const agregar_TS = document.getElementById('terminar_solicitud');
+                                       agregar_TS.disabled = true; 
+                
                                         $.ajax({
                                         type: 'POST',
                                         url: '/CallCenter/ResumenEjecutivo/',
@@ -769,6 +786,8 @@ html;
                 </tr>
 html;
             }
+
+
 
 
             View::set('header', $this->_contenedor->header($extraHeader));

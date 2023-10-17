@@ -393,6 +393,7 @@ html;
                                             if($Administracion[3]['PRORROGA'] == 2)
                                             {
                                                 $com_prorroga = $Administracion[3]['COMENTARIO_PRORROGA'];
+                                                /** @noinspection LanguageDetectionInspection */
                                                 $comentario_prorroga = <<<html
                                                     <div class="col-lg-4">
                                                     <label for="comentarios_prorroga">Comentarios de Prorroga *</label>
@@ -464,7 +465,7 @@ html;
                                             <div class="col-lg-8">
                                                 <div class="card card-danger col-md-12">
                                                     <ul class="nav navbar-nav navbar-right">
-                                                        <button type="submit" class="btn btn-success btn-lg" style="background: #2da92d; color: #ffffff; ">
+                                                        <button type="submit" id="terminar_solicitud" name="terminar_solicitud" class="btn btn-success btn-lg" style="background: #2da92d; color: #ffffff; ">
                                                             Terminar Solicitud <i class="fa fa-hand-pointer-o" style="color: #ffffff"></i>
                                                         </button>
                                                     </ul>
@@ -758,7 +759,7 @@ html;
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Respuestas</button>
+                <button type="submit" id="agregar_CL" name="agregar_CL" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Respuestas</button>
                 </form>
             </div>
 
@@ -966,7 +967,7 @@ html;
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="submit" name="agregar_av" class="btn btn-primary" value="enviar_av"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Respuestas</button>
+                <button type="submit" id="agregar_av" name="agregar_av" class="btn btn-primary" value="enviar_av"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Respuestas</button>
                 </form>
             </div>
 
