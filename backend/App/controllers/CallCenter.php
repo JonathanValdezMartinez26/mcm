@@ -734,7 +734,7 @@ html;
                 <tr style="padding: 0px !important; ">
                     <td style="padding: 5px !important; width:65px !important;">
                     
-                    <div><span class="label label-success"><span></span>MCM - {$value['ID_SCALL']}</span></div>
+                    <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
                     <hr>
                     <div><label>{$value['CDGNS']}-{$value['CICLO']}</label></div>
                     
