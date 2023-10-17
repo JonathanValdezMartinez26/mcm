@@ -1338,6 +1338,8 @@ html;
         $credito = $_GET['Credito'];
         $ciclo = $_GET['Ciclo'];
         $suc = $_GET['Suc'];
+        $fec = $_GET['Fec'];
+        $sol = $_GET['Sol'];
         $opciones_suc = '';
         $cdgco_all = array();
         $cdgco_suc = array();
@@ -1356,7 +1358,7 @@ html;
             array_push($cdgco_all, $val2['CODIGO']);
         }
 
-        $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo, $fec);
+        $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo, $fec, $sol);
 
         //var_dump($AdministracionOne[4]['NUMERO_INTENTOS_AV']);
 
@@ -2096,6 +2098,8 @@ html;
         $credito = $_GET['Credito'];
         $ciclo = $_GET['Ciclo'];
         $suc = $_GET['Suc'];
+        $fec = $_GET['Fec'];
+        $sol = $_GET['Sol'];
         $opciones_suc = '';
         $cdgco_all = array();
         $cdgco_suc = array();
@@ -2114,7 +2118,7 @@ html;
             array_push($cdgco_all, $val2['CODIGO']);
         }
 
-        $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo, $fec);
+        $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo, $fec, $sol);
 
         //var_dump($AdministracionOne[4]['NUMERO_INTENTOS_AV']);
 
@@ -2337,6 +2341,8 @@ html;
         $ciclo = $_GET['Ciclo'];
         $reg = $_GET['Reg'];
         $suc = $_GET['Suc'];
+        $fec = $_GET['Fec'];
+        $sol = $_GET['Sol'];
         $opciones_suc = '';
         $cdgco = array();
 
@@ -2354,7 +2360,7 @@ html;
             array_push($cdgco, $val2['CODIGO']);
         }
 
-        $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo, $fec);
+        $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo, $fec, $sol);
 
         if ($credito != '' && $ciclo != '') {
 
