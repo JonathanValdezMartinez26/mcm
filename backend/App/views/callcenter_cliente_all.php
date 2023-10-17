@@ -196,7 +196,6 @@
                                                         </div>
 
                                                         <div class="col-md-4">
-
                                                         </div>
                                                     </div>
                                                 </td>
@@ -204,6 +203,12 @@
 
                                             </tbody>
                                         </table>
+                                        <div>
+                                            <input class="form-check-input" type="checkbox" value="" id="check_2610" name="check_2610" onclick="check_pagos('$id_check');" $selected>
+                                            <label class="form-check-label" for="flexCheckDefault" style="font-size: 15px">
+                                                Información Inconsistente
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -441,6 +446,7 @@ html;
                                                         <select class="form-control mr-sm-4"  autofocus type="select" id="estatus_solicitud" name="estatus_solicitud">
                                                             <option selected disabled value="">Seleccione una opción</option>
                                                             <option value="CANCELADA, NO LOCALIZADOS">CANCELADA, NO LOCALIZADOS</option>
+                                                            <option value="CANCELADA, SOLICITUD MAL CAPTURADA">CANCELADA, SOLICITUD MAL CAPTURADA</option>
                                                             <option value="CANCELADA POR CLIENTE">CANCELADA POR CLIENTE</option>
                                                             <option value="CANCELADA POR GERENTE">CANCELADA POR GERENTE</option>
                                                             <option value="CANCELADA POR POLÍTICAS">CANCELADA POR POLÍTICAS</option>
