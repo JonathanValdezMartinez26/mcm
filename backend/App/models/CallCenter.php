@@ -8,7 +8,14 @@ use \App\interfaces\Crud;
 class CallCenter{
 
 
-    public static function getAllDescription($credito, $ciclo){
+    public static function getAllDescription($credito, $ciclo, $fec, $sol){
+
+        if($sol != '0000'){
+            $consulta = " AND ID_SCALL = '".$sol."'";
+        }
+        else{
+            $consulta = '';
+        }
 
         $mysqli = Database::getInstance();
         $query=<<<sql
@@ -131,7 +138,7 @@ sql;
         SELECT COUNT(ID_SCALL) as LLAMADA_UNO, (DIA_LLAMADA_1_CL ||' '|| TO_CHAR(HORA_LLAMADA_1_CL ,'HH24:MI:SS')) AS HORA_LLAMADA_UNO, (DIA_LLAMADA_2_CL ||' '||TO_CHAR(HORA_LLAMADA_2_CL ,'HH24:MI:SS')) AS HORA_LLAMADA_DOS, NUMERO_INTENTOS_CL, COMENTARIO_INICIAL, COMENTARIO_FINAL, 
         FIN_CL AS FINALIZADA, COMENTARIO_PRORROGA, PRORROGA, REACTIVACION 
         FROM SOL_CALL_CENTER 
-        WHERE CICLO ='$ciclo' AND CDGCL_CL = '$id_cliente' AND (CICLO != 'R1')
+        WHERE CICLO ='$ciclo' AND CDGCL_CL = '$id_cliente' AND (CICLO != 'R1') $consulta
         GROUP BY ID_SCALL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, PRG_UNO_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, NUMERO_INTENTOS_CL, COMENTARIO_INICIAL, COMENTARIO_FINAL, FIN_CL, COMENTARIO_PRORROGA, PRORROGA, REACTIVACION          
         
 sql;
@@ -140,7 +147,7 @@ sql;
         select COUNT(ID_SCALL) as LLAMADA_UNO, (DIA_LLAMADA_1_AV ||' '|| TO_CHAR(HORA_LLAMADA_1_AV ,'HH24:MI:SS')) AS HORA_LLAMADA_UNO, DIA_LLAMADA_1_AV AS NUM_LLAM, 
                (DIA_LLAMADA_2_AV ||' '|| TO_CHAR(HORA_LLAMADA_2_AV ,'HH24:MI:SS')) AS HORA_LLAMADA_DOS, PRG_UNO_AV, NUMERO_INTENTOS_AV, FIN_AV AS FINALIZADA
         from SOL_CALL_CENTER 
-        WHERE CICLO ='$ciclo' AND CDGCL_CL = '$id_cliente' AND (CICLO != 'R1')
+        WHERE CICLO ='$ciclo' AND CDGCL_CL = '$id_cliente' AND (CICLO != 'R1') $consulta
         GROUP BY ID_SCALL, DIA_LLAMADA_1_AV, HORA_LLAMADA_1_AV, PRG_UNO_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, NUMERO_INTENTOS_AV,
         FIN_AV
 sql;
@@ -355,12 +362,14 @@ sql;
              
 	     SELECT DISTINCT * FROM SOLICITUDES_PENDIENTES SPE
 	     WHERE $in SPE.SOLICITUD > TIMESTAMP '2023-10-09 00:00:00.000000'
-	     AND (SPE.CICLO != 'R1')
+	     AND (SPE.CICLO != 'R1') AND (SPE.CICLO != 'R2') AND (SPE.CICLO != 'R3') AND (SPE.CICLO != 'R4') AND (SPE.CICLO != 'R5')
+	     AND (SPE.CICLO != 'D1') AND (SPE.CICLO != 'D2') AND (SPE.CICLO != 'D3') AND (SPE.CICLO != 'D4') AND (SPE.CICLO != 'D5')
 	     UNION 
 	     SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
 	     WHERE $in_1 SPR.SOLICITUD > TIMESTAMP '2023-10-09 00:00:00.000000'
          AND (ESTATUS_FINAL IS NULL OR ESTATUS_FINAL = 'PENDIENTE')
-	     AND (SPR.CICLO != 'R1')
+	     AND (SPR.CICLO != 'R1') AND (SPR.CICLO != 'R2') AND (SPR.CICLO != 'R3') AND (SPR.CICLO != 'R4') AND (SPR.CICLO != 'R5')
+	     AND (SPR.CICLO != 'D1') AND (SPR.CICLO != 'D2') AND (SPR.CICLO != 'D3') AND (SPR.CICLO != 'D4') AND (SPR.CICLO != 'D5')
 sql;
 
         //var_dump($query);
