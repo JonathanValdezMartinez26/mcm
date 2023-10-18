@@ -451,7 +451,6 @@ html;
                                                             <option value="CANCELADA, NO LOCALIZADOS">CANCELADA, NO LOCALIZADOS</option>
                                                             <option value="CANCELADA, SOLICITUD MAL CAPTURADA">CANCELADA, SOLICITUD MAL CAPTURADA</option>
                                                             <option value="CANCELADA POR CLIENTE">CANCELADA POR CLIENTE</option>
-                                                            <option value="CANCELADA POR GERENTE">CANCELADA POR GERENTE</option>
                                                             <option value="CANCELADA POR POLÍTICAS">CANCELADA POR POLÍTICAS</option>
                                                             <option value="CANCELADA POR GERENTE">CANCELADA POR GERENTE</option>
                                                             <option value="LISTA CON OBSERVACION">LISTA CON OBSERVACIÓN</option>
