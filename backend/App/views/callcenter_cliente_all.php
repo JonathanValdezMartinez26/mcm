@@ -86,6 +86,7 @@
                                                     $ocultar_boton_l4_iniciar = '';
                                                     //------
                                                     $desactivar_aval = 'true';
+                                                    $check = '';
                                                 }
 
                                                 else if($Administracion[3]['FINALIZADA'] == '')
@@ -102,6 +103,7 @@
                                                     $ocultar_boton_l4_iniciar = '';
                                                     //------
                                                     $desactivar_aval = 'false';
+                                                    $check = 'display:none;';
 
                                                 }else if($Administracion[3]['FINALIZADA'] == '1')
                                                 {
@@ -124,6 +126,7 @@
                                                     $hora_l4 = "Primer llamada: ".$Administracion[3]['HORA_LLAMADA_UNO']."<br>"."Última Llamada: ".$Administracion[3]['HORA_LLAMADA_DOS'];
                                                     //------
                                                     $desactivar_aval = 'false';
+                                                    $check = '';
                                                 }
                                                 ?>
                                                 <td style="font-size: 18px; background: #787878;color: white" colspan="14">
@@ -203,8 +206,8 @@
 
                                             </tbody>
                                         </table>
-                                        <div>
-                                            <input class="form-check-input" type="checkbox" value="" id="check_2610" name="check_2610" onclick="check_pagos('$id_check');" $selected>
+                                        <div style="<?php echo $check; ?>">
+                                            <input class="form-check-input" type="checkbox" value="" id="check_2610" name="check_2610" onclick="check_2610('');">
                                             <label class="form-check-label" for="flexCheckDefault" style="font-size: 15px">
                                                 Información Inconsistente
                                             </label>

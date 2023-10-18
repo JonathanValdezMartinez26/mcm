@@ -536,6 +536,55 @@ html;        $extraFooter = <<<html
            
     }
     
+        function check_2610()
+        {
+             llamada = document.getElementById("titulo");
+             contenido = llamada.innerHTML;
+             
+             
+            swal({
+            title: "¿Está segura de continuar con una llamada incompleta?",
+            text: "",
+            icon: "warning",
+            buttons: ["Cancelar", "Continuar"],
+            dangerMode: false
+            })
+            .then((willDelete) => {
+            if (willDelete) {
+                                     
+            const agregar_CL = document.getElementById('agregar_CL');
+            agregar_CL.disabled = true; 
+                                      
+            $.ajax({
+                    type: 'POST',
+                    url: '/CallCenter/PagosAddEncuestaCL/',
+                    data: $('#Add_cl').serialize()+'&contenido='+contenido+'&completo=0',
+                    success: function(respuesta) {
+                    
+                        if(respuesta=='1'){
+                        swal("Registro guardado exitosamente", {
+                            icon: "success",
+                            });
+                            location.reload();
+                         }
+                         else {
+                                  $('#modal_encuesta_cliente').modal('hide')
+                                  swal(respuesta, {
+                                         icon: "error",
+                                  });            
+                              }
+                         }
+                    });
+                    }
+                    else {
+                            swal("Continúe con su registro", {icon: "success",});
+                            document.getElementById('check_2610').checked = false;
+                            return false;
+                         }
+            });
+                     
+        }
+    
       </script>
 html;
 
@@ -2116,6 +2165,7 @@ html;        $extraFooter = <<<html
              
            
     }
+        
     
       </script>
 html;
