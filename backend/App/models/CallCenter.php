@@ -8,7 +8,7 @@ use \App\interfaces\Crud;
 class CallCenter{
 
 
-    public static function getAllDescription($credito, $ciclo, $fec, $sol){
+    public static function getAllDescription($credito, $ciclo, $fec){
 
 
 
@@ -130,10 +130,7 @@ sql;
 sql;
 
 
-        if($sol != '0000'){
-            $consulta = " AND ID_SCALL = '".$sol."'";
-
-                    $desbloqueo_cl=<<<sql
+          $desbloqueo_cl=<<<sql
                 SELECT COUNT(ID_SCALL) as LLAMADA_UNO, (DIA_LLAMADA_1_CL ||' '|| TO_CHAR(HORA_LLAMADA_1_CL ,'HH24:MI:SS')) AS HORA_LLAMADA_UNO, (DIA_LLAMADA_2_CL ||' '||TO_CHAR(HORA_LLAMADA_2_CL ,'HH24:MI:SS')) AS HORA_LLAMADA_DOS, NUMERO_INTENTOS_CL, COMENTARIO_INICIAL, COMENTARIO_FINAL, 
                 FIN_CL AS FINALIZADA, COMENTARIO_PRORROGA, PRORROGA, REACTIVACION 
                 FROM SOL_CALL_CENTER 
@@ -142,7 +139,7 @@ sql;
                 
 sql;
 
-                    $desbloqueo_aval=<<<sql
+           $desbloqueo_aval=<<<sql
                 select COUNT(ID_SCALL) as LLAMADA_UNO, (DIA_LLAMADA_1_AV ||' '|| TO_CHAR(HORA_LLAMADA_1_AV ,'HH24:MI:SS')) AS HORA_LLAMADA_UNO, DIA_LLAMADA_1_AV AS NUM_LLAM, 
                        (DIA_LLAMADA_2_AV ||' '|| TO_CHAR(HORA_LLAMADA_2_AV ,'HH24:MI:SS')) AS HORA_LLAMADA_DOS, PRG_UNO_AV, NUMERO_INTENTOS_AV, FIN_AV AS FINALIZADA
                 from SOL_CALL_CENTER 
@@ -151,16 +148,11 @@ sql;
                 FIN_AV
 sql;
 
-            $llamada_cl = $mysqli->queryOne($desbloqueo_cl);
-            $llamada_av = $mysqli->queryOne($desbloqueo_aval);
-        }
-        else{
-            $llamada_cl = '';
-            $llamada_av = '';
-        }
+
 
         //var_dump($desbloqueo_aval);
-
+        $llamada_cl = $mysqli->queryOne($desbloqueo_cl);
+        $llamada_av = $mysqli->queryOne($desbloqueo_aval);
         $cliente = $mysqli->queryOne($query2);
         $aval = $mysqli->queryOne($query3);
 
