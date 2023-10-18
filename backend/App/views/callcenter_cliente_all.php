@@ -126,7 +126,7 @@
                                                     $hora_l4 = "Primer llamada: ".$Administracion[3]['HORA_LLAMADA_UNO']."<br>"."Última Llamada: ".$Administracion[3]['HORA_LLAMADA_DOS'];
                                                     //------
                                                     $desactivar_aval = 'false';
-                                                    $check = '';
+                                                    $check = 'display:none;';
                                                 }
                                                 ?>
                                                 <td style="font-size: 18px; background: #787878;color: white" colspan="14">
