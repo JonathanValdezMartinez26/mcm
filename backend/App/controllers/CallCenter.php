@@ -543,7 +543,7 @@ html;        $extraFooter = <<<html
              
              
             swal({
-            title: "¿Está segura de continuar con una llamada incompleta?",
+            title: "¿Está segura de continuar con el registro de una solicitud con Información Inconsistente?",
             text: "",
             icon: "warning",
             buttons: ["Cancelar", "Continuar"],
