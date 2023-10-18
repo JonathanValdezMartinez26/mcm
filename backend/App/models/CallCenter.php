@@ -45,7 +45,6 @@ class CallCenter{
 		AND SC.CDGNS = SN.CDGNS
 		AND SC.CICLO = SN.CICLO
 		AND SC.CANTSOLIC <> '9999'
-        AND (SC.CICLO != 'R1')
 
        
 sql;
@@ -134,16 +133,16 @@ sql;
                 SELECT COUNT(ID_SCALL) as LLAMADA_UNO, (DIA_LLAMADA_1_CL ||' '|| TO_CHAR(HORA_LLAMADA_1_CL ,'HH24:MI:SS')) AS HORA_LLAMADA_UNO, (DIA_LLAMADA_2_CL ||' '||TO_CHAR(HORA_LLAMADA_2_CL ,'HH24:MI:SS')) AS HORA_LLAMADA_DOS, NUMERO_INTENTOS_CL, COMENTARIO_INICIAL, COMENTARIO_FINAL, 
                 FIN_CL AS FINALIZADA, COMENTARIO_PRORROGA, PRORROGA, REACTIVACION 
                 FROM SOL_CALL_CENTER 
-                WHERE CICLO ='$ciclo' AND CDGCL_CL = '$id_cliente' AND (CICLO != 'R1') $consulta
+                WHERE CICLO ='$ciclo' AND CDGCL_CL = '$id_cliente' AND (CICLO != 'R1') 
                 GROUP BY ID_SCALL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, PRG_UNO_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, NUMERO_INTENTOS_CL, COMENTARIO_INICIAL, COMENTARIO_FINAL, FIN_CL, COMENTARIO_PRORROGA, PRORROGA, REACTIVACION          
                 
 sql;
 
-           $desbloqueo_aval=<<<sql
+                    $desbloqueo_aval=<<<sql
                 select COUNT(ID_SCALL) as LLAMADA_UNO, (DIA_LLAMADA_1_AV ||' '|| TO_CHAR(HORA_LLAMADA_1_AV ,'HH24:MI:SS')) AS HORA_LLAMADA_UNO, DIA_LLAMADA_1_AV AS NUM_LLAM, 
                        (DIA_LLAMADA_2_AV ||' '|| TO_CHAR(HORA_LLAMADA_2_AV ,'HH24:MI:SS')) AS HORA_LLAMADA_DOS, PRG_UNO_AV, NUMERO_INTENTOS_AV, FIN_AV AS FINALIZADA
                 from SOL_CALL_CENTER 
-                WHERE CICLO ='$ciclo' AND CDGCL_CL = '$id_cliente' AND (CICLO != 'R1') $consulta
+                WHERE CICLO ='$ciclo' AND CDGCL_CL = '$id_cliente' AND (CICLO != 'R1') 
                 GROUP BY ID_SCALL, DIA_LLAMADA_1_AV, HORA_LLAMADA_1_AV, PRG_UNO_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, NUMERO_INTENTOS_AV,
                 FIN_AV
 sql;
