@@ -764,6 +764,11 @@ html;
                     }
             
         }
+        
+         function boton_resumen_pago(id)
+        {
+           
+        }
        
       
       </script>
@@ -815,6 +820,7 @@ html;
         else
         {
             $Administracion = PagosDao::ConsultarPagosAppDetalle($ejecutivo, $fecha);
+            $AdministracionResumen = PagosDao::ConsultarPagosAppResumen($ejecutivo, $fecha);
 
             foreach ($Administracion[0] as $key => $value) {
 
@@ -862,7 +868,7 @@ html;
                     <td style="padding: 10px !important; $color_celda">{$value['CORTECAJA_PAGOSDIA_PK']}</td>
                     <td style="padding: 10px !important; text-align: left; $color_celda">
                         <div>NOMBRE: <b>{$value['NOMBRE']}</b></div>
-                        <div>#CRÉDITO: <b>{$value['CICLO']}</b></div>
+                        <div>#CRÉDITO: <b>{$value['CDGNS']}</b></div>
                         <div>CICLO: <b>{$value['CICLO']}</b></div>
                         <div>FECHA DE PAGO: <b>{$value['FECHA']}</b></div>
                     </td>
@@ -882,11 +888,95 @@ html;
                      </td>
                 </tr>
 html;
+
+            }
+
+
+            /////
+            $AdministracionOne = PagosDao::ConsultarCierreCajaCajera($this->__usuario);
+            $fechaActual = date("Y-m-d");
+            $horaActual = date("H:i:s");
+            $dia = date("N");
+
+            $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
+            if($hora_cierre == '')
+            {
+                $hora_cierre = '10:00:00';
+            }
+            else
+            {
+                $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
+            }
+
+            if($horaActual <= $hora_cierre)
+            {
+                if ($dia == 1)
+                {
+                    $date_past = strtotime('-3 days', strtotime($fechaActual));
+                    $date_past = date('Y-m-d', $date_past);
+                }
+                else
+                {
+                    $date_past = strtotime('-1 days', strtotime($fechaActual));
+                    $date_past = date('Y-m-d', $date_past);
+                }
+
+                $inicio_f = $date_past;
+                $fin_f = $fechaActual;
+            }
+            else
+            {
+                $inicio_f = $fechaActual;
+                $fin_f = $fechaActual;
+            }
+
+            ///////
+
+            foreach ($AdministracionResumen[0] as $key => $value_resumen) {
+
+                $ejecutivo = $value_resumen['EJECUTIVO'];
+                $cdgpe_ejecutivo = $value_resumen['CDGPE'];
+
+
+                if($value_resumen['TIPO'] == 'P'){$tipo_pago = 'PAGO';}
+                else if($value_resumen['TIPO'] == 'M'){$tipo_pago = 'MULTA';}
+                else if($value_resumen['TIPO'] == 'G'){$tipo_pago = 'GARANTIA';}
+                else if($value_resumen['TIPO'] == 'D'){$tipo_pago = 'MULTA';}
+                else if($value_resumen['TIPO'] == 'R'){$tipo_pago = 'REFINANCIAMIENTO';}
+
+                if($value_resumen['INCIDENCIA'] == 1)
+                {
+                    $campo_resumen = '$'.number_format($value_resumen['NUEVO_MONTO'], 2);
+                }
+                else
+                {
+                    $campo_resumen = '$'.number_format($value_resumen['MONTO'], 2);
+                }
+
+                $tabla_resumen .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 2px !important;">{$value_resumen['FIDENTIFICAPP']}</td>
+                    <td style="padding: 2px !important; text-align: left;">
+                        <div><b> ({$value_resumen['CDGNS']})</b> | {$value_resumen['NOMBRE']}</div>
+                    </td>
+                    <td><div><b>{$value_resumen['CICLO']}</b></div></td>
+                    <td style="padding: 2px !important;">{$tipo_pago}</td>
+                     
+                    <td style="padding: 2px !important; background: #173b00; color: #fdfdfd" >{$campo_resumen}</td>
+                   
+                </tr>
+html;
             }
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::set('tabla', $tabla);
+            View::set('ejecutivo', $ejecutivo);
+            View::set('cdgpe_ejecutivo', $cdgpe_ejecutivo);
+            View::set('tabla_resumen', $tabla_resumen);
             View::set('DetalleGlobal', $Administracion[1]);
+            View::set('inicio_f', $inicio_f);
+            View::set('fin_f', $fin_f);
+            View::set('fechaActual', $fechaActual);
             View::render("view_pagos_app_detalle");
         }
 

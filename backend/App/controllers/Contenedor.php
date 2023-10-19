@@ -106,6 +106,7 @@ html;
             $menu.=<<<html
             <li><a href="/Pagos/">Administración Pagos</a></li>
             <li><a href="/Pagos/CorteEjecutivo/">Recepción Pagos App</a></li> 
+            <li><a href="/Pagos/CorteEjecutivoReimprimir/">Reimprimir Recibos App</a></li> 
 html;
         }
         if($this->__perfil== 'ADMIN' || $this->__perfil== 'ACALL' || $this->__perfil== 'LAYOU')

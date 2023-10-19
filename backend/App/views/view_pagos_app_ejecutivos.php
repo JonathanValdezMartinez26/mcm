@@ -19,10 +19,6 @@
                     </ul>
                 </div>
 
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_horario" >
-                    <i class="fa fa-plus"></i> Reactivar Pago
-                </button>
-
                 <hr style="border-top: 1px solid #787878; margin-top: 5px;">
 
                 <div class="dataTable_wrapper">
