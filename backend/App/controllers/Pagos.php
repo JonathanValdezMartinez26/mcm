@@ -622,7 +622,6 @@ html;
                 currency: 'USD',
             });
 
-             
                  if(incidencia == 1)
                      {
                          document.getElementById("nuevo_monto").value = nuevo_monto;
