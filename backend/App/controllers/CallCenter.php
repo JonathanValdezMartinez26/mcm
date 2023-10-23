@@ -2686,6 +2686,25 @@ html;
                             }
         }
     
+        
+        function DeleteCDGCO(cdgco)
+        {
+            $.ajax({
+            type: 'POST',
+            url: '/CallCenter/DeleteAsignaSuc/',
+            data: "cdgco="+ cdgco,
+            success: function(respuesta) 
+            {
+              if(respuesta=='1')
+                {               
+                      swal("Registro actualizado exitosamente", {
+                                              icon: "success",
+                                            });
+                      location.reload();
+                }
+            }
+          });
+        }
       </script>
 html;
 
@@ -2749,8 +2768,7 @@ html;
                     <td>{$value['FECHA_ALTA']}</td>
                     <td>{$value['CDGOCPE']}</td>
                     <td style="padding: 0px !important;">
-                       <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
-                       <button type="button" class="btn btn-success btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-edit"></i></button>
+                       <button type="button" class="btn btn-danger btn-circle" onclick="DeleteCDGCO('{$value['CDGCO']}')"><i class="fa fa-trash"></i></button>
                     </td>
                 </tr>
 html;
@@ -2762,6 +2780,12 @@ html;
             View::set('Regiones', $getRegiones);
             View::set('tabla', $tabla);
             View::render("asignar_sucursales_analistas");
+    }
+
+    public function DeleteAsignaSuc(){
+
+        $cdgco = MasterDom::getDataAll('cdgco');
+        $id = CallCenterDao::DeleteAsignaSuc($cdgco);
     }
 
     public function Historico()

@@ -746,6 +746,17 @@ sql;
         return $mysqli->insert($query);
     }
 
+    public static function DeleteAsignaSuc($cdgco){
+
+        $mysqli = Database::getInstance(1);
+                $query=<<<sql
+                DELETE FROM ASIGNACION_SUC_A
+                WHERE CDGCO = '$cdgco'
+sql;
+        //var_dump($query);
+        return $mysqli->insert($query);
+    }
+
     public static function insertAsignaSucursal($asigna){
 
         $mysqli = Database::getInstance(1);
