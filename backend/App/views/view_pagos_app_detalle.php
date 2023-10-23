@@ -16,7 +16,7 @@
                         </div>
                         <div class="col-md-2 col-sm-2  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i>#</i> de Pagos Validados</span>
-                            <div class="count" style="font-size: 30px; color: #030303"><?php echo $DetalleGlobal[0]['TOTAL_VALIDADOS']; ?> DE <?php echo $DetalleGlobal[0]['TOTAL_PAGOS']; ?></div>
+                            <div class="count" style="font-size: 30px; color: #030303"><span style="font-size: 30px; color: #030303" id="validados_r" name="validados_r"><?php echo $DetalleGlobal[0]['TOTAL_VALIDADOS']; ?></span> DE <span style="font-size: 30px; color: #030303" id="total_r" name="total_r"><?php echo $DetalleGlobal[0]['TOTAL_PAGOS']; ?></span></div>
                         </div>
                         <div class="col-md-3 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Monto Validado</span>
@@ -25,7 +25,7 @@
                         <div class="col-md-3 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Terminar Validación</span>
                             <div class="count" style="font-size: 35px; color: #368a05">
-                                <button type="button" class="btn btn-primary" style="border: 1px solid #c4a603; background: #FFFFFF" data-toggle="modal" data-target="#modal_resumen" data-backdrop="static" data-keyboard="false">
+                                <button type="button" class="btn btn-primary" onclick="boton_resumen_pago();" style="border: 1px solid #c4a603; background: #FFFFFF"  data-keyboard="false">
                                     <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Procesar Pagos Validados</label>
                                 </button>
                             </div>
@@ -178,11 +178,12 @@
                                 <div class="row">
 
                                     <div class="dataTable_wrapper">
-                                        <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
+                                        <table style="margin-bottom: 0px;" class="table table-striped table-bordered table-hover" id="terminar_resumen" name="terminar_resumen">
                                             <thead>
                                             <tr>
                                                 <th>Fecha de Captura</th>
                                                 <th>Cliente</th>
+                                                <th>Nombre</th>
                                                 <th>Ciclo</th>
                                                 <th>Tipo</th>
                                                 <th>Monto</th>
@@ -195,9 +196,9 @@
                                         </table>
                                     </div>
                                 </div>
-                                <div class="card card-danger col-md-12" style="padding: 0px">
+                                <div class="card card-danger col-md-12" style="padding: 2px">
                                     <ul class="nav navbar-nav navbar-right">
-                                        <b style="font-size: 20px; color: #286090;">Total: $<?php echo number_format($DetalleGlobal[0]['TOTAL'],2); ?></b>
+                                        <b style="font-size: 20px; color: #173b00;">Total: $<?php echo number_format($DetalleGlobal[0]['TOTAL'],2); ?></b>
 
                                     </ul>
                                 </div>
@@ -206,7 +207,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                        <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span>Terminar</button>
+                        <button type="button"  class="btn btn-primary" onclick="boton_terminar();"><span class="glyphicon glyphicon-floppy-disk"></span>Terminar</button>
                         </form>
                     </div>
 

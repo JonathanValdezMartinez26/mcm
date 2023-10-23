@@ -115,6 +115,20 @@ sql;
         return $mysqli->insert($query);
     }
 
+    public static function AddPagoApp($update){
+
+        $mysqli = Database::getInstance(1);
+
+        //Agregar un registro completo (Bien) lLAMADA 1
+        $query=<<<sql
+        INSERT INTO FOLIO_APP
+        (ID_FOLIO_APP, FOLIO, CORTECAJA_PAGOSDIA_PK)
+        VALUES(FOLIO_APP_I.nextval, '12345678', '1')
+sql;
+        //var_dump($query);
+        return $mysqli->insert($query);
+    }
+
     public static function ConsultarHorarios(){
 
         $query=<<<sql

@@ -764,9 +764,63 @@ html;
             
         }
         
-         function boton_resumen_pago(id)
+         function boton_resumen_pago()
         {
+             validados = document.getElementById("validados_r");
+             contenido_validados = validados.innerHTML;
+             
+             total = document.getElementById("total_r");
+             contenido_total = total.innerHTML;
+             
+             operacion = parseInt(contenido_total) - parseInt(contenido_validados);
+            
            
+           
+           if(contenido_validados == contenido_total)
+               {
+                   $('#modal_resumen').modal({backdrop: 'static', keyboard: false}, 'show');
+               }
+           else 
+               {
+                    swal("Atención", "Debe validar todos los pagos (tiene " + operacion+ " registros pendientes)", "warning");
+               }
+           
+           
+
+        }
+        
+         function boton_terminar()
+        {
+            total = document.getElementById("total_r");
+            contenido_total = total.innerHTML;
+             
+            var resume_table = document.getElementById("terminar_resumen");
+            var arrayCDGNS = new Array();
+            var arrayCiclo = new Array();
+            var arrayNombre = new Array();
+            
+            var datos  = [];
+            var objeto = {};
+            
+            
+            
+            for (var i = 1, row; row = resume_table.rows[i]; i++) {
+               
+                arrayCDGNS[i] = codigo[i].innerText;
+                arrayCiclo[i] = ciclo[i].innerText;
+                arrayNombre[i] = nombre[i].innerText;
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/PagosAddApp/',
+                    data: 'cortecaja_pk='+1,
+                    success: function(respuesta) {
+                         
+                    }
+                    });
+                
+            }
+            
         }
        
       
@@ -838,11 +892,13 @@ html;
                 {
                     $color_celda = "";
                     $boton_visible = "";
+                    $check_visible = '';
                 }
                 else
                 {
                     $color_celda = "background-color: #FFC733 !important;";
                     $boton_visible = "disabled";
+                    $check_visible = 'display:none;';
                 }
 
                 if($value['ESTATUS_CAJA'] == 1)
@@ -874,8 +930,8 @@ html;
                     <td style="padding: 10px !important; $color_celda">{$tipo_pago}</td>
                     <td style="padding: 10px !important; $color_celda">
                         {$campo}
-                         <input class="form-check-input" type="checkbox" value="" id="$id_check" name="$id_check" onclick="check_pagos('$id_check');" $selected>
-                          <label class="form-check-label" for="flexCheckDefault">
+                         <input style="{$check_visible}" class="form-check-input" type="checkbox" value="" id="$id_check" name="$id_check" onclick="check_pagos('$id_check');" $selected>
+                          <label style="{$check_visible}" class="form-check-label" for="flexCheckDefault">
                             Validado
                          </label>
                     </td>
@@ -953,15 +1009,18 @@ html;
                 }
 
                 $tabla_resumen .= <<<html
-                <tr style="padding: 0px !important;">
-                    <td style="padding: 2px !important;">{$value_resumen['FIDENTIFICAPP']}</td>
-                    <td style="padding: 2px !important; text-align: left;">
-                        <div><b> ({$value_resumen['CDGNS']})</b> | {$value_resumen['NOMBRE']}</div>
+                <tr>
+                    <td id="fecha" style="padding: 3px !important;">{$value_resumen['FIDENTIFICAPP']}</td>
+                    <td id="codigo" style="text-align: left; padding: 3px !important;">
+                        <b> {$value_resumen['CDGNS']}</b>
                     </td>
-                    <td><div><b>{$value_resumen['CICLO']}</b></div></td>
-                    <td style="padding: 2px !important;">{$tipo_pago}</td>
+                    <td id="nombre" style="text-align: left; padding: 3px !important;">
+                        {$value_resumen['NOMBRE']}
+                    </td>
+                    <td id="ciclo" style="padding: 3px !important;"><b>{$value_resumen['CICLO']}</b></td>
+                    <td id="tipo" style="padding: 3px !important;">{$tipo_pago}</td>
                      
-                    <td style="padding: 2px !important; background: #173b00; color: #fdfdfd" >{$campo_resumen}</td>
+                    <td id="monto" style="background: #173b00; color: #fdfdfd; padding: 3px !important; width:94px !important;"><b>{$campo_resumen}</b></td>
                    
                 </tr>
 html;
@@ -1291,6 +1350,17 @@ html;
 
         $id = PagosDao::updatePagoApp($edit);
         //return $id;
+
+    }
+
+    public function PagosAddApp(){
+
+        $add_app = new \stdClass();
+
+        //$add_app->_fecha_registro = $_POST['folio'];
+        $add_app->_cortecaja_pagosdia_pk = $_POST['cortecaja_pk'];
+
+        $id = PagosDao::AddPagoApp($add_app);
 
     }
     public function PagosRegistro()
