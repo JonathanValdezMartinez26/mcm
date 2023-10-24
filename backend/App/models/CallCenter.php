@@ -257,7 +257,7 @@ sql;
                 $mysqli = Database::getInstance();
                 $query=<<<sql
                  SELECT DISTINCT (SPR.CDGNS || '-' || SPR.CICLO) AS A, SPR.REGION AS B, SPR.FECHA_TRABAJO AS C,  
-                 SPR.FECHA_SOL AS D, '' AS E, SPR.NOMBRE_SUCURSAL AS F, SPR.EJECUTIVO AS G, SPR.CDGCL AS H, SPR.NOMBRE AS I,
+                 SPR.FECHA_SOL AS D, '' AS E, SPR.NOMBRE_SUCURSAL AS F, SPR.EJECUTIVO AS G, SPR.CDGNS AS H, (SPR.CDGCL || ' - ' || SPR.NOMBRE) AS I,
                  SPR.CICLO AS J, SPR.TEL_CL AS K, SPR.TIPO_LLAM_1_CL AS L, 
                  CASE WHEN SPR.PRG_UNO_CL IS NULL THEN '- *'
                  ELSE SPR.PRG_UNO_CL END AS M,
