@@ -6,6 +6,7 @@
 
             <div class="card col-md-12">
 
+            <form name="all" id="all" method="POST">
                 <div class="row" >
                     <div class="tile_count float-right col-sm-12" style="margin-bottom: 1px; margin-top: 1px">
                         <div class="col-md-3 col-sm-4  tile_stats_count">
@@ -26,8 +27,14 @@
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Terminar Validación</span>
                             <div class="count" style="font-size: 35px; color: #368a05">
                                 <button type="button" class="btn btn-primary" onclick="boton_resumen_pago();" style="border: 1px solid #c4a603; background: #FFFFFF"  data-keyboard="false">
-                                    <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Procesar Pagos Validados</label>
+                                    <i class="fa fa-spinner" style="color: #1c4e63"></i> <label style="color: #1c4e63"> Procesar Pagos Validados</label>
                                 </button>
+                                <br>
+                                <button type="button" id="recibo_pagos" class="btn btn-primary" onclick="boton_ticket();" style="border: 1px solid #338300; background: #40a200; display: none;" data-keyboard="false">
+                                    <i class="fa fa-print" style="color: #ffffff"></i> <label style="color: #ffffff"> Imprimir Recibo de Pagos</label>
+                                </button>
+
+
                             </div>
                         </div>
 
@@ -56,6 +63,7 @@
                         </tbody>
                     </table>
                 </div>
+            </form>
             </div>
         </div>
     </div>
@@ -71,6 +79,7 @@
                     <div class="modal-body">
                         <div class="container-fluid">
                             <form onsubmit="enviar_add_edit_app(); return false" id="Add_Edit_Pago">
+
                                 <div class="col-md-6" style="display: none">
                                     <div class="col-md-12">
                                         <div class="form-group">
@@ -137,6 +146,9 @@
                         <center><h4 class="modal-title" id="myModalLabel">Resumen - Recepción de Pagos (App)</h4></center>
                     </div>
                     <div class="modal-body">
+
+
+                        ssssssssssssssssssssss
                         <div class="container-fluid">
                             <form onsubmit="enviar_add_edit_app(); return false" id="Add_Edit_Pago">
 
@@ -181,6 +193,7 @@
                                         <table style="margin-bottom: 0px;" class="table table-striped table-bordered table-hover" id="terminar_resumen" name="terminar_resumen">
                                             <thead>
                                             <tr>
+                                                <th style="display: none;">ID-MCM</th>
                                                 <th>Fecha de Captura</th>
                                                 <th>Cliente</th>
                                                 <th>Nombre</th>

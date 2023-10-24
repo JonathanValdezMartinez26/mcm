@@ -26,7 +26,7 @@ class CallCenter extends Controller{
         <link rel="shortcut icon" href="/img/logo.png">
 html;        $extraFooter = <<<html
       <script>
-      
+   
        function getParameterByName(name) {
         name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),

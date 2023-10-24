@@ -789,38 +789,52 @@ html;
 
         }
         
+         function boton_ticket()
+        {
+             $('#all').attr('action', '/Pagos/Ticket/');
+             $('#all').attr('target', '_blank');
+             $("#all").submit();
+        }
+        
          function boton_terminar()
         {
-            total = document.getElementById("total_r");
-            contenido_total = total.innerHTML;
-             
             var resume_table = document.getElementById("terminar_resumen");
-            var arrayCDGNS = new Array();
-            var arrayCiclo = new Array();
-            var arrayNombre = new Array();
+            total = document.getElementById("total_r");
+            contenido = parseInt(total.innerHTML);
+            var contador = 1;
+            var sum_contador = 0;
             
-            var datos  = [];
-            var objeto = {};
-            
-            
-            
-            for (var i = 1, row; row = resume_table.rows[i]; i++) {
-               
-                arrayCDGNS[i] = codigo[i].innerText;
-                arrayCiclo[i] = ciclo[i].innerText;
-                arrayNombre[i] = nombre[i].innerText;
+            for (var i = 0, row; row = resume_table.rows[i]; i++) {
                 
+                sum_contador = contador++;
                 $.ajax({
                     type: 'POST',
                     url: '/Pagos/PagosAddApp/',
-                    data: 'cortecaja_pk='+1,
+                    data: 'cortecaja_pk='+pk[i].innerText,
                     success: function(respuesta) {
-                         
-                    }
+                                swal({
+                                    title: "Procesando Pagos",
+                                    text: "Espere por favor...",
+                                    timer: 400,
+                                    onOpen: function() {
+                                        swal.showLoading()
+                                    }
+                                })
+                               
+                        }
                     });
-                
+                if(contenido == sum_contador)
+                {
+                     $('#modal_resumen').modal('hide');
+                     document.getElementById('recibo_pagos').style.display = 'block';
+                     //location.reload();
+                }
+                else
+                {
+                    
+                }
             }
-            
+          
         }
        
       
@@ -1010,6 +1024,7 @@ html;
 
                 $tabla_resumen .= <<<html
                 <tr>
+                    <td style="display: none;" id="pk" style="padding: 10px !important; background: #9d9d9d">{$value_resumen['CORTECAJA_PAGOSDIA_PK']}</td>
                     <td id="fecha" style="padding: 3px !important;">{$value_resumen['FIDENTIFICAPP']}</td>
                     <td id="codigo" style="text-align: left; padding: 3px !important;">
                         <b> {$value_resumen['CDGNS']}</b>
@@ -1040,6 +1055,73 @@ html;
 
 
     }
+
+    public function Ticket(){
+        $ids = MasterDom::getDataAll('borrar');
+        $mpdf=new \mPDF('c');
+        $mpdf->defaultPageNumStyle = 'I';
+        $mpdf->h2toc = array('H5'=>0,'H6'=>1);
+        $style = <<<html
+      <style>
+        .imagen{
+          width:100%;
+          height: 150px;
+          background: url(/img/ag_logo.png) no-repeat center center fixed;
+          background-size: cover;
+          -moz-background-size: cover;
+          -webkit-background-size: cover
+          -o-background-size: cover;
+        }
+
+        .titulo{
+          width:100%;
+          margin-top: 30px;
+          color: #b92020;
+          margin-left:auto;
+          margin-right:auto;
+        }
+      </style>
+html;
+        $tabla =<<<html
+          <img class="imagen" src="/img/logo.png"/>
+          <br>
+          <div style="page-break-inside: avoid;" align='center'>
+          <H1 class="titulo">Recibo</H1>
+          <table border="0" style="width:100%;text-align: center">
+            <tr style="background-color:#B8B8B8;">
+            <th><strong>#Crédito</strong></th>
+            <th><strong>Nombre del Cliente</strong></th>
+            <th><strong>Ciclo</strong></th>
+            <th><strong>Tipo</strong></th>
+            <th><strong>Monto</strong></th>
+            </tr>
+html;
+
+            foreach (PagosDao::getByIdReporte(1) as $key => $value) {
+                if($value['TIPO'] == 'P')
+                {
+
+                }
+                $tabla.=<<<html
+            <tr style="background-color:#B8B8B8;">
+            <td style="height:auto; width: 80px;background-color:#E4E4E4;">{$value['CDGNS']}</td>
+            <td style="height:auto; width: 300px;background-color:#E4E4E4;">{$value['NOMBRE']}</td>
+            <td style="height:auto; width: 60px;background-color:#E4E4E4;">{$value['CICLO']}</td>
+            <td style="height:auto; width: 80px;background-color:#E4E4E4;">{$value['TIPO']}</td>
+            <td style="height:auto; width: 100px;background-color:#E4E4E4;">{$value['TIPO']}</td>
+            </tr>
+html;
+            }
+
+        $tabla .=<<<html
+      </table>
+      </div>
+html;
+        $mpdf->WriteHTML($style,1);
+        $mpdf->WriteHTML($tabla,2);
+        print_r($mpdf->Output());/* se genera el pdf en la ruta especificada*/
+        exit;
+       }
 
     public function PagosConsulta()
     {
@@ -1358,10 +1440,9 @@ html;
         $add_app = new \stdClass();
 
         //$add_app->_fecha_registro = $_POST['folio'];
-        $add_app->_cortecaja_pagosdia_pk = $_POST['cortecaja_pk'];
+        $add_app = $_POST['cortecaja_pk'];
 
         $id = PagosDao::AddPagoApp($add_app);
-
     }
     public function PagosRegistro()
     {
@@ -2090,68 +2171,7 @@ html;
         function FunprecesarPagos() {
            alert("procesando...");
            ///////
-           Swal.fire({
-  title: 'Auto close alert!',
-  'html':
-    'I will close in <strong></strong> seconds.<br/><br/>' +
-    '<button id="increase" class="btn btn-warning">' +
-    'I need 5 more seconds!' +
-    '</button><br/><br/>' +
-    '<button id="stop" class="btn btn-danger">' +
-    'Please stop the timer!!' +
-    '</button><br/><br/>' +
-    '<button id="resume" class="btn btn-success" disabled>' +
-    'Phew... you can restart now!' +
-    '</button><br/><br/>' +
-    '<button id="toggle" class="btn btn-primary">' +
-    'Toggle' +
-    '</button>',
-  timer: 10000,
-  didOpen: () => {
-        const content = Swal.getHtmlContainer()
-    const $ = content.querySelector.bind(content)
-
-    const stop = $('#stop')
-    const resume = $('#resume')
-    const toggle = $('#toggle')
-    const increase = $('#increase')
-
-    Swal.showLoading()
-
-    function toggleButtons () {
-        stop.disabled = !Swal.isTimerRunning()
-      resume.disabled = Swal.isTimerRunning()
-    }
-
-    stop.addEventListener('click', () => {
-            Swal.stopTimer()
-      toggleButtons()
-    })
-
-    resume.addEventListener('click', () => {
-            Swal.resumeTimer()
-      toggleButtons()
-    })
-
-    toggle.addEventListener('click', () => {
-            Swal.toggleTimer()
-      toggleButtons()
-    })
-
-    increase.addEventListener('click', () => {
-            Swal.increaseTimer(5000)
-    })
-
-    timerInterval = setInterval(() => {
-            Swal.getHtmlContainer().querySelector('strong')
-            .textContent = (Swal.getTimerLeft() / 1000)
-                .toFixed(0)
-    }, 100)
-  },
-  willClose: () => {
-        clearInterval(timerInterval)
-  }
-})
+        
            ///////////
            
         }

@@ -757,6 +757,9 @@ sql;
         return $mysqli->insert($query);
     }
 
+
+
+
     public static function insertAsignaSucursal($asigna){
 
         $mysqli = Database::getInstance(1);

@@ -12,7 +12,6 @@
                     <h5 class="card-title">Seleccione el tipo de busqueda e ingrese el número de crédito </h5>
                 </div>
 
-
                 <div class="card-body">
                     <form class="" action="/Pagos/Layout/" method="GET">
                         <div class="row">

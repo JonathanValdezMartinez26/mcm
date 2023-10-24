@@ -115,7 +115,7 @@ sql;
         return $mysqli->insert($query);
     }
 
-    public static function AddPagoApp($update){
+    public static function AddPagoApp($pk){
 
         $mysqli = Database::getInstance(1);
 
@@ -123,11 +123,23 @@ sql;
         $query=<<<sql
         INSERT INTO FOLIO_APP
         (ID_FOLIO_APP, FOLIO, CORTECAJA_PAGOSDIA_PK)
-        VALUES(FOLIO_APP_I.nextval, '12345678', '1')
+        VALUES(FOLIO_APP_I.nextval, '12345678', '$pk')
 sql;
         //var_dump($query);
         return $mysqli->insert($query);
     }
+
+
+    public static function getByIdReporte($id){
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+    SELECT * FROM FOLIO_APP fa
+    INNER JOIN CORTECAJA_PAGOSDIA cp ON cp.CORTECAJA_PAGOSDIA_PK = fa.CORTECAJA_PAGOSDIA_PK 
+sql;
+
+        return $mysqli->queryAll($query);
+    }
+
 
     public static function ConsultarHorarios(){
 
@@ -590,6 +602,8 @@ sql;
             AND ACTIVO = 'S'
         ORDER BY 1
 sql;
+
+        //var_dump($query);
 
         $mysqli = Database::getInstance();
         return $mysqli->queryAll($query);
