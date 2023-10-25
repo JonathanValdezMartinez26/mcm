@@ -22,14 +22,12 @@
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Terminar Validación</span>
                             <div class="count" style="font-size: 35px; color: #368a05">
                                 <button type="button" class="btn btn-primary" onclick="boton_resumen_pago();" style="border: 1px solid #c4a603; background: #FFFFFF"  data-keyboard="false">
-                                    <i class="fa fa-spinner" style="color: #1c4e63"></i>  <span style="color: #1E283D">Procesar Pagos Validados</span>
+                                    <i class="fa fa-spinner" style="color: #1c4e63"></i>  <span style="color: #1E283D"><b>Procesar Pagos Validados</b></span>
                                 </button>
                                 <br>
                                 <button type="button" id="recibo_pagos" class="btn btn-primary" onclick="boton_ticket();" style="border: 1px solid #338300; background: #40a200; display: none;" data-keyboard="false">
-                                    <i class="fa fa-print" style="color: #ffffff"></i> <label style="color: #ffffff"> Imprimir Recibo de Pagos</label>
+                                    <i class="fa fa-print" style="color: #ffffff"></i> <span style="color: #ffffff"> Imprimir Recibo de Pagos</span>
                                 </button>
-
-
                             </div>
                         </div>
 

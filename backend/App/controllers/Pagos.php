@@ -809,6 +809,7 @@ html;
                     url: '/Pagos/PagosAddApp/',
                     data: 'cortecaja_pk='+pk[i].innerText,
                     success: function(respuesta) {
+                        
                                 swal({
                                     title: "Procesando Pagos",
                                     text: "Espere por favor...",
@@ -955,7 +956,7 @@ html;
                     <td style="padding: 10px !important; $color_celda">{$value['FIDENTIFICAPP']}</td>
                     
                      <td style="padding-top: 30px !important;">
-                        <button $boton_visible type="button" class="btn btn-success btn-circle" onclick="editar_pago('{$value['CORTECAJA_PAGOSDIA_PK']}', '{$value['COMENTARIO_INCIDENCIA']}', '{$value['TIPO']}', '{$value['MONTO']}', '{$value['NUEVO_MONTO']}', '{$value['INCIDENCIA']}');"><i class="fa fa-edit"></i> Editar Pago</button>
+                        <button type="button" class="btn btn-success btn-circle" onclick="editar_pago('{$value['CORTECAJA_PAGOSDIA_PK']}', '{$value['COMENTARIO_INCIDENCIA']}', '{$value['TIPO']}', '{$value['MONTO']}', '{$value['NUEVO_MONTO']}', '{$value['INCIDENCIA']}');"><i class="fa fa-edit"></i> Editar Pago</button>
                      </td>
                 </tr>
 html;

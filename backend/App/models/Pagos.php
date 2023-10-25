@@ -125,8 +125,18 @@ sql;
         (ID_FOLIO_APP, FOLIO, CORTECAJA_PAGOSDIA_PK)
         VALUES(FOLIO_APP_I.nextval, '12345678', '$pk')
 sql;
-        //var_dump($query);
-        return $mysqli->insert($query);
+        $query_1=<<<sql
+        UPDATE CORTECAJA_PAGOSDIA
+        SET  PROCESA_PAGOSDIA = '1'
+        WHERE CORTECAJA_PAGOSDIA_PK= '$pk'
+sql;
+
+        $insert_folio = $mysqli->insert($query);
+        $update_pk = $mysqli->insert($query_1);
+
+
+
+        return [$insert_folio, $update_pk];
     }
 
 
@@ -204,6 +214,7 @@ sql;
         AND TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) = '$fecha'
         AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
         AND PRN.CDGCO = '$suc'
+        AND PROCESA_PAGOSDIA = '0'
         
         ORDER BY decode(CORTECAJA_PAGOSDIA.TIPO ,
                         'P',1,
