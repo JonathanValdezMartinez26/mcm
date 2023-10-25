@@ -2,10 +2,7 @@
 <div class="right_col">
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
-
-
             <div class="card col-md-12">
-
             <form name="all" id="all" method="POST">
                 <div class="row" >
                     <div class="tile_count float-right col-sm-12" style="margin-bottom: 1px; margin-top: 1px">
@@ -25,7 +22,7 @@
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Terminar Validación</span>
                             <div class="count" style="font-size: 35px; color: #368a05">
                                 <button type="button" class="btn btn-primary" onclick="boton_resumen_pago();" style="border: 1px solid #c4a603; background: #FFFFFF"  data-keyboard="false">
-                                    <i class="fa fa-spinner" style="color: #1c4e63"></i> <label style="color: #1c4e63"> Procesar Pagos Validados</label>
+                                    <i class="fa fa-spinner" style="color: #1c4e63"></i>  <span style="color: #1E283D">Procesar Pagos Validados</span>
                                 </button>
                                 <br>
                                 <button type="button" id="recibo_pagos" class="btn btn-primary" onclick="boton_ticket();" style="border: 1px solid #338300; background: #40a200; display: none;" data-keyboard="false">

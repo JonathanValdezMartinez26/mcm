@@ -268,12 +268,17 @@ sql;
         return [$res1, $res2];
     }
 
-    public static function ConsultarPagosAppResumen($ejecutivo, $fecha){
+    public static function ConsultarPagosAppResumen($ejecutivo, $fecha, $suc){
 
         $query=<<<sql
-        SELECT * FROM CORTECAJA_PAGOSDIA WHERE CDGOCPE = '$ejecutivo' 
+        SELECT * FROM CORTECAJA_PAGOSDIA
+        INNER JOIN PRN ON PRN.CDGNS = CORTECAJA_PAGOSDIA.CDGNS 
+        INNER JOIN CO ON CO.CODIGO = PRN.CDGCO 
+        WHERE CORTECAJA_PAGOSDIA.CDGOCPE = '$ejecutivo' 
         AND TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) = '$fecha'
-        AND ESTATUS_CAJA = '1' AND (TIPO = 'P' OR TIPO = 'M')
+        AND CORTECAJA_PAGOSDIA.ESTATUS_CAJA = '1' AND (CORTECAJA_PAGOSDIA.TIPO = 'P' OR CORTECAJA_PAGOSDIA.TIPO = 'M')
+        AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
+        AND PRN.CDGCO = '$suc'
         ORDER BY decode(TIPO ,
                         'P',1,
                         'M',2,
