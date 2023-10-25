@@ -156,7 +156,7 @@ sql;
     public static function ConsultarPagosApp(){
 
         $query=<<<sql
-        SELECT COUNT(NOMBRE) AS NUM_PAGOS, NOMBRE, FECHA_D, FECHA, 
+                SELECT COD_SUC, SUCURSAL, COUNT(NOMBRE) AS NUM_PAGOS, NOMBRE, FECHA_D, FECHA, 
         FECHA_REGISTRO, CDGOCPE,
         SUM(PAGOS) AS TOTAL_PAGOS, 
         SUM(MULTA) AS TOTAL_MULTA, 
@@ -166,7 +166,7 @@ sql;
         SUM(MONTO) AS MONTO_TOTAL
         FROM
         (
-        SELECT CORTECAJA_PAGOSDIA.EJECUTIVO AS NOMBRE, 
+        SELECT CO.CODIGO AS COD_SUC, CO.NOMBRE AS SUCURSAL, CORTECAJA_PAGOSDIA.EJECUTIVO AS NOMBRE, 
         TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH') || '- ' || TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MON-YYYY' ) AS FECHA_D ,
         TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) AS FECHA,
         TO_CHAR(CORTECAJA_PAGOSDIA.FREGISTRO) AS FECHA_REGISTRO,
@@ -177,20 +177,35 @@ sql;
         CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'G' THEN MONTO END GARANTIA, 
         CORTECAJA_PAGOSDIA.MONTO, CORTECAJA_PAGOSDIA.CDGOCPE
         FROM CORTECAJA_PAGOSDIA
+        INNER JOIN PRN ON PRN.CDGNS = CORTECAJA_PAGOSDIA.CDGNS 
+        INNER JOIN CO ON CO.CODIGO = PRN.CDGCO 
+        WHERE PROCESA_PAGOSDIA = '0'
+        AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
+        AND PRN.CDGCO = CO.CODIGO
+       
+      
         )
-        GROUP BY NOMBRE, FECHA_D, FECHA, CDGOCPE, FECHA_REGISTRO
+        GROUP BY NOMBRE, FECHA_D, FECHA, CDGOCPE, FECHA_REGISTRO, COD_SUC, SUCURSAL 
         ORDER BY FECHA ASC
 sql;
 
+
+        /////AND PRN.SITUACION = 'E' PONER ESTA CUANDO ESTEMOS EN PRODUCTIVO
         $mysqli = Database::getInstance();
         return $mysqli->queryAll($query);
     }
-    public static function ConsultarPagosAppDetalle($ejecutivo, $fecha){
+    public static function ConsultarPagosAppDetalle($ejecutivo, $fecha, $suc){
 
         $query=<<<sql
-        SELECT * FROM CORTECAJA_PAGOSDIA WHERE CDGOCPE = '$ejecutivo' 
+        SELECT * FROM CORTECAJA_PAGOSDIA 
+        INNER JOIN PRN ON PRN.CDGNS = CORTECAJA_PAGOSDIA.CDGNS 
+        INNER JOIN CO ON CO.CODIGO = PRN.CDGCO 
+        WHERE CORTECAJA_PAGOSDIA.CDGOCPE = '$ejecutivo' 
         AND TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) = '$fecha'
-        ORDER BY decode(TIPO ,
+        AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
+        AND PRN.CDGCO = '$suc'
+        
+        ORDER BY decode(CORTECAJA_PAGOSDIA.TIPO ,
                         'P',1,
                         'M',2,
                         'G',3,
@@ -230,7 +245,11 @@ sql;
         ELSE 0
         END)) AS TOTAL
         FROM CORTECAJA_PAGOSDIA
-        WHERE CDGOCPE = '$ejecutivo' 
+        INNER JOIN PRN ON PRN.CDGNS = CORTECAJA_PAGOSDIA.CDGNS 
+        INNER JOIN CO ON CO.CODIGO = PRN.CDGCO 
+        WHERE CORTECAJA_PAGOSDIA.CDGOCPE = '$ejecutivo' 
+        AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
+        AND PRN.CDGCO = '$suc'
         AND TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) = '$fecha'
         ORDER BY decode(TIPO ,
                         'P',1,
@@ -242,7 +261,7 @@ sql;
 sql;
 
 
-        //var_dump($query2);
+        //var_dump($query);
         $mysqli = Database::getInstance();
         $res1 = $mysqli->queryAll($query);
         $res2 = $mysqli->queryAll($query2);

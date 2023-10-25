@@ -12,7 +12,7 @@
                     <ul class="nav navbar-nav navbar-right">
                         <b style="font-size: 20px; color: red;">Pagos capturados en campo por los ejecutivos</b>
                         <br>
-                        <b>Si su horario es incorrecto o necesita más tiempo, comuníquelo</b>
+                        <b></b>
                         <br>
                         <br>
                         <br>

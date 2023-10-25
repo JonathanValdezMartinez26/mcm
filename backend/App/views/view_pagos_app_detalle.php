@@ -11,9 +11,7 @@
                     <div class="tile_count float-right col-sm-12" style="margin-bottom: 1px; margin-top: 1px">
                         <div class="col-md-3 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Ejecutivo</span>
-
-                            <div class="count" style="font-size: 14px">NOMBRE DEL EJECUTIVO</div>
-                            <span class="count_top badge" style="padding: 1px 1px; background: <?php echo $Administracion[0]['COLOR']; ?>"><h5><b><i class="">SITUACIÓN: <?php echo $Administracion[0]['SITUACION_NOMBRE']; ?></i></b></h5></span>
+                            <div class="count" style="font-size: 18px"><?php echo $Ejecutivo ?></div>
                         </div>
                         <div class="col-md-2 col-sm-2  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i>#</i> de Pagos Validados</span>
@@ -147,8 +145,6 @@
                     </div>
                     <div class="modal-body">
 
-
-                        ssssssssssssssssssssss
                         <div class="container-fluid">
                             <form onsubmit="enviar_add_edit_app(); return false" id="Add_Edit_Pago">
 

@@ -784,9 +784,6 @@ html;
                {
                     swal("Atención", "Debe validar todos los pagos (tiene " + operacion+ " registros pendientes)", "warning");
                }
-           
-           
-
         }
         
          function boton_ticket()
@@ -845,10 +842,13 @@ html;
 
         $ejecutivo = $_GET['MTYQW'];
         $fecha = $_GET['FEC'];
+        $suc = $_GET['SUC'];
 
         if($ejecutivo == '' && $fecha == '')
         {
             $Administracion = PagosDao::ConsultarPagosApp();
+
+
 
             foreach ($Administracion as $key => $value) {
                 $pago = number_format($value['TOTAL_PAGOS'], 2);
@@ -863,7 +863,7 @@ html;
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;"></td>
+                    <td style="padding: 0px !important;">{$value['SUCURSAL']}</td>
                     <td style="padding: 0px !important;">{$value['NUM_PAGOS']}</td>
                     <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
                     <td style="padding: 0px !important;"><strong>{$value['FECHA_D']}</strong></td>
@@ -874,7 +874,7 @@ html;
                     <td style="padding: 0px !important;">$ {$garantia}</td>
                     <td style="padding: 0px !important;">$ {$monto_total}</td>
                     <td style="padding: 0px !important;">
-                        <a href="/Pagos/CorteEjecutivo/?MTYQW={$value['CDGOCPE']}&FEC={$value['FECHA']}" type="button" class="btn btn-success btn-circle"><i class="fa fa-edit"></i> Procesar Pagos</a>
+                        <a href="/Pagos/CorteEjecutivo/?MTYQW={$value['CDGOCPE']}&FEC={$value['FECHA']}&SUC={$value['COD_SUC']}" type="button" class="btn btn-success btn-circle"><i class="fa fa-edit"></i> Procesar Pagos</a>
                      </td>
                 </tr>
 html;
@@ -886,8 +886,10 @@ html;
         }
         else
         {
-            $Administracion = PagosDao::ConsultarPagosAppDetalle($ejecutivo, $fecha);
-            $AdministracionResumen = PagosDao::ConsultarPagosAppResumen($ejecutivo, $fecha);
+            $Administracion = PagosDao::ConsultarPagosAppDetalle($ejecutivo, $fecha, $suc);
+            $AdministracionResumen = PagosDao::ConsultarPagosAppResumen($ejecutivo, $fecha, $suc);
+
+            $Ejec = $Administracion[0][1];
 
             foreach ($Administracion[0] as $key => $value) {
 
@@ -1047,6 +1049,7 @@ html;
             View::set('cdgpe_ejecutivo', $cdgpe_ejecutivo);
             View::set('tabla_resumen', $tabla_resumen);
             View::set('DetalleGlobal', $Administracion[1]);
+            View::set('Ejecutivo', $Ejec['EJECUTIVO']);
             View::set('inicio_f', $inicio_f);
             View::set('fin_f', $fin_f);
             View::set('fechaActual', $fechaActual);
