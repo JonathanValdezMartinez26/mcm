@@ -799,17 +799,18 @@ html;
             total = document.getElementById("total_r");
             contenido = parseInt(total.innerHTML);
             var contador = 1;
-            var sum_contador = 0;
+            var sum_contador = 1;
             
-            for (var i = 0, row; row = resume_table.rows[i]; i++) {
-                
-                sum_contador = contador++;
+            for (var i = 1, row; row = resume_table.rows[i]; i++) {
+             
+                    col = row.cells[0];
+                    pk = col.innerText;
+                  
                 $.ajax({
                     type: 'POST',
                     url: '/Pagos/PagosAddApp/',
-                    data: 'cortecaja_pk='+pk[i].innerText,
+                    data: 'cortecaja_pk='+pk,
                     success: function(respuesta) {
-                        
                                 swal({
                                     title: "Procesando Pagos",
                                     text: "Espere por favor...",
@@ -890,7 +891,7 @@ html;
             $Administracion = PagosDao::ConsultarPagosAppDetalle($ejecutivo, $fecha, $suc);
             $AdministracionResumen = PagosDao::ConsultarPagosAppResumen($ejecutivo, $fecha, $suc);
 
-            $Ejec = $Administracion[0][1];
+            $Ejec = $Administracion[0][0];
 
             foreach ($Administracion[0] as $key => $value) {
 

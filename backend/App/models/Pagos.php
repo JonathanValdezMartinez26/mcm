@@ -131,6 +131,8 @@ sql;
         WHERE CORTECAJA_PAGOSDIA_PK= '$pk'
 sql;
 
+        //var_dump($query_1);
+
         $insert_folio = $mysqli->insert($query);
         $update_pk = $mysqli->insert($query_1);
 
@@ -192,8 +194,6 @@ sql;
         WHERE PROCESA_PAGOSDIA = '0'
         AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
         AND PRN.CDGCO = CO.CODIGO
-       
-      
         )
         GROUP BY NOMBRE, FECHA_D, FECHA, CDGOCPE, FECHA_REGISTRO, COD_SUC, SUCURSAL 
         ORDER BY FECHA ASC
@@ -205,23 +205,21 @@ sql;
         return $mysqli->queryAll($query);
     }
     public static function ConsultarPagosAppDetalle($ejecutivo, $fecha, $suc){
-
         $query=<<<sql
-        SELECT * FROM CORTECAJA_PAGOSDIA 
-        INNER JOIN PRN ON PRN.CDGNS = CORTECAJA_PAGOSDIA.CDGNS 
-        INNER JOIN CO ON CO.CODIGO = PRN.CDGCO 
-        WHERE CORTECAJA_PAGOSDIA.CDGOCPE = '$ejecutivo' 
+        SELECT * FROM CORTECAJA_PAGOSDIA
+        INNER JOIN PRN ON PRN.CDGNS = CORTECAJA_PAGOSDIA.CDGNS
+        INNER JOIN CO ON CO.CODIGO = PRN.CDGCO
+        WHERE CORTECAJA_PAGOSDIA.CDGOCPE = '$ejecutivo'
         AND TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) = '$fecha'
         AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
         AND PRN.CDGCO = '$suc'
         AND PROCESA_PAGOSDIA = '0'
-        
         ORDER BY decode(CORTECAJA_PAGOSDIA.TIPO ,
                         'P',1,
                         'M',2,
                         'G',3,
-                        'D', 4,
-                        'R', 5
+                        'D',4,
+                        'R',5
                         ) asc
 sql;
 
@@ -231,23 +229,18 @@ sql;
         WHEN (ESTATUS_CAJA = 1 AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN 1
         ELSE 0
         END) AS TOTAL_VALIDADOS, 
-        
         SUM(CASE 
         WHEN ((TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN 1
         ELSE 0
         END) AS TOTAL_PAGOS,
-    
         SUM(CASE 
         WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA = 1 AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN NUEVO_MONTO 
         ELSE 0
         END) AS TOTAL_NUEVOS_MONTOS, 
-        
         SUM(CASE 
         WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA = 0 AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN MONTO
         ELSE 0
         END) AS TOTAL_MONT_SIN_MOD, 
-        
-        
         (SUM(CASE 
         WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA = 1 AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN NUEVO_MONTO 
         ELSE 0
@@ -262,15 +255,15 @@ sql;
         AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
         AND PRN.CDGCO = '$suc'
         AND TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) = '$fecha'
+        AND PROCESA_PAGOSDIA = '0'
         ORDER BY decode(TIPO ,
                         'P',1,
                         'M',2,
                         'G',3,
-                        'D', 4,
-                        'R', 5
+                        'D',4,
+                        'R',5
                         ) asc
 sql;
-
 
         //var_dump($query);
         $mysqli = Database::getInstance();
@@ -290,6 +283,7 @@ sql;
         AND CORTECAJA_PAGOSDIA.ESTATUS_CAJA = '1' AND (CORTECAJA_PAGOSDIA.TIPO = 'P' OR CORTECAJA_PAGOSDIA.TIPO = 'M')
         AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
         AND PRN.CDGCO = '$suc'
+        AND PROCESA_PAGOSDIA = '0'
         ORDER BY decode(TIPO ,
                         'P',1,
                         'M',2,
