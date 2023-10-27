@@ -187,6 +187,7 @@ html;
                     <li><a href="/CallCenter/Administracion/">Asignar Sucursales</a></li>
                     <li><a href="/CallCenter/Prorroga/">Solicitudes de Prorroga</a></li>
                     <li><a href="/CallCenter/Reactivar/">Reactivar Solicitudes</a></li>
+                    <li><a href="/CallCenter/Busqueda/">Búsqueda Rápida</a></li>
                     
 html;
         }
