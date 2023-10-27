@@ -850,8 +850,6 @@ html;
         {
             $Administracion = PagosDao::ConsultarPagosApp();
 
-
-
             foreach ($Administracion as $key => $value) {
                 $pago = number_format($value['TOTAL_PAGOS'], 2);
                 $multa = number_format($value['TOTAL_MULTA'], 2);
@@ -860,11 +858,9 @@ html;
                 $garantia = number_format($value['GARANTIA'], 2);
                 $monto_total = number_format($value['MONTO_TOTAL'], 2);
 
-
-
-
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;"></td>
                     <td style="padding: 0px !important;">{$value['SUCURSAL']}</td>
                     <td style="padding: 0px !important;">{$value['NUM_PAGOS']}</td>
                     <td style="padding: 0px !important;">{$value['NOMBRE']}</td>

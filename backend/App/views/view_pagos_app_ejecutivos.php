@@ -25,6 +25,7 @@
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
                         <tr>
+                            <th>Código de Barras</th>
                             <th>Sucursal</th>
                             <th>Pagos Cobrados</th>
                             <th>Ejecutivo</th>
