@@ -374,6 +374,21 @@ sql;
 
     }
 
+    public static function getAllSolicitudesBusquedaRapida($cdgns){
+
+        $mysqli = Database::getInstance();
+
+        $query=<<<sql
+	     SELECT DISTINCT * FROM SOLICITUDES_PENDIENTES SPE WHERE CDGNS = '$cdgns'
+	     UNION 
+	     SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
+	     WHERE CDGNS = '$cdgns'
+sql;
+
+        //var_dump($query);
+        return $mysqli->queryAll($query);
+    }
+
     public static function getAllSolicitudesProrroga($cdgco){
 
 

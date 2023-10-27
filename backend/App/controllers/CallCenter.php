@@ -849,6 +849,95 @@ html;
 
         }
     }
+    public function Busqueda()
+    {
+        $extraHeader = <<<html
+        <title>Consulta de Clientes Call Center</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+        $extraFooter = <<<html
+      <script>
+   
+       function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+        
+        $('#doce_cl').on('change', function() {
+          if(this.value == 'N')
+              {
+                  swal("Atención", "Al finalizar la encuesta cancele la solicitud, no cumple con la política de seguridad de la pregunta #12", "warning");
+              }
+        });
+      
+        $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+          "lengthMenu": [
+                    [6, 10, 20, 30, -1],
+                    [6, 10, 20, 30, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+        });
+         
+      </script>
+html;
+
+        $credito = $_GET['Credito'];
+
+        if ($credito != '') {
+
+                $Administracion = CallCenterDao::getAllSolicitudesBusquedaRapida($credito);
+                foreach ($Administracion as $key => $value) {
+
+                    $monto = number_format($value['MONTO'], 2);
+                    $tabla .= <<<html
+                    <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
+                    <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
+                    <td style="padding: 0px !important;">{$value['CDGNS']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA']}</td>
+                    <td style="padding: 0px !important;">{$value['CICLO']}</td>
+                    <td style="padding: 0px !important;">$ {$monto}</td>
+                    <td style="padding: 0px !important;">{$value['TIPO']}</td>
+                    <td style="padding: 0px !important;">{$value['EJECUTIVO']}</td>
+                    <td style="padding: 0px !important;" class="center">{$editar}</td>
+                </tr>
+html;
+                }
+
+                View::set('tabla', $tabla);
+                View::set('Administracion', $AdministracionOne);
+                View::set('credito', $credito);
+                View::set('fechaActual', $fechaActual);
+                View::set('usuario', $this->__usuario);
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::render("pagos_registro_busqueda");
+
+        } else {
+            View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
+            View::render("callcenter_busqueda_rapida");
+        }
+
+    }
 
     public function Prorroga()
     {

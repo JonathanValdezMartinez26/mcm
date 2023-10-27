@@ -145,7 +145,6 @@ html;
                 </li>
 html;
 
-
         if($this->__perfil== 'ADMIN' || $this->__perfil== 'GARAN' || $this->__perfil== 'CAMAG') {
             $menu .= <<<html
                 <li><a><i class="fa fa-users"> </i>&nbsp; Creditos <span class="fa fa-chevron-down"></span></a>
@@ -188,7 +187,6 @@ html;
                     <li><a href="/CallCenter/Prorroga/">Solicitudes de Prorroga</a></li>
                     <li><a href="/CallCenter/Reactivar/">Reactivar Solicitudes</a></li>
                     <li><a href="/CallCenter/Busqueda/">Búsqueda Rápida</a></li>
-                    
 html;
         }
         if($this->__perfil == 'ADMIN' || $this->__perfil == 'CALLC' || $this->__perfil == 'ACALL') {
