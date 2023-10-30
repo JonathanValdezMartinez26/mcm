@@ -6,7 +6,7 @@
             <form name="all" id="all" method="POST">
                 <div class="row" >
                     <div class="tile_count float-right col-sm-12" style="margin-bottom: 1px; margin-top: 1px">
-                        <div class="col-md-3 col-sm-4  tile_stats_count">
+                        <div class="col-md-4 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Ejecutivo</span>
                             <div class="count" style="font-size: 18px"><?php echo $Ejecutivo ?></div>
                         </div>

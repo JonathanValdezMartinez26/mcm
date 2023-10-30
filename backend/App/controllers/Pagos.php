@@ -887,8 +887,6 @@ html;
         }
         else
         {
-
-
             $Administracion = PagosDao::ConsultarPagosAppDetalle($ejecutivo, $fecha, $suc);
             $validar = $Administracion[0];
 
@@ -1021,8 +1019,8 @@ html;
                 <tr style="padding: 0px !important;">
                     <td style="padding: 10px !important; $color_celda">{$value['CORTECAJA_PAGOSDIA_PK']}</td>
                     <td style="padding: 10px !important; text-align: left; $color_celda">
+                        <div>#CRÉDITO: <b>{$value['CDGNS']}</b></div>   
                         <div>NOMBRE: <b>{$value['NOMBRE']}</b></div>
-                        <div>#CRÉDITO: <b>{$value['CDGNS']}</b></div>
                         <div>CICLO: <b>{$value['CICLO']}</b></div>
                         <div>FECHA DE PAGO: <b>{$value['FECHA']}</b></div>
                     </td>
