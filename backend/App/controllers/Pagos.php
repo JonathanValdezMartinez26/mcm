@@ -786,9 +786,9 @@ html;
                }
         }
         
-         function boton_ticket()
+         function boton_ticket(barcode)
         {
-             $('#all').attr('action', '/Pagos/Ticket/');
+             $('#all').attr('action', '/Pagos/Ticket/'+barcode+'/');
              $('#all').attr('target', '_blank');
              $("#all").submit();
         }
@@ -828,10 +828,7 @@ html;
                     });
                 if(contenido == sum_contador)
                 {
-                     $('#modal_resumen').modal('hide');
-                     document.getElementById('recibo_pagos').style.display = 'block';
-                     document.getElementById('procesar_pagos').style.display = 'none';
-                     //location.reload();
+                     location.reload();
                 }
                 else
                 {
@@ -899,7 +896,6 @@ html;
             {
                 //////////////////////aqui
                 $Administracion = PagosDao::ConsultarPagosAppDetalleImprimir($ejecutivo, $fecha, $suc);
-                $AdministracionResumen = PagosDao::ConsultarPagosAppResumen($ejecutivo, $fecha, $suc);
                 $Ejec = $Administracion[0][0];
                 foreach ($Administracion[0] as $key => $value) {
 
@@ -1137,8 +1133,8 @@ html;
 
     }
 
-    public function Ticket(){
-        $ids = MasterDom::getDataAll('borrar');
+    public function Ticket($barcode){
+        var_dump($barcode);
         $mpdf=new \mPDF('c');
         $mpdf->defaultPageNumStyle = 'I';
         $mpdf->h2toc = array('H5'=>0,'H6'=>1);
@@ -1178,7 +1174,7 @@ html;
             </tr>
 html;
 
-            foreach (PagosDao::getByIdReporte(1) as $key => $value) {
+            foreach (PagosDao::getByIdReporte($barcode) as $key => $value) {
                 if($value['TIPO'] == 'P')
                 {
 

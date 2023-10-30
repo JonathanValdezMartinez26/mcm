@@ -141,11 +141,12 @@ sql;
     }
 
 
-    public static function getByIdReporte($id){
+    public static function getByIdReporte($folio){
         $mysqli = Database::getInstance();
         $query=<<<sql
-    SELECT * FROM FOLIO_APP fa
-    INNER JOIN CORTECAJA_PAGOSDIA cp ON cp.CORTECAJA_PAGOSDIA_PK = fa.CORTECAJA_PAGOSDIA_PK 
+        SELECT * FROM FOLIO_APP fa
+        INNER JOIN CORTECAJA_PAGOSDIA cp ON cp.CORTECAJA_PAGOSDIA_PK = fa.CORTECAJA_PAGOSDIA_PK
+        WHERE FOLIO = '$folio'
 sql;
 
         return $mysqli->queryAll($query);
@@ -322,7 +323,7 @@ sql;
         AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
         AND PRN.CDGCO = '$suc'
         AND TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) = '$fecha'
-        AND PROCESA_PAGOSDIA = '0'
+        AND PROCESA_PAGOSDIA = '1'
         ORDER BY decode(TIPO ,
                         'P',1,
                         'M',2,
