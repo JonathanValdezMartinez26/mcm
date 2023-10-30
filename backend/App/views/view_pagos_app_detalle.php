@@ -21,12 +21,8 @@
                         <div class="col-md-3 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Terminar Validación</span>
                             <div class="count" style="font-size: 35px; color: #368a05">
-                                <button type="button" class="btn btn-primary" onclick="boton_resumen_pago();" style="border: 1px solid #c4a603; background: #FFFFFF"  data-keyboard="false">
+                                <button type="button" id="procesar_pagos" class="btn btn-primary" onclick="boton_resumen_pago();" style="border: 1px solid #c4a603; background: #FFFFFF"  data-keyboard="false">
                                     <i class="fa fa-spinner" style="color: #1c4e63"></i>  <span style="color: #1E283D"><b>Procesar Pagos Validados</b></span>
-                                </button>
-                                <br>
-                                <button type="button" id="recibo_pagos" class="btn btn-primary" onclick="boton_ticket();" style="border: 1px solid #338300; background: #40a200; display: none;" data-keyboard="false">
-                                    <i class="fa fa-print" style="color: #ffffff"></i> <span style="color: #ffffff"> Imprimir Recibo de Pagos</span>
                                 </button>
                             </div>
                         </div>
@@ -136,7 +132,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <center><h4 class="modal-title" id="myModalLabel">Resumen - Recepción de Pagos (App)</h4></center>
+                        <center><h4 class="modal-title" id="myModalLabel">Resumen - Recepción de Pagos (App) - Folio: <?php echo $barcode; ?></h4></center>
                     </div>
                     <div class="modal-body">
 
@@ -158,7 +154,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="movil">Medio de Registro</label>
                                             <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled placeholder="" value="APP MÓVIL">
@@ -166,9 +162,9 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-7">
+                                    <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="ejecutivo">Nombre del Ejecutivo que entrega los pagos</label>
+                                            <label for="ejecutivo">Nombre del Ejecutivo</label>
                                             <select class="form-control mr-sm-3"  autofocus type="select" id="ejecutivo" name="ejecutivo">
                                                 <option value="<?php echo $cdgpe_ejecutivo; ?>"><?php echo $ejecutivo; ?></option>
                                             </select>
@@ -185,7 +181,6 @@
                                             <thead>
                                             <tr>
                                                 <th style="display: none;">ID-MCM</th>
-                                                <th>Fecha de Captura</th>
                                                 <th>Cliente</th>
                                                 <th>Nombre</th>
                                                 <th>Ciclo</th>
@@ -211,7 +206,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                        <button type="button"  class="btn btn-primary" onclick="boton_terminar();"><span class="glyphicon glyphicon-floppy-disk"></span>Terminar</button>
+                        <button type="button"  class="btn btn-primary" onclick="boton_terminar('<?= $barcode; ?>');"><span class="glyphicon glyphicon-floppy-disk"></span>Terminar</button>
                         </form>
                     </div>
 

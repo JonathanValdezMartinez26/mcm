@@ -793,23 +793,27 @@ html;
              $("#all").submit();
         }
         
-         function boton_terminar()
+         function boton_terminar(barcode)
         {
             var resume_table = document.getElementById("terminar_resumen");
             total = document.getElementById("total_r");
+            
             contenido = parseInt(total.innerHTML);
-            var contador = 1;
-            var sum_contador = 1;
+            var sum_contador = 0;
+            
+            
             
             for (var i = 1, row; row = resume_table.rows[i]; i++) {
-             
+                
+              sum_contador++;
+              
                     col = row.cells[0];
                     pk = col.innerText;
                   
                 $.ajax({
                     type: 'POST',
                     url: '/Pagos/PagosAddApp/',
-                    data: 'cortecaja_pk='+pk,
+                    data: 'cortecaja_pk='+pk+'&barcode='+barcode,
                     success: function(respuesta) {
                                 swal({
                                     title: "Procesando Pagos",
@@ -826,6 +830,7 @@ html;
                 {
                      $('#modal_resumen').modal('hide');
                      document.getElementById('recibo_pagos').style.display = 'block';
+                     document.getElementById('procesar_pagos').style.display = 'none';
                      //location.reload();
                 }
                 else
@@ -845,8 +850,9 @@ html;
         $ejecutivo = $_GET['MTYQW'];
         $fecha = $_GET['FEC'];
         $suc = $_GET['SUC'];
+        $barcode = $_GET['BCODE'];
 
-        if($ejecutivo == '' && $fecha == '')
+        if($ejecutivo == '' || $fecha == '' || $suc == '' || $barcode == '')
         {
             $Administracion = PagosDao::ConsultarPagosApp();
 
@@ -860,7 +866,7 @@ html;
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;"></td>
+                    <td style="padding: 0px !important;">{$value['BARRAS']}</td>
                     <td style="padding: 0px !important;">{$value['SUCURSAL']}</td>
                     <td style="padding: 0px !important;">{$value['NUM_PAGOS']}</td>
                     <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
@@ -872,7 +878,7 @@ html;
                     <td style="padding: 0px !important;">$ {$garantia}</td>
                     <td style="padding: 0px !important;">$ {$monto_total}</td>
                     <td style="padding: 0px !important;">
-                        <a href="/Pagos/CorteEjecutivo/?MTYQW={$value['CDGOCPE']}&FEC={$value['FECHA']}&SUC={$value['COD_SUC']}" type="button" class="btn btn-success btn-circle"><i class="fa fa-edit"></i> Procesar Pagos</a>
+                        <a href="/Pagos/CorteEjecutivo/?MTYQW={$value['CDGOCPE']}&FEC={$value['FECHA']}&BCODE={$value['BARRAS']}&SUC={$value['COD_SUC']}" type="button" class="btn btn-success btn-circle"><i class="fa fa-edit"></i> Procesar Pagos</a>
                      </td>
                 </tr>
 html;
@@ -884,55 +890,138 @@ html;
         }
         else
         {
+
+
             $Administracion = PagosDao::ConsultarPagosAppDetalle($ejecutivo, $fecha, $suc);
-            $AdministracionResumen = PagosDao::ConsultarPagosAppResumen($ejecutivo, $fecha, $suc);
+            $validar = $Administracion[0];
 
-            $Ejec = $Administracion[0][0];
+            if($validar == NULL)
+            {
+                //////////////////////aqui
+                $Administracion = PagosDao::ConsultarPagosAppDetalleImprimir($ejecutivo, $fecha, $suc);
+                $AdministracionResumen = PagosDao::ConsultarPagosAppResumen($ejecutivo, $fecha, $suc);
+                $Ejec = $Administracion[0][0];
+                foreach ($Administracion[0] as $key => $value) {
 
-            foreach ($Administracion[0] as $key => $value) {
+                    if ($value['TIPO'] == 'P') {
+                        $tipo_pago = 'PAGO';
+                    } else if ($value['TIPO'] == 'M') {
+                        $tipo_pago = 'MULTA';
+                    } else if ($value['TIPO'] == 'G') {
+                        $tipo_pago = 'GARANTIA';
+                    } else if ($value['TIPO'] == 'D') {
+                        $tipo_pago = 'MULTA';
+                    } else if ($value['TIPO'] == 'R') {
+                        $tipo_pago = 'REFINANCIAMIENTO';
+                    }
 
-                if($value['TIPO'] == 'P'){$tipo_pago = 'PAGO';}
-                else if($value['TIPO'] == 'M'){$tipo_pago = 'MULTA';}
-                else if($value['TIPO'] == 'G'){$tipo_pago = 'GARANTIA';}
-                else if($value['TIPO'] == 'D'){$tipo_pago = 'MULTA';}
-                else if($value['TIPO'] == 'R'){$tipo_pago = 'REFINANCIAMIENTO';}
 
+                    $monto = number_format($value['MONTO'], 2);
+                    $nuevo_monto = number_format($value['NUEVO_MONTO'], 2);
+                    $id_check = $value['CORTECAJA_PAGOSDIA_PK'];
+                    if ($value['TIPO'] == 'P' || $value['TIPO'] == 'M') {
+                        $color_celda = "";
+                        $boton_visible = "";
+                        $check_visible = '';
+                    } else {
+                        $color_celda = "background-color: #FFC733 !important;";
+                        $boton_visible = "disabled";
+                        $check_visible = 'display:none;';
+                    }
 
+                    if ($value['ESTATUS_CAJA'] == 1) {
+                        $selected = 'checked';
+                    } else {
+                        $selected = '';
+                    }
 
-                $monto = number_format($value['MONTO'], 2);
-                $nuevo_monto = number_format($value['NUEVO_MONTO'], 2);
-                $id_check = $value['CORTECAJA_PAGOSDIA_PK'];
-                if($value['TIPO'] == 'P' || $value['TIPO'] == 'M')
-                {
-                    $color_celda = "";
-                    $boton_visible = "";
-                    $check_visible = '';
+                    if ($value['INCIDENCIA'] == 1) {
+                        $campo = '<div><del>$' . $monto . '</del></div> <div style="font-size: 20px!important;"> $' . $nuevo_monto . '</div>';
+                    } else {
+                        $campo = '<div style="font-size: 20px!important;">$' . $monto . '</div>';
+                    }
+                    $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 10px !important; $color_celda">{$value['CORTECAJA_PAGOSDIA_PK']}</td>
+                    <td style="padding: 10px !important; text-align: left; $color_celda">
+                        <div>#CRÉDITO: <b>{$value['CDGNS']}</b></div>
+                        <div>NOMBRE: <b>{$value['NOMBRE']}</b></div>
+                        
+                        <div>CICLO: <b>{$value['CICLO']}</b></div>
+                        <div>FECHA DE PAGO: <b>{$value['FECHA']}</b></div>
+                    </td>
+                    <td style="padding: 10px !important; $color_celda">{$tipo_pago}</td>
+                    <td style="padding: 10px !important; $color_celda">
+                        {$campo}
+                         <input style="{$check_visible}" class="form-check-input" type="checkbox" value="" id="$id_check" name="$id_check" onclick="check_pagos('$id_check');" $selected disabled>
+                          <label style="{$check_visible}" class="form-check-label" for="flexCheckDefault">
+                            Validado
+                         </label>
+                    </td>
+                    <td style="padding: 10px !important; $color_celda">{$value['COMENTARIO_INCIDENCIA']}</td>
+                    <td style="padding: 10px !important; $color_celda">{$value['FIDENTIFICAPP']}</td>
+                    
+                     <td style="padding-top: 30px !important;">
+                        <b>Pago Procesado</b>
+                     </td>
+                </tr>
+html;
+
                 }
-                else
-                {
-                    $color_celda = "background-color: #FFC733 !important;";
-                    $boton_visible = "disabled";
-                    $check_visible = 'display:none;';
-                }
 
-                if($value['ESTATUS_CAJA'] == 1)
-                {
-                    $selected = 'checked';
-                }
-                else
-                {
-                    $selected= '';
-                }
 
-                if($value['INCIDENCIA'] == 1)
-                {
-                    $campo = '<div><del>$'.$monto.'</del></div> <div style="font-size: 20px!important;"> $'.$nuevo_monto.'</div>';
-                }
-                else
-                {
-                    $campo = '<div style="font-size: 20px!important;">$'.$monto.'</div>';
-                }
-                $tabla .= <<<html
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('tabla', $tabla);
+                View::set('ejecutivo', $ejecutivo);
+                View::set('DetalleGlobal', $Administracion[1]);
+                View::set('Ejecutivo', $Ejec['EJECUTIVO']);
+                View::set('barcode', $barcode);
+                View::render("view_pagos_app_detalle_imprimir");
+            }
+            else {
+                $AdministracionResumen = PagosDao::ConsultarPagosAppResumen($ejecutivo, $fecha, $suc);
+                $Ejec = $Administracion[0][0];
+                foreach ($Administracion[0] as $key => $value) {
+
+                    if ($value['TIPO'] == 'P') {
+                        $tipo_pago = 'PAGO';
+                    } else if ($value['TIPO'] == 'M') {
+                        $tipo_pago = 'MULTA';
+                    } else if ($value['TIPO'] == 'G') {
+                        $tipo_pago = 'GARANTIA';
+                    } else if ($value['TIPO'] == 'D') {
+                        $tipo_pago = 'MULTA';
+                    } else if ($value['TIPO'] == 'R') {
+                        $tipo_pago = 'REFINANCIAMIENTO';
+                    }
+
+
+                    $monto = number_format($value['MONTO'], 2);
+                    $nuevo_monto = number_format($value['NUEVO_MONTO'], 2);
+                    $id_check = $value['CORTECAJA_PAGOSDIA_PK'];
+                    if ($value['TIPO'] == 'P' || $value['TIPO'] == 'M') {
+                        $color_celda = "";
+                        $boton_visible = "";
+                        $check_visible = '';
+                    } else {
+                        $color_celda = "background-color: #FFC733 !important;";
+                        $boton_visible = "disabled";
+                        $check_visible = 'display:none;';
+                    }
+
+                    if ($value['ESTATUS_CAJA'] == 1) {
+                        $selected = 'checked';
+                    } else {
+                        $selected = '';
+                    }
+
+                    if ($value['INCIDENCIA'] == 1) {
+                        $campo = '<div><del>$' . $monto . '</del></div> <div style="font-size: 20px!important;"> $' . $nuevo_monto . '</div>';
+                    } else {
+                        $campo = '<div style="font-size: 20px!important;">$' . $monto . '</div>';
+                    }
+                    $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 10px !important; $color_celda">{$value['CORTECAJA_PAGOSDIA_PK']}</td>
                     <td style="padding: 10px !important; text-align: left; $color_celda">
@@ -958,74 +1047,63 @@ html;
                 </tr>
 html;
 
-            }
+                }
 
+                $AdministracionOne = PagosDao::ConsultarCierreCajaCajera($this->__usuario);
+                $fechaActual = date("Y-m-d");
+                $horaActual = date("H:i:s");
+                $dia = date("N");
 
-            /////
-            $AdministracionOne = PagosDao::ConsultarCierreCajaCajera($this->__usuario);
-            $fechaActual = date("Y-m-d");
-            $horaActual = date("H:i:s");
-            $dia = date("N");
-
-            $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
-            if($hora_cierre == '')
-            {
-                $hora_cierre = '10:00:00';
-            }
-            else
-            {
                 $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
-            }
-
-            if($horaActual <= $hora_cierre)
-            {
-                if ($dia == 1)
-                {
-                    $date_past = strtotime('-3 days', strtotime($fechaActual));
-                    $date_past = date('Y-m-d', $date_past);
-                }
-                else
-                {
-                    $date_past = strtotime('-1 days', strtotime($fechaActual));
-                    $date_past = date('Y-m-d', $date_past);
+                if ($hora_cierre == '') {
+                    $hora_cierre = '10:00:00';
+                } else {
+                    $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
                 }
 
-                $inicio_f = $date_past;
-                $fin_f = $fechaActual;
-            }
-            else
-            {
-                $inicio_f = $fechaActual;
-                $fin_f = $fechaActual;
-            }
+                if ($horaActual <= $hora_cierre) {
+                    if ($dia == 1) {
+                        $date_past = strtotime('-3 days', strtotime($fechaActual));
+                        $date_past = date('Y-m-d', $date_past);
+                    } else {
+                        $date_past = strtotime('-1 days', strtotime($fechaActual));
+                        $date_past = date('Y-m-d', $date_past);
+                    }
 
-            ///////
-
-            foreach ($AdministracionResumen[0] as $key => $value_resumen) {
-
-                $ejecutivo = $value_resumen['EJECUTIVO'];
-                $cdgpe_ejecutivo = $value_resumen['CDGPE'];
-
-
-                if($value_resumen['TIPO'] == 'P'){$tipo_pago = 'PAGO';}
-                else if($value_resumen['TIPO'] == 'M'){$tipo_pago = 'MULTA';}
-                else if($value_resumen['TIPO'] == 'G'){$tipo_pago = 'GARANTIA';}
-                else if($value_resumen['TIPO'] == 'D'){$tipo_pago = 'MULTA';}
-                else if($value_resumen['TIPO'] == 'R'){$tipo_pago = 'REFINANCIAMIENTO';}
-
-                if($value_resumen['INCIDENCIA'] == 1)
-                {
-                    $campo_resumen = '$'.number_format($value_resumen['NUEVO_MONTO'], 2);
-                }
-                else
-                {
-                    $campo_resumen = '$'.number_format($value_resumen['MONTO'], 2);
+                    $inicio_f = $date_past;
+                    $fin_f = $fechaActual;
+                } else {
+                    $inicio_f = $fechaActual;
+                    $fin_f = $fechaActual;
                 }
 
-                $tabla_resumen .= <<<html
+                foreach ($AdministracionResumen[0] as $key => $value_resumen) {
+
+                    $ejecutivo = $value_resumen['EJECUTIVO'];
+                    $cdgpe_ejecutivo = $value_resumen['CDGPE'];
+
+
+                    if ($value_resumen['TIPO'] == 'P') {
+                        $tipo_pago = 'PAGO';
+                    } else if ($value_resumen['TIPO'] == 'M') {
+                        $tipo_pago = 'MULTA';
+                    } else if ($value_resumen['TIPO'] == 'G') {
+                        $tipo_pago = 'GARANTIA';
+                    } else if ($value_resumen['TIPO'] == 'D') {
+                        $tipo_pago = 'MULTA';
+                    } else if ($value_resumen['TIPO'] == 'R') {
+                        $tipo_pago = 'REFINANCIAMIENTO';
+                    }
+
+                    if ($value_resumen['INCIDENCIA'] == 1) {
+                        $campo_resumen = '$' . number_format($value_resumen['NUEVO_MONTO'], 2);
+                    } else {
+                        $campo_resumen = '$' . number_format($value_resumen['MONTO'], 2);
+                    }
+
+                    $tabla_resumen .= <<<html
                 <tr>
                     <td style="display: none;" id="pk" style="padding: 10px !important; background: #9d9d9d">{$value_resumen['CORTECAJA_PAGOSDIA_PK']}</td>
-                    <td id="fecha" style="padding: 3px !important;">{$value_resumen['FIDENTIFICAPP']}</td>
                     <td id="codigo" style="text-align: left; padding: 3px !important;">
                         <b> {$value_resumen['CDGNS']}</b>
                     </td>
@@ -1039,19 +1117,21 @@ html;
                    
                 </tr>
 html;
+                }
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('tabla', $tabla);
+                View::set('ejecutivo', $ejecutivo);
+                View::set('cdgpe_ejecutivo', $cdgpe_ejecutivo);
+                View::set('tabla_resumen', $tabla_resumen);
+                View::set('DetalleGlobal', $Administracion[1]);
+                View::set('Ejecutivo', $Ejec['EJECUTIVO']);
+                View::set('inicio_f', $inicio_f);
+                View::set('fin_f', $fin_f);
+                View::set('barcode', $barcode);
+                View::set('fechaActual', $fechaActual);
+                View::render("view_pagos_app_detalle");
             }
-            View::set('header', $this->_contenedor->header($extraHeader));
-            View::set('footer', $this->_contenedor->footer($extraFooter));
-            View::set('tabla', $tabla);
-            View::set('ejecutivo', $ejecutivo);
-            View::set('cdgpe_ejecutivo', $cdgpe_ejecutivo);
-            View::set('tabla_resumen', $tabla_resumen);
-            View::set('DetalleGlobal', $Administracion[1]);
-            View::set('Ejecutivo', $Ejec['EJECUTIVO']);
-            View::set('inicio_f', $inicio_f);
-            View::set('fin_f', $fin_f);
-            View::set('fechaActual', $fechaActual);
-            View::render("view_pagos_app_detalle");
         }
 
 
@@ -1431,6 +1511,7 @@ html;
         $edit->_comentario_detalle = $_POST['comentario_detalle'];
         $edit->_tipo_pago = $_POST['tipo_pago_detalle'];
 
+
         $id = PagosDao::updatePagoApp($edit);
         //return $id;
 
@@ -1438,12 +1519,10 @@ html;
 
     public function PagosAddApp(){
 
-        $add_app = new \stdClass();
-
-        //$add_app->_fecha_registro = $_POST['folio'];
         $add_app = $_POST['cortecaja_pk'];
+        $barcode = $_POST['barcode'];
 
-        $id = PagosDao::AddPagoApp($add_app);
+        $id = PagosDao::AddPagoApp($add_app, $barcode);
     }
     public function PagosRegistro()
     {
