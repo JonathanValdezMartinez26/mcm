@@ -797,11 +797,8 @@ html;
         {
             var resume_table = document.getElementById("terminar_resumen");
             total = document.getElementById("total_r");
-            
+            sum_contador = 0;
             contenido = parseInt(total.innerHTML);
-            var sum_contador = 0;
-            
-            
             
             for (var i = 1, row; row = resume_table.rows[i]; i++) {
                 
@@ -832,7 +829,7 @@ html;
                 }
                 else
                 {
-                    
+                   alert("no")
                 }
             }
           
@@ -1173,17 +1170,25 @@ html;
 html;
 
             foreach (PagosDao::getByIdReporte($barcode) as $key => $value) {
-                if($value['TIPO'] == 'P')
-                {
-
+                if ($value['TIPO'] == 'P') {
+                    $tipo_pago = 'PAGO';
+                } else if ($value['TIPO'] == 'M') {
+                    $tipo_pago = 'MULTA';
+                } else if ($value['TIPO'] == 'G') {
+                    $tipo_pago = 'GARANTIA';
+                } else if ($value['TIPO'] == 'D') {
+                    $tipo_pago = 'MULTA';
+                } else if ($value['TIPO'] == 'R') {
+                    $tipo_pago = 'REFINANCIAMIENTO';
                 }
+
                 $tabla.=<<<html
             <tr style="background-color:#B8B8B8;">
             <td style="height:auto; width: 80px;background-color:#E4E4E4;">{$value['CDGNS']}</td>
             <td style="height:auto; width: 300px;background-color:#E4E4E4;">{$value['NOMBRE']}</td>
             <td style="height:auto; width: 60px;background-color:#E4E4E4;">{$value['CICLO']}</td>
-            <td style="height:auto; width: 80px;background-color:#E4E4E4;">{$value['TIPO']}</td>
-            <td style="height:auto; width: 100px;background-color:#E4E4E4;">{$value['TIPO']}</td>
+            <td style="height:auto; width: 80px;background-color:#E4E4E4;">{$tipo_pago}</td>
+            <td style="height:auto; width: 100px;background-color:#E4E4E4;">{$value['MONTO']}</td>
             </tr>
 html;
             }
