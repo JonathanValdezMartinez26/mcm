@@ -1129,7 +1129,6 @@ html;
     }
 
     public function Ticket($barcode){
-        var_dump($barcode);
         $mpdf=new \mPDF('c');
         $mpdf->defaultPageNumStyle = 'I';
         $mpdf->h2toc = array('H5'=>0,'H6'=>1);
@@ -1152,43 +1151,150 @@ html;
           margin-left:auto;
           margin-right:auto;
         }
+        
+        body {
+          padding: 50px;
+        }
+        
+        * {
+          box-sizing: border-box;
+        }
+        
+        .receipt-main {
+          display: inline-block;
+          width: 100%;
+          padding: 15px;
+          font-size: 12px;
+          border: 1px solid #000;
+        }
+        
+        .receipt-title {
+          text-align: center;
+          text-transform: uppercase;
+          font-size: 20px;
+          font-weight: 600;
+          margin: 0;
+        }
+          
+        .receipt-label {
+          font-weight: 600;
+        }
+        
+        .text-large {
+          font-size: 16px;
+        }
+        
+        .receipt-section {
+          margin-top: 10px;
+        }
+        
+        .receipt-footer {
+          text-align: center;
+          background: #ff0000;
+        }
+        
+        .receipt-signature {
+          height: 80px;
+          margin: 50px 0;
+          padding: 0 50px;
+          background: #fff;
+          
+          .receipt-line {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #000;
+          }
+          
+          p {
+            text-align: justify;
+            margin: 0;
+            font-size: 17px;
+          }
+        }
       </style>
 html;
         $tabla =<<<html
-          <img class="imagen" src="/img/logo.png"/>
-          <br>
-          <div style="page-break-inside: avoid;" align='center'>
-          <H1 class="titulo">Recibo</H1>
-          <table border="0" style="width:100%;text-align: center">
-            <tr style="background-color:#B8B8B8;">
-            <th><strong>#Crédito</strong></th>
-            <th><strong>Nombre del Cliente</strong></th>
-            <th><strong>Ciclo</strong></th>
-            <th><strong>Tipo</strong></th>
-            <th><strong>Monto</strong></th>
-            </tr>
+
+        <div class="receipt-main">
+         <table class="table">
+             <tr>
+                 <th style="width: 600px;" class="text-right">
+                    <p class="receipt-title"><b>Recibo de Pago</b></p>
+                 </th>
+                 <th style="width: 10px;" class="text-right">
+                    <img src="img/logo.png" alt="Esta es una descripcion alternativa de la imagen para cuando no se pueda mostrar" width="60" height="50" align="left"/>
+                 </th>
+             </tr>
+        </table>
+         
+        <br>
+        <br>
+         
+          
+          <div class="receipt-section pull-left">
+            <span class="receipt-label text-large">#FOLIO:</span>
+            <span class="text-large"><b>200000045800105</b></span>
+          </div>
+          
+           <div class="receipt-section pull-left">
+            <span class="receipt-label text-large">FECHA:</span>
+            <span class="text-large">31/10/2023</span>
+          </div>
+          
+          
+          <div class="clearfix"></div>
+          
+          <div class="receipt-section">
+        
+            <p>Recibí del ejecutiv(a) <b>Jonathan valdez Martinez</b>, la cantidad de $10,000 (), 
+            por concepto de recoleccion de <b>pagos varios</b> <u>(15 Pagos)</u> de Financiera Más con Menos, sucursal TOLUCA 1, con aplicación a la fecha: <b>31/10/2023</b>.
+             </p>
+             <p>Así mismo el ejecutivo firma de conformidad, la entrega a detalle de los siguientes pagos, en donde se especifica número de crédito, ciclo, nombre completo del cliente, tipo de pago y monto:</p>
+          </div>
+          
+          <hr>
+          
+        
+       <div class="table-responsive-sm">
+          <table class="table">
+              <thead>
+                 <tr>
+                     <th># Crédito</th>
+                     <th>Nombre del Cliente</th>
+                     <th>Ciclo</th>
+                     <th width="10%" class="text-right">Tipo</th>
+                     <th class="text-right">Monto</th>
+                 </tr>
+              </thead>
+                  <tbody>
+                     
 html;
 
             foreach (PagosDao::getByIdReporte($barcode) as $key => $value) {
                 if ($value['TIPO'] == 'P') {
                     $tipo_pago = 'PAGO';
+                    $procede = "$".number_format($value['MONTO'],2);
                 } else if ($value['TIPO'] == 'M') {
                     $tipo_pago = 'MULTA';
+                    $procede = '';
                 } else if ($value['TIPO'] == 'G') {
                     $tipo_pago = 'GARANTIA';
+                    $procede = '$00.00';
                 } else if ($value['TIPO'] == 'D') {
                     $tipo_pago = 'MULTA';
+                    $procede = '$00.00';
                 } else if ($value['TIPO'] == 'R') {
                     $tipo_pago = 'REFINANCIAMIENTO';
+                    $procede = '$00.00';
                 }
 
                 $tabla.=<<<html
+                   
             <tr style="background-color:#B8B8B8;">
-            <td style="height:auto; width: 80px;background-color:#E4E4E4;">{$value['CDGNS']}</td>
-            <td style="height:auto; width: 300px;background-color:#E4E4E4;">{$value['NOMBRE']}</td>
-            <td style="height:auto; width: 60px;background-color:#E4E4E4;">{$value['CICLO']}</td>
-            <td style="height:auto; width: 80px;background-color:#E4E4E4;">{$tipo_pago}</td>
-            <td style="height:auto; width: 100px;background-color:#E4E4E4;">{$value['MONTO']}</td>
+            <td style="height:auto; width: 80px;background-color:#E4E4E4; text-align: center;">{$value['CDGNS']}</td>
+            <td style="height:auto; width: 300px;background-color:#E4E4E4; ">{$value['NOMBRE']}</td>
+            <td style="height:auto; width: 60px;background-color:#E4E4E4; text-align: center;">{$value['CICLO']}</td>
+            <td style="height:auto; width: 80px;background-color:#E4E4E4; text-align: center;">{$tipo_pago}</td>
+            <td class="center" style="height:auto; width: 100px;background-color:#E4E4E4; text-align: center;">{$procede}</td>
             </tr>
 html;
             }
@@ -1196,6 +1302,45 @@ html;
         $tabla .=<<<html
       </table>
       </div>
+      <hr>
+      <br>
+      <br>
+      <br>
+      <br>
+      
+        <table class="table">
+             <tr>
+                 <th style="width: 370px;" class="text-right">
+                 <b>Ejecutiv(a)</b>
+                 <br>
+                 <br>
+                 <br>
+                 _____________________
+                 <br>
+                 <b>Jonathan Valdez Martinez</b>
+                 <br>
+                 <b>Firma de conformidad</b>
+                 
+                 
+                 </th>
+                 <th style="width: 210px;" class="text-right">
+                 <b>Cajer(a)</b>
+                 <br>
+                 <br>
+                 <br>
+                 _____________________
+                 <br>
+                 <b>Jonathan Valdez Martinez</b>
+                 <br>
+                 <b>Firma de conformidad</b>
+                 
+                 
+                 </th>
+             </tr>
+        </table>
+      
+</div>
+
 html;
         $mpdf->WriteHTML($style,1);
         $mpdf->WriteHTML($tabla,2);

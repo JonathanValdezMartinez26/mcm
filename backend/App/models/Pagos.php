@@ -147,6 +147,13 @@ sql;
         SELECT * FROM FOLIO_APP fa
         INNER JOIN CORTECAJA_PAGOSDIA cp ON cp.CORTECAJA_PAGOSDIA_PK = fa.CORTECAJA_PAGOSDIA_PK
         WHERE FOLIO = '$folio'
+        ORDER BY decode(cp.TIPO ,
+                                'P',1,
+                                'M',2,
+                                'G',3,
+                                'D',4,
+                                'R',5
+                                ) asc
 sql;
 
         return $mysqli->queryAll($query);
