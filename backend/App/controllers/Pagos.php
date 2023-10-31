@@ -1134,17 +1134,8 @@ html;
         $mpdf->h2toc = array('H5'=>0,'H6'=>1);
         $style = <<<html
       <style>
-        .imagen{
-          width:100%;
-          height: 150px;
-          background: url(/img/ag_logo.png) no-repeat center center fixed;
-          background-size: cover;
-          -moz-background-size: cover;
-          -webkit-background-size: cover
-          -o-background-size: cover;
-        }
-
-        .titulo{
+     
+       .titulo{
           width:100%;
           margin-top: 30px;
           color: #b92020;
@@ -1212,6 +1203,10 @@ html;
         }
       </style>
 html;
+        $complemento = PagosDao::getByIdReporte($barcode);
+
+        $cant_total = "$".number_format($complemento[0]['TOTAL'],2);
+
         $tabla =<<<html
 
         <div class="receipt-main">
@@ -1226,13 +1221,9 @@ html;
              </tr>
         </table>
          
-        <br>
-        <br>
-         
-          
           <div class="receipt-section pull-left">
             <span class="receipt-label text-large">#FOLIO:</span>
-            <span class="text-large"><b>200000045800105</b></span>
+            <span class="text-large"><b>{$barcode}</b></span>
           </div>
           
            <div class="receipt-section pull-left">
@@ -1245,8 +1236,8 @@ html;
           
           <div class="receipt-section">
         
-            <p>Recibí del ejecutiv(a) <b>Jonathan valdez Martinez</b>, la cantidad de $10,000 (), 
-            por concepto de recoleccion de <b>pagos varios</b> <u>(15 Pagos)</u> de Financiera Más con Menos, sucursal TOLUCA 1, con aplicación a la fecha: <b>31/10/2023</b>.
+            <p>Recibí del ejecutiv(a) <b>{$complemento[0]['EJECUTIVO']}</b>, la cantidad de <b>$cant_total</b>, 
+            por concepto de recoleccion de <b>pagos varios</b> <u>({$complemento[0]['TOTAL_VALIDADOS']} pagos)</u> de Financiera Más con Menos, sucursal <u>{$complemento[0]['NOMBRE_SUC']}</u>, con aplicación a la fecha: <b>31/10/2023</b>.
              </p>
              <p>Así mismo el ejecutivo firma de conformidad, la entrega a detalle de los siguientes pagos, en donde se especifica número de crédito, ciclo, nombre completo del cliente, tipo de pago y monto:</p>
           </div>
@@ -1269,7 +1260,8 @@ html;
                      
 html;
 
-            foreach (PagosDao::getByIdReporte($barcode) as $key => $value) {
+
+            foreach ($complemento[1] as $key => $value) {
                 if ($value['TIPO'] == 'P') {
                     $tipo_pago = 'PAGO';
                     $procede = "$".number_format($value['MONTO'],2);
@@ -1306,7 +1298,6 @@ html;
       <br>
       <br>
       <br>
-      <br>
       
         <table class="table">
              <tr>
@@ -1317,20 +1308,20 @@ html;
                  <br>
                  _____________________
                  <br>
-                 <b>Jonathan Valdez Martinez</b>
+                 <b>{$complemento[0]['EJECUTIVO']}</b>
                  <br>
                  <b>Firma de conformidad</b>
                  
                  
                  </th>
-                 <th style="width: 210px;" class="text-right">
+                 <th style="width: 270px;" class="text-right">
                  <b>Cajer(a)</b>
                  <br>
                  <br>
                  <br>
                  _____________________
                  <br>
-                 <b>Jonathan Valdez Martinez</b>
+                 <b>$this->__nombre</b>
                  <br>
                  <b>Firma de conformidad</b>
                  

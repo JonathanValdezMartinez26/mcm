@@ -156,7 +156,54 @@ sql;
                                 ) asc
 sql;
 
-        return $mysqli->queryAll($query);
+        $query_1=<<<sql
+        SELECT
+        SUM(CASE 
+        WHEN (ESTATUS_CAJA = 1 AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN 1
+        ELSE 0
+        END) AS TOTAL_VALIDADOS, 
+        SUM(CASE 
+        WHEN ((TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN 1
+        ELSE 0
+        END) AS TOTAL_PAGOS,
+        SUM(CASE 
+        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA = 1 AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN NUEVO_MONTO 
+        ELSE 0
+        END) AS TOTAL_NUEVOS_MONTOS, 
+        SUM(CASE 
+        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA = 0 AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN MONTO
+        ELSE 0
+        END) AS TOTAL_MONT_SIN_MOD, 
+        (SUM(CASE 
+        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA = 1 AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN NUEVO_MONTO 
+        ELSE 0
+        END) + SUM(CASE 
+        WHEN (ESTATUS_CAJA = 1 AND INCIDENCIA = 0 AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN MONTO
+        ELSE 0
+        END)) AS TOTAL, CO.NOMBRE AS NOMBRE_SUC, FA.FOLIO, CORTECAJA_PAGOSDIA.EJECUTIVO
+        FROM CORTECAJA_PAGOSDIA
+        INNER JOIN PRN ON PRN.CDGNS = CORTECAJA_PAGOSDIA.CDGNS 
+        INNER JOIN FOLIO_APP FA ON FA.CORTECAJA_PAGOSDIA_PK = CORTECAJA_PAGOSDIA.CORTECAJA_PAGOSDIA_PK
+        INNER JOIN CO ON CO.CODIGO = PRN.CDGCO 
+        WHERE PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
+        AND FA.FOLIO = '$folio'
+        AND PROCESA_PAGOSDIA = '1'
+        GROUP BY FA.FOLIO, CO.NOMBRE, TIPO, CORTECAJA_PAGOSDIA.EJECUTIVO
+        ORDER BY decode(TIPO ,
+                        'P',1,
+                        'M',2,
+                        'G',3,
+                        'D',4,
+                        'R',5
+                        ) asc
+sql;
+
+        $tabla = $mysqli->queryAll($query);
+        $datos = $mysqli->queryOne($query_1);
+
+
+        return [$datos, $tabla];
+
     }
 
 
