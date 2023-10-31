@@ -1228,8 +1228,8 @@ html;
           </div>
           
            <div class="receipt-section pull-left">
-            <span class="receipt-label text-large">FECHA:</span>
-            <span class="text-large">31/10/2023</span>
+            <span class="receipt-label text-large">FECHA DE COBRO:</span>
+            <span class="text-large">{$complemento[0]['FECHA_GRUPO']}</span>
           </div>
           
           
@@ -1253,7 +1253,7 @@ html;
                      <th># Crédito</th>
                      <th>Nombre del Cliente</th>
                      <th>Ciclo</th>
-                     <th width="10%" class="text-right">Tipo</th>
+                     <th width="19%" class="text-right">Tipo</th>
                      <th class="text-right">Monto</th>
                  </tr>
               </thead>
@@ -1265,10 +1265,25 @@ html;
             foreach ($complemento[1] as $key => $value) {
                 if ($value['TIPO'] == 'P') {
                     $tipo_pago = 'PAGO';
-                    $procede = "$".number_format($value['MONTO'],2);
+                    if($value['INCIDENCIA'] == '1')
+                    {
+                        $procede = "$".number_format($value['NUEVO_MONTO'],2);
+                    }
+                    else
+                    {
+                        $procede = "$".number_format($value['MONTO'],2);
+                    }
+
                 } else if ($value['TIPO'] == 'M') {
                     $tipo_pago = 'MULTA';
-                    $procede = '';
+                    if($value['INCIDENCIA'] == '1')
+                    {
+                        $procede = "$".number_format($value['NUEVO_MONTO'],2);
+                    }
+                    else
+                    {
+                        $procede = "$".number_format($value['MONTO'],2);
+                    }
                 } else if ($value['TIPO'] == 'G') {
                     $tipo_pago = 'GARANTIA';
                     $procede = '$00.00';

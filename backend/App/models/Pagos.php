@@ -189,13 +189,6 @@ sql;
         AND FA.FOLIO = '$folio'
         AND PROCESA_PAGOSDIA = '1'
         GROUP BY FA.FOLIO, CO.NOMBRE, TIPO, CORTECAJA_PAGOSDIA.EJECUTIVO
-        ORDER BY decode(TIPO ,
-                        'P',1,
-                        'M',2,
-                        'G',3,
-                        'D',4,
-                        'R',5
-                        ) asc
 sql;
 
         $tabla = $mysqli->queryAll($query);
