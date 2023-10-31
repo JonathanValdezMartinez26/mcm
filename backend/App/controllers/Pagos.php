@@ -1132,6 +1132,7 @@ html;
         $mpdf=new \mPDF('c');
         $mpdf->defaultPageNumStyle = 'I';
         $mpdf->h2toc = array('H5'=>0,'H6'=>1);
+
         $style = <<<html
       <style>
      
@@ -1236,7 +1237,7 @@ html;
           
           <div class="receipt-section">
         
-            <p>Recibí del ejecutiv(a) <b>{$complemento[0]['EJECUTIVO']}</b>, la cantidad de <b>$cant_total</b>, 
+            <p>Recibí del ejecutiv(a) <b>{$complemento[0]['EJECUTIVO']}</b>, la cantidad de <b>{$cant_total} M.N</b>, 
             por concepto de recoleccion de <b>pagos varios</b> <u>({$complemento[0]['TOTAL_VALIDADOS']} pagos)</u> de Financiera Más con Menos, sucursal <u>{$complemento[0]['NOMBRE_SUC']}</u>, con aplicación a la fecha: <b>31/10/2023</b>.
              </p>
              <p>Así mismo el ejecutivo firma de conformidad, la entrega a detalle de los siguientes pagos, en donde se especifica número de crédito, ciclo, nombre completo del cliente, tipo de pago y monto:</p>
@@ -1333,9 +1334,14 @@ html;
 </div>
 
 html;
+
+        $fechaActual = date('Y-m-d H:i:s');
+
+
         $mpdf->WriteHTML($style,1);
         $mpdf->WriteHTML($tabla,2);
-        print_r($mpdf->Output());/* se genera el pdf en la ruta especificada*/
+        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:opensans;">Este recibo de pago se genero el día '.$fechaActual.'<br>{PAGENO}</div>');
+        print_r($mpdf->Output());
         exit;
        }
 

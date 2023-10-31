@@ -5,7 +5,6 @@
       <div style="text-align: center; padding-top: 10px;">
           <section class="content">
               <div class="container-fluid">
-
                   <div class="row">
                       <div class="col-lg-3 col-6">
 
