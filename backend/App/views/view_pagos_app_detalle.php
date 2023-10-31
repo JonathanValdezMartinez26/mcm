@@ -13,6 +13,8 @@
                         <div class="col-md-2 col-sm-2  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i>#</i> de Pagos Validados</span>
                             <div class="count" style="font-size: 30px; color: #030303"><span style="font-size: 30px; color: #030303" id="validados_r" name="validados_r"><?php echo $DetalleGlobal[0]['TOTAL_VALIDADOS']; ?></span> DE <span style="font-size: 30px; color: #030303" id="total_r" name="total_r"><?php echo $DetalleGlobal[0]['TOTAL_PAGOS']; ?></span></div>
+                            <div class="count" style="font-size: 30px; color: #030303"><span style="font-size: 30px; color: #030303; display: none;" id="validados_r_total" name="validados_r_total"><?php echo $DetalleGlobal[0]['TOTAL_PAGOS_TOTAL']; ?></span></div>
+
                         </div>
                         <div class="col-md-3 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Monto Validado</span>

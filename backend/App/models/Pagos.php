@@ -188,7 +188,7 @@ sql;
         WHERE PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
         AND FA.FOLIO = '$folio'
         AND PROCESA_PAGOSDIA = '1'
-        GROUP BY FA.FOLIO, CO.NOMBRE, TIPO, CORTECAJA_PAGOSDIA.EJECUTIVO
+        GROUP BY FA.FOLIO, CO.NOMBRE, CORTECAJA_PAGOSDIA.EJECUTIVO
 sql;
 
         $tabla = $mysqli->queryAll($query);
@@ -276,6 +276,10 @@ sql;
 
         $query2=<<<sql
         SELECT
+            SUM(CASE 
+        WHEN (ESTATUS = 'A') THEN 1
+        ELSE 0
+        END) AS TOTAL_PAGOS_TOTAL,
         SUM(CASE 
         WHEN (ESTATUS_CAJA = 1 AND (TIPO = 'P' OR TIPO = 'M') AND ESTATUS = 'A') THEN 1
         ELSE 0

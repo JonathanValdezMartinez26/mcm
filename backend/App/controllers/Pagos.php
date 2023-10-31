@@ -796,9 +796,9 @@ html;
          function boton_terminar(barcode)
         {
             var resume_table = document.getElementById("terminar_resumen");
-            total = document.getElementById("total_r");
-            sum_contador = 0;
-            contenido = parseInt(total.innerHTML);
+            total = document.getElementById("validados_r_total");
+            sum_contador = 1;
+            contenido = parseInt(total.innerHTML) + 1;
             
             for (var i = 1, row; row = resume_table.rows[i]; i++) {
                 
@@ -815,22 +815,24 @@ html;
                                 swal({
                                     title: "Procesando Pagos",
                                     text: "Espere por favor...",
-                                    timer: 400,
+                                    timer: 100,
                                     onOpen: function() {
                                         swal.showLoading()
                                     }
                                 })
-                               
                         }
                     });
-                if(contenido == sum_contador)
-                {
-                     location.reload();
-                }
-                else
-                {
-                   alert("no")
-                }
+                
+                 if(contenido == sum_contador)
+                     {
+                         //alert("Son iguales");
+                         location.reload();
+                     }
+                 else
+                     {
+                         //alert("No son iguales");
+                     }
+               
             }
           
         }
@@ -931,6 +933,7 @@ html;
                     } else {
                         $campo = '<div style="font-size: 20px!important;">$' . $monto . '</div>';
                     }
+
                     $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 10px !important; $color_celda">{$value['CORTECAJA_PAGOSDIA_PK']}</td>
