@@ -212,7 +212,7 @@ sql;
              SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
              INNER JOIN PE ON PE.CODIGO = SPR.CDGPE
              WHERE SPR.CDGPE = '$cdgpe'
-             AND SPR.FECHA_TRABAJO BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
+             AND SPR.FECHA_SOL BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
              AND SEMAFORO = '1'
 sql;
             //var_dump($query);
@@ -227,7 +227,7 @@ sql;
                  SELECT DISTINCT ID_SCALL, CDGNS, CICLO, FECHA_SOL, INICIO, SPR.CDGCO, CDGCL, NOMBRE, NOMBRE_SUCURSAL, CODIGO_SUCURSAL, REGION, CODIGO_REGION, EJECUTIVO, ID_EJECUTIVO, FECHA, CDGPE, ESTATUS_CL, ESTATUS_AV, SOLICITUD, FECHA_TRABAJO, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS_FINAL, VOBO_REG, SEMAFORO, PRORROGA, REACTIVACION, TEL_CL, TIPO_LLAM_1_CL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, TIPO_LLAM_2_CL,DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, PRG_UNO_CL,PRG_DOS_CL,PRG_TRES_CL, PRG_CUATRO_CL, '' AS PRG_CINCO_CL, '' AS PRG_SEIS_CL, '' AS PRG_SIETE_CL, '' AS PRG_OCHO_CL, PRG_NUEVE_CL, PRG_DIEZ_CL, PRG_ONCE_CL,  PRG_DOCE_CL, CDGCL_AV,  TEL_AV,  FECHA_TRABAJO_AV, TIPO_LLAM_1_AV,  DIA_LLAMADA_1_AV,  HORA_LLAMADA_1_AV, TIPO_LLAM_2_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, PRG_UNO_AV, PRG_DOS_AV, PRG_TRES_AV, PRG_CUATRO_AV,PRG_CINCO_AV, PRG_SEIS_AV, PRG_SIETE_AV,  PRG_OCHO_AV, PRG_NUEVE_AV, CDGPE_ANALISTA,LLAMADA_POST_VENTA, CDGPE_ANALISTA_INICIAL, NUMERO_INTENTOS_CL, NUMERO_INTENTOS_AV, FIN_CL,FIN_AV, COMENTARIO_PRORROGA
                  FROM SOLICITUDES_PROCESADAS SPR
                  INNER JOIN PE ON PE.CODIGO = SPR.CDGPE
-                 WHERE SPR.FECHA_TRABAJO BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
+                 WHERE SPR.FECHA_SOL BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
                  AND SEMAFORO = '1'
                  
                  UNION
@@ -339,10 +339,88 @@ sql;
              
                  FROM  SOLICITUDES_PROCESADAS SPR
                  INNER JOIN PE ON PE.CODIGO = SPR.CDGPE 
-                 WHERE $var SPR.FECHA_TRABAJO BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
+                 WHERE $var SPR.FECHA_SOL BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
                  AND SEMAFORO = '1'
+                 
+                 UNION
+                 
+                 SELECT DISTINCT (SPR.CDGNS || '-' || CASE WHEN (CICLO = 'R1' OR CICLO = 'R2' OR CICLO = 'R3' OR CICLO = 'R4' OR CICLO = 'R5')  THEN 'CANCELADA ADMINISTRADORA' ELSE 'NO PROCESADA AÚN | CICLO:' || CICLO END) AS A, SPR.REGION AS B, SPR.FECHA_TRABAJO AS C,  
+                 SPR.FECHA_SOL AS D, '' AS E, SPR.NOMBRE_SUCURSAL AS F, SPR.EJECUTIVO AS G, SPR.CDGNS AS H, (SPR.NOMBRE) AS I,
+                 CASE WHEN (CICLO = 'R1' OR CICLO = 'R2' OR CICLO = 'R3' OR CICLO = 'R4' OR CICLO = 'R5')  THEN 'CANCELADA ADMINISTRADORA' ELSE 'NO PROCESADA AÚN | CICLO:' || CICLO END AS J, SPR.TEL_CL AS K, SPR.TIPO_LLAM_1_CL AS L, 
+                 CASE WHEN SPR.PRG_UNO_CL IS NULL THEN '- *'
+                 ELSE SPR.PRG_UNO_CL END AS M,
+                  CASE WHEN SPR.PRG_DOS_CL IS NULL THEN '- *'
+                 ELSE SPR.PRG_DOS_CL END AS N,
+                  CASE WHEN SPR.PRG_TRES_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_TRES_CL END AS O,
+                  CASE WHEN SPR.PRG_CUATRO_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_CUATRO_CL END AS P,
+                  CASE WHEN SPR.PRG_CINCO_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_CINCO_CL END AS Q,
+                  CASE WHEN SPR.PRG_SEIS_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_SEIS_CL END AS R,
+                  CASE WHEN SPR.PRG_SIETE_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_SIETE_CL END AS S,
+                  CASE WHEN SPR.PRG_OCHO_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_OCHO_CL END AS T,
+                  CASE WHEN SPR.PRG_NUEVE_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_NUEVE_CL END AS U,
+                  CASE WHEN SPR.PRG_DIEZ_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_DIEZ_CL END AS V,
+                  CASE WHEN SPR.PRG_ONCE_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_ONCE_CL END AS W,
+                 CASE WHEN SPR.PRG_DOCE_CL IS NULL THEN '-'
+                 ELSE SPR.PRG_DOCE_CL END AS X,
+                 GET_NOMBRE_CLIENTE(SPR.CDGCL_AV) AS Y,
+                 SPR.TEL_AV AS Z, 
+                 SPR.TIPO_LLAM_1_AV AS AA, 
+                 
+                 CASE WHEN SPR.PRG_UNO_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_UNO_AV END AS AB,
+                  CASE WHEN SPR.PRG_TRES_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_TRES_AV END AS AC,
+                  CASE WHEN SPR.PRG_TRES_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_TRES_AV END AS AD,
+                  CASE WHEN SPR.PRG_CUATRO_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_CUATRO_AV END AS AE,
+                  CASE WHEN SPR.PRG_CINCO_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_CINCO_AV END AS AF,
+                  CASE WHEN SPR.PRG_SEIS_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_SEIS_AV END AS AG,
+                  CASE WHEN SPR.PRG_SIETE_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_SIETE_AV END AS AH,
+                  CASE WHEN SPR.PRG_OCHO_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_OCHO_AV END AS AI,
+                  CASE WHEN SPR.PRG_NUEVE_AV IS NULL THEN '-'
+                 ELSE SPR.PRG_NUEVE_AV END AS AJ,
+                 TO_CHAR(SPR.DIA_LLAMADA_1_CL ,'DD/MM/YYYY HH24:MI:SS') AS AK, 
+                 TO_CHAR(SPR.DIA_LLAMADA_2_CL ,'DD/MM/YYYY HH24:MI:SS') AS AL, 
+                 TO_CHAR(SPR.DIA_LLAMADA_1_AV ,'DD/MM/YYYY HH24:MI:SS') AS AM, 
+                 TO_CHAR(SPR.DIA_LLAMADA_2_AV ,'DD/MM/YYYY HH24:MI:SS') AS AN, 
+                 SPR.COMENTARIO_INICIAL AS AO, 
+                 SPR.COMENTARIO_FINAL AS AP, 
+                 SPR.ESTATUS_FINAL AS AQ, 
+                  CASE WHEN SPR.COMENTARIO_PRORROGA IS NULL THEN 'N'
+                  ELSE 'S' END AS AR,
+                 SPR.VOBO_REG AS ASS,
+                 '' AS ATT,
+                 SPR.SEMAFORO AS AU, 
+                 '' AS AV, 
+                 '' AS AW,
+                 '' AS AX, 
+                 '' AS AY, 
+                 '' AS AZ, 
+                 '' AS BA, 
+                 '' AS BB, 
+                 '' AS BC, 
+                 '' AS BD
+             
+                 FROM  SOLICITUDES_PENDIENTES SPR
+                 WHERE $var SPR.FECHA_SOL BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
+                 
+                 
 sql;
-                //ar_dump($query);
+                //var_dump($query);
                 return $mysqli->queryAll($query);
 
     }
