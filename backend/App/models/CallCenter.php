@@ -245,7 +245,7 @@ sql;
 
         $string_from_array = implode(', ', $cdgco);
         //var_dump($cdgco);
-        if($perfil == 'ADMIN')
+        if($perfil == 'ADMIN' || $perfil == 'ACALL')
         {
             $var = '';
         }
