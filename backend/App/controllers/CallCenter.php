@@ -908,16 +908,41 @@ html;
 
                     $monto = number_format($value['MONTO'], 2);
                     $tabla .= <<<html
-                    <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
-                    <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
-                    <td style="padding: 0px !important;">{$value['CDGNS']}</td>
-                    <td style="padding: 0px !important;">{$value['FECHA']}</td>
-                    <td style="padding: 0px !important;">{$value['CICLO']}</td>
-                    <td style="padding: 0px !important;">$ {$monto}</td>
-                    <td style="padding: 0px !important;">{$value['TIPO']}</td>
-                    <td style="padding: 0px !important;">{$value['EJECUTIVO']}</td>
-                    <td style="padding: 0px !important;" class="center">{$editar}</td>
+                     <tr style="padding: 0px !important; ">
+                    <td style="padding: 5px !important; width:65px !important;">
+                    
+                    <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
+                    <hr>
+                    <div><label>{$value['CDGNS']}-{$value['CICLO']}</label></div>
+                    
+                    
+                    </td>
+                    <td style="padding: 10px !important; text-align: left">
+                         <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
+                        <br>
+                         <span class="fa fa-map-marker"></span> SUCURSAL: ({$value['CODIGO_SUCURSAL']}) {$value['NOMBRE_SUCURSAL']}
+                        <br>
+                        <span class="fa fa-briefcase"></span> EJECUTIVO: {$value['EJECUTIVO']}
+                    </td>
+                    <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label> <br><label><span class="fa fa-phone"></span> {$format}</label></td>                    <td style="padding-top: 22px !important; text-align: left">
+                        <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
+                        
+                        <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
+                        $prorroga
+                        $reactivacion
+                    </td>
+                    <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
+                    <td style="padding: 10px !important; text-align: left; width:165px !important;">
+                    <div><span class="label label-$color_ci" ><span class="fa $icon_ci"></span></span> Comentarios Iniciales</div>
+                    <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span> Comentarios Finales</div>
+                    $comentario_prorroga
+                    <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud</div>
+                    $vobo
+                    </td>
+                    <td style="padding-top: 22px !important;">
+                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>$titulo_boton</b>
+                        </a>
+                    </td>
                 </tr>
 html;
                 }
@@ -929,7 +954,7 @@ html;
                 View::set('usuario', $this->__usuario);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::render("pagos_registro_busqueda");
+                View::render("busqueda_registro_rapida");
 
         } else {
             View::set('header', $this->_contenedor->header($extraHeader));

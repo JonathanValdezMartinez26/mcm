@@ -220,7 +220,7 @@ sql;
         }
         else
         {
-            if($perfil == 'ADMIN')
+            if($perfil == 'ADMIN' || $perfil == 'ACALL')
             {
                 $mysqli = Database::getInstance();
                 $query=<<<sql
