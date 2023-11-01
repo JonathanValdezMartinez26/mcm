@@ -2956,6 +2956,7 @@ html;
       
       function ProrrogaPedir(id_call, estatus, reactivacion)
          {
+             
                 if(reactivacion == '1')
                  {
                       swal("Actualmente tiene una REACTIVACION en espera de validación", {icon: "warning",});
