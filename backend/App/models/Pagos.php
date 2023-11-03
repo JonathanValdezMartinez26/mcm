@@ -212,6 +212,17 @@ sql;
         return $mysqli->queryAll($query);
     }
 
+    public static function ConsultarDiasFestivos(){
+
+        $query=<<<sql
+        SELECT * FROM DIAS_FESTIVOS
+        ORDER BY FECHA ASC 
+sql;
+
+        $mysqli = Database::getInstance();
+        return $mysqli->queryAll($query);
+    }
+
     public static function ConsultarPagosApp(){
 
         $query=<<<sql

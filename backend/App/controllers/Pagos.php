@@ -518,6 +518,155 @@ html;
 
     }
 
+    public function DiasFestivos()
+    {
+        $extraHeader = <<<html
+        <title>Ajuste Cierre Caja</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
+        $extraFooter = <<<html
+      <script>
+      
+       $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+           "lengthMenu": [
+                    [30, 50, -1],
+                    [30, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+        });
+       
+        function enviar_add_horario(){	
+             sucursal = document.getElementById("sucursal").value; 
+             
+            if(sucursal == '')
+                {
+                    
+                      swal("Atención", "Ingrese un monto mayor a $0", "warning");
+                      document.getElementById("monto").focus();
+                        
+                }
+            else
+                {
+                    
+                    $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/HorariosAdd/',
+                    data: $('#Add_AHC').serialize(),
+                    success: function(respuesta) {
+                         if(respuesta=='1'){
+                      
+                         swal("Registro guardado exitosamente", {
+                                      icon: "success",
+                                    });
+                        location.reload();
+                        }
+                        else {
+                         swal(respuesta, {
+                                      icon: "error",
+                                    });
+                         //location.reload();
+                         
+                        }
+                    }
+                    });
+                }
+    }
+    
+        function enviar_update_horario(){	
+          
+                    $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/HorariosUpdate/',
+                    data: $('#Update_AHC').serialize(),
+                    success: function(respuesta) {
+                         if(respuesta=='1'){
+                      
+                         swal("Registro actualizado exitosamente", {
+                                      icon: "success",
+                                    });
+                        location.reload();
+                        }
+                        else {
+                         swal(respuesta, {
+                                      icon: "error",
+                                    });
+                         //location.reload();
+                         
+                        }
+                    }
+                    });
+    }
+      
+      
+      </script>
+html;
+
+        $tabla = '';
+        $horaActual = date("H:i:s");
+        $opciones_suc = '';
+
+        $ComboSucursales = CallCenterDao::getComboSucursalesHorario();
+
+
+        foreach ($ComboSucursales as $key => $val2) {
+
+            $opciones_suc .= <<<html
+                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+html;
+        }
+
+        $Administracion = PagosDao::ConsultarDiasFestivos();
+
+
+        foreach ($Administracion as $key => $value) {
+
+            if($value['HORA_PRORROGA'] == 'NULL')
+            {
+                $prorroga = 'NO TIENE';
+            }
+            else
+            {
+                $prorroga = $value['HORA_PRORROGA'];
+            }
+
+            $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;">{$value['DIA_FESTIVO_PK']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA']}</td>
+                    <td style="padding: 0px !important;"><strong>{$value['DESCRIPCIÓN']}</strong></td>
+                     <td style="padding: 0px !important;">
+                        <button style="display: none;" type="button" class="btn btn-success btn-circle" onclick="EditarHorario('{$value['CDGCO']}', '{$value['NOMBRE']}' , '{$value['HORA_CIERRE']}');"><i class="fa fa-edit"></i></button>
+                     </td>
+                </tr>
+html;
+        }
+
+        View::set('tabla', $tabla);
+        View::set('usuario', $this->__usuario);
+        View::set('opciones_suc', $opciones_suc);
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("dias_festivos_caja_sucursal");
+
+    }
+
     public function CorteEjecutivo()
     {
         $extraHeader = <<<html
