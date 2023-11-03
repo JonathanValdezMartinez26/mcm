@@ -521,7 +521,7 @@ html;
     public function DiasFestivos()
     {
         $extraHeader = <<<html
-        <title>Ajuste Cierre Caja</title>
+        <title>Días Festivos</title>
         <link rel="shortcut icon" href="/img/logo.png">
 html;
 
