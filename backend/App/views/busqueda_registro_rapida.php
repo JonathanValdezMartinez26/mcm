@@ -3,7 +3,7 @@
 <div class="right_col">
         <div class="panel panel-body" style="margin-bottom: 0px;">
             <div class="x_title">
-                <h3> Consulta Rapida de Pagos</h3>
+                <h3> Búsqueda Rápida de Solicitudes</h3>
                 <div class="clearfix"></div>
             </div>
 
