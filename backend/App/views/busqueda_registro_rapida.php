@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form class="" action="/Pagos/PagosRegistro/" method="GET">
+                    <form class="" action="/CallCenter/Busqueda/" method="GET">
                         <div class="row">
                             <div class="col-md-4">
                                 <select class="form-control mr-sm-3" style="font-size: 18px;" autofocus type="select" id="opcion_credito" name="opcion_credito" placeholder="000000">
@@ -40,14 +40,11 @@
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
                         <tr>
-                                    <th>Medio</th>
-                                    <th>Consecutivo</th>
-                                    <th>CDGNS</th>
-                                    <th>Fecha</th>
-                                    <th>Ciclo</th>
-                                    <th>Monto</th>
-                                    <th>Tipo</th>
-                                    <th>Ejecutivo</th>
+                                    <th>Crédito</th>
+                                    <th>Datos Generales</th>
+                                    <th>Estatus Llamadas</th>
+                                    <th>Call Center</th>
+                                    <th>Estatus Solicitud</th>
                                     <th>Acciones</th>
                                 </tr>
                                 </thead>
