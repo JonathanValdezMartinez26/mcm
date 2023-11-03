@@ -233,7 +233,7 @@ html;
 "> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
                    <li><a href="/Pagos/AjusteHoraCierre/">Ajustar Hora de Cierre</a></li>
-                   <li><a href="/Pagos/DiasFestivos/">Gestionar Días Festivos</a></li>
+                   <li><a href="/Pagos/DiasFestivos/">Asignación Días Festivos</a></li>
                   </ul>
                 </li>
               </ul>
