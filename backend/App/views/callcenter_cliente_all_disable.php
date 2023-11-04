@@ -396,7 +396,6 @@ html;
                                             if($Administracion[3]['PRORROGA'] == 2)
                                             {
                                                 $com_prorroga = $Administracion[3]['COMENTARIO_PRORROGA'];
-                                                /** @noinspection LanguageDetectionInspection */
                                                 $comentario_prorroga = <<<html
                                                     <div class="col-lg-4">
                                                     <label for="comentarios_prorroga">Comentarios de Prorroga *</label>
@@ -436,14 +435,14 @@ html;
                                                 <div class="form-group">
                                                     <div>
                                                         <label for="estatus_solicitud"> Estatus Final de la Solicitud *</label>
-                                                        <input autofocus="" type="text" class="form-control"  autocomplete="off" max="10000" disabled>
+                                                        <input autofocus="" type="text" class="form-control"  autocomplete="off" max="10000" value="<?php echo $Administracion[3]['ESTATUS'];?>" disabled>
                                                     </div>
                                                 </div>
 
                                                 <div class="form-group">
                                                     <div>
                                                         <label for="vobo_gerente"> VoBo Gerente Regional (Opcional)</label>
-                                                        <input autofocus="" type="text" class="form-control"  autocomplete="off" max="10000" disabled>
+                                                        <input autofocus="" type="text" class="form-control"  autocomplete="off" max="10000" value="<?php if($Administracion[3]['VOBO_GERENTE_REGIONAL'] == 'S'){echo "SI";}else{echo "NO";}  ?>" disabled>
                                                     </div>
                                                 </div>
                                             </div>
