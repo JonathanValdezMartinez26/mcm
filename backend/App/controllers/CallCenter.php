@@ -593,6 +593,7 @@ html;
         $suc = $_GET['Suc'];
         $reg = $_GET['Reg'];
         $fec = $_GET['Fec'];
+        $act = $_GET['Act'];
 
 
         $opciones_suc = '';
@@ -616,7 +617,9 @@ html;
 
         //var_dump($AdministracionOne[4]['NUMERO_INTENTOS_AV']);
 
-        if ($credito != '' && $ciclo != '') {
+        if ($credito != '' && $ciclo != '' && $fec != '') {
+
+
             $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo, $fec);
 
             if($AdministracionOne[0] == '')
@@ -638,11 +641,17 @@ html;
                 View::set('reg', $reg);
                 View::set('cdgpe', $this->__usuario);
                 View::set('pendientes', 'Mis ');
-                View::render("callcenter_cliente_all");
+
+                if($act == 'N'){
+                    View::render("callcenter_cliente_all_disable");
+                }
+                else{
+                    View::render("callcenter_cliente_all");
+                }
             }
         } else {
 
-            if($credito == '' && $ciclo == '' && $suc != '')
+            if($credito == '' && $ciclo == '' && $suc == '')
             {
                 if($suc == '000')
                 {
@@ -829,7 +838,7 @@ html;
                     $vobo
                     </td>
                     <td style="padding-top: 22px !important;">
-                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>$titulo_boton</b>
+                        <a type="button" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Act=S&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>$titulo_boton</b>
                         </a>
                     </td>
                 </tr>
@@ -906,6 +915,17 @@ html;
                 $Administracion = CallCenterDao::getAllSolicitudesBusquedaRapida($credito);
                 foreach ($Administracion as $key => $value) {
 
+                    if($value['ESTATUS_GENERAL'] == "SIN HISTORIAL")
+                    {
+                        $ver_resumen = '';
+
+                    }else{
+                        $ver_resumen = <<<html
+                        <a type="button" target="_blank" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Act=N&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle"><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen
+                        </a>
+html;
+                    }
+
                     $monto = number_format($value['MONTO'], 2);
                     $tabla .= <<<html
                      <tr style="padding: 0px !important; ">
@@ -949,7 +969,7 @@ html;
                   
                     
                     <td style="padding-top: 22px !important;">
-                      
+                        {$ver_resumen}
                     </td>
                 </tr>
 html;
