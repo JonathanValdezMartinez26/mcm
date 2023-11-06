@@ -3140,6 +3140,11 @@ html;
                     $color = 'warning';
                     $icon = 'fa-clock-o';
                 }
+                else if($value['ESTATUS_CL'] == '-')
+                {
+                    $color = 'danger';
+                    $icon = 'fa-close';
+                }
                 else
                 {
                     $color = 'success';
@@ -3155,6 +3160,11 @@ html;
                 {
                     $color_a = 'warning';
                     $icon_a = 'fa-clock-o';
+                }
+                else if($value['ESTATUS_AV'] == '-')
+                {
+                    $color_a = 'danger';
+                    $icon_a = 'fa-close';
                 }
                 else
                 {
@@ -3256,7 +3266,7 @@ html;
 
                 //var_dump($value['PRORROGA']);
 
-                if($value['EJEC_CALL'] == 'PENDIENTE DE VALIDAR')
+                if($value['EJEC_CALL'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == 'PENDIENTE DE VALIDAR')
                 {
                     $botones_prorroga = <<<html
                 <td style="padding-top: 22px !important;">
@@ -3498,8 +3508,6 @@ html;
                         <hr>
                         <div><b>VALIDO:</b> {$value['NOMBRE1']} {$value['PRIMAPE']} {$value['SEGAPE']}</div>
                         
-                        
-                        ////////////////aqui hay que corregir
                     
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
