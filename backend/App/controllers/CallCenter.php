@@ -673,7 +673,8 @@ html;
             }
             else
             {
-                $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_all);
+                array_push($cdgco_suc, $suc);
+                $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_suc);
                 //var_dump($Solicitudes);
             }
             //var_dump($Solicitudes);
