@@ -660,7 +660,7 @@ html;
                 }
                 else
                 {
-                    var_dump("1010");
+                    //var_dump("1010");
                     if($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL')
                     {
                         $Solicitudes = CallCenterDao::getAllSolicitudes('');
