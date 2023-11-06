@@ -236,7 +236,7 @@ sql;
 
              
 sql;
-            var_dump($query);
+            //var_dump($query);
             return $mysqli->queryAll($query);
         }
         else
