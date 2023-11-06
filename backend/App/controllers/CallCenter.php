@@ -653,7 +653,7 @@ html;
 
             if($credito == '' && $ciclo == '')
             {
-                if($suc == '000')
+                if($suc == '000' || $suc == '')
                 {
                     $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_all);
                     //var_dump("1");
