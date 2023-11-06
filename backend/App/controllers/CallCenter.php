@@ -3468,7 +3468,7 @@ html;
                 }
 
 
-                if($value['EJEC_CALL'] == 'PENDIENTE DE VALIDAR')
+                if($value['NOMBRE1'] == 'PENDIENTE DE VALIDACIÓN' || $value['NOMBRE1'] == '-')
                 {
                     $botones_prorroga = <<<html
                 <td style="padding-top: 22px !important;">
