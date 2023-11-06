@@ -659,8 +659,16 @@ html;
                 }
                 else
                 {
-                    array_push($cdgco_suc, $suc);
-                    $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_suc);
+                    if($this->__usuario == 'ADMIN')
+                    {
+                        array_push($cdgco_suc, $suc);
+                        $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_suc);
+                    }
+                    else
+                    {
+                        $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_all);
+                    }
+
                 }
             }
             else
@@ -3235,10 +3243,34 @@ html;
                     }else if($value['REACTIVACION'] == '3')
                     {
                         $boton_titulo_reactivar = 'Reactivar Declinado';
+                    }else if($value['REACTIVACION'] == '400')
+                    {
+                        $boton_titulo_reactivar = 'Reactivar Declinado';
                     }
+
                 }
 
                 //var_dump($value['PRORROGA']);
+
+                if($value['EJEC_CALL'] == 'PENDIENTE DE VALIDAR')
+                {
+                    $botones_prorroga = <<<html
+                <td style="padding-top: 22px !important;">
+                </td>
+html;
+                }
+                else
+                {
+                    $botones_prorroga = <<<html
+                <td style="padding-top: 22px !important;">
+                        <a type="button" class="btn btn-primary btn-circle" onclick="ProrrogaPedir('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: $color_boton; color: $fuente " $des_prorroga><i class="fa fa-edit"></i> <b>$boton_titulo_prorroga</b>
+                        </a>
+                        <br>
+                        <a type="button" class="btn btn-warning btn-circle" onclick="ReactivarSolicitud('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: #ffbcbc; color: #0D0A0A" ><i class="fa fa-repeat"></i> <b>$boton_titulo_reactivar</b>
+                        </a>
+                </td>
+html;
+                }
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
@@ -3256,7 +3288,7 @@ html;
                         
                         <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
                         <hr>
-                        <div><b>VALIDO:</b> {$value['NOMBRE1']} {$value['PRIMAPE']} {$value['SEGAPE']}</div>
+                        <div><b>VALIDO:</b> {$value['EJEC_CALL']}</div>
 
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
@@ -3270,13 +3302,7 @@ html;
 
                     </td>
                    
-                     <td style="padding-top: 22px !important;">
-                        <a type="button" class="btn btn-primary btn-circle" onclick="ProrrogaPedir('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: $color_boton; color: $fuente " $des_prorroga><i class="fa fa-edit"></i> <b>$boton_titulo_prorroga</b>
-                        </a>
-                        <br>
-                        <a type="button" class="btn btn-warning btn-circle" onclick="ReactivarSolicitud('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: #ffbcbc; color: #0D0A0A" ><i class="fa fa-repeat"></i> <b>$boton_titulo_reactivar</b>
-                        </a>
-                    </td>
+                     $botones_prorroga
                 </tr>
 html;
             }
@@ -3421,7 +3447,31 @@ html;
                     }else if($value['REACTIVACION'] == '3')
                     {
                         $boton_titulo_reactivar = 'Reactivar Declinado';
+                    }else if($value['REACTIVACION'] == '400')
+                    {
+                        $boton_titulo_reactivar = 'Reactivar Declinado';
                     }
+                }
+
+
+                if($value['EJEC_CALL'] == 'PENDIENTE DE VALIDAR')
+                {
+                    $botones_prorroga = <<<html
+                <td style="padding-top: 22px !important;">
+                </td>
+html;
+                }
+                else
+                {
+                $botones_prorroga = <<<html
+                <td style="padding-top: 22px !important;">
+                        <a type="button" class="btn btn-primary btn-circle" onclick="ProrrogaPedir('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: $color_boton; color: $fuente " $des_prorroga><i class="fa fa-edit"></i> <b>$boton_titulo_prorroga</b>
+                        </a>
+                        <br>
+                        <a type="button" class="btn btn-warning btn-circle" onclick="ReactivarSolicitud('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: #ffbcbc; color: #0D0A0A" ><i class="fa fa-repeat"></i> <b>$boton_titulo_reactivar</b>
+                        </a>
+                </td>
+html;
                 }
 
 
@@ -3443,6 +3493,9 @@ html;
                         <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
                         <hr>
                         <div><b>VALIDO:</b> {$value['NOMBRE1']} {$value['PRIMAPE']} {$value['SEGAPE']}</div>
+                        
+                        
+                        ////////////////aqui hay que corregir
                     
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
@@ -3457,13 +3510,7 @@ html;
                      
                     </td>
                    
-                     <td style="padding-top: 22px !important;">
-                        <a type="button" class="btn btn-primary btn-circle" onclick="ProrrogaPedir('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: $color_boton; color: $fuente " $des_prorroga><i class="fa fa-edit"></i> <b>$boton_titulo_prorroga</b>
-                        </a>
-                        <br>
-                        <a type="button" class="btn btn-warning btn-circle" onclick="ReactivarSolicitud('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: #ffbcbc; color: #0D0A0A" ><i class="fa fa-repeat"></i> <b>$boton_titulo_reactivar</b>
-                        </a>
-                    </td>
+                     $botones_prorroga
                 </tr>
 html;
             }
