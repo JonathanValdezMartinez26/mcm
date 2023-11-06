@@ -677,6 +677,7 @@ html;
                 array_push($cdgco_suc, $suc);
                 $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_suc);
                 //var_dump($Solicitudes);
+                var_dump("1");
             }
             //var_dump($Solicitudes);
 
