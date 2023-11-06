@@ -651,22 +651,23 @@ html;
             }
         } else {
 
-            if($credito == '' && $ciclo == '' && $suc == '')
+            if($credito == '' && $ciclo == '')
             {
                 if($suc == '000')
                 {
                     $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_all);
+                    //var_dump("1");
                 }
                 else
                 {
                     if($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL')
                     {
-                        array_push($cdgco_suc, $suc);
-                        $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_suc);
+                        $Solicitudes = CallCenterDao::getAllSolicitudes('');
                     }
                     else
                     {
-                        $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_all);
+                        array_push($cdgco_suc, $suc);
+                        $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_suc);
                     }
 
                 }

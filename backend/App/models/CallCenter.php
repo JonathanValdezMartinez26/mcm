@@ -429,7 +429,7 @@ sql;
     public static function getAllSolicitudes($cdgco){
 
         $string_from_array = implode(', ', $cdgco);
-        //var_dump($string_from_array);
+        var_dump($string_from_array);
 
         if($string_from_array != '')
         {
