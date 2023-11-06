@@ -3266,7 +3266,7 @@ html;
 
                 //var_dump($value['PRORROGA']);
 
-                if($value['NOMBRE1'] == 'PENDIENTE DE VALIDACIÓN' || $value['NOMBRE1'] == '-')
+                if($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-')
                 {
                     $botones_prorroga = <<<html
                 <td style="padding-top: 22px !important;">
@@ -3468,7 +3468,7 @@ html;
                 }
 
 
-                if($value['NOMBRE1'] == 'PENDIENTE DE VALIDACIÓN' || $value['NOMBRE1'] == '-')
+                if($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-')
                 {
                     $botones_prorroga = <<<html
                 <td style="padding-top: 22px !important;">
@@ -3483,7 +3483,7 @@ html;
                         </a>
                         <br>
                         <a type="button" class="btn btn-warning btn-circle" onclick="ReactivarSolicitud('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: #ffbcbc; color: #0D0A0A" ><i class="fa fa-repeat"></i> <b>$boton_titulo_reactivar</b>
-                        </a>
+                        </a>fvfvfvfvf
                 </td>
 html;
                 }
