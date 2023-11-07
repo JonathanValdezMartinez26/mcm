@@ -988,9 +988,7 @@ html;
                 }
 
                 View::set('tabla', $tabla);
-                View::set('Administracion', $AdministracionOne);
                 View::set('credito', $credito);
-                View::set('fechaActual', $fechaActual);
                 View::set('usuario', $this->__usuario);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -3285,6 +3283,17 @@ html;
                 </td>
 html;
                 }
+                if($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-')
+                {
+                    $ver_resumen = '';
+
+                }else{
+                    $ver_resumen = <<<html
+                        <hr>
+                        <a type="button" target="_blank" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Act=N&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle"><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen
+                        </a>
+html;
+                }
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
@@ -3311,12 +3320,13 @@ html;
                     <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span> Comentarios Finales</div>
                     <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud</div>
                     $vobo
-                    <hr>
-                    <div><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen</div>
+                   
+                    $ver_resumen
 
                     </td>
                    
                      $botones_prorroga
+                     
                 </tr>
 html;
             }
@@ -3477,14 +3487,26 @@ html;
                 }
                 else
                 {
-                $botones_prorroga = <<<html
+                    $botones_prorroga = <<<html
                 <td style="padding-top: 22px !important;">
                         <a type="button" class="btn btn-primary btn-circle" onclick="ProrrogaPedir('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: $color_boton; color: $fuente " $des_prorroga><i class="fa fa-edit"></i> <b>$boton_titulo_prorroga</b>
                         </a>
                         <br>
                         <a type="button" class="btn btn-warning btn-circle" onclick="ReactivarSolicitud('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: #ffbcbc; color: #0D0A0A" ><i class="fa fa-repeat"></i> <b>$boton_titulo_reactivar</b>
-                        </a>fvfvfvfvf
+                        </a>
                 </td>
+html;
+                }
+
+                if($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-')
+                {
+                    $ver_resumen = '';
+
+                }else{
+                    $ver_resumen = <<<html
+                        <hr>
+                        <a type="button" target="_blank" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Act=N&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle"><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen
+                        </a>
 html;
                 }
 
@@ -3516,10 +3538,8 @@ html;
                     <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span> Comentarios Finales</div>
                     <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud</div>
                     $vobo
-                    <hr>
-                       
-                            <button onclick="VerResumen();"><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen</button>
-                     
+                    
+                    $ver_resumen
                     </td>
                    
                      $botones_prorroga

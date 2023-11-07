@@ -330,7 +330,7 @@
                                                         if($desactivar_aval == 'false')
                                                         {
                                                             $tabla = <<<html
-                                                            <button type="button" $ocultar_boton_l4_iniciar_a class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_aval" data-backdrop="static" data-keyboard="false">
+                                                            <button type="button" disabled $ocultar_boton_l4_iniciar_a class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_aval" data-backdrop="static" data-keyboard="false">
                                                                 <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">$titulo_boton_l4_a </label>
                                                             </button>
 html;
@@ -401,7 +401,7 @@ html;
                                                     <label for="comentarios_prorroga">Comentarios de Prorroga *</label>
                                                     <textarea name="comentarios_prorroga" id="comentarios_prorroga" class="form-control" rows="7" cols="50" placeholder="Escribe tus comentarios FINALES, una vez que hayas completado el proceso correspondiente" style="background-color: white; resize: none"> $com_prorroga</textarea>
 
-                                                    <button type="submit" name="agregar_resumen" value="enviar_resumen" class="btn btn-primary">
+                                                    <button type="submit" disabled name="agregar_resumen" value="enviar_resumen" class="btn btn-primary">
                                                         <i class="fa fa-save"></i> <b>Guardar</b>
                                                     </button>
                                                 </div>
@@ -465,7 +465,7 @@ html;
     <div class="modal-dialog modal-lg" style="width: 1300px !important;">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" disabled class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <span class="label label-danger" style="font-size: 95% !important; border-radius: 50em !important; background: #787878FF">CLIENTE</span>
                 <form onsubmit="enviar_add_cl(); return false" id="Add_cl">
                 <center><h4 class="modal-title"><?php echo $Administracion[0]['CLIENTE']; ?>, LLAMADA #<label id="titulo" name="titulo"><?php  if($Administracion[3]['NUMERO_INTENTOS_CL'] == NULL){$num = '1';}else {$num = $Administracion[3]['NUMERO_INTENTOS_CL'] + 1;} echo $num;?></label></h4></center>
@@ -733,8 +733,8 @@ html;
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="submit" id="agregar_CL" name="agregar_CL" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Respuestas</button>
+                <button type="button" disabled class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button type="submit"  disabled id="agregar_CL" name="agregar_CL" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Respuestas</button>
                 </form>
             </div>
 
