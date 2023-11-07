@@ -235,6 +235,8 @@ html;
                    <li><a href="/ApiCondusef/UploadFile/">Subir Archivo</a></li>
                    <li><a href="/ApiCondusef/GetMyTickets/">Obtener Tickets</a></li>
                    <li><a href="/ApiCondusef/StatusTicket/">Status de Tickets</a></li>
+                   <li><a href="/ApiCondusef/StatusTicket/">Corregir un documento</a></li>
+                   <li><a href="/ApiCondusef/StatusTicket/">Eliminar un documento</a></li>
                   </ul>
                 </li>
               </ul>
