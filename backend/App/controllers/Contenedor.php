@@ -232,9 +232,9 @@ html;
                 <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
                 </i>&nbsp;Api Condusef<span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
-                   <li><a href="/Operaciones/ReportePLDDesembolsos/">PLD Reporte Desembolsos</a></li>
-                   <li><a href="/Operaciones/ReportePLDPagos/">PLD Reporte Pagos</a></li>
-                   <li><a href="/Operaciones/ReportePLDPagosNacimiento/">PLD R. Pagos Edad</a></li>
+                   <li><a href="/ApiCondusef/UploadFile/">Subir Archivo</a></li>
+                   <li><a href="/ApiCondusef/GetMyTickets/">Obtener Tickets</a></li>
+                   <li><a href="/ApiCondusef/StatusTicket/">Status de Tickets</a></li>
                   </ul>
                 </li>
               </ul>
