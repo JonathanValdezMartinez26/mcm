@@ -226,6 +226,21 @@ if($this->__perfil == 'ADMIN' || $this->__usuario == 'PLD') {
 html;
 }
 
+        if($this->__perfil == 'ADMIN' || $this->__usuario == 'PLD') {
+            $menu .= <<<html
+              <ul class="nav side-menu">
+                <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
+                </i>&nbsp;Api Condusef<span class="fa fa-chevron-down"></span></a>
+                  <ul class="nav child_menu">
+                   <li><a href="/Operaciones/ReportePLDDesembolsos/">PLD Reporte Desembolsos</a></li>
+                   <li><a href="/Operaciones/ReportePLDPagos/">PLD Reporte Pagos</a></li>
+                   <li><a href="/Operaciones/ReportePLDPagosNacimiento/">PLD R. Pagos Edad</a></li>
+                  </ul>
+                </li>
+              </ul>
+html;
+        }
+
         if($this->__perfil == 'ADMIN') {
             $menu .= <<<html
               <ul class="nav side-menu">
