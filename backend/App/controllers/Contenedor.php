@@ -78,7 +78,7 @@ $menu =<<<html
           <div class="clearfix"></div>
           <div class="profile clearfix">
             <div class="profile_pic">
-              <img src="https://www.designbust.com/download/325/png/user_online_icon512.png" alt="..." class="img-circle profile_img">
+              <img src="https://static.vecteezy.com/system/resources/previews/013/042/571/large_2x/default-avatar-profile-icon-social-media-user-photo-in-flat-style-vector.jpg" alt="..." class="img-circle profile_img">
             </div>
             <div class="profile_info">
               <span>USUARIO: {$usuario}</span>

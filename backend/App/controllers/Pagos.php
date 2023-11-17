@@ -308,7 +308,7 @@ html;
                 }
                 else
                 {
-                    $date_past = strtotime('-3 days', strtotime($fechaActual));
+                    $date_past = strtotime('-4 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
 
                     $fecha_base = strtotime($value['FECHA']);
@@ -2020,7 +2020,11 @@ html;
         $horaActual = date("H:i:s");
         $dia = date("N");
 
+        //$dia = 2;
+
         $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__usuario);
+
+        $fue_dia_festivo = $AdministracionOne[2]['TOT'];
 
         $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
         if($hora_cierre == '')
@@ -2041,8 +2045,21 @@ html;
                 }
                 else
                 {
-                    $date_past = strtotime('-1 days', strtotime($fechaActual));
-                    $date_past = date('Y-m-d', $date_past);
+                    if($fue_dia_festivo == 1 && $dia == 2)
+                    {
+                        $date_past = strtotime('-4 days', strtotime($fechaActual));
+                        $date_past = date('Y-m-d', $date_past);
+                    }
+                    else if($fue_dia_festivo == 1 && $dia != 2)
+                    {
+                        $date_past = strtotime('-2 days', strtotime($fechaActual));
+                        $date_past = date('Y-m-d', $date_past);
+                    }
+                    else
+                    {
+                        $date_past = strtotime('-1 days', strtotime($fechaActual));
+                        $date_past = date('Y-m-d', $date_past);
+                    }
                 }
 
                 $inicio_f = $date_past;
