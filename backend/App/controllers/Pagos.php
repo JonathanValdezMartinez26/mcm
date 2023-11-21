@@ -316,6 +316,9 @@ html;
 
                     $inicio_f = $date_past;
 
+
+
+
                     if($inicio_f == $fecha_base)
                     {
                         $editar = <<<html
@@ -2131,15 +2134,19 @@ html;
                     }
                     else
                     {
+
+
+
                         $date_past_b = strtotime('-3 days', strtotime($fechaActual));
                         $date_past_b = date('Y-m-d', $date_past_b);
+
 
                         $fecha_base = strtotime($value['FECHA']);
                         $fecha_base = date('Y-m-d', $fecha_base);
 
                         $inicio_b = $date_past_b;
 
-                        if($inicio_b == $fecha_base)
+                        if(  ($inicio_b == $fecha_base) ||   (($fechaActual == $AdministracionOne[2]['FECHA_CAPTURA']) && $fecha_base == '2023-11-17'))
                         {
                             if($horaActual <= $hora_cierre)
                             {

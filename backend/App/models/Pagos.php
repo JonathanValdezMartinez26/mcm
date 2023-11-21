@@ -637,8 +637,11 @@ sql;
         $fechaActual = date("Y-m-d");
 
         $query_dia_festivo=<<<sql
-        SELECT COUNT(*) AS TOT FROM DIAS_FESTIVOS WHERE FECHA_CAPTURA = TIMESTAMP '$fechaActual 00:00:00.000000'
+        SELECT COUNT(*) AS TOT, TO_CHAR(FECHA_CAPTURA, 'YYYY-mm-dd') as FECHA_CAPTURA FROM DIAS_FESTIVOS WHERE FECHA_CAPTURA = TIMESTAMP '$fechaActual 00:00:00.000000'
+        GROUP BY FECHA_CAPTURA 
 sql;
+
+        //var_dump($query_dia_festivo);
         $consulta_horario = $mysqli->queryOne($query_horario);
         $consulta_dia_festivo = $mysqli->queryOne($query_dia_festivo);
 
