@@ -188,6 +188,19 @@ sql;
 
     }
 
+    public static function getComboSucursalesAllCDGCO(){
+
+        $mysqli = Database::getInstance();
+        $query=<<<sql
+           SELECT CO.CODIGO, CO.NOMBRE  FROM ASIGNACION_SUC_A
+           INNER JOIN CO ON CO.CODIGO = ASIGNACION_SUC_A.CDGCO 
+		    
+sql;
+        //var_dump($query);
+        return $mysqli->queryAll($query);
+
+    }
+
     public static function getComboSucursalesGlobales(){
 
         $mysqli = Database::getInstance();
