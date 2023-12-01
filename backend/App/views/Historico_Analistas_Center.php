@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form class="" id="consulta" action="/CallCenter/Historico/" method="GET" onsubmit="return Validar()">
+                    <form class="" id="consulta" action="/CallCenter/HistoricoAnalistas/" method="GET" onsubmit="return Validar()">
                         <div class="row">
                             <div class="col-md-12">
 
