@@ -252,7 +252,7 @@ sql;
         }
         else
         {
-            if($perfil == 'ADMIN' || $perfil == 'ACALL')
+            if($perfil == 'ADMIN' || $perfil == 'ACALL' || $cdgpe == 'ESMM')
             {
                 $mysqli = Database::getInstance();
                 $query=<<<sql

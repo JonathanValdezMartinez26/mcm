@@ -196,7 +196,14 @@ html;
             }
             else{
                 $mis = 'Mis';
-                $opcion = '<li><a href="/CallCenter/Global/">Todos los Pendientes</a></li>';
+                if($this->__usuario == 'ESMM')
+                {
+                    $opcion = '<li><a href="/CallCenter/HistoricoAnalistas/">Histórico Analistas</a></li>';
+                }
+
+                $opcion .= '<li><a href="/CallCenter/Global/">Todos los Pendientes</a></li>';
+
+
             }
             $menu .= <<<html
                    <li><a href="/CallCenter/Pendientes/">$mis Pendientes $titulo</a></li>

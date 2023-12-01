@@ -1,2 +1,0 @@
-
-                '' AS NUMERO_DOCUMENTO,
