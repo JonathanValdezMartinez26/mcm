@@ -116,7 +116,7 @@ html;
 html;
         }
 
-        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil == 'AMOCA')
+        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil == 'AMOCA' || $this->__perfil == 'CPAGO')
         {
             $menu.=<<<html
                     <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
