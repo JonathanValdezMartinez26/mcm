@@ -116,7 +116,7 @@ html;
 html;
         }
 
-        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__usuario == 'LGFR' || $this->__usuario == 'PLMV' || $this->__usuario == 'PMAB' || $this->__usuario == 'MGJC')
+        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__usuario == 'LGFR' || $this->__usuario == 'PLMV' || $this->__usuario == 'PMAB' || $this->__usuario == 'MGJC' || $this->__usuario== 'AVGA')
         {
             $menu.=<<<html
                     <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
@@ -132,7 +132,7 @@ html;
 html;
         }
 
-        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil== 'GTOCA' || $this->__usuario== 'AVGA' || $this->__perfil== 'OCOF' || $this->__perfil== 'CPAGO' || $this->__perfil == 'ACALL' )
+        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil== 'GTOCA' || $this->__perfil== 'AMOCA' || $this->__perfil== 'OCOF' || $this->__perfil== 'CPAGO' || $this->__perfil == 'ACALL' )
         {
             $menu.=<<<html
                     <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
