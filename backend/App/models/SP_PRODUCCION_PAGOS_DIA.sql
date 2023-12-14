@@ -1,532 +1,437 @@
-CREATE OR REPLACE PROCEDURE ESIACOM.SPACCIONPAGODIA (prmCDGEM IN PAGOSDIA.CDGEM%TYPE,
-                                                     prmFECHA IN PAGOSDIA.FECHA%TYPE,
-                                                     prmFECHAAUX IN PAGOSDIA.FECHA%TYPE,
-                                                     prmCDGNS IN PAGOSDIA.CDGNS%TYPE,
-                                                     prmCICLO IN PAGOSDIA.CICLO%TYPE,
-                                                     prmSECUENCIA IN PAGOSDIA.SECUENCIA%TYPE,
-                                                     prmNOMBRE IN PAGOSDIA.NOMBRE%TYPE,
-                                                     prmCDGOCPE IN PAGOSDIA.CDGOCPE%TYPE,
-                                                     prmEJECUTIVO IN PAGOSDIA.EJECUTIVO%TYPE,
-                                                     prmCDGPE IN PAGOSDIA.CDGOCPE%TYPE,
-                                                     prmMONTO IN PAGOSDIA.MONTO%TYPE,
-                                                     prmTIPOMOV IN PAGOSDIA.TIPO%TYPE,
-                                                     prmTIPO IN NUMBER,
-                                                     vMensaje OUT VARCHAR2) IS
+CREATE OR REPLACE PROCEDURE ESIACOM.SP_CIERRE_DIA
+( PFECHA_CALC IN DATE
+, PDELETE IN INTEGER)
+
+IS
+
 /******************************************************************************
-   NAME:       SPACCIONPAGODIA
-   PURPOSE:
+   NAME:       sp_Cierre_Dia
+   PURPOSE:    PROCESO PARA REGISTRAR CIERRE DE DIA
 
    REVISIONS:
-   Ver        Date        Author           Description
-   ---------  ----------  ---------------  ------------------------------------
-   1.0        06/07/2020  ANGEL GUERRERO   1. Created this procedure.
+   Ver        Date          Author                      Description
+   ---------  ----------   -----------------------     ------------------------------------
+   1.0        05/05/2012   ANGEL M. GUERRERO MEJIA     Created this procedure.
+   1.1       15/04/2014    ANGEL M. GUERRERO MEJIA     Se agrego el dato del coordinador del grupo
+   1.2       19/01/2017   HUGO GONZALEZ MORA           Se obtiene el coordinador de la tabla PE
+   1.3       02/02/2017   HUGO GONZALEZ MORA           Se crearon dos nuevos campos en TBL_CIERRE_DIA (CDGCRD y NOMCRD) y
+                                                       nuevamente se pasaran los datos del coordinador y nombre del coordinador (COOR, NOM_COOR)
+                                                       además de los datos de la tabla CRD en los nuevos campos (CDGCRD y NOMCRD)
 
 ******************************************************************************/
 
-      ecode          NUMBER;
-      emesg          VARCHAR2(200);
-      vCount         NUMBER;
-      vCount2        NUMBER;
-      vHora          NUMBER;
-      vTipo          VARCHAR2(1);
-      valTiposUnicos number:=0;
-      vMontoElim     NUMBER(12,2);
 BEGIN
 
-     vTipo := prmTIPOMOV;
+    DECLARE
+VARCDGEM        VARCHAR2(6) := 'EMPFIN';
+    VARCDGCLNS      VARCHAR2(6);
+    VARCLNS         VARCHAR2(1);
+    VARNOMBRE       VARCHAR2(80);
+    VARCICLO        VARCHAR2(2);
+    VARSDO_CAPITAL  DECIMAL(10,2);
+    VARSDO_INTERES  DECIMAL(10,2);
+    VARSDO_RECARGOS DECIMAL(10,2);
+    VARSDO_TOTAL    DECIMAL(10,2);
+    VARMORA_CAPITAL DECIMAL(10,2);
+    VARMORA_INTERES DECIMAL(10,2);
+    VARMORA_TOTAL   DECIMAL(10,2);
+    VARDIAS_MORA    INTEGER;
+    VARPORCENT_MORA DECIMAL(6,2);
+    VARNO_CLIENTES  INTEGER;
+    VARFECHA_CALC   DATE := PFECHA_CALC;
+    VARPERIODICIDAD VARCHAR2(1);
+    VARINICIO       DATE;
+    VARPAGADOREAL   DECIMAL(10,2);
+    VARPARCIALIDAD  DECIMAL(10,2);
+    VARCOD_SUCURSAL VARCHAR2(3);
+    VARNOM_SUCURSAL VARCHAR2(30);
+    VARCOD_ASESOR   VARCHAR2(6);
+    VARNOM_ASESOR   VARCHAR2(80);
+    VARPAGOS_COMP   DECIMAL(10,2);
+    VARPAGOS_REAL   DECIMAL(10,2);
+    VARTIPO_CARTERA VARCHAR2(1);
+    VARCONTADOR     INTEGER;
+    VARNO_PAGOS     INTEGER;
+    VARMONTO_PAGOS  DECIMAL(11,2);
+    VARHISTORICO    INTEGER;
 
---     --CONSULTA PARA SABER SI EL CREDITO ES DE UNA AGENCIA QUE TIENE CAJA
---     SELECT COUNT(*) INTO vCount2 FROM PRN WHERE CDGEM = prmCDGEM AND CDGNS = prmCDGNS AND CICLO = prmCICLO
---     AND CDGCO IN ('001',  --TENANCINGO
---                   '002',  --XONACATLAN
---                   '003',  --CHOLULA 1
---                   '004',  --HUAMANTLA
---                   '005',  --CHOLULA 2
---                   '006',  --TENANGO
---                   '007',  --ZINA 1
---                   '008',  --PUEBLA SUR
---                   '009',  --ATIZAPAN
---                   '010',  --SANTA ANA
---                   '011',  --ATLIXCO
---                   '012',  --APIZACO
---                   '013',  --PUEBLA NORTE
---                   '014',  --TOLUCA
---                   '015',  --IXTAPALUCA
---                   '016',  --ZINA 2
---                   '017', --ZACATLAN
---                   '018'); --CHALCO-AMECA
+    VARNO_NOMINA       VARCHAR2(20);
+    VARREGION          VARCHAR2(50);
+    VARINICIO_AUX      DATE;
+    VARFIN             DATE;
+    VARPLAZO           NUMBER(3);
+    VARTASA            NUMBER(7,4);
+    VARINTERES_GLOBAL  NUMBER(11,2);
+    VARMONTO_CUOTA     NUMBER(11,2);
+    VARTOTAL_PAGAR     NUMBER(11,2);
+    VARCAPITAL_PAGADO  NUMBER(11,2);
+    VARINTERES_PAGADO  NUMBER(11,2);
+    VARSITUACION       VARCHAR2(1);
+    VARMONTO_ENTREGADO NUMBER(11,2);
+    VARSALDO_GL        NUMBER(11,2);
+    vFIN_REAL          DATE;
+    vFECHA_INC         DATE;
 
-SELECT TO_NUMBER(TO_CHAR(SYSDATE,'HH24')) INTO vHora FROM DUAL;
---
---     --VALIDA SI ES UNA HORA VALIDA PARA LA CAPTURA DE PAGOS POR PARTE DE LAS CAJERAS
---     IF vCount2 = 1 THEN
---
---        IF (vHora < 8 OR vHora > 18) AND prmCDGPE NOT IN ('SORA','AMGM','GASC')THEN
---            vMensaje := '0 No se puede capturar el pago. Caja cerrada.';
---            RETURN;
---        END IF;
---     END IF;
+    --AMGM 15/04/2014 Se agrego el dato del coordinador del grupo
+    VARCOD_COOR VARCHAR2(6);
+    VARNOM_COOR VARCHAR2(80);
 
-IF (vHora < 7 OR vHora > 18) AND prmCDGPE NOT IN ('SORA','AMGM','GASC')THEN
-        vMensaje := '0 No se puede capturar el pago. Caja cerrada.';
-        RETURN;
+    -- HGM 19/01/2017 Se agrego el dato del coordinador desde la tabla PE y CRD
+    VARCDGCRD VARCHAR(3);
+    VARNOMCRD VARCHAR(30);
+
+    ecode NUMBER;
+    emesg VARCHAR2(200);
+
+CURSOR CIERRE IS
+SELECT PRN.CDGEM
+     ,PRN.CDGNS CDGCLNS
+     ,'G' CLNS
+     ,NS.NOMBRE
+     ,PRN.CICLO
+     , ROUND(SALDOCAPITALPRN (PrN.CdgEm, PrN.CdgNs, PrN.Ciclo, PrN.CantEntre,    PRN.Tasa, PRN.Plazo, PrN.Periodicidad, PrN.CdgMCI,    PrN.Inicio, PrN.DiaJunta, PrN.MULTPER, PrN.PeriGrCap,    PrN.PeriGrInt, Prn.DesFasePago, PRN.CdgTi, PRN.ModoApliReca,   TRUNC(PFECHA_CALC), NULL,   'N'),2) AS SaldoCapital
+     , ROUND(SALDOTOTALPRN(PrN.CdgEm, PrN.CdgNS, PrN.Ciclo, PrN.CantEntre, PrN.Tasa,    PrN.Plazo, PrN.Periodicidad, PrN.CdgMCI, PrN.Inicio, PrN.DiaJunta,    PrN.MULTPER, PrN.PeriGrCap, PrN.PeriGrInt, PrN.DesfasePago, PrN.CdgTI,    PrN.ModoApliReca, TRUNC(PFECHA_CALC)) - SALDOCAPITALPRN (PrN.CdgEm, PrN.CdgNs, PrN.Ciclo, PrN.CantEntre,    PRN.Tasa, PRN.Plazo, PrN.Periodicidad, PrN.CdgMCI,    PrN.Inicio, PrN.DiaJunta, PrN.MULTPER, PrN.PeriGrCap,    PrN.PeriGrInt, Prn.DesFasePago, PRN.CdgTi, PRN.ModoApliReca,   TRUNC(PFECHA_CALC), NULL,   'N'),2) AS SaldoINTERES
+     ,0 AS SALDORECARGOS
+     , ROUND(SALDOTOTALPRN(PrN.CdgEm, PrN.CdgNS, PrN.Ciclo, PrN.CantEntre, PrN.Tasa,    PrN.Plazo, PrN.Periodicidad, PrN.CdgMCI, PrN.Inicio, PrN.DiaJunta,    PrN.MULTPER, PrN.PeriGrCap, PrN.PeriGrInt, PrN.DesfasePago, PrN.CdgTI,    PrN.ModoApliReca, TRUNC(PFECHA_CALC)),2) AS SALDOTOTAL
+     , ROUND(SaldoVencidoCapitalPrN(PrN.CdgEm,PrN.CdgNS, PrN.Ciclo, PrN.CantEntre, PrN.Tasa, PrN.Plazo, PrN.Periodicidad, PrN.CdgMCI, PrN.Inicio,PrN.DiaJunta, PrN.MULTPER, PrN.PeriGrCap, PrN.PeriGrInt, PrN.DesFasePago, PrN.CdgTi, PrN.ModoApliReca,TRUNC(PFECHA_CALC), null, 'N' ),2) AS MORA_CAP
+     , ROUND(SALDOVENCIDOINTERESPRN(PrN.CdgEm,PrN.CdgNS, PrN.Ciclo, PrN.CantEntre, PrN.Tasa, PrN.Plazo, PrN.Periodicidad, PrN.CdgMCI, PrN.Inicio,PrN.DiaJunta, PrN.MULTPER, PrN.PeriGrCap, PrN.PeriGrInt, PrN.DesFasePago, PrN.CdgTi, PrN.ModoApliReca,TRUNC(PFECHA_CALC)),2) AS MORA_INT
+     , ROUND(SaldoVencidoCapitalPrN(PrN.CdgEm,PrN.CdgNS, PrN.Ciclo, PrN.CantEntre, PrN.Tasa, PrN.Plazo, PrN.Periodicidad, PrN.CdgMCI, PrN.Inicio,PrN.DiaJunta, PrN.MULTPER, PrN.PeriGrCap, PrN.PeriGrInt, PrN.DesFasePago, PrN.CdgTi, PrN.ModoApliReca,TRUNC(PFECHA_CALC), null, 'S' ),2) AS MORA_TOTAL
+     ,fn_Regresa_Ctes(PRN.CDGEM, PRN.CDGNS, PRN.CICLO, 'G') AS NOCLIENTES
+     ,CASE WHEN PRN.INICIO < TO_DATE('01/05/2018','DD/MM/YYYY') THEN
+               FNCALDIASMORA (PRN.CDGEM, PRN.CDGNS, 'G', PRN.CICLO,TRUNC(PFECHA_CALC))
+           ELSE
+               FNCALDIASMORAESP (PRN.CDGEM, PRN.CDGNS, 'G', PRN.CICLO,TRUNC(PFECHA_CALC))
+    END DIAS_MORA
+     ,ROUND((( ROUND(SaldoVencidoCapitalPrN(PrN.CdgEm,PrN.CdgNS, PrN.Ciclo, PrN.CantEntre, PrN.Tasa, PrN.Plazo, PrN.Periodicidad, PrN.CdgMCI, PrN.Inicio,PrN.DiaJunta, PrN.MULTPER, PrN.PeriGrCap, PrN.PeriGrInt, PrN.DesFasePago, PrN.CdgTi, PrN.ModoApliReca,TRUNC(PFECHA_CALC), null, 'S' ),2)) / (ROUND(SALDOTOTALPRN(PrN.CdgEm, PrN.CdgNS, PrN.Ciclo, PrN.CantEntre, PrN.Tasa,    PrN.Plazo, PrN.Periodicidad, PrN.CdgMCI, PrN.Inicio, PrN.DiaJunta,    PrN.MULTPER, PrN.PeriGrCap, PrN.PeriGrInt, PrN.DesfasePago, PrN.CdgTI,    PrN.ModoApliReca, TRUNC(PFECHA_CALC)),2))),2) PORCENT_MORA
+     ,CO.CODIGO COD_SUCURSAL
+     ,CO.NOMBRE AS SUCURSAL
+     , PRN.CDGOCPE AS ASESOR
+     , NOMBREC(NULL,NULL,'I','N',PE.NOMBRE1,PE.NOMBRE2,PE.PRIMAPE,PE.SEGAPE) AS NOM_ASESOR
+     , ROUND(PAGOSCOMPPRN(PRN.CDGEM,PRN.CDGNS,PRN.CICLO, NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,TRUNC(PFECHA_CALC)),2) AS PAGOS_COMP
+     , ROUND(PAGADOCAPITALPRN (Prn.CdgEm, PrN.CdgNS, PrN.Ciclo, PrN.CdgMci, TRUNC(PFECHA_CALC),'S'),2) as PAGOS_REAL
+     ,NVL((SELECT TIPO  FROM PRN_LEGAL WHERE CDGEM = PRN.CDGEM  AND CDGCLNS = PRN.CDGNS AND CLNS = 'G'  AND CICLO = PRN.CICLO  AND TRUNC(ALTA) <= TRUNC(PFECHA_CALC) AND BAJA IS NULL),'V') TIPO_CARTERA
+     ,NVL(PE.TELEFONO, '') AS NO_NOMINA
+     ,RG.NOMBRE AS REGION
+     , PRN.INICIO
+     ,FNFECHAPROXPAGO(PRN.INICIO,PRN.PERIODICIDAD,PRN.PLAZO) FIN
+     ,PRN.Plazo
+     ,PRN.TASA
+     , ROUND(FNGETINTERESGLOBAL(PRN.CdgEm, PRN.CdgNS, PRN.Ciclo,'G'),2) INTERES_TOTAL
+     , ROUND(PARCIALIDADPrN (PrN.CdgEm, PrN.CdgNs, PrN.Ciclo, NVL(PrN.cantentre,PrN.Cantautor),    PrN.Tasa, PrN.Plazo, PrN.Periodicidad, PrN.CdgMCI, PrN.Inicio,    PrN.DiaJunta, PrN.MULTPER, PrN.PeriGrCap, PrN.PeriGrInt, PrN.DesFasePago,    PrN.CdgTi, NULL),2) AS PAG_SEM
+     , ROUND(APAGARPRN(PrN.CdgEm,PrN.CdgNS, PrN.Ciclo, PrN.CantEntre, PrN.Tasa, PrN.Plazo, PrN.Periodicidad, PrN.CdgMCI, PrN.Inicio,PrN.DiaJunta, PrN.MULTPER, PrN.PeriGrCap, PrN.PeriGrInt, PrN.DesFasePago, PrN.CdgTi),2) AS TOTAL_PAGAR
+     , ROUND(PAGADOCAPITALPRN (Prn.CdgEm, PrN.CdgNS, PrN.Ciclo, PrN.CdgMci, TRUNC(PFECHA_CALC),'N'),2) as PAGADOCAPITAL
+     --, ROUND(PAGADOINTERESPRN(PrN.CdgEm, PrN.CdgNs, PrN.Ciclo,   TRUNC(PFECHA_CALC)),2) AS PagadoInteres -- AMGM 13JUN2012 SE CAMBIO ESTA FUNCION POR LA CONSULTA DE ABAJO YA QUE NO ESTABA CONSIDERANDO MOVIMIENTOS EXTRAORDINARIOS A INTERESES (MI)
+     ,NVL((SELECT SUM(PAGADOINT) FROM MP WHERE CDGEM = PRN.CDGEM AND CDGCLNS = PRN.CDGNS AND CLNS = 'G' AND CICLO = PRN.CICLO  AND TIPO <> 'IN' AND ESTATUS <> 'E'),0) PAGADOINTERES
+     ,PRN.SITUACION
+     ,PRN.CANTENTRE
+     , FNSDOGARANTIA(PRN.CDGEM,PRN.CDGNS,PRN.CICLO,'G',TRUNC(PFECHA_CALC)) SALDO_GL
+     ,A.CODIGO COD_COR   --AMGM 15/04/2014
+     ,CASE WHEN A.CODIGO IS NOT NULL THEN NOMBREC(NULL,NULL,'I','N',A.NOMBRE1,A.NOMBRE2,A.PRIMAPE,A.SEGAPE) ELSE NULL END NOM_COR --AMGM 15/04/2014
+     , PE.CDGCRD COD_COR  -- HGM 19/01/2017
+     , CRD.NOMBRE NOM_COR -- HGM 19/01/2017
+FROM  PRN, NS,  PE, CO, RG, PE PE2 LEFT JOIN PE A ON PE2.CDGEM = A.CDGEM AND PE2.CALLE = A.TELEFONO AND A.PUESTO = 'C'  --AMGM 15/04/2014
+                                   LEFT JOIN CRD ON PE2.CDGEM = CRD.CDGEM AND PE2.CDGCRD = CRD.CODIGO -- HGM 19/01/2017
+WHERE PRN.CDGEM = VARCDGEM
+  AND PRN.CDGEM = NS.CDGEM
+  AND PRN.CDGNS = NS.CODIGO
+  AND PRN.CDGEM = PE.CDGEM
+  AND PRN.CDGOCPE = PE.CODIGO
+  AND PRN.CDGEM = PE2.CDGEM   --AMGM 15/04/2014
+  AND PRN.CDGOCPE = PE2.CODIGO    --AMGM 15/04/2014
+  AND PRN.CDGEM = CO.CDGEM
+  AND PRN.CDGCO = CO.CODIGO
+  AND CO.CDGEM = RG.CDGEM
+  AND CO.CDGRG = RG.CODIGO
+  AND PRN.SITUACION = 'E'
+  AND PRN.INICIO <= TRUNC(PFECHA_CALC)
+  AND PRN.INICIO > TO_DATE('01/02/2019','DD/MM/YYYY') --AMGM 18FEB19
+  AND (SELECT COUNT(*) FROM PRN_LEGAL WHERE CDGEM = PRN.CDGEM AND CDGCLNS = PRN.CDGNS AND CICLO = PRN.CICLO AND CLNS = 'G' AND TRUNC(ALTA) <= TRUNC(pFECHA_CALC) AND TIPO = 'Z') = 0
+UNION                                                                          --INCLUYE LA INFORMACION DE CREDITOS INDIVIDUALES
+SELECT PRC.CDGEM
+     ,PRC.CDGCLNS
+     ,PRC.CLNS
+     ,NOMBREC(CL.CDGEM,CL.CODIGO,'I','N',NULL,NULL,NULL,NULL) NOMBRE
+     ,PRC.CICLO
+     , ROUND(SALDOCAPITALPRC (PrC.CdgEm, PrC.CdgCL, PrC.Ciclo, PRC.CLNS, PRC.CDGCLNS, PrC.CantEntre, PRC.Tasa, PRC.Plazo, PrC.Periodicidad, PrC.CdgMCI, PrC.Inicio, PrC.DiaJunta, PrC.MULTPER, PrC.PeriGrCap, PrC.PeriGrInt, PrC.DesFasePago, PRC.CdgTi, PRC.ModoApliReca,   TRUNC(PFECHA_CALC), NULL,   'N'),2) AS SaldoCapital
+     , ROUND(SALDOINTERESPRC (PrC.CdgEm, PrC.CdgCL, PrC.Ciclo, PRC.CLNS, PRC.CDGCLNS, PrC.CantEntre, PRC.Tasa, PRC.Plazo, PrC.Periodicidad, PrC.CdgMCI, PrC.Inicio, PrC.DiaJunta, PrC.MULTPER, PrC.PeriGrCap, PrC.PeriGrInt, PrC.DesFasePago, PRC.CdgTi, PRC.ModoApliReca,   TRUNC(PFECHA_CALC)),2) AS SaldoINTERES
+     ,0 AS SALDORECARGOS
+     , ROUND(SALDOTOTALPRC(PrC.CdgEm, PrC.CdgCL, PrC.Ciclo, PRC.CLNS, PRC.CDGCLNS, PrC.CantEntre, PrC.Tasa, PrC.Plazo, PrC.Periodicidad, PrC.CdgMCI, PrC.Inicio, PrC.DiaJunta, PrC.MULTPER, PrC.PeriGrCap, PrC.PeriGrInt, PrC.DesfasePago, PrC.CdgTI, PrC.ModoApliReca, TRUNC(PFECHA_CALC)),2) AS SALDOTOTAL
+     , ROUND(SaldoVencidoCapitalPrC(PrC.CdgEm,PrC.CdgCL, PrC.Ciclo, PRC.CLNS, PRC.CDGCLNS, PrC.CantEntre, PrC.Tasa, PrC.Plazo, PrC.Periodicidad, PrC.CdgMCI, PrC.Inicio, PrC.DiaJunta, PrC.MULTPER, PrC.PeriGrCap, PrC.PeriGrInt, PrC.DesFasePago, PrC.CdgTi, PrC.ModoApliReca,TRUNC(PFECHA_CALC), null, 'N' ),2) AS MORA_CAP
+     , ROUND(SALDOVENCIDOINTERESPRC(PrC.CdgEm,PrC.CdgCL, PrC.Ciclo, PRC.CLNS, PRC.CDGCLNS, PrC.CantEntre, PrC.Tasa, PrC.Plazo, PrC.Periodicidad, PrC.CdgMCI, PrC.Inicio,PrC.DiaJunta, PrC.MULTPER, PrC.PeriGrCap, PrC.PeriGrInt, PrC.DesFasePago, PrC.CdgTi, PrC.ModoApliReca,TRUNC(PFECHA_CALC)),2) AS MORA_INT
+     , ROUND(SaldoVencidoCapitalPrC(PrC.CdgEm,PrC.CdgCL, PrC.Ciclo, PRC.CLNS, PRC.CDGCLNS, PrC.CantEntre, PrC.Tasa, PrC.Plazo, PrC.Periodicidad, PrC.CdgMCI, PrC.Inicio,PrC.DiaJunta, PrC.MULTPER, PrC.PeriGrCap, PrC.PeriGrInt, PrC.DesFasePago, PrC.CdgTi, PrC.ModoApliReca,TRUNC(PFECHA_CALC), null, 'S' ),2) AS MORA_TOTAL
+     ,fn_Regresa_Ctes(PRC.CDGEM, PRC.CDGCLNS, PRC.CICLO, PRC.CLNS) AS NOCLIENTES
+     ,CASE WHEN PRC.INICIO < TO_DATE('01/05/2018','DD/MM/YYYY') THEN
+               FNCALDIASMORA (PRC.CDGEM, PRC.CDGCLNS, PRC.CLNS, PRC.CICLO,TRUNC(PFECHA_CALC))
+           ELSE
+               FNCALDIASMORAESP (PRC.CDGEM, PRC.CDGCLNS, PRC.CLNS, PRC.CICLO,TRUNC(PFECHA_CALC))
+    END DIAS_MORA
+     ,ROUND((( ROUND(SaldoVencidoCapitalPrC(PrC.CdgEm,PrC.CdgCL, PrC.Ciclo, PRC.CLNS, PRC.CDGCLNS, PrC.CantEntre, PrC.Tasa, PrC.Plazo, PrC.Periodicidad, PrC.CdgMCI, PrC.Inicio,PrC.DiaJunta, PrC.MULTPER, PrC.PeriGrCap, PrC.PeriGrInt, PrC.DesFasePago, PrC.CdgTi, PrC.ModoApliReca,TRUNC(PFECHA_CALC), null, 'S' ),2)) / (ROUND(SALDOTOTALPRC(PrC.CdgEm, PrC.CdgCL, PrC.Ciclo, PRC.CLNS, PRC.CDGCLNS, PrC.CantEntre, PrC.Tasa, PrC.Plazo, PrC.Periodicidad, PrC.CdgMCI, PrC.Inicio, PrC.DiaJunta,    PrC.MULTPER, PrC.PeriGrCap, PrC.PeriGrInt, PrC.DesfasePago, PrC.CdgTI,    PrC.ModoApliReca, TRUNC(PFECHA_CALC)),2))),2) PORCENT_MORA
+     ,CO.CODIGO COD_SUCURSAL
+     ,CO.NOMBRE AS SUCURSAL
+     ,PRC.CDGOCPE AS ASESOR
+     , NOMBREC(NULL,NULL,'I','N',PE.NOMBRE1,PE.NOMBRE2,PE.PRIMAPE,PE.SEGAPE) AS NOM_ASESOR
+     , ROUND(PAGOSCOMPPRC(PRC.CDGEM,PRC.CDGCL,PRC.CICLO, PRC.CLNS, PRC.CDGCLNS, NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,TRUNC(PFECHA_CALC)),2) AS PAGOS_COMP
+     , ROUND(PAGADOCAPITALPRC (PrC.CdgEm, PrC.CdgCL, PrC.Ciclo, PRC.CLNS, PRC.CDGCLNS, PrC.CdgMci, TRUNC(PFECHA_CALC),'S'),2) as PAGOS_REAL
+     ,NVL((SELECT TIPO  FROM PRN_LEGAL WHERE CDGEM = PRC.CDGEM  AND CDGCLNS = PRC.CDGCLNS  AND CICLO = PRC.CICLO AND CLNS = PRC.CLNS AND TRUNC(ALTA) <= TRUNC(PFECHA_CALC) AND BAJA IS NULL),'V') TIPO_CARTERA
+     ,NVL(PE.TELEFONO, '') AS NO_NOMINA
+     ,RG.NOMBRE AS REGION
+     ,PRC.INICIO
+     ,FNFECHAPROXPAGO(PRC.INICIO,PRC.PERIODICIDAD,PRC.PLAZO) FIN
+     ,PRC.Plazo
+     ,PRC.TASA
+     , ROUND(FNGETINTERESGLOBAL(PRC.CdgEm, PRC.CdgCLNS, PRC.Ciclo,PRC.CLNS),2) INTERES_TOTAL
+     , ROUND(PARCIALIDADPrC (PrC.CdgEm, PrC.CdgCL, PrC.Ciclo, PRC.CLNS, PRC.CDGCLNS, NVL(PrC.cantentre,PrC.Cantautor),    PrC.Tasa, PrC.Plazo, PrC.Periodicidad, PrC.CdgMCI, PrC.Inicio,    PrC.DiaJunta, PrC.MULTPER, PrC.PeriGrCap, PrC.PeriGrInt, PrC.DesFasePago, PrC.CdgTi, NULL),2) AS PAG_SEM
+     , ROUND(APAGARPRC(PrC.CdgEm,PrC.CdgCL, PrC.Ciclo, PRC.CLNS, PRC.CDGCLNS, PrC.CantEntre, PrC.Tasa, PrC.Plazo, PrC.Periodicidad, PrC.CdgMCI, PrC.Inicio,PrC.DiaJunta, PrC.MULTPER, PrC.PeriGrCap, PrC.PeriGrInt, PrC.DesFasePago, PrC.CdgTi),2) AS TOTAL_PAGAR
+     , ROUND(PAGADOCAPITALPRC (PrC.CdgEm, PrC.CdgCL, PrC.Ciclo, PRC.CLNS, PRC.CDGCLNS, PrC.CdgMci, TRUNC(PFECHA_CALC),'N'),2) as PAGADOCAPITAL
+     --, ROUND(PAGADOINTERESPRN(PrN.CdgEm, PrN.CdgNs, PrN.Ciclo,   TRUNC(PFECHA_CALC)),2) AS PagadoInteres -- AMGM 13JUN2012 SE CAMBIO ESTA FUNCION POR LA CONSULTA DE ABAJO YA QUE NO ESTABA CONSIDERANDO MOVIMIENTOS EXTRAORDINARIOS A INTERESES (MI)
+     ,NVL((SELECT SUM(PAGADOINT) FROM MP WHERE CDGEM = PRC.CDGEM AND CDGCLNS = PRC.CDGCLNS AND CLNS = PRC.CLNS AND CICLO = PRC.CICLO  AND TIPO <> 'IN' AND ESTATUS <> 'E'),0) PAGADOINTERES
+     ,PRC.SITUACION
+     ,PRC.CANTENTRE
+     , FNSDOGARANTIA(PRC.CDGEM,PRC.CDGCLNS,PRC.CICLO,PRC.CLNS,TRUNC(PFECHA_CALC)) SALDO_GL
+     ,A.CODIGO COD_COR --AMGM 15/04/2014
+     ,CASE WHEN A.CODIGO IS NOT NULL THEN NOMBREC(NULL,NULL,'I','N',A.NOMBRE1,A.NOMBRE2,A.PRIMAPE,A.SEGAPE) ELSE NULL END NOM_COR --AMGM 15/04/2014
+     , PE.CDGCRD COD_COR  -- HGM 19/01/2017
+     , CRD.NOMBRE NOM_COR -- HGM 19/01/2017
+FROM  PRC, CL,  PE, CO, RG, PE PE2 LEFT JOIN PE A ON PE2.CDGEM = A.CDGEM AND PE2.CALLE = A.TELEFONO AND A.PUESTO = 'C' --AMGM 15/04/2014
+                                   LEFT JOIN CRD ON PE2.CDGEM = CRD.CDGEM AND PE2.CDGCRD = CRD.CODIGO -- HGM 19/01/2017
+WHERE PRC.CDGEM = VARCDGEM
+  AND PRC.CDGEM = CL.CDGEM
+  AND PRC.CDGCLNS = CL.CODIGO
+  AND PRC.CDGEM = PE.CDGEM
+  AND PRC.CDGOCPE = PE.CODIGO
+  AND PRC.CDGEM = PE2.CDGEM --AMGM 15/04/2014
+  AND PRC.CDGOCPE = PE2.CODIGO  --AMGM 15/04/2014
+  AND PRC.CDGEM = CO.CDGEM
+  AND PRC.CDGCO = CO.CODIGO
+  AND CO.CDGEM = RG.CDGEM
+  AND CO.CDGRG = RG.CODIGO
+  AND PRC.SITUACION = 'E'
+  AND PRC.CLNS = 'I'
+  AND PRC.INICIO <= TRUNC(PFECHA_CALC)
+  AND PRC.INICIO > TO_DATE('01/02/2019','DD/MM/YYYY') --AMGM 18FEB19
+  AND (SELECT COUNT(*) FROM PRN_LEGAL WHERE CDGEM = PRC.CDGEM AND CDGCLNS = PRC.CDGCL AND CICLO = PRC.CICLO AND CLNS = PRC.CLNS AND TRUNC(ALTA) <= TRUNC(PFECHA_CALC) AND TIPO = 'Z') = 0
+ORDER BY CDGCLNS,CICLO;
+
+BEGIN
+DELETE FROM TBL_CIERRE_DIA
+WHERE FECHA_CALC = VARFECHA_CALC
+  AND FECHA_LIQUIDA IS NULL;
+
+COMMIT;
+DBMS_OUTPUT.PUT_LINE ('REGISTROS ELIMINADOS: ' || VARFECHA_CALC);
+
+OPEN CIERRE;
+LOOP
+FETCH CIERRE INTO VARCDGEM, VARCDGCLNS, VARCLNS, VARNOMBRE, VARCICLO, VARSDO_CAPITAL, VARSDO_INTERES,
+                            VARSDO_RECARGOS, VARSDO_TOTAL, VARMORA_CAPITAL, VARMORA_INTERES,
+                            VARMORA_TOTAL, VARNO_CLIENTES, VARDIAS_MORA, VARPORCENT_MORA,
+                            VARCOD_SUCURSAL, VARNOM_SUCURSAL, VARCOD_ASESOR, VARNOM_ASESOR,
+                            VARPAGOS_COMP, VARPAGOS_REAL, VARTIPO_CARTERA, VARNO_NOMINA, VARREGION, VARINICIO_AUX, VARFIN,
+                            VARPLAZO, VARTASA, VARINTERES_GLOBAL, VARMONTO_CUOTA, VARTOTAL_PAGAR,
+                            VARCAPITAL_PAGADO, VARINTERES_PAGADO, VARSITUACION, VARMONTO_ENTREGADO, VARSALDO_GL,VARCOD_COOR,VARNOM_COOR, --AMGM 15/04/2014
+                            VARCDGCRD, VARNOMCRD; -- HGM 19/01/2017
+            EXIT WHEN CIERRE%NOTFOUND;
+
+            IF VARMORA_CAPITAL < 0 THEN
+
+                VARMORA_CAPITAL := 0;
+
 END IF;
 
-     --VALIDA QUE NO SE PUEDAN CAPTURAR PAGOS DEL DIA ANTERIOR DESPUES DE LAS 12 DEL MEDIO DIA
-     IF vHora >= 12 AND prmFECHA < TRUNC(SYSDATE) AND prmCDGPE NOT IN ('SORA','AMGM','GASC') THEN
-        vMensaje := '0 No se puede registrar/actualizar/eliminar un movimiento con fecha anterior al día de hoy. Hora de captura no permitida';
-        RETURN;
+            IF VARMORA_INTERES < 0 THEN
+
+                VARMORA_INTERES :=0;
+
 END IF;
 
+            IF VARMORA_TOTAL < 0 THEN
 
-     IF prmTIPO = 1 THEN
+                VARMORA_TOTAL := 0;
 
-        -- SOOA 04/01/2023: Validacion que verifica el numero de movimientos, que no sean pagos, en el ciclo
-        -- SOOA 23/01/2023: Se agrega exclusion que permite registrar mas de un movimiento a ciertos usuarios
-        IF prmCDGPE NOT IN ('SORA','AMGM','GASC') AND vTipo <> 'P' AND vTipo <> 'M' THEN
-SELECT COUNT(*) INTO valTiposUnicos
-FROM PAGOSDIA
-WHERE CDGEM = prmCDGEM
-  AND CDGNS = prmCDGNS
-  AND CICLO = prmCICLO
-  AND TIPO = vTipo
-  AND ESTATUS = 'A';
 END IF;
 
-        IF valTiposUnicos > 0 THEN
-          vMensaje := '0 No se puede guardar la informacion, ya se ha realizado un registro previo de tipo ' || TIPO_OPERACION(vTipo) || ' en el ciclo ' || prmCICLO || '.';
-          RETURN;
-END IF;
-        -- SOOA 04/01/2023: Fin Modificacion
+            IF VARPORCENT_MORA < 0 THEN
 
-SELECT COUNT(*) INTO vCount
-FROM PAGOSDIA
-WHERE CDGEM = prmCDGEM
-  AND FECHA = prmFECHA;
+                VARPORCENT_MORA := 0;
 
-vCount := vCount + 1;
-
-        IF prmTIPOMOV = 'I' THEN
-            vCount:= 0;
-            vTipo:= 'P';
 END IF;
 
-INSERT INTO PAGOSDIA (CDGEM,
-                      FECHA,
-                      CDGNS,
-                      NOMBRE,
-                      CICLO,
-                      CDGOCPE,
-                      EJECUTIVO,
-                      SECUENCIA,
-                      FREGISTRO,
-                      CDGPE,
-                      ESTATUS,
-                      MONTO,
-                      TIPO)
-VALUES (prmCDGEM,
-        prmFECHA,
-        prmCDGNS,
-        prmNOMBRE,
-        prmCICLO,
-        prmCDGOCPE,
-        prmEJECUTIVO,
-        vCount,
+INSERT INTO TBL_CIERRE_DIA(CDGEM,
+                           CDGCLNS,
+                           CLNS,
+                           NOMBRE,
+                           CICLO,
+                           SDO_CAPITAL,
+                           SDO_INTERES,
+                           SDO_RECARGOS,
+                           SDO_TOTAL,
+                           MORA_CAPITAL,
+                           MORA_INTERES,
+                           MORA_TOTAL,
+                           DIAS_MORA,
+                           PORCENT_MORA,
+                           NO_CLIENTES,
+                           FECHA_CALC,
+                           COD_SUCURSAL,
+                           NOM_SUCURSAL,
+                           COD_ASESOR,
+                           NOM_ASESOR,
+                           PAGOS_COMP,
+                           PAGOS_REAL,
+                           TIPO_CARTERA,
+                           NO_NOMINA,
+                           REGION,
+                           INICIO,
+                           FIN,
+                           PLAZO,
+                           TASA,
+                           INTERES_GLOBAL,
+                           MONTO_CUOTA,
+                           TOTAL_PAGAR,
+                           CAPITAL_PAGADO,
+                           INTERES_PAGADO,
+                           SITUACION,
+                           MONTO_ENTREGADO,
+                           SALDO_GL,
+                           REGISTRO,
+                           PROCESADO,
+                           COD_COOR,  --AMGM 15/04/2014
+                           NOM_COOR, --AMGM 15/04/2014
+                           CDGCRD,    -- HGM 19/01/2017
+                           NOMCRD)   -- HGM 19/01/2017
+VALUES (VARCDGEM,
+        VARCDGCLNS,
+        VARCLNS,
+        VARNOMBRE,
+        VARCICLO,
+        VARSDO_CAPITAL,
+        VARSDO_INTERES,
+        VARSDO_RECARGOS,
+        VARSDO_TOTAL,
+        VARMORA_CAPITAL,
+        VARMORA_INTERES,
+        VARMORA_TOTAL,
+        VARDIAS_MORA,
+        VARPORCENT_MORA,
+        VARNO_CLIENTES,
+        VARFECHA_CALC,
+        VARCOD_SUCURSAL,
+        VARNOM_SUCURSAL,
+        VARCOD_ASESOR,
+        VARNOM_ASESOR,
+        VARPAGOS_COMP,
+        VARPAGOS_REAL,
+        VARTIPO_CARTERA,
+        VARNO_NOMINA,
+        VARREGION,
+        VARINICIO_AUX,
+        VARFIN,
+        VARPLAZO,
+        VARTASA,
+        VARINTERES_GLOBAL,
+        VARMONTO_CUOTA,
+        VARTOTAL_PAGAR,
+        VARCAPITAL_PAGADO,
+        VARINTERES_PAGADO,
+        VARSITUACION,
+        VARMONTO_ENTREGADO,
+        VARSALDO_GL,
         SYSDATE,
-        prmCDGPE,
-        'A',
-        prmMONTO,
-        vTipo);
+        1,
+        VARCOD_COOR, --AMGM 15/04/2014
+        VARNOM_COOR,  --AMGM 15/04/2014
+        VARCDGCRD,    -- HGM 19/01/2017
+        VARNOMCRD ); -- HGM 19/01/2017
+
+-- 2018JUL18 HGM - SE INSERTA EN LA TABLA DE CIERRE ESPECIFICA PARA EL CALULCO DE INCENTIVOS
+INSERT
+INTO TBL_CIERRE_DIA_INC ( CDGEM, CDGCLNS, CLNS, NOMBRE, CICLO, SDO_CAPITAL, SDO_INTERES, SDO_RECARGOS, SDO_TOTAL, MORA_CAPITAL, MORA_INTERES, MORA_TOTAL, DIAS_MORA, PORCENT_MORA, NO_CLIENTES
+                        , FECHA_CALC, COD_SUCURSAL, NOM_SUCURSAL, COD_ASESOR, NOM_ASESOR, PAGOS_COMP, PAGOS_REAL, TIPO_CARTERA, NO_NOMINA, REGION, INICIO, FIN, PLAZO, TASA, INTERES_GLOBAL
+                        , MONTO_CUOTA, TOTAL_PAGAR, CAPITAL_PAGADO, INTERES_PAGADO, SITUACION, MONTO_ENTREGADO, SALDO_GL, REGISTRO, PROCESADO, COD_COOR, NOM_COOR, CDGCRD, NOMCRD )
+VALUES ( VARCDGEM, VARCDGCLNS, VARCLNS, VARNOMBRE, VARCICLO, VARSDO_CAPITAL, VARSDO_INTERES, VARSDO_RECARGOS, VARSDO_TOTAL, VARMORA_CAPITAL, VARMORA_INTERES, VARMORA_TOTAL, VARDIAS_MORA, VARPORCENT_MORA, VARNO_CLIENTES
+       , VARFECHA_CALC, VARCOD_SUCURSAL, VARNOM_SUCURSAL, VARCOD_ASESOR, VARNOM_ASESOR, VARPAGOS_COMP, VARPAGOS_REAL, VARTIPO_CARTERA, VARNO_NOMINA, VARREGION, VARINICIO_AUX, VARFIN, VARPLAZO, VARTASA, VARINTERES_GLOBAL
+       , VARMONTO_CUOTA, VARTOTAL_PAGAR, VARCAPITAL_PAGADO, VARINTERES_PAGADO, VARSITUACION, VARMONTO_ENTREGADO, VARSALDO_GL, SYSDATE, 1, VARCOD_COOR, VARNOM_COOR, VARCDGCRD, VARNOMCRD );
+
 COMMIT;
-END IF;
 
-     IF prmTIPO = 2 THEN
+END LOOP;
+CLOSE CIERRE;
 
+COMMIT;
 
-
-     ----------------------------------------------------------
-	 IF vTipo = 'S' OR vTipo = 'G' THEN
-
-SELECT COUNT(*) INTO valTiposUnicos
-FROM PAGOSDIA
-WHERE CDGEM = prmCDGEM
-  AND CDGNS = prmCDGNS
-  AND CICLO = prmCICLO
-  AND TIPO = vTipo
-  AND ESTATUS = 'A';
-
-IF valTiposUnicos > 0 THEN
-	          vMensaje := 'No se puede actualizar, ' || TIPO_OPERACION(vTipo) || ' ya existe en el ciclo ' || prmCICLO || '.';
-	          RETURN;
-END IF;
-END IF;
-  ------------------------------------------------------------------
+--2017ENE05 SE INCORPORO EJECUCION DE REPORTE DE CHEQUES IMPRESOS
+ESIACOM.SP_REP_CHEQUE_IMP (VARCDGEM, pFECHA_CALC, pFECHA_CALC, 'USER');
 
 
+        IF (TRUNC(LAST_DAY(VARFECHA_CALC)) = TRUNC(VARFECHA_CALC)) THEN
 
-        -- AMGM 28/02/2023: Validacion que NO permite eliminar un pago si ya se aplico en la cartera
+            -- 2018JUL18 HGM - SE OBTIENE LA FECHA DE HACE 3 MESES PARA ELIMINAR LOS REGISTROS DE TBL_CIERRE_DIA_INC
+SELECT ADD_MONTHS(VARFECHA_CALC + 1, - 3)
+INTO vFECHA_INC
+FROM DUAL;
 
-        -- Obtenemos el monto del movimiento
-        IF prmCDGNS IS NOT NULL THEN
+-- 2018JUL18 HGM - SE LIMPIA LA TABLA DE TBL_CIERRE_DIA_INC PARA SOLO MANTENER 2 MESES DE HISTORIA
+DELETE
+FROM TBL_CIERRE_DIA_INC
+WHERE CDGEM = VARCDGEM
+  AND FECHA_CALC BETWEEN TO_DATE('01/' || LPAD(EXTRACT(MONTH FROM vFECHA_INC), 2, 0) || EXTRACT(YEAR FROM vFECHA_INC))
+    AND LAST_DAY(TO_DATE('01/' || LPAD(EXTRACT(MONTH FROM vFECHA_INC), 2, 0) || EXTRACT(YEAR FROM vFECHA_INC)));
 
-SELECT MONTO INTO vMontoElim
-FROM PAGOSDIA
-WHERE CDGEM = prmCDGEM
-  AND FECHA = prmFECHAAUX
-  AND CDGNS = prmCDGNS
-  AND SECUENCIA = prmSECUENCIA;
-
-ELSE
-
-SELECT MONTO INTO vMontoElim
-FROM PAGOSDIA
-WHERE CDGEM = prmCDGEM
-  AND FECHA = prmFECHAAUX
-  AND SECUENCIA = prmSECUENCIA;
-
-END IF;
-
-        --Validamos el tipo de movimiento que se va a eliminar
-        IF vTipo NOT IN ('M','S') THEN
-
-              -- Validamos si existe como pago
-SELECT COUNT(*) INTO valTiposUnicos
-FROM MP
-WHERE CDGEM = prmCDGEM
-  AND CDGCLNS = prmCDGNS
-  AND CICLO = prmCICLO
-  AND TIPO = 'PD'
-  AND FREALDEP = prmFECHAAUX
-  AND CANTIDAD = vMontoElim;
-
-IF valTiposUnicos = 0 THEN
-
-                  --Validamos si existe como garantía
-SELECT COUNT(*) INTO valTiposUnicos
-FROM PAG_GAR_SIM
-WHERE CDGEM = prmCDGEM
-  AND CDGCLNS = prmCDGNS
-  AND CICLO = prmCICLO
-  AND FPAGO = prmFECHAAUX
-  AND ESTATUS = 'RE'
-  AND CANTIDAD = vMontoElim;
-
-IF valTiposUnicos = 0 THEN
-
-                      --Validamos si existe como Descuento
-SELECT COUNT(*) INTO valTiposUnicos
-FROM MP, MPR
-WHERE MP.CDGEM = MPR.CDGEM
-  AND MP.CDGCLNS = MPR.CDGNS
-  AND MP.CICLO = MPR.CICLO
-  AND MP.PERIODO = MPR.PERIODO
-  AND MP.SECUENCIA = MPR.SECUENCIA
-  AND MP.CDGEM = prmCDGEM
-  AND MP.CDGCLNS = prmCDGNS
-  AND MP.CICLO = prmCICLO
-  AND MP.TIPO IN ('AA','AC','CI','MI')
-  AND MP.FREALDEP = prmFECHAAUX
-  AND MPR.RAZON = '04';
-
-IF valTiposUnicos = 0 THEN
-
-                        --Validamos si existe como Refinanciamiento
-SELECT COUNT(*) INTO valTiposUnicos
-FROM MP, MPR
-WHERE MP.CDGEM = MPR.CDGEM
-  AND MP.CDGCLNS = MPR.CDGNS
-  AND MP.CICLO = MPR.CICLO
-  AND MP.PERIODO = MPR.PERIODO
-  AND MP.SECUENCIA = MPR.SECUENCIA
-  AND MP.CDGEM = prmCDGEM
-  AND MP.CDGCLNS = prmCDGNS
-  AND MP.CICLO = prmCICLO
-  AND MP.TIPO IN ('AA','AC','CI','MI')
-  AND MP.FREALDEP = prmFECHAAUX
-  AND MPR.RAZON = '09';
-
-END IF;
-
-END IF;
-
-
-END IF;
-
-ELSE
-
-            --Validamos si ya se reaizo el cierre de día para este crédito
-            IF prmCDGNS IS NOT NULL THEN
-
-SELECT COUNT(*) INTO valTiposUnicos
+-- SE REALIZA EL RESPALDO DEL ULTIMO DÍA DEL CIERRE PARA LOS REPORTES DE CARTERA EN RIESGO
+INSERT
+INTO TBL_CIERRE_DIA_2
+SELECT *
 FROM TBL_CIERRE_DIA
-WHERE CDGEM = prmCDGEM
-  AND CDGCLNS = prmCDGNS
-  AND CICLO = prmCICLO
-  AND FECHA_CALC = prmFECHAAUX;
+WHERE CDGEM = VARCDGEM
+  AND FECHA_CALC = VARFECHA_CALC;
 
-ELSE
-
-                valTiposUnicos := 0;
-
-END IF;
-
-
-END IF;
-
-        IF valTiposUnicos > 0 THEN
-          vMensaje := '0 No se puede modificar el movimiento porque ya se aplico en el cierre diario. Favor de solicitar apoyo a Operaciones.';
-          RETURN;
-END IF;
-        -- AMGM 28/02/2023: Fin Modificacion
-
-
-        IF prmFECHA = prmFECHAAUX THEN  -- Si son iguales quiere decir que solo cambio el monto o el tipo
-
-               vCount:= prmSECUENCIA;
-
-               IF prmTIPOMOV = 'I' THEN
-                    vCount:= 0;
-                    vTipo:= 'P';
-END IF;
-
-               IF prmSECUENCIA = 0 AND prmTIPOMOV <> 'I' THEN
-
-SELECT COUNT(*) INTO vCount
-FROM PAGOSDIA
-WHERE CDGEM = prmCDGEM
-  AND FECHA = prmFECHA;
-
-vCount := vCount + 1;
-
-END IF;
-
-
-UPDATE PAGOSDIA SET MONTO = prmMONTO,
-                    TIPO = vTipo,
-                    CDGPE = prmCDGPE,
-                    CICLO = prmCICLO,
-                    CDGOCPE = prmCDGOCPE,
-                    EJECUTIVO = prmEJECUTIVO,
-                    FACTUALIZA = SYSDATE,
-                    SECUENCIA = vCount
-WHERE CDGEM = prmCDGEM
-  AND FECHA = prmFECHA
-  AND CDGNS = prmCDGNS
-  AND SECUENCIA = prmSECUENCIA;
-COMMIT;
-
-
-ELSE --Si entra aqui es porque la fecha del pago cambio
-
-             --1) borrar el registro con la fecha anterior
-UPDATE PAGOSDIA SET ESTATUS = 'E',
-                    CDGPE = prmCDGPE,
-                    FACTUALIZA = SYSDATE
-WHERE CDGEM = prmCDGEM
-  AND FECHA = prmFECHAAUX
-  AND CDGNS = prmCDGNS
-  AND SECUENCIA = prmSECUENCIA;
-
---2) Registramos el pago como nuevo
-
---2.1) Se determina la secuencia del pago
-SELECT COUNT(*) INTO vCount
-FROM PAGOSDIA
-WHERE CDGEM = prmCDGEM
-  AND FECHA = prmFECHA;
-
-vCount := vCount + 1;
-
-               IF prmTIPOMOV = 'I' THEN
-                    vCount:= 0;
-                    vTipo:= 'P';
-END IF;
-
-               --2.2) Se inserta el nuevo pago
-INSERT INTO PAGOSDIA (CDGEM,
-                      FECHA,
-                      CDGNS,
-                      NOMBRE,
-                      CICLO,
-                      CDGOCPE,
-                      EJECUTIVO,
-                      SECUENCIA,
-                      FREGISTRO,
-                      CDGPE,
-                      ESTATUS,
-                      MONTO,
-                      TIPO)
-VALUES (prmCDGEM,
-        prmFECHA,
-        prmCDGNS,
-        prmNOMBRE,
-        prmCICLO,
-        prmCDGOCPE,
-        prmEJECUTIVO,
-        vCount,
-        SYSDATE,
-        prmCDGPE,
-        'A',
-        prmMONTO,
-        vTipo);
-COMMIT;
-
-END IF;
-
-END IF;
-
-     IF prmTIPO = 3 THEN
-
-        -- AMGM 28/02/2023: Validacion que NO permite eliminar un pago si ya se aplico en la cartera
-
-        -- Obtenemos el monto del movimiento
-        IF prmCDGNS IS NOT NULL THEN
-
-SELECT MONTO INTO vMontoElim
-FROM PAGOSDIA
-WHERE CDGEM = prmCDGEM
-  AND FECHA = prmFECHA
-  AND CDGNS = prmCDGNS
-  AND SECUENCIA = prmSECUENCIA;
-
-ELSE
-
-SELECT MONTO INTO vMontoElim
-FROM PAGOSDIA
-WHERE CDGEM = prmCDGEM
-  AND FECHA = prmFECHA
-  AND SECUENCIA = prmSECUENCIA;
-
-END IF;
-
-        --Validamos el tipo de movimiento que se va a eliminar
-        IF vTipo = 'P' THEN
-
-SELECT COUNT(*) INTO valTiposUnicos
-FROM MP
-WHERE CDGEM = prmCDGEM
-  AND CDGCLNS = prmCDGNS
-  AND CICLO = prmCICLO
-  AND TIPO = 'PD'
-  AND FREALDEP = prmFECHA
-  AND CANTIDAD = vMontoElim;
-
-ELSIF vTIPO = 'G' THEN
-
-SELECT COUNT(*) INTO valTiposUnicos
-FROM PAG_GAR_SIM
-WHERE CDGEM = prmCDGEM
-  AND CDGCLNS = prmCDGNS
-  AND CICLO = prmCICLO
-  AND FPAGO = prmFECHA
-  AND ESTATUS = 'RE'
-  AND CANTIDAD = vMontoElim;
-
-ELSIF vTIPO = 'D' THEN
-
-SELECT COUNT(*) INTO valTiposUnicos
-FROM MP, MPR
-WHERE MP.CDGEM = MPR.CDGEM
-  AND MP.CDGCLNS = MPR.CDGNS
-  AND MP.CICLO = MPR.CICLO
-  AND MP.PERIODO = MPR.PERIODO
-  AND MP.SECUENCIA = MPR.SECUENCIA
-  AND MP.CDGEM = prmCDGEM
-  AND MP.CDGCLNS = prmCDGNS
-  AND MP.CICLO = prmCICLO
-  AND MP.TIPO IN ('AA','AC','CI','MI')
-  AND MP.FREALDEP = prmFECHA
-  AND MPR.RAZON = '04';
-
-ELSIF vTIPO = 'R' THEN
-
-SELECT COUNT(*) INTO valTiposUnicos
-FROM MP, MPR
-WHERE MP.CDGEM = MPR.CDGEM
-  AND MP.CDGCLNS = MPR.CDGNS
-  AND MP.CICLO = MPR.CICLO
-  AND MP.PERIODO = MPR.PERIODO
-  AND MP.SECUENCIA = MPR.SECUENCIA
-  AND MP.CDGEM = prmCDGEM
-  AND MP.CDGCLNS = prmCDGNS
-  AND MP.CICLO = prmCICLO
-  AND MP.TIPO IN ('AA','AC','CI','MI')
-  AND MP.FREALDEP = prmFECHA
-  AND MPR.RAZON = '09';
-
-ELSE
-
-            --Validamos si ya se reaizo el cierre de día para este crédito
-            IF prmCDGNS IS NOT NULL THEN
-
-SELECT COUNT(*) INTO valTiposUnicos
-FROM TBL_CIERRE_DIA
-WHERE CDGEM = prmCDGEM
-  AND CDGCLNS = prmCDGNS
-  AND CICLO = prmCICLO
-  AND FECHA_CALC = prmFECHAAUX;
-
-ELSE
-
-                valTiposUnicos := 0;
-
-END IF;
-
-
-
-END IF;
-
-        IF valTiposUnicos > 0 THEN
-          vMensaje := '0 No se puede eliminar el movimiento porque ya se aplico en el cierre diario. Favor de solicitar apoyo a Operaciones.';
-          RETURN;
-END IF;
-        -- AMGM 28/02/2023: Fin Modificacion
-
-
-         IF prmSECUENCIA = 0 THEN --AND prmCDGPE NOT IN ('SORA','AMGM','GASC') THEN
-
-            IF prmCDGNS IS NULL OR prmCDGNS = '' THEN
-
-                vMensaje := '0 No se puede eliminar un primer pago. Comunicate con Operaciones.';
-                RETURN;
-
-ELSE
-
-                --vMensaje := '0 No se puede eliminar un primer pago. Comunicate con Operaciones.' || prmCDGNS || prmFECHA || prmSECUENCIA;
-                --RETURN;
-
-UPDATE PAGOSDIA SET ESTATUS = 'E',
-                    CDGPE = prmCDGPE,
-                    FACTUALIZA = SYSDATE
-WHERE CDGEM = prmCDGEM
-  AND FECHA = prmFECHA
-  AND CDGNS = prmCDGNS
-  AND SECUENCIA = prmSECUENCIA;
-COMMIT;
-
-END IF;
-
-ELSE
-
-UPDATE PAGOSDIA SET ESTATUS = 'E',
-                    CDGPE = prmCDGPE,
-                    FACTUALIZA = SYSDATE
-WHERE CDGEM = prmCDGEM
-  AND FECHA = prmFECHA
-  AND SECUENCIA = prmSECUENCIA;
 COMMIT;
 
 END IF;
 
 
-END IF;
+        DBMS_OUTPUT.PUT_LINE ('PROCESO DE CIERRE DE DIA ' || SYSDATE || ' TERMINADO....');
 
-     vMensaje := '1 Proceso realizado exitosamente';
+EXCEPTION
+             WHEN OTHERS THEN
+                ecode := SQLCODE;
+                emesg := SQLERRM;
+                DBMS_OUTPUT.PUT_LINE ('ERROR: '||SQLERRM);
+ROLLBACK;
 
-exception
-     when others then
-          ecode := SQLCODE;
-          emesg := SQLERRM;
-rollback;
-vMensaje := '0 Fallo el proceso. Descripción: ' || TO_CHAR(ecode) || '-' || emesg;
-END SPACCIONPAGODIA;
+END;
+
+END SP_CIERRE_DIA;
+sdvbfv
+
+
+
+
+
+
+
+
+
+
+CALL ESIACOM.SP_CIERRE_DIA(:PFECHA_CALC,:PDELETE);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

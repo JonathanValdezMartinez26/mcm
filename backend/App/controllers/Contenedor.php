@@ -116,7 +116,7 @@ html;
 html;
         }
 
-        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil == 'AMOCA' || $this->__perfil == 'CPAGO')
+        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil == 'AMOCA' || $this->__usuario == 'LGFR' || $this->__usuario == 'PLMV' || $this->__usuario == 'PMAB' || $this->__usuario == 'MGJC')
         {
             $menu.=<<<html
                     <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
