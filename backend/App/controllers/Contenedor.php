@@ -119,6 +119,7 @@ html;
         if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__usuario == 'LGFR' || $this->__usuario == 'PLMV' || $this->__usuario == 'PMAB' || $this->__usuario == 'MGJC'
             || $this->__usuario== 'AVGA' //USUARIO DE ANGELES - TOLUCA
             || $this->__usuario== 'FLCR' //USUARIO DE REBECA - VILLA VICTORIA
+            || $this->__usuario== 'COCS' //USUARIO DE REBECA - VILLA VICTORIA
         )
         {
             $menu.=<<<html
