@@ -120,7 +120,8 @@ html;
             || $this->__usuario== 'AVGA' //USUARIO DE ANGELES - TOLUCA
             || $this->__usuario== 'FLCR' //USUARIO DE REBECA - VILLA VICTORIA
             || $this->__usuario== 'COCS' //USUARIO DE SELENE - ESTADO DE MEXICO
-            || $this->__usuario== 'GOIY' //USUARIO DE SELENE - ESTADO DE MEXICO
+            || $this->__usuario== 'GOIY' //USUARIO DE SELENE - Huamantla, Santa Ana, Apizaco y Tlaxcala
+            || $this->__usuario== 'DAGC' //DANIELA
 
         )
         {
