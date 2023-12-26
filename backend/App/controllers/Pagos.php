@@ -2146,7 +2146,7 @@ html;
 
                         $inicio_b = $date_past_b;
 
-                        if(  ($inicio_b == $fecha_base) ||   (($fechaActual == $AdministracionOne[2]['FECHA_CAPTURA']) && $fecha_base == '2023-11-17')) // aqui poner el dia en que se estaran capturando
+                        if(  ($inicio_b == $fecha_base) ||   (($fechaActual == $AdministracionOne[2]['FECHA_CAPTURA']) && $fecha_base == '2023-12-25')) // aqui poner el dia en que se estaran capturando
                         {
                             if($horaActual <= $hora_cierre)
                             {
