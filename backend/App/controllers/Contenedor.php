@@ -24,7 +24,7 @@ class Contenedor extends Controller{
     }
 
     public function header($extra = ''){
-        date_default_timezone_set('America/Mazatlan');
+        date_default_timezone_set('America/Mexico_City');
         $usuario = $this->__usuario;
         $nombre = $this->__nombre;
         $sucursal = $this->__cdgco;

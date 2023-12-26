@@ -2021,6 +2021,8 @@ html;
 
         $fechaActual = date("Y-m-d");
         $horaActual = date("H:i:s");
+
+        var_dump($horaActual);
         $dia = date("N");
 
         //$dia = 2;
@@ -2032,7 +2034,7 @@ html;
         $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
         if($hora_cierre == '')
         {
-            $hora_cierre = '10:00:00';  
+            $hora_cierre = '10:00:00';
         }
         else
         {
