@@ -2032,7 +2032,7 @@ html;
         $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
         if($hora_cierre == '')
         {
-            $hora_cierre = '10:00:00';
+            $hora_cierre = '10:00:00';  
         }
         else
         {
