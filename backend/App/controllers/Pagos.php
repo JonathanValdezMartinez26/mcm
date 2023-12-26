@@ -2022,7 +2022,7 @@ html;
         $fechaActual = date("Y-m-d");
         $horaActual = date("H:i:s");
 
-        var_dump($horaActual);
+        
         $dia = date("N");
 
         //$dia = 2;
