@@ -122,6 +122,7 @@ html;
             || $this->__usuario== 'COCS' //USUARIO DE SELENE - ESTADO DE MEXICO
             || $this->__usuario== 'GOIY' //USUARIO DE SELENE - Huamantla, Santa Ana, Apizaco y Tlaxcala
             || $this->__usuario== 'DAGC' //DANIELA
+            || $this->__usuario== 'COVG' //USUARIO GABRIELA VELAZQUEZ
 
         )
         {
