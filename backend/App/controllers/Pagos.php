@@ -234,7 +234,7 @@ html;
         }
         else
         {
-            $date_past = strtotime('-2 days', strtotime($fechaActual));
+            $date_past = strtotime('-2 days', strtotime($fechaActual));/////Aqui se dan o se quoitan dias
             $date_past = date('Y-m-d', $date_past);
 
             $inicio_f = $date_past;
@@ -1614,7 +1614,13 @@ html;
 
         $sucursales = PagosDao::ListaSucursales($this->__usuario);
         $getSucursales = '';
-        if($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL')
+        if($this->__perfil == 'ADMIN'
+            || $this->__perfil == 'ACALL'
+            || $this->__usuario == 'PMAB'
+            || $this->__usuario == 'PAES'
+            || $this->__usuario == 'COCS'
+            || $this->__usuario == 'LGFR'
+        )
             {
                 $getSucursales .= <<<html
                 <option value="">TODAS</option>
