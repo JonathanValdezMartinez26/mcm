@@ -172,7 +172,25 @@
                                         <option value="M">MULTA</option>
                                         <option value="G">GARANTÍA</option>
                                         <option value="D">DESCUENTO</option>
-                                        <option value="D">DESCUENTO DE CAMPAÑA POR LEALTAD</option>
+
+                                        <?php
+                                        if($cdgco == '007' ||
+                                           $cdgco == '014' ||
+                                           $cdgco == '020' ||
+                                           $cdgco == '025' ||
+                                           $cdgco == '026' ||
+                                           $cdgco == '027'
+
+
+                                            || $usuario == 'AMGM' || $usuario == 'GASC')
+                                            {
+                                                $imp = '<option value="D">DESCUENTO DE CAMPAÑA POR LEALTAD</option>';
+
+                                                echo $imp;
+                                            }
+                                        ?>
+
+
                                         <option value="R">REFINANCIAMIENTO</option>
                                         <option value="S">SEGURO</option>
                                     </select>

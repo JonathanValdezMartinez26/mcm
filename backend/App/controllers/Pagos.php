@@ -2204,6 +2204,7 @@ html;
                 View::set('fechaActual', $fechaActual);
                 View::set('status', $getStatus);
                 View::set('usuario', $this->__usuario);
+                View::set('cdgco', $this->__cdgco);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::render("pagos_registro_busqueda");
