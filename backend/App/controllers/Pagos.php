@@ -1633,7 +1633,6 @@ html;
 html;
         }
 
-
         if ($Inicial != '' && $Final != '') {
             $Consulta = PagosDao::ConsultarPagosFechaSucursal($id_sucursal, $Inicial, $Final);
 

@@ -172,6 +172,7 @@
                                         <option value="M">MULTA</option>
                                         <option value="G">GARANTÍA</option>
                                         <option value="D">DESCUENTO</option>
+                                        <option value="D">DESCUENTO DE CAMPAÑA POR LEALTAD</option>
                                         <option value="R">REFINANCIAMIENTO</option>
                                         <option value="S">SEGURO</option>
                                     </select>
