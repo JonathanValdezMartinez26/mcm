@@ -678,7 +678,7 @@ html;
                 array_push($cdgco_suc, $suc);
                 $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_suc);
                 //var_dump($Solicitudes);
-                var_dump("1");
+                //var_dump("1");
             }
             //var_dump($Solicitudes);
 
@@ -815,6 +815,10 @@ html;
                 }
 
 
+                if($value['RECOMENDADO'] != '')
+                {
+                    $recomendado = '<div><b>CAMPAÑA ACTIVA</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #6a0013"><span class="fa fa-yelp"> </span> </span></div><b><em>RECOMIENDA MÁS Y PAGA MENOS <em></em></b><hr>';
+                }
 
 
                 $tabla .= <<<html
@@ -834,12 +838,18 @@ html;
                         <br>
                         <span class="fa fa-briefcase"></span> EJECUTIVO: {$value['EJECUTIVO']}
                     </td>
-                    <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label> <br><label><span class="fa fa-phone"></span> {$format}</label></td>                    <td style="padding-top: 22px !important; text-align: left">
+                    <td style="padding-top: 10px !important;">
+                            <span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label> <br><label><span class="fa fa-phone"></span> {$format}</label>
+                           
+                    </td>                    <td style="padding-top: 22px !important; text-align: left">
                         <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
                         
                         <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
+                         <br>
+                       
                         $prorroga
                         $reactivacion
+                         {$recomendado}
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
                     <td style="padding: 10px !important; text-align: left; width:165px !important;">
@@ -3294,6 +3304,14 @@ html;
                         </a>
 html;
                 }
+                if($value['RECOMENDADO'] != '' && $value['CICLO'] == '01')
+                {
+                    $recomendado = '<div><b>CAMPAÑA ACTIVA</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #6a0013"><span class="fa fa-yelp"> </span> </span></div><b><em>RECOMIENDA MÁS Y PAGA MENOS <em></em></b><hr>';
+                }
+                else
+                {
+                    $recomendado = '';
+                }
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
@@ -3311,8 +3329,10 @@ html;
                         
                         <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
                         <hr>
+                         {$recomendado}
                         <div><b>VALIDO:</b> {$value['NOMBRE1']} {$value['PRIMAPE']} {$value['SEGAPE']}</div>
-
+                        
+                       
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
                     <td style="padding: 10px !important; text-align: left; width:165px !important;">
@@ -3322,6 +3342,7 @@ html;
                     $vobo
                    
                     $ver_resumen
+                    
 
                     </td>
                    

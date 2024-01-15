@@ -39,7 +39,7 @@
                                 <th>-</th>
                                 <th>Región/Agencia</th>
                                 <th>Cliente</th>
-                                <th>detalle Encuesta</th>
+                                <th>Detalle Encuesta</th>
                                 <th>F. Solicitud</th>
                                 <th>Bitácora</th>
                                 <th>Acciones</th>
