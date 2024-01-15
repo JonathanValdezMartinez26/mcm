@@ -3809,6 +3809,15 @@ html;
 html;
                 }
 
+                if($value['RECOMENDADO'] != '' && $value['CICLO'] == '01')
+                {
+                    $recomendado = '<div><b>CAMPAÑA ACTIVA</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #6a0013"><span class="fa fa-yelp"> </span> </span></div><b><em>RECOMIENDA MÁS Y PAGA MENOS <em></em></b><hr>';
+                }
+                else
+                {
+                    $recomendado = '';
+                }
+
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 5px !important;"><label>{$value['CDGNS']}-{$value['CICLO']}</label></td>
@@ -3825,6 +3834,7 @@ html;
                         
                         <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
                         <hr>
+                        {$recomendado}
                         <div><b>VALIDO:</b> {$value['NOMBRE1']} {$value['PRIMAPE']} {$value['SEGAPE']}</div>
 
                     </td>
