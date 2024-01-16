@@ -21,52 +21,74 @@ class ApiCondusef extends Controller
 
     }
 
-    public function UploadFile()
+    public function CreateUser()
     {
         $extraHeader = <<<html
-        <title>Consulta de Pagos Cultiva</title>
+        <title>Crear Usuario REDECO</title>
         <link rel="shortcut icon" href="/img/logo.png">
 html;
 
         $extraFooter = <<<html
       <script>
       
-      </script>
-html;
-
-        View::render("upload_file_api_condusef");
+       $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+           "lengthMenu": [
+                    [30, 50, -1],
+                    [30, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+        });
+       
+        function enviar_add_user(){	
+            alert("Hola");
+            
+             $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/HorariosAdd/',
+                    data: $('#Add_AHC').serialize(),
+                    success: function(respuesta) {
+                         if(respuesta=='1'){
+                      
+                         swal("Registro guardado exitosamente", {
+                                      icon: "success",
+                                    });
+                        location.reload();
+                        }
+                        else {
+                         swal(respuesta, {
+                                      icon: "error",
+                                    });
+                         //location.reload();
+                         
+                        }
+                    }
+           });
     }
-
-    public function GetMyTickets()
-    {
-        $extraHeader = <<<html
-        <title>Consulta de Pagos Cultiva</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
-        $extraFooter = <<<html
-      <script>
-      
+    
+    
       </script>
 html;
 
-        View::render("upload_file_api_condusef");
-    }
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("z_api_create_user");
 
-    public function StatusTicket()
-    {
-        $extraHeader = <<<html
-        <title>Consulta de Pagos Cultiva</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
-        $extraFooter = <<<html
-      <script>
-      
-      </script>
-html;
-
-        View::render("upload_file_api_condusef");
     }
 
 

@@ -247,11 +247,8 @@ html;
                 <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
                 </i>&nbsp;Api Condusef<span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
-                   <li><a href="/ApiCondusef/UploadFile/">Subir Archivo</a></li>
-                   <li><a href="/ApiCondusef/GetMyTickets/">Obtener Tickets</a></li>
-                   <li><a href="/ApiCondusef/StatusTicket/">Status de Tickets</a></li>
-                   <li><a href="/ApiCondusef/StatusTicket/">Corregir un documento</a></li>
-                   <li><a href="/ApiCondusef/StatusTicket/">Eliminar un documento</a></li>
+                   <li><a href="/ApiCondusef/CreateUser/">Usuarios</a></li>
+                  
                   </ul>
                 </li>
               </ul>
