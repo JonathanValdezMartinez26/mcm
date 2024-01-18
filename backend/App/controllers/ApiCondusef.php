@@ -91,5 +91,227 @@ html;
 
     }
 
+    public function QueriesComplaints()
+    {
+        $extraHeader = <<<html
+        <title>Consultar Quejas REDECO</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
+        $extraFooter = <<<html
+      <script>
+      
+       $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+           "lengthMenu": [
+                    [30, 50, -1],
+                    [30, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+        });
+       
+        function enviar_add_user(){	
+            alert("Hola");
+            
+             $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/HorariosAdd/',
+                    data: $('#Add_AHC').serialize(),
+                    success: function(respuesta) {
+                         if(respuesta=='1'){
+                      
+                         swal("Registro guardado exitosamente", {
+                                      icon: "success",
+                                    });
+                        location.reload();
+                        }
+                        else {
+                         swal(respuesta, {
+                                      icon: "error",
+                                    });
+                         //location.reload();
+                         
+                        }
+                    }
+           });
+    }
+    
+    
+    
+    
+    
+      </script>
+html;
+
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("z_api_quejas_consulta");
+
+    }
+
+
+    public function ComplaintsAdd()
+    {
+        $extraHeader = <<<html
+        <title>Consultar Quejas REDECO</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
+        $extraFooter = <<<html
+      <script>
+      
+       $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+           "lengthMenu": [
+                    [30, 50, -1],
+                    [30, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+        });
+       
+        function enviar_add_user(){	
+            alert("Hola");
+            
+             $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/HorariosAdd/',
+                    data: $('#Add_AHC').serialize(),
+                    success: function(respuesta) {
+                         if(respuesta=='1'){
+                      
+                         swal("Registro guardado exitosamente", {
+                                      icon: "success",
+                                    });
+                        location.reload();
+                        }
+                        else {
+                         swal(respuesta, {
+                                      icon: "error",
+                                    });
+                         //location.reload();
+                         
+                        }
+                    }
+           });
+    }
+    
+    ///////////////////////////////
+    //MEDIO DE RECEPCION
+    ///////////////////////////////
+        $.ajax({
+          type: 'GET',
+          url: 'https://api.condusef.gob.mx/catalogos/medio-recepcion/',
+          dataType: 'json',
+          success: function(data_json) {
+			$.each(data_json.medio, function(key, value) {
+                
+                  let id = data_json.medio[key].medioId;
+                  let desc = data_json.medio[key].medioDsc;
+                  
+				$("#medio_recepcion").append('<option name="' + id + '">' + desc + '</option>');
+			});
+           
+          }
+        });
+    
+    ///////////////////////////////
+    //NIVELES DE ATENCION
+    ///////////////////////////////
+        $.ajax({
+          type: 'GET',
+          url: 'https://api.condusef.gob.mx/catalogos/niveles-atencion',
+          dataType: 'json',
+          success: function(data_json) {
+			$.each(data_json.nivelesDeAtencion, function(key, value) {
+                
+                  let id = data_json.nivelesDeAtencion[key].nivelDeAtencionId;
+                  let desc = data_json.nivelesDeAtencion[key].nivelDeAtencionDsc;
+                  
+				$("#nivel_atencion").append('<option name="' + id + '">' + desc + '</option>');
+			});
+           
+          }
+        });
+        
+    ///////////////////////////////
+    //ESTADOS
+    ///////////////////////////////
+        $.ajax({
+          type: 'GET',
+          url: 'https://api.condusef.gob.mx/sepomex/estados/',
+          dataType: 'json',
+          success: function(data_json) {
+			$.each(data_json.estados, function(key, value) {
+                
+                  let id = data_json.estados[key].claveEdo;
+                  let desc = data_json.estados[key].estado;
+                  
+				$("#estado").append('<option name="' + id + '">' + desc + '</option>');
+			});
+           
+          }
+        });
+        
+    ///////////////////////////////
+    //NIVELES DE ATENCION
+    ///////////////////////////////
+        $.ajax({
+          type: 'GET',
+          url: 'https://api.condusef.gob.mx/sepomex/estados/',
+          dataType: 'json',
+          success: function(data_json) {
+			$.each(data_json.estados, function(key, value) {
+                
+                  let id = data_json.estados[key].claveEdo;
+                  let desc = data_json.estados[key].estado;
+                  
+				$("#nivel_atencion").append('<option name="' + id + '">' + desc + '</option>');
+			});
+           
+          }
+        });
+    
+
+    
+    
+      </script>
+html;
+
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("z_api_agregar_quejas");
+
+    }
+
 
 }
