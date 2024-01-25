@@ -19,6 +19,101 @@ class Cultiva extends Controller
 
     }
 
+    public function generarExcel(){
+
+        $Fecha = $_GET['Inicial'];
+
+        $objPHPExcel = new \PHPExcel();
+        $objPHPExcel->getProperties()->setCreator("jma");
+        $objPHPExcel->getProperties()->setLastModifiedBy("jma");
+        $objPHPExcel->getProperties()->setTitle("Reporte");
+        $objPHPExcel->getProperties()->setSubject("Reporte");
+        $objPHPExcel->getProperties()->setDescription("Descripcion");
+        $objPHPExcel->setActiveSheetIndex(0);
+
+
+
+        $estilo_titulo = array(
+            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+        );
+
+        $estilo_encabezado = array(
+            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+        );
+
+        $estilo_celda = array(
+            'font' => array('bold' => false,'name'=>'Calibri','size'=>11,'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+
+        );
+
+
+        $fila = 1;
+        $adaptarTexto = true;
+
+        $controlador = "Operaciones";
+        $columna = array('A','B','C','D');
+        $nombreColumna = array( 'SUCURSAL', 'NOMBRE_GRUPO', 'CLIENTE', 'DOMICILIO');
+        $nombreCampo = array('SUCURSAL','NOMBRE_GRUPO','CLIENTE','DOMICILIO'
+        );
+
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'Consulta de Solicitudes Cultiva dia '.$Fecha );
+        $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
+        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
+        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
+
+        $fila +=1;
+
+        /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
+        foreach ($nombreColumna as $key => $value) {
+            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, $value);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_encabezado);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
+        }
+        $fila +=1; //fila donde comenzaran a escribirse los datos
+
+        /* FILAS DEL ARCHIVO EXCEL */
+
+        $Layoutt = OperacionesDao::ConsultaGruposCultiva($Fecha);
+        foreach ($Layoutt as $key => $value) {
+            foreach ($nombreCampo as $key => $campo) {
+                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_celda);
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            }
+            $fila +=1;
+        }
+
+
+        $objPHPExcel->getActiveSheet()->getStyle('A1:'.$columna[count($columna)-1].$fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        for ($i=0; $i <$fila ; $i++) {
+            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(20);
+        }
+
+
+        $objPHPExcel->getActiveSheet()->setTitle('Reporte');
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Cultiva '.$controlador.'.xlsx"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+        header ('Cache-Control: cache, must-revalidate');
+        header ('Pragma: public');
+
+        \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
+    }
+
     public function index()
     {
         $extraHeader = <<<html
@@ -28,6 +123,13 @@ html;
 
         $extraFooter = <<<html
       <script>
+      
+      function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
       
        $(document).ready(function(){
             $("#muestra-cupones").tablesorter();
@@ -51,6 +153,15 @@ html;
             });
             var checkAll = 0;
             
+            
+            fecha1 = getParameterByName('Inicial');
+            
+            $("#export_excel_consulta").click(function(){
+              $('#all').attr('action', '/Cultiva/generarExcel/?Inicial='+fecha1);
+              $('#all').attr('target', '_blank');
+              $("#all").submit();
+            });
+             
         });
        
 
