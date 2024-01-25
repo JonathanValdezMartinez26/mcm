@@ -259,9 +259,6 @@
                                         <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
                                     </div>
                                 </div>
-
-
-
                             </div>
 
                         </div>

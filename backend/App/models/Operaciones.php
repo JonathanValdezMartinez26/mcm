@@ -293,6 +293,38 @@ sql;
 
     }
 
+    public static function ConsultaGruposCultiva($fecha_alta){
+
+
+        $query=<<<sql
+            SELECT 
+            CO.NOMBRE AS SUCURSAL,  
+            SC.CDGNS, NS.NOMBRE as NOMBRE_GRUPO ,  (CL.NOMBRE1 || ' ' || CL.NOMBRE2 || ' ' || CL.PRIMAPE || ' ' || CL.SEGAPE ) AS CLIENTE, 
+            (CL.CALLE || ', ' || LO.NOMBRE  ||', ' || MU.NOMBRE  ||', ' || EF.NOMBRE) AS DOMICILIO  
+            FROM SC 
+            INNER JOIN NS ON NS.CODIGO = SC.CDGNS 
+            INNER JOIN CL ON CL.CODIGO = SC.CDGCL 
+            INNER JOIN EF ON CL.CDGEF = CL.CDGEF 
+            INNER JOIN MU ON MU.CODIGO  = CL.CDGMU 
+            INNER JOIN LO ON LO.CODIGO = CL.CDGLO  
+            INNER JOIN CO ON CO.CODIGO = NS.CDGCO 
+            WHERE SOLICITUD BETWEEN TIMESTAMP '$fecha_alta 00:00:00.000000' AND TIMESTAMP '$fecha_alta 11:59:00.000000'
+            AND EF.CODIGO = CL.CDGEF 
+            AND MU.CODIGO = CL.CDGMU 
+            AND MU.CDGEF = EF.CODIGO 
+            AND LO.CODIGO = CL.CDGLO 
+            AND CO.CODIGO = NS.CDGCO 
+            AND LO.CDGEF = EF.CODIGO 
+            AND LO.CDGMU = MU.CODIGO 
+            ORDER BY NS.NOMBRE
+sql;
+
+
+        $mysqli = Database_cultiva::getInstance();
+        return $mysqli->queryAll($query);
+
+    }
+
 
 
 }
