@@ -9,7 +9,7 @@
 
             <div class="card card-danger col-md-8" >
                 <div class="card-header">
-                    <h5 class="card-title">Seleccione el rango de fechas a generar el , solo tiene permitido un rango 7 días </h5>
+                    <h5 class="card-title">Seleccione una fecha para descargar el reporte</h5>
                 </div>
 
                 <div class="card-body">
