@@ -101,7 +101,7 @@ class Cultiva extends Controller
         $objPHPExcel->getActiveSheet()->setTitle('Reporte');
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Cultiva '.$controlador.'.xlsx"');
+        header('Content-Disposition: attachment;filename="Cultiva Reporte Clientes'.'.xlsx"');
         header('Cache-Control: max-age=0');
         header('Cache-Control: max-age=1');
         header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
