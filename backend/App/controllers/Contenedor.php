@@ -263,12 +263,15 @@ html;
         if($this->__perfil== 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario== 'PLMV')
         {
             $menu.=<<<html
-            <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Cultiva <span class="fa fa-chevron-down"></span></a>
+        <ul class="nav side-menu">
+                <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
+                </i>&nbsp;Cultiva<span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
-                    <!-- <li><a href="/Pagos/CorteCaja/">Corte Caja Pagos</a></li>-->
-                   <li><a href="/Cultiva/">Consulta Clientes Solicitudes</a></li>
-                </ul>
-            </li>
+                  <li><a href="/Cultiva/">Consulta Clientes Solicitudes</a></li>
+                  
+                  </ul>
+                </li>
+        </ul>
 html;
         }
 
