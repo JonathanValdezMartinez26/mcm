@@ -22,6 +22,7 @@ class Cultiva extends Controller
     public function generarExcel(){
 
         $Fecha = $_GET['Inicial'];
+        $Fecha2 = $_GET['Final'];
 
         $objPHPExcel = new \PHPExcel();
         $objPHPExcel->getProperties()->setCreator("jma");
@@ -81,7 +82,7 @@ class Cultiva extends Controller
 
         /* FILAS DEL ARCHIVO EXCEL */
 
-        $Layoutt = OperacionesDao::ConsultaGruposCultiva($Fecha);
+        $Layoutt = OperacionesDao::ConsultaGruposCultiva($Fecha, $Fecha2);
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
@@ -155,9 +156,10 @@ html;
             
             
             fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
             
             $("#export_excel_consulta").click(function(){
-              $('#all').attr('action', '/Cultiva/generarExcel/?Inicial='+fecha1);
+              $('#all').attr('action', '/Cultiva/generarExcel/?Inicial='+fecha1 + '&Final='+fecha2);
               $('#all').attr('target', '_blank');
               $("#all").submit();
             });
