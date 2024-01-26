@@ -82,7 +82,16 @@ class Cultiva extends Controller
 
         /* FILAS DEL ARCHIVO EXCEL */
 
-        $Layoutt = OperacionesDao::ConsultaGruposCultiva($Fecha, $Fecha2);
+        if($Fecha != '')
+        {
+            $Layoutt = OperacionesDao::ConsultaGruposCultiva($Fecha, $Fecha2);
+        }
+        else
+        {
+            $fechaActual = date('Y-m-d');
+            $Layoutt = OperacionesDao::ConsultaGruposCultiva($fechaActual, $fechaActual);
+        }
+
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
