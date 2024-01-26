@@ -299,9 +299,9 @@ sql;
         $query=<<<sql
             SELECT 
             CO.NOMBRE AS SUCURSAL,  
-            SC.CDGNS, NS.NOMBRE as NOMBRE_GRUPO ,  (CL.NOMBRE1 || ' ' || CL.NOMBRE2 || ' ' || CL.PRIMAPE || ' ' || CL.SEGAPE ) AS CLIENTE, 
+            SC.CDGNS, NS.NOMBRE as NOMBRE_GRUPO ,   TO_CHAR((CL.NOMBRE1 || ' ' || CL.NOMBRE2 || ' ' || CL.PRIMAPE || ' ' || CL.SEGAPE )) AS CLIENTE, 
             (CL.CALLE || ', ' || LO.NOMBRE  ||', ' || MU.NOMBRE  ||', ' || EF.NOMBRE) AS DOMICILIO, 
-             TO_CHAR(SC.SOLICITUD ,'DD/MM/YYYY HH24:MI:SS') AS SOLICITUD
+             TO_CHAR(SC.SOLICITUD ,'DD/MM/YYYY HH24:MI:SS') AS SOLICITUD, SC.CICLO, NS.CODIGO AS CDGNS 
             
             FROM SC 
             INNER JOIN NS ON NS.CODIGO = SC.CDGNS 
@@ -318,7 +318,7 @@ sql;
             AND CO.CODIGO = NS.CDGCO 
             AND LO.CDGEF = EF.CODIGO 
             AND LO.CDGMU = MU.CODIGO 
-            ORDER BY NS.NOMBRE
+            ORDER BY SC.SOLICITUD ASC
 sql;
 
 

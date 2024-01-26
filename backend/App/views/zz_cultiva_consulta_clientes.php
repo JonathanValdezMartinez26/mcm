@@ -41,7 +41,9 @@
                             <thead>
                             <tr>
                                 <th>Sucursal</th>
+                                <th>Credito</th>
                                 <th>Nombre del Grupo</th>
+                                <th>Ciclo</th>
                                 <th>Nombre del Cliente</th>
                                 <th>Direccion del Cliente</th>
                                 <th>Fecha Solicitud</th>

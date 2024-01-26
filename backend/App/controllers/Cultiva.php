@@ -180,7 +180,9 @@ html;
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;">{$value['SUCURSAL']}</td>
+                    <td style="padding: 0px !important;">{$value['CDGNS']}</td>
                     <td style="padding: 0px !important;">{$value['NOMBRE_GRUPO']}</td>
+                    <td style="padding: 0px !important;">{$value['CICLO']}</td>
                     <td style="padding: 0px !important;">{$value['CLIENTE']}</td>
                     <td style="padding: 0px !important;">{$value['DOMICILIO']}</td>
                     <td style="padding: 0px !important;">{$value['SOLICITUD']}</td>
@@ -196,7 +198,9 @@ html;
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                    <td style="padding: 0px !important;">{$value['SUCURSAL']}</td>
+                   <td style="padding: 0px !important;">{$value['CDGNS']}</td>
                     <td style="padding: 0px !important;">{$value['NOMBRE_GRUPO']}</td>
+                    <td style="padding: 0px !important;">{$value['CICLO']}</td>
                     <td style="padding: 0px !important;">{$value['CLIENTE']}</td>
                     <td style="padding: 0px !important;">{$value['DOMICILIO']}</td>
                     <td style="padding: 0px !important;">{$value['SOLICITUD']}</td>
