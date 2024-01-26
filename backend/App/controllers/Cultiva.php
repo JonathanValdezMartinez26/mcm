@@ -171,9 +171,10 @@ html;
 
         $fechaActual = date('Y-m-d');
         $Fecha = $_GET['Inicial'];
+        $FechaFinal = $_GET['Final'];
 
         if ($Fecha != '') {
-            $Consulta = OperacionesDao::ConsultaGruposCultiva($Fecha);
+            $Consulta = OperacionesDao::ConsultaGruposCultiva($Fecha, $FechaFinal);
 
             foreach ($Consulta as $key => $value) {
 
@@ -188,10 +189,13 @@ html;
                     <td style="padding: 0px !important;">{$value['SOLICITUD']}</td>
                 </tr>
 html;
+                View::set('Inicial', $Fecha);
+                View::set('Final', $FechaFinal);
+
             }
 
         } else {
-            $Consulta = OperacionesDao::ConsultaGruposCultiva($fechaActual);
+            $Consulta = OperacionesDao::ConsultaGruposCultiva($fechaActual, $fechaActual);
 
             foreach ($Consulta as $key => $value) {
 
@@ -207,10 +211,11 @@ html;
                 </tr>
 html;
             }
+            View::set('Inicial', date("Y-m-d"));
+            View::set('Final', date("Y-m-d"));
         }
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('Inicial', date("Y-m-d"));
         View::set('tabla', $tabla);
         View::render("zz_cultiva_consulta_clientes");
 

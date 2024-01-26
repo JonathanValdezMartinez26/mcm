@@ -22,6 +22,11 @@
                                     <span id="availability1" >Desde</span>
                                 </div>
 
+                                <div class="col-md-3">
+                                    <input class="form-control mr-sm-2"  autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $Final; ?>">
+                                    <span id="availability1" >Hasta</span>
+                                </div>
+
                                 <div class="col-md-2">
                                     <button class="btn btn-default" type="submit">Buscar</button>
                                 </div>
