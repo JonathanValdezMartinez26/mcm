@@ -44,6 +44,7 @@
                                 <th>Nombre del Grupo</th>
                                 <th>Nombre del Cliente</th>
                                 <th>Direccion del Cliente</th>
+                                <th>Fecha Solicitud</th>
                             </tr>
                             </thead>
                             <tbody>

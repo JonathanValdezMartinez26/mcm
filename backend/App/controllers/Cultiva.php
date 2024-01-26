@@ -183,6 +183,7 @@ html;
                     <td style="padding: 0px !important;">{$value['NOMBRE_GRUPO']}</td>
                     <td style="padding: 0px !important;">{$value['CLIENTE']}</td>
                     <td style="padding: 0px !important;">{$value['DOMICILIO']}</td>
+                    <td style="padding: 0px !important;">{$value['SOLICITUD']}</td>
                 </tr>
 html;
             }
@@ -198,6 +199,7 @@ html;
                     <td style="padding: 0px !important;">{$value['NOMBRE_GRUPO']}</td>
                     <td style="padding: 0px !important;">{$value['CLIENTE']}</td>
                     <td style="padding: 0px !important;">{$value['DOMICILIO']}</td>
+                    <td style="padding: 0px !important;">{$value['SOLICITUD']}</td>
                 </tr>
 html;
             }
