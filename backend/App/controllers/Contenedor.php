@@ -123,7 +123,7 @@ html;
             || $this->__usuario== 'GOIY' //USUARIO DE SELENE - Huamantla, Santa Ana, Apizaco y Tlaxcala
             || $this->__usuario== 'DAGC' //DANIELA
             || $this->__usuario== 'COVG' //USUARIO GABRIELA VELAZQUEZ
-	    || || $this->__usuario== 'TESP'
+	    || $this->__usuario== 'TESP'
 
         )
         {
