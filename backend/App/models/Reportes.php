@@ -15,6 +15,8 @@ class Reportes{
             CO.CODIGO AS COD_SUCURSAL, CO.NOMBRE AS SUCURSAL, PE.TELEFONO AS NOMINA, '' AS NOMINA_JEFE, ACTIVO, '' AS PUESTO 
             FROM PE
             INNER JOIN CO ON CO.CODIGO = PE.CDGCO 
+           
+           ORDER BY PE.DESDEUS ASC
 
 		    
 sql;
