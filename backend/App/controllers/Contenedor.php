@@ -171,6 +171,7 @@ html;
         }
             if($this->__perfil== 'ADMIN' ) {
                 $menu .= <<<html
+                   <li><a href="/Promociones/">Calculo Descuento Telaraña</a></li>
                    <li><a href="/Creditos/ActualizaCredito/">Actualización de Créditos</a></li>
                    <li><a href="/Devengo/">Devengo Crédito</a></li>
 html;
@@ -180,6 +181,7 @@ html;
                    <li><a href="/Creditos/CambioSucursal/">Cambio de Sucursal</a></li>
 html;
             }
+
                $menu .= <<<html
                   </ul>
                 </li>
@@ -284,6 +286,7 @@ html;
                   <ul class="nav child_menu">
                    <li><a href="/Pagos/AjusteHoraCierre/">Ajustar Hora de Cierre</a></li>
                    <li><a href="/Pagos/DiasFestivos/">Asignación Días Festivos</a></li>
+                    <li><a href="/Reportes/Usuarios/">Reporte Usuarios SICAFIN</a></li>
                   </ul>
                 </li>
               </ul>
