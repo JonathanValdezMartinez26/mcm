@@ -286,7 +286,8 @@ html;
                   <ul class="nav child_menu">
                    <li><a href="/Pagos/AjusteHoraCierre/">Ajustar Hora de Cierre</a></li>
                    <li><a href="/Pagos/DiasFestivos/">Asignación Días Festivos</a></li>
-                    <li><a href="/Reportes/Usuarios/">Reporte Usuarios SICAFIN</a></li>
+                    <li><a href="/Reportes/UsuariosMCM/">Reporte Usuarios SICAFIN MCM</a></li>
+                    <li><a href="/Reportes/UsuariosCultiva/">Reporte Usuarios SICAFIN Cultiva</a></li>
                   </ul>
                 </li>
               </ul>
