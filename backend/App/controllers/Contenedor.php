@@ -171,7 +171,7 @@ html;
         }
             if($this->__perfil== 'ADMIN' ) {
                 $menu .= <<<html
-                   <li><a href="/Promociones/">Calculo Descuento Telaraña</a></li>
+                   <li><a href="/Promociones/Telarana/">Calculo Descuento Telaraña</a></li>
                    <li><a href="/Creditos/ActualizaCredito/">Actualización de Créditos</a></li>
                    <li><a href="/Devengo/">Devengo Crédito</a></li>
 html;

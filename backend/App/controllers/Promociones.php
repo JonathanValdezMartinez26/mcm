@@ -20,7 +20,7 @@ class Promociones extends Controller
     }
 
 
-    public function index()
+    public function Telarana()
     {
         $extraHeader = <<<html
         <title>Promociones - Telarana </title>
@@ -76,13 +76,12 @@ html;
 html;
 
 
-        $fechaActual = date('Y-m-d');
-        $Fecha = $_GET['Inicial'];
-        $FechaFinal = $_GET['Final'];
+        $Credito = $_GET['Credito'];
 
-        if ($Fecha != '') {
-            $Consulta = OperacionesDao::ConsultaGruposCultiva($Fecha, $FechaFinal);
+        if ($Credito != '') {
+            //$Consulta = OperacionesDao::ConsultaGruposCultiva($Credito);
 
+            $Consulta = '';
             foreach ($Consulta as $key => $value) {
 
                 $tabla .= <<<html
@@ -96,35 +95,18 @@ html;
                     <td style="padding: 0px !important;">{$value['SOLICITUD']}</td>
                 </tr>
 html;
-                View::set('Inicial', $Fecha);
-                View::set('Final', $FechaFinal);
 
             }
+
+            View::render("promociones_telarana_busqueda_all");
 
         } else {
-            $Consulta = OperacionesDao::ConsultaGruposCultiva($fechaActual, $fechaActual);
-
-            foreach ($Consulta as $key => $value) {
-
-                $tabla .= <<<html
-                <tr style="padding: 0px !important;">
-                   <td style="padding: 0px !important;">{$value['SUCURSAL']}</td>
-                   <td style="padding: 0px !important;">{$value['CDGNS']}</td>
-                    <td style="padding: 0px !important;">{$value['NOMBRE_GRUPO']}</td>
-                    <td style="padding: 0px !important;">{$value['CICLO']}</td>
-                    <td style="padding: 0px !important;">{$value['CLIENTE']}</td>
-                    <td style="padding: 0px !important;">{$value['DOMICILIO']}</td>
-                    <td style="padding: 0px !important;">{$value['SOLICITUD']}</td>
-                </tr>
-html;
-            }
-            View::set('Inicial', date("Y-m-d"));
-            View::set('Final', date("Y-m-d"));
+            View::render("promociones_telarana_busqueda");
         }
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('tabla', $tabla);
-        View::render("zz_cultiva_consulta_clientes");
+
 
 
     }
