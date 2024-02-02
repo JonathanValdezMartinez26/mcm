@@ -554,81 +554,12 @@ html;
             var checkAll = 0;
             
         });
-       
-        function enviar_add_horario(){	
-             sucursal = document.getElementById("sucursal").value; 
-             
-            if(sucursal == '')
-                {
-                    
-                      swal("Atención", "Ingrese un monto mayor a $0", "warning");
-                      document.getElementById("monto").focus();
-                        
-                }
-            else
-                {
-                    
-                    $.ajax({
-                    type: 'POST',
-                    url: '/Pagos/HorariosAdd/',
-                    data: $('#Add_AHC').serialize(),
-                    success: function(respuesta) {
-                         if(respuesta=='1'){
-                      
-                         swal("Registro guardado exitosamente", {
-                                      icon: "success",
-                                    });
-                        location.reload();
-                        }
-                        else {
-                         swal(respuesta, {
-                                      icon: "error",
-                                    });
-                         //location.reload();
-                         
-                        }
-                    }
-                    });
-                }
-    }
-    
-        function enviar_update_horario(){	
-          
-                    $.ajax({
-                    type: 'POST',
-                    url: '/Pagos/HorariosUpdate/',
-                    data: $('#Update_AHC').serialize(),
-                    success: function(respuesta) {
-                         if(respuesta=='1'){
-                      
-                         swal("Registro actualizado exitosamente", {
-                                      icon: "success",
-                                    });
-                        location.reload();
-                        }
-                        else {
-                         swal(respuesta, {
-                                      icon: "error",
-                                    });
-                         //location.reload();
-                         
-                        }
-                    }
-                    });
-    }
-      
-      
+
       </script>
 html;
 
         $tabla = '';
 
-        foreach ($ComboSucursales as $key => $val2) {
-
-            $opciones_suc .= <<<html
-                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
-html;
-        }
 
         $Administracion = PagosDao::ConsultarDiasFestivos();
 
@@ -2148,7 +2079,8 @@ html;
 
                         $inicio_b = $date_past_b;
 
-                        if(  ($inicio_b == $fecha_base) ||   (($fechaActual == $AdministracionOne[2]['FECHA_CAPTURA']) && $fecha_base == '2023-12-26')) // aqui poner el dia en que se estaran capturando
+                        ///////////////////////////////////////////////////////////////////////////////////////////////////
+                        if(  ($inicio_b == $fecha_base) ||   (($fechaActual == $AdministracionOne[2]['FECHA_CAPTURA']) && $fecha_base == '2024-02-06')) // aqui poner el dia en que se estaran capturando
                         {
                             if($horaActual <= $hora_cierre)
                             {
