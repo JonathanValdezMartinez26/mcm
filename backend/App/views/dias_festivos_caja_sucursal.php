@@ -18,9 +18,9 @@
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Fecha Festiva</th>
                             <th>Descripción</th>
+                            <th>Fecha de Captura</th>
                             <th>Acciones</th>
                         </tr>
                         </thead>

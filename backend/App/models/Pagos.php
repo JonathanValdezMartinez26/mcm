@@ -215,8 +215,11 @@ sql;
     public static function ConsultarDiasFestivos(){
 
         $query=<<<sql
-        SELECT * FROM DIAS_FESTIVOS
-        ORDER BY FECHA ASC 
+        SELECT 
+        TO_CHAR(FECHA, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH') || '- ' || TO_CHAR(FECHA, 'DD-MON-YYYY' ) AS FECHA,
+        UPPER(DESCRIPCION) AS DESCRIPCION, 
+        TO_CHAR(FECHA_CAPTURA , 'DAY', 'NLS_DATE_LANGUAGE=SPANISH') || '- ' || TO_CHAR(FECHA_CAPTURA , 'DD-MON-YYYY' ) AS FECHA_CAPTURA
+        FROM DIAS_FESTIVOS
 sql;
 
         $mysqli = Database::getInstance();

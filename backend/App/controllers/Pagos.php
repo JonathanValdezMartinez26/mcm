@@ -622,11 +622,6 @@ html;
 html;
 
         $tabla = '';
-        $horaActual = date("H:i:s");
-        $opciones_suc = '';
-
-        $ComboSucursales = CallCenterDao::getComboSucursalesHorario();
-
 
         foreach ($ComboSucursales as $key => $val2) {
 
@@ -651,9 +646,9 @@ html;
 
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;">{$value['DIA_FESTIVO_PK']}</td>
                     <td style="padding: 0px !important;">{$value['FECHA']}</td>
-                    <td style="padding: 0px !important;"><strong>{$value['DESCRIPCIÓN']}</strong></td>
+                    <td style="padding: 0px !important;">{$value['DESCRIPCION']}</td>
+                    <td style="padding: 0px !important;"><strong>{$value['FECHA_CAPTURA']}</strong></td>
                      <td style="padding: 0px !important;">
                         <button style="display: none;" type="button" class="btn btn-success btn-circle" onclick="EditarHorario('{$value['CDGCO']}', '{$value['NOMBRE']}' , '{$value['HORA_CIERRE']}');"><i class="fa fa-edit"></i></button>
                      </td>
