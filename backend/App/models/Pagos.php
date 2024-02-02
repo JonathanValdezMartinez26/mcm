@@ -220,6 +220,7 @@ sql;
         UPPER(DESCRIPCION) AS DESCRIPCION, 
         TO_CHAR(FECHA_CAPTURA , 'DAY', 'NLS_DATE_LANGUAGE=SPANISH') || '- ' || TO_CHAR(FECHA_CAPTURA , 'DD-MON-YYYY' ) AS FECHA_CAPTURA
         FROM DIAS_FESTIVOS
+        ORDER BY DIA_FESTIVO_PK ASC 
 sql;
 
         $mysqli = Database::getInstance();
