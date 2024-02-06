@@ -168,7 +168,7 @@ html;
     public function ComplaintsAdd()
     {
         $extraHeader = <<<html
-        <title>Consultar Quejas REDECO</title>
+        <title>Registrar Quejas REDECO</title>
         <link rel="shortcut icon" href="/img/logo.png">
 html;
 

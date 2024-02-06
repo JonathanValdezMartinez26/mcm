@@ -3,14 +3,14 @@
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
             <div class="x_title">
-                <h3> Agregar Quejas a REDECO</h3>
+                <h3> Agregar Quejas REDECO</h3>
                 <div class="clearfix"></div>
             </div>
 
             <div class="card col-md-12">
 
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_usuario">
-                    <i class="fa fa-plus"></i> Crear Usuario
+                    <i class="fa fa-plus"></i> Reportar queja
                 </button>
                 <hr style="border-top: 1px solid #787878; margin-top: 5px;">
 
@@ -18,9 +18,9 @@
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
                         <tr>
-                            <th>Usuario</th>
-                            <th>Perfil</th>
-                            <th>Fecha de Registro</th>
+                            <th>Mes</th>
+                            <th>Folio</th>
+                            <th>Fecha</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -38,7 +38,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Crear Nuevo Usuario REDECO</h4></center>
+                <center><h4 class="modal-title" id="myModalLabel">Agregar queja REDECO</h4></center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -109,8 +109,8 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="fecha_registro">Producto o servicio *</label>
-                                        <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba la contraseña</small>
+                                        <input type="input" class="form-control" id="num_quejas" name="num_quejas">
+                                        <small id="emailHelp" class="form-text text-muted">Escriba el producto o servicio</small>
                                     </div>
                                 </div>
 
@@ -149,38 +149,42 @@
                                         <label for="estado">Estado *</label>
                                         <select class="form-control" autofocus type="select" id="estado" name="estado">
                                         </select>
+                                        <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Municipio *</label>
-                                        <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba la contraseña</small>
+                                        <label for="municipio">Municipio *</label>
+                                        <select class="form-control" autofocus type="select" id="municipio" name="municipio">
+                                        </select>
+                                        <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Localidad *</label>
-                                        <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba la contraseña</small>
+                                        <label for="localidad">Localidad *</label>
+                                        <select class="form-control" autofocus type="select" id="localidad" name="localidad">
+                                        </select>
                                     </div>
                                 </div>
 
+
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Colonia *</label>
-                                        <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba la contraseña</small>
+                                        <label for="colonia">Colonia *</label>
+                                        <select class="form-control" autofocus type="select" id="colonia" name="colonia">
+                                        </select>
                                     </div>
                                 </div>
+
 
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="fecha_registro">CP *</label>
-                                        <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba la contraseña</small>
+                                        <input type="number" class="form-control" id="num_quejas" name="num_quejas" maxlength="5">
+                                        <small id="emailHelp" class="form-text text-muted">Escriba un CP valido</small>
                                     </div>
                                 </div>
 
@@ -211,8 +215,8 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="fecha_registro">Edad *</label>
-                                        <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba la contraseña</small>
+                                        <input type="input" class="form-control" id="num_quejas" name="num_quejas">
+                                        <small id="emailHelp" class="form-text text-muted">Escriba la edad</small>
                                     </div>
                                 </div>
 
@@ -220,31 +224,43 @@
                                     <div class="form-group">
                                         <label for="fecha_registro">Fecha de resolucion *</label>
                                         <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba la contraseña</small>
+                                        <small id="emailHelp" class="form-text text-muted">Selecciona una fecha</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Fecha en la que se notifico al usuario *</label>
+                                        <label for="fecha_registro">Fecha notificación al usuario *</label>
                                         <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba la contraseña</small>
+                                        <small id="emailHelp" class="form-text text-muted">Selecciona una fecha</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Sentido de la resolución *</label>
-                                        <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba la contraseña</small>
+                                        <label for="fecha_registro">Tipo de penalización *</label>
+                                        <select class="form-control" autofocus type="select" id="pori" name="pori">
+                                            <option value="1">1 - Totalmente favorable al usuario</option>
+                                            <option value="2">2 - Desfavorable al Usuario</option>
+                                            <option value="3">3 - Parcialmente
+                                                favorable al  usuario
+                                                y puede ser
+                                                nulo si el
+                                                Estado de la
+                                                Queja es
+                                                igual a (1)
+                                                Pendiente
+                                            </option>
+                                        </select>
+                                        <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="fecha_registro">Número de penalización *</label>
-                                        <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba la contraseña</small>
+                                        <input type="number" class="form-control" id="num_quejas" name="num_quejas">
+                                        <small id="emailHelp" class="form-text text-muted">Escriba un numero de penalización</small>
                                     </div>
                                 </div>
 

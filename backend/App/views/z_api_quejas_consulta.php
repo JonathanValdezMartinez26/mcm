@@ -10,7 +10,7 @@
             <div class="card col-md-12">
 
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_usuario">
-                    <i class="fa fa-plus"></i> Crear Usuario
+                    <i class="fa fa-plus"></i> Reportar
                 </button>
                 <hr style="border-top: 1px solid #787878; margin-top: 5px;">
 
