@@ -3,15 +3,12 @@
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
             <div class="x_title">
-                <h3> Creación de usuarios REDECO</h3>
+                <h3> Consulta de quejas REDECO</h3>
                 <div class="clearfix"></div>
             </div>
 
             <div class="card col-md-12">
-
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_usuario">
-                    <i class="fa fa-plus"></i> Reportar
-                </button>
+                
                 <hr style="border-top: 1px solid #787878; margin-top: 5px;">
 
                 <div class="dataTable_wrapper">
