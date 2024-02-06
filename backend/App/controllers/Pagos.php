@@ -1999,7 +1999,9 @@ html;
                 }
 
                 $inicio_f = $date_past;
-                $fin_f = $fechaActual;
+                //$fin_f = $fechaActual;
+
+                $fin_f = $date_past;
             }
             else
             {
