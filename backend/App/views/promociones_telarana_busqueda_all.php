@@ -156,6 +156,7 @@
                                                                 <th>Descuento por promoción</th>
                                                                 <th>Lo recomendo en</th>
                                                                 <th>Estatus de pago</th>
+                                                                <th>Cumple Políticas</th>
                                                             </tr>
                                                             </thead>
                                                             <tbody>

@@ -140,6 +140,7 @@ html;
                     <td style="padding: 0px !important;">$ {$value['DESCUENTO']}</td>
                     <td style="padding: 0px !important;">CICLO {$value['CICLO_INVITACION']} </td>
                     <td style="padding: 0px !important;"> {$estatus_p} </td>
+                    <td style="padding: 0px !important;"> NO </td>
                 </tr>
 html;
 
