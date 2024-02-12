@@ -4,7 +4,7 @@ defined("APPPATH") OR die("Access denied");
 
 use \Core\View;
 use \Core\Controller;
-use \App\models\Operaciones AS OperacionesDao;
+use \App\models\Promociones AS PromocionesDao;
 
 class Promociones extends Controller
 {
@@ -79,33 +79,91 @@ html;
         $Credito = $_GET['Credito'];
 
         if ($Credito != '') {
-            //$Consulta = OperacionesDao::ConsultaGruposCultiva($Credito);
 
-            $Consulta = '';
-            foreach ($Consulta as $key => $value) {
+            $Recomienda = PromocionesDao::ConsultarDatosClienteRecomienda($Credito);
 
-                $tabla .= <<<html
+
+            $datetime1 = new \DateTime($Recomienda['INICIO']);
+
+            $fechaActual = date("Y-m-d");
+            $datetime2 = new \DateTime($fechaActual);
+
+            $interval = $datetime1->diff($datetime2);
+            $semanas = floor(($interval->format('%a') / 7)) . ' semanas';
+
+            if($semanas >= 10)
+            {
+                $promocion_estatus =  <<<html
+                    <div class="col-md-12 col-sm-12  tile_stats_count">
+                            <span class="count_top" style="font-size: 19px"><i><i class="fa fa-calendar"></i></i> Estatus</span>
+                            <div class="count" style="font-size: 17px"> Semanas de vida</div>
+                    </div>;
+html;
+            }
+            else
+            {
+                $promocion_estatus =  <<<html
+                    <div class="col-md-12 col-sm-12  tile_stats_count">
+                            <span class="count_top" style="font-size: 19px"><i><i class="fa fa-clock-o"></i></i> Estatus: NO APLICA</span>
+                            <div class="count" style="font-size: 16px"> Espere a la semana 10. Para continuar.</div>
+                    </div>;
+html;
+            }
+
+
+
+            if($Recomienda != NULL)
+            {
+                $Consulta = PromocionesDao::ConsultarClientesInvitados($Credito);
+                foreach ($Consulta as $key => $value) {
+
+                    if($value['ESTATUS_PAGADO'] == NULL)
+                    {
+                        $estatus_p = 'PENDIENTE';
+                    }else
+                    {
+                        $estatus_p = '';
+                    }
+
+
+                    $tabla_clientes .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;">{$value['SUCURSAL']}</td>
-                    <td style="padding: 0px !important;">{$value['CDGNS']}</td>
-                    <td style="padding: 0px !important;">{$value['NOMBRE_GRUPO']}</td>
-                    <td style="padding: 0px !important;">{$value['CICLO']}</td>
-                    <td style="padding: 0px !important;">{$value['CLIENTE']}</td>
-                    <td style="padding: 0px !important;">{$value['DOMICILIO']}</td>
-                    <td style="padding: 0px !important;">{$value['SOLICITUD']}</td>
+                    <td style="padding: 0px !important;">{$value['CL_INVITADO']}</td>
+                    <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
+                    <td style="padding: 0px !important;">$ {$value['CANTIDAD_ENTREGADA']}</td>
+                    <td style="padding: 0px !important;">$ {$value['DESCUENTO']}</td>
+                    <td style="padding: 0px !important;">CICLO {$value['CICLO_INVITACION']} </td>
+                    <td style="padding: 0px !important;"> {$estatus_p} </td>
                 </tr>
 html;
 
+                }
+
+                View::set('tabla_clientes', $tabla_clientes);
+                View::set('Recomienda', $Recomienda);
+                View::set('Semanas', $semanas);
+                View::set('Promocion_estatus', $promocion_estatus);
+                View::render("promociones_telarana_busqueda_all");
+
+
+            }
+            else
+            {
+                echo "El cliente no aplica para un descuento, ya que actualmente no tiene un credito activo";
             }
 
-            View::render("promociones_telarana_busqueda_all");
-
-        } else {
+        }
+        else
+        {
+            var_dump("Holaaa");
             View::render("promociones_telarana_busqueda");
         }
+
+
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('tabla', $tabla);
+
+
 
 
 

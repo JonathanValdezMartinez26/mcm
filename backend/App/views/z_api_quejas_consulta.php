@@ -8,7 +8,7 @@
             </div>
 
             <div class="card col-md-12">
-                
+
                 <hr style="border-top: 1px solid #787878; margin-top: 5px;">
 
                 <div class="dataTable_wrapper">
