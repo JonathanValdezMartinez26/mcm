@@ -139,6 +139,8 @@ html;
 
                 }
 
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('tabla_clientes', $tabla_clientes);
                 View::set('Recomienda', $Recomienda);
                 View::set('Semanas', $semanas);
@@ -156,12 +158,13 @@ html;
         else
         {
             var_dump("Holaaa");
+            View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
             View::render("promociones_telarana_busqueda");
         }
 
 
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
+
 
 
 

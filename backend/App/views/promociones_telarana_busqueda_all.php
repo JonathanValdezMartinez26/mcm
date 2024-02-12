@@ -134,7 +134,7 @@
                                                         <div class="col-md-12">
 
                                                             <strong>
-                                                                Historial de Identificación de clientes que ha invitado (Nombre del que invita)
+                                                                Historial de clientes invitados por <?php echo $Recomienda['NOMBRE']; ?>
                                                             </strong>
                                                         </div>
 
