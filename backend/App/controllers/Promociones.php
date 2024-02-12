@@ -91,7 +91,7 @@ html;
             $interval = $datetime1->diff($datetime2);
             $semanas = floor(($interval->format('%a') / 7)) . ' semanas';
 
-            if($semanas >= 10)
+            if($semanas >= 9)
             {
                 $promocion_estatus =  <<<html
                     <div class="col-md-12 col-sm-12  tile_stats_count">
@@ -106,12 +106,33 @@ html;
                     </div>;
 html;
             }
+            else if($Recomienda['DIAS_ATRASO'] >= 7)
+            {
+                $promocion_estatus =  <<<html
+                    <div class="col-md-12 col-sm-12  tile_stats_count">
+                            <span class="count_top" style="font-size: 19px"><i><i class="fa fa-calendar"></i></i> Estatus: NO</span>
+                           <br>
+                           <br>
+                           <br>
+                           <div class="col-md-12 col-sm-12 ">
+                                    <button style="background: #109d0e !important; border-radius: 25px;" type="submit" name="agregar" class="btn btn-success btn-lg" value="enviar" onclick="FunprecesarPagos()"><span class="fa fa-check"></span> Calcular Descuento</button>
+                           </div>
+                           </br>
+                    </div>;
+html;
+            }
             else
             {
                 $promocion_estatus =  <<<html
                     <div class="col-md-12 col-sm-12  tile_stats_count">
-                            <span class="count_top" style="font-size: 19px"><i><i class="fa fa-clock-o"></i></i> Estatus: NO APLICA</span>
+                            <span class="count_top" style="font-size: 19px"><i><i class="fa fa-clock-o"></i></i> Estatus: NO APLICA POR PLAZO</span>
                             <div class="count" style="font-size: 16px"> Espere a la semana 10. Para continuar.</div>
+                            
+                            <td style="padding: 10px !important; text-align: left; width:165px !important;">
+                                <div style="padding-bottom: 5px"><span class="label label-success" ><span class="fa fa-check"></span></span> Cliente sin atrasos</div>
+                                <div style="padding-bottom: 5px"><span class="label label-success"><span class="fa fa-check"></span></span> Invitados sin atrasos</div>
+                                <div style="padding-bottom: 5px"><span class="label label-success"><span style="font-size: 16px;" class="fa fa-close"></span></span> Estatus Final Solicitud</div>
+                            </td>
                     </div>;
 html;
             }
@@ -138,7 +159,9 @@ html;
                     <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
                     <td style="padding: 0px !important;">$ {$value['CANTIDAD_ENTREGADA']}</td>
                     <td style="padding: 0px !important;">$ {$value['DESCUENTO']}</td>
+                   
                     <td style="padding: 0px !important;">CICLO {$value['CICLO_INVITACION']} </td>
+                    <td style="padding: 0px !important;"> {$value['DIAS_ATRASO']}</td>
                     <td style="padding: 0px !important;"> {$estatus_p} </td>
                     <td style="padding: 0px !important;"> NO </td>
                 </tr>

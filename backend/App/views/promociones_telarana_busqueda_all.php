@@ -80,7 +80,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <span class="badge" style="background: #57687b"><h4 style="margin-top: 4px; margin-bottom: 4px">Fechas del crédito </h4></span>
                     <div class="panel panel-body" style="padding: 0px">
                         <div class="x_content">
@@ -101,7 +101,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <span class="badge" style="background: #57687b"><h4 style="margin-top: 4px; margin-bottom: 4px">Recomienda mas Paga Menos </h4></span>
                     <div class="panel panel-body" style="padding: 0px">
                         <div class="x_content">
@@ -155,6 +155,7 @@
                                                                 <th>Total del Prestamo</th>
                                                                 <th>Descuento por promoción</th>
                                                                 <th>Lo recomendo en</th>
+                                                                <th>Número de atrasos</th>
                                                                 <th>Estatus de pago</th>
                                                                 <th>Cumple Políticas</th>
                                                             </tr>
