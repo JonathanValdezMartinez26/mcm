@@ -91,12 +91,18 @@ html;
             $interval = $datetime1->diff($datetime2);
             $semanas = floor(($interval->format('%a') / 7)) . ' semanas';
 
-            if($semanas >= 10)
+            if($semanas >= 1)
             {
                 $promocion_estatus =  <<<html
                     <div class="col-md-12 col-sm-12  tile_stats_count">
-                            <span class="count_top" style="font-size: 19px"><i><i class="fa fa-calendar"></i></i> Estatus</span>
-                            <div class="count" style="font-size: 17px"> Semanas de vida</div>
+                            <span class="count_top" style="font-size: 19px"><i><i class="fa fa-calendar"></i></i> Estatus: DISPONIBLE</span>
+                           <br>
+                           <br>
+                           <br>
+                           <div class="col-md-12 col-sm-12 ">
+                                    <button style="background: #109d0e !important; border-radius: 25px;" type="submit" name="agregar" class="btn btn-success btn-lg" value="enviar" onclick="FunprecesarPagos()"><span class="fa fa-check"></span> Calcular Descuento</button>
+                           </div>
+                           </br>
                     </div>;
 html;
             }
