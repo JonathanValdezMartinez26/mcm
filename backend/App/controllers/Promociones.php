@@ -91,7 +91,7 @@ html;
             $interval = $datetime1->diff($datetime2);
             $semanas = floor(($interval->format('%a') / 7)) . ' semanas';
 
-            if($semanas >= 1)
+            if($semanas >= 10)
             {
                 $promocion_estatus =  <<<html
                     <div class="col-md-12 col-sm-12  tile_stats_count">
