@@ -153,13 +153,16 @@
                                                         <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                                             <thead>
                                                             <tr>
+                                                                <th>Recomendo en</th>
                                                                 <th>Codigo del crédito</th>
                                                                 <th>Nombre completo del cliente invitado</th>
-                                                                <th>Descuento por promoción</th>
-                                                                <th>Lo recomendo en</th>
                                                                 <th>Número de atrasos</th>
+                                                                <th>Descuento por promoción</th>
+
+                                                                <th>Cumple políticas del descuento</th>
                                                                 <th>Estatus de la promoción</th>
-                                                                <th>Cumple políticas</th>
+
+                                                                <th>Vo.Bo</th>
                                                                 <th>E.C </th>
                                                             </tr>
                                                             </thead>

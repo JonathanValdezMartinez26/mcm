@@ -156,14 +156,19 @@ html;
 
                     $tabla_clientes .= <<<html
                 <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;">CICLO {$value['CICLO_INVITACION']} </td>
                     <td style="padding: 0px !important;">{$value['CDGNS_INVITADO']}</td>
                     <td style="padding: 0px !important;">{$value['NOMBRE']} ({$value['CL_INVITADO']})</td>
-                    <td style="padding: 0px !important;">$ {$value['DESCUENTO']}</td>
-                   
-                    <td style="padding: 0px !important;">CICLO {$value['CICLO_INVITACION']} </td>
                     <td style="padding: 0px !important;"> {$value['DIAS_ATRASO']}</td>
-                    <td style="padding: 0px !important;"> {$estatus_p} </td>
+                    <td style="padding: 0px !important;">$ {$value['DESCUENTO']}</td>
                     <td style="padding: 0px !important;"> NO </td>
+                    
+                   
+                    
+                    
+                    <td style="padding: 0px !important;"> {$estatus_p} </td>
+                    <td style="padding: 0px !important;"> - </td>
+                    
                     <td style="padding: 0px !important;"> <a target="_blank" href="http://25.13.83.206:3883/RptGenerado_empp/default.aspx?&id=27&grupo=$cdgns&ciclo=01"><span class="fa fa-file-pdf-o"> - 01</span></a>. </td>
                 </tr>
 html;
