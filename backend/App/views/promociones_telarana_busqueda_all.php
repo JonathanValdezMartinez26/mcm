@@ -49,6 +49,7 @@
                                                     <?php echo $Recomienda['SUCURSAL']; ?>
                                                 </td>
                                             </tr>
+
                                             <tr>
                                                 <td style="font-size: 18px; background: #cccccc;color: #707070" colspan="14">
                                                     <div class="row">
@@ -56,7 +57,7 @@
                                                             El cliente tiene un total de  <strong>
                                                                 <span class="label label-warning" style="font-size: 95% !important; border-radius: 50em !important;" align="right"><?php echo $Recomienda['DIAS_ATRASO']; ?></span>
                                                             </strong>
-                                                            atrasos en sus pagos del ciclo actual.
+                                                            días de atraso en sus pagos del ciclo actual.
                                                         </div>
 
                                                         <div class="col-md-4">
@@ -150,14 +151,15 @@
                                                         <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                                             <thead>
                                                             <tr>
-                                                                <th>Codigo del Cliente</th>
-                                                                <th>Nombre Completo del Cliente Invitado</th>
-                                                                <th>Total del Prestamo</th>
+                                                                <th>Codigo del crédito</th>
+                                                                <th>Nombre completo del cliente invitado</th>
+                                                                <th>Total del prestamo</th>
                                                                 <th>Descuento por promoción</th>
                                                                 <th>Lo recomendo en</th>
                                                                 <th>Número de atrasos</th>
-                                                                <th>Estatus de pago</th>
-                                                                <th>Cumple Políticas</th>
+                                                                <th>Estatus de la promoción</th>
+                                                                <th>Cumple políticas</th>
+                                                                <th>E.C </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody>
