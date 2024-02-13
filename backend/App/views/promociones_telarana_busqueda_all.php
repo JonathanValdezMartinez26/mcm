@@ -43,7 +43,9 @@
                                             <tr>
                                                 <td style="font-size: 19px" ;="" colspan="10"><?php echo $Recomienda['CDGNS']; ?></td>
                                                 <td style="font-size: 19px; font: " colspan="3">
-                                                    <?php echo $Recomienda['CICLO']; ?>
+                                                    <?php echo $Recomienda['CICLO'];
+                                                    $ciclo = $Recomienda['CICLO'];
+                                                    ?>
                                                 </td>
                                                 <td style="font-size: 16px;" colspan="5">
                                                     <?php echo $Recomienda['SUCURSAL']; ?>
@@ -57,7 +59,7 @@
                                                             El cliente tiene un total de  <strong>
                                                                 <span class="label label-warning" style="font-size: 95% !important; border-radius: 50em !important;" align="right"><?php echo $Recomienda['DIAS_ATRASO']; ?></span>
                                                             </strong>
-                                                            días de atraso en sus pagos del ciclo actual.
+                                                            días de atraso en sus pagos del ciclo actual.  <a target="_blank" href="http://25.13.83.206:3883/RptGenerado_empp/default.aspx?&id=27&grupo=<?php echo $Recomienda['CDGNS']; ?>&ciclo=<?php echo $ciclo; ?>"><span class="fa fa-file-pdf-o"> - <?php echo $ciclo; ?></span></a>
                                                         </div>
 
                                                         <div class="col-md-4">
