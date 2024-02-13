@@ -155,7 +155,6 @@
                                                             <tr>
                                                                 <th>Codigo del crédito</th>
                                                                 <th>Nombre completo del cliente invitado</th>
-                                                                <th>Total del prestamo</th>
                                                                 <th>Descuento por promoción</th>
                                                                 <th>Lo recomendo en</th>
                                                                 <th>Número de atrasos</th>

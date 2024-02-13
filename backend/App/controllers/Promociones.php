@@ -158,7 +158,6 @@ html;
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;">{$value['CDGNS_INVITADO']}</td>
                     <td style="padding: 0px !important;">{$value['NOMBRE']} ({$value['CL_INVITADO']})</td>
-                    <td style="padding: 0px !important;">$ {$value['CANTIDAD_ENTREGADA']}</td>
                     <td style="padding: 0px !important;">$ {$value['DESCUENTO']}</td>
                    
                     <td style="padding: 0px !important;">CICLO {$value['CICLO_INVITACION']} </td>
