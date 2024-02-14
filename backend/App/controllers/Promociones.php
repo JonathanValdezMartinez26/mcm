@@ -128,12 +128,7 @@ html;
                             <span class="count_top" style="font-size: 19px"><i><i class="fa fa-clock-o"></i></i> Estatus: NO APLICA POR PLAZO</span>
                             <div class="count" style="font-size: 16px"> Espere a la semana 10. Para continuar.</div>
                             
-                            <td style="padding: 10px !important; text-align: left; width:165px !important;">
-                                <div style="padding-bottom: 5px"><span class="label label-success" ><span class="fa fa-check"></span></span> Cliente sin atrasos</div>
-                                <div style="padding-bottom: 5px"><span class="label label-success"><span class="fa fa-check"></span></span> Invitados sin atrasos</div>
-                                <div style="padding-bottom: 5px"><span class="label label-success"><span style="font-size: 16px;" class="fa fa-close"></span></span> Estatus Final Solicitud</div>
-                            </td>
-                    </div>;
+                    </div>
 html;
             }
 
@@ -193,7 +188,6 @@ html;
         }
         else
         {
-            var_dump("Holaaa");
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::render("promociones_telarana_busqueda");
