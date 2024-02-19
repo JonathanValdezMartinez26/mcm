@@ -3683,6 +3683,7 @@ html;
         $fechaActual = date('Y-m-d');
         $Inicial = $_GET['Inicial'];
         $Final = $_GET['Final'];
+        $Sucursal = $_GET['Suc'];
 
         $cdgco = array();
 
@@ -4346,7 +4347,7 @@ html;
 
         /* FILAS DEL ARCHIVO EXCEL */
 
-        $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco_all, $this->__perfil, $Sucursal);
+        $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco_all, $this->__usuario, $Sucursal);
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
@@ -4355,6 +4356,8 @@ html;
             }
             $fila +=1;
         }
+
+
 
 
         $objPHPExcel->getActiveSheet()->freezePane('A3');

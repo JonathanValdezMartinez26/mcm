@@ -359,7 +359,7 @@ sql;
 
     /////////////////////////////////////////////
 
-    public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $perfil, $suc){
+    public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $usuario, $suc){
 
 
 
@@ -378,7 +378,7 @@ sql;
 
                 $mysqli = Database::getInstance();
                 $query=<<<sql
-                 SELECT DISTINCT (SPR.CDGNS || '-' || SPR.CICLO) AS A, SPR.REGION AS B, SPR.FECHA_TRABAJO AS C,  
+                  SELECT * FROM (SELECT DISTINCT (SPR.CDGNS || '-' || SPR.CICLO) AS A, SPR.REGION AS B, SPR.FECHA_TRABAJO AS C,  
                  SPR.FECHA_SOL AS D, '' AS E, SPR.NOMBRE_SUCURSAL AS F, SPR.EJECUTIVO AS G, SPR.CDGNS AS H, (SPR.NOMBRE) AS I,
                  SPR.CICLO AS J, SPR.TEL_CL AS K, SPR.TIPO_LLAM_1_CL AS L, 
                  CASE WHEN SPR.PRG_UNO_CL IS NULL THEN '- *'
@@ -453,6 +453,7 @@ sql;
                  INNER JOIN PE ON PE.CODIGO = SPR.CDGPE 
                  WHERE $var SPR.FECHA_SOL BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
                  AND SEMAFORO = '1' 
+                 AND SPR.CDGPE = '$usuario'
                  
                  UNION
                  
@@ -528,7 +529,7 @@ sql;
                  '' AS BD
              
                  FROM  SOLICITUDES_PENDIENTES SPR
-                 WHERE $var SPR.FECHA_SOL BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
+                 WHERE $var SPR.FECHA_SOL BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000') ORDER BY D DESC
                  
                  
 sql;
