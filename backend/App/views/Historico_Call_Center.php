@@ -25,6 +25,14 @@
                                     <input class="form-control mr-sm-2" autofocus type="date" id="Final" name="Final" placeholder="000000" aria-label="Search" value="<?php echo $Final; ?>" min="" max="<?php echo $Final; ?>">
                                     <span id="availability1">Hasta</span>
                                 </div>
+                                <div class="col-md-4 col-sm-8">
+                                    <div class="form-group">
+                                        <select class="form-control" autofocus type="select" id="Suc" name="Suc" aria-label="Search">
+                                            <?php echo $sucursal; ?>
+                                        </select>
+                                        <label for="ejecutivosuc">Sucursal </label>
+                                    </div>
+                                </div>
                                 <div class="col-md-2">
                                     <button class="btn btn-default" type="submit">Buscar</button>
                                 </div>

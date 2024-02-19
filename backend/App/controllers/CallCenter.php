@@ -608,8 +608,15 @@ html;
 html;
         foreach ($ComboSucursales as $key => $val2) {
 
+            if($suc == $val2['CODIGO'])
+            {
+                $sel = 'selected';
+            }else{
+                $sel = '';
+            }
+
             $opciones_suc .= <<<html
-                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+                <option {$sel} value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
 html;
             array_push($cdgco_all, $val2['CODIGO']);
         }
@@ -3123,14 +3130,36 @@ html;
         $fechaActual = date('Y-m-d');
         $Inicial = $_GET['Inicial'];
         $Final = $_GET['Final'];
+        $Sucursal = $_GET['Suc'];
+
+
 
         $cdgco = array();
 
-        $ComboSucursales = CallCenterDao::getComboSucursales($this->__usuario);
+        //////////////////////////////////////////
 
+        $opciones_suc = '';
+
+        $ComboSucursales = CallCenterDao::getComboSucursales($this->__usuario);
+        $opciones_suc .= <<<html
+                <option  value="000">(000) TODAS MIS SUCURSALES INCLUIDAS OTRAS NO MOSTRADAS EN LA LISTA</option>
+html;
         foreach ($ComboSucursales as $key => $val2) {
+
+            if($Sucursal == $val2['CODIGO'])
+            {
+                $sel = 'selected';
+            }else{
+                $sel = '';
+            }
+
+            $opciones_suc .= <<<html
+                <option {$sel} value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+html;
             array_push($cdgco, $val2['CODIGO']);
         }
+
+        ///////////////////////////////////////
 
 
         if ($Inicial != '' || $Final != '') {
@@ -3357,6 +3386,7 @@ html;
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('Inicial', $fechaActual);
                 View::set('Final', $fechaActual);
+                View::set('sucursal', $opciones_suc);
                 View::render("historico_call_center_message_f");
             }
             else
@@ -3366,6 +3396,7 @@ html;
                 View::set('tabla', $tabla);
                 View::set('Inicial', $Inicial);
                 View::set('Final', $Final);
+                View::set('sucursal', $opciones_suc);
                 View::render("Historico_Call_Center");
             }
         }
@@ -3574,6 +3605,7 @@ html;
                 View::set('fechaActual', $fechaActual);
                 View::set('Inicial', $fechaActual);
                 View::set('Final', $fechaActual);
+                View::set('sucursal', $opciones_suc);
                 View::render("historico_call_center_message_f");
             }
             else
@@ -3583,6 +3615,7 @@ html;
                 View::set('tabla', $tabla);
                 View::set('Inicial', $fechaActual);
                 View::set('Final', $fechaActual);
+                View::set('sucursal', $opciones_suc);
                 View::render("Historico_Call_Center");
             }
 
