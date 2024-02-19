@@ -4249,6 +4249,8 @@ html;
 
         $fecha_inicio = $_GET['Inicial'];
         $fecha_fin = $_GET['Final'];
+        $Sucursal = $_GET['Suc'];
+
 
         if($fecha_fin == '' || $fecha_fin == '')
         {
@@ -4344,7 +4346,7 @@ html;
 
         /* FILAS DEL ARCHIVO EXCEL */
 
-        $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco_all, $this->__perfil);
+        $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco_all, $this->__perfil, $Sucursal);
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
@@ -4482,7 +4484,7 @@ html;
 
         /* FILAS DEL ARCHIVO EXCEL */
 
-        $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco_all, $this->__perfil);
+        $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco_all, $this->__perfil, $Sucursal);
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));

@@ -356,7 +356,7 @@ sql;
 
     }
 
-    public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $perfil){
+    public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $perfil, $Sucursal){
 
         $string_from_array = implode(', ', $cdgco);
         //var_dump($cdgco);
