@@ -278,16 +278,43 @@ html;
 html;
         }
 
-        if($this->__perfil == 'ADMIN') {
+        if($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ') {
             $menu .= <<<html
               <ul class="nav side-menu">
-                <li><a><i class="glyphicon glyphicon glyphicon-cog	
-"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>
+                
+html;
+            if($this->__perfil == 'ADMIN' )
+            {
+                $menu .= <<<html
+                <li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>
+html;
+            }
+            else
+            {
+                $menu .= <<<html
+                <li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Usuarios SICAFIN <span class="fa fa-chevron-down"></span></a>
+html;
+            }
+
+                $menu .= <<<html
                   <ul class="nav child_menu">
+html;
+
+            if($this->__perfil == 'ADMIN') {
+                $menu .= <<<html
                    <li><a href="/Pagos/AjusteHoraCierre/">Ajustar Hora de Cierre</a></li>
                    <li><a href="/Pagos/DiasFestivos/">Asignación Días Festivos</a></li>
+html;
+            }
+
+            if($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ') {
+                $menu .= <<<html
                     <li><a href="/Reportes/UsuariosMCM/">Reporte Usuarios SICAFIN MCM</a></li>
                     <li><a href="/Reportes/UsuariosCultiva/">Reporte Usuarios SICAFIN Cultiva</a></li>
+html;
+            }
+
+            $menu .= <<<html
                   </ul>
                 </li>
               </ul>
