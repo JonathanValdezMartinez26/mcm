@@ -3004,7 +3004,7 @@ html;
             usuario = getParameterByName('Was');
             
              $("#export_excel_consulta").click(function(){
-              $('#all').attr('action', '/CallCenter/HistorialGenera/?Inicial='+fecha1+'&Final='+fecha2);
+              $('#all').attr('action', '/CallCenter/HistorialGenera/?Inicial='+fecha1+'&Final='+fecha2+'&Suc='+cdgco);
               $('#all').attr('target', '_blank');
               $("#all").submit();
             });

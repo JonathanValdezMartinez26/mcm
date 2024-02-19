@@ -280,6 +280,7 @@ sql;
 
 
 
+
         if($suc == '000')
         {
             $string_from_array = implode(', ', $cdgco);
@@ -356,18 +357,24 @@ sql;
 
     }
 
-    public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $perfil, $Sucursal){
+    /////////////////////////////////////////////
+
+    public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $perfil, $suc){
+
+
 
         $string_from_array = implode(', ', $cdgco);
-        //var_dump($cdgco);
-        if($perfil == 'ADMIN' || $perfil == 'ACALL')
+        if($suc == '000')
         {
             $var = '';
         }
         else
         {
-           $var = 'SPR.CDGCO IN('.$string_from_array.') AND ';
+            //$var = 'SPR.CDGCO IN('.$string_from_array.') AND ';
+            $var = 'SPR.CDGCO IN('.$suc.') AND ';
         }
+
+
 
                 $mysqli = Database::getInstance();
                 $query=<<<sql
@@ -445,7 +452,7 @@ sql;
                  FROM  SOLICITUDES_PROCESADAS SPR
                  INNER JOIN PE ON PE.CODIGO = SPR.CDGPE 
                  WHERE $var SPR.FECHA_SOL BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
-                 AND SEMAFORO = '1'
+                 AND SEMAFORO = '1' 
                  
                  UNION
                  
