@@ -276,9 +276,20 @@ sql;
 
     }
 
-    public static function getAllSolicitudesHistorico($fecha_inicio, $fecha_fin, $cdgco, $cdgpe, $perfil){
+    public static function getAllSolicitudesHistorico($fecha_inicio, $fecha_fin, $cdgco, $cdgpe, $perfil, $suc){
 
-        $string_from_array = implode(', ', $cdgco);
+
+
+        if($suc == '000')
+        {
+            $string_from_array = implode(', ', $cdgco);
+            $con_array_cdgco = '';
+        }
+        else
+        {
+            $string_from_array = $suc;
+            $con_array_cdgco = 'AND SPR.CDGCO IN('.$string_from_array.')';
+        }
 
         //var_dump($string_from_array);
         if($string_from_array != '')
@@ -289,7 +300,7 @@ sql;
                  FROM SOLICITUDES_PROCESADAS SPR
                  INNER JOIN PE ON PE.CODIGO = SPR.CDGPE
                  WHERE SPR.CDGPE = '$cdgpe' AND SPR.FECHA_SOL BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
-                 AND SEMAFORO = '1'
+                 AND SEMAFORO = '1' $con_array_cdgco
                  
                  UNION
                  

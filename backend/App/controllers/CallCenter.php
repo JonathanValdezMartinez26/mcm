@@ -3162,9 +3162,9 @@ html;
         ///////////////////////////////////////
 
 
-        if ($Inicial != '' || $Final != '') {
+        if ($Inicial != '' || $Final != '' || $Sucursal != '') {
             /////////////////////////////////
-            $Consulta = CallCenterDao::getAllSolicitudesHistorico($Inicial, $Final, $cdgco, $this->__usuario, $this->__perfil);
+            $Consulta = CallCenterDao::getAllSolicitudesHistorico($Inicial, $Final, $cdgco, $this->__usuario, $this->__perfil, $Sucursal);
             foreach ($Consulta as $key => $value) {
 
                 if($value['ESTATUS_CL'] == 'PENDIENTE')
