@@ -3672,7 +3672,7 @@ html;
             usuario = getParameterByName('Was');
             
              $("#export_excel_consulta_analistas").click(function(){
-              $('#all').attr('action', '/CallCenter/HistorialGeneraAnalistas/?Inicial='+fecha1+'&Final='+fecha2);
+              $('#all').attr('action', '/CallCenter/HistorialGeneraAnalistas/?Inicial='+fecha1+'&Final='+fecha2+'&Suc='+cdgco);
               $('#all').attr('target', '_blank');
               $("#all").submit();
             });
@@ -4392,6 +4392,7 @@ html;
 
         $fecha_inicio = $_GET['Inicial'];
         $fecha_fin = $_GET['Final'];
+        $sucursal = $_GET['Suc'];
 
         if($fecha_fin == '' || $fecha_fin == '')
         {
@@ -4487,7 +4488,7 @@ html;
 
         /* FILAS DEL ARCHIVO EXCEL */
 
-        $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco_all, $this->__perfil, $Sucursal);
+        $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco_all, $this->__perfil, $sucursal);
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
