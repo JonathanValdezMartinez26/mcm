@@ -635,7 +635,7 @@ sql;
             WHERE CDGNS = '$cdgns') ORDER BY INICIO DESC
 sql;
 
-        var_dump($query);
+        //var_dump($query);
         return $mysqli->queryAll($query);
     }
 
