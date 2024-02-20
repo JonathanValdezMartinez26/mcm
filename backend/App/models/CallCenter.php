@@ -366,7 +366,7 @@ sql;
         $string_from_array = implode(', ', $cdgco);
         if($suc == '000')
         {
-            $var = '';
+            $var = 'SPR.CDGCO IN('.$string_from_array.') AND ';
         }
         else
         {
@@ -376,11 +376,11 @@ sql;
 
         if($usuario != '')
         {
-            $var = 'AND SPR.CDGPE IN('.$usuario.')';
+            $var_ = "AND SPR.CDGPE IN('".$usuario."')";
         }
         else
         {
-            $var = '';
+            $var_ = '';
         }
 
 
@@ -462,7 +462,7 @@ sql;
                  INNER JOIN PE ON PE.CODIGO = SPR.CDGPE 
                  WHERE $var SPR.FECHA_SOL BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
                  AND SEMAFORO = '1' 
-                
+                $var_
                  
                  UNION
                  
