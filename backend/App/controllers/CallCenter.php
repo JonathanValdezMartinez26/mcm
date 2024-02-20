@@ -4394,11 +4394,12 @@ html;
         $fecha_fin = $_GET['Final'];
         $sucursal = $_GET['Suc'];
 
-        if($fecha_fin == '' || $fecha_fin == '')
+        if($fecha_fin == '' || $fecha_fin == '' || $sucursal == '')
         {
             $fechaActual = date('Y-m-d');
             $fecha_inicio = $fechaActual;
             $fecha_fin = $fechaActual;
+            $sucursal = '000';
         }
 
 
