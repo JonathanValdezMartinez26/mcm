@@ -370,8 +370,17 @@ sql;
         }
         else
         {
-            //$var = 'SPR.CDGCO IN('.$string_from_array.') AND ';
             $var = 'SPR.CDGCO IN('.$suc.') AND ';
+        }
+
+
+        if($usuario != '')
+        {
+            $var = 'AND SPR.CDGPE IN('.$usuario.')';
+        }
+        else
+        {
+            $var = '';
         }
 
 
@@ -453,7 +462,7 @@ sql;
                  INNER JOIN PE ON PE.CODIGO = SPR.CDGPE 
                  WHERE $var SPR.FECHA_SOL BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
                  AND SEMAFORO = '1' 
-                 AND SPR.CDGPE = '$usuario'
+                
                  
                  UNION
                  
@@ -626,7 +635,7 @@ sql;
             WHERE CDGNS = '$cdgns') ORDER BY INICIO DESC
 sql;
 
-        //var_dump($query);
+        var_dump($query);
         return $mysqli->queryAll($query);
     }
 

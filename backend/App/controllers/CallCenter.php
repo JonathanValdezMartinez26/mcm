@@ -4382,23 +4382,36 @@ html;
     public function HistorialGeneraAnalistas(){
 
         $cdgco_all = array();
+        $analistas_all = array();
 
         $ComboSucursales = CallCenterDao::getComboSucursalesAllCDGCO();
         foreach ($ComboSucursales as $key => $val2) {
             array_push($cdgco_all, $val2['CODIGO']);
         }
 
+        //$ComboAnalistas = CallCenterDao::getAllAnalistas();
+        //foreach ($ComboAnalistas as $key => $val2) {
+          //  array_push($analistas_all, $val2['USUARIO']);
+        //}
+
+        //$string_from_array = implode(', ', $analistas_all);
+
+        //var_dump($string_from_array);
+
+
 
 
         $fecha_inicio = $_GET['Inicial'];
         $fecha_fin = $_GET['Final'];
-        $sucursal = $_GET['Suc'];
 
-        if($fecha_fin == '' || $fecha_fin == '' || $sucursal == '')
+        if($fecha_fin == '' || $fecha_fin == '')
         {
             $fechaActual = date('Y-m-d');
             $fecha_inicio = $fechaActual;
             $fecha_fin = $fechaActual;
+            $sucursal = '000';
+        }
+        else{
             $sucursal = '000';
         }
 
@@ -4489,7 +4502,8 @@ html;
 
         /* FILAS DEL ARCHIVO EXCEL */
 
-        $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco_all, $this->__perfil, $sucursal);
+
+        $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco_all, '', $sucursal);
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
