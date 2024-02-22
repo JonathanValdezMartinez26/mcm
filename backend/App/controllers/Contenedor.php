@@ -278,6 +278,23 @@ html;
 html;
         }
 
+        if($this->__perfil== 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario== 'PLMV')
+        {
+            $menu.=<<<html
+        <ul class="nav side-menu">
+                <li><a><i class="glyphicon glyphicon glyphicon-cog"> 
+                </i>&nbsp;Incidencias MCM<span class="fa fa-chevron-down"></span></a>
+                  <ul class="nav child_menu">
+                  <li><a href="/Cultiva/">Error Autorizar y/o Rechazar Solicitud</a></li>
+                  <li><a href="/Cultiva/">Calculo de Devengos</a></li>
+                  <li><a href="/Cultiva/">Cambio de Fecha Pagos No conciliados del día</a></li>
+                  
+                  </ul>
+                </li>
+        </ul>
+html;
+        }
+
         if($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ') {
             $menu .= <<<html
               <ul class="nav side-menu">

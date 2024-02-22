@@ -82,6 +82,8 @@ html;
 
             $Recomienda = PromocionesDao::ConsultarDatosClienteRecomienda($Credito);
 
+            var_dump($Recomienda);
+
 
             $datetime1 = new \DateTime($Recomienda['INICIO']);
 
@@ -107,6 +109,21 @@ html;
 html;
             }
             else if($Recomienda['DIAS_ATRASO'] >= 7)
+            {
+                $promocion_estatus =  <<<html
+                    <div class="col-md-12 col-sm-12  tile_stats_count">
+                            <span class="count_top" style="font-size: 19px"><i><i class="fa fa-calendar"></i></i> Estatus: NO</span>
+                           <br>
+                           <br>
+                           <br>
+                           <div class="col-md-12 col-sm-12 ">
+                                    <button style="background: #109d0e !important; border-radius: 25px;" type="submit" name="agregar" class="btn btn-success btn-lg" value="enviar" onclick="FunprecesarPagos()"><span class="fa fa-check"></span> Calcular Descuento</button>
+                           </div>
+                           </br>
+                    </div>;
+html;
+            }
+            else if($Recomienda['CICLO'] == 1)
             {
                 $promocion_estatus =  <<<html
                     <div class="col-md-12 col-sm-12  tile_stats_count">
@@ -149,14 +166,38 @@ html;
 
                     $cdgns = $value['CDGNS_INVITADO'];
 
+
+                    if($value['DIAS_ATRASO'] >= 7)
+                    {
+                        $titulo_uno = 'NO';
+                    }
+                    else
+                    {
+                        $titulo_uno = 'SI';
+                    }
                     $tabla_clientes .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;">CICLO {$value['CICLO_INVITACION']} </td>
                     <td style="padding: 0px !important;">{$value['CDGNS_INVITADO']}</td>
                     <td style="padding: 0px !important;">{$value['NOMBRE']} ({$value['CL_INVITADO']})</td>
-                    <td style="padding: 0px !important;"> {$value['DIAS_ATRASO']}</td>
+                    <td style="padding: 0px !important;"> 
+                    <div>
+                         CICLO 01 - {$value['DIAS_ATRASO']} 
+                    </div>
+                    <div>
+                         CICLO 02 -  {$value['DIAS_ATRASO']} 
+                    </div>
+                    </td>
                     <td style="padding: 0px !important;">$ {$value['DESCUENTO']}</td>
-                    <td style="padding: 0px !important;"> NO </td>
+                    <td style="padding: 0px !important;"> 
+                    <div>
+                         CICLO 01 - <b>{$titulo_uno} </b>
+                    </div>
+                    <div>
+                         CICLO 02 -  SIN REGISTRO
+                    </div>
+
+</td>
                     
                    
                     

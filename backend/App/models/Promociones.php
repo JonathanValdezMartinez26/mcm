@@ -43,7 +43,8 @@ sql;
 	              
 	   TO_CHAR(TCD.INICIO ,'YYYY/MM/DD') AS INICIO,
 	   TO_CHAR(TCD.FIN ,'YYYY/MM/DD') AS FIN, TCD.PLAZO, 
-	   FNCALDIASATRASO('EMPFIN','$cdgns', PRN.CICLO,'G',SYSDATE) AS DIAS_ATRASO
+	   FNCALDIASATRASO('EMPFIN','$cdgns', PRN.CICLO,'G',SYSDATE) AS DIAS_ATRASO, 
+	   MAX(PRN.CICLO) AS ULTIMO_CICLO_REGISTRADO 
 	              
 	   FROM CL_PROMO_TELARANA CPT
        INNER JOIN CL ON CL.CODIGO = CPT.CL_INVITA
@@ -54,8 +55,9 @@ sql;
        WHERE CPT.CDGNS_INVITA = '$cdgns' AND PRN.SITUACION = 'E'
        AND TCD.CICLO = PRN.CICLO 
        )
-       GROUP BY CL_INVITA, NOMBRE, CICLO, CDGNS, SUCURSAL, INICIO, FIN, PLAZO, DIAS_ATRASO
+       GROUP BY CL_INVITA, NOMBRE, CICLO, CDGNS, SUCURSAL, INICIO, FIN, PLAZO, DIAS_ATRASO, ULTIMO_CICLO_REGISTRADO
 sql;
+        var_dump($query);
         try {
             $mysqli = Database::getInstance();
             return $mysqli->queryOne($query);
