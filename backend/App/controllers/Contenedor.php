@@ -116,7 +116,9 @@ html;
 html;
         }
 
-        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__usuario == 'LGFR' || $this->__usuario == 'PLMV' || $this->__usuario == 'PMAB' || $this->__usuario == 'MGJC'
+        if($this->__perfil== 'ADMIN' || $this->__perfil == 'CAJA' || $this->__usuario == 'LGFR'
+            || $this->__usuario == 'PLMV'
+            || $this->__usuario == 'PMAB' || $this->__usuario == 'MGJC'
             || $this->__usuario== 'AVGA' //USUARIO DE ANGELES - TOLUCA
             || $this->__usuario== 'FLCR' //USUARIO DE REBECA - VILLA VICTORIA
             || $this->__usuario== 'COCS' //USUARIO DE SELENE - ESTADO DE MEXICO
@@ -285,10 +287,11 @@ html;
                 <li><a><i class="glyphicon glyphicon glyphicon-cog"> 
                 </i>&nbsp;Incidencias MCM<span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
-                  <li><a href="/Cultiva/">Error Autorizar y/o Rechazar Solicitud</a></li>
-                  <li><a href="/Cultiva/">Calculo de Devengos</a></li>
-                  <li><a href="/Cultiva/">Cambio de Fecha Pagos No conciliados del día</a></li>
-                  
+                  <li><a href="/Incidencias/AutorizaRechazaSolicitud/">Error Autorizar y/o Rechazar Solicitud</a></li>
+                  <li><a href="/Incidencias/CalculoDevengo/">Calculo de Devengos</a></li>
+                  <li><a href="/Incidencias/CancelarRefinanciamiento/">Cancelar Refinanciamiento</a></li>
+                  <li><a href="/Incidencias/ActualizarFechaPagosNoConciliados/">Cambio de Fecha para Pagos No conciliados del día</a></li>
+                  <li><a href="/Incidencias/ActualizarFechaPagosNoConciliados/">Telaraña agregar referencias</a></li>
                   </ul>
                 </li>
         </ul>
