@@ -90,9 +90,9 @@ sql;
                 TO_CHAR(GRUPO) AS GRUPO, 
                 ULTIMO_CICLO AS CUENTA_RELACION, 
                 CLIENTES AS NOMBRE,
-                ADICIONAL, 
-                A_PATERNO,
-                A_MATERNO,
+                TO_CHAR(ADICIONAL) AS ADICIONAL, 
+                TO_CHAR(A_PATERNO) AS A_PATERNO,
+                TO_CHAR(A_MATERNO) AS A_MATERNO,
                 'PRESTAMO ' || ULTIMO_CICLO AS DESCRIPCION_OPERACION, 
                  CASE WHEN ULTIMO_CICLO = '01' THEN '0'
                  ELSE '1' END AS IDENTIFICA_CUENTA, 
@@ -106,7 +106,6 @@ sql;
                 ORDER BY FECHA_ALTA DESC
                 
 sql;
-
         //var_dump($query);
         try {
             $mysqli = Database_cultiva::getInstance();
