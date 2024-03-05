@@ -839,20 +839,15 @@ html;
 
             foreach ($Consulta as $key => $value) {
 
-                $nombre = utf8_encode($value['NOMBRE']);
-                $adicional = utf8_encode($value['ADICIONAL']);
-                $paterno = utf8_encode($value['A_PATERNO']);
-                $materno = utf8_encode($value['A_MATERNO']);
-
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;">{$value['CLIENTE']}</td>
                     <td style="padding: 0px !important;">{$value['GRUPO']}</td>
                     <td style="padding: 0px !important;">{$value['CUENTA_RELACION']}</td>
-                    <td style="padding: 0px !important;">{$nombre}</td>
-                    <td style="padding: 0px !important;">{$adicional}</td>
-                    <td style="padding: 0px !important;">{$paterno}</td>
-                    <td style="padding: 0px !important;">{$materno}</td>
+                    <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
+                    <td style="padding: 0px !important;">{$value['ADICIONAL']}</td>
+                    <td style="padding: 0px !important;">{$value['A_PATERNO']}</td>
+                    <td style="padding: 0px !important;">{$value['A_MATERNO']}</td>
                     <td style="padding: 0px !important;">{$value['DESCRIPCION_OPERACION']}</td>
                     <td style="padding: 0px !important;">{$value['IDENTIFICA_CUENTA']}</td>
                     <td style="padding: 0px !important;">{$value['CONSERVA']}</td>
