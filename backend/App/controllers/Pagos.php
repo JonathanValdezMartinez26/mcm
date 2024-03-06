@@ -1,12 +1,14 @@
 <?php
+
 namespace App\controllers;
-defined("APPPATH") OR die("Access denied");
+
+defined("APPPATH") or die("Access denied");
 
 use \Core\View;
 use \Core\MasterDom;
 use \Core\Controller;
-use \App\models\Pagos AS PagosDao;
-use \App\models\CallCenter AS CallCenterDao;
+use \App\models\Pagos as PagosDao;
+use \App\models\CallCenter as CallCenterDao;
 
 
 
@@ -22,7 +24,6 @@ class Pagos extends Controller
         $this->_contenedor = new Contenedor;
         View::set('header', $this->_contenedor->header());
         View::set('footer', $this->_contenedor->footer());
-
     }
 
     public function index()
@@ -224,17 +225,14 @@ html;
         $dia = date("N");
 
 
-        if ($dia == 1)
-        {
+        if ($dia == 1) {
             $date_past = strtotime('-3 days', strtotime($fechaActual));
             $date_past = date('Y-m-d', $date_past);
 
             $inicio_f = $date_past;
             $fin_f = $fechaActual;
-        }
-        else
-        {
-            $date_past = strtotime('-2 days', strtotime($fechaActual));/////Aqui se dan o se quoitan dias
+        } else {
+            $date_past = strtotime('-2 days', strtotime($fechaActual)); /////Aqui se dan o se quoitan dias
             $date_past = date('Y-m-d', $date_past);
 
             $inicio_f = $date_past;
@@ -247,12 +245,9 @@ html;
 
 
         foreach ($status[0] as $key => $val2) {
-            if($status[1] == $val2['ID_EJECUTIVO'])
-            {
+            if ($status[1] == $val2['ID_EJECUTIVO']) {
                 $select = 'selected';
-            }
-            else
-            {
+            } else {
                 $select = '';
             }
 
@@ -266,77 +261,64 @@ html;
             $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
 
 
-            if($AdministracionOne[0]['NO_CREDITO'] == '')
-            {
+            if ($AdministracionOne[0]['NO_CREDITO'] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('status', $getStatus);
                 View::set('credito', $credito);
                 View::set('usuario', $this->__usuario);
                 View::render("pagos_admin_busqueda_message");
+            } else {
+                $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $hora_cierre);
+                foreach ($Administracion as $key => $value) {
 
-            }
-            else
-            {
-            $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $hora_cierre);
-            foreach ($Administracion as $key => $value) {
-
-                if($value['FIDENTIFICAPP'] ==  NULL)
-                {
-                    $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
-                    $mensaje = 'InfoAdmin();';
-                }
-                else
-                {
-                    $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
-                    $mensaje = 'InfoPhone();';
-                }
-
-                if($value['DESIGNATION_ADMIN'] == 'SI')
-                {/////
-                    /// /
-                    ///
-                    ///
-                    /// aqui poner que si los pagos son de app no se pueden modificar, consulte con operaciones
-                    ///
-                    ///
-                    ///
-                    $editar = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
-html;
-                }
-                else
-                {
-                    $date_past = strtotime('-4 days', strtotime($fechaActual));
-                    $date_past = date('Y-m-d', $date_past);
-
-                    $fecha_base = strtotime($value['FECHA']);
-                    $fecha_base = date('Y-m-d', $fecha_base);
-
-                    $inicio_f = $date_past;
-
-
-
-
-                    if($inicio_f == $fecha_base)
-                    {
-                        $editar = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
-html;
+                    if ($value['FIDENTIFICAPP'] ==  NULL) {
+                        $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
+                        $mensaje = 'InfoAdmin();';
+                    } else {
+                        $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
+                        $mensaje = 'InfoPhone();';
                     }
-                    else
-                    {
+
+                    if ($value['DESIGNATION_ADMIN'] == 'SI') { /////
+                        /// /
+                        ///
+                        ///
+                        /// aqui poner que si los pagos son de app no se pueden modificar, consulte con operaciones
+                        ///
+                        ///
+                        ///
                         $editar = <<<html
+                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+html;
+                    } else {
+                        $date_past = strtotime('-4 days', strtotime($fechaActual));
+                        $date_past = date('Y-m-d', $date_past);
+
+                        $fecha_base = strtotime($value['FECHA']);
+                        $fecha_base = date('Y-m-d', $fecha_base);
+
+                        $inicio_f = $date_past;
+
+
+
+
+                        if ($inicio_f == $fecha_base) {
+                            $editar = <<<html
+                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+html;
+                        } else {
+                            $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
                     <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
 html;
+                        }
                     }
-                }
-                $monto =number_format($value['MONTO'],2);
+                    $monto = number_format($value['MONTO'], 2);
 
-                $tabla .= <<<html
+                    $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
                     <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
@@ -349,7 +331,7 @@ html;
                     <td style="padding: 0px !important;" class="center">{$editar}</td>
                 </tr>
 html;
-            }
+                }
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('tabla', $tabla);
@@ -361,7 +343,6 @@ html;
                 View::set('usuario', $this->__usuario);
                 View::render("pagos_admin_busqueda");
             }
-
         } else {
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -488,12 +469,9 @@ html;
 
         foreach ($Administracion as $key => $value) {
 
-            if($value['HORA_PRORROGA'] == 'NULL')
-            {
+            if ($value['HORA_PRORROGA'] == 'NULL') {
                 $prorroga = 'NO TIENE';
-            }
-            else
-            {
+            } else {
                 $prorroga = $value['HORA_PRORROGA'];
             }
 
@@ -518,7 +496,6 @@ html;
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::render("horarios_caja_sucursal");
-
     }
 
     public function DiasFestivos()
@@ -566,12 +543,9 @@ html;
 
         foreach ($Administracion as $key => $value) {
 
-            if($value['HORA_PRORROGA'] == 'NULL')
-            {
+            if ($value['HORA_PRORROGA'] == 'NULL') {
                 $prorroga = 'NO TIENE';
-            }
-            else
-            {
+            } else {
                 $prorroga = $value['HORA_PRORROGA'];
             }
 
@@ -593,7 +567,6 @@ html;
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::render("dias_festivos_caja_sucursal");
-
     }
 
     public function CorteEjecutivo()
@@ -926,8 +899,7 @@ html;
         $suc = $_GET['SUC'];
         $barcode = $_GET['BCODE'];
 
-        if($ejecutivo == '' || $fecha == '' || $suc == '' || $barcode == '')
-        {
+        if ($ejecutivo == '' || $fecha == '' || $suc == '' || $barcode == '') {
             $Administracion = PagosDao::ConsultarPagosApp();
 
             foreach ($Administracion as $key => $value) {
@@ -961,14 +933,11 @@ html;
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::set('tabla', $tabla);
             View::render("view_pagos_app_ejecutivos");
-        }
-        else
-        {
+        } else {
             $Administracion = PagosDao::ConsultarPagosAppDetalle($ejecutivo, $fecha, $suc);
             $validar = $Administracion[0];
 
-            if($validar == NULL)
-            {
+            if ($validar == NULL) {
                 //////////////////////aqui
                 $Administracion = PagosDao::ConsultarPagosAppDetalleImprimir($ejecutivo, $fecha, $suc);
                 $Ejec = $Administracion[0][0];
@@ -1038,7 +1007,6 @@ html;
                      </td>
                 </tr>
 html;
-
                 }
 
 
@@ -1050,8 +1018,7 @@ html;
                 View::set('Ejecutivo', $Ejec['EJECUTIVO']);
                 View::set('barcode', $barcode);
                 View::render("view_pagos_app_detalle_imprimir");
-            }
-            else {
+            } else {
                 $AdministracionResumen = PagosDao::ConsultarPagosAppResumen($ejecutivo, $fecha, $suc);
                 $Ejec = $Administracion[0][0];
                 foreach ($Administracion[0] as $key => $value) {
@@ -1118,7 +1085,6 @@ html;
                      </td>
                 </tr>
 html;
-
                 }
 
                 $AdministracionOne = PagosDao::ConsultarCierreCajaCajera($this->__usuario);
@@ -1205,14 +1171,13 @@ html;
                 View::render("view_pagos_app_detalle");
             }
         }
-
-
     }
 
-    public function Ticket($barcode){
-        $mpdf=new \mPDF('c');
+    public function Ticket($barcode)
+    {
+        $mpdf = new \mPDF('c');
         $mpdf->defaultPageNumStyle = 'I';
-        $mpdf->h2toc = array('H5'=>0,'H6'=>1);
+        $mpdf->h2toc = array('H5' => 0, 'H6' => 1);
 
         $style = <<<html
       <style>
@@ -1287,9 +1252,9 @@ html;
 html;
         $complemento = PagosDao::getByIdReporte($barcode);
 
-        $cant_total = "$".number_format($complemento[0]['TOTAL'],2);
+        $cant_total = "$" . number_format($complemento[0]['TOTAL'], 2);
 
-        $tabla =<<<html
+        $tabla = <<<html
 
         <div class="receipt-main">
          <table class="table">
@@ -1343,40 +1308,33 @@ html;
 html;
 
 
-            foreach ($complemento[1] as $key => $value) {
-                if ($value['TIPO'] == 'P') {
-                    $tipo_pago = 'PAGO';
-                    if($value['INCIDENCIA'] == '1')
-                    {
-                        $procede = "$".number_format($value['NUEVO_MONTO'],2);
-                    }
-                    else
-                    {
-                        $procede = "$".number_format($value['MONTO'],2);
-                    }
-
-                } else if ($value['TIPO'] == 'M') {
-                    $tipo_pago = 'MULTA';
-                    if($value['INCIDENCIA'] == '1')
-                    {
-                        $procede = "$".number_format($value['NUEVO_MONTO'],2);
-                    }
-                    else
-                    {
-                        $procede = "$".number_format($value['MONTO'],2);
-                    }
-                } else if ($value['TIPO'] == 'G') {
-                    $tipo_pago = 'GARANTIA';
-                    $procede = '$00.00';
-                } else if ($value['TIPO'] == 'D') {
-                    $tipo_pago = 'MULTA';
-                    $procede = '$00.00';
-                } else if ($value['TIPO'] == 'R') {
-                    $tipo_pago = 'REFINANCIAMIENTO';
-                    $procede = '$00.00';
+        foreach ($complemento[1] as $key => $value) {
+            if ($value['TIPO'] == 'P') {
+                $tipo_pago = 'PAGO';
+                if ($value['INCIDENCIA'] == '1') {
+                    $procede = "$" . number_format($value['NUEVO_MONTO'], 2);
+                } else {
+                    $procede = "$" . number_format($value['MONTO'], 2);
                 }
+            } else if ($value['TIPO'] == 'M') {
+                $tipo_pago = 'MULTA';
+                if ($value['INCIDENCIA'] == '1') {
+                    $procede = "$" . number_format($value['NUEVO_MONTO'], 2);
+                } else {
+                    $procede = "$" . number_format($value['MONTO'], 2);
+                }
+            } else if ($value['TIPO'] == 'G') {
+                $tipo_pago = 'GARANTIA';
+                $procede = '$00.00';
+            } else if ($value['TIPO'] == 'D') {
+                $tipo_pago = 'MULTA';
+                $procede = '$00.00';
+            } else if ($value['TIPO'] == 'R') {
+                $tipo_pago = 'REFINANCIAMIENTO';
+                $procede = '$00.00';
+            }
 
-                $tabla.=<<<html
+            $tabla .= <<<html
                    
             <tr style="background-color:#B8B8B8;">
             <td style="height:auto; width: 80px;background-color:#E4E4E4; text-align: center;">{$value['CDGNS']}</td>
@@ -1386,9 +1344,9 @@ html;
             <td class="center" style="height:auto; width: 100px;background-color:#E4E4E4; text-align: center;">{$procede}</td>
             </tr>
 html;
-            }
+        }
 
-        $tabla .=<<<html
+        $tabla .= <<<html
       </table>
       </div>
       <hr>
@@ -1434,12 +1392,12 @@ html;
         $fechaActual = date('Y-m-d H:i:s');
 
 
-        $mpdf->WriteHTML($style,1);
-        $mpdf->WriteHTML($tabla,2);
-        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:opensans;">Este recibo de pago se genero el día '.$fechaActual.'<br>{PAGENO}</div>');
+        $mpdf->WriteHTML($style, 1);
+        $mpdf->WriteHTML($tabla, 2);
+        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:opensans;">Este recibo de pago se genero el día ' . $fechaActual . '<br>{PAGENO}</div>');
         print_r($mpdf->Output());
         exit;
-       }
+    }
 
     public function PagosConsulta()
     {
@@ -1540,18 +1498,18 @@ html;
 
         $sucursales = PagosDao::ListaSucursales($this->__usuario);
         $getSucursales = '';
-        if($this->__perfil == 'ADMIN'
+        if (
+            $this->__perfil == 'ADMIN'
             || $this->__perfil == 'ACALL'
             || $this->__usuario == 'PMAB'
             || $this->__usuario == 'PAES'
             || $this->__usuario == 'COCS'
             || $this->__usuario == 'LGFR'
-        )
-            {
-                $getSucursales .= <<<html
+        ) {
+            $getSucursales .= <<<html
                 <option value="">TODAS</option>
 html;
-            }
+        }
 
         foreach ($sucursales as $key => $val2) {
             $getSucursales .= <<<html
@@ -1563,18 +1521,15 @@ html;
             $Consulta = PagosDao::ConsultarPagosFechaSucursal($id_sucursal, $Inicial, $Final);
 
             foreach ($Consulta as $key => $value) {
-                if($value['FIDENTIFICAPP'] ==  NULL)
-                {
+                if ($value['FIDENTIFICAPP'] ==  NULL) {
                     $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
                     $mensaje = 'InfoAdmin();';
-                }
-                else
-                {
+                } else {
                     $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
                     $mensaje = 'InfoPhone();';
                 }
 
-                $monto =number_format($value['MONTO'],2);
+                $monto = number_format($value['MONTO'], 2);
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
@@ -1591,16 +1546,13 @@ html;
                 </tr>
 html;
             }
-            if($Consulta[0] == '')
-            {
+            if ($Consulta[0] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('getSucursales', $getSucursales);
                 View::set('fechaActual', $fechaActual);
                 View::render("pagos_consulta_busqueda_message");
-            }
-            else
-            {
+            } else {
                 View::set('tabla', $tabla);
                 View::set('Inicial', $Inicial);
                 View::set('Final', $Final);
@@ -1609,7 +1561,6 @@ html;
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::render("pagos_consulta_busqueda");
             }
-
         } else {
 
             View::set('header', $this->_contenedor->header($extraHeader));
@@ -1620,7 +1571,8 @@ html;
         }
     }
 
-    public function PagosAdd(){
+    public function PagosAdd()
+    {
         $pagos = new \stdClass();
         $credito = MasterDom::getDataAll('cdgns');
         $pagos->_credito = $credito;
@@ -1651,7 +1603,8 @@ html;
         return $id;
     }
 
-    public function HorariosAdd(){
+    public function HorariosAdd()
+    {
         $pagos = new \stdClass();
         $fecha_registro = MasterDom::getDataAll('fecha_registro');
         $pagos->_fecha_registro = $fecha_registro;
@@ -1666,7 +1619,8 @@ html;
         return $id;
     }
 
-    public function HorariosUpdate(){
+    public function HorariosUpdate()
+    {
         $horario = new \stdClass();
 
         $sucursal = MasterDom::getDataAll('sucursal_e');
@@ -1679,7 +1633,8 @@ html;
         return $id;
     }
 
-    public function ValidaCorrectoPago(){
+    public function ValidaCorrectoPago()
+    {
         $update = new \stdClass();
 
         $estatus = MasterDom::getDataAll('estatus');
@@ -1692,7 +1647,8 @@ html;
         return $id;
     }
 
-    public function PagosEdit(){
+    public function PagosEdit()
+    {
         $pagos = new \stdClass();
 
 
@@ -1731,7 +1687,8 @@ html;
         return $id;
     }
 
-    public function Delete(){
+    public function Delete()
+    {
 
         $cdgns = $_POST['cdgns'];
         $fecha = $_POST['fecha'];
@@ -1740,9 +1697,9 @@ html;
 
         $id = PagosDao::DeleteProcedure($cdgns, $fecha, $usuario, $secuencia);
         return $id;
-
     }
-    public function PagosEditApp(){
+    public function PagosEditApp()
+    {
 
         $edit = new \stdClass();
 
@@ -1759,7 +1716,8 @@ html;
 
     }
 
-    public function PagosAddApp(){
+    public function PagosAddApp()
+    {
 
         $add_app = $_POST['cortecaja_pk'];
         $barcode = $_POST['barcode'];
@@ -1963,61 +1921,44 @@ html;
         $fue_dia_festivo = $AdministracionOne[2]['TOT'];
 
         $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
-        if($hora_cierre == '')
-        {
+        if ($hora_cierre == '') {
             $hora_cierre = '10:00:00';
-        }
-        else
-        {
+        } else {
             $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
         }
 
-            if($horaActual <= $hora_cierre)
-            {
-                if ($dia == 1)
-                {
-                    $date_past = strtotime('-3 days', strtotime($fechaActual));
+        if ($horaActual <= $hora_cierre) {
+            if ($dia == 1) {
+                $date_past = strtotime('-3 days', strtotime($fechaActual));
+                $date_past = date('Y-m-d', $date_past);
+            } else {
+                if ($fue_dia_festivo == 1 && $dia == 2) {
+                    $date_past = strtotime('-4 days', strtotime($fechaActual));
+                    $date_past = date('Y-m-d', $date_past);
+                } else if ($fue_dia_festivo == 1 && $dia != 2) {
+                    $date_past = strtotime('-2 days', strtotime($fechaActual));
+                    $date_past = date('Y-m-d', $date_past);
+                } else {
+                    $date_past = strtotime('-1 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 }
-                else
-                {
-                    if($fue_dia_festivo == 1 && $dia == 2)
-                    {
-                        $date_past = strtotime('-4 days', strtotime($fechaActual));
-                        $date_past = date('Y-m-d', $date_past);
-                    }
-                    else if($fue_dia_festivo == 1 && $dia != 2)
-                    {
-                        $date_past = strtotime('-2 days', strtotime($fechaActual));
-                        $date_past = date('Y-m-d', $date_past);
-                    }
-                    else
-                    {
-                        $date_past = strtotime('-1 days', strtotime($fechaActual));
-                        $date_past = date('Y-m-d', $date_past);
-                    }
-                }
-
-                $inicio_f = $date_past;
-                $fin_f = $fechaActual;
-
-                //$fin_f = $date_past;
             }
-            else
-            {
-                $inicio_f = $fechaActual;
-                $fin_f = $fechaActual;
-            }
+
+            $inicio_f = $date_past;
+            $fin_f = $fechaActual;
+
+            //$fin_f = $date_past;
+        } else {
+            $inicio_f = $fechaActual;
+            $fin_f = $fechaActual;
+        }
 
 
         $status = PagosDao::ListaEjecutivosAdmin($credito);
         foreach ($status[0] as $key => $val2) {
-            if($status[1] == $val2['ID_EJECUTIVO'])
-            {
+            if ($status[1] == $val2['ID_EJECUTIVO']) {
                 $select = 'selected';
-            }
-            else
-            {
+            } else {
                 $select = '';
             }
 
@@ -2027,33 +1968,26 @@ html;
         }
         if ($credito != '') {
 
-            if($AdministracionOne[0]['NO_CREDITO'] == '')
-            {
+            if ($AdministracionOne[0]['NO_CREDITO'] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('status', $getStatus);
                 View::set('credito', $credito);
                 View::set('usuario', $this->__usuario);
                 View::render("pagos_registro_busqueda_message");
-            }
-            else
-            {
+            } else {
                 $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $hora_cierre);
                 foreach ($Administracion as $key => $value) {
 
-                    if($value['FIDENTIFICAPP'] ==  NULL)
-                    {
+                    if ($value['FIDENTIFICAPP'] ==  NULL) {
                         $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
                         $mensaje = 'InfoAdmin();';
-                    }
-                    else
-                    {
+                    } else {
                         $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
                         $mensaje = 'InfoPhone();';
                     }
 
-                    if($value['DESIGNATION'] == 'SI')
-                    {
+                    if ($value['DESIGNATION'] == 'SI') {
                         /////
                         /// /
                         ///
@@ -2066,9 +2000,7 @@ html;
                     <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
                     <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
 html;
-                    }
-                    else
-                    {
+                    } else {
 
 
 
@@ -2082,26 +2014,20 @@ html;
                         $inicio_b = $date_past_b;
 
                         ///////////////////////////////////////////////////////////////////////////////////////////////////
-                        if(  ($inicio_b == $fecha_base) ||   (($fechaActual == $AdministracionOne[2]['FECHA_CAPTURA']) && $fecha_base == '2024-02-06')) // aqui poner el dia en que se estaran capturando
+                        if (($inicio_b == $fecha_base) ||   (($fechaActual == $AdministracionOne[2]['FECHA_CAPTURA']) && $fecha_base == '2024-02-06')) // aqui poner el dia en que se estaran capturando
                         {
-                            if($horaActual <= $hora_cierre)
-                            {
+                            if ($horaActual <= $hora_cierre) {
                                 $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
                     <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
 html;
-                            }
-                            else
-                            {
+                            } else {
                                 $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
                     <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
 html;
                             }
-
-                        }
-                        else
-                        {
+                        } else {
                             $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
                     <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
@@ -2138,7 +2064,6 @@ html;
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::render("pagos_registro_busqueda");
             }
-
         } else {
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -2334,33 +2259,24 @@ html;
         $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__usuario);
 
         $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
-        if($hora_cierre == '')
-        {
+        if ($hora_cierre == '') {
             $hora_cierre = '10:00:00';
-        }
-        else
-        {
+        } else {
             $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
         }
 
-        if($horaActual <= $hora_cierre)
-        {
-            if ($dia == 1)
-            {
+        if ($horaActual <= $hora_cierre) {
+            if ($dia == 1) {
                 $date_past = strtotime('-3 days', strtotime($fechaActual));
                 $date_past = date('Y-m-d', $date_past);
-            }
-            else
-            {
+            } else {
                 $date_past = strtotime('-1 days', strtotime($fechaActual));
                 $date_past = date('Y-m-d', $date_past);
             }
 
             $inicio_f = $date_past;
             $fin_f = $fechaActual;
-        }
-        else
-        {
+        } else {
             $inicio_f = $fechaActual;
             $fin_f = $fechaActual;
         }
@@ -2368,12 +2284,9 @@ html;
 
         $status = PagosDao::ListaEjecutivosAdmin($credito);
         foreach ($status[0] as $key => $val2) {
-            if($status[1] == $val2['ID_EJECUTIVO'])
-            {
+            if ($status[1] == $val2['ID_EJECUTIVO']) {
                 $select = 'selected';
-            }
-            else
-            {
+            } else {
                 $select = '';
             }
 
@@ -2383,27 +2296,21 @@ html;
         }
         if ($credito != '') {
 
-            if($AdministracionOne[0]['NO_CREDITO'] == '')
-            {
+            if ($AdministracionOne[0]['NO_CREDITO'] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('status', $getStatus);
                 View::set('credito', $credito);
                 View::set('usuario', $this->__usuario);
                 View::render("pagos_consulta_p_busqueda_message");
-            }
-            else
-            {
+            } else {
                 $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $hora_cierre);
                 foreach ($Administracion as $key => $value) {
 
-                    if($value['FIDENTIFICAPP'] ==  NULL)
-                    {
+                    if ($value['FIDENTIFICAPP'] ==  NULL) {
                         $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
                         $mensaje = 'InfoAdmin();';
-                    }
-                    else
-                    {
+                    } else {
                         $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
                         $mensaje = 'InfoPhone();';
                     }
@@ -2441,7 +2348,6 @@ html;
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::render("pagos_consulta_p_busqueda");
             }
-
         } else {
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -2539,49 +2445,35 @@ html;
             foreach ($CorteCaja as $key => $value) {
 
                 //////////////////////////////////////
-                if($value['TIPO'] == 'P')
-                {
+                if ($value['TIPO'] == 'P') {
                     $tipo_pago = 'PAGO';
                 }
-                if($value['TIPO_PAGO'] == 'G')
-                {
+                if ($value['TIPO_PAGO'] == 'G') {
                     $tipo_pago = 'GARANTÍA';
                 }
-                if($value['TIPO_PAGO'] == 'M')
-                {
-
+                if ($value['TIPO_PAGO'] == 'M') {
                 }
-                if($value['TIPO_PAGO'] == 'A')
-                {
-
+                if ($value['TIPO_PAGO'] == 'A') {
                 }
-                if($value['TIPO_PAGO'] == 'W')
-                {
-
+                if ($value['TIPO_PAGO'] == 'W') {
                 }
-                if($value['ESTATUS_CAJA'] == '0')
-                {
-                    if($value['INCIDENCIA'] == 1)
-                    {
+                if ($value['ESTATUS_CAJA'] == '0') {
+                    if ($value['INCIDENCIA'] == 1) {
                         $estatus = 'PENDIENTE, CON MODIFICACION';
-                    }
-                    else{
+                    } else {
                         $estatus = 'PENDIENTE';
                     }
-
-
                 }
                 //////////////////////////////////////
 
-                if($value['INCIDENCIA'] == 1)
-                {
-                    $incidencia = '<br><span class="count_top" style="font-size: 20px; color: gold"><i class="fa fa-warning"></i></span> <b>Incidencia:</b>'.$value['COMENTARIO_INCIDENCIA'];
-                    $monto = '<span class="count_top" style="font-size: 16px; color: #017911">Monto a recibir: $' .number_format($value['NUEVO_MONTO']). '</span><br>
-                              <span class="count_top" style="font-size: 15px; color: #ff0066">Monto registrado: $' .number_format($value['MONTO']).'</span>';
+                if ($value['INCIDENCIA'] == 1) {
+                    $incidencia = '<br><span class="count_top" style="font-size: 20px; color: gold"><i class="fa fa-warning"></i></span> <b>Incidencia:</b>' . $value['COMENTARIO_INCIDENCIA'];
+                    $monto = '<span class="count_top" style="font-size: 16px; color: #017911">Monto a recibir: $' . number_format($value['NUEVO_MONTO']) . '</span><br>
+                              <span class="count_top" style="font-size: 15px; color: #ff0066">Monto registrado: $' . number_format($value['MONTO']) . '</span>';
                     $botones = "";
-                }else{
+                } else {
                     $incidencia = '';
-                    $monto = '$ '.number_format($value['MONTO']);
+                    $monto = '$ ' . number_format($value['MONTO']);
 
                     $botones =  <<<html
                     
@@ -2610,23 +2502,18 @@ html;
 
             /////////////////////////////////////////////////////////////////
             /// Sirve para decir que la consulta viene vacia, mandar mernsaje de vacio
-            if($CorteCaja[0] == '')
-            {
+            if ($CorteCaja[0] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::render("cortecaja_view");
-            }
-            else
-            {
+            } else {
                 View::set('tabla', $tabla);
                 View::set('CorteCajaById', $CorteCajaById);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::render("cortecaja_view");
             }
-
-        }
-        else {
+        } else {
 
             $CorteCaja = PagosDao::getAllCorteCaja();
 
@@ -2651,14 +2538,11 @@ html;
             }
             /////////////////////////////////////////////////////////////////
             /// Sirve para decir que la consulta viene vacia, mandar mernsaje de vacio
-            if($CorteCaja[0] == '')
-            {
+            if ($CorteCaja[0] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::render("cortecaja_all");////CAmbiar a una en donde diga que no hay registros
-            }
-            else
-            {
+                View::render("cortecaja_all"); ////CAmbiar a una en donde diga que no hay registros
+            } else {
                 View::set('tabla', $tabla);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -2666,8 +2550,6 @@ html;
             }
             //////////////////////////////////////////////////////////////////
         }
-
-
     }
 
     public function Layout()
@@ -2730,16 +2612,12 @@ html;
         $Inicial = $_GET['Inicial'];
         $Final = $_GET['Final'];
 
-        if($Inicial == '' && $Final == '')
-        {
+        if ($Inicial == '' && $Final == '') {
             View::set('fechaActual', $fechaActual);
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::render("pagos_layout_all");
-
-        }
-        else
-        {
+        } else {
             ///////////////////////////////////////////////////////////////////////////////////
             $tabla = '';
 
@@ -2757,15 +2635,12 @@ html;
                 </tr>
 html;
                 }
-                if($Layout[0] == '')
-                {
+                if ($Layout[0] == '') {
                     View::set('header', $this->_contenedor->header($extraHeader));
                     View::set('footer', $this->_contenedor->footer($extraFooter));
                     View::set('fechaActual', $fechaActual);
                     View::render("pagos_layout_busqueda_message");
-                }
-                else
-                {
+                } else {
                     View::set('tabla', $tabla);
                     View::set('Inicial', $Inicial);
                     View::set('Final', $Final);
@@ -2773,23 +2648,19 @@ html;
                     View::set('footer', $this->_contenedor->footer($extraFooter));
                     View::render("pagos_layout_busqueda");
                 }
-
-
             } else {
                 View::set('fechaActual', $fechaActual);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::render("pagos_layout_all");
-
             }
 
             ////////////////////////////////////////////////////
         }
-
-
     }
 
-    public function generarExcel(){
+    public function generarExcel()
+    {
 
         $fecha_inicio = $_GET['Inicial'];
         $fecha_fin = $_GET['Final'];
@@ -2805,19 +2676,19 @@ html;
 
 
         $estilo_titulo = array(
-            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true, 'name' => 'Calibri', 'size' => 11, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_encabezado = array(
-            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true, 'name' => 'Calibri', 'size' => 11, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_celda = array(
-            'font' => array('bold' => false,'name'=>'Calibri','size'=>11,'color' => array('rgb' => '060606')),
+            'font' => array('bold' => false, 'name' => 'Calibri', 'size' => 11, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
 
@@ -2828,36 +2699,36 @@ html;
         $adaptarTexto = true;
 
         $controlador = "Pagos";
-        $columna = array('A','B','C','D');
-        $nombreColumna = array('Fecha','Referencia','Monto','Moneda');
-        $nombreCampo = array('FECHA','REFERENCIA','MONTO','MONEDA');
+        $columna = array('A', 'B', 'C', 'D');
+        $nombreColumna = array('Fecha', 'Referencia', 'Monto', 'Moneda');
+        $nombreCampo = array('FECHA', 'REFERENCIA', 'MONTO', 'MONEDA');
 
 
 
         /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
         foreach ($nombreColumna as $key => $value) {
-            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, $value);
-            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_encabezado);
-            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, $value);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_encabezado);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
         }
-        $fila +=1; //fila donde comenzaran a escribirse los datos
+        $fila += 1; //fila donde comenzaran a escribirse los datos
 
         /* FILAS DEL ARCHIVO EXCEL */
 
         $Layoutt = PagosDao::GeneraLayoutContable($fecha_inicio, $fecha_fin);
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
-                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_celda);
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_celda);
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
             }
-            $fila +=1;
+            $fila += 1;
         }
 
 
-        $objPHPExcel->getActiveSheet()->getStyle('A1:'.$columna[count($columna)-1].$fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        for ($i=0; $i <$fila ; $i++) {
+        $objPHPExcel->getActiveSheet()->getStyle('A1:' . $columna[count($columna) - 1] . $fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        for ($i = 0; $i < $fila; $i++) {
             $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(20);
         }
 
@@ -2865,20 +2736,21 @@ html;
         $objPHPExcel->getActiveSheet()->setTitle('Reporte');
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Layout '.$controlador.'.xlsx"');
+        header('Content-Disposition: attachment;filename="Layout ' . $controlador . '.xlsx"');
         header('Cache-Control: max-age=0');
         header('Cache-Control: max-age=1');
-        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-        header ('Cache-Control: cache, must-revalidate');
-        header ('Pragma: public');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
 
         \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
     }
 
-    public function generarExcelConsulta(){
+    public function generarExcelConsulta()
+    {
 
         $fecha_inicio = $_GET['Inicial'];
         $fecha_fin = $_GET['Final'];
@@ -2895,19 +2767,19 @@ html;
 
 
         $estilo_titulo = array(
-            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true, 'name' => 'Calibri', 'size' => 11, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_encabezado = array(
-            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true, 'name' => 'Calibri', 'size' => 11, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_celda = array(
-            'font' => array('bold' => false,'name'=>'Calibri','size'=>11,'color' => array('rgb' => '060606')),
+            'font' => array('bold' => false, 'name' => 'Calibri', 'size' => 11, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
 
@@ -2918,35 +2790,35 @@ html;
         $adaptarTexto = true;
 
         $controlador = "Pagos";
-        $columna = array('A','B','C','D','E','F','G','H','I','J');
-        $nombreColumna = array('Sucursal','Codigo','Fecha','Cliente', 'Nombre', 'Ciclo', 'Monto', 'Tipo', 'Ejecutivo', 'Registro');
-        $nombreCampo = array('NOMBRE_SUCURSAL','SECUENCIA','FECHA','CDGNS','NOMBRE','CICLO','MONTO', 'TIPO', 'EJECUTIVO', 'FREGISTRO');
+        $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
+        $nombreColumna = array('Sucursal', 'Codigo', 'Fecha', 'Cliente', 'Nombre', 'Ciclo', 'Monto', 'Tipo', 'Ejecutivo', 'Registro');
+        $nombreCampo = array('NOMBRE_SUCURSAL', 'SECUENCIA', 'FECHA', 'CDGNS', 'NOMBRE', 'CICLO', 'MONTO', 'TIPO', 'EJECUTIVO', 'FREGISTRO');
 
 
         /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
         foreach ($nombreColumna as $key => $value) {
-            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, $value);
-            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_encabezado);
-            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, $value);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_encabezado);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
         }
-        $fila +=1; //fila donde comenzaran a escribirse los datos
+        $fila += 1; //fila donde comenzaran a escribirse los datos
 
         /* FILAS DEL ARCHIVO EXCEL */
 
         $Layoutt = PagosDao::ConsultarPagosFechaSucursal($Sucursal, $fecha_inicio, $fecha_fin);
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
-                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_celda);
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_celda);
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
             }
-            $fila +=1;
+            $fila += 1;
         }
 
 
-        $objPHPExcel->getActiveSheet()->getStyle('A1:'.$columna[count($columna)-1].$fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        for ($i=0; $i <$fila ; $i++) {
+        $objPHPExcel->getActiveSheet()->getStyle('A1:' . $columna[count($columna) - 1] . $fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        for ($i = 0; $i < $fila; $i++) {
             $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(20);
         }
 
@@ -2954,17 +2826,16 @@ html;
         $objPHPExcel->getActiveSheet()->setTitle('Reporte');
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Consulta Pagos Global '.$controlador.'.xlsx"');
+        header('Content-Disposition: attachment;filename="Consulta Pagos Global ' . $controlador . '.xlsx"');
         header('Cache-Control: max-age=0');
         header('Cache-Control: max-age=1');
-        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-        header ('Cache-Control: cache, must-revalidate');
-        header ('Pragma: public');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
 
         \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
     }
-
 }

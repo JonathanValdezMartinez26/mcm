@@ -54,10 +54,10 @@
                             <div class="col-md-12">
                                 <div class="col-md-6">
                                     <div class="col-md-3">
-                                        <span id="availability1">Cliente:</span>
+                                        <span id="availability1">Codigo Cliente:</span>
                                     </div>
                                     <div class="col-md-5">
-                                        <input type="number" class="form-control" id="Cliente" name="Cliente" value="">
+                                        <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="Cliente" name="Cliente" value="" placeholder="000000">
                                     </div>
                                     <div class="col-md-1">
                                         <button type="button" class="btn btn-primary" onclick="buscaCliente('Cliente')">
@@ -65,24 +65,24 @@
                                         </button>
                                     </div>
                                     <div class="col-md-12">
-                                        <span id="availability1">Cliente:</span>
-                                        <input type="text" class="form-control" id="MuestraCliente" name="MuestraCliente" value="" readonly>
+                                        <span id="availability1">Nombre Cliente:</span>
+                                        <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="MuestraCliente" name="MuestraCliente" value="" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="col-md-3">
-                                        <span id="availability1">Invitado:</span>
+                                        <span id="availability1">Codigo Invitado:</span>
                                     </div>
                                     <div class="col-md-5">
-                                        <input type="text" class="form-control" id="Invitado" name="Invitado" value="">
+                                        <input type="text" class="form-control" id="Invitado" name="Invitado" value="" placeholder="000000" disabled>
                                     </div>
                                     <div class="col-md-1">
-                                        <button type="button" class="btn btn-primary" onclick="buscaCliente('Invitado')">
+                                        <button type="button" class="btn btn-primary" onclick="buscaCliente('Invitado')" id="BuscarInvitado" disabled>
                                             <i class="fa fa-search"></i> Buscar
                                         </button>
                                     </div>
                                     <div class="col-md-12">
-                                        <span id="availability1">Invitado::</span>
+                                        <span id="availability1">Nombre Invitado:</span>
                                         <input type="text" class="form-control" id="MuestraInvitado" name="MuestraInvitado" value="" readonly>
                                     </div>
                                 </div>
@@ -92,8 +92,8 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="col-md-4">
-                                    <span id="availability1">Fecha:</span>
-                                    <input type="date" class="form-control" id="Fecha" name="Fecha" value=<?= $fecha ?>>
+                                    <span id="availability1">Fecha de Registro:</span>
+                                    <input type="date" class="form-control" id="Fecha" name="Fecha" value=<?= $fecha ?> min=<?= $fechaMin ?> max=<?= $fechaMax ?>>
                                 </div>
                             </div>
                         </div>
@@ -101,7 +101,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
+                <button type="submit" name="agregar" class="btn btn-primary" value="enviar" disabled><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
                 </form>
             </div>
 

@@ -95,7 +95,8 @@ sql;
         $query = <<<sql
         SELECT
             clpt.CL_INVITA,
-            clpt.CL_INVITADO
+            clpt.CL_INVITADO,
+            clpt.FECHA_REGISTRO
         FROM
             CL_PROMO_TELARANA clpt
         WHERE
@@ -139,7 +140,7 @@ sql;
                 if ($validacionInvitado == -1) return self::Responde(false, "Error al validar al cliente invitado.");
 
                 $validacionTelarana = self::ValidaEstatusTelarana($anfitrion['codigo'], $codigo);
-                if (count($validacionTelarana) > 0) return self::Responde(false, "El cliente {$nombre} ya fue invitado por {$anfitrion['codigo']} - {$anfitrion['nombre']}");
+                if (count($validacionTelarana) > 0) return self::Responde(false, "El cliente {$nombre} ya fue invitado por {$anfitrion['codigo']} - {$anfitrion['nombre']} el {$validacionTelarana[0]['FECHA_REGISTRO']}.");
                 foreach ($validacionTelarana as $key => $value) {
                     if ($value['CL_INVITA'] == $codigo) return self::Responde(false, "El cliente {$nombre} no puede ser anfitrion e invitado a la vez.");
                 }
