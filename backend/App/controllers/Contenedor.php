@@ -179,7 +179,7 @@ html;
         <li><a href="/Validaciones/RegistroTelarana/">Registro Telaraña</a></li>
         <li><a href="/Creditos/ActualizaCredito/">Actualización de Créditos</a></li>
         <li><a href="/Devengo/">Devengo Crédito</a></li>
-      html;
+html;
     }
     if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CAMAG') {
       $menu .= <<<html
@@ -277,8 +277,14 @@ html;
 html;
     }
 
+<<<<<<< HEAD
     if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario == 'PLMV') {
       $menu .= <<<html
+=======
+        if($this->__perfil== 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario== 'PLMV' || $this->__usuario == 'PHEE')
+        {
+            $menu.=<<<html
+>>>>>>> 75759ce06249d5ecc7bb94a6eb2cd110122f0163
         <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon glyphicon-cog"> 
                 </i>&nbsp;Incidencias MCM<span class="fa fa-chevron-down"></span></a>
@@ -320,8 +326,13 @@ html;
 html;
       }
 
+<<<<<<< HEAD
       if ($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ') {
         $menu .= <<<html
+=======
+            if($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ' || $this->__usuario == 'PHEE') {
+                $menu .= <<<html
+>>>>>>> 75759ce06249d5ecc7bb94a6eb2cd110122f0163
                     <li><a href="/Reportes/UsuariosMCM/">Reporte Usuarios SICAFIN MCM</a></li>
                     <li><a href="/Reportes/UsuariosCultiva/">Reporte Usuarios SICAFIN Cultiva</a></li>
 html;
