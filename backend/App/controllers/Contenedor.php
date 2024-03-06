@@ -280,7 +280,7 @@ html;
 html;
         }
 
-        if($this->__perfil== 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario== 'PLMV')
+        if($this->__perfil== 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario== 'PLMV' || $this->__usuario == 'PHEE')
         {
             $menu.=<<<html
         <ul class="nav side-menu">
@@ -327,7 +327,7 @@ html;
 html;
             }
 
-            if($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ') {
+            if($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ' || $this->__usuario == 'PHEE') {
                 $menu .= <<<html
                     <li><a href="/Reportes/UsuariosMCM/">Reporte Usuarios SICAFIN MCM</a></li>
                     <li><a href="/Reportes/UsuariosCultiva/">Reporte Usuarios SICAFIN Cultiva</a></li>
