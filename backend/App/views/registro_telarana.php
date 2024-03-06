@@ -25,6 +25,7 @@
                                 <th>Codigo Invitado</th>
                                 <th>Nombre Invitado</th>
                                 <th>Fecha Invitación</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -56,7 +57,7 @@
                                         <span id="availability1">Cliente:</span>
                                     </div>
                                     <div class="col-md-5">
-                                        <input type="text" class="form-control" id="Cliente" name="Cliente" value="">
+                                        <input type="number" class="form-control" id="Cliente" name="Cliente" value="">
                                     </div>
                                     <div class="col-md-1">
                                         <button type="button" class="btn btn-primary" onclick="buscaCliente('Cliente')">

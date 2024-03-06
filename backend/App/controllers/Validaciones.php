@@ -153,7 +153,11 @@ html;
             $tabla_clientes .= "<tr style='padding: 0px !important;'>";
             foreach ($fila as $key => $columna) {
                 $tabla_clientes .= "<td style='padding: 0px !important;'>{$columna}</td>";
+
             }
+            $tabla_clientes .='<td style="padding: 0px !important;" class="center">
+                <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
+</td>';
             $tabla_clientes .= "</tr>";
         }
 

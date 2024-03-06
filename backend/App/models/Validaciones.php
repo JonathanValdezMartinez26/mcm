@@ -147,7 +147,7 @@ sql;
                 $validacionAnfitrion = self::ValidaEstatusCredito($codigo);
                 if ($validacionAnfitrion == 0) return self::Responde(false, "El cliente que invita no tiene créditos activos.");
                 if ($validacionAnfitrion == -1) return self::Responde(false, "Error al validar al cliente que invita.");
-                if ($validacionAnfitrion < 4) return self::Responde(false, "El cliente que invita se encuentra en el ciclo {$validacionAnfitrion} y no puede invitar a nadie.");
+                if ($validacionAnfitrion < 4) return self::Responde(false, "El cliente que invita se encuentra en el ciclo {$validacionAnfitrion} y no cumple las políticas de la promoción.");
             }
 
             return self::Responde(true, "Consulta exitosa.", array("nombre" => $nombre));
