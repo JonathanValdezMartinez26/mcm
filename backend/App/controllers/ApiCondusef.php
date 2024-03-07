@@ -237,8 +237,7 @@ html;
                         let desc = data_json.nivelesDeAtencion[key].nivelDeAtencionDsc;
                         $("#nivel_atencion").append('<option name="' + id + '">' + desc + '</option>');
                     });
-                
-<<<<<<< HEAD
+              
                   let id = data_json.medio[key].medioId;
                   let desc = data_json.medio[key].medioDsc;
                   
@@ -267,25 +266,7 @@ html;
           }
         });
         
-    ///////////////////////////////
-    //ESTADOS
-    ///////////////////////////////
-        $.ajax({
-          type: 'GET',
-          url: 'https://api.condusef.gob.mx/sepomex/estados/',
-          dataType: 'json',
-          success: function(data_json) {
-			$.each(data_json.estados, function(key, value) {
-                
-                  let id = data_json.estados[key].claveEdo;
-                  let desc = data_json.estados[key].estado;
-                  
-				$("#estado").append('<option name="' + id + '">' + desc + '</option>');
-			});
-           
-          }
-        });
-        
+
 
                 ///////////////////////////////
                 //NIVELES DE ATENCION
