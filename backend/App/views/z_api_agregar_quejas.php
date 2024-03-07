@@ -17,14 +17,14 @@
                 <div class="dataTable_wrapper">
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
-                        <tr>
-                            <th>Mes</th>
-                            <th>Folio</th>
-                            <th>Fecha</th>
-                        </tr>
+                            <tr>
+                                <th>Mes</th>
+                                <th>Folio</th>
+                                <th>Fecha</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <?= $tabla; ?>
+                            <?= $tabla; ?>
                         </tbody>
                     </table>
                 </div>
@@ -38,13 +38,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Agregar queja REDECO</h4></center>
+                <center>
+                    <h4 class="modal-title" id="myModalLabel">Agregar queja REDECO</h4>
+                </center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
                     <form onsubmit="enviar_add_user(); return false" id="Add_user">
                         <div class="row">
-
 
                             <div class="col-md-12">
                                 <div class="col-md-3">
@@ -144,10 +145,27 @@
                                     </div>
                                 </div>
 
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label for="fecha_registro">CP *</label>
+                                        <input type="number" class="form-control" id="cp" name="cp" maxlength="5" value="">
+                                        <small id="emailHelp" class="form-text text-muted">Escriba un CP valido</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-1">
+                                    <div class="form-group">
+                                        <label for="tbnCP">Buscar</label>
+                                        <button type="button" class="btn btn-primary" onclick="validaCP()" id="btnCP">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="estado">Estado *</label>
-                                        <select class="form-control" autofocus type="select" id="estado" name="estado">
+                                        <select class="form-control" autofocus type="select" id="estado" name="estado" disabled>
                                         </select>
                                         <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
                                     </div>
@@ -156,7 +174,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="municipio">Municipio *</label>
-                                        <select class="form-control" autofocus type="select" id="municipio" name="municipio">
+                                        <select class="form-control" autofocus type="select" id="municipio" name="municipio" disabled>
                                         </select>
                                         <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
                                     </div>
@@ -165,7 +183,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="localidad">Localidad *</label>
-                                        <select class="form-control" autofocus type="select" id="localidad" name="localidad">
+                                        <select class="form-control" autofocus type="select" id="localidad" name="localidad" disabled>
                                         </select>
                                     </div>
                                 </div>
@@ -174,20 +192,10 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="colonia">Colonia *</label>
-                                        <select class="form-control" autofocus type="select" id="colonia" name="colonia">
+                                        <select class="form-control" autofocus type="select" id="colonia" name="colonia" disabled>
                                         </select>
                                     </div>
                                 </div>
-
-
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="fecha_registro">CP *</label>
-                                        <input type="number" class="form-control" id="num_quejas" name="num_quejas" maxlength="5">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba un CP valido</small>
-                                    </div>
-                                </div>
-
 
                                 <div class="col-md-3">
                                     <div class="form-group">
@@ -243,7 +251,7 @@
                                             <option value="1">1 - Totalmente favorable al usuario</option>
                                             <option value="2">2 - Desfavorable al Usuario</option>
                                             <option value="3">3 - Parcialmente
-                                                favorable al  usuario
+                                                favorable al usuario
                                                 y puede ser
                                                 nulo si el
                                                 Estado de la
@@ -293,8 +301,6 @@
 
 <script>
     function EditarHorario(sucursal, nombre_suc, hora_actual) {
-
-
         var o = new Option(nombre_suc, sucursal);
         $(o).html(nombre_suc);
         $("#sucursal_e").append(o);
@@ -302,7 +308,6 @@
         document.getElementById("hora_ae").value = hora_actual;
 
         $('#modal_update_horario').modal('show');
-
     }
 </script>
 
