@@ -295,7 +295,7 @@ html;
                   let id = data_json.estados[key].claveEdo;
                   let desc = data_json.estados[key].estado;
                   
-				$("#nivel_atencion").append('<option name="' + id + '">' + desc + '</option>');
+				$("#nivel_atencionn").append('<option name="' + id + '">' + desc + '</option>');
 			});
            
           }

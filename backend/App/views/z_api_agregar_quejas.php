@@ -76,14 +76,14 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Numero de folio *</label>
-                                        <input type="number" class="form-control" id="num_quejas" name="num_quejas">
+                                        <label for="fecha_registro">Número de folio *</label>
+                                        <input type="text" class="form-control" id="num_quejas" name="num_quejas" placeholder="YYYY/REDECO/00000">
                                         <small id="emailHelp" class="form-text text-muted">Número de folio</small>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Fecha de la queja *</label>
+                                        <label for="fecha_registro">Fecha de recepción *</label>
                                         <input type="date" class="form-control" id="num_quejas" name="num_quejas">
                                         <small id="emailHelp" class="form-text text-muted">Fecha en la que se recibio la queja</small>
                                     </div>
@@ -109,7 +109,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="fecha_registro">Producto o servicio *</label>
-                                        <input type="input" class="form-control" id="num_quejas" name="num_quejas">
+                                        <input type="input" class="form-control" id="num_quejas" name="num_quejas" placeholder="">
                                         <small id="emailHelp" class="form-text text-muted">Escriba el producto o servicio</small>
                                     </div>
                                 </div>
@@ -117,8 +117,8 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="fecha_registro">Causa de la queja *</label>
-                                        <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba la contraseña</small>
+                                        <input type="text" class="form-control" id="num_quejas" name="num_quejas">
+                                        <small id="emailHelp" class="form-text text-muted">Escriba la causa</small>
                                     </div>
                                 </div>
 
