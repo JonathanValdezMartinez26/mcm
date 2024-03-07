@@ -237,37 +237,10 @@ html;
                         let desc = data_json.nivelesDeAtencion[key].nivelDeAtencionDsc;
                         $("#nivel_atencion").append('<option name="' + id + '">' + desc + '</option>');
                     });
-              
-                  let id = data_json.medio[key].medioId;
-                  let desc = data_json.medio[key].medioDsc;
-                  
-				$("#medio_recepcion").append('<option name="' + id + '">' + desc + '</option>');
-			});
-           
-          }
-        });
-    
-    ///////////////////////////////
-    //NIVELES DE ATENCION
-    ///////////////////////////////
-        $.ajax({
-          type: 'GET',
-          url: 'https://api.condusef.gob.mx/catalogos/niveles-atencion',
-          dataType: 'json',
-          success: function(data_json) {
-			$.each(data_json.nivelesDeAtencion, function(key, value) {
                 
-                  let id = data_json.nivelesDeAtencion[key].nivelDeAtencionId;
-                  let desc = data_json.nivelesDeAtencion[key].nivelDeAtencionDsc;
-                  
-				$("#nivel_atencion").append('<option name="' + id + '">' + desc + '</option>');
-			});
-           
-          }
-        });
-        
-
-
+                }
+                });
+            
                 ///////////////////////////////
                 //NIVELES DE ATENCION
                 ///////////////////////////////
@@ -364,7 +337,7 @@ html;
                     elemento.disabled = !(opciones.length > 1)
                 }
             </script>
-html;
+        html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
