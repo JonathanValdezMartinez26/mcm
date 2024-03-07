@@ -286,34 +286,7 @@ html;
           }
         });
         
-    ///////////////////////////////
-    //NIVELES DE ATENCION
-    ///////////////////////////////
-        $.ajax({
-          type: 'GET',
-          url: 'https://api.condusef.gob.mx/sepomex/estados/',
-          dataType: 'json',
-          success: function(data_json) {
-			$.each(data_json.estados, function(key, value) {
-                
-                  let id = data_json.estados[key].claveEdo;
-                  let desc = data_json.estados[key].estado;
-                  
-				$("#nivel_atencionn").append('<option name="' + id + '">' + desc + '</option>');
-			});
-           
-          }
-        });
-    
 
-    
-    
-      </script>
-html;
-=======
-                }
-                });
-            
                 ///////////////////////////////
                 //NIVELES DE ATENCION
                 ///////////////////////////////
@@ -410,8 +383,7 @@ html;
                     elemento.disabled = !(opciones.length > 1)
                 }
             </script>
-        html;
->>>>>>> 91e86f369509d5edd0417d389b02871f7ca09cf7
+html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
