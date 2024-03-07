@@ -80,7 +80,7 @@ html;
             $tabla .= "<tr style='padding: 0px !important;'>";
             foreach ($fila as $key => $columna) {
                 if ($key == 'ACTIVO') $columna = self::ValidaSN($columna);
-                if ($key == 'PUESTO') $columna =  str_replace(",", ", ", $columna);
+                if ($key == 'PUESTO') $columna = self::quitaDuplicados($columna);
                 if ($key == 'FECHA_ALTA') $columna = self::FechaCompleta($columna);
 
                 $tabla .= "<td style='padding: 0px !important;'>{$columna}</td>";
@@ -265,7 +265,7 @@ html;
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
                 if ($campo == 'ACTIVO') $value[$campo] = self::ValidaSN($value[$campo]);
-                if ($campo == 'PUESTO') $value[$campo] = str_replace(",", ", ", $value[$campo]);
+                if ($campo == 'PUESTO') $value[$campo] = self::quitaDuplicados($value[$campo]);
                 if ($campo == 'FECHA_ALTA') $value[$campo] = self::FechaCompleta($value[$campo]);
 
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
@@ -409,5 +409,12 @@ html;
 
         if ($fecha_objeto && $fecha_objeto->format('d/m/y') === $fecha) return $fecha_objeto->format('d/m/Y');
         return $fecha;
+    }
+
+    public function quitaDuplicados($lista)
+    {
+        $arreglo = explode(",", $lista);
+        $arreglo = array_unique($arreglo);
+        return implode(", ", $arreglo);
     }
 }
