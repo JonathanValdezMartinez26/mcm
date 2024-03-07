@@ -36,15 +36,16 @@ class Reportes
                     END AS ACTIVO,
                     --'' AS PUESTO
                     (
-                        SELECT
-                            WM_CONCAT(TUS.NOMBRE) AS NOMBRE
-                        FROM
-                            TUS,
-                            UT
-                        WHERE
-                            TUS.CODIGO = UT.CDGTUS
-                            AND TUS.CDGEM = UT.CDGEM
-                            AND UT.CDGPE = PE.CODIGO
+						SELECT
+							WM_CONCAT(TUS.NOMBRE)
+						FROM
+							TUS,
+							UT
+						WHERE
+							TUS.CODIGO = UT.CDGTUS
+							AND UT.CDGEM = 'EMPFIN'
+							AND TUS.CDGEM = UT.CDGEM
+							AND UT.CDGPE = PE.CODIGO
                     ) AS PUESTO
                 FROM
                     PE,
@@ -69,15 +70,16 @@ class Reportes
                     END AS ACTIVO,
                     --'' AS PUESTO
                     (
-                        SELECT
-                            WM_CONCAT(TUS.NOMBRE) AS NOMBRE
-                        FROM
-                            TUS,
-                            UT
-                        WHERE
-                            TUS.CODIGO = UT.CDGTUS
-                            AND TUS.CDGEM = UT.CDGEM
-                            AND UT.CDGPE = PE.CODIGO
+						SELECT
+							WM_CONCAT(TUS.NOMBRE)
+						FROM
+							TUS,
+							UT
+						WHERE
+							TUS.CODIGO = UT.CDGTUS
+							AND UT.CDGEM = 'EMPFIN'
+							AND TUS.CDGEM = UT.CDGEM
+							AND UT.CDGPE = PE.CODIGO
                     ) AS PUESTO
                 FROM
                     PE
