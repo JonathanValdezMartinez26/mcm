@@ -46,6 +46,7 @@ class Reportes
 							AND UT.CDGEM = 'EMPFIN'
 							AND TUS.CDGEM = UT.CDGEM
 							AND UT.CDGPE = PE.CODIGO
+                            AND TUS.NOMBRE != 'SUPER ADMINISTRADOR'
                     ) AS PUESTO
                 FROM
                     PE,
@@ -80,6 +81,7 @@ class Reportes
 							AND UT.CDGEM = 'EMPFIN'
 							AND TUS.CDGEM = UT.CDGEM
 							AND UT.CDGPE = PE.CODIGO
+                            AND TUS.NOMBRE != 'SUPER ADMINISTRADOR'
                     ) AS PUESTO
                 FROM
                     PE
