@@ -8,7 +8,7 @@ use \Core\View;
 use \Core\MasterDom;
 use \Core\Controller;
 use \App\models\Pagos as PagosDao;
-use \App\models\Operaciones as OperacionesDao;
+use \App\models\ApiCondusef as ApiCondusefDao;
 
 class ApiCondusef extends Controller
 {
@@ -339,8 +339,43 @@ html;
             </script>
         html;
 
+        $meses = [
+            "01" => "Enero",
+            "02" => "Febrero",
+            "03" => "Marzo",
+            "04" => "Abril",
+            "05" => "Mayo",
+            "06" => "Junio",
+            "07" => "Julio",
+            "08" => "Agosto",
+            "09" => "Septiembre",
+            "10" => "Octubre",
+            "11" => "Noviembre",
+            "12" => "Diciembre"
+        ];
+
+        $opcionesMeses = "";
+        foreach ($meses as $key => $value) {
+            $opcionesMeses .= "<option value='{$key}'>{$value}</option>";
+        }
+
+        $productos = ApiCondusefDao::GetProductos();
+        $opcionesProductos = "";
+        foreach ($productos as $key => $value) {
+            $opcionesProductos .= "<option value='{$value['CODIGO']}'>{$value['PRODUCTO']}</option>";
+        }
+
+        $causas = ApiCondusefDao::GetCausas();
+        $opcionesCausas = "";
+        foreach ($causas as $key => $value) {
+            $opcionesCausas .= "<option value='{$value['CODIGO']}'>{$value['DESCRIPCION']}</option>";
+        }
+
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('meses', $opcionesMeses);
+        View::set('productos', $opcionesProductos);
+        View::set('causas', $opcionesCausas);
         View::render("z_api_agregar_quejas");
     }
 }

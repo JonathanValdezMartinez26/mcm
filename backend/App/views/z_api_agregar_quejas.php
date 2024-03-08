@@ -50,43 +50,32 @@
                             <div class="col-md-12">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="hora">Mes a informar *</label>
-                                        <select class="form-control" autofocus type="select" id="hora" name="hora">
-                                            <option value="1">ENERO</option>
-                                            <option value="2">FEBRERO</option>
-                                            <option value="2">MARZO</option>
-                                            <option value="2">ABRIL</option>
-                                            <option value="2">MAYO</option>
-                                            <option value="2">JUNIO</option>
-                                            <option value="2">JULIO</option>
-                                            <option value="2">AGOSTO</option>
-                                            <option value="2">SEPTIEMBRE</option>
-                                            <option value="2">OCTUBRE</option>
-                                            <option value="2">NOVIEMBRE</option>
-                                            <option value="2">DICIEMBRE</option>
+                                        <label for="mes">Mes a informar *</label>
+                                        <select class="form-control" autofocus type="select" id="mes" name="mes">
+                                            <?= $meses; ?>
                                         </select>
-                                        <small id="emailHelp" class="form-text text-muted">Perfil</small>
+                                        <small class="form-text text-muted">Seleccione un Mes</small>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Numero de quejas *</label>
+                                        <label for="num_quejas">Numero de quejas *</label>
                                         <input type="number" class="form-control" id="num_quejas" name="num_quejas" readonly value="1">
-                                        <small id="emailHelp" class="form-text text-muted">Número de quejas a reportar</small>
+                                        <small class="form-text text-muted">Número de quejas a reportar</small>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Numero de folio *</label>
-                                        <input type="number" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Número de folio</small>
+                                        <label for="num_folio">Numero de folio *</label>
+                                        <input type="number" class="form-control" id="num_folio" name="num_folio">
+                                        <small class="form-text text-muted">Ingrese el número de folio</small>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="fecha_registro">Fecha de la queja *</label>
-                                        <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Fecha en la que se recibio la queja</small>
+                                        <input type="date" class="form-control" id="fecha_registro" name="fecha_registro">
+                                        <small class="form-text text-muted">Fecha en la que se recibio la queja</small>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -94,7 +83,7 @@
                                         <label for="medio_recepcion">Medio de recepción *</label>
                                         <select class="form-control" autofocus type="select" id="medio_recepcion" name="medio_recepcion">
                                         </select>
-                                        <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
+                                        <small class="form-text text-muted">Seleccione un Medio</small>
                                     </div>
                                 </div>
 
@@ -103,53 +92,57 @@
                                         <label for="nivel_atencion">Nivel de atención o contacto *</label>
                                         <select class="form-control" autofocus type="select" id="nivel_atencion" name="nivel_atencion">
                                         </select>
-                                        <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
+                                        <small class="form-text text-muted">Seleccione un Nivel</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Producto o servicio *</label>
-                                        <input type="input" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba el producto o servicio</small>
+                                        <label for="producto">Producto o servicio *</label>
+                                        <select class="form-control" autofocus type="select" id="producto" name="producto">
+                                            <?= $productos; ?>
+                                        </select>
+                                        <small class="form-text text-muted">Seleccione un Producto</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Causa de la queja *</label>
-                                        <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba la contraseña</small>
+                                        <label for="causa">Causa de la queja *</label>
+                                        <select class="form-control" autofocus type="select" id="causa" name="causa">
+                                            <?= $causas; ?>
+                                        </select>
+                                        <small class="form-text text-muted">Seleccione una Causa</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">PORI *</label>
+                                        <label for="pori">PORI *</label>
                                         <select class="form-control" autofocus type="select" id="pori" name="pori">
                                             <option value="SI">SI</option>
                                             <option value="NO">NO</option>
                                         </select>
-                                        <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
+                                        <small class="form-text text-muted">Seleccione una opción</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Estatus *</label>
-                                        <select class="form-control" autofocus type="select" id="pori" name="pori">
+                                        <label for="estatus">Estatus *</label>
+                                        <select class="form-control" autofocus type="select" id="estatus" name="estatus">
                                             <option value="1">PENDIENTE</option>
                                             <option value="2">CONCLUIDO</option>
                                         </select>
-                                        <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
+                                        <small class="form-text text-muted">Seleccione un Estatus</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-2">
                                     <div class="form-group">
-                                        <label for="fecha_registro">CP *</label>
+                                        <label for="cp">CP *</label>
                                         <input type="number" class="form-control" id="cp" name="cp" maxlength="5" value="">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba un CP valido</small>
+                                        <small class="form-text text-muted">Ingrese un CP a buscar</small>
                                     </div>
                                 </div>
 
@@ -167,7 +160,7 @@
                                         <label for="estado">Estado *</label>
                                         <select class="form-control" autofocus type="select" id="estado" name="estado" disabled>
                                         </select>
-                                        <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
+                                        <small class="form-text text-muted">Seleccione un Estado</small>
                                     </div>
                                 </div>
 
@@ -176,15 +169,16 @@
                                         <label for="municipio">Municipio *</label>
                                         <select class="form-control" autofocus type="select" id="municipio" name="municipio" disabled>
                                         </select>
-                                        <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
+                                        <small class="form-text text-muted">Seleccione un Municipio</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="localidad">Localidad *</label>
+                                        <label for="localidad">Tipo de Localidad *</label>
                                         <select class="form-control" autofocus type="select" id="localidad" name="localidad" disabled>
                                         </select>
+                                        <small class="form-text text-muted">Seleccione un tipo de Localidad</small>
                                     </div>
                                 </div>
 
@@ -194,60 +188,61 @@
                                         <label for="colonia">Colonia *</label>
                                         <select class="form-control" autofocus type="select" id="colonia" name="colonia" disabled>
                                         </select>
+                                        <small class="form-text text-muted">Seleccione una Colonia</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Tipo de Persona *</label>
-                                        <select class="form-control" autofocus type="select" id="pori" name="pori">
+                                        <label for="tipo_persona">Tipo de Persona *</label>
+                                        <select class="form-control" autofocus type="select" id="tipo_persona" name="tipo_persona">
                                             <option value="1">FISICA</option>
                                             <option value="2">MORAL</option>
                                         </select>
-                                        <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
+                                        <small class="form-text text-muted">Seleccione un Tipo</small>
                                     </div>
                                 </div>
 
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Sexo *</label>
-                                        <select class="form-control" autofocus type="select" id="pori" name="pori">
+                                        <label for="sexo">Sexo *</label>
+                                        <select class="form-control" autofocus type="select" id="sexo" name="sexo">
                                             <option value="H">HOMBRE</option>
                                             <option value="M">MUJER</option>
                                         </select>
-                                        <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
+                                        <small class="form-text text-muted">Seleccione un Sexo</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Edad *</label>
-                                        <input type="input" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba la edad</small>
+                                        <label for="edad">Edad *</label>
+                                        <input type="input" class="form-control" id="edad" name="edad">
+                                        <small class="form-text text-muted">Ingrese la edad</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Fecha de resolucion *</label>
-                                        <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Selecciona una fecha</small>
+                                        <label for="fecha_resolucion">Fecha de resolucion *</label>
+                                        <input type="date" class="form-control" id="fecha_resolucion" name="fecha_resolucion">
+                                        <small class="form-text text-muted">Seleccione una fecha</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Fecha notificación al usuario *</label>
-                                        <input type="date" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Selecciona una fecha</small>
+                                        <label for="fecha_notificacion">Fecha notificación al usuario *</label>
+                                        <input type="date" class="form-control" id="fecha_notificacion" name="fecha_notificacion">
+                                        <small class="form-text text-muted">Seleccione una fecha</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Tipo de penalización *</label>
-                                        <select class="form-control" autofocus type="select" id="pori" name="pori">
+                                        <label for="tipo_penalizacion">Tipo de penalización *</label>
+                                        <select class="form-control" autofocus type="select" id="tipo_penalizacion" name="tipo_penalizacion">
                                             <option value="1">1 - Totalmente favorable al usuario</option>
                                             <option value="2">2 - Desfavorable al Usuario</option>
                                             <option value="3">3 - Parcialmente
@@ -260,27 +255,27 @@
                                                 Pendiente
                                             </option>
                                         </select>
-                                        <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
+                                        <small class="form-text text-muted">Seleccione un tipo</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Número de penalización *</label>
-                                        <input type="number" class="form-control" id="num_quejas" name="num_quejas">
-                                        <small id="emailHelp" class="form-text text-muted">Escriba un numero de penalización</small>
+                                        <label for="num_penalizacion">Número de penalización *</label>
+                                        <input type="number" class="form-control" id="num_penalizacion" name="num_penalizacion">
+                                        <small class="form-text text-muted">Escriba un numero de penalización</small>
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_registro">Tipo de penalización *</label>
-                                        <select class="form-control" autofocus type="select" id="pori" name="pori">
+                                        <label for="tipo_penalizacion">Tipo de penalización *</label>
+                                        <select class="form-control" autofocus type="select" id="tipo_penalizacion" name="tipo_penalizacion">
                                             <option value="1">CONTRUACTALES - CANCELACIÓN DEL CONTRATO</option>
                                             <option value="2">CONTRACTUALES - REASIGNACIÓN DE CARTERA</option>
                                             <option value="3">ECONOMICAS - MULTA</option>
                                         </select>
-                                        <small id="emailHelp" class="form-text text-muted">Selecciona una opción</small>
+                                        <small class="form-text text-muted">Seleccione un tipo</small>
                                     </div>
                                 </div>
                             </div>
