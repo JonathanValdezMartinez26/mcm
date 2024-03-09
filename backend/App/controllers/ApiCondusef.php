@@ -5,9 +5,7 @@ namespace App\controllers;
 defined("APPPATH") or die("Access denied");
 
 use \Core\View;
-use \Core\MasterDom;
 use \Core\Controller;
-use \App\models\Pagos as PagosDao;
 use \App\models\ApiCondusef as ApiCondusefDao;
 
 class ApiCondusef extends Controller
@@ -155,6 +153,7 @@ html;
 
     public function ComplaintsAdd()
     {
+        $fecha = date('Y-m-d');
         $extraHeader = <<<html
             <title>Registrar Quejas REDECO</title>
             <link rel="shortcut icon" href="/img/logo.png">
@@ -184,104 +183,78 @@ html;
                     });
                     var checkAll = 0;
                 });
-                
-                function enviar_add_user(){	
-                    alert("Hola");
-                    $.ajax({
-                        type: 'POST',
-                        url: '/Pagos/HorariosAdd/',
-                        data: $('#Add_AHC').serialize(),
-                        success: function(respuesta) {
-                            if(respuesta=='1'){
-                        
-                            swal("Registro guardado exitosamente", {
-                                        icon: "success",
-                                        });
-                            location.reload();
-                            }
-                            else {
-                            swal(respuesta, {
-                                        icon: "error",
-                                        });
-                            //location.reload();
-                            }
-                        }
-                    });
-                }
-                ///////////////////////////////
-                //MEDIO DE RECEPCION
-                ///////////////////////////////
-                $.ajax({
-                type: 'GET',
-                url: 'https://api.condusef.gob.mx/catalogos/medio-recepcion/',
-                dataType: 'json',
-                success: function(data_json) {
-                    $.each(data_json.medio, function(key, value) {
-                        let id = data_json.medio[key].medioId;
-                        let desc = data_json.medio[key].medioDsc;
-                        $("#medio_recepcion").append('<option name="' + id + '">' + desc + '</option>');
-                    });
-                }
-                });
-            
-                ///////////////////////////////
-                //NIVELES DE ATENCION
-                ///////////////////////////////
-                $.ajax({
-                type: 'GET',
-                url: 'https://api.condusef.gob.mx/catalogos/niveles-atencion',
-                dataType: 'json',
-                success: function(data_json) {
-                    $.each(data_json.nivelesDeAtencion, function(key, value) {
-                        let id = data_json.nivelesDeAtencion[key].nivelDeAtencionId;
-                        let desc = data_json.nivelesDeAtencion[key].nivelDeAtencionDsc;
-                        $("#nivel_atencion").append('<option name="' + id + '">' + desc + '</option>');
-                    });
-                
-                }
-                });
-            
-                ///////////////////////////////
-                //NIVELES DE ATENCION
-                ///////////////////////////////
-                $.ajax({
-                type: 'GET',
-                url: 'https://api.condusef.gob.mx/sepomex/estados/',
-                dataType: 'json',
-                success: function(data_json) {
-                    $.each(data_json.estados, function(key, value) {
-                        let id = data_json.estados[key].claveEdo;
-                        let desc = data_json.estados[key].estado;
-                        $("#nivel_atencion").append('<option name="' + id + '">' + desc + '</option>');
-                    });
-                }
-                })
-                 
+                                                  
                 const showError = (mensaje) => swal(mensaje, { icon: "error" })
+                const showAviso = (mensaje) => swal(mensaje, { icon: "warning" })
             
-                const consumeAPI = (url, callback, tipoDatos = 'json', tipo = "get") => {
+                const consumeAPI = (url, callback, datos = null, tipoDatos = 'json', tipo = "get", token = null, msgError = "") => {
                     $.ajax({
                         type: tipo,
                         url: url,
                         dataType: tipoDatos,
-                        success: callback
+                        data: datos,
+                        success: callback,
+                        error: () => showError(msgError),
+                        beforeSend: (xhr) => {
+                            if (token) xhr.setRequestHeader('Authorization', token)
+                        },
                     })
                 }
                  
+                consumeAPI("https://api.condusef.gob.mx/catalogos/medio-recepcion/", (data) => {
+                    const medio = document.querySelector("#MedioId")
+                    const opciones = getOpciones(data.medio, "MedioId", "medioDsc")
+                    insertaOpciones(medio, opciones)
+                })
+                 
+                consumeAPI("https://api.condusef.gob.mx/catalogos/niveles-atencion", (data) => {
+                    const atencion = document.querySelector("#NivelATId")
+                    const opciones = getOpciones(data.nivelesDeAtencion, "nivelDeAtencionId", "nivelDeAtencionDsc")
+                    insertaOpciones(atencion, opciones)
+                })
+                 
                 const limpiaCampos = (mensaje = "") => {
                     if (mensaje !== "") showError(mensaje)
-                    document.querySelector("#estado").innerHTML = ""
-                    document.querySelector("#estado").disabled = true
-                    document.querySelector("#municipio").innerHTML = ""
-                    document.querySelector("#municipio").disabled = true
-                    document.querySelector("#localidad").innerHTML = ""
-                    document.querySelector("#localidad").disabled = true
-                    document.querySelector("#colonia").innerHTML = ""
-                    document.querySelector("#colonia").disabled = true
+                    document.querySelector("#EstadosId").innerHTML = ""
+                    document.querySelector("#EstadosId").disabled = true
+                    document.querySelector("#QuejasMunId").innerHTML = ""
+                    document.querySelector("#QuejasMunId").disabled = true
+                    document.querySelector("#QuejasLocId").innerHTML = ""
+                    document.querySelector("#QuejasLocId").disabled = true
+                    document.querySelector("#QuejasColId").innerHTML = ""
+                    document.querySelector("#QuejasColId").disabled = true
+                }
+                 
+                const soloNumeros = (e) => {
+                    if (e.keyCode < 48 || e.keyCode > 57) return e.preventDefault()
+                }
+                 
+                const validaEntradaCP = (e) =>{
+                    if (e.keyCode === 13) {
+                        validaCP()
+                        return e.preventDefault()
+                    }
+                    if (e.keyCode < 48 || e.keyCode > 57) return e.preventDefault()
+                }
+                 
+                const formatoFecha = (fecha) => {
+                    const [anio, mes, dia] = fecha.split("-")
+                    return dia + "/" + mes + "/" + anio
+                }
+                 
+                const validaFechaRecepcion = () => {
+                    const fechaRegistro = document.querySelector("#QuejasFecRecepcion").value
+                    const mesRegistro = document.querySelector("#QuejasNoTrim").value
+                    const [anio, mes, dia] = fechaRegistro.split("-")
+                     
+                    if (parseInt(mes) != parseInt(mesRegistro)) {
+                        document.querySelector("#QuejasFecRecepcion").value = "$fecha"
+                        return showAviso("El mes de registro no coincide con la fecha de recepción, favor de validar.")
+                    }
                 }
                  
                 const validaCP = () => {
-                        const cp = document.querySelector("#cp").value
+                        const cp = document.querySelector("#QuejasCP").value
                         if (cp.length !== 5) return limpiaCampos("El código postal debe ser de 5 dígitos.")
                         
                         const url = "https://api.condusef.gob.mx/sepomex/colonias/?cp=" + cp
@@ -297,25 +270,25 @@ html;
                 }
                  
                 const validaEstado = (edo) => {
-                    const estado = document.querySelector("#estado")
-                    const estados = getOpciones(edo, "claveEdo", "estado")
+                    const estado = document.querySelector("#EstadosId")
+                    const estados = getOpciones(edo, "estadoId", "estado")
                     insertaOpciones(estado, estados)
                 }
                  
                 const validaMunicipio = (mun) => {
-                    const municipio = document.querySelector("#municipio")
+                    const municipio = document.querySelector("#QuejasMunId")
                     const municipios = getOpciones(mun, "municipioId", "municipio")
                     insertaOpciones(municipio, municipios)
                 }
                  
                 const validaLocalidad = (loc) => {
-                    const localidad = document.querySelector("#localidad")
+                    const localidad = document.querySelector("#QuejasLocId")
                     const localidades = getOpciones(loc, "tipoLocalidadId", "tipoLocalidad")
                     insertaOpciones(localidad, localidades)
                 }
                  
                 const validaColonia = (col) => {
-                    const colonia = document.querySelector("#colonia")
+                    const colonia = document.querySelector("#QuejasColId")
                     const colonias = getOpciones(col, "coloniaId", "colonia")
                     insertaOpciones(colonia, colonias)
                 }
@@ -336,19 +309,53 @@ html;
                     elemento.selectedIndex = 0
                     elemento.disabled = !(opciones.length > 1)
                 }
+                
+                const registraQueja =() => {
+                    const datos = {
+                        QuejasNoTrim: document.querySelector("#QuejasNoTrim").value,
+                        QuejasNum: document.querySelector("#QuejasNum").value,
+                        QuejasFolio: document.querySelector("#QuejasFolio").value,
+                        QuejasFecRecepcion: formatoFecha(document.querySelector("#QuejasFecRecepcion").value),
+                        MedioId: document.querySelector("#MedioId").value,
+                        NivelATId: document.querySelector("#NivelATId").value,
+                        product: document.querySelector("#product").value,
+                        CausasId: document.querySelector("#CausasId").value,
+                        QuejasPORI: document.querySelector("#QuejasPORI").value,
+                        QuejasEstatus: document.querySelector("#QuejasEstatus").value,
+                        EstadosId: document.querySelector("#EstadosId").value,
+                        QuejasMunId: document.querySelector("#QuejasMunId").value,
+                        QuejasLocId: document.querySelector("#QuejasLocId").value,
+                        QuejasColId: document.querySelector("#QuejasColId").value,
+                        QuejasCP: document.querySelector("#QuejasCP").value,
+                        QuejasTipoPersona: document.querySelector("#QuejasTipoPersona").value,
+                        QuejasSexo: document.querySelector("#QuejasSexo").value,
+                        QuejasEdad: document.querySelector("#QuejasEdad").value,
+                        QuejasFecResolucion: formatoFecha(document.querySelector("#QuejasFecResolucion").value),
+                        QuejasFecNotificacion: formatoFecha(document.querySelector("#QuejasFecNotificacion").value),
+                        QuejasRespuesta: document.querySelector("#QuejasRespuesta").value,
+                        QuejasNumPenal: document.querySelector("#QuejasNumPenal").value,
+                        PenalizacionId: document.querySelector("#PenalizacionId").value,
+                    }
+                     
+                    const procesaRespuesta = (respuesta) => {
+                        console.log(respuesta, datos)
+                    }
+                     
+                    consumeAPI("https://api.condusef.gob.mx/redeco/quejas", procesaRespuesta, datos, "json", "post", null, "Ocurrió un error de comunicación con el portal de REDECO.")
+                }
             </script>
         html;
 
         $meses = [
-            "01" => "Enero",
-            "02" => "Febrero",
-            "03" => "Marzo",
-            "04" => "Abril",
-            "05" => "Mayo",
-            "06" => "Junio",
-            "07" => "Julio",
-            "08" => "Agosto",
-            "09" => "Septiembre",
+            "1" => "Enero",
+            "2" => "Febrero",
+            "3" => "Marzo",
+            "4" => "Abril",
+            "5" => "Mayo",
+            "6" => "Junio",
+            "7" => "Julio",
+            "8" => "Agosto",
+            "9" => "Septiembre",
             "10" => "Octubre",
             "11" => "Noviembre",
             "12" => "Diciembre"
@@ -373,6 +380,7 @@ html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha', $fecha);
         View::set('meses', $opcionesMeses);
         View::set('productos', $opcionesProductos);
         View::set('causas', $opcionesCausas);
