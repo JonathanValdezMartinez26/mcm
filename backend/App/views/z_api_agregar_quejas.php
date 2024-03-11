@@ -43,7 +43,7 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form id="Add_user">
+                    <form id="Add_user" onsubmit="registraQueja(event)">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="col-md-3">
@@ -65,7 +65,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="QuejasFolio">Numero de folio *</label>
-                                        <input type="number" class="form-control" id="QuejasFolio" name="QuejasFolio" required>
+                                        <input type="text" class="form-control" id="QuejasFolio" name="QuejasFolio" required>
                                         <small class="form-text text-muted">Ingrese el número de folio</small>
                                     </div>
                                 </div>
@@ -79,7 +79,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="MedioId">Medio de recepción *</label>
-                                        <select class="form-control" autofocus type="select" id="MedioId" name="MedioId">
+                                        <select class="form-control" autofocus type="select" id="MedioId" name="MedioId" required>
                                         </select>
                                         <small class="form-text text-muted">Seleccione un Medio</small>
                                     </div>
@@ -88,7 +88,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="NivelATId">Nivel de atención o contacto *</label>
-                                        <select class="form-control" autofocus type="select" id="NivelATId" name="NivelATId">
+                                        <select class="form-control" autofocus type="select" id="NivelATId" name="NivelATId" required>
                                         </select>
                                         <small class="form-text text-muted">Seleccione un Nivel</small>
                                     </div>
@@ -139,7 +139,7 @@
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label for="QuejasCP">CP *</label>
-                                        <input type="text" class="form-control" id="QuejasCP" name="QuejasCP" maxlength="5" value="" onkeypress="validaEntradaCP(event)">
+                                        <input type="text" class="form-control" id="QuejasCP" name="QuejasCP" maxlength="5" value="" onkeypress="validaEntradaCP(event)" required>
                                         <small class="form-text text-muted">Ingrese un CP a buscar</small>
                                     </div>
                                 </div>
@@ -156,7 +156,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="EstadosId">Estado *</label>
-                                        <select class="form-control" autofocus type="select" id="EstadosId" name="EstadosId" disabled>
+                                        <select class="form-control" autofocus type="select" id="EstadosId" name="EstadosId" disabled required>
                                         </select>
                                         <small class="form-text text-muted">Seleccione un Estado</small>
                                     </div>
@@ -165,7 +165,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="QuejasMunId">Municipio *</label>
-                                        <select class="form-control" autofocus type="select" id="QuejasMunId" name="QuejasMunId" disabled>
+                                        <select class="form-control" autofocus type="select" id="QuejasMunId" name="QuejasMunId" disabled required>
                                         </select>
                                         <small class="form-text text-muted">Seleccione un Municipio</small>
                                     </div>
@@ -174,17 +174,16 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="QuejasLocId">Tipo de Localidad *</label>
-                                        <select class="form-control" autofocus type="select" id="QuejasLocId" name="QuejasLocId" disabled>
+                                        <select class="form-control" autofocus type="select" id="QuejasLocId" name="QuejasLocId" disabled required>
                                         </select>
                                         <small class="form-text text-muted">Seleccione un tipo de Localidad</small>
                                     </div>
                                 </div>
 
-
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="QuejasColId">Colonia *</label>
-                                        <select class="form-control" autofocus type="select" id="QuejasColId" name="QuejasColId" disabled>
+                                        <select class="form-control" autofocus type="select" id="QuejasColId" name="QuejasColId" disabled required>
                                         </select>
                                         <small class="form-text text-muted">Seleccione una Colonia</small>
                                     </div>
@@ -201,7 +200,6 @@
                                     </div>
                                 </div>
 
-
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="QuejasSexo">Sexo *</label>
@@ -216,7 +214,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="QuejasEdad">Edad *</label>
-                                        <input type="number" class="form-control" id="QuejasEdad" name="QuejasEdad" min=18 max=99 required>
+                                        <input type="number" class="form-control" id="QuejasEdad" name="QuejasEdad" min=18 max=99 onkeypress=validaLargo(event) required>
                                         <small class="form-text text-muted">Ingrese la edad</small>
                                     </div>
                                 </div>
@@ -278,13 +276,13 @@
                                 </div>
                             </div>
 
+                            <div class="modal-footer">
+                                <button class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                                <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Registrar Usuario</button>
+                            </div>
                         </div>
+                    </form>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="submit" name="agregar" class="btn btn-primary" value="enviar" onclick="registraQueja()"><span class="glyphicon glyphicon-floppy-disk"></span> Registrar Usuario</button>
-                </form>
             </div>
         </div>
     </div>

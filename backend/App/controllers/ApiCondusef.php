@@ -229,6 +229,10 @@ html;
                     if (e.keyCode < 48 || e.keyCode > 57) return e.preventDefault()
                 }
                  
+                const validaLargo = (e, largo = 1) => {
+                    if (e.target.value.length > largo) return e.preventDefault()
+                }
+                 
                 const validaEntradaCP = (e) =>{
                     if (e.keyCode === 13) {
                         validaCP()
@@ -310,7 +314,8 @@ html;
                     elemento.disabled = !(opciones.length > 1)
                 }
                 
-                const registraQueja =() => {
+                const registraQueja =(e) => {
+                    e.preventDefault()
                     const datos = {
                         QuejasNoTrim: document.querySelector("#QuejasNoTrim").value,
                         QuejasNum: document.querySelector("#QuejasNum").value,
