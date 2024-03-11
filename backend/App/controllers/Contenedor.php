@@ -97,7 +97,23 @@ html;
           <br/>
           <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
             <div class="menu_section">
+            
+            
+             <h3>General WEB AHORRO</h3>
+            <ul class="nav side-menu">     
+            
+                <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Ahorro <span class="fa fa-chevron-down"></span></a>
+                      <ul class="nav child_menu">
+                            <li><a href="/Ahorro/Apertuta/">Apertura de Cuentas</a></li> 
+                            <li><a href="/Ahorro/Clientes/">Cuentas Corrientes</a></li> 
+                            <li><a href="/Ahorro/Saldos/">Saldos al día</a></li> 
+                      </ul>
+                </li>
+             </ul>
+                
+                <br>
               <h3>General </h3>
+              
               <ul class="nav side-menu">       
 html;
     if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil == 'GTOCA' || $this->__perfil == 'AMOCA' || $this->__perfil == 'OCOF' || $this->__perfil == 'CPAGO' || $this->__perfil == 'ACALL' || $this->__perfil == 'LAYOU' || $this->__usuario == 'TESP') {
