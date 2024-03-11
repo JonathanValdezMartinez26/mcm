@@ -75,10 +75,31 @@ html;
       </script>
 html;
 
+        $cliente = $_GET['Cliente'];
+        $BuscaCliente = AhorroDao::ConcultaClientes($cliente);
 
-            View::set('header', $this->_contenedor->header($extraHeader));
-            View::set('footer', $this->_contenedor->footer($extraFooter));
-            View::render("promociones_telarana_busqueda");
+
+
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+
+        if($cliente == '')
+        {
+            View::render("ahorro_apertura_inicio");
+        }
+        else if($BuscaCliente == '')
+        {
+            View::render("ahorro_apertura_inicio");
+        }
+        else
+        {
+            var_dump($BuscaCliente);
+            View::set('Cliente',$BuscaCliente);
+            View::render("ahorro_apertura_encuentra_cliente");
+        }
+
+
+
 
 
 

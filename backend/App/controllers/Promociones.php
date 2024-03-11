@@ -82,8 +82,6 @@ html;
 
             $Recomienda = PromocionesDao::ConsultarDatosClienteRecomienda($Credito);
 
-            var_dump($Recomienda);
-
 
             $datetime1 = new \DateTime($Recomienda['INICIO']);
 

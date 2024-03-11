@@ -39,7 +39,7 @@ sql;
         $query=<<<sql
       SELECT * FROM(
 	   SELECT CL_INVITA, (CL.NOMBRE1 || ' ' || CL.NOMBRE2 || ' '|| CL.PRIMAPE || ' '|| CL.SEGAPE ) AS NOMBRE, 
-	          PRN.CICLO, PRN.CDGNS, CO. NOMBRE AS SUCURSAL,  
+	          PRN.CICLO, PRN.CDGNS, CO.NOMBRE AS SUCURSAL,  
 	              
 	   TO_CHAR(TCD.INICIO ,'YYYY/MM/DD') AS INICIO,
 	   TO_CHAR(TCD.FIN ,'YYYY/MM/DD') AS FIN, TCD.PLAZO, 
@@ -54,10 +54,11 @@ sql;
 	   
        WHERE CPT.CDGNS_INVITA = '$cdgns' AND PRN.SITUACION = 'E'
        AND TCD.CICLO = PRN.CICLO 
+       GROUP BY CL_INVITA,  CL.NOMBRE1 ,CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE, PRN.CICLO, PRN.CDGNS,  CO.NOMBRE , TCD.INICIO, TCD.FIN, TCD.PLAZO
        )
        GROUP BY CL_INVITA, NOMBRE, CICLO, CDGNS, SUCURSAL, INICIO, FIN, PLAZO, DIAS_ATRASO, ULTIMO_CICLO_REGISTRADO
 sql;
-        var_dump($query);
+        //var_dump($query);
         try {
             $mysqli = Database::getInstance();
             return $mysqli->queryOne($query);
