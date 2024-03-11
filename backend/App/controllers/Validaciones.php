@@ -24,32 +24,13 @@ class Validaciones extends Controller
         View::set('footer', $this->_contenedor->footer());
     }
 
-    public function TablaInvitados()
-    {
-        $catalogo = ValidacionesDao::ConsultaClienteInvitado();
-
-        $tabla_clientes = "";
-        foreach ($catalogo as $key => $fila) {
-            $tabla_clientes .= "<tr style='padding: 0px !important;'>";
-            foreach ($fila as $key => $columna) {
-                $tabla_clientes .= "<td style='padding: 0px !important;'>{$columna}</td>";
-            }
-            $tabla_clientes .= '<td style="padding: 0px !important;" class="center">
-                <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
-                </td>';
-            $tabla_clientes .= "</tr>";
-        }
-
-        return $tabla_clientes;
-    }
-
     public function RegistroTelarana()
     {
         $fecha = date('Y-m-d');
         $extraHeader = <<<html
-        <title>Gestion de Telaraña</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
+            <title>Gestion de Telaraña</title>
+            <link rel="shortcut icon" href="/img/logo.png">
+        html;
 
         $extraFooter = <<<html
         <script>
@@ -188,9 +169,24 @@ html;
         </script>
         html;
 
+        $catalogo = ValidacionesDao::ConsultaClienteInvitado();
+
+        $tabla_clientes = "";
+        foreach ($catalogo as $key => $fila) {
+            $tabla_clientes .= "<tr style='padding: 0px !important;'>";
+            foreach ($fila as $key => $columna) {
+                if ($key == "FECHA_REGISTRO") $columna = date('d-m-Y H:i:s', strtotime($columna));
+                $tabla_clientes .= "<td style='padding: 0px !important;'>{$columna}</td>";
+            }
+            $tabla_clientes .= '<td style="padding: 0px !important;" class="center">
+                <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
+                </td>';
+            $tabla_clientes .= "</tr>";
+        }
+
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('tabla', self::TablaInvitados());
+        View::set('tabla', $tabla_clientes);
         View::set('fecha', $fecha);
         View::set('fechaMin', date('Y-m-d', strtotime("-30 day")));
         View::set('fechaMax', date('Y-m-d', strtotime("+7 day")));
@@ -200,7 +196,6 @@ html;
     public function VinculaInvitado()
     {
         $respuesta = ValidacionesDao::VinculaInvitado($_POST);
-        View::set('tabla', self::TablaInvitados());
         echo $respuesta;
         return $respuesta;
     }

@@ -1,4 +1,5 @@
 <?php echo $header; ?>
+
 <div class="right_col">
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
@@ -12,7 +13,6 @@
                     <i class="fa fa-plus"></i> Reportar queja
                 </button>
                 <hr style="border-top: 1px solid #787878; margin-top: 5px;">
-
                 <div class="dataTable_wrapper">
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
