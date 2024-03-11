@@ -104,7 +104,7 @@ html;
             
                 <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Ahorro <span class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
-                            <li><a href="/Ahorro/Apertuta/">Apertura de Cuentas</a></li> 
+                            <li><a href="/Ahorro/Apertura/">Apertura de Cuentas</a></li> 
                             <li><a href="/Ahorro/Clientes/">Cuentas Corrientes</a></li> 
                             <li><a href="/Ahorro/Saldos/">Saldos al día</a></li> 
                       </ul>
@@ -269,7 +269,6 @@ html;
                 <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
                 </i>&nbsp;Api Condusef<span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
-                   <li><a href="/ApiCondusef/CreateUser/">Usuarios</a></li>
                    <li><a href="/ApiCondusef/ComplaintsAdd/">Registrar Quejas</a></li>
                    <li><a href="/ApiCondusef/QueriesComplaints/">Consultar Quejas</a></li>
                   
