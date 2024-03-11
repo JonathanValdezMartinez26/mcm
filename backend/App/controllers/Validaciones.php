@@ -24,8 +24,28 @@ class Validaciones extends Controller
         View::set('footer', $this->_contenedor->footer());
     }
 
+    public function TablaInvitados()
+    {
+        $catalogo = ValidacionesDao::ConsultaClienteInvitado();
+
+        $tabla_clientes = "";
+        foreach ($catalogo as $key => $fila) {
+            $tabla_clientes .= "<tr style='padding: 0px !important;'>";
+            foreach ($fila as $key => $columna) {
+                $tabla_clientes .= "<td style='padding: 0px !important;'>{$columna}</td>";
+            }
+            $tabla_clientes .= '<td style="padding: 0px !important;" class="center">
+                <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
+                </td>';
+            $tabla_clientes .= "</tr>";
+        }
+
+        return $tabla_clientes;
+    }
+
     public function RegistroTelarana()
     {
+        $fecha = date('Y-m-d');
         $extraHeader = <<<html
         <title>Gestion de Telaraña</title>
         <link rel="shortcut icon" href="/img/logo.png">
@@ -41,8 +61,9 @@ html;
             }
             
             const showError = (mensaje) => swal(mensaje, { icon: "error" })
-            
             const showSuccess = (mensaje) => swal(mensaje, { icon: "success" })
+            const getCodigoCliente = (cliente) => cliente.split(" - ")[0]
+            const getNombreCliente = (cliente) => cliente.split(" - ")[1]
             
             const consumeWS = (url, datos, callback, tipo = "post") => {
                 $.ajax({
@@ -53,134 +74,133 @@ html;
                 })
             }
             
-            const getCodigoCliente = (cliente) => cliente.split(" - ")[0]
-            const getNombreCliente = (cliente) => cliente.split(" - ")[1]
+            const validarYbuscar = (e) => {
+                if (e.keyCode === 13) {
+                    if (e.target.id === "Cliente") buscaAnfitrion()
+                    if (e.target.id === "Invitado") buscaInvitado()
+                }
+                if (e.target.value.length > 5) e.preventDefault()
+                if (e.keyCode < 48 || e.keyCode > 57) e.preventDefault()
+            }
             
-            const vincularInvitado = () => {
+            const limpiaCampos = (numero, nombre, msg = null) => {
+                if (msg) showError(msg)
+                if (numero) numero.value = ""
+                if (nombre) nombre.value = ""
+                document.querySelector("#btnVincular").disabled = true
+                return false
+            }
+            
+            const buscaAnfitrion = () => {
+                const noAnfitrion = document.querySelector("#Cliente")
+                const nombreAnfitrion = document.querySelector("#MuestraCliente")
+                const noInvitado = document.querySelector("#Invitado")
+                const nombreInvitado = document.querySelector("#MuestraInvitado")
+                
+                if (nombreAnfitrion.value !== "") limpiaCampos(null, nombreInvitado)
+                if (noAnfitrion.value === "") return limpiaCampos(noAnfitrion, nombreAnfitrion, "Se debe ingresar un numero de Cliente para buscar anfitrión.")
+                if (isNaN(noAnfitrion.value)) return limpiaCampos(noAnfitrion, nombreAnfitrion, "El valor ingresado debe ser un numérico.")
+                if (noAnfitrion.value.length != 6) return limpiaCampos(noAnfitrion, nombreAnfitrion, "El valor ingresado debe ser de 6 dígitos.")
+                
+                const procesaRespuesta = (respuesta) => {
+                    const res = JSON.parse(respuesta)
+                    if (!res.success) {
+                        limpiaCampos(noInvitado, nombreInvitado)
+                        document.querySelector("#Invitado").disabled = true
+                        document.querySelector("#BuscarInvitado").disabled = true
+                        return limpiaCampos(noAnfitrion, nombreAnfitrion, res.mensaje)
+                    }
+            
+                    nombreAnfitrion.value = res.datos.nombre
+                    noAnfitrion.value = ""
+                    document.querySelector("#Invitado").disabled = false
+                    document.querySelector("#BuscarInvitado").disabled = false
+                }
+            
+                const datos = { codigo: noAnfitrion.value }
+                consumeWS("/Validaciones/BuscaCliente", datos, procesaRespuesta)
+            
+                return false
+            }
+            
+            const buscaInvitado = () => {
+                const noInvitado = document.querySelector("#Invitado")
+                const nombreInvitado = document.querySelector("#MuestraInvitado")
+                const anfitrion = document.querySelector("#MuestraCliente")
+                const noAnfitrion = getCodigoCliente(anfitrion.value)
+                
+                if (noInvitado.value === noAnfitrion) return limpiaCampos(noInvitado, nombreInvitado, "El cliente invitado no puede ser el mismo que el cliente anfitrión.")
+                if (noInvitado.value === "") return limpiaCampos(noInvitado, nombreInvitado, "Se debe ingresar un numero de Cliente para buscar un invitado.")
+                if (isNaN(noInvitado.value)) return limpiaCampos(noInvitado, nombreInvitado, "El valor ingresado debe ser un numérico.")
+                if (noInvitado.value.length != 6) return limpiaCampos(noInvitado, nombreInvitado, "El valor ingresado debe ser de 6 dígitos.")
+            
+                const procesaRespuesta = (respuesta) => {
+                    const res = JSON.parse(respuesta)
+                    if (!res.success) return limpiaCampos(noInvitado, nombreInvitado, res.mensaje)
+            
+                    nombreInvitado.value = res.datos.nombre
+                    noInvitado.value = ""
+                    document.querySelector("#btnVincular").disabled = false
+                }
+            
+                const datos = {
+                    anfitrion: noAnfitrion,
+                    codigo: noInvitado.value
+                }
+                consumeWS("/Validaciones/BuscaCliente", datos, procesaRespuesta)
+            
+                return false
+            }
+            
+            const vincularInvitado = (e) => {
+                e.preventDefault()
                 const cliente = document.querySelector("#MuestraCliente")
                 const invitado = document.querySelector("#MuestraInvitado")
                 const fecha = document.querySelector("#Fecha")
-            
-                if (cliente.value === "") {
-                    showError("El campo cliente no puede estar vacío")
-                    return false
-                }
-            
-                if (invitado.value === "") {
-                    showError("El campo invitado no puede estar vacío")
-                    return false
-                }
-            
-                if (cliente.value === invitado.value) {
-                    showError("El cliente no puede ser el mismo que el invitado")
-                    return false
-                }
-            
+                
                 if (isNaN(new Date(fecha.value).getTime())) {
                     showError("El campo fecha no puede estar vacío")
                     return false
                 }
-            
+                
                 const datos = {
-                    invita: getCodigoCliente(cliente.value),
+                    anfitrion: getCodigoCliente(cliente.value),
                     invitado: getCodigoCliente(invitado.value),
                     fecha: fecha.value
                 }
-            
+                
                 const validaRespuesta = (respuesta) => {
                     const res = JSON.parse(respuesta)
                     if (!res.success) {
                         showError(res.mensaje)
                         return false
                     }
+            
                     showSuccess(res.mensaje)
                     cliente.value = ""
                     invitado.value = ""
+                    fecha.value = "$fecha"
                 }
             
                 consumeWS("/Validaciones/VinculaInvitado", datos, validaRespuesta)
-            }
-            
-            const buscaCliente = (id) => {
-                const noCliente = document.querySelector("#" + id)
-                const nombreCliente = document.querySelector("#Muestra" + id)
-            
-                const limpiaCampos = (msg) => {
-                    showError(msg)
-                    noCliente.value = ""
-                    nombreCliente.value = ""
-                    return false
-                }
-            
-                if (noCliente.value === "") return limpiaCampos("Se debe ingresar un numero de "+id+" para buscar.")
-                if (isNaN(noCliente.value)) return limpiaCampos("El valor ingresado debe ser un númerico.")
-                if (noCliente.value.length != 6) return limpiaCampos("El valor ingresado debe ser de 6 dígitos.")
-            
-                const validaRespuesta = (respuesta) => {
-                    const res = JSON.parse(respuesta)
-            
-                    if (!res.success) return limpiaCampos(res.mensaje)
-            
-                    nombreCliente.value = res.datos.nombre
-                    document.querySelector("#" + id).value = ""
-                    if (id === "Cliente"){
-                        document.querySelector("#Invitado").disabled = false
-                        document.querySelector("#BuscarInvitado").disabled = false
-
-                    }
-                }
-            
-                const datos = { codigo: noCliente.value }
-            
-                if (id === "Invitado") {
-                    const anfitrion = {
-                        codigo: getCodigoCliente(document.querySelector("#MuestraCliente").value),
-                        nombre: getNombreCliente(document.querySelector("#MuestraCliente").value)
-                    }
-            
-                    if (anfitrion.codigo === noCliente.value)
-                        return limpiaCampos("El cliente no puede ser el mismo que el invitado")
-
-                    if (anfitrion.codigo != "") datos.anfitrion = anfitrion
-                }
-            
-                consumeWS("/Validaciones/BuscaCliente", datos, validaRespuesta)
-            }
-
-            const validarYbuscar = (e) => {
-                if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
-                if (e.keyCode === 13) buscaCliente(e.target.id)
+                return false
             }
         </script>
-html;
-
-
-        $catalogo = ValidacionesDao::ConsultaClienteInvitado();
-
-        $tabla_clientes = "";
-        foreach ($catalogo as $key => $fila) {
-            $tabla_clientes .= "<tr style='padding: 0px !important;'>";
-            foreach ($fila as $key => $columna) {
-                $tabla_clientes .= "<td style='padding: 0px !important;'>{$columna}</td>";
-            }
-            $tabla_clientes .= '<td style="padding: 0px !important;" class="center">
-                <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
-                </td>';
-            $tabla_clientes .= "</tr>";
-        }
+        html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('tabla', $tabla_clientes);
-        View::set('fecha', date('Y-m-d'));
-        View::set('fechaMin', date('Y-m-d', strtotime("-1 year")));
+        View::set('tabla', self::TablaInvitados());
+        View::set('fecha', $fecha);
+        View::set('fechaMin', date('Y-m-d', strtotime("-30 day")));
         View::set('fechaMax', date('Y-m-d', strtotime("+7 day")));
         View::render("registro_telarana");
     }
 
     public function VinculaInvitado()
     {
-        $respuesta = ValidacionesDao::AddVinculaInvitado($_POST);
+        $respuesta = ValidacionesDao::VinculaInvitado($_POST);
+        View::set('tabla', self::TablaInvitados());
         echo $respuesta;
         return $respuesta;
     }

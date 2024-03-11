@@ -1,4 +1,5 @@
 <?php echo $header; ?>
+
 <div class="right_col">
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
@@ -6,14 +7,11 @@
                 <h3>Gestión de Clientes en Telaraña</h3>
                 <div class="clearfix"></div>
             </div>
-
             <div class="card col-md-12">
-
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_horario">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_vincular">
                     <i class="fa fa-plus"></i> Vincular Invitado
                 </button>
                 <hr style="border-top: 1px solid #787878; margin-top: 5px;">
-
                 <div class="dataTable_wrapper">
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
@@ -38,7 +36,8 @@
     </div>
 </div>
 
-<div class="modal fade" id="modal_agregar_horario" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- <div class="modal  in" id="modal_vincular" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block; padding-right: 15px;"> -->
+<div class="modal fade" id="modal_vincular" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -49,7 +48,7 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form onsubmit="vincularInvitado(); return false" id="Add_AHC">
+                    <form id="Add_AHC">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="col-md-6">
@@ -60,13 +59,13 @@
                                         <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="Cliente" name="Cliente" value="" placeholder="000000">
                                     </div>
                                     <div class="col-md-1">
-                                        <button type="button" class="btn btn-primary" onclick="buscaCliente('Cliente')">
+                                        <button type="button" class="btn btn-primary" onclick="buscaAnfitrion()">
                                             <i class="fa fa-search"></i> Buscar
                                         </button>
                                     </div>
                                     <div class="col-md-12">
                                         <span id="availability1">Nombre Cliente:</span>
-                                        <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="MuestraCliente" name="MuestraCliente" value="" readonly>
+                                        <input type="text" class="form-control" id="MuestraCliente" name="MuestraCliente" value="" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -74,10 +73,10 @@
                                         <span id="availability1">Codigo Invitado:</span>
                                     </div>
                                     <div class="col-md-5">
-                                        <input type="text" class="form-control" id="Invitado" name="Invitado" value="" placeholder="000000" disabled>
+                                        <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="Invitado" name="Invitado" value="" placeholder="000000" disabled>
                                     </div>
                                     <div class="col-md-1">
-                                        <button type="button" class="btn btn-primary" onclick="buscaCliente('Invitado')" id="BuscarInvitado" disabled>
+                                        <button type="button" class="btn btn-primary" onclick="buscaInvitado()" id="BuscarInvitado" disabled>
                                             <i class="fa fa-search"></i> Buscar
                                         </button>
                                     </div>
@@ -97,14 +96,13 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                            <button type="submit" onclick="vincularInvitado(event)" id="btnVincular" name=" agregar" class="btn btn-primary" value="enviar" disabled><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="submit" name="agregar" class="btn btn-primary" value="enviar" disabled><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
-                </form>
-            </div>
-
         </div>
     </div>
 </div>

@@ -1,6 +1,8 @@
 <?php
+
 namespace Core;
-defined("APPPATH") OR die("Access denied");
+
+defined("APPPATH") or die("Access denied");
 
 use \Core\App;
 use \PDO;
@@ -9,36 +11,42 @@ use \PDO;
  * @class Conn
  */
 
-Class Database{
+class Database
+{
 
-const MAIL = "cesar.cor.riv@gmail.com" /*"tecnico@webmaster.com"*/;
-const TEMA = 'ecommerce';
-static $_instance;
-static $_mysqli;
+    const MAIL = "cesar.cor.riv@gmail.com" /*"tecnico@webmaster.com"*/;
+    const TEMA = 'ecommerce';
+    static $_instance;
+    static $_mysqli;
 
-static $_debug;
-static $_mail;
+    static $_debug;
+    static $_mail;
 
-    private function __construct(){
+    private function __construct()
+    {
         $this->conectar();
     }
 
-    private function __clone(){ }
+    private function __clone()
+    {
+    }
 
-    public static function getInstance($debug = true, $mail = false){
+    public static function getInstance($debug = true, $mail = false)
+    {
 
-	self::$_debug = $debug;
-	self::$_mail = $mail;
+        self::$_debug = $debug;
+        self::$_mail = $mail;
 
-        if (!(self::$_instance instanceof self)){
-            self::$_instance=new self();
+        if (!(self::$_instance instanceof self)) {
+            self::$_instance = new self();
         }
         return self::$_instance;
     }
 
-    private function conectar(){
+    private function conectar()
+    {
 
-	//load from config/config.ini
+        //load from config/config.ini
         $dsn = 'oci:dbname=ESIACOM';
 
         //OR connect using the Oracle Instant Client
@@ -52,19 +60,20 @@ static $_mail;
         try {
 
             $this->_mysqli =  new PDO($dsn, $username, $password);
-	    //$this->_mysqli->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            //$this->_mysqli->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        }catch(\PDOException $e){
-	    if(self::$_debug)
+        } catch (\PDOException $e) {
+            if (self::$_debug)
                 echo $e->getMessage();
-	    if(self::$_mail)
-                mail(self::MAIL,'error en conexion '.self::TEMA,$e->getMessage());
+            if (self::$_mail)
+                mail(self::MAIL, 'error en conexion ' . self::TEMA, $e->getMessage());
 
-	    die();
+            die();
         }
     }
 
-    public function insert($sql){
+    public function insert($sql)
+    {
 
         $stmt = $this->_mysqli->prepare($sql);
         $result = $stmt->execute();
@@ -76,63 +85,74 @@ static $_mail;
             $arr = $stmt->errorInfo();
             print_r($arr);
         }
-
     }
 
-    public function queryOne($sql,$params = ''){
+    public function insertar($sql, $datos)
+    {
+        try {
+            return $this->_mysqli->prepare($sql)->execute($datos);
+        } catch (\PDOException $e) {
+            echo "Error sql : " . $e->getMessage() . "\nSql : $sql";
+            return false;
+        }
+    }
 
-        if($params == ''){
-            try{
+    public function queryOne($sql, $params = '')
+    {
+
+        if ($params == '') {
+            try {
                 $stmt = $this->_mysqli->query($sql);
                 return array_shift($stmt->fetchAll(PDO::FETCH_ASSOC));
-            }catch(\PDOException $e){
-		if(self::$_mail)
-                    mail(self::MAIL,'error en queryOne '.self::TEMA,"Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1));
-		if(self::$_debug)
-		    echo "Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1);
+            } catch (\PDOException $e) {
+                if (self::$_mail)
+                    mail(self::MAIL, 'error en queryOne ' . self::TEMA, "Error sql : " . $e->getMessage() . "\nSql : $sql \n params :\n" . print_r($params, 1));
+                if (self::$_debug)
+                    echo "Error sql : " . $e->getMessage() . "\nSql : $sql \n params :\n" . print_r($params, 1);
                 return false;
             }
-        }else{
-            try{
+        } else {
+            try {
                 $stmt = $this->_mysqli->prepare($sql);
-                foreach($params AS $values=>$val)
-                    $stmt->bindParam($values,$val);
+                foreach ($params as $values => $val)
+                    $stmt->bindParam($values, $val);
                 $stmt->execute($params);
                 return array_shift($stmt->fetchAll(PDO::FETCH_ASSOC));
-            }catch(\PDOException $e){
-		if(self::$_mail)
-                    mail(self::MAIL,'error en queryOne '.self::TEMA,"Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1));
-		if(self::$_debug)
-		    echo "Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1);
+            } catch (\PDOException $e) {
+                if (self::$_mail)
+                    mail(self::MAIL, 'error en queryOne ' . self::TEMA, "Error sql : " . $e->getMessage() . "\nSql : $sql \n params :\n" . print_r($params, 1));
+                if (self::$_debug)
+                    echo "Error sql : " . $e->getMessage() . "\nSql : $sql \n params :\n" . print_r($params, 1);
                 return false;
             }
         }
     }
-    public function queryAll($sql,$params = ''){
 
-        if($params == ''){
-            try{
+    public function queryAll($sql, $params = '')
+    {
+        if ($params == '') {
+            try {
                 $stmt = $this->_mysqli->query($sql);
                 return $stmt->fetchAll(PDO::FETCH_ASSOC);
-            }catch(\PDOException $e){
-		if(self::$_mail)
-                    mail(self::MAIL,'error en queryAll '.self::TEMA,"Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1));
-		if(self::$_debug)
-		    echo "Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1);
+            } catch (\PDOException $e) {
+                if (self::$_mail)
+                    mail(self::MAIL, 'error en queryAll ' . self::TEMA, "Error sql : " . $e->getMessage() . "\nSql : $sql \n params :\n" . print_r($params, 1));
+                if (self::$_debug)
+                    echo "Error sql : " . $e->getMessage() . "\nSql : $sql \n params :\n" . print_r($params, 1);
                 return false;
             }
-        }else{
-            try{
+        } else {
+            try {
                 $stmt = $this->_mysqli->prepare($sql);
-                foreach($params AS $values=>$val)
-                    $stmt->bindParam($values,$val);
+                foreach ($params as $values => $val)
+                    $stmt->bindParam($values, $val);
                 $stmt->execute($params);
                 return $stmt->fetchAll(PDO::FETCH_ASSOC);
-            }catch(\PDOException $e){
-		if(self::$_mail)
-                    mail(self::MAIL,'error en queryAll '.self::TEMA,"Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1));
-		if(self::$_debug)
-		    echo "Error sql : ".$e->getMessage()."\nSql : $sql \n params :\n".print_r($params,1);
+            } catch (\PDOException $e) {
+                if (self::$_mail)
+                    mail(self::MAIL, 'error en queryAll ' . self::TEMA, "Error sql : " . $e->getMessage() . "\nSql : $sql \n params :\n" . print_r($params, 1));
+                if (self::$_debug)
+                    echo "Error sql : " . $e->getMessage() . "\nSql : $sql \n params :\n" . print_r($params, 1);
                 return false;
             }
         }
@@ -140,7 +160,8 @@ static $_mail;
 
     ///////////////////////////////////////////////////////////////////////////////////////////7
 
-    public function queryProcedurePago($credito, $ciclo_, $monto_, $tipo_, $nombre_, $user_, $ejecutivo_id,  $ejec_nom_, $tipo_procedure, $fecha_aux, $secuencia, $fecha){
+    public function queryProcedurePago($credito, $ciclo_, $monto_, $tipo_, $nombre_, $user_, $ejecutivo_id,  $ejec_nom_, $tipo_procedure, $fecha_aux, $secuencia, $fecha)
+    {
 
         $newDate = date("d-m-Y", strtotime($fecha));
         $newDateFechaAux = date("d-m-Y", strtotime($fecha_aux));
@@ -164,20 +185,20 @@ static $_mail;
         $query_text = "CALL SPACCIONPAGODIA_PRUEBA(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         ///$query_text = "CALL SPACCIONPAGODIA(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";/////este es el que funciona bien cuando se actualice la base de datos de produccion
         $stmt = $this->_mysqli->prepare($query_text);
-        $stmt->bindParam(1,$empresa, PDO::PARAM_STR);
-        $stmt->bindParam(2,$fecha, PDO::PARAM_STR);
-        $stmt->bindParam(3,$fecha_aux, PDO::PARAM_STR);
-        $stmt->bindParam(4,$cdgns, PDO::PARAM_STR);
-        $stmt->bindParam(5,$ciclo, PDO::PARAM_STR);
-        $stmt->bindParam(6,$secuencia, PDO::PARAM_STR);
-        $stmt->bindParam(7,$nombre, PDO::PARAM_STR);
-        $stmt->bindParam(8,$cdgocpe, PDO::PARAM_STR);
-        $stmt->bindParam(9,$ejecutivo, PDO::PARAM_STR);
-        $stmt->bindParam(10,$cdgpe, PDO::PARAM_STR);
-        $stmt->bindParam(11,$monto, PDO::PARAM_STR);
-        $stmt->bindParam(12,$tipo_mov, PDO::PARAM_STR);
-        $stmt->bindParam(13,$tipo, PDO::PARAM_INT, 10);
-        $stmt->bindParam(14,$resultado, PDO::PARAM_STR|PDO::PARAM_INPUT_OUTPUT, 100);
+        $stmt->bindParam(1, $empresa, PDO::PARAM_STR);
+        $stmt->bindParam(2, $fecha, PDO::PARAM_STR);
+        $stmt->bindParam(3, $fecha_aux, PDO::PARAM_STR);
+        $stmt->bindParam(4, $cdgns, PDO::PARAM_STR);
+        $stmt->bindParam(5, $ciclo, PDO::PARAM_STR);
+        $stmt->bindParam(6, $secuencia, PDO::PARAM_STR);
+        $stmt->bindParam(7, $nombre, PDO::PARAM_STR);
+        $stmt->bindParam(8, $cdgocpe, PDO::PARAM_STR);
+        $stmt->bindParam(9, $ejecutivo, PDO::PARAM_STR);
+        $stmt->bindParam(10, $cdgpe, PDO::PARAM_STR);
+        $stmt->bindParam(11, $monto, PDO::PARAM_STR);
+        $stmt->bindParam(12, $tipo_mov, PDO::PARAM_STR);
+        $stmt->bindParam(13, $tipo, PDO::PARAM_INT, 10);
+        $stmt->bindParam(14, $resultado, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT, 100);
         //$stmt->bindParam(15,$identifica_app, PDO::PARAM_STR);
 
 
@@ -190,9 +211,9 @@ static $_mail;
             $arr = $stmt->errorInfo();
             print_r($arr);
         }
-
     }
-    public function queryProcedureDeletePago($cdgns_, $fecha_, $user_, $secuencia_){
+    public function queryProcedureDeletePago($cdgns_, $fecha_, $user_, $secuencia_)
+    {
 
         $fecha_parseada = strtotime($fecha_);
         $fecha_parseada = date('d-m-Y', $fecha_parseada);
@@ -217,20 +238,20 @@ static $_mail;
         $query_text = "CALL SPACCIONPAGODIA_PRUEBA(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         //$query_text = "CALL SPACCIONPAGODIA(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         $stmt = $this->_mysqli->prepare($query_text);
-        $stmt->bindParam(1,$empresa, PDO::PARAM_STR);
-        $stmt->bindParam(2,$fecha, PDO::PARAM_STR);
-        $stmt->bindParam(3,$fecha_aux, PDO::PARAM_STR);
-        $stmt->bindParam(4,$cdgns, PDO::PARAM_STR);
-        $stmt->bindParam(5,$ciclo, PDO::PARAM_STR);
-        $stmt->bindParam(6,$secuencia, PDO::PARAM_STR);
-        $stmt->bindParam(7,$nombre, PDO::PARAM_STR);
-        $stmt->bindParam(8,$cdgocpe, PDO::PARAM_STR);
-        $stmt->bindParam(9,$ejecutivo, PDO::PARAM_STR);
-        $stmt->bindParam(10,$cdgpe, PDO::PARAM_STR);
-        $stmt->bindParam(11,$monto, PDO::PARAM_STR);
-        $stmt->bindParam(12,$tipo_mov, PDO::PARAM_STR);
-        $stmt->bindParam(13,$tipo, PDO::PARAM_INT, 10);
-        $stmt->bindParam(14,$resultado, PDO::PARAM_STR|PDO::PARAM_INPUT_OUTPUT, 100);
+        $stmt->bindParam(1, $empresa, PDO::PARAM_STR);
+        $stmt->bindParam(2, $fecha, PDO::PARAM_STR);
+        $stmt->bindParam(3, $fecha_aux, PDO::PARAM_STR);
+        $stmt->bindParam(4, $cdgns, PDO::PARAM_STR);
+        $stmt->bindParam(5, $ciclo, PDO::PARAM_STR);
+        $stmt->bindParam(6, $secuencia, PDO::PARAM_STR);
+        $stmt->bindParam(7, $nombre, PDO::PARAM_STR);
+        $stmt->bindParam(8, $cdgocpe, PDO::PARAM_STR);
+        $stmt->bindParam(9, $ejecutivo, PDO::PARAM_STR);
+        $stmt->bindParam(10, $cdgpe, PDO::PARAM_STR);
+        $stmt->bindParam(11, $monto, PDO::PARAM_STR);
+        $stmt->bindParam(12, $tipo_mov, PDO::PARAM_STR);
+        $stmt->bindParam(13, $tipo, PDO::PARAM_INT, 10);
+        $stmt->bindParam(14, $resultado, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT, 100);
         //$stmt->bindParam(15,$identifica_app, PDO::PARAM_STR);
 
 
@@ -243,10 +264,10 @@ static $_mail;
             $arr = $stmt->errorInfo();
             print_r($arr);
         }
-
     }
 
-    public function queryProcedureActualizaSucursal($n_credito_p, $ciclo_p, $nueva_suc_p){
+    public function queryProcedureActualizaSucursal($n_credito_p, $ciclo_p, $nueva_suc_p)
+    {
 
         $empresa = "EMPFIN";
         $no_credito = $n_credito_p;
@@ -256,11 +277,11 @@ static $_mail;
 
         $query_text = "CALL SPACTUALIZASUC(?, ?, ?, ?, ?)";
         $stmt = $this->_mysqli->prepare($query_text);
-        $stmt->bindParam(1,$empresa, PDO::PARAM_STR);
-        $stmt->bindParam(2,$no_credito, PDO::PARAM_STR);
-        $stmt->bindParam(3,$ciclo, PDO::PARAM_STR);
-        $stmt->bindParam(4,$nuevaSucursal, PDO::PARAM_STR);
-        $stmt->bindParam(5,$resultado, PDO::PARAM_STR|PDO::PARAM_INPUT_OUTPUT, 100);
+        $stmt->bindParam(1, $empresa, PDO::PARAM_STR);
+        $stmt->bindParam(2, $no_credito, PDO::PARAM_STR);
+        $stmt->bindParam(3, $ciclo, PDO::PARAM_STR);
+        $stmt->bindParam(4, $nuevaSucursal, PDO::PARAM_STR);
+        $stmt->bindParam(5, $resultado, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT, 100);
 
         $result = $stmt->execute();
 
@@ -273,14 +294,13 @@ static $_mail;
             echo "\nPDOStatement::errorInfo():\n";
             $arr = $stmt->errorInfo();
             print_r($arr);
-
         }
-
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function queryProcedureInsertGarantias($n_credito_p, $articulo_p, $marca_p, $modelo_p, $serie_p, $factura_p, $usuario_p, $valor_p){
+    public function queryProcedureInsertGarantias($n_credito_p, $articulo_p, $marca_p, $modelo_p, $serie_p, $factura_p, $usuario_p, $valor_p)
+    {
 
         $empresa = "EMPFIN";
         $no_credito = $n_credito_p;
@@ -301,18 +321,18 @@ static $_mail;
         $query_text = "CALL ESIACOM.SPACCIONGARPREN(?,?,?,?,?,?,?,?,?,?,?,?)
 ";
         $stmt = $this->_mysqli->prepare($query_text);
-        $stmt->bindParam(1,$empresa, PDO::PARAM_STR);
-        $stmt->bindParam(2,$no_credito, PDO::PARAM_STR);
-        $stmt->bindParam(3,$ciclo, PDO::PARAM_STR);
-        $stmt->bindParam(4,$articulo, PDO::PARAM_STR);
-        $stmt->bindParam(5,$marca, PDO::PARAM_STR);
-        $stmt->bindParam(6,$modelo, PDO::PARAM_STR);
-        $stmt->bindParam(7,$serie, PDO::PARAM_STR);
-        $stmt->bindParam(8,$valor, PDO::PARAM_STR);
-        $stmt->bindParam(9,$factura, PDO::PARAM_STR);
-        $stmt->bindParam(10,$usuario, PDO::PARAM_STR);
-        $stmt->bindParam(11,$tipo_transaccion, PDO::PARAM_STR);
-        $stmt->bindParam(12,$resultado, PDO::PARAM_STR|PDO::PARAM_INPUT_OUTPUT, 100);
+        $stmt->bindParam(1, $empresa, PDO::PARAM_STR);
+        $stmt->bindParam(2, $no_credito, PDO::PARAM_STR);
+        $stmt->bindParam(3, $ciclo, PDO::PARAM_STR);
+        $stmt->bindParam(4, $articulo, PDO::PARAM_STR);
+        $stmt->bindParam(5, $marca, PDO::PARAM_STR);
+        $stmt->bindParam(6, $modelo, PDO::PARAM_STR);
+        $stmt->bindParam(7, $serie, PDO::PARAM_STR);
+        $stmt->bindParam(8, $valor, PDO::PARAM_STR);
+        $stmt->bindParam(9, $factura, PDO::PARAM_STR);
+        $stmt->bindParam(10, $usuario, PDO::PARAM_STR);
+        $stmt->bindParam(11, $tipo_transaccion, PDO::PARAM_STR);
+        $stmt->bindParam(12, $resultado, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT, 100);
 
         $result = $stmt->execute();
 
@@ -325,11 +345,10 @@ static $_mail;
             echo "\nPDOStatement::errorInfo():\n";
             $arr = $stmt->errorInfo();
             print_r($arr);
-
         }
-
     }
-    public function queryProcedureDeleteGarantias($n_credito_p, $secuencia, $tipo_transaccion){
+    public function queryProcedureDeleteGarantias($n_credito_p, $secuencia, $tipo_transaccion)
+    {
 
         $empresa = "EMPFIN";
         $no_credito = $n_credito_p;
@@ -350,18 +369,18 @@ static $_mail;
         $query_text = "CALL ESIACOM.SPACCIONGARPREN(?,?,?,?,?,?,?,?,?,?,?,?)
 ";
         $stmt = $this->_mysqli->prepare($query_text);
-        $stmt->bindParam(1,$empresa, PDO::PARAM_STR);
-        $stmt->bindParam(2,$no_credito, PDO::PARAM_STR);
-        $stmt->bindParam(3,$ciclo, PDO::PARAM_STR);
-        $stmt->bindParam(4,$articulo, PDO::PARAM_STR);
-        $stmt->bindParam(5,$marca, PDO::PARAM_STR);
-        $stmt->bindParam(6,$modelo, PDO::PARAM_STR);
-        $stmt->bindParam(7,$serie, PDO::PARAM_STR);
-        $stmt->bindParam(8,$valor, PDO::PARAM_STR);
-        $stmt->bindParam(9,$factura, PDO::PARAM_STR);
-        $stmt->bindParam(10,$usuario, PDO::PARAM_STR);
-        $stmt->bindParam(11,$tipo_transaccion, PDO::PARAM_STR);
-        $stmt->bindParam(12,$resultado, PDO::PARAM_STR|PDO::PARAM_INPUT_OUTPUT, 100);
+        $stmt->bindParam(1, $empresa, PDO::PARAM_STR);
+        $stmt->bindParam(2, $no_credito, PDO::PARAM_STR);
+        $stmt->bindParam(3, $ciclo, PDO::PARAM_STR);
+        $stmt->bindParam(4, $articulo, PDO::PARAM_STR);
+        $stmt->bindParam(5, $marca, PDO::PARAM_STR);
+        $stmt->bindParam(6, $modelo, PDO::PARAM_STR);
+        $stmt->bindParam(7, $serie, PDO::PARAM_STR);
+        $stmt->bindParam(8, $valor, PDO::PARAM_STR);
+        $stmt->bindParam(9, $factura, PDO::PARAM_STR);
+        $stmt->bindParam(10, $usuario, PDO::PARAM_STR);
+        $stmt->bindParam(11, $tipo_transaccion, PDO::PARAM_STR);
+        $stmt->bindParam(12, $resultado, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT, 100);
 
         $result = $stmt->execute();
 
@@ -372,11 +391,10 @@ static $_mail;
             echo "\nPDOStatement::errorInfo():\n";
             $arr = $stmt->errorInfo();
             print_r($arr);
-
         }
-
     }
-    public function queryProcedureUpdatesGarantias($n_credito_p, $articulo_p, $marca_p, $modelo_p, $serie_p, $factura_p, $usuario_p, $valor_p, $secuencia_p){
+    public function queryProcedureUpdatesGarantias($n_credito_p, $articulo_p, $marca_p, $modelo_p, $serie_p, $factura_p, $usuario_p, $valor_p, $secuencia_p)
+    {
 
 
         $empresa = "EMPFIN";
@@ -398,18 +416,18 @@ static $_mail;
         $query_text = "CALL ESIACOM.SPACCIONGARPREN(?,?,?,?,?,?,?,?,?,?,?,?)
 ";
         $stmt = $this->_mysqli->prepare($query_text);
-        $stmt->bindParam(1,$empresa, PDO::PARAM_STR);
-        $stmt->bindParam(2,$no_credito, PDO::PARAM_STR);
-        $stmt->bindParam(3,$secuencia, PDO::PARAM_STR);
-        $stmt->bindParam(4,$articulo, PDO::PARAM_STR);
-        $stmt->bindParam(5,$marca, PDO::PARAM_STR);
-        $stmt->bindParam(6,$modelo, PDO::PARAM_STR);
-        $stmt->bindParam(7,$serie, PDO::PARAM_STR);
-        $stmt->bindParam(8,$valor, PDO::PARAM_STR);
-        $stmt->bindParam(9,$factura, PDO::PARAM_STR);
-        $stmt->bindParam(10,$usuario, PDO::PARAM_STR);
-        $stmt->bindParam(11,$tipo_transaccion, PDO::PARAM_STR);
-        $stmt->bindParam(12,$resultado, PDO::PARAM_STR|PDO::PARAM_INPUT_OUTPUT, 100);
+        $stmt->bindParam(1, $empresa, PDO::PARAM_STR);
+        $stmt->bindParam(2, $no_credito, PDO::PARAM_STR);
+        $stmt->bindParam(3, $secuencia, PDO::PARAM_STR);
+        $stmt->bindParam(4, $articulo, PDO::PARAM_STR);
+        $stmt->bindParam(5, $marca, PDO::PARAM_STR);
+        $stmt->bindParam(6, $modelo, PDO::PARAM_STR);
+        $stmt->bindParam(7, $serie, PDO::PARAM_STR);
+        $stmt->bindParam(8, $valor, PDO::PARAM_STR);
+        $stmt->bindParam(9, $factura, PDO::PARAM_STR);
+        $stmt->bindParam(10, $usuario, PDO::PARAM_STR);
+        $stmt->bindParam(11, $tipo_transaccion, PDO::PARAM_STR);
+        $stmt->bindParam(12, $resultado, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT, 100);
 
         $result = $stmt->execute();
 
@@ -417,18 +435,16 @@ static $_mail;
             //print_r($stmt->fetchAll(PDO::FETCH_ASSOC));
             //return $resultado;
             var_dump($resultado);
-
         } else {
             echo "\nPDOStatement::errorInfo():\n";
             $arr = $stmt->errorInfo();
             print_r($arr);
-
         }
-
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public function queryProcedureActualizaNumCredito($credito_a, $credito_n){
+    public function queryProcedureActualizaNumCredito($credito_a, $credito_n)
+    {
 
         $empresa = "EMPFIN";
         $credito_actual = $credito_a;
@@ -439,10 +455,10 @@ static $_mail;
         $query_text = "CALL SPACTUALIZACODIGOGPO(?,?,?,?)";
 
         $stmt = $this->_mysqli->prepare($query_text);
-        $stmt->bindParam(1,$empresa, PDO::PARAM_STR);
-        $stmt->bindParam(2,$credito_actual, PDO::PARAM_STR);
-        $stmt->bindParam(3,$credito_nuevo, PDO::PARAM_STR);
-        $stmt->bindParam(4,$resultado_s, PDO::PARAM_STR|PDO::PARAM_INPUT_OUTPUT, 300);
+        $stmt->bindParam(1, $empresa, PDO::PARAM_STR);
+        $stmt->bindParam(2, $credito_actual, PDO::PARAM_STR);
+        $stmt->bindParam(3, $credito_nuevo, PDO::PARAM_STR);
+        $stmt->bindParam(4, $resultado_s, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT, 300);
 
         $result = $stmt->execute();
 
@@ -454,11 +470,10 @@ static $_mail;
             echo "\nPDOStatement::errorInfo():\n";
             $arr = $stmt->errorInfo();
             print_r($arr);
-
         }
-
     }
-    public function queryProcedureActualizaNumCreditoCiclo($credito_a, $ciclo_n){
+    public function queryProcedureActualizaNumCreditoCiclo($credito_a, $ciclo_n)
+    {
 
         $empresa = "EMPFIN";
         $credito_actual = $credito_a;
@@ -469,26 +484,24 @@ static $_mail;
         $query_text = "CALL SPACTUALIZACICLOGPO(?,?,?,?)";
 
         $stmt = $this->_mysqli->prepare($query_text);
-        $stmt->bindParam(1,$empresa, PDO::PARAM_STR);
-        $stmt->bindParam(2,$credito_actual, PDO::PARAM_STR);
-        $stmt->bindParam(3,$ciclo_n, PDO::PARAM_STR);
-        $stmt->bindParam(4,$resultado_s, PDO::PARAM_STR|PDO::PARAM_INPUT_OUTPUT, 300);
+        $stmt->bindParam(1, $empresa, PDO::PARAM_STR);
+        $stmt->bindParam(2, $credito_actual, PDO::PARAM_STR);
+        $stmt->bindParam(3, $ciclo_n, PDO::PARAM_STR);
+        $stmt->bindParam(4, $resultado_s, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT, 300);
 
         $result = $stmt->execute();
 
         if ($result) {
-           echo $resultado_s;
-        }
-        else {
+            echo $resultado_s;
+        } else {
             echo "\nPDOStatement::errorInfo():\n";
             $arr = $stmt->errorInfo();
             print_r($arr);
-
         }
-
     }
 
-    public function queryProcedureActualizaNumCreditoSituacion($credito_a, $ciclo_n, $situacion){
+    public function queryProcedureActualizaNumCreditoSituacion($credito_a, $ciclo_n, $situacion)
+    {
 
         $empresa = "EMPFIN";
         $credito_actual = $credito_a;
@@ -500,24 +513,20 @@ static $_mail;
         $query_text = "CALL SPACTUALIZASITUACION(?,?,?,?,?)";
 
         $stmt = $this->_mysqli->prepare($query_text);
-        $stmt->bindParam(1,$empresa, PDO::PARAM_STR);
-        $stmt->bindParam(2,$credito_actual, PDO::PARAM_STR);
-        $stmt->bindParam(3,$ciclo_n, PDO::PARAM_STR);
-        $stmt->bindParam(4,$situacion_n, PDO::PARAM_STR);
-        $stmt->bindParam(5,$resultado_s, PDO::PARAM_STR|PDO::PARAM_INPUT_OUTPUT, 300);
+        $stmt->bindParam(1, $empresa, PDO::PARAM_STR);
+        $stmt->bindParam(2, $credito_actual, PDO::PARAM_STR);
+        $stmt->bindParam(3, $ciclo_n, PDO::PARAM_STR);
+        $stmt->bindParam(4, $situacion_n, PDO::PARAM_STR);
+        $stmt->bindParam(5, $resultado_s, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT, 300);
 
         $result = $stmt->execute();
 
         if ($result) {
             echo $resultado_s;
-        }
-        else {
+        } else {
             echo "\nPDOStatement::errorInfo():\n";
             $arr = $stmt->errorInfo();
             print_r($arr);
-
         }
-
     }
-
 }
