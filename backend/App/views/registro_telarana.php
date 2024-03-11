@@ -16,11 +16,11 @@
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
                             <tr>
-                                <th>Codigo Credito</th>
+                                <th>Código Crédito</th>
                                 <th>Ciclo Invitación</th>
-                                <th>Codigo Cliente</th>
+                                <th>Código Cliente</th>
                                 <th>Nombre Cliente</th>
-                                <th>Codigo Invitado</th>
+                                <th>Código Invitado</th>
                                 <th>Nombre Invitado</th>
                                 <th>Fecha Invitación</th>
                                 <th>Acciones</th>
@@ -36,14 +36,13 @@
     </div>
 </div>
 
-<!-- <div class="modal  in" id="modal_vincular" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block; padding-right: 15px;"> -->
 <div class="modal fade" id="modal_vincular" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <center>
-                    <h4 class="modal-title" id="myModalLabel">Vinculación de Invitados</h4>
+                    <h4 class="modal-title" id="myModalLabel">Vinculación de invitados</h4>
                 </center>
             </div>
             <div class="modal-body">
@@ -53,7 +52,7 @@
                             <div class="col-md-12">
                                 <div class="col-md-6">
                                     <div class="col-md-3">
-                                        <span id="availability1">Codigo Cliente:</span>
+                                        <span id="availability1">Codigo de cliente:</span>
                                     </div>
                                     <div class="col-md-5">
                                         <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="Cliente" name="Cliente" value="" placeholder="000000">
@@ -64,13 +63,13 @@
                                         </button>
                                     </div>
                                     <div class="col-md-12">
-                                        <span id="availability1">Nombre Cliente:</span>
+                                        <span id="availability1">Nombre de cliente:</span>
                                         <input type="text" class="form-control" id="MuestraCliente" name="MuestraCliente" value="" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="col-md-3">
-                                        <span id="availability1">Codigo Invitado:</span>
+                                        <span id="availability1">Codigo de invitado:</span>
                                     </div>
                                     <div class="col-md-5">
                                         <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="Invitado" name="Invitado" value="" placeholder="000000" disabled>
@@ -81,7 +80,7 @@
                                         </button>
                                     </div>
                                     <div class="col-md-12">
-                                        <span id="availability1">Nombre Invitado:</span>
+                                        <span id="availability1">Nombre de invitado:</span>
                                         <input type="text" class="form-control" id="MuestraInvitado" name="MuestraInvitado" value="" readonly>
                                     </div>
                                 </div>
@@ -106,5 +105,9 @@
         </div>
     </div>
 </div>
+
+<script>
+    console.log("<?= $tabla; ?>");
+</script>
 
 <?php echo $footer; ?>
