@@ -13,7 +13,7 @@ class Ahorro{
 sql;
 
         $query_busca_cliente=<<<sql
-        SELECT (NOMBRE1 || ' ' || NOMBRE2 || ' ' || PRIMAPE || ' ' || SEGAPE) AS NOMBRE, CURP FROM CL WHERE CODIGO = '$cliente'
+        SELECT (NOMBRE1 || ' ' || NOMBRE2 || ' ' || PRIMAPE || ' ' || SEGAPE) AS NOMBRE, CURP, REGISTRO  FROM CL WHERE CODIGO = '$cliente'
 sql;
 
         $query_tiene_creditos=<<<sql

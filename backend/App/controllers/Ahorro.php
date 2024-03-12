@@ -80,6 +80,9 @@ html;
 
 
 
+
+
+
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
 
@@ -93,7 +96,7 @@ html;
         }
         else
         {
-            var_dump($BuscaCliente);
+
             View::set('Cliente',$BuscaCliente);
             View::render("ahorro_apertura_encuentra_cliente");
         }
