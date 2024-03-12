@@ -51,7 +51,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="QuejasNoTrim">Mes a informar *</label>
-                                        <select class="form-control" autofocus type="select" id="QuejasNoTrim" name="QuejasNoTrim" onchange="validaFechaRecepcion()">
+                                        <select class="form-control" autofocus type="select" id="QuejasNoTrim" name="QuejasNoTrim">
                                             <?= $meses; ?>
                                         </select>
                                         <small class="form-text text-muted">Seleccione un mes</small>
@@ -74,7 +74,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="QuejasFecRecepcion">Fecha de la queja *</label>
-                                        <input type="date" class="form-control" id="QuejasFecRecepcion" name="QuejasFecRecepcion" value="<?= $fecha ?>" onchange="validaFechaRecepcion()" />
+                                        <input type="date" class="form-control" id="QuejasFecRecepcion" name="QuejasFecRecepcion" value="<?= $fecha ?>" />
                                         <small class="form-text text-muted">Fecha en la que se recibió la queja</small>
                                     </div>
                                 </div>
@@ -253,7 +253,7 @@
                                     <div class="form-group">
                                         <label for="QuejasNumPenal">Número de penalización *</label>
                                         <input type="number" class="form-control" id="QuejasNumPenal" name="QuejasNumPenal" />
-                                        <small class="form-text text-muted">Escriba un numero de penalización</small>
+                                        <small class="form-text text-muted">Escriba un número de penalización</small>
                                     </div>
                                 </div>
 
