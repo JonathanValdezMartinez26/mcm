@@ -1,10 +1,12 @@
 <?php
+
 namespace App\controllers;
-defined("APPPATH") OR die("Access denied");
+
+defined("APPPATH") or die("Access denied");
 
 use \Core\View;
 use \Core\Controller;
-use \App\models\Ahorro AS AhorroDao;
+use \App\models\Ahorro as AhorroDao;
 
 class Ahorro extends Controller
 {
@@ -16,7 +18,6 @@ class Ahorro extends Controller
         $this->_contenedor = new Contenedor;
         View::set('header', $this->_contenedor->header());
         View::set('footer', $this->_contenedor->footer());
-
     }
 
 
@@ -25,130 +26,109 @@ class Ahorro extends Controller
         $extraHeader = <<<html
         <title>Apertura de cuentas </title>
         <link rel="shortcut icon" href="/img/logo.png">
-html;
+        html;
 
         $extraFooter = <<<html
-      <script>
-      
-      function getParameterByName(name) {
-            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(location.search);
-            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-        }
-      
-       $(document).ready(function(){
-            $("#muestra-cupones").tablesorter();
-          var oTable = $('#muestra-cupones').DataTable({
-           "lengthMenu": [
-                    [30, 50, -1],
-                    [30, 50, 'Todos'],
-                ],
-                "columnDefs": [{
-                    "orderable": false,
-                    "targets": 0
-                }],
-                 "order": false
-            });
-            // Remove accented character from search input as well
-            $('#muestra-cupones input[type=search]').keyup( function () {
-                var table = $('#example').DataTable();
-                table.search(
-                    jQuery.fn.DataTable.ext.type.search.html(this.value)
-                ).draw();
-            });
-            var checkAll = 0;
-            
-                 
-        });
-      
-       function boton_contrato(numero_contrato)
-        {
-             $('#PDF').attr('action', '/Ahorro/Imprime_Contrato/'+numero_contrato+'/');
-             $('#PDF').attr('target', '_blank');
-             $("#PDF").submit();
-        }
-       
-        function boton_genera_contrato(cliente) {
-              swal({
-              title: "¿Está seguro de continuar con la apertura de la cuenta de ahorro del cliente: " + cliente + "?",
-              text: "",
-              icon: "warning",
-              buttons: true,
-              dangerMode: true,
-            })
-            .then((willDelete) => {
-              if (willDelete) {
-                    $.ajax({
-                        type: "POST",
-                        url: "/Ahorro/AgregaContrato/",
-                        data: $('#Add').serialize(),
-                        success: function(respuesta){
-                            
-                            if(respuesta == '')
-                            {
-                                swal("No pudimos generar el contrato, reintenta o contacta a tu Analista Soporte.", {
-                                  icon: "error",
-                                });   
-                            }
-                            else 
-                            {
-                                   swal("Generamos correctamente el contrato " + respuesta + " del cliente "+cliente+ " capture su inversion de ahorro inicial.", {
-                                      icon: "success",
-                                   });
-                                    
-                                   boton_contrato(respuesta);
-                                   document.getElementById("contrato").value = respuesta;
-                                   $('#modal_agregar_pago').modal('show');
-                            }
-                            
-                              
-                              
+        <script>
+            function getParameterByName(name) {
+                name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]")
+                var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                    results = regex.exec(location.search)
+                return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "))
+            }
+        
+            $(document).ready(function () {
+                $("#muestra-cupones").tablesorter()
+                var oTable = $("#muestra-cupones").DataTable({
+                    lengthMenu: [
+                        [30, 50, -1],
+                        [30, 50, "Todos"]
+                    ],
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 0
                         }
-                    });
-              }
-            });
-    
-        }
-
-      </script>
-html;
+                    ],
+                    order: false
+                })
+                // Remove accented character from search input as well
+                $("#muestra-cupones input[type=search]").keyup(function () {
+                    var table = $("#example").DataTable()
+                    table.search(jQuery.fn.DataTable.ext.type.search.html(this.value)).draw()
+                })
+                var checkAll = 0
+            })
+        
+            function boton_contrato(numero_contrato) {
+                $("#PDF").attr("action", "/Ahorro/Imprime_Contrato/" + numero_contrato + "/")
+                $("#PDF").attr("target", "_blank")
+                $("#PDF").submit()
+            }
+            
+            const showError = (mensaje) => swal(mensaje, { icon: "error" })
+            const showSuccess = (mensaje) => swal(mensaje, { icon: "success" })
+            
+            const boton_genera_contrato = async (cliente) => {
+                try {
+                    const continuar = await swal({
+                        title:
+                            "¿Está seguro de continuar con la apertura de la cuenta de ahorro del cliente: " +
+                            cliente +
+                            "?",
+                        text: "",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true
+                    })
+            
+                    if (continuar) {
+                        const respuesta = await $.ajax({
+                            type: "POST",
+                            url: "/Ahorro/AgregaContrato/",
+                            data: $("#Add").serialize()
+                        })
+                        return console.log(respuesta)
+            
+                        if (respuesta == "")
+                            return showError(
+                                "No pudimos generar el contrato, reintenta o contacta a tu Analista Soporte."
+                            )
+            
+                        showSuccess(
+                            "Generamos correctamente el contrato " +
+                                respuesta +
+                                " del cliente " +
+                                cliente +
+                                " capture su inversión de ahorro inicial."
+                        )
+                        boton_contrato(respuesta)
+                        document.querySelector("#contrato").value = respuesta
+                        $("#modal_agregar_pago").modal("show")
+                    }
+                } catch (error) {
+                    console.error(error)
+                }
+            }
+        </script>
+        html;
 
         $cliente = $_GET['Cliente'];
         $BuscaCliente = AhorroDao::ConcultaClientes($cliente);
-
-
-
-
-
-
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
 
-        if($cliente == '')
-        {
-            View::render("ahorro_apertura_inicio");
-        }
-        else if($BuscaCliente == '')
-        {
-            View::render("ahorro_apertura_inicio");
-        }
-        else
-        {
+        if ($cliente == '') return View::render("ahorro_apertura_inicio");
+        if ($BuscaCliente == '') return View::render("ahorro_apertura_inicio");
 
-            View::set('Cliente',$BuscaCliente);
-            View::render("ahorro_apertura_encuentra_cliente");
-        }
-
-
+        View::set('Cliente', $BuscaCliente);
+        View::render("ahorro_apertura_encuentra_cliente");
     }
 
     public function AgregaContrato()
     {
-        //la consulta te debe devolver el numero de contrato que se genero que es igual al codigo del cliente mas la fecha es decir 00001313032024
-        //insert consulta
-        echo "00001313032024";
-
+        $constrato = AhorroDao::AgregaContrato($_POST);
+        echo $constrato;
     }
 
     public function Imprime_Contrato($numero_contrato)
