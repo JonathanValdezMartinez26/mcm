@@ -212,7 +212,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="Fecha">Manejo de cuenta</label>
                         <select class="form-control mr-sm-3" autofocus="" type="select" id="tipo" name="tipo" readonly="">
@@ -222,7 +222,7 @@
                 </div>
 
 
-                <div class="col-md-5"></div>
+                <div class="col-md-6"></div>
                 <div class="col-md-5 col-sm-4  tile_stats_count">
                     <div class="count" style="font-size: 35px; color: #368a05">
                         <button type="button" id="procesar_pagos" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_pago" style="border: 1px solid #c4a603; background: #FFFFFF" data-keyboard="false">
@@ -277,9 +277,9 @@
 
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="movil">Medio de registro</label>
-                                    <input type="text" class="form-control" id="medio_registro" aria-describedby="medio_registro" disabled placeholder="" value="CAJERA">
-                                    <small id="emailHelp" class="form-text text-muted">Medio de registro del pago.</small>
+                                    <label for="movil">Contrato</label>
+                                    <input type="text" class="form-control" id="medio_registro" aria-describedby="medio_registro" readonly placeholder="" value="">
+                                    <small id="emailHelp" class="form-text text-muted">Contrato.</small>
                                 </div>
                             </div>
 
