@@ -285,8 +285,8 @@
 
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="movil">Contrato</label>
-                                    <input type="text" class="form-control" id="medio_registro" aria-describedby="medio_registro" readonly placeholder="" value="">
+                                    <label for="contrato">Contrato</label>
+                                    <input type="text" class="form-control" id="contrato" aria-describedby="contrato" readonly placeholder="">
                                     <small id="emailHelp" class="form-text text-muted">Contrato.</small>
                                 </div>
                             </div>

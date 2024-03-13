@@ -85,11 +85,23 @@ html;
                         data: $('#Add').serialize(),
                         success: function(respuesta){
                             
-                            alert(respuesta);
+                            if(respuesta == '')
+                            {
+                                swal("No pudimos generar el contrato, reintenta o contacta a tu Analista Soporte.", {
+                                  icon: "error",
+                                });   
+                            }
+                            else 
+                            {
+                                   swal("Generamos correctamente el contrato " + respuesta + " del cliente "+cliente+ " capture su inversion de ahorro inicial.", {
+                                      icon: "success",
+                                   });
+                                    
+                                   boton_contrato(respuesta);
+                                   document.getElementById("contrato").value = respuesta;
+                                   $('#modal_agregar_pago').modal('show');
+                            }
                             
-                              boton_contrato(respuesta);
-                              
-                              $('#modal_agregar_pago').modal('show');
                               
                               
                         }
@@ -131,11 +143,11 @@ html;
 
     }
 
-
     public function AgregaContrato()
     {
-
-        echo "1";
+        //la consulta te debe devolver el numero de contrato que se genero que es igual al codigo del cliente mas la fecha es decir 00001313032024
+        //insert consulta
+        echo "00001313032024";
 
     }
 
