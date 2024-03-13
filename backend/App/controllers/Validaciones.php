@@ -30,7 +30,7 @@ class Validaciones extends Controller
         $extraHeader = <<<html
             <title>Gestion de Telaraña</title>
             <link rel="shortcut icon" href="/img/logo.png">
-        html;
+html;
 
         $extraFooter = <<<html
         <script>
@@ -170,7 +170,7 @@ class Validaciones extends Controller
                 return false
             }
         </script>
-        html;
+html;
 
         $catalogo = ValidacionesDao::ConsultaClienteInvitado();
 
