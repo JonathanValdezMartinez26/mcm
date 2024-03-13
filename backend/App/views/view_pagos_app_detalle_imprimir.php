@@ -26,8 +26,6 @@
                                 </button>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
                 <div class="dataTable_wrapper">
