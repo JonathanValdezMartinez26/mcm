@@ -42,7 +42,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <center>
-                    <h4 class="modal-title" id="myModalLabel">Vinculación de invitados</h4>
+                    <h4 class="modal-title" id="myModalLabel">Vincular invitados - Recomienda más paga menos</h4>
                 </center>
             </div>
             <div class="modal-body">
