@@ -186,24 +186,27 @@ html;
                                                   
                 const showError = (mensaje) => swal(mensaje, { icon: "error" })
                 const showAviso = (mensaje) => swal(mensaje, { icon: "warning" })
+                const showSuccess = (mensaje) => swal(mensaje, { icon: "success" })
             
                 const consumeAPI = (url, callback, datos = null, tipoDatos = 'json', tipo = "get", token = null, msgError = "") => {
                     $.ajax({
                         type: tipo,
                         url: url,
                         dataType: tipoDatos,
-                        data: datos,
+                        data: JSON.stringify(datos),
+                        contentType: "application/json",
                         success: callback,
-                        error: () => showError(msgError),
-                        beforeSend: (xhr) => {
-                            if (token) xhr.setRequestHeader('Authorization', token)
+                        error: (resError) => {
+                            console.log(resError.responseJSON, resError.responseText, resError.statusText, resError.status)
+                            showError(msgError)
                         },
+                        headers: { "Authorization": token }
                     })
                 }
                  
                 consumeAPI("https://api.condusef.gob.mx/catalogos/medio-recepcion/", (data) => {
                     const medio = document.querySelector("#MedioId")
-                    const opciones = getOpciones(data.medio, "MedioId", "medioDsc")
+                    const opciones = getOpciones(data.medio, "medioId", "medioDsc")
                     insertaOpciones(medio, opciones)
                 })
                  
@@ -316,37 +319,48 @@ html;
                 
                 const registraQueja =(e) => {
                     e.preventDefault()
-                    const datos = {
-                        QuejasNoTrim: document.querySelector("#QuejasNoTrim").value,
+                    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJhMmI1MTc4OC1hMzk3LTQxMjUtOGUxNi1lZWZjMmEyY2E1MzEiLCJ1c2VybmFtZSI6IkN1bHRpdmFPQyIsImluc3RpdHVjaW9uaWQiOiJGOUNGMjUzMy03RjRDLTQ3RkYtOTIyNi04MEE4QjA3OCIsImluc3RpdHVjaW9uQ2xhdmUiOjE1NDk0LCJkZW5vbWluYWNpb25fc29jaWFsIjoiRmluYW5jaWVyYSBDdWx0aXZhLCBTLkEuUC5JLiBkZSBDLlYuLCBTT0ZPTSwgRS5OLlIuIiwic2VjdG9yaWQiOjI0LCJzZWN0b3IiOiJTT0NJRURBREVTIEZJTkFOQ0lFUkFTIERFIE9CSkVUTyBNVUxUSVBMRSBFTlIiLCJpYXQiOjE3MTAzNTEwNTUsImV4cCI6MTcxMTIxNTA1NX0.aac7IoeyX7_JNNLb1z6iixtIqtALaxLi98Ttjx18RNs"
+                    const datos = [{
+                        QuejasNoTrim: Number(document.querySelector("#QuejasNoTrim").value),
                         QuejasNum: document.querySelector("#QuejasNum").value,
                         QuejasFolio: document.querySelector("#QuejasFolio").value,
                         QuejasFecRecepcion: formatoFecha(document.querySelector("#QuejasFecRecepcion").value),
-                        MedioId: document.querySelector("#MedioId").value,
-                        NivelATId: document.querySelector("#NivelATId").value,
+                        MedioId: Number(document.querySelector("#MedioId").value),
+                        NivelATId: Number(document.querySelector("#NivelATId").value),
                         product: document.querySelector("#product").value,
                         CausasId: document.querySelector("#CausasId").value,
                         QuejasPORI: document.querySelector("#QuejasPORI").value,
-                        QuejasEstatus: document.querySelector("#QuejasEstatus").value,
-                        EstadosId: document.querySelector("#EstadosId").value,
-                        QuejasMunId: document.querySelector("#QuejasMunId").value,
-                        QuejasLocId: document.querySelector("#QuejasLocId").value,
-                        QuejasColId: document.querySelector("#QuejasColId").value,
-                        QuejasCP: document.querySelector("#QuejasCP").value,
-                        QuejasTipoPersona: document.querySelector("#QuejasTipoPersona").value,
+                        QuejasEstatus: Number(document.querySelector("#QuejasEstatus").value),
+                        EstadosId: Number(document.querySelector("#EstadosId").value),
+                        QuejasMunId: Number(document.querySelector("#QuejasMunId").value),
+                        QuejasLocId: Number(document.querySelector("#QuejasLocId").value),
+                        QuejasColId: Number(document.querySelector("#QuejasColId").value),
+                        QuejasCP: Number(document.querySelector("#QuejasCP").value),
+                        QuejasTipoPersona: Number(document.querySelector("#QuejasTipoPersona").value),
                         QuejasSexo: document.querySelector("#QuejasSexo").value,
-                        QuejasEdad: document.querySelector("#QuejasEdad").value,
+                        QuejasEdad: Number(document.querySelector("#QuejasEdad").value),
                         QuejasFecResolucion: formatoFecha(document.querySelector("#QuejasFecResolucion").value),
                         QuejasFecNotificacion: formatoFecha(document.querySelector("#QuejasFecNotificacion").value),
                         QuejasRespuesta: document.querySelector("#QuejasRespuesta").value,
-                        QuejasNumPenal: document.querySelector("#QuejasNumPenal").value,
-                        PenalizacionId: document.querySelector("#PenalizacionId").value,
-                    }
+                        QuejasNumPenal: Number(document.querySelector("#QuejasNumPenal").value),
+                        PenalizacionId: Number(document.querySelector("#PenalizacionId").value),
+                    }]
                      
                     const procesaRespuesta = (respuesta) => {
-                        console.log(respuesta, datos)
+                        if (respuesta.errors.length > 0) {
+                            let mensaje = "Ocurrieron los siguientes errores:\\n"
+                            respuesta.errors[0].queja.errors.forEach(error => {
+                                mensaje += error + ".\\n" 
+                            })
+                            return showError(mensaje)
+                        }
+                         
+                        if (respuesta.addedRows === 1) {
+                            return showSuccess("Queja registrada exitosamente.")
+                        }
                     }
-                     
-                    consumeAPI("https://api.condusef.gob.mx/redeco/quejas", procesaRespuesta, datos, "json", "post", null, "Ocurrió un error de comunicación con el portal de REDECO.")
+                                
+                    consumeAPI("https://api.condusef.gob.mx/redeco/quejas", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REDECO.")
                 }
             </script>
         html;

@@ -154,8 +154,8 @@
                                                         <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                                             <thead>
                                                                 <tr>
-                                                                    <th>Recomendo en</th>
-                                                                    <th>Codigo del crédito</th>
+                                                                    <th>Recomendó en</th>
+                                                                    <th>Código del crédito</th>
                                                                     <th>Nombre completo del cliente invitado</th>
                                                                     <th>Número de atrasos</th>
                                                                     <th>Descuento por promoción</th>

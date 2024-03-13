@@ -28,7 +28,7 @@ class Validaciones extends Controller
     {
         $fecha = date('Y-m-d');
         $extraHeader = <<<html
-            <title>Gestion de Telaraña</title>
+            <title>Gestión de Telaraña</title>
             <link rel="shortcut icon" href="/img/logo.png">
         html;
 
