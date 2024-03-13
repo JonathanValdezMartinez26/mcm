@@ -42,7 +42,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <center>
-                    <h4 class="modal-title" id="myModalLabel">Vinculación de invitados</h4>
+                    <h4 class="modal-title" id="myModalLabel">Vincular invitados - Recomienda más paga menos</h4>
                 </center>
             </div>
             <div class="modal-body">
@@ -50,7 +50,7 @@
                     <form id="Add_AHC" onsubmit="vincularInvitado(event)">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="col-md-4">
+                                <div class="col-md-12">
                                     <span id="availability1">Buscar por:</span>
                                 </div>
                                 <div class="col-md-4">
@@ -61,10 +61,11 @@
                                     <input type="radio" name="tipoAnfitrion" id="anfiXcgdns">
                                     <label for="anfiXcgdns">Cliente</label>
                                 </div>
-                                <div class="col-md-2">
+
+                                <div class="col-md-12">
                                     <span id="availability1">Código:</span>
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-7">
                                     <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="Cliente" name="Cliente" value="" placeholder="000000" required>
                                 </div>
                                 <div class="col-md-3">
@@ -78,7 +79,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="col-md-4">
+                                <div class="col-md-12">
                                     <span id="availability1">Buscar por:</span>
                                 </div>
                                 <div class="col-md-4">
@@ -89,10 +90,10 @@
                                     <input type="radio" name="tipoInvitado" id="invXcdgns">
                                     <label for="invXcdgns">Cliente</label>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-12">
                                     <span id="availability1">Código:</span>
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-7">
                                     <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="Invitado" name="Invitado" value="" placeholder="000000" disabled required>
                                 </div>
                                 <div class="col-md-3">
@@ -104,16 +105,20 @@
                                     <span id="availability1">Nombre de invitado:</span>
                                     <input type="text" class="form-control" id="MuestraInvitado" name="MuestraInvitado" value="" readonly>
                                 </div>
+
                             </div>
-                            <div class="col-md-12">
-                                <div class="col-md-4 col-md-offset-4">
+
+                            <div class="col-md-6">
+                                <div class="col-md-12">
                                     <span id="availability1">Fecha de Registro:</span>
                                     <input type="date" class="form-control" id="Fecha" name="Fecha" value=<?= $fecha ?> min=<?= $fechaMin ?> max=<?= $fechaMax ?>>
                                 </div>
+                                <br>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
+                                <br>
                             </div>
                         </div>
                         <div class="modal-footer">

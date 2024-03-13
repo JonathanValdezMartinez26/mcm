@@ -97,7 +97,9 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+
+    <form id="Add" name="Add">
+        <div class="col-md-6">
         <div class="panel panel-body" style="margin-bottom: 0px;">
             <div class="x_title">
                 <h3> Apertura de cuenta ahorro corriente</h3>
@@ -225,7 +227,8 @@
                 <div class="col-md-6"></div>
                 <div class="col-md-5 col-sm-4  tile_stats_count">
                     <div class="count" style="font-size: 35px; color: #368a05">
-                        <button type="button" id="procesar_pagos" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_pago" style="border: 1px solid #c4a603; background: #FFFFFF" data-keyboard="false">
+
+                        <button type="button" name="procesar_pagos" id="procesar_pagos" class="btn btn-primary"  onclick="boton_genera_contrato('<?php echo $Cliente[0]['NOMBRE']; ?>');" style="border: 1px solid #c4a603; background: #FFFFFF" data-keyboard="false">
                             <i class="fa fa-spinner" style="color: #1c4e63"></i>  <span style="color: #1E283D"><b>GUARDAR DATOS Y PROCEDER AL COBRO </b></span>
                         </button>
                     </div>
@@ -236,6 +239,11 @@
 
             </div>
         </div>
+    </form>
+
+    <form id="PDF" name="PDF">
+
+    </form>
     <div class="col-md-2">
         <div class="panel panel-body" style="margin-bottom: 0px;">
             <div class="x_title">
@@ -265,7 +273,7 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form onsubmit="enviar_add(); return false" id="Add">
+                    <form onsubmit="enviar_addssss(); return false" id="Add">
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -277,8 +285,8 @@
 
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="movil">Contrato</label>
-                                    <input type="text" class="form-control" id="medio_registro" aria-describedby="medio_registro" readonly placeholder="" value="">
+                                    <label for="contrato">Contrato</label>
+                                    <input type="text" class="form-control" id="contrato" aria-describedby="contrato" readonly placeholder="">
                                     <small id="emailHelp" class="form-text text-muted">Contrato.</small>
                                 </div>
                             </div>
