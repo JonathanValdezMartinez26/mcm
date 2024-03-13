@@ -104,11 +104,32 @@ html;
            <h3>General WEB AHORRO</h3>
             <ul class="nav side-menu">     
             
-                <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Ahorro <span class="fa fa-chevron-down"></span></a>
+                <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp;Cuentas de Ahorro <span class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
                             <li><a href="/Ahorro/Apertura/">Apertura de Cuentas</a></li> 
-                            <li><a href="/Ahorro/Clientes/">Cuentas Corrientes</a></li> 
+                            <li><a href="/Ahorro/CuentasClientes/">Cuentas de Ahorro</a></li> 
                             <li><a href="/Ahorro/Saldos/">Saldos al día</a></li> 
+                      </ul>
+                </li>
+                <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp;Cuentas de Inversion <span class="fa fa-chevron-down"></span></a>
+                      <ul class="nav child_menu">
+                            <li><a href="/Inversion/Apertura/">Apertura de Cuentas</a></li> 
+                            <li><a href="/Inversion/Clientes/">Cuentas de Ahorro</a></li> 
+                            <li><a href="/Inversion/Saldos/">Saldos al día</a></li> 
+                      </ul>
+                </li>
+                <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp;Cuentas Ahorro (Peques) <span class="fa fa-chevron-down"></span></a>
+                      <ul class="nav child_menu">
+                            <li><a href="/Peques/Apertura/">Apertura de Cuentas</a></li> 
+                            <li><a href="/Peques/Clientes/">Cuentas de Ahorro</a></li> 
+                            <li><a href="/Peques/Saldos/">Saldos al Día</a></li> 
+                      </ul>
+                </li>
+                 <li><a><i class="glyphicon	glyphicon glyphicon-list-alt"> </i>&nbsp; Saldos <span class="fa fa-chevron-down"></span></a>
+                      <ul class="nav child_menu">
+                            <li><a href="/CorteAlDia/Caja/">Caja</a></li> 
+                            <li><a href="/CorteAlDia/Clientes/">Saldos del Día</a></li> 
+                            <li><a href="/CorteAlDia/Saldos/">Corte de Caja Diario</a></li> 
                       </ul>
                 </li>
              </ul>
