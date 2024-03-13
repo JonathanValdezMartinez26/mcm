@@ -73,6 +73,7 @@ class Validaciones extends Controller
             }
             
             const buscaAnfitrion = () => {
+                const xCredito = document.querySelector("#anfiXcred").checked
                 const noAnfitrion = document.querySelector("#Cliente")
                 const nombreAnfitrion = document.querySelector("#MuestraCliente")
                 const noInvitado = document.querySelector("#Invitado")
@@ -98,27 +99,28 @@ class Validaciones extends Controller
                     document.querySelector("#BuscarInvitado").disabled = false
                 }
             
-                const datos = { codigo: noAnfitrion.value }
+                const datos = { codigo: noAnfitrion.value, xCredito }
                 consumeWS("/Validaciones/BuscaCliente", datos, procesaRespuesta)
-            
+                
                 return false
             }
             
             const buscaInvitado = () => {
+                const xCredito = document.querySelector("#invXcred").checked
                 const noInvitado = document.querySelector("#Invitado")
                 const nombreInvitado = document.querySelector("#MuestraInvitado")
                 const anfitrion = document.querySelector("#MuestraCliente")
                 const noAnfitrion = getCodigoCliente(anfitrion.value)
                 
-                if (noInvitado.value === noAnfitrion) return limpiaCampos(noInvitado, nombreInvitado, "El cliente invitado no puede ser el mismo que el cliente anfitrión.")
-                if (noInvitado.value === "") return limpiaCampos(noInvitado, nombreInvitado, "Se debe ingresar un numero de Cliente para buscar un invitado.")
-                if (isNaN(noInvitado.value)) return limpiaCampos(noInvitado, nombreInvitado, "El valor ingresado debe ser un numérico.")
+                if (noInvitado.value === "") return limpiaCampos(noInvitado, nombreInvitado, "Se debe ingresar un código para buscar.")
+                if (isNaN(noInvitado.value)) return limpiaCampos(noInvitado, nombreInvitado, "El valor ingresado debe ser numérico.")
                 if (noInvitado.value.length != 6) return limpiaCampos(noInvitado, nombreInvitado, "El valor ingresado debe ser de 6 dígitos.")
-            
+                
                 const procesaRespuesta = (respuesta) => {
                     const res = JSON.parse(respuesta)
                     if (!res.success) return limpiaCampos(noInvitado, nombreInvitado, res.mensaje)
-            
+                    if (getCodigoCliente(res.datos.nombre) === noAnfitrion) return limpiaCampos(noInvitado, nombreInvitado, "El cliente invitado no puede ser el mismo que el cliente anfitrión.")
+                    
                     nombreInvitado.value = res.datos.nombre
                     noInvitado.value = ""
                     document.querySelector("#btnVincular").disabled = false
@@ -126,7 +128,8 @@ class Validaciones extends Controller
             
                 const datos = {
                     anfitrion: noAnfitrion,
-                    codigo: noInvitado.value
+                    codigo: noInvitado.value,
+                    xCredito
                 }
                 consumeWS("/Validaciones/BuscaCliente", datos, procesaRespuesta)
             

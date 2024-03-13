@@ -132,9 +132,31 @@ class Validaciones
         }
     }
 
+    public static function BuscaCredito($credito)
+    {
+        $query = <<<sql
+        SELECT UNIQUE
+            PRC.CDGCL AS CODIGO
+        FROM
+            PRC
+        WHERE
+            PRC.CDGNS = '{$credito}'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $resultado = $mysqli->queryOne($query);
+            if ($resultado == null) return null;
+            return $resultado['CODIGO'];
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
     public static function BuscaCliente($cliente)
     {
-        $codigo = $cliente['codigo'];
+        $codigo = $cliente['xCredito'] == 'true' ? self::BuscaCredito($cliente['codigo']) : $cliente['codigo'];
+        $param = $cliente['xCredito'] == 'true' ? "crédito" : "cliente";
         $query = <<<sql
         SELECT
             CL.CODIGO,
@@ -148,7 +170,7 @@ class Validaciones
         try {
             $mysqli = Database::getInstance();
             $resultado = $mysqli->queryOne($query);
-            if ($resultado == null) return self::Responde(false, "No se encontró el cliente {$cliente['codigo']}");
+            if ($resultado == null) return self::Responde(false, "No se encontró el $param {$cliente['codigo']}");
             $nombre = "{$resultado['CODIGO']} - {$resultado['NOMBRE']}";
 
             if (array_key_exists('anfitrion', $cliente)) {

@@ -87,7 +87,7 @@ class Promociones extends Controller
             
                 if (datos) configuracion.data = datos
                 if (autorizacion) configuracion.headers = { Authorization: autorizacion }
-            
+                
                 $.ajax(configuracion)
             }
             
@@ -100,34 +100,41 @@ class Promociones extends Controller
                 }
             }
             
-            const registrarPagosPromocion = () => {
-                const tabla = document.getElementById('muestra-promociones')
-                const filas = tabla.getElementsByTagName('tr')
-                const pagos = filas.map(fila => {
-                    const checkbox = fila.getElementsByTagName('input')[0]
+            const registrarPagosPromocion = (e) => {
+                e.preventDefault()
+            
+                const tabla = document.querySelector('#muestra-promociones')
+                const filas = tabla.querySelectorAll('tr')
+                const d = {}
+                d.pagos = []
+                
+                for (let i = 1; i < filas.length; i++) {
+                    const fila = filas[i]
+                    const checkbox = fila.querySelector('input[type="checkbox"]')
                     if (checkbox.checked) {
                         const id = checkbox.id.split('_')[1]
-                        const comentario = document.getElementById('comentario_' + id).value
-                        const descuento = fila.getElementsByTagName('td')[2].innerText
-                        return {
+                        const descuento = fila.querySelector('#desc_' + id).textContent
+                        const coment = fila.querySelector('#coment_' + id)
+                        const comentario = coment ? coment.value : ''
+                        d.pagos.push({
                             id,
                             comentario,
                             descuento
-                        }
+                        })
                     }
-                })
+                }
             
                 consumirServicio(
-                    '/Promociones/registrarPagosPromocion',
+                    '/Promociones/RegistrarPagosPromocion',
                     (respuesta) => {
                         console.log(respuesta)
                     },
                     {
                         metodo: 'POST',
-                        datos: JSON.stringify(pagos),
-                        tipoDatos: 'json'
+                        datos: d
                     }
                 )
+                return false
             }
         </script>
         html;
@@ -257,7 +264,7 @@ class Promociones extends Controller
 
                     $aplica = $value['DIAS_ATRASO'] >= 7 ? 'NO' : 'SI';
                     $cumple = $value['DIAS_ATRASO'] >= 7 ? '' : 'checked';
-                    $comentario = $value['DIAS_ATRASO'] >= 7 && $value['DESCUENTO'] > 0 ? '<input type="text" id="comentario_' . $value['CL_INVITADO'] . '" disabled>' : '';
+                    $comentario = $value['DIAS_ATRASO'] >= 7 && $value['DESCUENTO'] > 0 ? '<input type="text" id="coment_' . $value['CL_INVITADO'] . '" disabled>' : '';
                     $bloqueo = $value['DIAS_ATRASO'] >= 7 && $value['DESCUENTO'] == 0 ? 'disabled' : '';
                     $descuento = number_format((float)$value['DESCUENTO'], 2);
 
@@ -265,7 +272,7 @@ class Promociones extends Controller
                     <tr>
                         <td><input type="checkbox" id="CL_{$value['CL_INVITADO']}" onchange=capturaComentario(event) $cumple $bloqueo> {$value['NOMBRE']}</td>
                         <td>{$aplica}</td>
-                        <td><span>$</span>$descuento</td>
+                        <td><span>$</span><span id="desc_{$value['CL_INVITADO']}">$descuento</span></td>
                         <td>$comentario</td>
                     </tr>
                     html;
@@ -342,9 +349,9 @@ class Promociones extends Controller
         return $tabla_promociones;
     }
 
-    public function registrarPagosPromocion()
+    public function RegistrarPagosPromocion()
     {
-        $resultado = PromocionesDao::registrarPagosPromocion($_POST);
+        $resultado = PromocionesDao::RegistrarPagosPromocion($_POST);
         echo $resultado;
         return $resultado;
     }

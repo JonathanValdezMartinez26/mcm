@@ -64,23 +64,55 @@ class Promociones
     public static function ConsultarDatosClienteRecomienda($cdgns)
     {
         $query = <<<sql
-        SELECT * FROM(
-        SELECT CL_INVITA, (CL.NOMBRE1 || ' ' || CL.NOMBRE2 || ' '|| CL.PRIMAPE || ' '|| CL.SEGAPE ) AS NOMBRE, 
-                PRN.CICLO, PRN.CDGNS, CO.NOMBRE AS SUCURSAL,
-        TO_CHAR(TCD.INICIO ,'YYYY/MM/DD') AS INICIO,
-        TO_CHAR(TCD.FIN ,'YYYY/MM/DD') AS FIN, TCD.PLAZO, 
-        FNCALDIASATRASO('EMPFIN','$cdgns', PRN.CICLO,'G',SYSDATE) AS DIAS_ATRASO, 
-        MAX(PRN.CICLO) AS ULTIMO_CICLO_REGISTRADO 
-        FROM CL_PROMO_TELARANA CPT
-        INNER JOIN CL ON CL.CODIGO = CPT.CL_INVITA
-        INNER JOIN PRN ON PRN.CDGNS = CPT.CDGNS_INVITA 
-        INNER JOIN CO ON PRN.CDGCO = CO.CODIGO
-        INNER JOIN TBL_CIERRE_DIA TCD  ON TCD.CDGCLNS = CPT.CDGNS_INVITA 
-        WHERE CPT.CDGNS_INVITA = '$cdgns' AND PRN.SITUACION = 'E'
-        AND TCD.CICLO = PRN.CICLO 
-        GROUP BY CL_INVITA,  CL.NOMBRE1 ,CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE, PRN.CICLO, PRN.CDGNS,  CO.NOMBRE , TCD.INICIO, TCD.FIN, TCD.PLAZO
-        )
-        GROUP BY CL_INVITA, NOMBRE, CICLO, CDGNS, SUCURSAL, INICIO, FIN, PLAZO, DIAS_ATRASO, ULTIMO_CICLO_REGISTRADO
+        SELECT
+            *
+        FROM
+        (
+            SELECT
+                CL_INVITA,
+                CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
+                PRN.CICLO,
+                PRN.CDGNS,
+                CO.NOMBRE AS SUCURSAL,
+                TO_CHAR(TCD.INICIO, 'YYYY/MM/DD') AS INICIO,
+                TO_CHAR(TCD.FIN, 'YYYY/MM/DD') AS FIN,
+                TCD.PLAZO,
+                FNCALDIASATRASO('EMPFIN', '$cdgns', PRN.CICLO, 'G', SYSDATE) AS DIAS_ATRASO,
+                MAX(PRN.CICLO) AS ULTIMO_CICLO_REGISTRADO
+            FROM
+                CL_PROMO_TELARANA CPT
+                INNER JOIN CL ON CL.CODIGO = CPT.CL_INVITA
+                INNER JOIN PRN ON PRN.CDGNS = CPT.CDGNS_INVITA
+                INNER JOIN CO ON PRN.CDGCO = CO.CODIGO
+                INNER JOIN TBL_CIERRE_DIA TCD ON TCD.CDGCLNS = CPT.CDGNS_INVITA
+            WHERE
+                CPT.CDGNS_INVITA = '$cdgns'
+                AND PRN.SITUACION = 'E'
+                AND TCD.CICLO = PRN.CICLO
+            GROUP BY
+                CL_INVITA,
+                CL.NOMBRE1,
+                CL.NOMBRE2,
+                CL.PRIMAPE,
+                CL.SEGAPE,
+                PRN.CICLO,
+                PRN.CDGNS,
+                CO.NOMBRE,
+                TCD.INICIO,
+                TCD.FIN,
+                TCD.PLAZO
+            )
+        GROUP BY
+            CL_INVITA,
+            NOMBRE,
+            CICLO,
+            CDGNS,
+            SUCURSAL,
+            INICIO,
+            FIN,
+            PLAZO,
+            DIAS_ATRASO,
+            ULTIMO_CICLO_REGISTRADO
         sql;
         //var_dump($query);
         try {
@@ -123,16 +155,24 @@ class Promociones
         }
     }
 
-    public static function registrarPagosPromocion($datos)
+    public static function RegistrarPagosPromocion($datos)
     {
-        $query = <<<sql
-        INSERT INTO CL_PROMO_TELARANA (CDGNS_INVITA, CL_INVITA, CDGNS_INVITADO, CL_INVITADO, CICLO_INVITACION, ESTATUS_PAGADO, FECHA_PAGO, MONTO_PAGO, USUARIO_REGISTRO, FECHA_REGISTRO)
-        VALUES ('$datos[cdgns_invita]', '$datos[cl_invita]', '$datos[cdgns_invitado]', '$datos[cl_invitado]', '$datos[ciclo_invitacion]', '$datos[estatus_pagado]', TO_DATE('$datos[fecha_pago]', 'YYYY/MM/DD'), '$datos[monto_pago]', '$datos[usuario_registro]', SYSDATE)
-        sql;
+        $pagos = $datos['pagos'];
+        $query = "";
+
+        foreach ($pagos as $pago) {
+            $query .= <<<sql
+            INSERT INTO MP
+                (CDGNS, COMENTARIO, DESCUENTO)
+            VALUES
+                ('{$pago['id']}', '{$pago['comentario']}', '{$pago['descuento']}');
+            sql;
+        }
+
         try {
             // $mysqli = Database::getInstance();
             // return $mysqli->insert($query);
-            return self::Responde(true, "Pago registrado correctamente", $datos);
+            return self::Responde(true, "Pago registrado correctamente", $query);
         } catch (Exception $e) {
             return self::Responde(false, "Error al registrar el pago", null, $e->getMessage());
         }

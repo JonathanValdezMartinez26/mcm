@@ -26,12 +26,12 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td style="font-size: 16px;  !important;" colspan="14">
-                                                    <div class="row">
-                                                        <div class="col-md-12" style="padding-top: 11px">
-                                                            <b><?php echo $Recomienda['NOMBRE']; ?> (<?php echo $Recomienda['CL_INVITA']; ?>) </b>
-                                                        </div>
+                                                <td style="font-size: 16px;" colspan="14"></td>
+                                                <div class="row">
+                                                    <div class="col-md-12" style="padding-top: 11px">
+                                                        <b><?php echo $Recomienda['NOMBRE']; ?> (<?php echo $Recomienda['CL_INVITA']; ?>) </b>
                                                     </div>
+                                                </div>
                                                 </td>
 
                                             </tr>
@@ -42,7 +42,7 @@
                                             </tr>
                                             <tr>
                                                 <td style="font-size: 19px" ;="" colspan="10"><?php echo $Recomienda['CDGNS']; ?></td>
-                                                <td style="font-size: 19px; font: " colspan="3">
+                                                <td style="font-size: 19px" colspan="3">
                                                     <?php echo $Recomienda['CICLO'];
                                                     $ciclo = $Recomienda['CICLO'];
                                                     ?>
@@ -207,7 +207,7 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form onsubmit=registrarPagosPromocion() id="Add">
+                    <form onsubmit=registrarPagosPromocion(event) id="Add">
                         <div class="row">
                             <div class="col-md-12">
                                 <table class="table table-striped table-bordered table-hover" id="muestra-promociones">
