@@ -288,4 +288,11 @@ html;
         print_r($mpdf->Output());
         exit;
     }
+
+    ///////////////////////////////////////////////////////////
+    public function CuentasClientes()
+    {
+
+    }
+
 }
