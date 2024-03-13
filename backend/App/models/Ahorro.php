@@ -53,10 +53,54 @@ class Ahorro
 
     public static function AgregaContrato($datos)
     {
-        // return "00001313032024";
-        return json_encode($datos);
+        $noContrato = $datos['credito'] . date_format(date_create($datos['fecha']), 'Ymd');
+
+        $qtyTasa = <<<sql
+        INSERT INTO TASA_AN_AHORRO
+            (CODIGO, DESCRIPCION, TASA, REGISTRO, ESTATUS)
+        VALUES
+            ((SELECT MAX(CODIGO) FROM TASA_AN_AHORRO) + 1, 'Tasa Ahorro Beneficiario 1', '{$datos['tasa']}', '{$datos['fecha']}', 'A')
+        sql;
+
+        $qryPrioritario = <<<sql
+        INSERT INTO PR_PRIORITARIO
+            (CODIGO, DESCRIPCION, COSTO_INSCRIPCION, COSTO_GASTOS_ADMIN, ESTATUS, CDGTAAH)
+        VALUES
+            ((SELECT MAX(CODIGO) FROM PR_PRIORITARIO) + 1, 'PRODUCTO PRIORITARIO 1', '0', '0', 'A', (SELECT MAX(CODIGO) FROM TASA_AN_AHORRO))
+        sql;
+
+        $qrySecundario = <<<sql
+        INSERT INTO PR_SECUNDARIO
+            (CODIGO, DESCRIPCION, COSTO_INSCRIPCION, COSTO_GASTOS_ADMIN, ESTATUS)
+        VALUES
+            ((SELECT MAX(CODIGO) FROM PR_SECUNDARIO) + 1, 'PRODUCTO SECUNDARIO 1', '0', '0', 'A')
+        sql;
+
+        $qryAhorro = <<<sql
+        INSERT INTO ASIGNA_PROD_AHORRO
+            (CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, BENEFICIARIO_1, CDGCT_PARENTESCO_1, BENEFICIARIO_2, CDGCT_PARENTESCO_2)
+        VALUES
+            ('$noContrato', (SELECT CODIGO FROM PRC WHERE CDGN = '{$datos['credito']}'), '{$datos['fecha']}', (SELECT MAX(CODIGO) FROM PR_SECUNDARIO), 'A', '{$datos['beneficiario_1']}', '{$datos['parentesco_1']}', '{$datos['beneficiario_2']}', '{$datos['parentesco_1']}')
+        sql;
+
+        $qryProducto = <<<sql
+        INSERT INTO ASIGNA_SUB_PRODUCTO
+            (CDGCONTRATO, CDGPR_SECUNDARIO, FECHA_APERTURA, ESTATUS)
+        VALUES
+            ('$noContrato', (SELECT MAX(CODIGO) FROM PR_SECUNDARIO), '{$datos['fecha']}', 'A')
+        sql;
+
+        $resDemo = [
+            'contrato' => $noContrato,
+            'tasa' => $qtyTasa,
+            'prioritario' => $qryPrioritario,
+            'secundario' => $qrySecundario,
+            'ahorro' => $qryAhorro,
+            'producto' => $qryProducto
+        ];
+        return json_encode($resDemo);
     }
-    
-    
+
+
     ////////////////////////////////////////////////////////////////////////////////////////
 }

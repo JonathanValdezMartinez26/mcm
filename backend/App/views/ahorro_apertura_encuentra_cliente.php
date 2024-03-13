@@ -89,7 +89,7 @@
         </div>
     </div>
 
-    <form id="Add" name="Add">
+    <form id="registroInicialAhorro" name="registroInicialAhorro">
         <div class="col-md-6">
             <div class="panel panel-body" style="margin-bottom: 0px;">
                 <div class="x_title">
@@ -154,13 +154,12 @@
                                 <input type="number" min=1 max=100 class="form-control" id="porcentaje1" name="porcentaje1" required>
                             </div>
                         </div>
-
                     </div>
                     <div class="col-md-4">
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="tipo">Beneficiario 2 </label>
-                                <input type="text" class="form-control" id="beneficiario1" name="beneficiario1" required>
+                                <input type="text" class="form-control" id="beneficiario2" name="beneficiario2" required>
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -216,10 +215,10 @@
             </div>
         </div>
     </form>
-
+    <!-- 
     <form id="PDF" name="PDF">
 
-    </form>
+    </form> -->
     <div class="col-md-2">
         <div class="panel panel-body" style="margin-bottom: 0px;">
             <div class="x_title">
