@@ -10,11 +10,11 @@
 
             <div class="card col-md-12">
                 <div class="row">
-                    <div class="col-md-7">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="movil">Fecha de registro</label>
-                            <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled="" placeholder="" value="">
-                            <small id="emailHelp" class="form-text text-muted">Fecha de registro en sucursal</small>
+                            <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled="" placeholder="" value="<?php echo $Cliente[0]['REGISTRO']; ?>">
+                            <small id="emailHelp" class="form-text text-muted">Fecha de registro.</small>
                         </div>
                     </div>
 
@@ -29,13 +29,13 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="nombre">Nombre del cliente</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" readonly="" value="<?php echo $Cliente[0]['NOMBRE']; ?>">
+                            <input type="text" class="form-control" id="nom_cliente" name="nombre" readonly="" value="<?php echo $Cliente[0]['NOMBRE']; ?>">
                         </div>
                     </div>
                     <div class="col-md-8">
                         <div class="form-group">
                             <label for="nombre">CURP</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" readonly="" value="<?php echo $Cliente[0]['CURP']; ?>">
+                            <input type="text" class="form-control" id="curp_" name="curp_" readonly="" value="<?php echo $Cliente[0]['CURP']; ?>">
                         </div>
                     </div>
 
@@ -43,23 +43,18 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="nombre">Edad</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" readonly="" value="27 Años">
+                            <input type="text" class="form-control" id="edad" name="edad" readonly="" value="<?php echo $Cliente[0]['EDAD']; ?> Años">
                         </div>
                     </div>
 
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="nombre">Dirección</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" readonly="" value="<?php echo $Cliente[0]['']; ?> SAN PEDRO DE LOS PINOS, CDMX">
+                            <textarea type="text" class="form-control" id="direccion" name="direccion"  rows="3" cols="50" readonly><?php echo $Cliente[0]['DIRECCION']; ?>.
+                            </textarea>
                         </div>
                     </div>
 
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="nombre">Actividad ecónomica</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" readonly="" value="<?php echo $Cliente[0]['']; ?> VENTA - TORTILLAS">
-                        </div>
-                    </div>
                 </div>
                 <hr>
                 <div class="row">
@@ -124,6 +119,7 @@
                         <select class="form-control mr-sm-3" autofocus="" type="select" id="tipo" name="tipo">
                             <option value="P">5 %</option>
                         </select>
+                        <small id="emailHelp" class="form-text text-muted">Rendimiento.</small>
                     </div>
                 </div>
 
@@ -131,7 +127,7 @@
                     <div class="form-group">
                         <label for="tipo">Monto minimo</label>
                         <input onkeydown="return false" type="text" class="form-control" id="Fecha" name="Fecha" value="$100.00" readonly>
-                        <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
+                        <small id="emailHelp" class="form-text text-muted">Ahorro para cuenta corriente.</small>
                     </div>
                 </div>
 
@@ -139,7 +135,7 @@
                     <div class="form-group">
                         <label for="tipo">Monto maximo</label>
                         <input onkeydown="return false" type="text" class="form-control" id="Fecha" name="Fecha" min="2024-03-07" max="2024-03-11" value="NO APLICA" readonly>
-                        <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
+                        <small id="emailHelp" class="form-text text-muted">Ahorro para cuenta corriente.</small>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -216,7 +212,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="Fecha">Manejo de cuenta</label>
                         <select class="form-control mr-sm-3" autofocus="" type="select" id="tipo" name="tipo" readonly="">
@@ -226,7 +222,7 @@
                 </div>
 
 
-                <div class="col-md-5"></div>
+                <div class="col-md-6"></div>
                 <div class="col-md-5 col-sm-4  tile_stats_count">
                     <div class="count" style="font-size: 35px; color: #368a05">
                         <button type="button" id="procesar_pagos" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_pago" style="border: 1px solid #c4a603; background: #FFFFFF" data-keyboard="false">
@@ -281,9 +277,9 @@
 
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="movil">Medio de registro</label>
-                                    <input type="text" class="form-control" id="medio_registro" aria-describedby="medio_registro" disabled placeholder="" value="CAJERA">
-                                    <small id="emailHelp" class="form-text text-muted">Medio de registro del pago.</small>
+                                    <label for="movil">Contrato</label>
+                                    <input type="text" class="form-control" id="medio_registro" aria-describedby="medio_registro" readonly placeholder="" value="">
+                                    <small id="emailHelp" class="form-text text-muted">Contrato.</small>
                                 </div>
                             </div>
 
