@@ -108,7 +108,8 @@ html;
                       <ul class="nav child_menu">
                             <li><a href="/Ahorro/Apertura/">Ahorro Corriente</a></li> 
                             <li><a href="/Ahorro/CuentasClientes/">Inversion Plazo Fijo</a></li> 
-                            <li><a href="/Ahorro/Saldos/">Ahorro Peques</a></li> 
+                            <li><a href="/Ahorro/Saldos/">Ahorro Peques</a></li>
+                            <li><a href="/CalculadoraRendimiento/Ahorro/">Calculadora de rendimiento</a></li> 
                       </ul>
                 </li>
                      
@@ -122,9 +123,9 @@ html;
                 
                  <li><a><i class="glyphicon	glyphicon glyphicon-dollar"> </i>&nbsp; Incentivos <span class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
-                            <li><a href="/CajaAhorro/">Realizar Cobros</a></li> 
-                            <li><a href="/CorteAlDia/Clientes/">Saldos del Día</a></li> 
-                            <li><a href="/CorteAlDia/Saldos/">Corte de Caja Diario</a></li> 
+                            <li><a href="/Incentivos/">Realizar Cobros</a></li> 
+                            <li><a href="/Incentivos/Calculo/">Calculo de comisiones</a></li> 
+                            <li><a href="/Incentivos/Saldos/">Corte de Caja Diario</a></li> 
                       </ul>
                 </li>
                 

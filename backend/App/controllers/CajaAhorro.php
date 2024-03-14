@@ -67,6 +67,7 @@ html;
 
         $BuscaCliente = CajaAhorroDao::ConsultaClientesProducto($cliente);
 
+
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
 
