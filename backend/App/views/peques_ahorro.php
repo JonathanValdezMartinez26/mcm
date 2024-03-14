@@ -10,6 +10,44 @@
                     </div>
                     <div class="card col-md-12">
                         <div class="row">
+                            <p>Para poder aperturar una cuenta de Ahorro Peque el CO-TITULAR debe tener una cuenta activa de Ahorro Corriente, si el CO-TITULAR no tienen una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>
+                                .  </p>
+                            <hr>
+                            <div class="col-md-9">
+                                <label for="movil">Clave de contrato o código del cliente (SICAFIN)</label>
+                                <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="Cliente" name="Cliente" value="" placeholder="000000" required>
+                            </div>
+
+                            <div class="col-md-3" style="padding-top: 25px">
+                                <button type="button" class="btn btn-primary" onclick="buscaCliente()">
+                                    <i class="fa fa-search"></i> Buscar
+                                </button>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="movil">Fecha de registro</label>
+                                    <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled="" placeholder="" value="<?php echo $Cliente[0]['REGISTRO']; ?>">
+                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="cdgns">Clave de cliente</label>
+                                    <input type="number" class="form-control" id="cdgns" name="cdgns" readonly="" value="003011">
+                                    <small id="emailHelp" class="form-text text-muted">Número de acreditado MCM</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nombre">Primer nombre*</label>
+                                    <input type="text" class="form-control" id="nom_cliente" name="nombre1" >
+                                </div>
+                            </div>
+
+                        </div>
+                        <hr>
+                        <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="movil">Fecha de registro</label>
