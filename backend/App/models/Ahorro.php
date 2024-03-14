@@ -9,6 +9,18 @@ use Exception;
 
 class Ahorro
 {
+    public static function Responde($respuesta, $mensaje, $datos = null, $error = null)
+    {
+        $res = array(
+            "success" => $respuesta,
+            "mensaje" => $mensaje
+        );
+
+        if ($datos != null) $res['datos'] = $datos;
+        if ($error != null) $res['error'] = $error;
+
+        return json_encode($res);
+    }
 
     public static function ConsultaClientes($cliente)
     {
@@ -105,6 +117,63 @@ class Ahorro
             'producto' => $qryProducto
         ];
         return json_encode($resDemo);
+    }
+
+    public static function AddPagoApertura($datos)
+    {
+        $qryTicket = <<<sql
+        INSERT INTO TICKETS_AHORRO
+            (CODIGO, FECHA, CDG_CONTRATO)
+        VALUES
+            ((SELECT NVL(MAX(CODIGO),0) FROM TICKETS_AHORRO) + 1, SYSDATE, :contrato)
+        sql;
+
+        $datosTicket = [
+            'contrato' => $datos['contrato'],
+        ];
+
+        try {
+            $mysqli = Database::getInstance();
+            $ticket = $mysqli->insertar($qryTicket, $datosTicket, true);
+            if ($ticket) return self::Responde(false, "Ocurrió un error al registrar el pago de apertura");
+
+            $qryPago = <<<sql
+            INSERT INTO MOVIMIENTOS_AHORRO
+                (ID_MOV, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, CDGPE, MOVIMIENTO, DESCRIPCION)
+            VALUES
+                ((SELECT MAX(ID_MOV) FROM MOVIMIENTOS_AHORRO) + 1, ?, :fecha_pago, :contrato, :monto, 'CDGPE_EJECUTIVO', :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(CODIGO) FROM TICKETS_AHORRO));
+            
+            sql;
+
+            $registros = [
+                [
+                    'fecha_pago' => $datos['fecha_pago'],
+                    'tipo_pago' => $datos['tipo_pago'],
+                    'contrato' => $datos['contrato'],
+                    'monto' => $datos['monto_ahorro'],
+                    'movimiento' => '1',
+                    'ticket' => $ticket,
+                ],
+                [
+                    'fecha_pago' => $datos['fecha_pago'],
+                    'tipo_pago' => $datos['tipo_pago'],
+                    'contrato' => $datos['contrato'],
+                    'monto' => $datos['monto_apertura'],
+                    'movimiento' => '0',
+                    'ticket' => $ticket,
+                ]
+            ];
+
+            try {
+                $mysqli = Database::getInstance();
+                if ($mysqli->insertaMultiple($qryPago, $registros)) return self::Responde(true, "Pago de apertura registrado correctamente");
+                return self::Responde(false, "Ocurrió un error al registrar el pago de apertura");
+            } catch (Exception $e) {
+                return self::Responde(false, "Ocurrió un error al registrar el pago de apertura");
+            }
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al registrar el pago de apertura");
+        }
     }
 
 

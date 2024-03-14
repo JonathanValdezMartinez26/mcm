@@ -123,6 +123,7 @@ class Ahorro extends Controller
                     
                     document.querySelector("#contrato").value = contrato.contrato
                     document.querySelector("#codigo_cl").value = noCredito
+                    //document.querySelector("#modal_agregar_pago").modal("show")
                     $("#modal_agregar_pago").modal("show")
                     
                     boton_contrato(contrato.contrato)
@@ -131,6 +132,33 @@ class Ahorro extends Controller
                 console.error(error)
             }
             return false
+        }
+                    
+        const pagoApertura = (e) => {
+          e.preventDefault()
+          const datos = $("#AddPagoApertura").serializeArray()
+                    
+          $.ajax({
+            type: "POST",
+            url: "/Ahorro/pagoApertura/",
+            data: $.param(datos),
+            success: (respuesta) => {
+              respuesta = JSON.parse(respuesta)
+              console.log(respuesta)
+               
+              if (respuesta.success) {
+                showSuccess(respuesta.mensaje)
+                document.querySelector("#registroInicialAhorro").reset()
+                $("#modal_agregar_pago").modal("hide")
+              } else {
+                showError(respuesta.mensaje)
+              }
+            },
+            error: (error) => {
+              console.error(error)
+              showError("Ocurrió un error al registrar el pago de apertura.")
+            }
+          })
         }
     </script>
     html;
@@ -154,6 +182,13 @@ class Ahorro extends Controller
   {
     $contrato = AhorroDao::AgregaContratoAhorro($_POST);
     echo $contrato;
+  }
+
+  public function PagoApertura()
+  {
+    $pago = AhorroDao::AddPagoApertura($_POST);
+    echo $pago;
+    return $pago;
   }
 
   public function Imprime_Contrato($numero_contrato)

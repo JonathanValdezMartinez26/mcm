@@ -233,6 +233,7 @@
     </div>
 </div>
 
+<!-- <div class="modal fade in" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block; padding-right: 15px;"> -->
 <div class="modal fade" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -244,7 +245,7 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form onsubmit="return false" id="Add">
+                    <form id="AddPagoApertura">
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -257,7 +258,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="contrato">Contrato</label>
-                                    <input type="text" class="form-control" id="contrato" aria-describedby="contrato" readonly placeholder="">
+                                    <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
                                     <small id="emailHelp" class="form-text text-muted">Contrato.</small>
                                 </div>
                             </div>
@@ -265,7 +266,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="codigo_cl">Número de cliente</label>
-                                    <input type="number" class="form-control" id="codigo_cl" name="codigo_cl" readonly value="<?php echo $credito; ?>">
+                                    <input type="number" class="form-control" id="codigo_cl" name="codigo_cl" value="<?php echo $credito; ?>" readonly>
                                     <small id="emailHelp" class="form-text text-muted">Número del crédito.</small>
                                 </div>
                             </div>
@@ -273,17 +274,16 @@
                             <div class="col-md-7">
                                 <div class="form-group">
                                     <label for="nombre">Nombre del Cliente</label>
-                                    <input type="text" class="form-control" id="nombre" name="nombre" readonly value="<?php echo $Cliente[0]['NOMBRE']; ?>">
+                                    <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo $Cliente[0]['NOMBRE']; ?>" readonly>
                                 </div>
                             </div>
 
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="curp">CURP</label>
-                                    <input type="text" class="form-control" id="curp" name="curp" readonly value="<?php echo $Cliente[0]['CURP']; ?>">
+                                    <input type="text" class="form-control" id="curp" name="curp" value="<?php echo $Cliente[0]['CURP']; ?>" readonly>
                                 </div>
                             </div>
-
 
                             <div class="col-sm-12">
                                 <table class="table table-striped table-bordered table-hover dataTable no-footer">
@@ -297,7 +297,9 @@
                                             <td style="padding: 0px !important;">
                                                 <div class="col-md-12" style="padding-top: 9px;">
                                                     <div class="form-group">
-                                                        <input autofocus type="text" class="form-control" id="apertura_cuenta" name="apertura_cuenta" autocomplete="off" max="10000" value="APERTURA DE CUENTA - INSCRIPCIÓN" readonly>
+                                                        <select class="form-control" name="tipo_pago" id="tipo_pago" disabled>
+                                                            <option value="CDG_TIPO_PAGO_1">APERTURA DE CUENTA - INSCRIPCIÓN</option>
+                                                        </select>
                                                         <small id="emailHelp" class="form-text text-muted">Monto fijo.</small>
                                                     </div>
                                                 </div>
@@ -310,7 +312,7 @@
                                                 </div>
                                                 <div class="col-md-9" style="padding-top: 9px;">
                                                     <div class="form-group">
-                                                        <input autofocus type="text" class="form-control" id="monto_apertura" name="monto_apertura" autocomplete="off" max="10000" value="50" readonly>
+                                                        <input type="text" class="form-control" id="monto_apertura" name="monto_apertura" value="50" readonly>
                                                     </div>
                                                 </div>
                                             </td>
@@ -319,7 +321,9 @@
                                             <td style="padding: 0px !important;">
                                                 <div class="col-md-12" style="padding-top: 9px;">
                                                     <div class="form-group">
-                                                        <input autofocus type="text" class="form-control" id="monto" name="monto" autocomplete="off" max="10000" value="CAPITAL INICIAL - CUENTA CORRIENTE" readonly>
+                                                        <select class="form-control" name="tipo_pago" id="tipo_pago" disabled>
+                                                            <option value="CDG_TIPO_PAGO_2">CAPITAL INICIAL - CUENTA CORRIENTE</option>
+                                                        </select>
                                                         <small id="emailHelp" class="form-text text-muted">El monto debe ser mayor a $100.00 MN.</small>
                                                     </div>
                                                 </div>
@@ -332,7 +336,7 @@
                                                 </div>
                                                 <div class="col-md-9" style="padding-top: 9px;">
                                                     <div class="form-group">
-                                                        <input autofocus type="text" class="form-control" id="monto_ahorro" name="monto_ahorro" autocomplete="off" max="10000">
+                                                        <input type="number" class="form-control" id="monto_ahorro" name="monto_ahorro" min=100 max=1000000>
                                                     </div>
                                                 </div>
                                             </td>
@@ -342,7 +346,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                                <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
+                                <button type="button" name="agregar" class="btn btn-primary" value="enviar" onclick=pagoApertura(event)><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
                             </div>
                         </div>
                     </form>

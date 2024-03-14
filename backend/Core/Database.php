@@ -87,11 +87,29 @@ class Database
         }
     }
 
-    public function insertar($sql, $datos)
+    public function insertar($sql, $datos, $getID = false)
     {
         try {
-            return $this->_mysqli->prepare($sql)->execute($datos);
+            if ($getID === false)  return $this->_mysqli->prepare($sql)->execute($datos);
+
+            return $this->_mysqli->prepare($sql)->execute($datos); //? $this->_mysqli->lastInsertId() : "Error sql :" . $sql . "\nDatos : " . print_r($datos, 1);
         } catch (\PDOException $e) {
+            return "Error sql : " . $e->getMessage() . "\nSql : $sql";
+        }
+    }
+
+    public function insertaMultiple($sql, $registros)
+    {
+        $this->_mysqli->beginTransaction();
+        try {
+            $stmt = $this->_mysqli->prepare($sql);
+            foreach ($registros as $valores) {
+                $stmt->execute($valores);
+            }
+            $this->_mysqli->commit();
+            return true;
+        } catch (\PDOException $e) {
+            $this->_mysqli->rollBack();
             echo "Error sql : " . $e->getMessage() . "\nSql : $sql";
             return false;
         }
