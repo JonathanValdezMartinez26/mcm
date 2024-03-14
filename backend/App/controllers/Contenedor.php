@@ -101,6 +101,7 @@ html;
 
       if ($this->__usuario == 'AMGM') {
           $menu .= <<<html
+          <hr>
            <h3>General WEB AHORRO</h3>
             <ul class="nav side-menu">     
             
@@ -147,6 +148,7 @@ html;
 
 
       $menu .= <<<html
+      <hr>
               <h3>General </h3>
               <ul class="nav side-menu">       
 html;
