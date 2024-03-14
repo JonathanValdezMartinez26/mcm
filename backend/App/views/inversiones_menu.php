@@ -6,7 +6,7 @@
             <div class="col-md-4">
                 <div class="panel panel-body" style="margin-bottom: 0px;">
                     <div class="x_title">
-                        <h3>Alta del cliente (Peque)</h3>
+                        <h3>Mis movimientos del día</h3>
                     </div>
                     <div class="card col-md-12">
                         <div class="row">
@@ -153,52 +153,28 @@
             <form id="registroInicialAhorro" name="registroInicialAhorro">
                 <div class="col-md-8">
                     <div class="panel panel-body" style="margin-bottom: 0px;">
-                        <div class="x_title">
-                            <h3> Apertura de cuenta Ahorro Peques</h3>
-                        </div>
-                        <p><b><span class="fa fa-sticky-note"></span> Datos básicos de apertura</b></p>
-                        <br>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="Fecha">Fecha de apertura</label>
-                                    <input onkeydown="return false" type="date" class="form-control" id="fecha" name="fecha" min="2024-03-07" max="2024-03-11" value="2024-03-11">
-                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
+                        <nav class="navbar navbar-date-picker">
+                            <div class="container-fluid">
+                                <div class="navbar-header">
+                                    <a class="navbar-brand" href="#">WebSiteName</a>
                                 </div>
+                                <ul class="nav navbar-nav">
+                                    <li class="active"><a href="#">Home</a></li>
+                                    <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Page 1 <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">Page 1-1</a></li>
+                                            <li><a href="#">Page 1-2</a></li>
+                                            <li><a href="#">Page 1-3</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="#">Page 2</a></li>
+                                </ul>
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                                </ul>
                             </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label for="tipo">Tasa Anual</label>
-                                    <select class="form-control mr-sm-3" autofocus="" type="select" id="tasa" name="tasa">
-                                        <option value="5">5 %</option>
-                                    </select>
-                                    <small id="emailHelp" class="form-text text-muted">Rendimiento.</small>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">Monto mínimo</label>
-                                    <input onkeydown="return false" type="text" class="form-control" id="monto_min" name="monto_min" value="$100.00" readonly>
-                                    <small id="emailHelp" class="form-text text-muted">Ahorro para cuenta corriente.</small>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">Monto máximo</label>
-                                    <input onkeydown="return false" type="text" class="form-control" id="monto_max" name="monto_max" value="NO APLICA" readonly>
-                                    <small id="emailHelp" class="form-text text-muted">Ahorro para cuenta corriente.</small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">Monto máximo</label>
-                                    <input onkeydown="return false" type="text" class="form-control" id="monto_max" name="monto_max" value="NO APLICA" readonly>
-                                    <small id="emailHelp" class="form-text text-muted">Ahorro para cuenta corriente.</small>
-                                </div>
-                            </div>
-
-                        </div>
+                        </nav>
                     </div>
                 </div>
             </form>
