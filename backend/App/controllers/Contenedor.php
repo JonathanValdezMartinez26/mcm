@@ -101,14 +101,15 @@ html;
 
       if ($this->__usuario == 'AMGM') {
           $menu .= <<<html
+          <hr>
            <h3>General WEB AHORRO</h3>
             <ul class="nav side-menu">     
             
                 <li><a><i class="glyphicon glyphicon-folder-open"></i>&nbsp; Apertura de Cuentas <span class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
                             <li><a href="/Ahorro/Apertura/">Ahorro Corriente</a></li> 
-                            <li><a href="/Ahorro/CuentasClientes/">Inversion Plazo Fijo</a></li> 
-                            <li><a href="/Ahorro/Saldos/">Ahorro Peques</a></li>
+                            <li><a href="/Inversiones/">Inversion Plazo Fijo</a></li> 
+                            <li><a href="/Peques/Apertura/">Ahorro Peques</a></li>
                             <li><a href="/CalculadoraRendimiento/Ahorro/">Calculadora de rendimiento</a></li> 
                       </ul>
                 </li>
@@ -121,7 +122,7 @@ html;
                       </ul>
                 </li>
                 
-                 <li><a><i class="glyphicon	glyphicon glyphicon-dollar"> </i>&nbsp; Incentivos <span class="fa fa-chevron-down"></span></a>
+                 <li><a><i class="glyphicon glyphicon-gift"> </i>&nbsp; Incentivos <span class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
                             <li><a href="/Incentivos/">Realizar Cobros</a></li> 
                             <li><a href="/Incentivos/Calculo/">Calculo de comisiones</a></li> 
@@ -129,7 +130,10 @@ html;
                       </ul>
                 </li>
                 
-                <li><a><i class="glyphicon	glyphicon glyphicon-dollar"> </i>&nbsp; Promociones <span class="fa fa-chevron-down"></span></a>
+                <li><a href="/PromocionesAhorro/"><i class="glyphicon glyphicon-hourglass"> </i>&nbsp; Promociones </a>
+                   
+                </li>
+                <li><a><i class="glyphicon glyphicon-tasks"> </i>&nbsp; Cuentas y Saldos ADMIN<span class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
                             <li><a href="/CajaAhorro/">Realizar Cobros</a></li> 
                             <li><a href="/CorteAlDia/Clientes/">Saldos del Día</a></li> 
@@ -144,6 +148,7 @@ html;
 
 
       $menu .= <<<html
+      <hr>
               <h3>General </h3>
               <ul class="nav side-menu">       
 html;
