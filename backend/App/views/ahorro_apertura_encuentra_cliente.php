@@ -183,7 +183,7 @@
                         <div class="form-group">
                             <label for="Fecha">Sucursal</label>
                             <select class="form-control mr-sm-3" id="sucursal" name="sucursal">
-                                <option value="1514">SUCURSAL DE PRUEBA</option>
+                                <option value="1514">CORPORATIVO</option>
                             </select>
                         </div>
                     </div>
@@ -191,7 +191,7 @@
                         <div class="form-group">
                             <label for="Fecha">Ejecutivo</label>
                             <select class="form-control mr-sm-3" id="ejecutivo" name="ejecutivo">
-                                <option value="135">Toñito Cesario</option>
+                                <option value="135">Ejecutivo Prueba</option>
                             </select>
                         </div>
                     </div>
@@ -206,7 +206,7 @@
                     <div class="col-md-6"></div>
                     <div class="col-md-5 col-sm-4  tile_stats_count">
                         <div class="count" style="font-size: 35px; color: #368a05">
-                            <button type="button" name="procesar_pagos" id="procesar_pagos" class="btn btn-primary" onclick="boton_genera_contrato('<?php echo $Cliente[0]['NOMBRE']; ?>');" style="border: 1px solid #c4a603; background: #FFFFFF" data-keyboard="false">
+                            <button type="button" name="procesar_pagos" id="procesar_pagos" class="btn btn-primary" onclick="boton_genera_contrato(event, '<?php echo $Cliente[0]['NOMBRE']; ?>');" style="border: 1px solid #c4a603; background: #FFFFFF" data-keyboard="false">
                                 <i class="fa fa-spinner" style="color: #1c4e63"></i> <span style="color: #1E283D"><b>GUARDAR DATOS Y PROCEDER AL COBRO </b></span>
                             </button>
                         </div>
@@ -215,10 +215,10 @@
             </div>
         </div>
     </form>
-    <!-- 
+
     <form id="PDF" name="PDF">
 
-    </form> -->
+    </form>
     <div class="col-md-2">
         <div class="panel panel-body" style="margin-bottom: 0px;">
             <div class="x_title">
@@ -230,13 +230,10 @@
                     <div><span class="label label-success"><span class="fa fa-check"></span></span> Apertura de cuenta</div>
                     <div><span class="label label-success"><span class="fa fa-check"></span></span> Pago de inscripción</div>
                     <div><span class="label label-warning"><span class="fa fa-clock-o"></span></span> Gastos de administración</div>
-
                 </td>
             </div>
-
         </div>
     </div>
-</div>
 </div>
 
 <div class="modal fade" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -346,17 +343,14 @@
                                     </tbody>
                                 </table>
                             </div>
-
-
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                                <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
+                            </div>
                         </div>
+                    </form>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
-                </form>
-            </div>
-
         </div>
     </div>
 </div>

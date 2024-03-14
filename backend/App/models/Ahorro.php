@@ -10,7 +10,7 @@ use Exception;
 class Ahorro
 {
 
-    public static function ConcultaClientes($cliente)
+    public static function ConsultaClientes($cliente)
     {
 
         $query_valida_es_cliente_ahorro = <<<sql

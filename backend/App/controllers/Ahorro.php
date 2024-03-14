@@ -7,6 +7,7 @@ defined("APPPATH") or die("Access denied");
 use \Core\View;
 use \Core\Controller;
 use \App\models\Ahorro as AhorroDao;
+use Mpdf\mPDF;
 
 class Ahorro extends Controller
 {
@@ -61,15 +62,32 @@ class Ahorro extends Controller
         })
     
         function boton_contrato(numero_contrato) {
-            $("#registroInicialAhorro").attr("action", "/Ahorro/Imprime_Contrato/" + numero_contrato + "/")
-            $("#registroInicialAhorro").attr("target", "_blank")
-            $("#registroInicialAhorro").submit()
+          $("#registroInicialAhorro").attr("action", "/Ahorro/Imprime_Contrato/" + numero_contrato + "/")
+          $("#registroInicialAhorro").attr("target", "_blank")
+          $("#registroInicialAhorro").submit()
         }
+    
+    
+        // const boton_contrato = async (numero_contrato) => {
+        //   await $.ajax({
+        //       type: 'GET',
+        //       url: '/Ahorro/Imprime_Contrato/' + numero_contrato,
+        //       dataType: 'blob',
+        //       success: (pdfBlob) => {
+        //           var pdfUrl = URL.createObjectURL(pdfBlob);
+        //           window.open(pdfUrl, '_blank');
+        //       },
+        //       error: (xhr, status, error) => {
+        //           console.error('Error al obtener el PDF:', error);
+        //       }
+        //   });
+        // }
         
         const showError = (mensaje) => swal(mensaje, { icon: "error" })
-        const showSuccess = (mensaje) => swal(mensaje, { icon: "success" })
+        const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })
         
-        const boton_genera_contrato = async (cliente) => {
+        const boton_genera_contrato = async (e, cliente) => {
+            e.preventDefault()
             try {
                 const continuar = await swal({
                     title:
@@ -98,34 +116,33 @@ class Ahorro extends Controller
                         )
                     
                     const contrato = JSON.parse(respuesta)
-                    showSuccess(
-                        "Generamos correctamente el contrato " +
-                        contrato.contrato +
-                            " del cliente " +
-                            cliente +
-                            " capture su inversión de ahorro inicial."
-                    )
-                    boton_contrato(contrato.contrato)
+                    const notOK = await showSuccess("Se ha generado el contrato: " + contrato.contrato)
+                    
                     document.querySelector("#contrato").value = contrato.contrato
                     $("#modal_agregar_pago").modal("show")
+                    boton_contrato(contrato.contrato)
                 }
             } catch (error) {
                 console.error(error)
             }
+            return false
         }
     </script>
     html;
 
     $cliente = $_GET['Cliente'];
-    $BuscaCliente = AhorroDao::ConcultaClientes($cliente);
+    $BuscaCliente = AhorroDao::ConsultaClientes($cliente);
     View::set('header', $this->_contenedor->header($extraHeader));
     View::set('footer', $this->_contenedor->footer($extraFooter));
 
-    if ($cliente == '') return View::render("ahorro_apertura_inicio");
-    if ($BuscaCliente == '') return View::render("ahorro_apertura_inicio");
-
-    View::set('Cliente', $BuscaCliente);
-    View::render("ahorro_apertura_encuentra_cliente");
+    if ($cliente == '') {
+      View::render("ahorro_apertura_inicio");
+    } else if ($BuscaCliente == '') {
+      View::render("ahorro_apertura_inicio");
+    } else {
+      View::set('Cliente', $BuscaCliente);
+      View::render("ahorro_apertura_encuentra_cliente");
+    }
   }
 
   public function AgregaContrato()
