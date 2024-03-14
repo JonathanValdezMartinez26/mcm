@@ -62,27 +62,29 @@ class Ahorro extends Controller
         })
     
         function boton_contrato(numero_contrato) {
-          $("#registroInicialAhorro").attr("action", "/Ahorro/Imprime_Contrato/" + numero_contrato + "/")
-          $("#registroInicialAhorro").attr("target", "_blank")
-          $("#registroInicialAhorro").submit()
+          const host = window.location.origin
+          
+          let plantilla = "<!DOCTYPE html>"
+          plantilla += '<html lang="es">'
+          plantilla += '<head>'
+          plantilla += '<meta charset="UTF-8">'
+          plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+          plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
+          plantilla += '<title>Contrato ' + numero_contrato + '</title>'
+          plantilla += '</head>'
+          plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
+          plantilla +=
+              '<iframe src="' + host + '/Ahorro/Imprime_Contrato/' +
+              numero_contrato +
+              '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
+          plantilla += "</body>"
+          plantilla += "</html>"
+      
+          const blob = new Blob([plantilla], { type: "text/html" })
+          const url = URL.createObjectURL(blob)
+          window.open(url, "_blank")
         }
     
-    
-        // const boton_contrato = async (numero_contrato) => {
-        //   await $.ajax({
-        //       type: 'GET',
-        //       url: '/Ahorro/Imprime_Contrato/' + numero_contrato,
-        //       dataType: 'blob',
-        //       success: (pdfBlob) => {
-        //           var pdfUrl = URL.createObjectURL(pdfBlob);
-        //           window.open(pdfUrl, '_blank');
-        //       },
-        //       error: (xhr, status, error) => {
-        //           console.error('Error al obtener el PDF:', error);
-        //       }
-        //   });
-        // }
-        
         const showError = (mensaje) => swal(mensaje, { icon: "error" })
         const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })
         
@@ -101,8 +103,9 @@ class Ahorro extends Controller
                 })
         
                 if (continuar) {
+                    const noCredito = document.querySelector("#cdgns").value
                     const datos = $("#registroInicialAhorro").serializeArray()
-                    datos.push({ name: "credito", value: document.querySelector("#cdgns").value })
+                    datos.push({ name: "credito", value: noCredito })
         
                     const respuesta = await $.ajax({
                         type: "POST",
@@ -119,7 +122,9 @@ class Ahorro extends Controller
                     const notOK = await showSuccess("Se ha generado el contrato: " + contrato.contrato)
                     
                     document.querySelector("#contrato").value = contrato.contrato
+                    document.querySelector("#codigo_cl").value = noCredito
                     $("#modal_agregar_pago").modal("show")
+                    
                     boton_contrato(contrato.contrato)
                 }
             } catch (error) {
@@ -147,16 +152,12 @@ class Ahorro extends Controller
 
   public function AgregaContrato()
   {
-    $contrato = AhorroDao::AgregaContrato($_POST);
+    $contrato = AhorroDao::AgregaContratoAhorro($_POST);
     echo $contrato;
   }
 
   public function Imprime_Contrato($numero_contrato)
   {
-    $mpdf = new \mPDF('c');
-    $mpdf->defaultPageNumStyle = 'I';
-    $mpdf->h2toc = array('H5' => 0, 'H6' => 1);
-
     $style = <<<html
       <style>
      
@@ -279,14 +280,17 @@ html;
 html;
 
 
-    $fechaActual = date('Y-m-d H:i:s');
-
-    $mpdf->SetTitle("Contrato: " . $numero_contrato);
+    $nombreArchivo = "Contrato " . $numero_contrato;
+    $mpdf = new \mPDF('c');
+    $mpdf->defaultPageNumStyle = 'I';
+    $mpdf->h2toc = array('H5' => 0, 'H6' => 1);
+    $mpdf->SetTitle($nombreArchivo);
     $mpdf->WriteHTML($style, 1);
     $mpdf->WriteHTML($tabla, 2);
-    $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:opensans;">Este recibo de pago se genero el día ' . $fechaActual . '<br>{PAGENO}</div>');
+    $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:opensans;">Este recibo de pago se genero el día ' . date('Y-m-d H:i:s') . '<br>{PAGENO}</div>');
 
-    print_r($mpdf->Output());
+    $mpdf->Output($nombreArchivo . '.pdf', 'I');
+
     exit;
   }
 

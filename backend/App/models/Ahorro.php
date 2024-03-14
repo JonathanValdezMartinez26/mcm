@@ -51,30 +51,29 @@ class Ahorro
         }
     }
 
-    public static function AgregaContrato($datos)
+    public static function GetTasaAnual()
+    {
+        $query_tasa = <<<sql
+        SELECT
+            CODIGO,
+            TASA
+        FROM
+            TASA_AN_AHORRO
+        WHERE
+            ESTATUS = 'A'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryAll($query_tasa);
+        } catch (Exception $e) {
+            return "";
+        }
+    }
+
+    public static function AgregaContratoAhorro($datos)
     {
         $noContrato = $datos['credito'] . date_format(date_create($datos['fecha']), 'Ymd');
-
-        $qtyTasa = <<<sql
-        INSERT INTO TASA_AN_AHORRO
-            (CODIGO, DESCRIPCION, TASA, REGISTRO, ESTATUS)
-        VALUES
-            ((SELECT MAX(CODIGO) FROM TASA_AN_AHORRO) + 1, 'Tasa Ahorro Beneficiario 1', '{$datos['tasa']}', '{$datos['fecha']}', 'A')
-        sql;
-
-        $qryPrioritario = <<<sql
-        INSERT INTO PR_PRIORITARIO
-            (CODIGO, DESCRIPCION, COSTO_INSCRIPCION, COSTO_GASTOS_ADMIN, ESTATUS, CDGTAAH)
-        VALUES
-            ((SELECT MAX(CODIGO) FROM PR_PRIORITARIO) + 1, 'PRODUCTO PRIORITARIO 1', '0', '0', 'A', (SELECT MAX(CODIGO) FROM TASA_AN_AHORRO))
-        sql;
-
-        $qrySecundario = <<<sql
-        INSERT INTO PR_SECUNDARIO
-            (CODIGO, DESCRIPCION, COSTO_INSCRIPCION, COSTO_GASTOS_ADMIN, ESTATUS)
-        VALUES
-            ((SELECT MAX(CODIGO) FROM PR_SECUNDARIO) + 1, 'PRODUCTO SECUNDARIO 1', '0', '0', 'A')
-        sql;
 
         $qryAhorro = <<<sql
         INSERT INTO ASIGNA_PROD_AHORRO
@@ -82,6 +81,17 @@ class Ahorro
         VALUES
             ('$noContrato', (SELECT CODIGO FROM PRC WHERE CDGN = '{$datos['credito']}'), '{$datos['fecha']}', (SELECT MAX(CODIGO) FROM PR_SECUNDARIO), 'A', '{$datos['beneficiario_1']}', '{$datos['parentesco_1']}', '{$datos['beneficiario_2']}', '{$datos['parentesco_1']}')
         sql;
+
+        $resDemo = [
+            'contrato' => $noContrato,
+            'ahorro' => $qryAhorro,
+        ];
+        return json_encode($resDemo);
+    }
+
+    public static function AgregaContratoAhorroKids($datos)
+    {
+        $noContrato = $datos['credito'] . date_format(date_create($datos['fecha']), 'Ymd');
 
         $qryProducto = <<<sql
         INSERT INTO ASIGNA_SUB_PRODUCTO
@@ -91,11 +101,7 @@ class Ahorro
         sql;
 
         $resDemo = [
-            'contrato' => $noContrato,
-            'tasa' => $qtyTasa,
-            'prioritario' => $qryPrioritario,
-            'secundario' => $qrySecundario,
-            'ahorro' => $qryAhorro,
+            'contrato' => '',
             'producto' => $qryProducto
         ];
         return json_encode($resDemo);

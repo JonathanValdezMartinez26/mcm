@@ -216,9 +216,6 @@
         </div>
     </form>
 
-    <form id="PDF" name="PDF">
-
-    </form>
     <div class="col-md-2">
         <div class="panel panel-body" style="margin-bottom: 0px;">
             <div class="x_title">
@@ -247,7 +244,7 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form onsubmit="enviar_addssss(); return false" id="Add">
+                    <form onsubmit="return false" id="Add">
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
