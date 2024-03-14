@@ -33,7 +33,7 @@
                             </div>
                             <div class="col-md-5">
                                 <div class="form-group">
-                                    <label for="cdgns">Clave de cliente</label>
+                                    <label for="cdgns">Clave de cliente (Co-Titular)</label>
                                     <input type="number" class="form-control" id="cdgns" name="cdgns" readonly="" value="003011">
                                     <small id="emailHelp" class="form-text text-muted">Número de acreditado MCM</small>
                                 </div>
@@ -57,7 +57,7 @@
                             </div>
                             <div class="col-md-5">
                                 <div class="form-group">
-                                    <label for="cdgns">Clave de cliente</label>
+                                    <label for="cdgns">Clave de cliente (Peque)</label>
                                     <input type="number" class="form-control" id="cdgns" name="cdgns" readonly="" value="003011">
                                     <small id="emailHelp" class="form-text text-muted">Número de acreditado MCM</small>
                                 </div>
@@ -134,8 +134,8 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-md-12">
-                                    <input type="radio" name="sexo" id="cHombre" checked>
-                                    <label for="cHombre">Dirección (Autoriza usar la dirección del acreditado) *</label>
+                                    <input type="radio" name="direccion" id="cDireccion" checked>
+                                    <label for="cDireccion">Dirección (Autoriza usar la dirección del acreditado) *</label>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
