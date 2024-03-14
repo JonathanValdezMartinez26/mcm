@@ -100,16 +100,31 @@ class Database
 
     public function insertaMultiple($sql, $registros)
     {
-        $this->_mysqli->beginTransaction();
         try {
+            $this->_mysqli->beginTransaction();
             $stmt = $this->_mysqli->prepare($sql);
             foreach ($registros as $valores) {
-                $stmt->execute($valores);
+                $result = $stmt->execute($valores);
+                if (!$result) {
+                    $this->_mysqli->rollBack();
+                    return "Error: " . print_r($stmt->errorInfo(), 1) . "\nSql : " . $sql . "\nDatos : " . print_r($valores, 1);
+                }
             }
             $this->_mysqli->commit();
             return true;
         } catch (\PDOException $e) {
             $this->_mysqli->rollBack();
+            return "Error sql : " . $e->getMessage() . "\nSql : $sql";
+        }
+    }
+
+    public function eliminar($sql)
+    {
+        try {
+            $stmt = $this->_mysqli->prepare($sql);
+            $stmt->execute();
+            return true;
+        } catch (\PDOException $e) {
             echo "Error sql : " . $e->getMessage() . "\nSql : $sql";
             return false;
         }

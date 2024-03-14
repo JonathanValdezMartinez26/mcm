@@ -121,58 +121,61 @@ class Ahorro
 
     public static function AddPagoApertura($datos)
     {
+        $error = null;
         $qryTicket = <<<sql
         INSERT INTO TICKETS_AHORRO
-            (CODIGO, FECHA, CDG_CONTRATO)
+            (CODIGO, FECHA, CDG_CONTRATO, MONTO)
         VALUES
-            ((SELECT NVL(MAX(CODIGO),0) FROM TICKETS_AHORRO) + 1, SYSDATE, :contrato)
+            ((SELECT NVL(MAX(CODIGO),0) FROM TICKETS_AHORRO) + 1, SYSDATE, :contrato, :monto)
         sql;
 
         $datosTicket = [
             'contrato' => $datos['contrato'],
+            'monto' => $datos['monto_ahorro']
         ];
 
         try {
             $mysqli = Database::getInstance();
             $ticket = $mysqli->insertar($qryTicket, $datosTicket, true);
-            if ($ticket) return self::Responde(false, "Ocurrió un error al registrar el pago de apertura");
+            if (!$ticket) return self::Responde(false, "Ocurrió un error al crear el ticket de ahorro");
 
             $qryPago = <<<sql
             INSERT INTO MOVIMIENTOS_AHORRO
-                (ID_MOV, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, CDGPE, MOVIMIENTO, DESCRIPCION)
+                (CODIGO, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, CDGPE, MOVIMIENTO, DESCRIPCION, CDG_TICKET)
             VALUES
-                ((SELECT MAX(ID_MOV) FROM MOVIMIENTOS_AHORRO) + 1, ?, :fecha_pago, :contrato, :monto, 'CDGPE_EJECUTIVO', :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(CODIGO) FROM TICKETS_AHORRO));
-            
+                ((SELECT NVL(MAX(CODIGO),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, 'SOOA', :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(CODIGO) FROM TICKETS_AHORRO))
             sql;
 
             $registros = [
                 [
-                    'fecha_pago' => $datos['fecha_pago'],
-                    'tipo_pago' => $datos['tipo_pago'],
-                    'contrato' => $datos['contrato'],
-                    'monto' => $datos['monto_ahorro'],
-                    'movimiento' => '1',
-                    'ticket' => $ticket,
-                ],
-                [
-                    'fecha_pago' => $datos['fecha_pago'],
-                    'tipo_pago' => $datos['tipo_pago'],
+                    'tipo_pago' => $datos['comisionApertura'],
                     'contrato' => $datos['contrato'],
                     'monto' => $datos['monto_apertura'],
-                    'movimiento' => '0',
-                    'ticket' => $ticket,
+                    'movimiento' => '1'
+                ],
+                [
+                    'tipo_pago' => $datos['depositoInicial'],
+                    'contrato' => $datos['contrato'],
+                    'monto' => $datos['monto_ahorro'],
+                    'movimiento' => '0'
                 ]
             ];
 
             try {
                 $mysqli = Database::getInstance();
-                if ($mysqli->insertaMultiple($qryPago, $registros)) return self::Responde(true, "Pago de apertura registrado correctamente");
-                return self::Responde(false, "Ocurrió un error al registrar el pago de apertura");
+                $res = $mysqli->insertaMultiple($qryPago, $registros);
+                if ($res === true) return self::Responde(true, "Pago de apertura registrado correctamente");
+                $error = array('datos' => $datos, 'registros' => $registros, 'res' => $res);
             } catch (Exception $e) {
-                return self::Responde(false, "Ocurrió un error al registrar el pago de apertura");
+                $error = $e->getMessage();
             }
+            $queryReverso = <<<sql
+            DELETE FROM TICKETS_AHORRO WHERE CODIGO = (SELECT MAX(CODIGO) FROM TICKETS_AHORRO);
+            sql;
+            $mysqli->eliminar($queryReverso);
+            return self::Responde(false, "Ocurrió un error al registrar los pagos de apertura.", null, $error);
         } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al registrar el pago de apertura");
+            return self::Responde(false, "Ocurrió un error al procesar los registros de apertura", null, $e->getMessage());
         }
     }
 

@@ -297,8 +297,8 @@
                                             <td style="padding: 0px !important;">
                                                 <div class="col-md-12" style="padding-top: 9px;">
                                                     <div class="form-group">
-                                                        <select class="form-control" name="tipo_pago" id="tipo_pago" disabled>
-                                                            <option value="CDG_TIPO_PAGO_1">APERTURA DE CUENTA - INSCRIPCIÓN</option>
+                                                        <select class="form-control" name="comisionApertura" id="comisionApertura">
+                                                            <option value="1">APERTURA DE CUENTA - INSCRIPCIÓN</option>
                                                         </select>
                                                         <small id="emailHelp" class="form-text text-muted">Monto fijo.</small>
                                                     </div>
@@ -321,8 +321,8 @@
                                             <td style="padding: 0px !important;">
                                                 <div class="col-md-12" style="padding-top: 9px;">
                                                     <div class="form-group">
-                                                        <select class="form-control" name="tipo_pago" id="tipo_pago" disabled>
-                                                            <option value="CDG_TIPO_PAGO_2">CAPITAL INICIAL - CUENTA CORRIENTE</option>
+                                                        <select class="form-control" name="depositoInicial" id="depositoInicial">
+                                                            <option value="2">CAPITAL INICIAL - CUENTA CORRIENTE</option>
                                                         </select>
                                                         <small id="emailHelp" class="form-text text-muted">El monto debe ser mayor a $100.00 MN.</small>
                                                     </div>
