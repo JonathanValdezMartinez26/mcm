@@ -10,25 +10,25 @@ use \App\models\CajaAhorro as CajaAhorroDao;
 
 class CajaAhorro extends Controller
 {
-    private $_contenedor;
+  private $_contenedor;
 
-    function __construct()
-    {
-        parent::__construct();
-        $this->_contenedor = new Contenedor;
-        View::set('header', $this->_contenedor->header());
-        View::set('footer', $this->_contenedor->footer());
-    }
+  function __construct()
+  {
+    parent::__construct();
+    $this->_contenedor = new Contenedor;
+    View::set('header', $this->_contenedor->header());
+    View::set('footer', $this->_contenedor->footer());
+  }
 
 
-    public function index()
-    {
-        $extraHeader = <<<html
+  public function index()
+  {
+    $extraHeader = <<<html
         <title>Caja Cobrar</title>
         <link rel="shortcut icon" href="/img/logo.png">
 html;
 
-        $extraFooter = <<<html
+    $extraFooter = <<<html
         <script>
             function getParameterByName(name) {
                 name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]")
@@ -59,40 +59,36 @@ html;
                 })
                 var checkAll = 0
             })
-        
         </script>
 html;
 
-        if($opcion == '')
-        {
-            View::render("caja_menu_ahorro");
-        }
-        if($opcion == 'Inversion')
-        {
-            echo "Hola Inversion";
-            //View::render("caja_menu_ahorro");
-        }
+    View::set('header', $this->_contenedor->header($extraHeader));
+    View::set('footer', $this->_contenedor->footer($extraFooter));
 
-
-        $BuscaCliente = CajaAhorroDao::ConsultaClientesProducto($cliente);
-
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-
-        View::set('Cliente', $BuscaCliente);
-
+    if ($opcion == '') {
+      View::render("caja_menu_ahorro");
+    }
+    if ($opcion == 'Inversion') {
+      echo "Hola Inversion";
+      //View::render("caja_menu_ahorro");
     }
 
 
+    $BuscaCliente = CajaAhorroDao::ConsultaClientesProducto($cliente);
 
-    public function Imprime_Contrato($numero_contrato)
-    {
-        $mpdf = new \mPDF('c');
-        $mpdf->defaultPageNumStyle = 'I';
-        $mpdf->h2toc = array('H5' => 0, 'H6' => 1);
 
-        $style = <<<html
+    View::set('Cliente', $BuscaCliente);
+  }
+
+
+
+  public function Imprime_Contrato($numero_contrato)
+  {
+    $mpdf = new \mPDF('c');
+    $mpdf->defaultPageNumStyle = 'I';
+    $mpdf->h2toc = array('H5' => 0, 'H6' => 1);
+
+    $style = <<<html
       <style>
 
        .titulo{
@@ -163,10 +159,10 @@ html;
         }
       </style>
 html;
-        ///$complemento = PagosDao::getByIdReporte($barcode);
+    ///$complemento = PagosDao::getByIdReporte($barcode);
 
 
-        $tabla = <<<html
+    $tabla = <<<html
 
         <div class="receipt-main">
          <table class="table">
@@ -214,14 +210,19 @@ html;
 html;
 
 
-        $fechaActual = date('Y-m-d H:i:s');
+    $fechaActual = date('Y-m-d H:i:s');
 
 
-        $mpdf->WriteHTML($style, 1);
-        $mpdf->WriteHTML($tabla, 2);
-        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:opensans;">Este recibo de pago se genero el día ' . $fechaActual . '<br>{PAGENO}</div>');
-        print_r($mpdf->Output());
-        exit;
-    }
+    $mpdf->WriteHTML($style, 1);
+    $mpdf->WriteHTML($tabla, 2);
+    $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:opensans;">Este recibo de pago se genero el día ' . $fechaActual . '<br>{PAGENO}</div>');
+    print_r($mpdf->Output());
+    exit;
+  }
 
+  public function AhorroCorriente()
+  {
+    View::set('Cliente', '003011');
+    View::render("ahorro_apertura_encuentra_cliente");
+  }
 }
