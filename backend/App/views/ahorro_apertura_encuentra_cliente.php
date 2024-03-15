@@ -277,6 +277,7 @@
                                 <div class="form-group">
                                     <label for="nombre_ejecutivo">Nombre del Ejecutivo</label>
                                     <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="Ejecutivo de Prueba" readonly>
+                                    <input type="hidden" class="form-control" id="ejecutivo" name="ejecutivo" value="SOOA">
                                 </div>
                             </div>
                         </div>
@@ -324,7 +325,7 @@
                                 <h4>$</h4>
                             </div>
                             <div class="col-md-5">
-                                <input type="number" class="form-control" id="inscripcion" name="inscripcion" value="50.00" readonly>
+                                <input type="number" class="form-control" id="inscripcion" name="inscripcion" value="<?= $saldoMinimoApertura ?>.00" readonly>
                             </div>
                         </div>
                         <div class="row">
@@ -336,12 +337,13 @@
                             </div>
                             <div class="col-md-5">
                                 <input type="number" class="form-control" id="saldo_inicial" name="saldo_inicial" value="0.00" readonly>
-                                <small style="opacity: 0;" id="tipSaldo">El saldo inicial debe ser mínimo de $100.00</small>
+                                <input type="hidden" class="form-control" id="sma" name="sma" value="<?= $saldoMinimoApertura ?>" readonly>
+                                <small style="opacity: 0;" id="tipSaldo">El saldo inicial debe ser mínimo de $<?= $saldoMinimoApertura ?>.00</small>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                            <button type="button" name="agregar" class="btn btn-primary" value="enviar" onclick=pagoApertura(event)><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
+                            <button type="button" id="registraDepositoInicial" name="agregar" class="btn btn-primary" value="enviar" onclick=pagoApertura(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
                         </div>
                     </form>
                 </div>

@@ -122,16 +122,21 @@ class Ahorro
     public static function AddPagoApertura($datos)
     {
         $error = null;
+
+        if ($datos['deposito_inicial'] == 0) return self::Responde(false, "El monto de apertura no puede ser de 0");
+        if ($datos['saldo_inicial'] < $datos['sma']) return self::Responde(false, "El saldo inicial no puede ser menor a " . $datos['sma']);
+
         $qryTicket = <<<sql
         INSERT INTO TICKETS_AHORRO
-            (CODIGO, FECHA, CDG_CONTRATO, MONTO)
+            (CODIGO, FECHA, CDG_CONTRATO, MONTO, CDGPE)
         VALUES
-            ((SELECT NVL(MAX(CODIGO),0) FROM TICKETS_AHORRO) + 1, SYSDATE, :contrato, :monto)
+            ((SELECT NVL(MAX(CODIGO),0) FROM TICKETS_AHORRO) + 1, SYSDATE, :contrato, :monto, :ejecutivo)
         sql;
 
         $datosTicket = [
             'contrato' => $datos['contrato'],
-            'monto' => $datos['monto_ahorro']
+            'monto' => $datos['deposito_inicial'],
+            'ejecutivo' => $datos['ejecutivo']
         ];
 
         try {
@@ -141,30 +146,30 @@ class Ahorro
 
             $qryPago = <<<sql
             INSERT INTO MOVIMIENTOS_AHORRO
-                (CODIGO, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, CDGPE, MOVIMIENTO, DESCRIPCION, CDG_TICKET)
+                (CODIGO, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, MOVIMIENTO, DESCRIPCION, CDG_TICKET)
             VALUES
-                ((SELECT NVL(MAX(CODIGO),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, 'SOOA', :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(CODIGO) FROM TICKETS_AHORRO))
+                ((SELECT NVL(MAX(CODIGO),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(CODIGO) FROM TICKETS_AHORRO))
             sql;
 
             $registros = [
                 [
-                    'tipo_pago' => $datos['comisionApertura'],
+                    'tipo_pago' => '1',
                     'contrato' => $datos['contrato'],
-                    'monto' => $datos['monto_apertura'],
-                    'movimiento' => '1'
+                    'monto' => $datos['inscripcion'],
+                    'movimiento' => '0'
                 ],
                 [
-                    'tipo_pago' => $datos['depositoInicial'],
+                    'tipo_pago' => '2',
                     'contrato' => $datos['contrato'],
-                    'monto' => $datos['monto_ahorro'],
-                    'movimiento' => '0'
+                    'monto' => $datos['saldo_inicial'],
+                    'movimiento' => '1'
                 ]
             ];
 
             try {
                 $mysqli = Database::getInstance();
                 $res = $mysqli->insertaMultiple($qryPago, $registros);
-                if ($res === true) return self::Responde(true, "Pago de apertura registrado correctamente");
+                if ($res === true) return self::Responde(true, "Deposito por apertura de cuenta de ahorro registrado correctamente.");
                 $error = array('datos' => $datos, 'registros' => $registros, 'res' => $res);
             } catch (Exception $e) {
                 $error = $e->getMessage();
