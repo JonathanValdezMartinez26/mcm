@@ -8,12 +8,12 @@
                 <div class="clearfix"></div>
             </div>
 
-            <div class="card card-danger col-md-5" >
+            <div class="card card-danger col-md-5">
                 <div class="card-header">
                     <h5 class="card-title">Ingrese el número del cliente y valide que sus datos sean correctos</h5>
                 </div>
                 <div class="card-body">
-                    <form class="" action="/Ahorro/Apertura/" method="GET">
+                    <form class="" action="/Apertura/Ahorro/" method="GET">
                         <div class="row">
 
                             <div class="col-md-4">
@@ -29,7 +29,7 @@
             </div>
             <div class="card col-md-12">
                 <hr style="border-top: 1px solid #787878; margin-top: 5px;">
-                <div class="row" >
+                <div class="row">
                     <div class="tile_count float-right col-sm-12" style="margin-bottom: 1px; margin-top: 1px">
                         <div class="x_content">
                             <br />

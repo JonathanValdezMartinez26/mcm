@@ -7,7 +7,7 @@ defined("APPPATH") or die("Access denied");
 use \Core\Database;
 use Exception;
 
-class Ahorro
+class Apertura
 {
     public static function Responde($respuesta, $mensaje, $datos = null, $error = null)
     {
@@ -130,7 +130,7 @@ class Ahorro
         INSERT INTO TICKETS_AHORRO
             (CODIGO, FECHA, CDG_CONTRATO, MONTO, CDGPE)
         VALUES
-            ((SELECT NVL(MAX(CODIGO),0) FROM TICKETS_AHORRO) + 1, SYSDATE, :contrato, :monto, :ejecutivo)
+            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM TICKETS_AHORRO) + 1, SYSDATE, :contrato, :monto, :ejecutivo)
         sql;
 
         $datosTicket = [
@@ -142,13 +142,13 @@ class Ahorro
         try {
             $mysqli = Database::getInstance();
             $ticket = $mysqli->insertar($qryTicket, $datosTicket, true);
-            if (!$ticket) return self::Responde(false, "Ocurrió un error al crear el ticket de ahorro");
+            if (!$ticket) return self::Responde(false, "Ocurrió un error al crear el ticket de ahorro", $datos, $datosTicket);
 
             $qryPago = <<<sql
             INSERT INTO MOVIMIENTOS_AHORRO
                 (CODIGO, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, MOVIMIENTO, DESCRIPCION, CDG_TICKET)
             VALUES
-                ((SELECT NVL(MAX(CODIGO),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(CODIGO) FROM TICKETS_AHORRO))
+                ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(TO_NUMBER(CODIGO)) FROM TICKETS_AHORRO))
             sql;
 
             $registros = [
@@ -175,7 +175,7 @@ class Ahorro
                 $error = $e->getMessage();
             }
             $queryReverso = <<<sql
-            DELETE FROM TICKETS_AHORRO WHERE CODIGO = (SELECT MAX(CODIGO) FROM TICKETS_AHORRO);
+            DELETE FROM TICKETS_AHORRO WHERE CODIGO = (SELECT MAX(TO_NUMBER(CODIGO)) FROM TICKETS_AHORRO);
             sql;
             $mysqli->eliminar($queryReverso);
             return self::Responde(false, "Ocurrió un error al registrar los pagos de apertura.", null, $error);

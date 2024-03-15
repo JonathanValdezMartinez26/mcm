@@ -99,17 +99,17 @@ html;
             <div class="menu_section">
 html;
 
-      if ($this->__usuario == 'AMGM') {
-          $menu .= <<<html
+    if ($this->__usuario == 'AMGM') {
+      $menu .= <<<html
           <hr>
            <h3>General WEB AHORRO</h3>
             <ul class="nav side-menu">     
             
                 <li><a><i class="glyphicon glyphicon-folder-open"></i>&nbsp; Apertura de Cuentas <span class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
-                            <li><a href="/Ahorro/Apertura/">Ahorro Corriente</a></li> 
-                            <li><a href="/Inversiones/">Inversion Plazo Fijo</a></li> 
-                            <li><a href="/Peques/Apertura/">Ahorro Peques</a></li>
+                            <li><a href="/Apertura/Ahorro/">Ahorro Corriente</a></li> 
+                            <li><a href="/Apertura/Inversion">Inversión Plazo Fijo</a></li> 
+                            <li><a href="/Apertura/Peques/">Ahorro Peques</a></li>
                             <li><a href="/CalculadoraRendimiento/Ahorro/">Calculadora de rendimiento</a></li> 
                       </ul>
                 </li>
@@ -136,10 +136,10 @@ html;
           
           <br>
 html;
-      }
+    }
 
 
-      $menu .= <<<html
+    $menu .= <<<html
       <hr>
               <h3>General </h3>
               <ul class="nav side-menu">       
@@ -320,9 +320,8 @@ html;
 html;
     }
 
-        if($this->__perfil== 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario== 'PLMV' || $this->__usuario == 'PHEE')
-        {
-            $menu.=<<<html
+    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario == 'PLMV' || $this->__usuario == 'PHEE') {
+      $menu .= <<<html
         <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon glyphicon-cog"> 
                 </i>&nbsp;Incidencias MCM<span class="fa fa-chevron-down"></span></a>
@@ -364,8 +363,8 @@ html;
 html;
       }
 
-            if($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ' || $this->__usuario == 'PHEE' || $this->__usuario == 'ORHM') {
-                $menu .= <<<html
+      if ($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ' || $this->__usuario == 'PHEE' || $this->__usuario == 'ORHM') {
+        $menu .= <<<html
                     <li><a href="/Reportes/UsuariosMCM/">Reporte Usuarios SICAFIN MCM</a></li>
                     <li><a href="/Reportes/UsuariosCultiva/">Reporte Usuarios SICAFIN Cultiva</a></li>
 html;
