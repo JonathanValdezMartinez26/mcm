@@ -66,7 +66,10 @@ html;
             
             const limpiaCampos = (numero, nombre, msg = null) => {
                 if (msg) showError(msg)
-                if (numero) numero.value = ""
+                if (numero) {
+                    numero.value = ""
+                    numero.required = true
+                }
                 if (nombre) nombre.value = ""
                 document.querySelector("#btnVincular").disabled = true
                 return false
@@ -94,6 +97,7 @@ html;
                     }
             
                     nombreAnfitrion.value = res.datos.nombre
+                    noAnfitrion.required = false
                     noAnfitrion.value = ""
                     document.querySelector("#Invitado").disabled = false
                     document.querySelector("#BuscarInvitado").disabled = false
@@ -123,6 +127,7 @@ html;
                     
                     nombreInvitado.value = res.datos.nombre
                     noInvitado.value = ""
+                    noInvitado.required = false
                     document.querySelector("#btnVincular").disabled = false
                 }
             

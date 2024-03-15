@@ -91,7 +91,7 @@ class Ahorro
         INSERT INTO ASIGNA_PROD_AHORRO
             (CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, BENEFICIARIO_1, CDGCT_PARENTESCO_1, BENEFICIARIO_2, CDGCT_PARENTESCO_2)
         VALUES
-            ('$noContrato', (SELECT CODIGO FROM PRC WHERE CDGN = '{$datos['credito']}'), '{$datos['fecha']}', (SELECT MAX(CODIGO) FROM PR_SECUNDARIO), 'A', '{$datos['beneficiario_1']}', '{$datos['parentesco_1']}', '{$datos['beneficiario_2']}', '{$datos['parentesco_1']}')
+            (:contrato, (SELECT CODIGO FROM PRC WHERE CDGN = '{$datos['credito']}'), '{$datos['fecha']}', (SELECT MAX(CODIGO) FROM PR_SECUNDARIO), 'A', '{$datos['beneficiario_1']}', '{$datos['parentesco_1']}', '{$datos['beneficiario_2']}', '{$datos['parentesco_1']}')
         sql;
 
         $resDemo = [
