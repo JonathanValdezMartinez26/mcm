@@ -27,7 +27,7 @@
                                         <img  src="https://cdn-icons-png.flaticon.com/512/3029/3029259.png" style="border-radius: 3px;" width="110" height="110" alt="" title="">
                                     </div>
                                     <br>
-                                    <p style="font-size: 14px"><b>&nbsp;&nbsp;s&nbsp;&nbsp;&nbsp;Nueva Inversión </b></p>
+                                    <p style="font-size: 14px"><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nueva Inversión </b></p>
                                 </div>
 
 

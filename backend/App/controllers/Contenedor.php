@@ -114,7 +114,7 @@ html;
                       </ul>
                 </li>
                      
-                <li><a href="/CajaAhorro/Home/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
+                <li><a href="/CajaAhorro/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
                 
                  <li><a><i class="glyphicon glyphicon-gift"> </i>&nbsp; Incentivos <span class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
