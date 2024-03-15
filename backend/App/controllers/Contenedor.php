@@ -114,19 +114,11 @@ html;
                       </ul>
                 </li>
                      
-                <li><a><i class="glyphicon	glyphicon glyphicon-list-alt"> </i>&nbsp; Caja <span class="fa fa-chevron-down"></span></a>
-                      <ul class="nav child_menu">
-                            <li><a href="/CajaAhorro/">Realizar Cobros</a></li> 
-                            <li><a href="/CorteAlDia/Clientes/">Saldos del Día</a></li> 
-                            <li><a href="/CorteAlDia/Saldos/">Corte de Caja Diario</a></li> 
-                      </ul>
-                </li>
+                <li><a href="/CajaAhorro/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
                 
                  <li><a><i class="glyphicon glyphicon-gift"> </i>&nbsp; Incentivos <span class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
-                            <li><a href="/Incentivos/">Realizar Cobros</a></li> 
                             <li><a href="/Incentivos/Calculo/">Calculo de comisiones</a></li> 
-                            <li><a href="/Incentivos/Saldos/">Corte de Caja Diario</a></li> 
                       </ul>
                 </li>
                 
@@ -135,9 +127,9 @@ html;
                 </li>
                 <li><a><i class="glyphicon glyphicon-tasks"> </i>&nbsp; Cuentas y Saldos ADMIN<span class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
-                            <li><a href="/CajaAhorro/">Realizar Cobros</a></li> 
-                            <li><a href="/CorteAlDia/Clientes/">Saldos del Día</a></li> 
-                            <li><a href="/CorteAlDia/Saldos/">Corte de Caja Diario</a></li> 
+                            <li><a href="/ReporteAhorro/Clientes/">Saldos del Día</a></li>
+                            <li><a href="/ReporteAhorro/Clientes/">Utilidad Cliente</a></li> 
+                            <li><a href="/ReporteAhorro/Clientes/">Reporte Solicitud de Retiro </a></li> 
                       </ul>
                 </li>
              </ul>

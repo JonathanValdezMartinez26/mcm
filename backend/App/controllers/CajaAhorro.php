@@ -70,12 +70,8 @@ html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-
-        if ($cliente == '') return View::render("ahorro_caja_inicio");
-        if ($BuscaCliente == '') return View::render("ahorro_caja_inicio");
-
         View::set('Cliente', $BuscaCliente);
-        View::render("ahorro_caja_principal");
+        View::render("caja_menu_ahorro");
     }
 
 
