@@ -7,7 +7,7 @@ defined("APPPATH") or die("Access denied");
 use \Core\View;
 use \Core\Controller;
 use \App\models\Ahorro as AhorroDao;
-use Mpdf\mPDF;
+use \mPDF;
 
 class Ahorro extends Controller
 {
@@ -63,7 +63,7 @@ class Ahorro extends Controller
     
         function boton_contrato(numero_contrato) {
           const host = window.location.origin
-          
+        
           let plantilla = "<!DOCTYPE html>"
           plantilla += '<html lang="es">'
           plantilla += '<head>'
@@ -160,6 +160,124 @@ class Ahorro extends Controller
             }
           })
         }
+        
+        const validaDeposito = (e) => {
+          const monto = parseFloat(e.target.value)
+          document.querySelector("#deposito").value = monto.toFixed(2)
+          const saldoInicial = (monto - parseFloat(document.querySelector("#inscripcion").value)).toFixed(2)
+          document.querySelector("#saldo_inicial").value = saldoInicial > 0 ? saldoInicial : "0.00"
+          document.querySelector("#deposito_inicial_letra").value = primeraMayuscula(numeroLetras(monto))
+    
+          if (saldoInicial < 100) {
+            document.querySelector("#saldo_inicial").setAttribute("style", "color: red")
+            document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
+          } else {
+            document.querySelector("#saldo_inicial").removeAttribute("style")
+            document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
+          }
+        }
+    
+        const numeroLetras = (numero) => {
+          if (!numero) return ""
+          const unidades = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"]
+          const especiales = [
+              "",
+              "once",
+              "doce",
+              "trece",
+              "catorce",
+              "quince",
+              "dieciséis",
+              "diecisiete",
+              "dieciocho",
+              "diecinueve",
+              "veinte",
+              "veintiún",
+              "veintidós",
+              "veintitrés",
+              "veinticuatro",
+              "veinticinco",
+              "veintiséis",
+              "veintisiete",
+              "veintiocho",
+              "veintinueve"
+          ]
+          const decenas = [
+              "",
+              "diez",
+              "veinte",
+              "treinta",
+              "cuarenta",
+              "cincuenta",
+              "sesenta",
+              "setenta",
+              "ochenta",
+              "noventa"
+          ]
+          const centenas = [
+              "cien",
+              "ciento",
+              "doscientos",
+              "trescientos",
+              "cuatrocientos",
+              "quinientos",
+              "seiscientos",
+              "setecientos",
+              "ochocientos",
+              "novecientos"
+          ]
+      
+          const convertirMenorA1000 = (numero) => {
+              let letra = ""
+              if (numero >= 100) {
+                  letra += centenas[(numero === 100 ? 0 : Math.floor(numero / 100))] + " "
+                  numero %= 100
+              }
+              if (numero === 10 || numero === 20 || (numero > 29 && numero < 100)) {
+                  letra += decenas[Math.floor(numero / 10)]
+                  numero %= 10
+                  letra += numero > 0 ? " y " : " "
+              }
+              if (numero != 20 && numero >= 11 && numero <= 29) {
+                  letra += especiales[numero % 10 + (numero > 20 ? 10 : 0)] + " "
+                  numero = 0
+              }
+              if (numero > 0) {
+                  letra += unidades[numero] + " "
+              }
+              return letra.trim()
+          }
+      
+          const convertir = (numero) => {
+            if (numero === 0) {
+                return "cero"
+            }
+        
+            let letra = ""
+        
+            if (numero >= 1000000) {
+                letra += convertirMenorA1000(Math.floor(numero / 1000000)) + (numero === 1000000 ? " millón " : " millones ")
+                numero %= 1000000
+            }
+        
+            if (numero >= 1000) {
+                letra += (numero === 1000 ? "" : convertirMenorA1000(Math.floor(numero / 1000))) + " mil "
+                numero %= 1000
+            }
+        
+            letra += convertirMenorA1000(numero)
+            return letra.trim()
+          }
+      
+          const parteEntera = Math.floor(numero)
+          const parteDecimal = Math.round((numero - parteEntera) * 100).toString().padStart(2, "0")
+          return convertir(parteEntera) + (numero == 1 ? ' peso ' : ' pesos ') + parteDecimal + '/100'
+      }
+      
+      const primeraMayuscula = (texto) => {
+          return texto.charAt(0).toUpperCase() + texto.slice(1)
+      }
+      
     </script>
     html;
 
@@ -316,7 +434,8 @@ html;
 
 
     $nombreArchivo = "Contrato " . $numero_contrato;
-    $mpdf = new \mPDF('c');
+
+    $mpdf = new Mpdf('c');
     $mpdf->defaultPageNumStyle = 'I';
     $mpdf->h2toc = array('H5' => 0, 'H6' => 1);
     $mpdf->SetTitle($nombreArchivo);

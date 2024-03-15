@@ -247,107 +247,101 @@
                 <div class="container-fluid">
                     <form id="AddPagoApertura">
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="fecha_pago">Fecha</label>
                                     <input onkeydown="return false" type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?php echo $Cliente[0]['REGISTRO']; ?>">
-                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
                                 </div>
                             </div>
-
-                            <div class="col-md-4">
+                            <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="contrato">Contrato</label>
                                     <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
-                                    <small id="emailHelp" class="form-text text-muted">Contrato.</small>
                                 </div>
                             </div>
-
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="codigo_cl">Número de cliente</label>
                                     <input type="number" class="form-control" id="codigo_cl" name="codigo_cl" value="<?php echo $credito; ?>" readonly>
-                                    <small id="emailHelp" class="form-text text-muted">Número del crédito.</small>
                                 </div>
                             </div>
-
-                            <div class="col-md-7">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="nombre">Nombre del Cliente</label>
-                                    <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo $Cliente[0]['NOMBRE']; ?>" readonly>
+                                    <label for="nombre_cliente">Nombre del Cliente</label>
+                                    <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" value="<?php echo $Cliente[0]['NOMBRE']; ?>" readonly>
                                 </div>
                             </div>
-
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nombre_ejecutivo">Nombre del Ejecutivo</label>
+                                    <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="Ejecutivo de Prueba" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3>Deposito de Apertura</h3>
+                            </div>
+                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
+                                <h3>$</h3>
+                            </div>
+                            <div class="col-md-5" style="padding-top: 5px;">
+                                <input type="number" class="form-control" id="deposito_inicial" name="deposito_inicial" min=100 max=100000 placeholder="Ingrese el monto" style="font-size: large;" onkeyup=validaDeposito(event)>
+                            </div>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" id="deposito_inicial_letra" name="deposito_inicial_letra" style="border: 1px solid #000000; text-align: center;" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" style="text-align:center;">
+                                <h4>Detalle de movimientos</h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-1">
+                                <h4>+</h4>
+                            </div>
                             <div class="col-md-5">
-                                <div class="form-group">
-                                    <label for="curp">CURP</label>
-                                    <input type="text" class="form-control" id="curp" name="curp" value="<?php echo $Cliente[0]['CURP']; ?>" readonly>
-                                </div>
+                                <h4>DEPOSITO</h4>
                             </div>
-
-                            <div class="col-sm-12">
-                                <table class="table table-striped table-bordered table-hover dataTable no-footer">
-                                    <thead>
-                                        <tr role="row">
-                                            <th class="header" rowspan="1" colspan="1" aria-label="Cod Sucursal" style="width: 250px;">Concepto del pago</th>
-                                            <th class="header sorting" tabindex="0" aria-controls="muestra-cupones" rowspan="1" colspan="1" aria-label="Nombre Sucursal: activate to sort column ascending" style="width: 46px;">Monto</th>
-                                    </thead>
-                                    <tbody>
-                                        <tr style="padding: 0px !important;" role="row" class="odd">
-                                            <td style="padding: 0px !important;">
-                                                <div class="col-md-12" style="padding-top: 9px;">
-                                                    <div class="form-group">
-                                                        <select class="form-control" name="comisionApertura" id="comisionApertura">
-                                                            <option value="1">APERTURA DE CUENTA - INSCRIPCIÓN</option>
-                                                        </select>
-                                                        <small id="emailHelp" class="form-text text-muted">Monto fijo.</small>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td style="padding: 0px !important;">
-                                                <div class="col-md-2" style="padding-top: 5px;">
-                                                    <div class="form-group">
-                                                        <h4>$</h4>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-9" style="padding-top: 9px;">
-                                                    <div class="form-group">
-                                                        <input type="text" class="form-control" id="monto_apertura" name="monto_apertura" value="50" readonly>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr style="padding: 0px !important;" role="row" class="odd">
-                                            <td style="padding: 0px !important;">
-                                                <div class="col-md-12" style="padding-top: 9px;">
-                                                    <div class="form-group">
-                                                        <select class="form-control" name="depositoInicial" id="depositoInicial">
-                                                            <option value="2">CAPITAL INICIAL - CUENTA CORRIENTE</option>
-                                                        </select>
-                                                        <small id="emailHelp" class="form-text text-muted">El monto debe ser mayor a $100.00 MN.</small>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td style="padding: 0px !important;">
-                                                <div class="col-md-2" style="padding-top: 5px;">
-                                                    <div class="form-group">
-                                                        <h4>$</h4>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-9" style="padding-top: 9px;">
-                                                    <div class="form-group">
-                                                        <input type="number" class="form-control" id="monto_ahorro" name="monto_ahorro" min=100 max=1000000>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
+                                <h4>$</h4>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                                <button type="button" name="agregar" class="btn btn-primary" value="enviar" onclick=pagoApertura(event)><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
+                            <div class="col-md-5">
+                                <input type="number" class="form-control" id="deposito" name="deposito" value="0.00" readonly>
                             </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-1">
+                                <h4>-</h4>
+                            </div>
+                            <div class="col-md-5">
+                                <h4>INSCRIPCIÓN</h4>
+                            </div>
+                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
+                                <h4>$</h4>
+                            </div>
+                            <div class="col-md-5">
+                                <input type="number" class="form-control" id="inscripcion" name="inscripcion" value="50.00" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>SALDO INICIAL DE LA CUENTA</h4>
+                            </div>
+                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
+                                <h4>$</h4>
+                            </div>
+                            <div class="col-md-5">
+                                <input type="number" class="form-control" id="saldo_inicial" name="saldo_inicial" value="0.00" readonly>
+                                <small style="opacity: 0;" id="tipSaldo">El saldo inicial debe ser mínimo de $100.00</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                            <button type="button" name="agregar" class="btn btn-primary" value="enviar" onclick=pagoApertura(event)><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
                         </div>
                     </form>
                 </div>
@@ -355,7 +349,6 @@
         </div>
     </div>
 </div>
-
 
 <style>
     .center {
