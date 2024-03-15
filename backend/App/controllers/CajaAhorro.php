@@ -63,15 +63,25 @@ html;
         </script>
 html;
 
-        $cliente = $_GET['Cliente'];
+        if($opcion == '')
+        {
+            View::render("caja_menu_ahorro");
+        }
+        if($opcion == 'Inversion')
+        {
+            echo "Hola Inversion";
+            //View::render("caja_menu_ahorro");
+        }
+
 
         $BuscaCliente = CajaAhorroDao::ConsultaClientesProducto($cliente);
 
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
+
         View::set('Cliente', $BuscaCliente);
-        View::render("caja_menu_ahorro");
+
     }
 
 
