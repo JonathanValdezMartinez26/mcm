@@ -24,6 +24,7 @@ class Ahorro extends Controller
 
   public function Apertura()
   {
+    $saldoMinimoApertura = 100;
     $extraHeader = <<<html
     <title>Apertura de cuentas </title>
     <link rel="shortcut icon" href="/img/logo.png">
@@ -31,6 +32,7 @@ class Ahorro extends Controller
 
     $extraFooter = <<<html
     <script>
+        const saldoMinimoApertura = $saldoMinimoApertura
         function getParameterByName(name) {
             name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]")
             var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
@@ -119,14 +121,21 @@ class Ahorro extends Controller
                         )
                     
                     const contrato = JSON.parse(respuesta)
-                    const notOK = await showSuccess("Se ha generado el contrato: " + contrato.contrato)
+                    await showSuccess("Se ha generado el contrato: " + contrato.contrato)
                     
                     document.querySelector("#contrato").value = contrato.contrato
                     document.querySelector("#codigo_cl").value = noCredito
-                    //document.querySelector("#modal_agregar_pago").modal("show")
-                    $("#modal_agregar_pago").modal("show")
-                    
                     boton_contrato(contrato.contrato)
+                    
+                    const depositoInicial = await swal({
+                        title: "¿Desea registrar el depósito por apertura de cuenta?",
+                        text: "",
+                        icon: "info",
+                        buttons: true,
+                        dangerMode: true
+                    })
+                    
+                    if (depositoInicial) $("#modal_agregar_pago").modal("show")
                 }
             } catch (error) {
                 console.error(error)
@@ -136,6 +145,8 @@ class Ahorro extends Controller
                     
         const pagoApertura = (e) => {
           e.preventDefault()
+          if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura)
+
           const datos = $("#AddPagoApertura").serializeArray()
                     
           $.ajax({
@@ -144,15 +155,12 @@ class Ahorro extends Controller
             data: $.param(datos),
             success: (respuesta) => {
               respuesta = JSON.parse(respuesta)
-              console.log(respuesta)
-               
-              if (respuesta.success) {
-                showSuccess(respuesta.mensaje)
-                document.querySelector("#registroInicialAhorro").reset()
-                $("#modal_agregar_pago").modal("hide")
-              } else {
-                showError(respuesta.mensaje)
-              }
+              if (!respuesta.success) return showError(respuesta.mensaje)
+        
+              showSuccess(respuesta.mensaje)
+              document.querySelector("#registroInicialAhorro").reset()
+              document.querySelector("#AddPagoApertura").reset()
+              $("#modal_agregar_pago").modal("hide")
             },
             error: (error) => {
               console.error(error)
@@ -168,12 +176,14 @@ class Ahorro extends Controller
           document.querySelector("#saldo_inicial").value = saldoInicial > 0 ? saldoInicial : "0.00"
           document.querySelector("#deposito_inicial_letra").value = primeraMayuscula(numeroLetras(monto))
     
-          if (saldoInicial < 100) {
+          if (saldoInicial < saldoMinimoApertura) {
             document.querySelector("#saldo_inicial").setAttribute("style", "color: red")
             document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
+            document.querySelector("#registraDepositoInicial").disabled = true
           } else {
             document.querySelector("#saldo_inicial").removeAttribute("style")
             document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
+            document.querySelector("#registraDepositoInicial").disabled = false
           }
         }
     
@@ -285,6 +295,7 @@ class Ahorro extends Controller
     $BuscaCliente = AhorroDao::ConsultaClientes($cliente);
     View::set('header', $this->_contenedor->header($extraHeader));
     View::set('footer', $this->_contenedor->footer($extraFooter));
+    view::set('saldoMinimoApertura', $saldoMinimoApertura);
 
     if ($cliente == '') {
       View::render("ahorro_apertura_inicio");
