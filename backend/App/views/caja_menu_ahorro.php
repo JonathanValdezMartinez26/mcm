@@ -6,7 +6,7 @@
             <div class="col-md-4">
                 <div class="panel panel-body" style="margin-bottom: 0px;">
                     <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                        <a class="navbar-brand"><span><i class="fa fa-smile-o"></i></span> Mi espacio</a>
+                        <a class="navbar-brand">Mi espacio</a>
                         &nbsp;&nbsp;
                     </div>
 
