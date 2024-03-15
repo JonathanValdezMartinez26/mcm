@@ -146,7 +146,7 @@ class Ahorro extends Controller
         const pagoApertura = (e) => {
           e.preventDefault()
           if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura)
-
+                    
           const datos = $("#AddPagoApertura").serializeArray()
                     
           $.ajax({
