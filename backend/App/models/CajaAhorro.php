@@ -15,7 +15,7 @@ class CajaAhorro
 
         $query_valida_es_cliente_ahorro = <<<sql
             SELECT * FROM CL WHERE CODIGO = '$cliente'
-        sql;
+sql;
 
         $query_busca_cliente = <<<sql
             SELECT (CL.NOMBRE1 || ' ' || CL.NOMBRE2 || ' ' || CL.PRIMAPE || ' ' || CL.SEGAPE) AS NOMBRE, CL.CURP, TO_CHAR(CL.REGISTRO ,'DD-MM-YYYY')AS REGISTRO, 
@@ -32,16 +32,16 @@ class CajaAhorro
             AND MU.CODIGO = COL.CDGMU 
             AND LO.CODIGO = COL.CDGLO 
             AND CL.CODIGO = '$cliente'
-        sql;
+sql;
 
 
         $query_tiene_creditos = <<<sql
             SELECT * FROM CL WHERE CODIGO = '$cliente'
-        sql;
+sql;
 
         $query_es_aval = <<<sql
             SELECT * FROM CL WHERE CODIGO = '$cliente'
-        sql;
+sql;
 
         try {
             $mysqli = Database::getInstance();

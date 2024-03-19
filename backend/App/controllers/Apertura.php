@@ -28,7 +28,7 @@ class Apertura extends Controller
     $extraHeader = <<<html
     <title>Apertura de cuentas </title>
     <link rel="shortcut icon" href="/img/logo.png">
-    html;
+html;
 
     $extraFooter = <<<html
     <script>
@@ -290,7 +290,7 @@ class Apertura extends Controller
       }
       
     </script>
-    html;
+html;
 
     $cliente = $_GET['Cliente'];
     $BuscaCliente = AperturaDao::ConsultaClientes($cliente);
@@ -393,9 +393,7 @@ class Apertura extends Controller
           }
         }
       </style>
-    html;
-    ///$complemento = PagosDao::getByIdReporte($barcode);
-
+html;
 
     $tabla = <<<html
         <div class="receipt-main">
@@ -431,8 +429,7 @@ class Apertura extends Controller
                  </tr>
               </thead>
             <tbody>    
-    html;
-
+html;
 
     $nombreArchivo = "Contrato " . $numero_contrato;
 
@@ -455,7 +452,7 @@ class Apertura extends Controller
     $extraHeader = <<<html
     <title>Apertura de cuentas </title>
     <link rel="shortcut icon" href="/img/logo.png">
-    html;
+html;
 
     $extraFooter = <<<html
     <script>
@@ -561,7 +558,7 @@ class Apertura extends Controller
             return false
         }
     </script>
-    html;
+html;
 
     $cliente = $_GET['Cliente'];
     $BuscaCliente = AperturaDao::ConsultaClientes($cliente);
@@ -651,7 +648,7 @@ class Apertura extends Controller
           }
         }
       </style>
-    html;
+html;
     ///$complemento = PagosDao::getByIdReporte($barcode);
 
 
@@ -699,7 +696,7 @@ class Apertura extends Controller
               </thead>
                   <tbody>
                      
-    html;
+html;
 
 
     $nombreArchivo = "Contrato " . $numero_contrato;
@@ -722,7 +719,7 @@ class Apertura extends Controller
     $extraHeader = <<<html
     <title>Apertura de cuentas </title>
     <link rel="shortcut icon" href="/img/logo.png">
-    html;
+html;
 
     $extraFooter = <<<html
     <script>
@@ -828,7 +825,7 @@ class Apertura extends Controller
             return false
         }
     </script>
-    html;
+html;
 
     $cliente = $_GET['Cliente'];
     $BuscaCliente = AperturaDao::ConsultaClientes($cliente);
@@ -918,7 +915,7 @@ class Apertura extends Controller
           }
         }
       </style>
-    html;
+html;
     ///$complemento = PagosDao::getByIdReporte($barcode);
 
 
@@ -966,7 +963,7 @@ class Apertura extends Controller
               </thead>
                   <tbody>
                      
-    html;
+html;
 
 
     $nombreArchivo = "Contrato " . $numero_contrato;

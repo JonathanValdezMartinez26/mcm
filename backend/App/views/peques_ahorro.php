@@ -38,9 +38,9 @@
                                     <small id="emailHelp" class="form-text text-muted">Número de acreditado MCM</small>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="nombre">Primer nombre*</label>
+                                    <label for="nombre">Nombre completo del CO-TITULAR*</label>
                                     <input type="text" class="form-control" id="nom_cliente" name="nombre1" >
                                 </div>
                             </div>
@@ -76,16 +76,17 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="nombre">Apellido materno*</label>
-                                    <input type="text" class="form-control" id="nom_cliente" name="apellido_p">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
                                     <label for="nombre">Apellido paterno*</label>
                                     <input type="text" class="form-control" id="nom_cliente" name="apellio_m">
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nombre">Apellido materno*</label>
+                                    <input type="text" class="form-control" id="nom_cliente" name="apellido_p">
+                                </div>
+                            </div>
+
                             <div class="col-md-6">
                                 <label for="nombre">Sexo*</label>
                                 <div class="form-group">
@@ -192,7 +193,7 @@
 
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="tipo">Monto máximo</label>
+                                    <label for="tipo">Costo de apertura</label>
                                     <input onkeydown="return false" type="text" class="form-control" id="monto_max" name="monto_max" value="NO APLICA" readonly>
                                     <small id="emailHelp" class="form-text text-muted">Ahorro para cuenta corriente.</small>
                                 </div>

@@ -5,10 +5,10 @@
 
             <div class="col-md-3 panel panel-body" style="margin-bottom: 0px;">
                 <a id="link" href="/Ahorro/CuentaCorriente/">
-                    <div class="col-md-5" style="margin-top: 5px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                        <img src="https://cdn-icons-png.flaticon.com/512/5575/5575939.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
+                    <div class="col-md-5 imagen"  style="margin-top: 5px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/5575/5575938.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                         <p style="font-size: 12px; padding-top: 5px; color: #000000"><b>Ahorro </b></p>
-                        <! -- https://cdn-icons-png.flaticon.com/512/5575/5575938.png -->
+                        <! -- https://cdn-icons-png.flaticon.com/512/5575/5575939.png -->
                     </div>
                 </a>
 
@@ -45,10 +45,10 @@
                 </a>
 
                 <a id="link" href="/Ahorro/SolicitudRetiro/">
-                    <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                        <img src="https://cdn-icons-png.flaticon.com/512/942/942803.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
+                    <div class="col-md-5" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/942/942752.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                         <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Solicitud de retiro </b></p>
-                        <! -- https://cdn-icons-png.flaticon.com/512/942/942752.png -->
+                        <! -- https://cdn-icons-png.flaticon.com/512/942/942803.png -->
                     </div>
                 </a>
 
@@ -76,13 +76,13 @@
                     <div class="modal-content">
                         <div class="modal-header" style="padding-bottom: 0px">
                             <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                                <a class="navbar-brand">Mi espacio / Cuentas de ahorro corriente</a>
+                                <a class="navbar-brand">Mi espacio / Retiros</a>
                                 &nbsp;&nbsp;
                             </div>
                             <div>
                                 <ul class="nav navbar-nav" >
-                                    <li><a onclick=mostrarAhorro() href=""><p style="font-size: 16px;"><b>Ahorro Cuenta Corriente</b></p></a></li>
-                                    <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Nuevo Contrato</p></a></li>
+                                    <li><a onclick=mostrarAhorro() href=""><p style="font-size: 16px;"><b>Solicitud de retiro</b></p></a></li>
+                                    <li class="linea"><a href="/Ahorro/SolicitudRetiroHistorial/"><p style="font-size: 15px;">Historial de solicitudes</p></a></li>
                                 </ul>
                             </div>
                         </div>
@@ -110,7 +110,7 @@
                                                         </div>
                                                         <div class="col-md-2">
                                                             <div class="form-group">
-                                                                <label for="fecha_pago">Fecha del depósito*</label>
+                                                                <label for="fecha_pago">Fecha de la solicitud*</label>
                                                                 <input onkeydown="return false" type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?php echo $Cliente[0]['REGISTRO']; ?>">
                                                             </div>
                                                         </div>
@@ -138,63 +138,75 @@
                                                                 <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" value="<?php echo $Cliente[0]['NOMBRE']; ?>" readonly>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-2">
                                                             <div class="form-group">
-                                                                <label for="nombre_ejecutivo">Nombre del ejecutivo*</label>
-                                                                <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="Ejecutivo de Prueba" readonly>
-                                                                <input type="hidden" class="form-control" id="ejecutivo" name="ejecutivo" value="SOOA">
+                                                                <label for="fecha_pago">Fecha del retiro*</label>
+                                                                <input onkeydown="return false" type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?php echo $Cliente[0]['REGISTRO']; ?>">
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-12"><hr></div>
-                                                        <div class="col-md-6"><h3></h3></div>
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                <label for="contrato">Monto del retiro*</label>
+                                                                <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
+                                                            </div>
+                                                        </div>
 
-                                                        <div class="col-md-1" style="display: flex; justify-content: flex-end;">
-                                                            <h3>$</h3>
-                                                        </div>
-                                                        <div class="col-md-5" style="padding-top: 5px;">
-                                                            <input type="number" class="form-control" id="deposito_inicial" name="deposito_inicial" min="250" max="100000" placeholder="Ingrese el monto a depositar" style="font-size: large; font-size: 30px;" onkeyup=validaDeposito(event)>
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <input type="text" class="form-control" id="deposito_inicial_letra" name="deposito_inicial_letra" style="border: 1px solid #000000; text-align: center; font-size: 28px;" readonly>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
                                                         <div class="col-md-12" style="text-align:center;">
                                                             <hr>
-                                                            <h3>Resumen de movimientos</h3>
-                                                            <br>
+                                                            <h4>Selecciona la cuenta del retiro</h4>
                                                         </div>
                                                     </div>
 
+                                                    <div class="card col-md-12">
+                                                        <form name="all" id="all" method="POST">
+                                                            <div class="dataTable_wrapper">
+                                                                <table class="table table-striped table-bordered table-hover">
+                                                                    <thead>
+                                                                    <tr>
+                                                                        <th></th>
+                                                                        <th>Apertura</th>
+                                                                        <th>Contrato</th>
+                                                                        <th>Cuenta</th>
+                                                                        <th>Saldo Disponible</th>
+                                                                        <th>Cliente(s)</th>
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    <tr style="padding: 0px !important;" role="row" class="odd">
+                                                                        <th><input type="radio" name="contrato" id="contrato1"></th>
+                                                                        <td style="padding: 0px !important;">15/03/2024 12:24:04</td>
+                                                                        <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>0030110147895210 &nbsp;</td>
+                                                                        <td style="padding: 0px !important;"> AHORRO CUENTA CORRIENTE SIMPLE</td>
+                                                                        <td style="padding: 0px !important;">$ 50,000.00</td>
+                                                                        <td style="padding: 0px !important;">EJEMPLO EJEMPLO EJEMPLO</td>
 
+                                                                    </tr>
+                                                                    <tr style="padding: 0px !important;" role="row" class="odd">
+                                                                        <th><input type="radio" name="contrato" id="contrato2"></th>
+                                                                        <td style="padding: 0px !important;">15/03/2024 12:24:04</td>
+                                                                        <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>0030110147895210 &nbsp;</td>
+                                                                        <td style="padding: 0px !important;">AHORRO CUENTA CORRIENTE MANCOMUNADA</td>
+                                                                        <td style="padding: 0px !important;">$ 50,000.00</td>
+                                                                        <td style="padding: 0px !important;">EJEMPLO EJEMPLO EJEMPLO<br>EJEMPLO EJEMPLO EJEMPLO 2</td>
+
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                    </div>
                                                     <div class="row">
-                                                        <div class="col-md-6"></div>
-                                                        <div class="col-md-6">
-                                                            <div class="col-md-8" style="display: flex; justify-content: flex-end;">
-                                                                <h4>Depósito a cuenta ahorro corriente $</h4>
-                                                            </div>
-                                                            <div class="col-md-4" style="display: flex; justify-content: flex-end;">
+                                                        <div>
 
-                                                                <input type="number" class="form-control" id="deposito" name="deposito" value="0.00" readonly>
-                                                            </div>
+                                                            <center>
+                                                                <p style="font-size: 17px;"> El cliente <u>EJEMPLO EJEMPLO EJEMPLO</u>, solicita el retiro de fondos de su cuenta <u>NUMERO_CONTRATO</u>, la cantidad de $0000 <b>(CANTIDAD CON LETRA M.N)</b>, para el día <b>18/03/2024.</b> <input type="checkbox" id="cbox1" value="first_checkbox" /></p>
+                                                            </center>
+
                                                         </div>
+
                                                     </div>
 
-                                                    <div class="row">
-                                                        <div class="col-md-6"></div>
-                                                        <div class="col-md-6">
-                                                            <div class="col-md-8">
-                                                                <h4>Saldo en la cuenta despues del depósito $</h4>
-                                                            </div>
-                                                            <div class="col-md-4">
-                                                                <input type="number" class="form-control" id="saldo_inicial" name="saldo_inicial" value="0.00" readonly>
-                                                                <input type="hidden" class="form-control" id="sma" name="sma" value="<?= $saldoMinimoApertura ?>" readonly>
-                                                                <small style="opacity: 0;" id="tipSaldo">El saldo inicial debe ser mínimo de $<?= $saldoMinimoApertura ?>.00</small>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                     <div class="modal-footer">
-                                                        <button type="button" id="registraDepositoInicial" name="agregar" class="btn btn-primary" value="enviar" onclick=pagoApertura(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Procesar Transaccion</button>
+                                                        <button type="button" id="registraDepositoInicial" name="agregar" class="btn btn-primary" value="enviar" onclick=pagoApertura(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Enviar Solicitud a Tesorería</button>
                                                     </div>
                                                 </form>
                                             </div>

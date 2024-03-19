@@ -28,7 +28,7 @@ class Promociones extends Controller
         $extraHeader = <<<html
         <title>Promociones - Telarana </title>
         <link rel="shortcut icon" href="/img/logo.png">
-        html;
+html;
 
         $extraFooter = <<<html
         <script>
@@ -137,7 +137,7 @@ class Promociones extends Controller
                 return false
             }
         </script>
-        html;
+html;
 
         if ($Credito != '') {
 
@@ -164,7 +164,7 @@ class Promociones extends Controller
                         </div>
                         </br>
                 </div>;
-                html;
+html;
             } else if ($Recomienda['DIAS_ATRASO'] >= 7) {
                 $promocion_estatus =  <<<html
                 <div class="col-md-12 col-sm-12  tile_stats_count">
@@ -177,7 +177,7 @@ class Promociones extends Controller
                         </div>
                         </br>
                 </div>;
-                html;
+html;
             } else if ($Recomienda['CICLO'] == 1) {
                 $promocion_estatus =  <<<html
                 <div class="col-md-12 col-sm-12  tile_stats_count">
@@ -190,7 +190,7 @@ class Promociones extends Controller
                         </div>
                         </br>
                 </div>;
-                html;
+html;
             } else {
                 // $promocion_estatus =  <<<html
                 // <div class="col-md-12 col-sm-12  tile_stats_count">
@@ -210,7 +210,7 @@ class Promociones extends Controller
                         </div>
                         </br>
                 </div>;
-                html;
+html;
             }
 
             if ($Recomienda != NULL) {
@@ -260,7 +260,7 @@ class Promociones extends Controller
                         <td style="padding: 0px !important;"> - </td>
                         <td style="padding: 0px !important;"> <a target="_blank" href="http://25.13.83.206:3883/RptGenerado_empp/default.aspx?&id=27&grupo=$cdgns&ciclo=01"><span class="fa fa-file-pdf-o"> - 01</span></a>. </td>
                     </tr>
-                    html;
+html;
 
                     $aplica = $value['DIAS_ATRASO'] >= 7 ? 'NO' : 'SI';
                     $cumple = $value['DIAS_ATRASO'] >= 7 ? '' : 'checked';
@@ -275,7 +275,7 @@ class Promociones extends Controller
                         <td><span>$</span><span id="desc_{$value['CL_INVITADO']}">$descuento</span></td>
                         <td>$comentario</td>
                     </tr>
-                    html;
+html;
                 }
 
 
@@ -343,7 +343,7 @@ class Promociones extends Controller
                 <td><span>$</span>$descuento</td>
                 <td>$comentario</td>
             </tr>
-            html;
+html;
         }
 
         return $tabla_promociones;

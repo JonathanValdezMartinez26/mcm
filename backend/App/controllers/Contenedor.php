@@ -110,11 +110,10 @@ html;
                             <li><a href="/Apertura/Ahorro/">Ahorro Corriente</a></li> 
                             <li><a href="/Apertura/Inversion">Inversión Plazo Fijo</a></li> 
                             <li><a href="/Apertura/Peques/">Ahorro Peques</a></li>
-                            <li><a href="/CalculadoraRendimiento/Ahorro/">Calculadora de rendimiento</a></li> 
                       </ul>
                 </li>
                      
-                <li><a href="/CajaAhorro/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
+                <li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
                 
                  <li><a><i class="glyphicon glyphicon-gift"> </i>&nbsp; Incentivos <span class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
@@ -127,9 +126,10 @@ html;
                 </li>
                 <li><a><i class="glyphicon glyphicon-tasks"> </i>&nbsp; Cuentas y Saldos ADMIN<span class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
-                            <li><a href="/ReporteAhorro/Clientes/">Saldos del Día</a></li>
                             <li><a href="/ReporteAhorro/Clientes/">Utilidad Cliente</a></li> 
                             <li><a href="/ReporteAhorro/Clientes/">Reporte Solicitud de Retiro </a></li> 
+                            <li><a href="/ReporteAhorro/Clientes/">Saldo de Sucursales </a></li> 
+                            <li><a href="/ReporteAhorro/Clientes/">Fondear Sucursales </a></li> 
                       </ul>
                 </li>
              </ul>
