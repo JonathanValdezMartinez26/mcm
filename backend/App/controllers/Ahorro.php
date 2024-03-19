@@ -930,129 +930,23 @@ html;
         View::render("caja_menu_reimprime_ticket");
     }
 
-    public function Ticket()
+    public function Ticket($ticket)
     {
         $style = <<<html
       <style>
-     
-       .titulo{
-          width:100%;
-          margin-top: 30px;
-          color: #b92020;
-          margin-left:auto;
-          margin-right:auto;
-        }
-        
-        body {
-          padding: 50px;
-        }
-        
-        * {
-          box-sizing: border-box;
-        }
-        
-        .receipt-main {
-          display: inline-block;
-          width: 100%;
-          padding: 15px;
-          font-size: 12px;
-          border: 1px solid #000;
-        }
-        
-        .receipt-title {
-          text-align: center;
-          text-transform: uppercase;
-          font-size: 20px;
-          font-weight: 600;
-          margin: 0;
-        }
-          
-        .receipt-label {
-          font-weight: 600;
-        }
-        
-        .text-large {
-          font-size: 16px;
-        }
-        
-        .receipt-section {
-          margin-top: 10px;
-        }
-        
-        .receipt-footer {
-          text-align: center;
-          background: #ff0000;
-        }
-        
-        .receipt-signature {
-          height: 80px;
-          margin: 50px 0;
-          padding: 0 50px;
-          background: #fff;
-          
-          .receipt-line {
-            margin-bottom: 10px;
-            border-bottom: 1px solid #000;
-          }
-          
-          p {
-            text-align: justify;
-            margin: 0;
-            font-size: 17px;
-          }
-        }
+    
+
       </style>
 html;
-        ///$complemento = PagosDao::getByIdReporte($barcode);
 
-
-        $tabla = <<<html
-        <div class="receipt-main">
-         <table class="table">
-             <tr>
-                 <th style="width: 600px;" class="text-right">
-                    <p class="receipt-title"><b>Recibo de Pago</b></p>
-                 </th>
-                 <th style="width: 10px;" class="text-right">
-                    <img src="img/logo.png" alt="Esta es una descripción alternativa de la imagen para cuando no se pueda mostrar" width="60" height="50" align="left"/>
-                 </th>
-             </tr>
-        </table>
-         
-          <div class="receipt-section pull-left">
-            <span class="receipt-label text-large">#FOLIO:</span>
-            <span class="text-large"><b></b></span>
-          </div>
-          
-           <div class="receipt-section pull-left">
-            <span class="receipt-label text-large">FECHA DE COBRO:</span>
-            <span class="text-large"></span>
-          </div>
-          
-          
-          <div class="clearfix"></div>
-          
-         
-          
-          <hr>
-          
-        
-       <div class="table-responsive-sm">
-          <table class="table">
-              <thead>
-                 <tr>
-                     <th># Crédito</th>
-                     <th>Nombre del Cliente</th>
-                     <th>Ciclo</th>
-                     <th width="19%" class="text-right">Tipo</th>
-                     <th class="text-right">Monto</th>
-                 </tr>
-              </thead>
-                  <tbody>
-                     
+        $contenido = <<<html
+        <div>
+      
+		</div>
 html;
 
 
+<<<<<<< HEAD
         $nombreArchivo = "Contrato ";
         $mpdf = new \mPDF('R', 'A4', 11, 'Arial');
 
@@ -1071,22 +965,107 @@ html;
         $textypos += 6;
         $mpdf->setX(2);
         $mpdf->Cell(5, $textypos, 'CANT.  ARTICULO       PRECIO               TOTAL');
+=======
+        $fecha_op = "19/03/2024 12:15:00";
+        $nombre_cliente = "PRUEBA PRUEBA PRUEBA";
+>>>>>>> 419597aa659220ed320f9f7b7da096fed03822bf
 
 
 
 
-        /////////////////////////////////////
+        $nombreArchivo = "Contrato " . $ticket;
 
-        $mpdf->defaultPageNumStyle = 'I';
-        $mpdf->h2toc = array('H5' => 0, 'H6' => 1);
+        $mpdf = new \mPDF('UTF-8', array(90,190));
+        $mpdf->SetMargins(0, 0 , 10);
         $mpdf->SetTitle($nombreArchivo);
         $mpdf->WriteHTML($style, 1);
-        $mpdf->WriteHTML($tabla, 2);
-        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:opensans;">Este recibo de pago se genero el día ' . date('Y-m-d H:i:s') . '<br>{PAGENO}</div>');
+        $mpdf->WriteHTML($contenido, 2);
+
+        // CABECERA
+        $mpdf->SetFont('Helvetica','',19);
+        $mpdf->Cell(60,4,'Más con Menos',0,1,'C');
+        $mpdf->Ln(2);
+        $mpdf->SetFont('Helvetica','',8);
+        $mpdf->Cell(60,4,'Financiera',0,1,'C');
+        $mpdf->Cell(60,4,'Dirección de la sucursal, C.P 00000',0,1,'C');
+        $mpdf->Cell(60,4,'000 000 00000',0,1,'C');
+        $mpdf->Ln(5);
+        $mpdf->SetFont('Helvetica','',12);
+        $mpdf->Cell(60,4,'RECIBO DE ABONO',0,1,'C');
+        $mpdf->Ln(2);
+        $mpdf->Cell(60,4,'**********************************',0,1,'C');
+
+// DATOS FACTURA
+        $mpdf->Ln(2);
+        $mpdf->SetFont('Helvetica','',9);
+        $mpdf->Cell(60,4,'Fecha de la operación: ' . $fecha_op ,0,1,'');
+        $mpdf->Cell(60,4,'Fecha: 28/10/2019',0,1,'');
+        $mpdf->Cell(60,4,'Metodo de pago: efectivo',0,1,'');
+        $mpdf->Cell(60,4,'Recibio: NOMBRE DE LA CAJERA MCM',0,1,'');
+
+        $mpdf->Ln(2);
+        $mpdf->SetFont('Helvetica','',12);
+        $mpdf->Cell(60,4,'___________________________________',0,1,'C');
+
+        $mpdf->Ln(2);
+        $mpdf->SetFont('Helvetica','',9);
+        $mpdf->Cell(60,4,'Nombre del cliente: ' ,0,1,'');
+        $mpdf->Cell(60,4, $nombre_cliente ,0,1,'');
+        $mpdf->Ln(2);
+        $mpdf->Cell(60,4,'Código de cliente: 000000',0,1,'');
+        $mpdf->Cell(60,4,'Código de contrato: 0000000000000',0,1,'');
+
+        $mpdf->Ln(2);
+        $mpdf->SetFont('Helvetica','',12);
+        $mpdf->Cell(60,4,'___________________________________',0,1,'C');
+        $mpdf->Ln(2);
+        $mpdf->SetFont('Helvetica','',11);
+        $mpdf->Cell(60,4,'CUENTA DE AHORRO CORRIENTE',0,1,'C');
+        $mpdf->Ln(2);
+        $mpdf->Cell(60,4,'RECIBIMOS $1200.00',0,1,'C');
+        $mpdf->SetFont('Helvetica','',9);
+        $mpdf->Cell(60,4,'(UN MIL DOSCIENTOS 00/100 M.N) ',0,1,'C');
+        $mpdf->SetFont('Helvetica','',12);
+        $mpdf->Ln(5);
+        $mpdf->Cell(60,4,'**********************************',0,1,'C');
+        $mpdf->SetFont('Helvetica','',11);
+        $mpdf->Cell(60,4,'ESTADO DE CUENTA',0,1,'C');
+
+        ///////////////////////////////////////
+        // COLUMNAS
+
+        $mpdf->Cell(30, 10, 'SALDO ANTERIOR: ', 0);
+        $mpdf->Cell(33, 10, '$10000.00',2,0,'R');
+        $mpdf->Ln(8);
+        $mpdf->Ln(0);
+
+        $mpdf->Cell(30, 10, 'SU ABONO A CUENTA : ', 0);
+        $mpdf->Cell(33, 10, '$10000.00',2,0,'R');
+        $mpdf->Ln(8);
+        $mpdf->Cell(65,0,'','T');
+        $mpdf->Ln(0);
+
+        $mpdf->Cell(30, 10, 'NUEVO SALDO: ', 0);
+        $mpdf->Cell(33, 10, '$10000.00',2,0,'R');
+        $mpdf->Ln(8);
+        $mpdf->SetFont('Helvetica','',12);
+        $mpdf->Ln(5);
+        $mpdf->Cell(60,4,'**********************************',0,1,'C');
+
+        $mpdf->Ln(2);
+        $mpdf->SetFont('Helvetica','',10);
+        $mpdf->Cell(60,4,'FOLIO DE LA OPERACIÓN',0,1,'C');
+        $mpdf->Ln(2);
+        $mpdf->Cell(60,4,'01050505051400000002024',0,1,'C');
+
+
+
+        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:12px;font-family:opensans;"><br>Este recibo de pago se genero el día <br>' . date('Y-m-d H:i:s') . '<br></div>');
 
         $mpdf->Output($nombreArchivo . '.pdf', 'I');
 
         exit;
+
     }
 
     //////////////////////////////////////////////////
