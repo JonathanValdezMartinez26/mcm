@@ -232,7 +232,9 @@ html;
             $inicio_f = $date_past;
             $fin_f = $fechaActual;
         } else {
-            $date_past = strtotime('-2 days', strtotime($fechaActual)); /////Aqui se dan o se quoitan dias
+
+            ///////agregar funcion para saber si es festivo
+            $date_past = strtotime('-4 days', strtotime($fechaActual)); /////Aqui se dan o se quoitan dias
             $date_past = date('Y-m-d', $date_past);
 
             $inicio_f = $date_past;
