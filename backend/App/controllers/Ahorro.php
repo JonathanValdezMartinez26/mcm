@@ -316,6 +316,26 @@ html;
     }
 
     ///////////////////////////////////////////////////
+
+    public function CuentaPeque()
+    {
+        $extraHeader = <<<html
+        <title>Caja Cobrar</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
+        $extraFooter = <<<html
+        <script>
+           
+        </script>
+html;
+
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("caja_menu_peque");
+
+    }
+
     public function ContratoCuentaPeque()
     {
         $extraHeader = <<<html

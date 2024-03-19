@@ -151,58 +151,7 @@
                 </div>
             </div>
 
-            <form id="registroInicialAhorro" name="registroInicialAhorro">
-                <div class="col-md-8">
-                    <div class="panel panel-body" style="margin-bottom: 0px;">
-                        <div class="x_title">
-                            <h3> Apertura de cuenta Ahorro Peques</h3>
-                        </div>
-                        <p><b><span class="fa fa-sticky-note"></span> Datos básicos de apertura</b></p>
-                        <br>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="Fecha">Fecha de apertura</label>
-                                    <input onkeydown="return false" type="date" class="form-control" id="fecha" name="fecha" min="2024-03-07" max="2024-03-11" value="2024-03-11">
-                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label for="tipo">Tasa Anual</label>
-                                    <select class="form-control mr-sm-3" autofocus="" type="select" id="tasa" name="tasa">
-                                        <option value="5">5 %</option>
-                                    </select>
-                                    <small id="emailHelp" class="form-text text-muted">Rendimiento.</small>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">Monto mínimo</label>
-                                    <input onkeydown="return false" type="text" class="form-control" id="monto_min" name="monto_min" value="$100.00" readonly>
-                                    <small id="emailHelp" class="form-text text-muted">Ahorro para cuenta corriente.</small>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">Monto máximo</label>
-                                    <input onkeydown="return false" type="text" class="form-control" id="monto_max" name="monto_max" value="NO APLICA" readonly>
-                                    <small id="emailHelp" class="form-text text-muted">Ahorro para cuenta corriente.</small>
-                                </div>
-                            </div>
 
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="tipo">Costo de apertura</label>
-                                    <input onkeydown="return false" type="text" class="form-control" id="monto_max" name="monto_max" value="NO APLICA" readonly>
-                                    <small id="emailHelp" class="form-text text-muted">Ahorro para cuenta corriente.</small>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </form>
     </div>
 </div>
 
