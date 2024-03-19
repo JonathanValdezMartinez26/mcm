@@ -104,9 +104,32 @@ sql;
             $mysqli = Database::getInstance();
             $res = $mysqli->queryOne($query);
             if ($res) return self::Responde(true, "Consulta realizada correctamente", $res);
-            return self::Responde(false, "No se encontraron datos para el cliente $cliente", $datos);
+            return self::Responde(false, "No se encontraron datos para el cliente $cliente");
         } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", $datos, $e->getMessage());
+            return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());
+        }
+    }
+
+    public static function BuscaClienteContrato($cliente)
+    {
+        $query = <<<sql
+        SELECT
+            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
+            CL.CURP,
+            (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO) AS CONTRATO
+        FROM
+            CL
+        WHERE
+            CL.CODIGO = '$cliente'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryOne($query);
+            if ($res) return self::Responde(true, "Consulta realizada correctamente", $res);
+            return self::Responde(false, "No se encontraron datos para el cliente $cliente");
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());
         }
     }
 
