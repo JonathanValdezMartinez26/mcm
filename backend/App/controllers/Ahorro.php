@@ -946,33 +946,6 @@ html;
 html;
 
 
-<<<<<<< HEAD
-        $nombreArchivo = "Contrato ";
-        $mpdf = new \mPDF('R', 'A4', 11, 'Arial');
-
-
-
-        ///////////////////////////////////
-
-        $mpdf->AddPage();
-        $textypos = 5;
-        $mpdf->setY(2);
-        $mpdf->setX(2);
-        $mpdf->Cell(5, $textypos, "NOMBRE DE LA EMPRESA");
-        $textypos += 6;
-        $mpdf->setX(2);
-        $mpdf->Cell(5, $textypos, '-------------------------------------------------------------------');
-        $textypos += 6;
-        $mpdf->setX(2);
-        $mpdf->Cell(5, $textypos, 'CANT.  ARTICULO       PRECIO               TOTAL');
-=======
-        $fecha_op = "19/03/2024 12:15:00";
-        $nombre_cliente = "PRUEBA PRUEBA PRUEBA";
->>>>>>> 419597aa659220ed320f9f7b7da096fed03822bf
-
-
-
-
         $nombreArchivo = "Contrato " . $ticket;
 
         $mpdf = new \mPDF('UTF-8', array(90,190));
