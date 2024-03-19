@@ -191,8 +191,36 @@ class Ahorro extends Controller
             }
              
             const validaDeposito = (e) => {
-                const monto = parseFloat(e.target.value)
+                const monto = parseFloat(e.target.value) || 0
+                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
+                const esDeposito = document.querySelector("#deposito").checked
                 document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
+                document.querySelector("#montoOperacion").value = monto.toFixed(2)
+                const saldoFinal = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
+                document.querySelector("#saldoFinal").value = saldoFinal
+                compruebaSaldoFinal(saldoFinal)
+            }
+             
+            const cambioMovimiento = (e) => {
+                const esDeposito = document.querySelector("#deposito").checked
+                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
+                const monto = parseFloat(document.querySelector("#montoOperacion").value) || 0
+                document.querySelector("#saldoFinal").value = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
+                document.querySelector("#simboloOperacion").innerText = esDeposito ? "+" : "-"
+                document.querySelector("#descOperacion").innerText = (esDeposito ? "Depósito" : "Retiro") + " a cuenta ahorro corriente"
+                compruebaSaldoFinal(document.querySelector("#saldoFinal").value)
+            }
+             
+            const compruebaSaldoFinal = saldoFinal => {
+                if (saldoFinal < 0) {
+                    document.querySelector("#saldoFinal").setAttribute("style", "color: red")
+                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
+                } else {
+                    document.querySelector("#saldoFinal").removeAttribute("style")
+                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
+                }
+                document.querySelector("#registraDepositoInicial").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value > 0)
+                
             }
              
             const numeroLetras = (numero) => {
@@ -289,9 +317,10 @@ class Ahorro extends Controller
             
                 const parteEntera = Math.floor(numero)
                 const parteDecimal = Math.round((numero - parteEntera) * 100).toString().padStart(2, "0")
-                return convertir(parteEntera) + (numero == 1 ? ' peso ' : ' pesos ') + parteDecimal + '/100'
+                return convertir(parteEntera) + (numero == 1 ? ' peso ' : ' pesos ') + parteDecimal + '/100 M.N.'
             }
-                const primeraMayuscula = (texto) => {
+             
+            const primeraMayuscula = (texto) => {
                 return texto.charAt(0).toUpperCase() + texto.slice(1)
             }
         </script>
@@ -594,7 +623,7 @@ class Ahorro extends Controller
         
                 const parteEntera = Math.floor(numero)
                 const parteDecimal = Math.round((numero - parteEntera) * 100).toString().padStart(2, "0")
-                return convertir(parteEntera) + (numero == 1 ? ' peso ' : ' pesos ') + parteDecimal + '/100'
+                return convertir(parteEntera) + (numero == 1 ? ' peso ' : ' pesos ') + parteDecimal + '/100 M.N.'
             }
         
             const primeraMayuscula = (texto) => {
@@ -1043,113 +1072,93 @@ html;
 
     public function Ticket($ticket)
     {
-        $style = <<<html
-      <style>
-    
-
-      </style>
-html;
-
-        $contenido = <<<html
-        <div>
-      
-		</div>
-html;
-
-
         $nombreArchivo = "Contrato " . $ticket;
 
-        $mpdf = new \mPDF('UTF-8', array(90,190));
-        $mpdf->SetMargins(0, 0 , 10);
+        $mpdf = new \mPDF('UTF-8', array(90, 190));
+        $mpdf->SetMargins(0, 0, 10);
         $mpdf->SetTitle($nombreArchivo);
-        $mpdf->WriteHTML($style, 1);
-        $mpdf->WriteHTML($contenido, 2);
+        $mpdf->WriteHTML('<div></div>', 2);
 
         // CABECERA
-        $mpdf->SetFont('Helvetica','',19);
-        $mpdf->Cell(60,4,'Más con Menos',0,1,'C');
+        $mpdf->SetFont('Helvetica', '', 19);
+        $mpdf->Cell(60, 4, 'Más con Menos', 0, 1, 'C');
         $mpdf->Ln(2);
-        $mpdf->SetFont('Helvetica','',8);
-        $mpdf->Cell(60,4,'Financiera',0,1,'C');
-        $mpdf->Cell(60,4,'Dirección de la sucursal, C.P 00000',0,1,'C');
-        $mpdf->Cell(60,4,'000 000 00000',0,1,'C');
+        $mpdf->SetFont('Helvetica', '', 8);
+        $mpdf->Cell(60, 4, 'Financiera', 0, 1, 'C');
+        $mpdf->Cell(60, 4, 'Dirección de la sucursal, C.P 00000', 0, 1, 'C');
+        $mpdf->Cell(60, 4, '000 000 00000', 0, 1, 'C');
+
+        // LEYENDA TIPO COMPROBANTE
+        $mpdf->Ln(10);
+        $mpdf->SetFont('Helvetica', '', 12);
+        $mpdf->Cell(60, 4, 'COMPROBANTE DE DEPOSITO', 0, 1, 'C');
+        $mpdf->Ln(3);
+        $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
+
+        // DATOS OPERACION
+        $mpdf->Ln(2);
+        $mpdf->SetFont('Helvetica', '', 9);
+        $mpdf->Cell(60, 4, 'Fecha de la operación: ' . $fecha_op, 0, 1, '');
+        $mpdf->Cell(60, 4, 'Método de pago: Efectivo', 0, 1, '');
+        $mpdf->MultiCell(60, 4, 'Recibió: NOMBRE DE LA CAJERA MCM', 0, 1, '');
+        $mpdf->SetFont('Helvetica', '', 12);
+        $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
+
+        // DATOS CLIENTE
         $mpdf->Ln(5);
-        $mpdf->SetFont('Helvetica','',12);
-        $mpdf->Cell(60,4,'RECIBO DE ABONO',0,1,'C');
-        $mpdf->Ln(2);
-        $mpdf->Cell(60,4,'**********************************',0,1,'C');
+        $mpdf->SetFont('Helvetica', '', 9);
+        $mpdf->MultiCell(60, 4, 'Nombre del cliente: ' . $nombre_cliente, 0, 1, '');
+        $mpdf->Cell(60, 4, 'Código de cliente: 000000', 0, 1, '');
+        $mpdf->Cell(60, 4, 'Código de contrato: 0000000000000', 0, 1, '');
+        $mpdf->SetFont('Helvetica', '', 12);
+        $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
 
-// DATOS FACTURA
-        $mpdf->Ln(2);
-        $mpdf->SetFont('Helvetica','',9);
-        $mpdf->Cell(60,4,'Fecha de la operación: ' . $fecha_op ,0,1,'');
-        $mpdf->Cell(60,4,'Fecha: 28/10/2019',0,1,'');
-        $mpdf->Cell(60,4,'Metodo de pago: efectivo',0,1,'');
-        $mpdf->Cell(60,4,'Recibio: NOMBRE DE LA CAJERA MCM',0,1,'');
-
-        $mpdf->Ln(2);
-        $mpdf->SetFont('Helvetica','',12);
-        $mpdf->Cell(60,4,'___________________________________',0,1,'C');
-
-        $mpdf->Ln(2);
-        $mpdf->SetFont('Helvetica','',9);
-        $mpdf->Cell(60,4,'Nombre del cliente: ' ,0,1,'');
-        $mpdf->Cell(60,4, $nombre_cliente ,0,1,'');
-        $mpdf->Ln(2);
-        $mpdf->Cell(60,4,'Código de cliente: 000000',0,1,'');
-        $mpdf->Cell(60,4,'Código de contrato: 0000000000000',0,1,'');
-
-        $mpdf->Ln(2);
-        $mpdf->SetFont('Helvetica','',12);
-        $mpdf->Cell(60,4,'___________________________________',0,1,'C');
-        $mpdf->Ln(2);
-        $mpdf->SetFont('Helvetica','',11);
-        $mpdf->Cell(60,4,'CUENTA DE AHORRO CORRIENTE',0,1,'C');
-        $mpdf->Ln(2);
-        $mpdf->Cell(60,4,'RECIBIMOS $1200.00',0,1,'C');
-        $mpdf->SetFont('Helvetica','',9);
-        $mpdf->Cell(60,4,'(UN MIL DOSCIENTOS 00/100 M.N) ',0,1,'C');
-        $mpdf->SetFont('Helvetica','',12);
+        // FOLIO DE LA OPERACION
         $mpdf->Ln(5);
-        $mpdf->Cell(60,4,'**********************************',0,1,'C');
-        $mpdf->SetFont('Helvetica','',11);
-        $mpdf->Cell(60,4,'ESTADO DE CUENTA',0,1,'C');
+        $mpdf->SetFont('Helvetica', '', 10);
+        $mpdf->Cell(60, 4, 'FOLIO DE LA OPERACIÓN', 0, 1, 'C');
+        $mpdf->Cell(60, 4, '01050505051400000002024', 0, 1, 'C');
 
-        ///////////////////////////////////////
-        // COLUMNAS
+        // DETALLE DE LA OPERACION
+        $mpdf->Ln(10);
+        $mpdf->SetFont('Helvetica', '', 12);
+        $mpdf->Cell(60, 4, 'CUENTA DE AHORRO CORRIENTE', 0, 1, 'C');
+        $mpdf->Ln(3);
+        $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
 
-        $mpdf->Cell(30, 10, 'SALDO ANTERIOR: ', 0);
-        $mpdf->Cell(33, 10, '$10000.00',2,0,'R');
+        // MONTO DE LA OPERACION
+        $mpdf->Ln(3);
+        $mpdf->SetFont('Helvetica', '', 12);
+        $mpdf->Cell(60, 4, 'RECIBIMOS $1,200.00', 0, 1, 'C');
+        $mpdf->SetFont('Helvetica', '', 8);
+        $mpdf->MultiCell(60, 4, '(UN MIL DOSCIENTOS 00/100 M.N)', 0, 'C');
+        $mpdf->SetFont('Helvetica', '', 12);
+        $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
+
+        // DESGLOSE DE LA OPERACION
+        $mpdf->Ln(4);
+        $mpdf->SetFont('Helvetica', '', 10);
+        $mpdf->Cell(30, 10, 'SALDO ANTERIOR:', 0);
+        $mpdf->Cell(30, 10, '$1,0000.00', 2, 0, 'R');
         $mpdf->Ln(8);
-        $mpdf->Ln(0);
-
-        $mpdf->Cell(30, 10, 'SU ABONO A CUENTA : ', 0);
-        $mpdf->Cell(33, 10, '$10000.00',2,0,'R');
+        $mpdf->Cell(30, 10, 'ABONO A CUENTA :', 0);
+        $mpdf->Cell(30, 10, '$1,0000.00', 2, 0, 'R');
         $mpdf->Ln(8);
-        $mpdf->Cell(65,0,'','T');
-        $mpdf->Ln(0);
+        $mpdf->Cell(30, 10, 'SALDO NUEVO: ', 0);
+        $mpdf->Cell(30, 10, '$1,0000.00', 2, 0, 'R');
 
-        $mpdf->Cell(30, 10, 'NUEVO SALDO: ', 0);
-        $mpdf->Cell(33, 10, '$10000.00',2,0,'R');
-        $mpdf->Ln(8);
-        $mpdf->SetFont('Helvetica','',12);
+        // FIRMAS
+        $mpdf->Ln(20);
+        $mpdf->SetFont('Helvetica', '', 10);
+        $mpdf->Cell(60, 4, 'Firma de conformidad', 0, 1, 'C');
         $mpdf->Ln(5);
-        $mpdf->Cell(60,4,'**********************************',0,1,'C');
+        $mpdf->Cell(60, 0, str_repeat('_', 25), 0, 1, 'C');
 
-        $mpdf->Ln(2);
-        $mpdf->SetFont('Helvetica','',10);
-        $mpdf->Cell(60,4,'FOLIO DE LA OPERACIÓN',0,1,'C');
-        $mpdf->Ln(2);
-        $mpdf->Cell(60,4,'01050505051400000002024',0,1,'C');
-
-
-
-        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:12px;font-family:opensans;"><br>Este recibo de pago se genero el día <br>' . date('Y-m-d H:i:s') . '<br></div>');
+        // PIE DE PAGINA
+        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:11px;font-family:Helvetica;"><br>Fecha de impresión: ' . date('Y-m-d H:i:s') . '</div>');
 
         $mpdf->Output($nombreArchivo . '.pdf', 'I');
-
         exit;
-
     }
 
     //////////////////////////////////////////////////

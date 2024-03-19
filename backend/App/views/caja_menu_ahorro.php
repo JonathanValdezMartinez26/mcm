@@ -151,15 +151,15 @@
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-md-3" style="text-align: center; font-size: 18px; padding-top: 5px;">
+                                                    <div class="col-md-3" style="font-size: 18px; padding-top: 5px;">
                                                         <label>Movimiento:</label>
                                                     </div>
                                                     <div class="col-md-2" style="text-align: center; font-size: 18px; padding-top: 5px;">
-                                                        <input type="radio" name="tipoMovimiento" id="deposito" checked>
+                                                        <input type="radio" name="tipoMovimiento" id="deposito" onchange=cambioMovimiento(event) checked>
                                                         <label for="deposito">Depósito</label>
                                                     </div>
                                                     <div class="col-md-2" style="text-align: center; font-size: 18px; padding-top: 5px;">
-                                                        <input type="radio" name="tipoMovimiento" id="retiro">
+                                                        <input type="radio" name="tipoMovimiento" id="retiro" onchange=cambioMovimiento(event)>
                                                         <label for="retiro">Retiro</label>
                                                     </div>
                                                     <div class="col-md-1" style="display: flex; justify-content: flex-end;">
@@ -182,7 +182,17 @@
                                                     <br>
                                                 </div>
                                             </div>
-
+                                            <div class="row">
+                                                <div class="col-md-8" style="display: flex; justify-content: flex-start;">
+                                                    <h4>Saldo actual cuenta ahorro corriente</h4>
+                                                </div>
+                                                <div class="col-md-1" style="display: flex; justify-content: flex-end;">
+                                                    <h4>$</h4>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="number" class="form-control" id="saldoActual" name="saldoActual" value="1000.00" readonly>
+                                                </div>
+                                            </div>
                                             <div class="row">
                                                 <div class="col-md-1">
                                                     <h4 id="simboloOperacion">+</h4>
@@ -193,19 +203,22 @@
                                                 <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                                     <h4>$</h4>
                                                 </div>
-                                                <div class="col-md-3" style="display: flex; justify-content: flex-end;">
+                                                <div class="col-md-3">
                                                     <input type="number" class="form-control" id="montoOperacion" name="montoOperacion" value="0.00" readonly>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8" style="display: flex; justify-content: flex-start;">
-                                                    <h4>Saldo cuenta ahorro corriente</h4>
+                                                    <h4>Saldo final cuenta ahorro corriente</h4>
                                                 </div>
                                                 <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                                     <h4>$</h4>
                                                 </div>
-                                                <div class="col-md-3" style="display: flex; justify-content: flex-end;">
-                                                    <input type="number" class="form-control" id="saldo" name="saldo" value="0.00" readonly>
+                                                <div class="col-md-3">
+                                                    <input type="number" class="form-control" id="saldoFinal" name="saldoFinal" value="0.00" readonly>
+                                                </div>
+                                                <div class="col-md-12" style="display: flex; justify-content: center; color: red;">
+                                                    <label id="tipSaldo" style="opacity:0">El saldo final no puede ser menor a $0.00.</label>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
