@@ -232,7 +232,9 @@ html;
             $inicio_f = $date_past;
             $fin_f = $fechaActual;
         } else {
-            $date_past = strtotime('-2 days', strtotime($fechaActual)); /////Aqui se dan o se quoitan dias
+
+            ///////agregar funcion para saber si es festivo
+            $date_past = strtotime('-4 days', strtotime($fechaActual)); /////Aqui se dan o se quoitan dias
             $date_past = date('Y-m-d', $date_past);
 
             $inicio_f = $date_past;
@@ -2014,7 +2016,7 @@ html;
                         $inicio_b = $date_past_b;
 
                         ///////////////////////////////////////////////////////////////////////////////////////////////////
-                        if (($inicio_b == $fecha_base) ||   (($fechaActual == $AdministracionOne[2]['FECHA_CAPTURA']) && $fecha_base == '2024-02-06')) // aqui poner el dia en que se estaran capturando
+                        if (($inicio_b == $fecha_base) ||   (($fechaActual == $AdministracionOne[2]['FECHA_CAPTURA']) && $fecha_base == '2024-03-19')) // aqui poner el dia en que se estaran capturando
                         {
                             if ($horaActual <= $hora_cierre) {
                                 $editar = <<<html
