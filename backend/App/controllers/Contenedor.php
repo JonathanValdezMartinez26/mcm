@@ -115,21 +115,15 @@ html;
                      
                 <li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
                 
-                 <li><a><i class="glyphicon glyphicon-gift"> </i>&nbsp; Incentivos <span class="fa fa-chevron-down"></span></a>
-                      <ul class="nav child_menu">
-                            <li><a href="/Incentivos/Calculo/">Calculo de comisiones</a></li> 
-                      </ul>
-                </li>
+                <li><a href="/Incentivos/"><i class="glyphicon glyphicon-adjust"> </i>&nbsp; Cálculo de comisiones </a> </li>
                 
-                <li><a href="/PromocionesAhorro/"><i class="glyphicon glyphicon-hourglass"> </i>&nbsp; Promociones </a>
-                   
+                
+                
                 </li>
                 <li><a><i class="glyphicon glyphicon-tasks"> </i>&nbsp; Cuentas y Saldos ADMIN<span class="fa fa-chevron-down"></span></a>
                       <ul class="nav child_menu">
-                            <li><a href="/ReporteAhorro/Clientes/">Utilidad Cliente</a></li> 
                             <li><a href="/ReporteAhorro/Clientes/">Reporte Solicitud de Retiro </a></li> 
                             <li><a href="/ReporteAhorro/Clientes/">Saldo de Sucursales </a></li> 
-                            <li><a href="/ReporteAhorro/Clientes/">Fondear Sucursales </a></li> 
                       </ul>
                 </li>
              </ul>

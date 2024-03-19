@@ -90,20 +90,17 @@
                                 <div class="col-md-12">
                                     <div class="row">
                                         <div class="card col-md-12">
-                                                <form id="AddPagoApertura">
                                                     <div class="row">
                                                         <div class="col-md-12">
-                                                            <div class="col-md-4">
+                                                            <div class="col-md-6">
                                                                 <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p><hr>
                                                             </div>
                                                         </div>
-
-
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-12" style="text-align:center;">
                                                             <h4>Mi historial de tickets</h4>
-                                                            <br>
+                                                            <hr>
                                                         </div>
                                                     </div>
 
@@ -114,7 +111,8 @@
                                                                     <thead>
                                                                     <tr>
                                                                         <th>ID</th>
-                                                                        <th>Fecha</th>
+                                                                        <th>Contrato</th>
+                                                                        <th>Fecha cobro</th>
                                                                         <th>Monto</th>
                                                                         <th>Cliente</th>
                                                                         <th>Caja</th>
@@ -122,42 +120,12 @@
                                                                     </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                    <tr style="padding: 0px !important;" role="row" class="odd">
-                                                                        <td style="padding: 0px !important;" width="45" nowrap="" onclick="InfoAdmin();"><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>0030110147895210 &nbsp;</td>
-                                                                        <td style="padding: 0px !important;">15/03/2024 12:24:04</td>
-                                                                        <td style="padding: 0px !important;">1200.00</td>
-                                                                        <td style="padding: 0px !important;">EJEMPLO EJEMPLO EJEMPLO</td>
-                                                                        <td style="padding: 0px !important;">AMGM</td>
-                                                                        <td style="padding: 0px !important;" class="center">
-                                                                            <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-print"></i></button>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr style="padding: 0px !important;" role="row" class="odd">
-                                                                        <td style="padding: 0px !important;" width="45" nowrap="" onclick="InfoAdmin();"><span class="count_top" style="font-size: 14px"><i class="fa fa-barcode" style="color: #787b70"></i> </span>0030110147895210</td>
-                                                                        <td style="padding: 0px !important;">15/03/2024 12:24:04</td>
-                                                                        <td style="padding: 0px !important;">1200.00</td>
-                                                                        <td style="padding: 0px !important;">EJEMPLO EJEMPLO EJEMPLO</td>
-                                                                        <td style="padding: 0px !important;">AMGM</td>
-                                                                        <td style="padding: 0px !important;" class="center">
-                                                                            <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-print"></i></button>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr style="padding: 0px !important;" role="row" class="odd">
-                                                                        <td style="padding: 0px !important;" width="45" nowrap="" onclick="InfoAdmin();"><span class="count_top" style="font-size: 14px"><i class="fa fa-barcode" style="color: #787b70"></i> </span>0030110147895210</td>
-                                                                        <td style="padding: 0px !important;">15/03/2024 12:24:04</td>
-                                                                        <td style="padding: 0px !important;">1200.00</td>
-                                                                        <td style="padding: 0px !important;">EJEMPLO EJEMPLO EJEMPLO</td>
-                                                                        <td style="padding: 0px !important;">AMGM</td>
-                                                                        <td style="padding: 0px !important;" class="center">
-                                                                            <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-print"></i></button>
-                                                                        </td>
+                                                                    <?= $tabla; ?>
                                                                     </tr>
                                                                     </tbody>
                                                                 </table>
                                                             </div>
                                                     </div>
-
-                                                </form>
                                             </div>
                                     </div>
                                 </div>
@@ -168,10 +136,70 @@
                 </form>
             </div>
 
-
-
         </div>
     </div>
+
+    <div class="modal fade" id="modal_ticket" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <center><h4 class="modal-title" id="myModalLabel">Reimpresión de tickets</h4></center>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <form onsubmit="enviar_add_sol(); return false" id="Add">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="fecha">Fecha de solicitud*</label>
+                                        <input onkeydown="return false" type="text" class="form-control" id="fecha" name="fecha" value="<?php echo $fecha_actual; ?>" readonly>
+                                        <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="folio">Folio del ticket*</label>
+                                        <input type="text" class="form-control" id="folio" readonly>
+                                        <small id="emailHelp" class="form-text text-muted">Medio de registro del pago.</small>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="tipo">Motivo *</label>
+                                        <select class="form-control mr-sm-3"  autofocus type="select" id="motivo" name="motivo">
+                                            <option value="SE EXTRAVIO">MOTIVO 1</option>
+                                            <option value="SE EXTRAVIO">MOTIVO 2</option>
+                                            <option value="SE EXTRAVIO">MOTIVO 3</option>
+                                            <option value="SE EXTRAVIO">MOTIVO 4</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="tipo">Escriba brevemente el motivo de la reimpresión *</label>
+                                        <textarea type="text" class="form-control" id="direccion" name="direccion" rows="3" cols="50"></textarea>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                    <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Terminar Solicitud</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 
     <style>
         .imagen {
