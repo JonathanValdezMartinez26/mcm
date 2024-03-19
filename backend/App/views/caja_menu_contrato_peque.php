@@ -91,7 +91,7 @@
                                 <div class="col-md-12">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
                                                 <p>Para poder dar de alta un nuevo contrato de una cuenta de Ahorro, el cliente debe estar registrado en SICAFIN, si el cliente no tiene una cuenta abierta solicite el alta a su ADMINISTRADORA.</p><hr>
                                             </div>
                                             <div class="col-md-4">
@@ -108,14 +108,14 @@
                                         <div class="col-md-5">
                                             <p><b><span class="fa fa-sticky-note"></span> Identificación del cliente</b></p>
                                             <br>
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="movil">Fecha de registro</label>
                                                     <input type="text" class="form-control" id="movil" aria-describedby="movil" disabled="" placeholder="" value="<?php echo $Cliente[0]['REGISTRO']; ?>">
                                                     <small id="emailHelp" class="form-text text-muted">Fecha de registro.</small>
                                                 </div>
                                             </div>
-                                            <div class="col-md-5">
+                                            <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="cdgns">Clave de cliente (Co-Titular)</label>
                                                     <input type="number" class="form-control" id="cdgns" name="cdgns" readonly="" value="003011">
