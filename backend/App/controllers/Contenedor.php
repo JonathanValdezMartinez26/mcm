@@ -285,7 +285,6 @@ html;
                 </i>&nbsp;Api Condusef<span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
                    <li><a href="/ApiCondusef/ComplaintsAdd/">Registrar Quejas</a></li>
-                   <li><a href="/ApiCondusef/QueriesComplaints/">Consultar Quejas</a></li>
                   
                   </ul>
                 </li>

@@ -12,21 +12,7 @@
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_usuario">
                     <i class="fa fa-plus"></i> Reportar queja
                 </button>
-                <hr style="border-top: 1px solid #787878; margin-top: 5px" />
-                <div class="dataTable_wrapper">
-                    <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
-                        <thead>
-                            <tr>
-                                <th>Mes</th>
-                                <th>Folio</th>
-                                <th>Fecha</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?= $tabla; ?>
-                        </tbody>
-                    </table>
-                </div>
+
             </div>
         </div>
     </div>

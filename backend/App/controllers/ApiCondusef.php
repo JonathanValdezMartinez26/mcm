@@ -359,6 +359,8 @@ html;
                         else
                             {
                                  return showSuccess("Queja registrada exitosamente bajo el folio: " + document.querySelector("#QuejasFolio").value)
+                                 $('#modal_agregar_usuario').modal('hide');
+                                 location.reload();
                             }
                     }
                     
