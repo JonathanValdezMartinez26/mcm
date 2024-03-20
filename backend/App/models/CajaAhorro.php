@@ -116,7 +116,8 @@ sql;
         SELECT
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
             CL.CURP,
-            (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO) AS CONTRATO
+            (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO) AS CONTRATO,
+            (SELECT SALDO FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO)) AS SALDO
         FROM
             CL
         WHERE
@@ -139,9 +140,9 @@ sql;
 
         $qryAhorro = <<<sql
         INSERT INTO ASIGNA_PROD_AHORRO
-            (CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, BENEFICIARIO_1, CDGCT_PARENTESCO_1, BENEFICIARIO_2, CDGCT_PARENTESCO_2)
+            (CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, SALDO)
         VALUES
-            (:contrato, :cliente, :fecha_apertura, '1', 'A', :beneficiario1, :parentesco1, :beneficiario2, :parentesco2)
+            (:contrato, :cliente, :fecha_apertura, '1', 'A', 0)
         sql;
 
         $resDemo = [
@@ -158,64 +159,92 @@ sql;
         if ($datos['deposito_inicial'] == 0) return self::Responde(false, "El monto de apertura no puede ser de 0");
         if ($datos['saldo_inicial'] < $datos['sma']) return self::Responde(false, "El saldo inicial no puede ser menor a " . $datos['sma']);
 
-        $qryTicket = <<<sql
+        $query = [
+            self::GetQueryTiecket(),
+            self::GetQueryMovimientoAhorro(),
+            self::GetQueryMovimientoAhorro()
+        ];
+
+
+        $datos = [
+            [
+                'contrato' => $datos['contrato'],
+                'monto' => $datos['deposito_inicial'],
+                'ejecutivo' => $datos['ejecutivo']
+            ],
+            [
+                'tipo_pago' => '1',
+                'contrato' => $datos['contrato'],
+                'monto' => $datos['saldo_inicial'],
+                'movimiento' => '1'
+            ],
+            [
+                'tipo_pago' => '2',
+                'contrato' => $datos['contrato'],
+                'monto' => $datos['inscripcion'],
+                'movimiento' => '0'
+            ]
+        ];
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->insertaMultiple($query, $datos);
+            if ($res) return self::Responde(true, "Pago de apertura registrado correctamente");
+            return self::Responde(false, "Ocurrió un error al registrar el pago de apertura");
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al registrar el pago de apertura", null, $e->getMessage());
+        }
+    }
+
+    // public static function RegistraOperacion($datos)
+    // {
+    //     $error = null;
+
+    //     $datosTicket = [
+    //         'contrato' => $datos['contrato'],
+    //         'monto' => $datos['monto'],
+    //         'ejecutivo' => $datos['ejecutivo']
+    //     ];
+
+    //     if (!$ticket['success']) return self::Responde(false, "Ocurrió un error al registrar el ticket de ahorro", null, $ticket['mensaje']);
+
+    //     $registro = [
+    //         'tipo_pago' => $datos['esDeposito'] ? '2' : '3',
+    //         'contrato' => $datos['contrato'],
+    //         'monto' => $datos['monto'],
+    //         'movimiento' => $datos['esDeposito'] ? '1' : '0',
+    //         'ticket' => $ticket['ticket']
+    //     ];
+
+    //     if (!$res['success']) {
+    //         $error = $res['mensaje'];
+    //         $elimminaT = self::EliminaTicket($ticket['ticket']);
+    //         if (!$elimminaT['success']) $error = $elimminaT;
+    //         return self::Responde(false, "Ocurrió un error al registrar el pago.", null, $error);
+    //     }
+
+    //     return self::Responde(true, "Pago registrado correctamente");
+    // }
+
+    public static function GetQueryTiecket()
+    {
+        return <<<sql
         INSERT INTO TICKETS_AHORRO
             (CODIGO, FECHA, CDG_CONTRATO, MONTO, CDGPE)
         VALUES
             ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM TICKETS_AHORRO) + 1, SYSDATE, :contrato, :monto, :ejecutivo)
         sql;
-
-        $datosTicket = [
-            'contrato' => $datos['contrato'],
-            'monto' => $datos['deposito_inicial'],
-            'ejecutivo' => $datos['ejecutivo']
-        ];
-
-        try {
-            $mysqli = Database::getInstance();
-            $ticket = $mysqli->insertar($qryTicket, $datosTicket, true);
-            if (!$ticket) return self::Responde(false, "Ocurrió un error al crear el ticket de ahorro", $datos, $datosTicket);
-
-            $qryPago = <<<sql
-            INSERT INTO MOVIMIENTOS_AHORRO
-                (CODIGO, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, MOVIMIENTO, DESCRIPCION, CDG_TICKET)
-            VALUES
-                ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(TO_NUMBER(CODIGO)) FROM TICKETS_AHORRO))
-            sql;
-
-            $registros = [
-                [
-                    'tipo_pago' => '1',
-                    'contrato' => $datos['contrato'],
-                    'monto' => $datos['inscripcion'],
-                    'movimiento' => '0'
-                ],
-                [
-                    'tipo_pago' => '2',
-                    'contrato' => $datos['contrato'],
-                    'monto' => $datos['saldo_inicial'],
-                    'movimiento' => '1'
-                ]
-            ];
-
-            try {
-                $mysqli = Database::getInstance();
-                $res = $mysqli->insertaMultiple($qryPago, $registros);
-                if ($res === true) return self::Responde(true, "Deposito por apertura de cuenta de ahorro registrado correctamente.");
-                $error = array('datos' => $datos, 'registros' => $registros, 'res' => $res);
-            } catch (Exception $e) {
-                $error = $e->getMessage();
-            }
-            $queryReverso = <<<sql
-            DELETE FROM TICKETS_AHORRO WHERE CODIGO = (SELECT MAX(TO_NUMBER(CODIGO)) FROM TICKETS_AHORRO);
-            sql;
-            $mysqli->eliminar($queryReverso);
-            return self::Responde(false, "Ocurrió un error al registrar los pagos de apertura.", null, $error);
-        } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al procesar los registros de apertura", null, $e->getMessage());
-        }
     }
 
+    public static function GetQueryMovimientoAhorro()
+    {
+        return <<<sql
+        INSERT INTO MOVIMIENTOS_AHORRO
+            (CODIGO, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, MOVIMIENTO, DESCRIPCION, CDG_TICKET, FECHA_VALOR)
+        VALUES
+            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(TO_NUMBER(CODIGO)) AS CODIGO FROM TICKETS_AHORRO WHERE CDG_CONTRATO = :contrato), SYSDATE)
+        sql;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////
 }

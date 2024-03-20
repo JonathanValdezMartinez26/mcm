@@ -31,6 +31,9 @@ class Ahorro extends Controller
 
         $extraFooter = <<<html
         <script>
+            const showError = (mensaje) => swal(mensaje, { icon: "error" })
+            const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })
+         
             const validarYbuscar = (e, buscar) => {
                 if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
                 if (e.keyCode === 13) buscaCliente()
@@ -53,10 +56,11 @@ class Ahorro extends Controller
                         if (!respuesta.success) return showError(respuesta.mensaje)
                         const datosCliente = respuesta.datos
                         
+                        document.querySelector("#nombre").value = datosCliente.NOMBRE
+                        document.querySelector("#curp").value = datosCliente.CURP
                         document.querySelector("#contrato").value = datosCliente.CONTRATO
                         document.querySelector("#cliente").value = noCliente.value
-                        document.querySelector("#curp").value = datosCliente.CURP
-                        document.querySelector("#nombre").value = datosCliente.NOMBRE
+                        document.querySelector("#saldoActual").value = parseFloat(datosCliente.SALDO).toFixed(2)
                         noCliente.value = ""
                     },
                     error: (error) => {
@@ -105,89 +109,6 @@ class Ahorro extends Controller
                 const blob = new Blob([plantilla], { type: "text/html" })
                 const url = URL.createObjectURL(blob)
                 window.open(url, "_blank")
-            }
-             
-            const showError = (mensaje) => swal(mensaje, { icon: "error" })
-            const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })
-             
-            const boton_genera_contrato = async (e, cliente) => {
-                e.preventDefault()
-                try {
-                    const continuar = await swal({
-                        title:
-                            "¿Está seguro de continuar con la apertura de la cuenta de ahorro del cliente: " +
-                            cliente +
-                            "?",
-                        text: "",
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true
-                    })
-            
-                    if (continuar) {
-                        const noCredito = document.querySelector("#cdgns").value
-                        const datos = $("#registroInicialAhorro").serializeArray()
-                        datos.push({ name: "credito", value: noCredito })
-            
-                        const respuesta = await $.ajax({
-                            type: "POST",
-                            url: "/Ahorro/AgregaContrato/",
-                            data: $.param(datos)
-                        })
-                        
-                        if (respuesta == "")
-                            return showError(
-                                "No pudimos generar el contrato, reintenta o contacta a tu Analista Soporte."
-                            )
-                        
-                        const contrato = JSON.parse(respuesta)
-                        await showSuccess("Se ha generado el contrato: " + contrato.contrato)
-                        
-                        document.querySelector("#contrato").value = contrato.contrato
-                        document.querySelector("#codigo_cl").value = noCredito
-                        boton_contrato(contrato.contrato)
-                        
-                        const depositoInicial = await swal({
-                            title: "¿Desea registrar el depósito por apertura de cuenta?",
-                            text: "",
-                            icon: "info",
-                            buttons: true,
-                            dangerMode: true
-                        })
-                        
-                        if (depositoInicial) $("#modal_agregar_pago").modal("show")
-                    }
-                } catch (error) {
-                    console.error(error)
-                }
-                return false
-            }
-             
-            const pagoApertura = (e) => {
-                e.preventDefault()
-                if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura)
-                            
-                const datos = $("#AddPagoApertura").serializeArray()
-                            
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/pagoApertura/",
-                    data: $.param(datos),
-                    success: (respuesta) => {
-                    respuesta = JSON.parse(respuesta)
-                    console.log(respuesta)
-                    if (!respuesta.success) return showError(respuesta.mensaje)
-                
-                    showSuccess(respuesta.mensaje)
-                    document.querySelector("#registroInicialAhorro").reset()
-                    document.querySelector("#AddPagoApertura").reset()
-                    $("#modal_agregar_pago").modal("hide")
-                    },
-                    error: (error) => {
-                    console.error(error)
-                    showError("Ocurrió un error al registrar el pago de apertura.")
-                    }
-                })
             }
              
             const validaDeposito = (e) => {
@@ -323,6 +244,54 @@ class Ahorro extends Controller
             const primeraMayuscula = (texto) => {
                 return texto.charAt(0).toUpperCase() + texto.slice(1)
             }
+             
+            const registraOperacion = (e) => {
+                e.preventDefault()
+                const datos = $("#registroOperacion").serializeArray()
+                $.ajax({
+                    type: "POST",
+                    url: "/Ahorro/registraOperacion/",
+                    data: $.param(datos),
+                    success: (respuesta) => {
+                        respuesta = JSON.parse(respuesta)
+                        if (!respuesta.success){
+                            console.log(respuesta.error)
+                            return showError(respuesta.mensaje)
+                        }
+                        showSuccess(respuesta.mensaje)
+                        imprimeTicket(document.querySelector("#contrato").value)
+                        document.querySelector("#registroOperacion").reset()
+                    },
+                    error: (error) => {
+                        console.error(error)
+                        showError("Ocurrió un error al registrar la operación.")
+                    }
+                })
+            }
+             
+            const imprimeTicket = (ticket) => {
+                const host = window.location.origin
+                
+                let plantilla = "<!DOCTYPE html>"
+                plantilla += '<html lang="es">'
+                plantilla += '<head>'
+                plantilla += '<meta charset="UTF-8">'
+                plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+                plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
+                plantilla += '<title>Ticket: ' + ticket + '</title>'
+                plantilla += '</head>'
+                plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
+                plantilla +=
+                    '<iframe src="' + host + '/Ahorro/Ticket/' +
+                    ticket +
+                    '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
+                plantilla += "</body>"
+                plantilla += "</html>"
+            
+                const blob = new Blob([plantilla], { type: "text/html" })
+                const url = URL.createObjectURL(blob)
+                window.open(url, "_blank")
+            }
         </script>
         html;
 
@@ -336,6 +305,12 @@ class Ahorro extends Controller
     {
         $datos = CajaAhorroDao::BuscaClienteContrato($_POST['cliente']);
         echo $datos;
+    }
+
+    public function RegistraOperacion()
+    {
+        $resutado =  CajaAhorroDao::RegistraOperacion($_POST);
+        echo $resutado;
     }
 
     public function ContratoCuentaCorriente()
@@ -426,8 +401,9 @@ class Ahorro extends Controller
                 window.open(url, "_blank")
             }
             
-            const boton_genera_contrato = async (e, cliente) => {
+            const generaContrato = async (e) => {
                 e.preventDefault()
+                const cliente = document.querySelector("#nombre").value
                 try {
                     const continuar = await swal({
                         title:
@@ -447,7 +423,7 @@ class Ahorro extends Controller
             
                         const respuesta = await $.ajax({
                             type: "POST",
-                            url: "/Ahorro/AgregaContrato/",
+                            url: "/Ahorro/AgregaContratoAhorro/",
                             data: $.param(datos)
                         })
                         
@@ -644,7 +620,7 @@ class Ahorro extends Controller
         echo $datos;
     }
 
-    public function AgregaContrato()
+    public function AgregaContratoAhorro()
     {
         $contrato = CajaAhorroDao::AgregaContratoAhorro($_POST);
         echo $contrato;
@@ -1058,7 +1034,8 @@ html;
         View::render("caja_menu_reimprime_ticket");
     }
 
-    public function AddSolicitudReimpresion(){
+    public function AddSolicitudReimpresion()
+    {
         $solicitud = new \stdClass();
 
         $solicitud->_folio = MasterDom::getData('folio');
