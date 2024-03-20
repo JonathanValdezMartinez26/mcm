@@ -186,7 +186,7 @@ html;
                                                   
                 const showError = (mensaje) => swal(mensaje, { icon: "error" })
                 const showAviso = (mensaje) => swal(mensaje, { icon: "warning" })
-                const showSuccess = (mensaje) => swal(mensaje, { icon: "success" })
+                const showSuccess = (mensaje) => swal(mensaje, { icon: "success" , showConfirmButton: true,}).then((result) => {location.reload();} )
             
                 const consumeAPI = (url, callback, datos = null, tipoDatos = 'json', tipo = "get", token = null, msgError = "") => {
                     $.ajax({
@@ -341,12 +341,12 @@ html;
                         QuejasEdad: Number(document.querySelector("#QuejasEdad").value),
                         QuejasFecResolucion: formatoFecha(document.querySelector("#QuejasFecResolucion").value),
                         QuejasFecNotificacion: formatoFecha(document.querySelector("#QuejasFecNotificacion").value),
-                        QuejasRespuesta: document.querySelector("#QuejasRespuesta").value,
+                        QuejasRespuesta: Number(document.querySelector("#QuejasRespuesta").value),
                         QuejasNumPenal: Number(document.querySelector("#QuejasNumPenal").value),
                         PenalizacionId: Number(document.querySelector("#PenalizacionId").value),
                     }]
                     
-                        console.log(datos);
+                     
                      
                     const procesaRespuesta = (respuesta) => {
                         if (respuesta.errors.length > 0) {
@@ -356,11 +356,13 @@ html;
                             })
                             return showError(mensaje)
                         }
-                         
-                        if (respuesta.addedRows === 1) {
-                            return showSuccess("Queja registrada exitosamente.")
-                        }
+                        else
+                            {
+                                 return showSuccess("Queja registrada exitosamente bajo el folio: " + document.querySelector("#QuejasFolio").value)
+                            }
                     }
+                    
+                    
                                 
                     consumeAPI("https://api.condusef.gob.mx/redeco/quejas", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REDECO.")
                 }

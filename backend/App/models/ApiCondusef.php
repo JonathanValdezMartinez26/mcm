@@ -32,7 +32,7 @@ class ApiCondusef
             SUBPRODUCTO as producto
         FROM
             CAT_PROD_SERV_RED
-        sql;
+sql;
 
         try {
             $mysqli = Database_cultiva::getInstance();
@@ -52,7 +52,7 @@ class ApiCondusef
             DESCRIPCION
         FROM
             CAT_CAUSA_QUEJA_RED
-        sql;
+sql;
 
         try {
             $mysqli = Database_cultiva::getInstance();
