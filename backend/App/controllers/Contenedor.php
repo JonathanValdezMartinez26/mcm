@@ -107,18 +107,8 @@ html;
             
               
                 <li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
-                
                 <li><a href="/Incentivos/"><i class="glyphicon glyphicon-adjust"> </i>&nbsp; Cálculo de comisiones </a> </li>
-                
-                
-                
-                </li>
-                <li><a><i class="glyphicon glyphicon-tasks"> </i>&nbsp; Cuentas y Saldos ADMIN<span class="fa fa-chevron-down"></span></a>
-                      <ul class="nav child_menu">
-                            <li><a href="/ReporteAhorro/Clientes/">Reporte Solicitud de Retiro </a></li> 
-                            <li><a href="/ReporteAhorro/Clientes/">Saldo de Sucursales </a></li> 
-                      </ul>
-                </li>
+                <li><a href="/AdminSucursales/SaldosDiarios/"><i class="glyphicon glyphicon-paste"> </i>&nbsp; Admin Sucursales </a> </li>
              </ul>
           
           <br>

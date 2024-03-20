@@ -922,7 +922,7 @@ html;
     public function ReimprimeTicketSolicitudes()
     {
         $extraHeader = <<<html
-        <title>Reimprime TicketS</title>
+        <title>Solicitudes de reimpresión Tickets</title>
         <link rel="shortcut icon" href="/img/logo.png">
 html;
 
@@ -1038,7 +1038,7 @@ html;
     public function ReimprimeTicket()
     {
         $extraHeader = <<<html
-        <title>Reimprime TicketS</title>
+        <title>Reimprime Tickets</title>
         <link rel="shortcut icon" href="/img/logo.png">
 html;
 
