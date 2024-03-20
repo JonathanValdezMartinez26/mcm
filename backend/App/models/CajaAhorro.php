@@ -6,6 +6,7 @@ defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
 use Exception;
+use DateTime;
 
 class CajaAhorro
 {
@@ -65,48 +66,69 @@ sql;
 
     public static function BuscaClienteNvoContrato($cliente)
     {
-        $query = <<<sql
+        $queryValidacion = <<<sql
         SELECT
-            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
-            CL.CURP,
-            TO_CHAR(CL.REGISTRO, 'DD-MM-YYYY') AS FECHA_REGISTRO,
-            TRUNC(MONTHS_BETWEEN(TO_DATE(SYSDATE, 'dd-mm-yy'), CL.NACIMIENTO)/12)AS EDAD,
-            UPPER((CL.CALLE
-                || ', '
-                || COL.NOMBRE
-                || ', '
-                || LO.NOMBRE
-                || ', '
-                || MU.NOMBRE
-                || ', '
-                || EF.NOMBRE)) AS DIRECCION
+            *
         FROM
-            CL,
-            COL,
-            LO,
-            MU,
-            EF
+            ASIGNA_PROD_AHORRO
         WHERE
-            EF.CODIGO = CL.CDGEF
-            AND MU.CODIGO = CL.CDGMU
-            AND LO.CODIGO = CL.CDGLO
-            AND COL.CODIGO = CL.CDGCOL
-            AND EF.CODIGO = MU.CDGEF
-            AND EF.CODIGO = LO.CDGEF
-            AND EF.CODIGO = COL.CDGEF
-            AND MU.CODIGO = LO.CDGMU
-            AND MU.CODIGO = COL.CDGMU
-            AND LO.CODIGO = COL.CDGLO
-            AND CL.CODIGO = '$cliente'
+            CDGCL = :cliente
         sql;
+
+        $datos = [
+            'cliente' => $cliente
+        ];
 
         try {
             $mysqli = Database::getInstance();
-            $res = $mysqli->queryOne($query);
-            if ($res) return self::Responde(true, "Consulta realizada correctamente", $res);
-            return self::Responde(false, "No se encontraron datos para el cliente $cliente");
+            $res = $mysqli->queryOne($queryValidacion, $datos);
+            if ($res) return self::Responde(false, "El cliente ya cuenta con un contrato de ahorro");
+
+            $query = <<<sql
+            SELECT
+                CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
+                CL.CURP,
+                TO_CHAR(CL.REGISTRO, 'DD-MM-YYYY') AS FECHA_REGISTRO,
+                TRUNC(MONTHS_BETWEEN(TO_DATE(SYSDATE, 'dd-mm-yy'), CL.NACIMIENTO)/12)AS EDAD,
+                UPPER((CL.CALLE
+                    || ', '
+                    || COL.NOMBRE
+                    || ', '
+                    || LO.NOMBRE
+                    || ', '
+                    || MU.NOMBRE
+                    || ', '
+                    || EF.NOMBRE)) AS DIRECCION
+            FROM
+                CL,
+                COL,
+                LO,
+                MU,
+                EF
+            WHERE
+                EF.CODIGO = CL.CDGEF
+                AND MU.CODIGO = CL.CDGMU
+                AND LO.CODIGO = CL.CDGLO
+                AND COL.CODIGO = CL.CDGCOL
+                AND EF.CODIGO = MU.CDGEF
+                AND EF.CODIGO = LO.CDGEF
+                AND EF.CODIGO = COL.CDGEF
+                AND MU.CODIGO = LO.CDGMU
+                AND MU.CODIGO = COL.CDGMU
+                AND LO.CODIGO = COL.CDGLO
+                AND CL.CODIGO = '$cliente'
+            sql;
+
+            try {
+                $mysqli = Database::getInstance();
+                $res = $mysqli->queryOne($query);
+                if ($res) return self::Responde(true, "Consulta realizada correctamente", $res);
+                return self::Responde(false, "No se encontraron datos para el cliente $cliente");
+            } catch (Exception $e) {
+                return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());
+            }
         } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());
+            return self::Responde(false, "Ocurrió un error al validar si el cliente ya cuenta con un contrato de ahorro", null, $e->getMessage());
         }
     }
 
@@ -136,20 +158,49 @@ sql;
 
     public static function AgregaContratoAhorro($datos)
     {
-        $noContrato = $datos['credito'] . date_format(date_create($datos['fecha']), 'Ymd');
-
-        $qryAhorro = <<<sql
-        INSERT INTO ASIGNA_PROD_AHORRO
-            (CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, SALDO)
-        VALUES
-            (:contrato, :cliente, :fecha_apertura, '1', 'A', 0)
+        $queryValidacion = <<<sql
+        SELECT
+            *
+        FROM
+            ASIGNA_PROD_AHORRO
+        WHERE
+            CDGCL = :cliente
         sql;
 
-        $resDemo = [
-            'contrato' => $noContrato,
-            'ahorro' => $qryAhorro,
-        ];
-        return json_encode($resDemo);
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryOne($queryValidacion, ['cliente' => $datos['credito']]);
+            if ($res) return self::Responde(false, "El cliente ya cuenta con un contrato de ahorro");
+
+            $noContrato = $datos['credito'] . date_format(date_create($datos['fecha']), 'Ymd');
+
+            $query = <<<sql
+            INSERT INTO ASIGNA_PROD_AHORRO
+                (CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, SALDO)
+            VALUES
+                (:contrato, :cliente, :fecha_apertura, '1', 'A', 0)
+            sql;
+
+            $fecha = DateTime::createFromFormat('Y-m-d', $datos['fecha']);
+            $fecha = $fecha !== false && $fecha->format('Y-m-d') === $datos['fecha'] ? $fecha->format('d-m-Y') : $datos['fecha'];
+
+            $datos = [
+                'contrato' => $noContrato,
+                'cliente' => $datos['credito'],
+                'fecha_apertura' => $fecha
+            ];
+
+            try {
+                $mysqli = Database::getInstance();
+                $res = $mysqli->insertar($query, $datos);
+                if (!$res) return self::Responde(true, "Contrato de ahorro registrado correctamente", ['contrato' => $noContrato]);
+                return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro");
+            } catch (Exception $e) {
+                return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro", null, $e->getMessage());
+            }
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al validar si el cliente ya cuenta con un contrato de ahorro", null, $e->getMessage());
+        }
     }
 
     public static function AddPagoApertura($datos)
@@ -166,7 +217,7 @@ sql;
         $validacion = [
             'query' => self::GetQueryValidaAhorro(),
             'datos' => ['contrato' => $datos['contrato']],
-            'funcion' => 'validaMovimientosAhorro'
+            'funcion' => [CajaAhorro::class, 'ValidaMovimientoAhorro']
         ];
 
         $datos = [
@@ -206,6 +257,7 @@ sql;
             self::GetQueryMovimientoAhorro()
         ];
 
+        $esDeposito = $datos['esDeposito'] === true || $datos['esDeposito'] === 'true';
 
         $datos = [
             [
@@ -214,14 +266,14 @@ sql;
                 'ejecutivo' => $datos['ejecutivo']
             ],
             [
-                'tipo_pago' => $datos['esDeposito'] ? '3' : '4',
+                'tipo_pago' => $esDeposito ? '3' : '4',
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['montoOperacion'],
-                'movimiento' => $datos['esDeposito'] ? '1' : '0'
+                'movimiento' => $esDeposito ? '1' : '0'
             ]
         ];
 
-        $tipoMov = $datos['esDeposito'] ? "depósito" : "retiro";
+        $tipoMov = $esDeposito ? "depósito" : "retiro";
 
         try {
             $mysqli = Database::getInstance();
@@ -233,7 +285,7 @@ sql;
         }
     }
 
-    public static function validaMovimientoAhorro($validar)
+    public static function ValidaMovimientoAhorro($validar)
     {
         $resultado = [
             'success' => true,

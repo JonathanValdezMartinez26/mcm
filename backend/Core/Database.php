@@ -87,12 +87,12 @@ class Database
         }
     }
 
-    public function insertar($sql, $datos, $getID = false)
+    public function insertar($sql, $datos)
     {
         try {
-            if ($getID === false)  return $this->_mysqli->prepare($sql)->execute($datos);
-
-            return $this->_mysqli->prepare($sql)->execute($datos);
+            if (!$this->_mysqli->prepare($sql)->execute($datos)) {
+                throw new \Exception("Error en insertar: " . print_r($this->_mysqli->errorInfo(), 1) . "\nSql : $sql \nDatos : " . print_r($datos, 1));
+            }
         } catch (\PDOException $e) {
             throw new \Exception("Error en insertar: " . $e->getMessage() . "\nSql : $sql");
         }

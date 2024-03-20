@@ -53,8 +53,11 @@ class Ahorro extends Controller
                     url: "/Ahorro/BuscaContrato/",
                     data: { cliente: noCliente.value },
                     success: (respuesta) => {
+                        limpiaDatosCliente()
                         respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) return showError(respuesta.mensaje)
+                        if (!respuesta.success) {
+                            return showError(respuesta.mensaje)
+                        }
                         const datosCliente = respuesta.datos
                         
                         document.querySelector("#nombre").value = datosCliente.NOMBRE
@@ -62,6 +65,7 @@ class Ahorro extends Controller
                         document.querySelector("#contrato").value = datosCliente.CONTRATO
                         document.querySelector("#cliente").value = noCliente.value
                         document.querySelector("#saldoActual").value = parseFloat(datosCliente.SALDO).toFixed(2)
+                        document.querySelector("#monto").disabled = false
                         noCliente.value = ""
                     },
                     error: (error) => {
@@ -73,11 +77,9 @@ class Ahorro extends Controller
             }
              
             const limpiaDatosCliente = () => {
+                document.querySelector("#AddPagoApertura").reset()
                 document.querySelector("#fecha_pago").value = getHoy()
-                document.querySelector("#contrato").value = ""
-                document.querySelector("#cliente").value = ""
-                document.querySelector("#curp").value = ""
-                document.querySelector("#nombre").value = ""
+                document.querySelector("#monto").disabled = true
             }
              
             const getHoy = () => {
@@ -114,6 +116,12 @@ class Ahorro extends Controller
              
             const validaDeposito = (e) => {
                 const monto = parseFloat(e.target.value) || 0
+                if (monto <= 0) {
+                    e.preventDefault()
+                    e.target.value = ""
+                    return showError("El monto a depositar debe ser mayor a 0")
+                }
+                 
                 const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
                 const esDeposito = document.querySelector("#deposito").checked
                 document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
@@ -249,6 +257,13 @@ class Ahorro extends Controller
             const registraOperacion = (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
+                
+                datos.forEach((dato) => {
+                    if (dato.name === "esDeposito") {
+                        dato.value = document.querySelector("#deposito").checked
+                    }
+                })
+                 
                 $.ajax({
                     type: "POST",
                     url: "/Ahorro/registraOperacion/",
@@ -350,7 +365,10 @@ class Ahorro extends Controller
                     data: { cliente: noCliente.value },
                     success: (respuesta) => {
                         respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) return showError(respuesta.mensaje)
+                        if (!respuesta.success) {
+                            limpiaDatosCliente()
+                            return showError(respuesta.mensaje)
+                        }
                         const datosCliente = respuesta.datos
                          
                         document.querySelector("#fechaRegistro").value = datosCliente.FECHA_REGISTRO
@@ -360,6 +378,10 @@ class Ahorro extends Controller
                         document.querySelector("#edad").value = datosCliente.EDAD
                         document.querySelector("#direccion").value = datosCliente.DIRECCION
                         noCliente.value = ""
+                        document.querySelector("#beneficiario_1").disabled = false
+                        document.querySelector("#parentesco_1").disabled = false
+                        document.querySelector("#porcentaje_1").disabled = false
+                        document.querySelector("#btnBen1").disabled = false
                     },
                     error: (error) => {
                         console.error(error)
@@ -370,12 +392,20 @@ class Ahorro extends Controller
             }
              
             const limpiaDatosCliente = () => {
+                document.querySelector("#registroInicialAhorro").reset()
+                 
                 document.querySelector("#fechaRegistro").value = ""
                 document.querySelector("#noCliente").value = ""
                 document.querySelector("#nombre").value = ""
                 document.querySelector("#curp").value = ""
                 document.querySelector("#edad").value = ""
                 document.querySelector("#direccion").value = ""
+                document.querySelector("#beneficiario_1").disabled = true
+                document.querySelector("#parentesco_1").disabled = true
+                document.querySelector("#porcentaje_1").disabled = true
+                document.querySelector("#btnBen1").disabled = true
+                document.querySelector("#ben2").style.opacity = "0"
+                document.querySelector("#ben3").style.opacity = "0"
             }
              
             const boton_contrato = (numero_contrato) => {
@@ -422,18 +452,19 @@ class Ahorro extends Controller
                         const datos = $("#registroInicialAhorro").serializeArray()
                         datos.push({ name: "credito", value: noCredito })
             
-                        const respuesta = await $.ajax({
+                        let respuesta = await $.ajax({
                             type: "POST",
                             url: "/Ahorro/AgregaContratoAhorro/",
                             data: $.param(datos)
                         })
                         
-                        if (respuesta == "")
-                            return showError(
-                                "No pudimos generar el contrato, reintenta o contacta a tu Analista Soporte."
-                            )
+                        respuesta = JSON.parse(respuesta)
+                        if (!respuesta.success) {
+                            console.error(respuesta.error)
+                            return showError(respuesta.mensaje)
+                        }
                         
-                        const contrato = JSON.parse(respuesta)
+                        const contrato = respuesta.datos
                         await showSuccess("Se ha generado el contrato: " + contrato.contrato)
                         
                         document.querySelector("#fecha_pago").value = getHoy()
@@ -472,7 +503,6 @@ class Ahorro extends Controller
                     data: $.param(datos),
                     success: (respuesta) => {
                         respuesta = JSON.parse(respuesta)
-                        console.log(respuesta)
                         if (!respuesta.success) return showError(respuesta.mensaje)
                     
                         showSuccess(respuesta.mensaje)
@@ -605,6 +635,87 @@ class Ahorro extends Controller
         
             const primeraMayuscula = (texto) => {
                 return texto.charAt(0).toUpperCase() + texto.slice(1)
+            }
+             
+            const camposLlenos = () => {
+                const val = () => {
+                    const porcentaje = 0
+                    for (let i = 1; i <= 3; i++) {
+                        if (document.querySelector("#ben" + i).style.opacity === "1") {
+                            if (!document.querySelector("#beneficiario_" + i).value) return false
+                            if (!document.querySelector("#parentesco_" + i).value) return false
+                            if (!document.querySelector("#porcentaje_" + i).value) return false
+                        }
+                        porcentaje += parseFloat(document.querySelector("#porcentaje_" + i).value) || 0
+                    }
+                    if (porcentaje > 100) showError("El porcentaje total no puede ser mayor a 100%")
+                    if (porcentaje < 100) showError("El porcentaje total no puede ser menor a 100%")
+                     
+                    return porcentaje === 100
+                }
+                document.querySelector("#btnGeneraContrato").disabled = !val()
+            }
+             
+            const validaPorcentaje = (e) => {
+                let porcentaje = 0
+                for (let i = 1; i <= 3; i++) {
+                    const porcentajeBeneficiario = parseFloat(document.getElementById(`porcentaje_` + i).value) || 0
+                    porcentaje += porcentajeBeneficiario
+                }
+                if (porcentaje > 100) {
+                    e.preventDefault()
+                    e.target.value = ""
+                    return showError("La suma de los porcentajes no puede ser mayor a 100%")
+                }
+                 
+                camposLlenos()
+            }
+             
+            const toggleBeneficiario = (numBeneficiario) => {
+                const ben = document.getElementById(`ben` + numBeneficiario)
+                ben.style.opacity = ben.style.opacity === "0" ? "1" : "0"
+            }
+             
+            const toggleButtonIcon = (btnId, show) => {
+                const btn = document.getElementById(btnId)
+                btn.innerHTML = show ? '<i class="fa fa-minus"></i>' : '<i class="fa fa-plus"></i>'
+            }
+             
+            const addBeneficiario = (event) => {
+                const btn = event.target === event.currentTarget ? event.target : event.target.parentElement
+                 
+                if (btn.innerHTML.trim() === '<i class="fa fa-plus"></i>') {
+                    toggleBeneficiario(parseInt(btn.id.split("btnBen")[1])+1)
+                    toggleButtonIcon(btn.id, true)
+                } else {
+                    toggleButtonIcon(btn.id, false)
+                    for (let i = 3; i > 0; i--) {
+                        if (document.getElementById(`ben` + i).style.opacity === "1") {
+                            moveData(i, i-1)
+                            toggleBeneficiario(i)
+                            break
+                        }
+                    }
+                }
+            }
+             
+            const moveData = (from, to) => {
+                const beneficiarioFrom = document.getElementById(`beneficiario_` + from)
+                const parentescoFrom = document.getElementById(`parentesco_` + from)
+                const porcentajeFrom = document.getElementById(`porcentaje_` + from)
+                 
+                const beneficiarioTo = document.getElementById(`beneficiario_` + to)
+                const parentescoTo = document.getElementById(`parentesco_` + to)
+                const porcentajeTo = document.getElementById(`porcentaje_` + to)
+                 
+                //if (!beneficiarioTo.value) return
+                beneficiarioTo.value = beneficiarioFrom.value
+                parentescoTo.value = parentescoFrom.value
+                porcentajeTo.value = porcentajeFrom.value
+                 
+                beneficiarioFrom.value = ""
+                parentescoFrom.value = ""
+                porcentajeFrom.value = ""
             }
         </script>
         html;

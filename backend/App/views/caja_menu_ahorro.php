@@ -155,18 +155,18 @@
                                                         <label>Movimiento:</label>
                                                     </div>
                                                     <div class="col-md-2" style="text-align: center; font-size: 18px; padding-top: 5px;">
-                                                        <input type="radio" name="tipoMovimiento" id="deposito" onchange=cambioMovimiento(event) checked>
+                                                        <input type="radio" name="esDeposito" id="deposito" onchange=cambioMovimiento(event) checked>
                                                         <label for="deposito">Depósito</label>
                                                     </div>
                                                     <div class="col-md-2" style="text-align: center; font-size: 18px; padding-top: 5px;">
-                                                        <input type="radio" name="tipoMovimiento" id="retiro" onchange=cambioMovimiento(event)>
+                                                        <input type="radio" name="esDeposito" id="retiro" onchange=cambioMovimiento(event)>
                                                         <label for="retiro">Retiro</label>
                                                     </div>
                                                     <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                                         <h3>$</h3>
                                                     </div>
                                                     <div class="col-md-4" style="padding-top: 5px;">
-                                                        <input type="number" class="form-control" id="monto" name="monto" min="250" max="100000" placeholder="0.00" style="font-size: large; font-size: 25px;" onkeyup=validaDeposito(event)>
+                                                        <input type="number" class="form-control" id="monto" name="monto" min="250" max="100000" placeholder="0.00" style="font-size: large; font-size: 25px;" oninput=validaDeposito(event) disabled>
                                                     </div>
                                                 </div>
                                                 <div class="row">

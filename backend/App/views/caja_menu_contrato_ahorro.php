@@ -156,92 +156,42 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-8">
+                                    <div class="col-md-8" style="min-height: 400px;">
                                         <form id="registroInicialAhorro" name="registroInicialAhorro">
                                             <p><b><span class="fa fa-sticky-note"></span> Datos básicos de apertura para la cuenta de Ahorro Corriente</b></p>
-                                            <br>
                                             <div class="row">
-                                                <div class="col-md-3">
+                                                <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="Fecha">Fecha de apertura</label>
                                                         <input onkeydown="return false" type="date" class="form-control" id="fecha" name="fecha" min="2024-03-07" max="2024-03-11" value="2024-03-11">
-                                                        <small class="form-text text-muted">Fecha de registro en sistema.</small>
+                                                        <!-- <small class="form-text text-muted">Fecha de registro en sistema.</small> -->
                                                     </div>
                                                 </div>
-
-                                                <div class="col-md-2">
+                                                <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="tipo">Tasa Anual</label>
                                                         <select class="form-control mr-sm-3" autofocus="" type="select" id="tasa" name="tasa">
                                                             <option value="5">5 %</option>
                                                         </select>
-                                                        <small class="form-text text-muted">Rendimiento.</small>
+                                                        <!-- <small class="form-text text-muted">Rendimiento.</small> -->
                                                     </div>
                                                 </div>
-
-                                                <div class="col-md-3">
+                                                <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="tipo">Monto mínimo</label>
                                                         <input onkeydown="return false" type="text" class="form-control" id="monto_min" name="monto_min" value="$100.00" readonly>
-                                                        <small class="form-text text-muted">Ahorro para cuenta corriente.</small>
+                                                        <!-- <small class="form-text text-muted">Ahorro para cuenta corriente.</small> -->
                                                     </div>
                                                 </div>
-
-                                                <div class="col-md-3">
+                                            </div>
+                                            <!-- <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="tipo">Monto máximo</label>
                                                         <input onkeydown="return false" type="text" class="form-control" id="monto_max" name="monto_max" value="NO APLICA" readonly>
                                                         <small class="form-text text-muted">Ahorro para cuenta corriente.</small>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label for="tipo">Beneficiario 1 </label>
-                                                            <input type="text" class="form-control" id="beneficiario1" name="beneficiario1" required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label for="tipo">Parentesco Beneficiario 1</label>
-                                                            <select class="form-control mr-sm-3" id="parentesco1" name="parentesco1" required>
-                                                                <option value="1">Padre/Madre</option>
-                                                                <option value="2">Esposo/Esposa</option>
-                                                                <option value="3">Hijo/Hija</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label for="tipo">Porcentaje Beneficiario 1</label>
-                                                            <input type="number" min=1 max=100 class="form-control" id="porcentaje1" name="porcentaje1" required>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label for="tipo">Beneficiario 2 </label>
-                                                            <input type="text" class="form-control" id="beneficiario2" name="beneficiario2" required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label for="tipo">Parentesco Beneficiario 2</label>
-                                                            <select class="form-control mr-sm-3" id="parentesco2" name="parentesco2">
-                                                                <option value="1">Padre/Madre</option>
-                                                                <option value="2">Esposo/Esposa</option>
-                                                                <option value="3">Hijo/Hija</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label for="tipo">Porcentaje Beneficiario 2</label>
-                                                            <input type="number" min=1 max=100 class="form-control" id="porcentaje2" name="porcentaje2" required>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                </div> -->
+                                            <div class="row">
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="Fecha">Sucursal</label>
@@ -266,14 +216,78 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6"></div>
-                                                <div class="col-md-5 col-sm-4  tile_stats_count">
-                                                    <div class="count" style="font-size: 35px; color: #368a05">
-                                                        <button type="button" name="procesar_pagos" id="procesar_pagos" class="btn btn-primary" onclick=generaContrato(event) style="border: 1px solid #c4a603; background: #FFFFFF" data-keyboard="false">
-                                                            <i class="fa fa-spinner" style="color: #1c4e63"></i> <span style="color: #1E283D"><b>GUARDAR DATOS Y PROCEDER AL COBRO </b></span>
-                                                        </button>
-                                                    </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label for="tipo">Beneficiario</label>
                                                 </div>
+                                                <div class="col-md-4">
+                                                    <label for="tipo">Parentesco</label>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="tipo">Porcentaje</label>
+                                                </div>
+                                            </div>
+                                            <div class="row" id="ben1">
+                                                <div class="col-md-4">
+                                                    <input type="text" class="form-control" id="beneficiario_1" name="beneficiario_1" oninput=camposLlenos(event) disabled>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <select class="form-control mr-sm-3" id="parentesco_1" name="parentesco_1" oninput=camposLlenos(event) disabled>
+                                                        <option value="1">Padre/Madre</option>
+                                                        <option value="2">Esposo/Esposa</option>
+                                                        <option value="3">Hijo/Hija</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_1" name="porcentaje_1" value="100" oninput=validaPorcentaje(event) disabled>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <button type="button" id="btnBen1" class="btn btn-primary" onclick=addBeneficiario(event)>
+                                                        <i class="fa fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row" id="ben2" style="opacity:0">
+                                                <div class="col-md-4">
+                                                    <input type="text" class="form-control" id="beneficiario_2" name="beneficiario_2">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <select class="form-control mr-sm-3" id="parentesco_2" name="parentesco_2">
+                                                        <option value="1">Padre/Madre</option>
+                                                        <option value="2">Esposo/Esposa</option>
+                                                        <option value="3">Hijo/Hija</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_2" name="porcentaje_2" oninput=validaPorcentaje(event)>
+                                                </div>
+                                                <div class=" col-md-1">
+                                                    <button type="button" id="btnBen2" class="btn btn-primary" onclick=addBeneficiario(event)>
+                                                        <i class="fa fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row" id="ben3" style="opacity:0">
+                                                <div class="col-md-4">
+                                                    <input type="text" class="form-control" id="beneficiario_3" name="beneficiario_3">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <select class="form-control mr-sm-3" id="parentesco_3" name="parentesco_3">
+                                                        <option value="1">Padre/Madre</option>
+                                                        <option value="2">Esposo/Esposa</option>
+                                                        <option value="3">Hijo/Hija</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_3" name="porcentaje_3" oninput=validaPorcentaje(event)>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer" style="margin-top:40px;">
+                                                <button type="button" name="btnGeneraContrato" id="btnGeneraContrato" class="btn btn-primary" onclick="generaContrato(event)" style="border: 1px solid #c4a603; background: #ffffff" data-keyboard="false" disabled>
+                                                    <i class="fa fa-spinner" style="color: #1c4e63"></i>
+                                                    <span style="color: #1e283d"><b>GUARDAR DATOS Y PROCEDER AL COBRO </b></span>
+                                                </button>
                                             </div>
                                         </form>
                                     </div>
