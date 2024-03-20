@@ -356,11 +356,10 @@ html;
                             })
                             return showError(mensaje)
                         }
-                         
-                        if (respuesta.addedRows === 1) {
-                            return showSuccess("Queja registrada exitosamente.")
-                        }
-                        console.log(respuesta);
+                        else
+                            {
+                                 return showSuccess("Queja registrada exitosamente bajo el folio: " + document.querySelector("#QuejasFolio").value)
+                            }
                     }
                     
                     
