@@ -6,6 +6,7 @@ defined("APPPATH") or die("Access denied");
 
 use \Core\View;
 use \Core\Controller;
+use \Core\MasterDom;
 use \App\models\CajaAhorro as CajaAhorroDao;
 use \App\models\Ahorro as AhorroDao;
 
@@ -918,6 +919,122 @@ html;
     }
 
     //////////////////////////////////////////////////
+    public function ReimprimeTicketSolicitudes()
+    {
+        $extraHeader = <<<html
+        <title>Reimprime TicketS</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
+        $extraFooter = <<<html
+        <script>
+           $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+           "lengthMenu": [
+                    [10, 50, -1],
+                    [10, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+        });
+           
+        function Reimprime_ticket(folio)
+        {
+              
+              $('#modal_ticket').modal('show');
+              document.getElementById("folio").value = folio;
+             
+        }
+        
+        function enviar_add_sol()
+        {
+             $('#modal_ticket').modal('hide');
+             swal({
+                   title: "¿Está segura de continuar?",
+                   text: "",
+                   icon: "warning",
+                   buttons: ["Cancelar", "Continuar"],
+                   dangerMode: false
+                   })
+                   .then((willDelete) => {
+                   if (willDelete) {
+                      
+                        $.ajax({
+                        type: 'POST',
+                        url: '/Ahorro/AddSolicitudReimpresion/',
+                        data: $('#Add').serialize(),
+                        success: function(respuesta) {
+                        if(respuesta=='1')
+                        {
+                            swal("Registro guardado exitosamente", {
+                                       icon: "success",
+                                 });
+                            location.reload();
+                                            
+                        }
+                        else {
+                              $('#modal_encuesta_cliente').modal('hide')
+                                      swal(respuesta, {
+                                      icon: "error",
+                                     });
+                                                
+                              }
+                         }
+                            });
+                         }
+                        else {
+                                    $('#modal_ticket').modal('show');
+                              }
+                        });
+        }
+        </script>
+html;
+
+        $Consulta = AhorroDao::ConsultaSolicitudesTickets($this->__usuario);
+        $tabla = "";
+
+        foreach ($Consulta as $key => $value) {
+            $monto = number_format($value['MONTO'], 2);
+
+            $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                   <td style="padding: 0px !important;">{$value['CODIGO']} </td>
+                    <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>{$value['CDG_CONTRATO']} &nbsp;</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_ALTA']} </td>
+                    <td style="padding: 0px !important;">$ {$monto}</td>
+                    <td style="padding: 0px !important;"></td>
+                    <td style="padding: 0px !important;">{$value['CDGPE']}</td>
+                    <td style="padding: 0px !important;" class="center">
+                         <button type="button" class="btn btn-success btn-circle" onclick="Reimprime_ticket('{$value['CODIGO']}');"><i class="fa fa-print"></i></button>
+                    </td>
+                </td>
+html;
+        }
+
+        $fecha_y_hora = date("Y-m-d H:i:s");
+
+
+
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('tabla', $tabla);
+        View::set('fecha_actual', $fecha_y_hora);
+        View::render("caja_menu_reimprime_ticket_historial");
+    }
+
     public function ReimprimeTicket()
     {
         $extraHeader = <<<html
@@ -1044,7 +1161,7 @@ html;
 
         $id = AhorroDao::insertSolicitudAhorro($solicitud);
 
-        return 0;
+        return $id;
     }
 
     public function Ticket($ticket)

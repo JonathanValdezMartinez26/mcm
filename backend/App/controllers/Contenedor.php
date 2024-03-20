@@ -105,14 +105,7 @@ html;
            <h3>General WEB AHORRO</h3>
             <ul class="nav side-menu">     
             
-                <li><a><i class="glyphicon glyphicon-folder-open"></i>&nbsp; Apertura de Cuentas <span class="fa fa-chevron-down"></span></a>
-                      <ul class="nav child_menu">
-                            <li><a href="/Apertura/Ahorro/">Ahorro Corriente</a></li> 
-                            <li><a href="/Apertura/Inversion">Inversión Plazo Fijo</a></li> 
-                            <li><a href="/Apertura/Peques/">Ahorro Peques</a></li>
-                      </ul>
-                </li>
-                     
+              
                 <li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
                 
                 <li><a href="/Incentivos/"><i class="glyphicon glyphicon-adjust"> </i>&nbsp; Cálculo de comisiones </a> </li>

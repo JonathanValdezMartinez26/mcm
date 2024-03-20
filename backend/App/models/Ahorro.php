@@ -35,6 +35,31 @@ sql;
         return $mysqli->queryAll($query);
     }
 
+    public static function ConsultaSolicitudesTickets($usuario)
+    {
+        if($usuario == 'AMGM')
+        {
+            $query=<<<sql
+            SELECT CODIGO, CDGTICKET_AHORRO, FREGISTRO, FREIMPRESION, MOTIVO, ESTATUS, CDGPE_SOLICITA, CDGPE_AUTORIZA, AUTORIZA, DESCRIPCION_MOTIVO, AUTORIZA_CLIENTE
+            FROM ESIACOM.TICKETS_AHORRO_REIMPRIME
+
+            
+sql;
+        }
+        else{
+            $query=<<<sql
+            SELECT CODIGO, CDGTICKET_AHORRO, FREGISTRO, FREIMPRESION, MOTIVO, ESTATUS, CDGPE_SOLICITA, CDGPE_AUTORIZA, AUTORIZA, DESCRIPCION_MOTIVO, AUTORIZA_CLIENTE
+            FROM ESIACOM.TICKETS_AHORRO_REIMPRIME
+            WHERE CDGPE_SOLICITA = '$usuario' 
+            ORDER BY FECHA DESC
+sql;
+        }
+
+
+        $mysqli = Database::getInstance();
+        return $mysqli->queryAll($query);
+    }
+
 
     public static function insertSolicitudAhorro($solicitud){
 
@@ -43,8 +68,8 @@ sql;
         //Agregar un registro
         $query=<<<sql
         INSERT INTO ESIACOM.TICKETS_AHORRO_REIMPRIME
-        (CODIGO, FECHA, CDG_CONTRATO, MONTO, CDGPE)
-        VALUES('6', TIMESTAMP '2024-03-15 15:21:09.000000', '00301120240311', 500, 'SOOA');
+        (CODIGO, CDGTICKET_AHORRO, FREGISTRO, FREIMPRESION, MOTIVO, ESTATUS, CDGPE_SOLICITA, CDGPE_AUTORIZA, AUTORIZA, DESCRIPCION_MOTIVO, FAUTORIZA, AUTORIZA_CLIENTE)
+        VALUES('1', '1', TIMESTAMP '2024-03-15 15:21:09.000000', TIMESTAMP '2024-03-15 15:21:09.000000', 'MOTIVO 1', '1', '1', '1', '1', '1', TIMESTAMP '2024-03-15 15:21:09.000000', '1')
 sql;
 
         return $mysqli->insert($query);

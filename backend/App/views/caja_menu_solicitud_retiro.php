@@ -140,7 +140,7 @@
                                                         </div>
                                                         <div class="col-md-2">
                                                             <div class="form-group">
-                                                                <label for="fecha_pago">Fecha del retiro*</label>
+                                                                <label for="fecha_pago">Fecha estimada del retiro*</label>
                                                                 <input onkeydown="return false" type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?php echo $Cliente[0]['REGISTRO']; ?>">
                                                             </div>
                                                         </div>
