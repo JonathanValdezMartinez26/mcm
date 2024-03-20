@@ -186,7 +186,7 @@ html;
                                                   
                 const showError = (mensaje) => swal(mensaje, { icon: "error" })
                 const showAviso = (mensaje) => swal(mensaje, { icon: "warning" })
-                const showSuccess = (mensaje) => swal(mensaje, { icon: "success" })
+                const showSuccess = (mensaje) => swal(mensaje, { icon: "success" , showConfirmButton: true,}).then((result) => {location.reload();} )
             
                 const consumeAPI = (url, callback, datos = null, tipoDatos = 'json', tipo = "get", token = null, msgError = "") => {
                     $.ajax({
@@ -359,8 +359,6 @@ html;
                         else
                             {
                                  return showSuccess("Queja registrada exitosamente bajo el folio: " + document.querySelector("#QuejasFolio").value)
-                                 $('#modal_agregar_usuario').modal('hide');
-                                 location.reload();
                             }
                     }
                     
