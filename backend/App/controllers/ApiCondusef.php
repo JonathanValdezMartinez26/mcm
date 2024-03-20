@@ -346,7 +346,7 @@ html;
                         PenalizacionId: Number(document.querySelector("#PenalizacionId").value),
                     }]
                     
-                        console.log(datos);
+                     
                      
                     const procesaRespuesta = (respuesta) => {
                         if (respuesta.errors.length > 0) {
@@ -360,7 +360,10 @@ html;
                         if (respuesta.addedRows === 1) {
                             return showSuccess("Queja registrada exitosamente.")
                         }
+                        console.log(respuesta);
                     }
+                    
+                    
                                 
                     consumeAPI("https://api.condusef.gob.mx/redeco/quejas", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REDECO.")
                 }
