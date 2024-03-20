@@ -79,12 +79,10 @@
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
-                                <li><a onclick=mostrarAhorro() href="">
-                                        <p style="font-size: 16px;"><b>Ahorro Cuenta Corriente</b></p>
-                                    </a></li>
-                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/">
-                                        <p style="font-size: 15px;">Nuevo Contrato</p>
-                                    </a></li>
+                                <li><a onclick=mostrarAhorro() href=""><p style="font-size: 16px;"><b>Ahorro Cuenta Corriente</b></p></a></li>
+                                <li class="linea"><a href="/Ahorro/SolicitudRetiroCuentaCorriente/"><p style="font-size: 15px;">Solicitud de Retiro</p></a></li>
+                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Nuevo Contrato</p></a></li>
+                                <li class="linea"><a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/"><p style="font-size: 15px;">Historial Solicitud de Retiro</p></a></li>
                             </ul>
                         </div>
                     </div>

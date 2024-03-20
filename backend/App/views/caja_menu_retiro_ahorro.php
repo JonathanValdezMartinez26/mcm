@@ -80,8 +80,8 @@
                         <div>
                             <ul class="nav navbar-nav">
                                 <li class="linea"><a href="/Ahorro/CuentaCorriente/"><p style="font-size: 15px;">Ahorro Cuenta Corriente</p></a></li></a></li>
-                                <li class="linea"><a href="/Ahorro/SolicitudRetiroCuentaCorriente/"><p style="font-size: 15px;">Solicitud de Retiro</p></a></li></a></li>
-                                <li><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 16px;"><b>Nuevo Contrato</b></p></a></li>
+                                <li><a href="/Ahorro/SolicitudRetiroCuentaCorriente/"><p style="font-size: 16px;"><b>Solicitud de Retiro</b></p></a></li></a></li>
+                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Nuevo Contrato</p>
                                 <li class="linea"><a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/"><p style="font-size: 15px;">Historial Solicitud de Retiro</p></a></li>
                             </ul>
                         </div>
@@ -90,204 +90,123 @@
                         <div class="container-fluid">
                             <div class="col-md-12">
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="col-md-4">
-                                            <p>Para poder dar de alta un nuevo contrato de una cuenta de Ahorro, el cliente debe estar registrado en SICAFIN, si el cliente no tiene una cuenta abierta solicite el alta a su ADMINISTRADORA.</p>
-                                            <hr>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="movil">Código de cliente (SICAFIN)*</label>
-                                            <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" placeholder="000000">
-                                        </div>
-
-                                        <div class="col-md-2" style="padding-top: 25px">
-                                            <button type="button" class="btn btn-primary" onclick="buscaCliente()">
-                                                <i class="fa fa-search"></i> Buscar
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p><b><span class="fa fa-sticky-note"></span> Identificación del cliente</b></p>
-                                        <br>
-                                        <div class="card col-md-12">
+                                    <div class="card col-md-12">
+                                        <form id="AddPagoApertura">
                                             <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="fechaRegistro">Fecha de registro</label>
-                                                        <input type="text" class="form-control" id="fechaRegistro" readonly>
-                                                        <small class="form-text text-muted">Fecha de registro.</small>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="noCliente">Clave de cliente</label>
-                                                        <input type="number" class="form-control" id="noCliente" readonly>
-                                                        <small class="form-text text-muted">Número de acreditado MCM</small>
-                                                    </div>
-                                                </div>
                                                 <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label for="nombre">Nombre del cliente</label>
-                                                        <input type="text" class="form-control" id="nombre" readonly>
+                                                    <div class="col-md-4">
+                                                        <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p><hr>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label for="movil">Clave de contrato o código del cliente (SICAFIN)</label>
+                                                        <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="Cliente" name="Cliente" value="" placeholder="000000" required>
+                                                    </div>
+
+                                                    <div class="col-md-2" style="padding-top: 25px">
+                                                        <button type="button" class="btn btn-primary" onclick="buscaCliente()">
+                                                            <i class="fa fa-search"></i> Buscar
+                                                        </button>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-8">
+                                                <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <label for="curp">CURP</label>
-                                                        <input type="text" class="form-control" id="curp" readonly="">
+                                                        <label for="fecha_pago">Fecha de la solicitud*</label>
+                                                        <input onkeydown="return false" type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?php echo $Cliente[0]['REGISTRO']; ?>">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="contrato">Número de contrato*</label>
+                                                        <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <label for="codigo_cl">Número cliente SICAFIN*</label>
+                                                        <input type="number" class="form-control" id="codigo_cl" name="codigo_cl" value="<?php echo $credito; ?>" readonly>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <label for="edad">Edad</label>
-                                                        <input type="text" class="form-control" id="edad" readonly>
+                                                        <label for="nombre">CURP*</label>
+                                                        <input type="text" class="form-control" id="curp_" name="curp_" readonly="" value="<?php echo $Cliente[0]['CURP']; ?>">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <div class="form-group">
+                                                        <label for="nombre_cliente">Nombre del cliente*</label>
+                                                        <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" value="<?php echo $Cliente[0]['NOMBRE']; ?>" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <label for="fecha_pago">Fecha estimada del retiro*</label>
+                                                        <input onkeydown="return false" type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?php echo $Cliente[0]['REGISTRO']; ?>">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <label for="contrato">Monto del retiro*</label>
+                                                        <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label for="direccion">Dirección</label>
-                                                        <textarea type="text" style="resize: none;" class="form-control" id="direccion" rows="3" cols="50" readonly>
-                                                        </textarea>
+                                                <div class="col-md-12" style="text-align:center;">
+                                                    <hr>
+                                                    <h4>Selecciona la cuenta del retiro</h4>
+                                                </div>
+                                            </div>
+
+                                            <div class="card col-md-12">
+                                                <form name="all" id="all" method="POST">
+                                                    <div class="dataTable_wrapper">
+                                                        <table class="table table-striped table-bordered table-hover">
+                                                            <thead>
+                                                            <tr>
+                                                                <th></th>
+                                                                <th>Apertura</th>
+                                                                <th>Contrato</th>
+                                                                <th>Cuenta</th>
+                                                                <th>Saldo Disponible</th>
+                                                                <th>Cliente(s)</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr style="padding: 0px !important;" role="row" class="odd">
+                                                                <th><input type="radio" name="contrato" id="contrato1"></th>
+                                                                <td style="padding: 0px !important;">15/03/2024 12:24:04</td>
+                                                                <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>0030110147895210 &nbsp;</td>
+                                                                <td style="padding: 0px !important;"> AHORRO CUENTA CORRIENTE SIMPLE</td>
+                                                                <td style="padding: 0px !important;">$ 50,000.00</td>
+                                                                <td style="padding: 0px !important;">EJEMPLO EJEMPLO EJEMPLO</td>
+
+                                                            </tr>
+                                                            <tr style="padding: 0px !important;" role="row" class="odd">
+                                                                <th><input type="radio" name="contrato" id="contrato2"></th>
+                                                                <td style="padding: 0px !important;">15/03/2024 12:24:04</td>
+                                                                <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>0030110147895210 &nbsp;</td>
+                                                                <td style="padding: 0px !important;">AHORRO CUENTA CORRIENTE MANCOMUNADA</td>
+                                                                <td style="padding: 0px !important;">$ 50,000.00</td>
+                                                                <td style="padding: 0px !important;">EJEMPLO EJEMPLO EJEMPLO<br>EJEMPLO EJEMPLO EJEMPLO 2</td>
+
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
                                                     </div>
+                                            </div>
+                                            <div class="row">
+                                                <div>
+
+                                                    <center>
+                                                        <p style="font-size: 17px;"> El cliente <u>EJEMPLO EJEMPLO EJEMPLO</u>, solicita el retiro de fondos de su cuenta <u>NUMERO_CONTRATO</u>, la cantidad de $0000 <b>(CANTIDAD CON LETRA M.N)</b>, para el día <b>18/03/2024.</b> <input type="checkbox" id="cbox1" value="first_checkbox" /></p>
+                                                    </center>
+
                                                 </div>
 
                                             </div>
-                                        </div>
-                                    </div>
 
-                                    <div class="col-md-8" style="min-height: 400px;">
-                                        <form id="registroInicialAhorro" name="registroInicialAhorro">
-                                            <p><b><span class="fa fa-sticky-note"></span> Datos básicos de apertura para la cuenta de Ahorro Corriente</b></p>
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="Fecha">Fecha de apertura</label>
-                                                        <input onkeydown="return false" type="date" class="form-control" id="fecha" name="fecha" min="2024-03-07" max="2024-03-11" value="2024-03-11">
-                                                        <!-- <small class="form-text text-muted">Fecha de registro en sistema.</small> -->
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="tipo">Tasa Anual</label>
-                                                        <select class="form-control mr-sm-3" autofocus="" type="select" id="tasa" name="tasa">
-                                                            <option value="5">5 %</option>
-                                                        </select>
-                                                        <!-- <small class="form-text text-muted">Rendimiento.</small> -->
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="tipo">Monto mínimo</label>
-                                                        <input onkeydown="return false" type="text" class="form-control" id="monto_min" name="monto_min" value="$100.00" readonly>
-                                                        <!-- <small class="form-text text-muted">Ahorro para cuenta corriente.</small> -->
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="tipo">Monto máximo</label>
-                                                        <input onkeydown="return false" type="text" class="form-control" id="monto_max" name="monto_max" value="NO APLICA" readonly>
-                                                        <small class="form-text text-muted">Ahorro para cuenta corriente.</small>
-                                                    </div>
-                                                </div> -->
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="Fecha">Sucursal</label>
-                                                        <select class="form-control mr-sm-3" id="sucursal" name="sucursal">
-                                                            <option value="1514">CORPORATIVO</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="Fecha">Ejecutivo</label>
-                                                        <select class="form-control mr-sm-3" id="ejecutivo" name="ejecutivo">
-                                                            <option value="135">Ejecutivo Prueba</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="Fecha">Manejo de cuenta</label>
-                                                        <select class="form-control mr-sm-3" id="manejo_cta" name="manejo_cta" readonly>
-                                                            <option value="1">Aplica</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <label for="tipo">Beneficiario</label>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label for="tipo">Parentesco</label>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label for="tipo">Porcentaje</label>
-                                                </div>
-                                            </div>
-                                            <div class="row" id="ben1">
-                                                <div class="col-md-4">
-                                                    <input type="text" class="form-control" id="beneficiario_1" name="beneficiario_1" oninput=camposLlenos(event) disabled>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <select class="form-control mr-sm-3" id="parentesco_1" name="parentesco_1" oninput=camposLlenos(event) disabled>
-                                                        <option value="1">Padre/Madre</option>
-                                                        <option value="2">Esposo/Esposa</option>
-                                                        <option value="3">Hijo/Hija</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_1" name="porcentaje_1" value="100" oninput=validaPorcentaje(event) disabled>
-                                                </div>
-                                                <div class="col-md-1">
-                                                    <button type="button" id="btnBen1" class="btn btn-primary" onclick=addBeneficiario(event)>
-                                                        <i class="fa fa-plus"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="row" id="ben2" style="opacity:0">
-                                                <div class="col-md-4">
-                                                    <input type="text" class="form-control" id="beneficiario_2" name="beneficiario_2">
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <select class="form-control mr-sm-3" id="parentesco_2" name="parentesco_2">
-                                                        <option value="1">Padre/Madre</option>
-                                                        <option value="2">Esposo/Esposa</option>
-                                                        <option value="3">Hijo/Hija</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_2" name="porcentaje_2" oninput=validaPorcentaje(event)>
-                                                </div>
-                                                <div class=" col-md-1">
-                                                    <button type="button" id="btnBen2" class="btn btn-primary" onclick=addBeneficiario(event)>
-                                                        <i class="fa fa-plus"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="row" id="ben3" style="opacity:0">
-                                                <div class="col-md-4">
-                                                    <input type="text" class="form-control" id="beneficiario_3" name="beneficiario_3">
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <select class="form-control mr-sm-3" id="parentesco_3" name="parentesco_3">
-                                                        <option value="1">Padre/Madre</option>
-                                                        <option value="2">Esposo/Esposa</option>
-                                                        <option value="3">Hijo/Hija</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_3" name="porcentaje_3" oninput=validaPorcentaje(event)>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer" style="margin-top:40px;">
-                                                <button type="button" name="btnGeneraContrato" id="btnGeneraContrato" class="btn btn-primary" onclick="generaContrato(event)" style="border: 1px solid #c4a603; background: #ffffff" data-keyboard="false" disabled>
-                                                    <i class="fa fa-spinner" style="color: #1c4e63"></i>
-                                                    <span style="color: #1e283d"><b>GUARDAR DATOS Y PROCEDER AL COBRO </b></span>
-                                                </button>
+                                            <div class="modal-footer">
+                                                <button type="button" id="registraDepositoInicial" name="agregar" class="btn btn-primary" value="enviar" onclick=pagoApertura(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Enviar Solicitud a Tesorería</button>
                                             </div>
                                         </form>
                                     </div>

@@ -898,6 +898,24 @@ html;
         View::render("caja_menu_contrato_inversion");
     }
 
+    public function SolicitudRetiroCuentaCorriente()
+    {
+        $extraHeader = <<<html
+        <title>Caja Cobrar</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
+        $extraFooter = <<<html
+        <script>
+           
+        </script>
+html;
+
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("caja_menu_retiro_ahorro");
+    }
+
     public function ConsultaInversion()
     {
         $extraHeader = <<<html
@@ -993,23 +1011,7 @@ html;
     }
 
     //////////////////////////////////////////////////
-    public function SolicitudRetiro()
-    {
-        $extraHeader = <<<html
-        <title>Caja Cobrar</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
 
-        $extraFooter = <<<html
-        <script>
-           
-        </script>
-html;
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render("caja_menu_solicitud_retiro");
-    }
 
     public function SolicitudRetiroHistorial()
     {
