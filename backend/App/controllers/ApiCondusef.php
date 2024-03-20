@@ -341,7 +341,7 @@ html;
                         QuejasEdad: Number(document.querySelector("#QuejasEdad").value),
                         QuejasFecResolucion: formatoFecha(document.querySelector("#QuejasFecResolucion").value),
                         QuejasFecNotificacion: formatoFecha(document.querySelector("#QuejasFecNotificacion").value),
-                        QuejasRespuesta: document.querySelector("#QuejasRespuesta").value,
+                        QuejasRespuesta: Number(document.querySelector("#QuejasRespuesta").value),
                         QuejasNumPenal: Number(document.querySelector("#QuejasNumPenal").value),
                         PenalizacionId: Number(document.querySelector("#PenalizacionId").value),
                     }]
