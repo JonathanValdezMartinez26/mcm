@@ -98,7 +98,7 @@ class Database
         }
     }
 
-    public function insertaMultiple($sql, $registros)
+    public function insertaMultiple($sql, $registros, $validacion = null)
     {
         try {
             $this->_mysqli->beginTransaction();
@@ -110,6 +110,18 @@ class Database
                     throw new \Exception("Error: " . print_r($stmt->errorInfo(), 1) . "\nSql : " . $sql . "\nDatos : " . print_r($valores, 1));
                 }
             }
+
+            if ($validacion != null) {
+                $stmt = $this->_mysqli->prepare($validacion['query']);
+                $stmt->execute($validacion['datos']);
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                $resValidacion = $validacion['funcion']($result);
+                if ($resValidacion['success'] == false) {
+                    $this->_mysqli->rollBack();
+                    throw new \Exception($resValidacion['mensaje']);
+                }
+            }
+
             $this->_mysqli->commit();
             return true;
         } catch (\PDOException $e) {

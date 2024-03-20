@@ -154,8 +154,6 @@ sql;
 
     public static function AddPagoApertura($datos)
     {
-        $error = null;
-
         if ($datos['deposito_inicial'] == 0) return self::Responde(false, "El monto de apertura no puede ser de 0");
         if ($datos['saldo_inicial'] < $datos['sma']) return self::Responde(false, "El saldo inicial no puede ser menor a " . $datos['sma']);
 
@@ -165,6 +163,11 @@ sql;
             self::GetQueryMovimientoAhorro()
         ];
 
+        $validacion = [
+            'query' => self::GetQueryValidaAhorro(),
+            'datos' => ['contrato' => $datos['contrato']],
+            'funcion' => 'validaMovimientosAhorro'
+        ];
 
         $datos = [
             [
@@ -175,7 +178,7 @@ sql;
             [
                 'tipo_pago' => '1',
                 'contrato' => $datos['contrato'],
-                'monto' => $datos['saldo_inicial'],
+                'monto' => $datos['deposito'],
                 'movimiento' => '1'
             ],
             [
@@ -188,7 +191,7 @@ sql;
 
         try {
             $mysqli = Database::getInstance();
-            $res = $mysqli->insertaMultiple($query, $datos);
+            $res = $mysqli->insertaMultiple($query, $datos, $validacion);
             if ($res) return self::Responde(true, "Pago de apertura registrado correctamente");
             return self::Responde(false, "Ocurrió un error al registrar el pago de apertura");
         } catch (Exception $e) {
@@ -196,35 +199,53 @@ sql;
         }
     }
 
-    // public static function RegistraOperacion($datos)
-    // {
-    //     $error = null;
+    public static function RegistraOperacion($datos)
+    {
+        $query = [
+            self::GetQueryTiecket(),
+            self::GetQueryMovimientoAhorro()
+        ];
 
-    //     $datosTicket = [
-    //         'contrato' => $datos['contrato'],
-    //         'monto' => $datos['monto'],
-    //         'ejecutivo' => $datos['ejecutivo']
-    //     ];
 
-    //     if (!$ticket['success']) return self::Responde(false, "Ocurrió un error al registrar el ticket de ahorro", null, $ticket['mensaje']);
+        $datos = [
+            [
+                'contrato' => $datos['contrato'],
+                'monto' => $datos['montoOperacion'],
+                'ejecutivo' => $datos['ejecutivo']
+            ],
+            [
+                'tipo_pago' => $datos['esDeposito'] ? '3' : '4',
+                'contrato' => $datos['contrato'],
+                'monto' => $datos['montoOperacion'],
+                'movimiento' => $datos['esDeposito'] ? '1' : '0'
+            ]
+        ];
 
-    //     $registro = [
-    //         'tipo_pago' => $datos['esDeposito'] ? '2' : '3',
-    //         'contrato' => $datos['contrato'],
-    //         'monto' => $datos['monto'],
-    //         'movimiento' => $datos['esDeposito'] ? '1' : '0',
-    //         'ticket' => $ticket['ticket']
-    //     ];
+        $tipoMov = $datos['esDeposito'] ? "depósito" : "retiro";
 
-    //     if (!$res['success']) {
-    //         $error = $res['mensaje'];
-    //         $elimminaT = self::EliminaTicket($ticket['ticket']);
-    //         if (!$elimminaT['success']) $error = $elimminaT;
-    //         return self::Responde(false, "Ocurrió un error al registrar el pago.", null, $error);
-    //     }
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->insertaMultiple($query, $datos);
+            if ($res) return self::Responde(true, "El " . $tipoMov . " fue registrado correctamente");
+            return self::Responde(false, "Ocurrió un error al registrar el " . $tipoMov);
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al registrar el " . $tipoMov, null, $e->getMessage());
+        }
+    }
 
-    //     return self::Responde(true, "Pago registrado correctamente");
-    // }
+    public static function validaMovimientoAhorro($validar)
+    {
+        $resultado = [
+            'success' => true,
+            'mensaje' => ""
+        ];
+
+        if (count($validar) > 0) return $resultado;
+
+        $resultado['success'] = false;
+        $resultado['mensaje'] = "Se detecto diferencia entre el registro del ticket y los movimiento de ahorro";
+        return $resultado;
+    }
 
     public static function GetQueryTiecket()
     {
@@ -243,6 +264,43 @@ sql;
             (CODIGO, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, MOVIMIENTO, DESCRIPCION, CDG_TICKET, FECHA_VALOR)
         VALUES
             ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(TO_NUMBER(CODIGO)) AS CODIGO FROM TICKETS_AHORRO WHERE CDG_CONTRATO = :contrato), SYSDATE)
+        sql;
+    }
+
+    public static function GetQueryValidaAhorro()
+    {
+        return <<<sql
+        SELECT
+            *
+        FROM
+            (
+            SELECT
+                T.CODIGO AS TC,
+                T.MONTO AS TM,
+                MA.CODIGO AS MC,
+                MA.MONTO AS MM,
+                NVL(T.MONTO,0) - NVL(MA.MONTO,0) AS DIFERENCIA
+            FROM
+                TICKETS_AHORRO T
+            FULL JOIN
+                (
+                SELECT
+                    M.CDG_TICKET AS CODIGO,
+                    SUM(CASE M.MOVIMIENTO
+                        WHEN '1' THEN M.MONTO
+                        ELSE -M.MONTO
+                    END) AS MONTO
+                FROM
+                    MOVIMIENTOS_AHORRO M
+                GROUP BY
+                    M.CDG_TICKET
+                ) MA
+            ON T.CODIGO = MA.CODIGO
+            WHERE
+                T.CDG_CONTRATO = :contrato
+            )
+        WHERE
+            DIFERENCIA != 0
         sql;
     }
 
