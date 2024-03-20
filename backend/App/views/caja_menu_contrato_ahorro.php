@@ -269,7 +269,7 @@
                                                 <div class="col-md-6"></div>
                                                 <div class="col-md-5 col-sm-4  tile_stats_count">
                                                     <div class="count" style="font-size: 35px; color: #368a05">
-                                                        <button type="button" name="procesar_pagos" id="procesar_pagos" class="btn btn-primary" onclick="boton_genera_contrato(event, '<?php echo $Cliente[0]['NOMBRE']; ?>');" style="border: 1px solid #c4a603; background: #FFFFFF" data-keyboard="false">
+                                                        <button type="button" name="procesar_pagos" id="procesar_pagos" class="btn btn-primary" onclick=generaContrato(event) style="border: 1px solid #c4a603; background: #FFFFFF" data-keyboard="false">
                                                             <i class="fa fa-spinner" style="color: #1c4e63"></i> <span style="color: #1E283D"><b>GUARDAR DATOS Y PROCEDER AL COBRO </b></span>
                                                         </button>
                                                     </div>

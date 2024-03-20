@@ -70,7 +70,7 @@
         </div>
 
         <div class="col-md-9">
-            <form id="registroInicialAhorro" name="registroInicialAhorro">
+            <form id="registroOperacion" name="registroOperacion">
                 <div class="modal-content">
                     <div class="modal-header" style="padding-bottom: 0px">
                         <div class="navbar-header card col-md-12" style="background: #2b2b2b">
@@ -190,7 +190,7 @@
                                                     <h4>$</h4>
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <input type="number" class="form-control" id="saldoActual" name="saldoActual" value="1000.00" readonly>
+                                                    <input type="number" class="form-control" id="saldoActual" name="saldoActual" value="0.00" readonly>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -222,7 +222,7 @@
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" id="registraDepositoInicial" name="agregar" class="btn btn-primary" value="enviar" onclick=pagoApertura(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Procesar Transaccion</button>
+                                                <button type="button" id="registraDepositoInicial" name="agregar" class="btn btn-primary" value="enviar" onclick=registraOperacion(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Procesar Transaccion</button>
                                             </div>
                                         </form>
                                     </div>
@@ -230,13 +230,9 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </form>
         </div>
-
-
-
     </div>
 </div>
 

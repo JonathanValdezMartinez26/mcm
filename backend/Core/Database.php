@@ -92,9 +92,9 @@ class Database
         try {
             if ($getID === false)  return $this->_mysqli->prepare($sql)->execute($datos);
 
-            return $this->_mysqli->prepare($sql)->execute($datos); //? $this->_mysqli->lastInsertId() : "Error sql :" . $sql . "\nDatos : " . print_r($datos, 1);
+            return $this->_mysqli->prepare($sql)->execute($datos);
         } catch (\PDOException $e) {
-            return "Error sql : " . $e->getMessage() . "\nSql : $sql";
+            throw new \Exception("Error en insertar: " . $e->getMessage() . "\nSql : $sql");
         }
     }
 
@@ -102,31 +102,28 @@ class Database
     {
         try {
             $this->_mysqli->beginTransaction();
-            $stmt = $this->_mysqli->prepare($sql);
-            foreach ($registros as $valores) {
+            foreach ($registros as $i => $valores) {
+                $stmt = $this->_mysqli->prepare($sql[$i]);
                 $result = $stmt->execute($valores);
                 if (!$result) {
                     $this->_mysqli->rollBack();
-                    return "Error: " . print_r($stmt->errorInfo(), 1) . "\nSql : " . $sql . "\nDatos : " . print_r($valores, 1);
+                    throw new \Exception("Error: " . print_r($stmt->errorInfo(), 1) . "\nSql : " . $sql . "\nDatos : " . print_r($valores, 1));
                 }
             }
             $this->_mysqli->commit();
             return true;
         } catch (\PDOException $e) {
             $this->_mysqli->rollBack();
-            return "Error sql : " . $e->getMessage() . "\nSql : $sql";
+            throw new \Exception("Error en insertaMultiple: " . $e->getMessage() . "\nSql : $sql");
         }
     }
 
     public function eliminar($sql)
     {
         try {
-            $stmt = $this->_mysqli->prepare($sql);
-            $stmt->execute();
-            return true;
+            return $this->_mysqli->prepare($sql)->execute();
         } catch (\PDOException $e) {
-            echo "Error sql : " . $e->getMessage() . "\nSql : $sql";
-            return false;
+            throw new \Exception("Error en eliminar: " . $e->getMessage() . "\nSql : $sql");
         }
     }
 
