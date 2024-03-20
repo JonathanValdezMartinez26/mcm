@@ -25,7 +25,7 @@ class ApiCondusef extends Controller
         $extraHeader = <<<html
             <title>Crear Usuario REDECO</title>
             <link rel="shortcut icon" href="/img/logo.png">
-        html;
+html;
 
         $extraFooter = <<<html
             <script>
@@ -79,7 +79,7 @@ class ApiCondusef extends Controller
                     });
                 }
             </script>
-        html;
+html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -91,7 +91,7 @@ class ApiCondusef extends Controller
         $extraHeader = <<<html
             <title>Consultar Quejas REDECO</title>
             <link rel="shortcut icon" href="/img/logo.png">
-        html;
+html;
 
         $extraFooter = <<<html
             <script>
@@ -157,7 +157,7 @@ html;
         $extraHeader = <<<html
             <title>Registrar Quejas REDECO</title>
             <link rel="shortcut icon" href="/img/logo.png">
-        html;
+html;
 
         $extraFooter = <<<html
             <script>
@@ -345,6 +345,8 @@ html;
                         QuejasNumPenal: Number(document.querySelector("#QuejasNumPenal").value),
                         PenalizacionId: Number(document.querySelector("#PenalizacionId").value),
                     }]
+                    
+                        console.log(datos);
                      
                     const procesaRespuesta = (respuesta) => {
                         if (respuesta.errors.length > 0) {
@@ -363,7 +365,7 @@ html;
                     consumeAPI("https://api.condusef.gob.mx/redeco/quejas", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REDECO.")
                 }
             </script>
-        html;
+html;
 
         $meses = [
             "1" => "Enero",

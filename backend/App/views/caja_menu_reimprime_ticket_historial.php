@@ -69,8 +69,6 @@
                 </a>
             </div>
 
-
-
             <div class="col-md-9">
                 <form id="registroInicialAhorro" name="registroInicialAhorro">
                     <div class="modal-content">
@@ -81,8 +79,8 @@
                             </div>
                             <div>
                                 <ul class="nav navbar-nav" >
-                                    <li> <a href=""><p style="font-size: 16px;"><b>Tickets</b></p></a></li>
-                                    <li class="linea"><a href="/Ahorro/ReimprimeTicketSolicitudes/"><p style="font-size: 15px;">Historial de solicitudes</p></a></li>
+                                    <li class="linea"><a href="/Ahorro/ReimprimeTicket/"><p style="font-size: 16px;">Tickets</p></a></li>
+                                    <li><a href="/Ahorro/ReimprimeTicketSolicitudes/"><p style="font-size: 15px;"><b>Historial de solicitudes</b></p></a></li>
                                 </ul>
                             </div>
                         </div>
@@ -100,7 +98,7 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-12" style="text-align:center;">
-                                                            <h4>Mi historial de tickets</h4>
+                                                            <h4>Mi historial de solicitudes para reimprimir tickets</h4>
                                                             <hr>
                                                         </div>
                                                     </div>
