@@ -1606,7 +1606,7 @@ html;
         $mpdf->Cell(60, 4, '000 000 00000', 0, 1, 'C');
 
         // LEYENDA TIPO COMPROBANTE
-        $mpdf->Ln(10);
+        $mpdf->Ln(7);
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 4, 'COMPROBANTE DE ' . ($datos['ES_DEPOSITO'] == 1 ? 'DEPOSITO' : 'RETIRO'), 0, 1, 'C');
         $mpdf->Ln(3);
@@ -1637,7 +1637,7 @@ html;
         $mpdf->Cell(60, 4, '01050505051400000002024', 0, 1, 'C');
 
         // DETALLE DE LA OPERACION
-        $mpdf->Ln(10);
+        $mpdf->Ln(7);
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 4, 'CUENTA DE AHORRO CORRIENTE', 0, 1, 'C');
         $mpdf->Ln(3);
