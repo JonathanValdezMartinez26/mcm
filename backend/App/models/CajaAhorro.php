@@ -479,6 +479,15 @@ sql;
             ) AS SALDO_ANTERIOR,
             (
                 SELECT
+                    SUM(MONTO)
+                FROM
+                    MOVIMIENTOS_AHORRO
+                WHERE
+                    TO_NUMBER(CDG_TICKET) = TO_NUMBER(T.CODIGO)
+                    AND CDG_TIPO_PAGO = 2
+            ) AS COMISION,
+            (
+                SELECT
                     MOVIMIENTO
                 FROM
                     MOVIMIENTOS_AHORRO

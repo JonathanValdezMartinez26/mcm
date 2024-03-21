@@ -1661,7 +1661,12 @@ html;
         $mpdf->Cell(30, 10, 'ABONO A CUENTA :', 0);
         $mpdf->Cell(30, 10,  "$" . number_format($datos['MONTO'], 2, '.', ','), 2, 0, 'R');
         $mpdf->Ln(8);
-        $nvoSaldo = ($datos['ES_DEPOSITO'] == 1 ? $datos['SALDO_ANTERIOR'] + $datos['MONTO'] : $datos['SALDO_ANTERIOR'] - $datos['MONTO']);
+        if ($datos['COMISION'] > 0) {
+            $mpdf->Cell(30, 10, 'COMISIÓN :', 0);
+            $mpdf->Cell(30, 10,  "$" . number_format($datos['COMISION'], 2, '.', ','), 2, 0, 'R');
+            $mpdf->Ln(8);
+        }
+        $nvoSaldo = ($datos['ES_DEPOSITO'] == 1 ? $datos['SALDO_ANTERIOR'] + $datos['MONTO'] : $datos['SALDO_ANTERIOR'] - $datos['MONTO']) - $datos['COMISION'];
         $mpdf->Cell(30, 10, 'SALDO NUEVO: ', 0);
         $mpdf->Cell(30, 10, "$" . number_format($nvoSaldo, 2, '.', ','), 2, 0, 'R');
 
