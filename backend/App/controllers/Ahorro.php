@@ -1340,16 +1340,16 @@ html;
                             opcion.innerText = cliente.CDG_CONTRATO
                             contratos.appendChild(opcion)
                         })
-                         
+                          
                         document.querySelector("#contrato").appendChild(contratos)
                         document.querySelector("#contrato").disabled = false
-                        document.querySelector("#contrato").addEventListener('change', (e) => {
+                        document.querySelector("#contrato").addEventListener("change", (e) => {
                             datosCliente.forEach(contrato => {
-                                if (contratoDG_CONTRATO = e.target.value) {
+                                if (contrato.CDG_CONTRATO == e.target.value) {
                                     document.querySelector("#nombre").value = contrato.NOMBRE
                                     document.querySelector("#curp").value = contrato.CURP
                                     document.querySelector("#cliente").value = contrato.CDGCL
-                                    document.querySelector("#saldoActual").value = contrato.SALDO
+                                    document.querySelector("#saldoActual").value = parseFloat(contrato.SALDO).toFixed(2)
                                 }
                             })
                         })

@@ -657,14 +657,14 @@ sql;
             CL_PQS.CURP,
             CL_PQS.CDG_CONTRATO,
             CL_PQS.CDGCL,
-            (
+            NVL((
                 SELECT
                     SALDO
                 FROM
                     ASIGNA_PROD_AHORRO APA
                 WHERE
                     APA.CONTRATO = CL_PQS.CDG_CONTRATO
-            ) AS SALDO
+            ),0) AS SALDO
         FROM
             CL_PQS
         WHERE
