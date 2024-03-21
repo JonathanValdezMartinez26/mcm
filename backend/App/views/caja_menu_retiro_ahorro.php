@@ -98,8 +98,8 @@
                                                         <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p><hr>
                                                     </div>
                                                     <div class="col-md-4">
-                                                        <label for="movil">Clave de contrato o código del cliente (SICAFIN)</label>
-                                                        <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="Cliente" name="Cliente" value="" placeholder="000000" required>
+                                                        <label for="clienteBuscado">Código de cliente (SICAFIN)*</label>
+                                                        <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" placeholder="000000">
                                                     </div>
 
                                                     <div class="col-md-2" style="padding-top: 25px">
@@ -141,13 +141,13 @@
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="fecha_pago">Fecha estimada del retiro*</label>
-                                                        <input onkeydown="return false" type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?php echo $Cliente[0]['REGISTRO']; ?>">
+                                                        <input onkeydown="return false" type="text" class="form-control" id="fecha_retiro" name="fecha_retiro" value="<?php echo $Cliente[0]['REGISTRO']; ?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <label for="contrato">Monto del retiro*</label>
-                                                        <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
+                                                        <label for="monto">Monto del retiro*</label>
+                                                        <input type="text" class="form-control" id="monto" name="monto" aria-describedby="monto" disabled>
                                                     </div>
                                                 </div>
 

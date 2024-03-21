@@ -949,6 +949,296 @@ html;
     public function SolicitudRetiroCuentaCorriente()
     {
         $extraHeader = <<<html
+        <title>Solicitud de Retiro Ahorro</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
+        $extraFooter = <<<html
+        <script>
+            const showError = (mensaje) => swal(mensaje, { icon: "error" })
+            const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })
+         
+            const validarYbuscar = (e, buscar) => {
+                if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
+                if (e.keyCode === 13) buscaCliente()
+            }
+            
+            const buscaCliente = () => {
+                const noCliente = document.querySelector("#clienteBuscado")
+                
+                if (!noCliente.value) {
+                    return showError("Ingrese un número de cliente a buscar.")
+                }
+                
+                $.ajax({
+                    type: "POST",
+                    url: "/Ahorro/BuscaContrato/",
+                    data: { cliente: noCliente.value },
+                    success: (respuesta) => {
+                        //limpiaDatosCliente()
+                        respuesta = JSON.parse(respuesta)
+                        if (!respuesta.success) {
+                            return showError(respuesta.mensaje)
+                        }
+                        const datosCliente = respuesta.datos
+                        
+                        console.log((datosCliente));
+                        
+                        document.querySelector("#nombre_cliente").value = datosCliente.NOMBRE
+                        document.querySelector("#curp_").value = datosCliente.CURP
+                        document.querySelector("#contrato").value = datosCliente.CONTRATO
+                        document.querySelector("#codigo_cl").value = noCliente.value
+                        //document.querySelector("#saldoActual").value = parseFloat(datosCliente.SALDO).toFixed(2)
+                        document.querySelector("#monto").disabled = false;
+                        noCliente.value = ""
+                    },
+                    error: (error) => {
+                        console.error(error)
+                        limpiaDatosCliente()
+                        showError("Ocurrió un error al buscar el cliente.")
+                    }
+                })
+            }
+             
+         
+             
+            const getHoy = () => {
+                const hoy = new Date()
+                const dd = String(hoy.getDate()).padStart(2, "0")
+                const mm = String(hoy.getMonth() + 1).padStart(2, "0")
+                const yyyy = hoy.getFullYear()
+                return dd + "-" + mm + "-" + yyyy
+            }
+             
+            const boton_contrato = (numero_contrato) => {
+                const host = window.location.origin
+                
+                let plantilla = "<!DOCTYPE html>"
+                plantilla += '<html lang="es">'
+                plantilla += '<head>'
+                plantilla += '<meta charset="UTF-8">'
+                plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+                plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
+                plantilla += '<title>Contrato ' + numero_contrato + '</title>'
+                plantilla += '</head>'
+                plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
+                plantilla +=
+                    '<iframe src="' + host + '/Ahorro/ImprimeContrato/' +
+                    numero_contrato +
+                    '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
+                plantilla += "</body>"
+                plantilla += "</html>"
+            
+                const blob = new Blob([plantilla], { type: "text/html" })
+                const url = URL.createObjectURL(blob)
+                window.open(url, "_blank")
+            }
+             
+            const validaDeposito = (e) => {
+                const monto = parseFloat(e.target.value) || 0
+                if (monto <= 0) {
+                    e.preventDefault()
+                    e.target.value = ""
+                    return showError("El monto a depositar debe ser mayor a 0")
+                }
+                 
+                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
+                const esDeposito = document.querySelector("#deposito").checked
+                document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
+                document.querySelector("#montoOperacion").value = monto.toFixed(2)
+                const saldoFinal = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
+                document.querySelector("#saldoFinal").value = saldoFinal
+                compruebaSaldoFinal(saldoFinal)
+            }
+             
+            const cambioMovimiento = (e) => {
+                const esDeposito = document.querySelector("#deposito").checked
+                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
+                const monto = parseFloat(document.querySelector("#montoOperacion").value) || 0
+                document.querySelector("#saldoFinal").value = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
+                document.querySelector("#simboloOperacion").innerText = esDeposito ? "+" : "-"
+                document.querySelector("#descOperacion").innerText = (esDeposito ? "Depósito" : "Retiro") + " a cuenta ahorro corriente"
+                compruebaSaldoFinal(document.querySelector("#saldoFinal").value)
+            }
+             
+            const compruebaSaldoFinal = saldoFinal => {
+                if (saldoFinal < 0) {
+                    document.querySelector("#saldoFinal").setAttribute("style", "color: red")
+                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
+                } else {
+                    document.querySelector("#saldoFinal").removeAttribute("style")
+                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
+                }
+                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value > 0)
+                
+            }
+             
+            const numeroLetras = (numero) => {
+                if (!numero) return ""
+                const unidades = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"]
+                const especiales = [
+                    "",
+                    "once",
+                    "doce",
+                    "trece",
+                    "catorce",
+                    "quince",
+                    "dieciséis",
+                    "diecisiete",
+                    "dieciocho",
+                    "diecinueve",
+                    "veinte",
+                    "veintiún",
+                    "veintidós",
+                    "veintitrés",
+                    "veinticuatro",
+                    "veinticinco",
+                    "veintiséis",
+                    "veintisiete",
+                    "veintiocho",
+                    "veintinueve"
+                ]
+                const decenas = [
+                    "",
+                    "diez",
+                    "veinte",
+                    "treinta",
+                    "cuarenta",
+                    "cincuenta",
+                    "sesenta",
+                    "setenta",
+                    "ochenta",
+                    "noventa"
+                ]
+                const centenas = [
+                    "cien",
+                    "ciento",
+                    "doscientos",
+                    "trescientos",
+                    "cuatrocientos",
+                    "quinientos",
+                    "seiscientos",
+                    "setecientos",
+                    "ochocientos",
+                    "novecientos"
+                ]
+            
+                const convertirMenorA1000 = (numero) => {
+                    let letra = ""
+                    if (numero >= 100) {
+                        letra += centenas[(numero === 100 ? 0 : Math.floor(numero / 100))] + " "
+                        numero %= 100
+                    }
+                    if (numero === 10 || numero === 20 || (numero > 29 && numero < 100)) {
+                        letra += decenas[Math.floor(numero / 10)]
+                        numero %= 10
+                        letra += numero > 0 ? " y " : " "
+                    }
+                    if (numero != 20 && numero >= 11 && numero <= 29) {
+                        letra += especiales[numero % 10 + (numero > 20 ? 10 : 0)] + " "
+                        numero = 0
+                    }
+                    if (numero > 0) {
+                        letra += unidades[numero] + " "
+                    }
+                    return letra.trim()
+                }
+            
+                const convertir = (numero) => {
+                    if (numero === 0) {
+                        return "cero"
+                    }
+                
+                    let letra = ""
+                
+                    if (numero >= 1000000) {
+                        letra += convertirMenorA1000(Math.floor(numero / 1000000)) + (numero === 1000000 ? " millón " : " millones ")
+                        numero %= 1000000
+                    }
+                
+                    if (numero >= 1000) {
+                        letra += (numero === 1000 ? "" : convertirMenorA1000(Math.floor(numero / 1000))) + " mil "
+                        numero %= 1000
+                    }
+                
+                    letra += convertirMenorA1000(numero)
+                    return letra.trim()
+                }
+            
+                const parteEntera = Math.floor(numero)
+                const parteDecimal = Math.round((numero - parteEntera) * 100).toString().padStart(2, "0")
+                return convertir(parteEntera) + (numero == 1 ? ' peso ' : ' pesos ') + parteDecimal + '/100 M.N.'
+            }
+             
+            const primeraMayuscula = (texto) => {
+                return texto.charAt(0).toUpperCase() + texto.slice(1)
+            }
+             
+            const registraOperacion = (e) => {
+                e.preventDefault()
+                const datos = $("#registroOperacion").serializeArray()
+                
+                datos.forEach((dato) => {
+                    if (dato.name === "esDeposito") {
+                        dato.value = document.querySelector("#deposito").checked
+                    }
+                })
+                 
+                $.ajax({
+                    type: "POST",
+                    url: "/Ahorro/registraOperacion/",
+                    data: $.param(datos),
+                    success: (respuesta) => {
+                        respuesta = JSON.parse(respuesta)
+                        if (!respuesta.success){
+                            console.log(respuesta.error)
+                            return showError(respuesta.mensaje)
+                        }
+                        showSuccess(respuesta.mensaje)
+                        imprimeTicket(document.querySelector("#contrato").value)
+                        document.querySelector("#registroOperacion").reset()
+                    },
+                    error: (error) => {
+                        console.error(error)
+                        showError("Ocurrió un error al registrar la operación.")
+                    }
+                })
+            }
+             
+            const imprimeTicket = (ticket) => {
+                const host = window.location.origin
+                
+                let plantilla = "<!DOCTYPE html>"
+                plantilla += '<html lang="es">'
+                plantilla += '<head>'
+                plantilla += '<meta charset="UTF-8">'
+                plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+                plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
+                plantilla += '<title>Ticket: ' + ticket + '</title>'
+                plantilla += '</head>'
+                plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
+                plantilla +=
+                    '<iframe src="' + host + '/Ahorro/Ticket/' +
+                    ticket +
+                    '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
+                plantilla += "</body>"
+                plantilla += "</html>"
+            
+                const blob = new Blob([plantilla], { type: "text/html" })
+                const url = URL.createObjectURL(blob)
+                window.open(url, "_blank")
+            }
+        </script>
+html;
+
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("caja_menu_retiro_ahorro");
+    }
+
+    public function HistorialSolicitudRetiroCuentaCorriente()
+    {
+        $extraHeader = <<<html
         <title>Caja Cobrar</title>
         <link rel="shortcut icon" href="/img/logo.png">
 html;
@@ -1114,53 +1404,11 @@ html;
            
         function Reimprime_ticket(folio)
         {
-              
               $('#modal_ticket').modal('show');
               document.getElementById("folio").value = folio;
              
         }
         
-        function enviar_add_sol()
-        {
-             $('#modal_ticket').modal('hide');
-             swal({
-                   title: "¿Está segura de continuar?",
-                   text: "",
-                   icon: "warning",
-                   buttons: ["Cancelar", "Continuar"],
-                   dangerMode: false
-                   })
-                   .then((willDelete) => {
-                   if (willDelete) {
-                      
-                        $.ajax({
-                        type: 'POST',
-                        url: '/Ahorro/AddSolicitudReimpresion/',
-                        data: $('#Add').serialize(),
-                        success: function(respuesta) {
-                        if(respuesta=='1')
-                        {
-                            swal("Registro guardado exitosamente", {
-                                       icon: "success",
-                                 });
-                            location.reload();
-                                            
-                        }
-                        else {
-                              $('#modal_encuesta_cliente').modal('hide')
-                                      swal(respuesta, {
-                                      icon: "error",
-                                     });
-                                                
-                              }
-                         }
-                            });
-                         }
-                        else {
-                                    $('#modal_ticket').modal('show');
-                              }
-                        });
-        }
         </script>
 html;
 
@@ -1238,6 +1486,8 @@ html;
         
         function enviar_add_sol()
         {
+             const showSuccess = (mensaje) => swal(mensaje, { icon: "success" } )
+             
              $('#modal_ticket').modal('hide');
              swal({
                    title: "¿Está segura de continuar?",
@@ -1256,11 +1506,7 @@ html;
                         success: function(respuesta) {
                         if(respuesta=='1')
                         {
-                            swal("Registro guardado exitosamente", {
-                                       icon: "success",
-                                 });
-                            location.reload();
-                                            
+                           return showSuccess("Solicitud enviada a tesorería." );
                         }
                         else {
                               $('#modal_encuesta_cliente').modal('hide')
