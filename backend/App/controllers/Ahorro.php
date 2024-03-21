@@ -1319,10 +1319,10 @@ html;
                     limpiaDatosCliente()
                     return showError("Ingrese un número de cliente a buscar.")
                 }
-                
+                 
                 $.ajax({
                     type: "POST",
-                    url: "/Ahorro/BuscaContrato/",
+                    url: "/Ahorro/BuscaContratoPQ/",
                     data: { cliente: noCliente.value },
                     success: (respuesta) => {
                         limpiaDatosCliente()
@@ -1331,7 +1331,29 @@ html;
                             return showError(respuesta.mensaje)
                         }
                         const datosCliente = respuesta.datos
+                        
+                        console.log(datosCliente)
+                        const contratos = document.createDocumentFragment()
+                        datosCliente.forEach(cliente => {
+                            const opcion = document.createElement("option")
+                            opcion.value = cliente.CDG_CONTRATO
+                            opcion.innerText = cliente.CDG_CONTRATO
+                            contratos.appendChild(opcion)
+                        })
                          
+                        document.querySelector("#contrato").appendChild(contratos)
+                        document.querySelector("#contrato").disabled = false
+                        document.querySelector("#contrato").addEventListener('change', (e) => {
+                            datosCliente.forEach(contrato => {
+                                if (contratoDG_CONTRATO = e.target.value) {
+                                    document.querySelector("#nombre").value = contrato.NOMBRE
+                                    document.querySelector("#curp").value = contrato.CURP
+                                    document.querySelector("#cliente").value = contrato.CDGCL
+                                    document.querySelector("#saldoActual").value = contrato.SALDO
+                                }
+                            })
+                        })
+                        document.querySelector("#monto").disabled=false
                         
                         noCliente.value = ""
                     },
@@ -1347,6 +1369,8 @@ html;
                 document.querySelector("#registroOperacion").reset()
                 document.querySelector("#fecha_pago").value = getHoy()
                 document.querySelector("#monto").disabled = true
+                document.querySelector("#contrato").innerHTML = ""
+                document.querySelector("#contrato").disabled = true
             }
              
             const getHoy = () => {
@@ -1950,6 +1974,12 @@ html;
     {
         $contrato = CajaAhorroDao::AgregaContratoAhorroPQ($_POST);
         echo $contrato;
+    }
+
+    public function BuscaContratoPQ()
+    {
+        $datos = CajaAhorroDao::BuscaClienteContratoPQ($_POST);
+        echo $datos;
     }
 
     //////////////////////////////////////////////////
