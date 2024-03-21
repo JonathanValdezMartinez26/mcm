@@ -43,8 +43,8 @@
             </div>
             <div class="card col-md-12">
                 <hr style="border-top: 1px solid #e5e5e5; margin-top: 5px;">
-                <div style="display: <?php echo $Administracion[0]['ACTIVO']; ?>">
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_pago" >
+                <div>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_pago" onclick="BotonPago('<?php echo $Administracion[0]['SITUACION_NOMBRE']; ?>');">
                         <i class="fa fa-plus"></i> Agregar Pago
                     </button>
                     <hr style="border-top: 1px solid #787878; margin-top: 5px;">
