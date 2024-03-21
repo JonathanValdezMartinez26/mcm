@@ -23,6 +23,25 @@ class CajaAhorro
         return json_encode($res);
     }
 
+    public static function GetCatalogoParentescos()
+    {
+        $query = <<<sql
+        SELECT
+            *
+        FROM
+            CAT_PARENTESCO
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($query);
+            if ($res) return $res;
+            return array();
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
     public static function ConsultaClientesProducto($cliente)
     {
 
@@ -136,14 +155,22 @@ sql;
     {
         $query = <<<sql
         SELECT
-            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
-            CL.CURP,
-            (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO) AS CONTRATO,
-            (SELECT SALDO FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO)) AS SALDO
+            *
         FROM
-            CL
+        (
+            SELECT
+                CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
+                CL.CURP,
+                (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO) AS CONTRATO,
+                (SELECT SALDO FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO)) AS SALDO,
+                CL.CODIGO AS CDGCL
+            FROM
+                CL
+            WHERE
+                CL.CODIGO = '$cliente'
+        )
         WHERE
-            CL.CODIGO = '$cliente'
+            CONTRATO IS NOT NULL
         sql;
 
         try {
@@ -181,19 +208,62 @@ sql;
                 (:contrato, :cliente, :fecha_apertura, '1', 'A', 0)
             sql;
 
+            $queryBen = <<<sql
+            INSERT INTO BENEFICIARIOS_AHORRO
+                (CDG_CONTRATO, NOMBRE, CDGCT_PARENTESCO, ESTATUS, FECHA_MODIFICACION, PORCENTAJE)
+            VALUES
+                (:contrato, :nombre, :parentesco, 'A', SYSDATE, :porcentaje)
+            sql;
+
             $fecha = DateTime::createFromFormat('Y-m-d', $datos['fecha']);
             $fecha = $fecha !== false && $fecha->format('Y-m-d') === $datos['fecha'] ? $fecha->format('d-m-Y') : $datos['fecha'];
 
             $datos = [
-                'contrato' => $noContrato,
-                'cliente' => $datos['credito'],
-                'fecha_apertura' => $fecha
+                [
+                    'contrato' => $noContrato,
+                    'cliente' => $datos['credito'],
+                    'fecha_apertura' => $fecha
+                ]
             ];
+
+            $inserts = [
+                $query
+            ];
+
+            if ($datos['beneficiario_1'] !== "") {
+                $datos[] = [
+                    'contrato' => $noContrato,
+                    'nombre' => $datos['beneficiario_1'],
+                    'parentesco' => $datos['parentesco_1'],
+                    'porcentaje' => $datos['porcentaje_1']
+                ];
+                $inserts[] = $queryBen;
+            }
+
+            if ($datos['beneficiario_2'] !== "") {
+                $datos[] = [
+                    'contrato' => $noContrato,
+                    'nombre' => $datos['beneficiario_2'],
+                    'parentesco' => $datos['parentesco_2'],
+                    'porcentaje' => $datos['porcentaje_2']
+                ];
+                $inserts[] = $queryBen;
+            }
+
+            if ($datos['beneficiario_3'] !== "") {
+                $datos[] = [
+                    'contrato' => $noContrato,
+                    'nombre' => $datos['beneficiario_3'],
+                    'parentesco' => $datos['parentesco_3'],
+                    'porcentaje' => $datos['porcentaje_3']
+                ];
+                $inserts[] = $queryBen;
+            }
 
             try {
                 $mysqli = Database::getInstance();
-                $res = $mysqli->insertar($query, $datos);
-                if (!$res) return self::Responde(true, "Contrato de ahorro registrado correctamente", ['contrato' => $noContrato]);
+                $res = $mysqli->insertaMultiple($inserts, $datos);
+                if ($res) return self::Responde(true, "Contrato de ahorro registrado correctamente", ['contrato' => $noContrato]);
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro");
             } catch (Exception $e) {
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro", null, $e->getMessage());
@@ -243,7 +313,12 @@ sql;
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->insertaMultiple($query, $datos, $validacion);
-            if ($res) return self::Responde(true, "Pago de apertura registrado correctamente");
+
+
+            if ($res) {
+                $ticket = self::RecuperaTicket($datos['contrato']);
+                return self::Responde(true, "Pago de apertura registrado correctamente", ['ticket' => $ticket]);
+            }
             return self::Responde(false, "Ocurrió un error al registrar el pago de apertura");
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar el pago de apertura", null, $e->getMessage());
@@ -278,7 +353,10 @@ sql;
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->insertaMultiple($query, $datos);
-            if ($res) return self::Responde(true, "El " . $tipoMov . " fue registrado correctamente");
+            if ($res) {
+                $ticket = self::RecuperaTicket($datos['contrato']);
+                return self::Responde(true, "El " . $tipoMov . " fue registrado correctamente", ['ticket' => $ticket]);
+            }
             return self::Responde(false, "Ocurrió un error al registrar el " . $tipoMov);
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar el " . $tipoMov, null, $e->getMessage());
@@ -353,6 +431,58 @@ sql;
             )
         WHERE
             DIFERENCIA != 0
+        sql;
+    }
+
+    public static function RecuperaTicket($contrato)
+    {
+        $queryTicket = <<<sql
+        SELECT
+            MAX(TO_NUMBER(CODIGO)) AS CODIGO
+        FROM
+            TICKETS_AHORRO
+        WHERE
+            CDG_CONTRATO = '$contrato'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryOne($queryTicket);
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public static function DatosTicket($ticket)
+    {
+        $query = <<< sql
+        SELECT
+            T.FECHA,
+            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE_CLIENTE,
+            CL.CDGCL,
+            APA.CONTRATO,
+            T.MONTO,
+            (
+                SELECT
+                    SUM(
+                        CASE MA.MOVIMIENTO
+                            WHEN 0 THEN -MA.MOVIMIENTO
+                            ELSE MA.MOVIMIENTO
+                    )
+                FROM
+                    MOVIMIENTOS_AHORRO MA
+                WHERE
+                    CDG_TICKET < T.CODIGO
+                    AND CDG_TIPO_PAGO != 2
+            ) AS SALDO_ANTERIOR
+        FROM
+            TICKET T,
+            ASIGNA_PROD_AHORRO APA,
+            CL
+        WHERE
+            CL.CDGCL = APA.CDGCL
+            AND T.CDG_CNTRATO = APA.CONTRATO
+
         sql;
     }
 

@@ -59,11 +59,11 @@ class Ahorro extends Controller
                             return showError(respuesta.mensaje)
                         }
                         const datosCliente = respuesta.datos
-                        
+                         
                         document.querySelector("#nombre").value = datosCliente.NOMBRE
                         document.querySelector("#curp").value = datosCliente.CURP
                         document.querySelector("#contrato").value = datosCliente.CONTRATO
-                        document.querySelector("#cliente").value = noCliente.value
+                        document.querySelector("#cliente").value = datosCliente.CDGCL
                         document.querySelector("#saldoActual").value = parseFloat(datosCliente.SALDO).toFixed(2)
                         document.querySelector("#monto").disabled = false
                         noCliente.value = ""
@@ -77,7 +77,7 @@ class Ahorro extends Controller
             }
              
             const limpiaDatosCliente = () => {
-                document.querySelector("#AddPagoApertura").reset()
+                document.querySelector("#registroOperacion").reset()
                 document.querySelector("#fecha_pago").value = getHoy()
                 document.querySelector("#monto").disabled = true
             }
@@ -87,7 +87,7 @@ class Ahorro extends Controller
                 const dd = String(hoy.getDate()).padStart(2, "0")
                 const mm = String(hoy.getMonth() + 1).padStart(2, "0")
                 const yyyy = hoy.getFullYear()
-                return dd + "-" + mm + "-" + yyyy
+                return yyyy + "-" + mm + "-" + dd
             }
              
             const boton_contrato = (numero_contrato) => {
@@ -257,6 +257,10 @@ class Ahorro extends Controller
             const registraOperacion = (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
+                 
+                if (!document.querySelector("#deposito").checked && !document.querySelector("#retiro").checked) {
+                    return showError("Seleccione el tipo de operación a realizar.")
+                }
                 
                 datos.forEach((dato) => {
                     if (dato.name === "esDeposito") {
@@ -275,7 +279,7 @@ class Ahorro extends Controller
                             return showError(respuesta.mensaje)
                         }
                         showSuccess(respuesta.mensaje)
-                        imprimeTicket(document.querySelector("#contrato").value)
+                        imprimeTicket(respuesta.datos.ticket)
                         document.querySelector("#registroOperacion").reset()
                     },
                     error: (error) => {
@@ -378,10 +382,7 @@ class Ahorro extends Controller
                         document.querySelector("#edad").value = datosCliente.EDAD
                         document.querySelector("#direccion").value = datosCliente.DIRECCION
                         noCliente.value = ""
-                        document.querySelector("#beneficiario_1").disabled = false
-                        document.querySelector("#parentesco_1").disabled = false
-                        document.querySelector("#porcentaje_1").disabled = false
-                        document.querySelector("#btnBen1").disabled = false
+                        habilitaBeneficiario(1, true)
                     },
                     error: (error) => {
                         console.error(error)
@@ -389,6 +390,13 @@ class Ahorro extends Controller
                         showError("Ocurrió un error al buscar el cliente.")
                     }
                 })
+            }
+             
+            const habilitaBeneficiario = (numBeneficiario, habilitar) => {
+                document.querySelector("#beneficiario_" + numBeneficiario).disabled = !habilitar
+                document.querySelector("#parentesco_" + numBeneficiario).disabled = !habilitar
+                document.querySelector("#porcentaje_" + numBeneficiario).disabled = !habilitar
+                if (numBeneficiario < 3)document.querySelector("#btnBen" + numBeneficiario).disabled = !habilitar
             }
              
             const limpiaDatosCliente = () => {
@@ -400,10 +408,7 @@ class Ahorro extends Controller
                 document.querySelector("#curp").value = ""
                 document.querySelector("#edad").value = ""
                 document.querySelector("#direccion").value = ""
-                document.querySelector("#beneficiario_1").disabled = true
-                document.querySelector("#parentesco_1").disabled = true
-                document.querySelector("#porcentaje_1").disabled = true
-                document.querySelector("#btnBen1").disabled = true
+                habilitaBeneficiario(1, false)
                 document.querySelector("#ben2").style.opacity = "0"
                 document.querySelector("#ben3").style.opacity = "0"
             }
@@ -450,6 +455,7 @@ class Ahorro extends Controller
                     if (continuar) {
                         const noCredito = document.querySelector("#noCliente").value
                         const datos = $("#registroInicialAhorro").serializeArray()
+                        console.log(datos)
                         datos.push({ name: "credito", value: noCredito })
             
                         let respuesta = await $.ajax({
@@ -510,6 +516,7 @@ class Ahorro extends Controller
                         document.querySelector("#AddPagoApertura").reset()
                         $("#modal_agregar_pago").modal("hide")
                         limpiaDatosCliente()
+                        imprimeTicket(respuesta.datos.ticket)
                     },
                     error: (error) => {
                         console.error(error)
@@ -637,9 +644,9 @@ class Ahorro extends Controller
                 return texto.charAt(0).toUpperCase() + texto.slice(1)
             }
              
-            const camposLlenos = () => {
+            const camposLlenos = (e) => {
                 const val = () => {
-                    const porcentaje = 0
+                    let porcentaje = 0
                     for (let i = 1; i <= 3; i++) {
                         if (document.querySelector("#ben" + i).style.opacity === "1") {
                             if (!document.querySelector("#beneficiario_" + i).value) return false
@@ -648,9 +655,11 @@ class Ahorro extends Controller
                         }
                         porcentaje += parseFloat(document.querySelector("#porcentaje_" + i).value) || 0
                     }
-                    if (porcentaje > 100) showError("El porcentaje total no puede ser mayor a 100%")
-                    if (porcentaje < 100) showError("El porcentaje total no puede ser menor a 100%")
-                     
+                    if (porcentaje > 100) {
+                        e.preventDefault()
+                        e.target.value = ""
+                        showError("La suma de los porcentajes no puede ser mayor a 100%")
+                    }
                     return porcentaje === 100
                 }
                 document.querySelector("#btnGeneraContrato").disabled = !val()
@@ -659,8 +668,10 @@ class Ahorro extends Controller
             const validaPorcentaje = (e) => {
                 let porcentaje = 0
                 for (let i = 1; i <= 3; i++) {
-                    const porcentajeBeneficiario = parseFloat(document.getElementById(`porcentaje_` + i).value) || 0
-                    porcentaje += porcentajeBeneficiario
+                    if (i == 1 || document.querySelector("#ben" + i).style.opacity === "1") {
+                        const porcentajeBeneficiario = parseFloat(document.querySelector("#porcentaje_" + i).value) || 0
+                        porcentaje += porcentajeBeneficiario
+                    }
                 }
                 if (porcentaje > 100) {
                     e.preventDefault()
@@ -668,7 +679,7 @@ class Ahorro extends Controller
                     return showError("La suma de los porcentajes no puede ser mayor a 100%")
                 }
                  
-                camposLlenos()
+                document.querySelector("#btnGeneraContrato").disabled = porcentaje !== 100
             }
              
             const toggleBeneficiario = (numBeneficiario) => {
@@ -677,7 +688,7 @@ class Ahorro extends Controller
             }
              
             const toggleButtonIcon = (btnId, show) => {
-                const btn = document.getElementById(btnId)
+                const btn = document.getElementById("btnBen" + btnId)
                 btn.innerHTML = show ? '<i class="fa fa-minus"></i>' : '<i class="fa fa-plus"></i>'
             }
              
@@ -685,13 +696,19 @@ class Ahorro extends Controller
                 const btn = event.target === event.currentTarget ? event.target : event.target.parentElement
                  
                 if (btn.innerHTML.trim() === '<i class="fa fa-plus"></i>') {
-                    toggleBeneficiario(parseInt(btn.id.split("btnBen")[1])+1)
-                    toggleButtonIcon(btn.id, true)
+                    const noID = parseInt(btn.id.split("btnBen")[1])
+                    habilitaBeneficiario(noID+1, true)
+                    toggleBeneficiario(noID+1)
+                    toggleButtonIcon(noID, true)
                 } else {
-                    toggleButtonIcon(btn.id, false)
+                    const noID = parseInt(btn.id.split("btnBen")[1])
+                    for (let j = noID; j < 3; j++) {
+                        moveData(j+1, j)
+                    }
                     for (let i = 3; i > 0; i--) {
                         if (document.getElementById(`ben` + i).style.opacity === "1") {
-                            moveData(i, i-1)
+                            habilitaBeneficiario(i, false)
+                            toggleButtonIcon(i-1, false)
                             toggleBeneficiario(i)
                             break
                         }
@@ -708,7 +725,6 @@ class Ahorro extends Controller
                 const parentescoTo = document.getElementById(`parentesco_` + to)
                 const porcentajeTo = document.getElementById(`porcentaje_` + to)
                  
-                //if (!beneficiarioTo.value) return
                 beneficiarioTo.value = beneficiarioFrom.value
                 parentescoTo.value = parentescoFrom.value
                 porcentajeTo.value = porcentajeFrom.value
@@ -717,12 +733,44 @@ class Ahorro extends Controller
                 parentescoFrom.value = ""
                 porcentajeFrom.value = ""
             }
+             
+            const imprimeTicket = (ticket) => {
+                const host = window.location.origin
+                
+                let plantilla = "<!DOCTYPE html>"
+                plantilla += '<html lang="es">'
+                plantilla += '<head>'
+                plantilla += '<meta charset="UTF-8">'
+                plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+                plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
+                plantilla += '<title>Ticket: ' + ticket + '</title>'
+                plantilla += '</head>'
+                plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
+                plantilla +=
+                    '<iframe src="' + host + '/Ahorro/Ticket/' +
+                    ticket +
+                    '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
+                plantilla += "</body>"
+                plantilla += "</html>"
+            
+                const blob = new Blob([plantilla], { type: "text/html" })
+                const url = URL.createObjectURL(blob)
+                window.open(url, "_blank")
+            }
         </script>
         html;
+
+        $parentescos = CajaAhorroDao::GetCatalogoParentescos();
+
+        $opcParentescos = "";
+        foreach ($parentescos as $parentesco) {
+            $opcParentescos .= "<option value='{$parentesco['CODIGO']}'>{$parentesco['DESCRIPCION']}</option>";
+        }
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         view::set('saldoMinimoApertura', $saldoMinimoApertura);
+        view::set('opcParentescos', $opcParentescos);
         View::render("caja_menu_contrato_ahorro");
     }
 
@@ -1279,7 +1327,9 @@ html;
 
     public function Ticket($ticket)
     {
-        $nombreArchivo = "Contrato " . $ticket;
+        $datos = CajaAhorroDao::DatosTicket($ticket);
+
+        $nombreArchivo = "Ticket " . $ticket;
 
         $mpdf = new \mPDF('UTF-8', array(90, 190));
         $mpdf->SetMargins(0, 0, 10);
@@ -1305,7 +1355,7 @@ html;
         // DATOS OPERACION
         $mpdf->Ln(2);
         $mpdf->SetFont('Helvetica', '', 9);
-        $mpdf->Cell(60, 4, 'Fecha de la operación: ' . $fecha_op, 0, 1, '');
+        $mpdf->Cell(60, 4, 'Fecha de la operación: ' . $datos['FECHA'], 0, 1, '');
         $mpdf->Cell(60, 4, 'Método de pago: Efectivo', 0, 1, '');
         $mpdf->MultiCell(60, 4, 'Recibió: NOMBRE DE LA CAJERA MCM', 0, 1, '');
         $mpdf->SetFont('Helvetica', '', 12);
@@ -1314,9 +1364,9 @@ html;
         // DATOS CLIENTE
         $mpdf->Ln(5);
         $mpdf->SetFont('Helvetica', '', 9);
-        $mpdf->MultiCell(60, 4, 'Nombre del cliente: ' . $nombre_cliente, 0, 1, '');
-        $mpdf->Cell(60, 4, 'Código de cliente: 000000', 0, 1, '');
-        $mpdf->Cell(60, 4, 'Código de contrato: 0000000000000', 0, 1, '');
+        $mpdf->MultiCell(60, 4, 'Nombre del cliente: ' . $datos['NOMBRE_CLIENTE'], 0, 1, '');
+        $mpdf->Cell(60, 4, 'Código de cliente: ' . $datos['CDGCL'], 0, 1, '');
+        $mpdf->Cell(60, 4, 'Código de contrato: ' . $datos['CONTRATO'], 0, 1, '');
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
 
@@ -1336,7 +1386,7 @@ html;
         // MONTO DE LA OPERACION
         $mpdf->Ln(3);
         $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 4, 'RECIBIMOS $1,200.00', 0, 1, 'C');
+        $mpdf->Cell(60, 4, 'RECIBIMOS ' .  $datos['MONTO'], 0, 1, 'C');
         $mpdf->SetFont('Helvetica', '', 8);
         $mpdf->MultiCell(60, 4, '(UN MIL DOSCIENTOS 00/100 M.N)', 0, 'C');
         $mpdf->SetFont('Helvetica', '', 12);
@@ -1346,13 +1396,13 @@ html;
         $mpdf->Ln(4);
         $mpdf->SetFont('Helvetica', '', 10);
         $mpdf->Cell(30, 10, 'SALDO ANTERIOR:', 0);
-        $mpdf->Cell(30, 10, '$1,0000.00', 2, 0, 'R');
+        $mpdf->Cell(30, 10, $datos['SALDO_ANTERIOR'], 2, 0, 'R');
         $mpdf->Ln(8);
         $mpdf->Cell(30, 10, 'ABONO A CUENTA :', 0);
-        $mpdf->Cell(30, 10, '$1,0000.00', 2, 0, 'R');
+        $mpdf->Cell(30, 10,  $datos['MONTO'], 2, 0, 'R');
         $mpdf->Ln(8);
         $mpdf->Cell(30, 10, 'SALDO NUEVO: ', 0);
-        $mpdf->Cell(30, 10, '$1,0000.00', 2, 0, 'R');
+        $mpdf->Cell(30, 10, $datos['SALDO_ANTERIOR'] + $datos['MONTO'], 2, 0, 'R');
 
         // FIRMAS
         $mpdf->Ln(20);

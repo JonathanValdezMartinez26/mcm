@@ -79,10 +79,18 @@
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
-                                <li class="linea"><a href="/Ahorro/CuentaCorriente/"><p style="font-size: 15px;">Ahorro Cuenta Corriente</p></a></li></a></li>
-                                <li class="linea"><a href="/Ahorro/SolicitudRetiroCuentaCorriente/"><p style="font-size: 15px;">Solicitud de Retiro</p></a></li></a></li>
-                                <li><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 16px;"><b>Nuevo Contrato</b></p></a></li>
-                                <li class="linea"><a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/"><p style="font-size: 15px;">Historial Solicitud de Retiro</p></a></li>
+                                <li class="linea"><a href="/Ahorro/CuentaCorriente/">
+                                        <p style="font-size: 15px;">Ahorro Cuenta Corriente</p>
+                                    </a></li></a></li>
+                                <li class="linea"><a href="/Ahorro/SolicitudRetiroCuentaCorriente/">
+                                        <p style="font-size: 15px;">Solicitud de Retiro</p>
+                                    </a></li></a></li>
+                                <li><a href="/Ahorro/ContratoCuentaCorriente/">
+                                        <p style="font-size: 16px;"><b>Nuevo Contrato</b></p>
+                                    </a></li>
+                                <li class="linea"><a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/">
+                                        <p style="font-size: 15px;">Historial Solicitud de Retiro</p>
+                                    </a></li>
                             </ul>
                         </div>
                     </div>
@@ -233,54 +241,53 @@
                                                     <input type="text" class="form-control" id="beneficiario_1" name="beneficiario_1" oninput=camposLlenos(event) disabled>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <select class="form-control mr-sm-3" id="parentesco_1" name="parentesco_1" oninput=camposLlenos(event) disabled>
-                                                        <option value="1">Padre/Madre</option>
-                                                        <option value="2">Esposo/Esposa</option>
-                                                        <option value="3">Hijo/Hija</option>
+                                                    <select class="form-control mr-sm-3" id="parentesco_1" name="parentesco_1" onchange=camposLlenos(event) disabled>
+                                                        <?= $opcParentescos; ?>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_1" name="porcentaje_1" value="100" oninput=validaPorcentaje(event) disabled>
+                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_1" name="porcentaje_1" value="100" oninput=camposLlenos(event) disabled>
                                                 </div>
                                                 <div class="col-md-1">
-                                                    <button type="button" id="btnBen1" class="btn btn-primary" onclick=addBeneficiario(event)>
+                                                    <button type="button" id="btnBen1" class="btn btn-primary" onclick=addBeneficiario(event) disabled>
                                                         <i class="fa fa-plus"></i>
                                                     </button>
                                                 </div>
                                             </div>
                                             <div class="row" id="ben2" style="opacity:0">
                                                 <div class="col-md-4">
-                                                    <input type="text" class="form-control" id="beneficiario_2" name="beneficiario_2">
+                                                    <input type="text" class="form-control" id="beneficiario_2" name="beneficiario_2" oninput=camposLlenos(event) disabled>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <select class="form-control mr-sm-3" id="parentesco_2" name="parentesco_2">
-                                                        <option value="1">Padre/Madre</option>
-                                                        <option value="2">Esposo/Esposa</option>
-                                                        <option value="3">Hijo/Hija</option>
+                                                    <select class="form-control mr-sm-3" id="parentesco_2" name="parentesco_2" onchange=camposLlenos(event) disabled>
+                                                        <?= $opcParentescos; ?>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_2" name="porcentaje_2" oninput=validaPorcentaje(event)>
+                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_2" name="porcentaje_2" oninput=validaPorcentaje(event) disabled>
                                                 </div>
                                                 <div class=" col-md-1">
-                                                    <button type="button" id="btnBen2" class="btn btn-primary" onclick=addBeneficiario(event)>
+                                                    <button type="button" id="btnBen2" class="btn btn-primary" onclick=addBeneficiario(event) disabled>
                                                         <i class="fa fa-plus"></i>
                                                     </button>
                                                 </div>
                                             </div>
                                             <div class="row" id="ben3" style="opacity:0">
                                                 <div class="col-md-4">
-                                                    <input type="text" class="form-control" id="beneficiario_3" name="beneficiario_3">
+                                                    <input type="text" class="form-control" id="beneficiario_3" name="beneficiario_3" oninput=camposLlenos(event) disabled>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <select class="form-control mr-sm-3" id="parentesco_3" name="parentesco_3">
-                                                        <option value="1">Padre/Madre</option>
-                                                        <option value="2">Esposo/Esposa</option>
-                                                        <option value="3">Hijo/Hija</option>
+                                                    <select class="form-control mr-sm-3" id="parentesco_3" name="parentesco_3" onchange=camposLlenos(event) disabled>
+                                                        <?= $opcParentescos; ?>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_3" name="porcentaje_3" oninput=validaPorcentaje(event)>
+                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_3" name="porcentaje_3" oninput=camposLlenos(event) disabled>
+                                                </div>
+                                                <div class=" col-md-1">
+                                                    <button type="button" id="btnBen3" class="btn btn-primary" onclick=addBeneficiario(event) disabled>
+                                                        <i class="fa fa-minus"></i>
+                                                    </button>
                                                 </div>
                                             </div>
                                             <div class="modal-footer" style="margin-top:40px;">

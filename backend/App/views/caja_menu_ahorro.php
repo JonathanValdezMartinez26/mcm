@@ -79,10 +79,18 @@
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
-                                <li><a onclick=mostrarAhorro() href=""><p style="font-size: 16px;"><b>Ahorro Cuenta Corriente</b></p></a></li>
-                                <li class="linea"><a href="/Ahorro/SolicitudRetiroCuentaCorriente/"><p style="font-size: 15px;">Solicitud de Retiro</p></a></li>
-                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Nuevo Contrato</p></a></li>
-                                <li class="linea"><a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/"><p style="font-size: 15px;">Historial Solicitud de Retiro</p></a></li>
+                                <li><a onclick=mostrarAhorro() href="">
+                                        <p style="font-size: 16px;"><b>Ahorro Cuenta Corriente</b></p>
+                                    </a></li>
+                                <li class="linea"><a href="/Ahorro/SolicitudRetiroCuentaCorriente/">
+                                        <p style="font-size: 15px;">Solicitud de Retiro</p>
+                                    </a></li>
+                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/">
+                                        <p style="font-size: 15px;">Nuevo Contrato</p>
+                                    </a></li>
+                                <li class="linea"><a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/">
+                                        <p style="font-size: 15px;">Historial Solicitud de Retiro</p>
+                                    </a></li>
                             </ul>
                         </div>
                     </div>
@@ -91,7 +99,7 @@
                             <div class="col-md-12">
                                 <div class="row">
                                     <div class="card col-md-12">
-                                        <form id="AddPagoApertura">
+                                        <form id="operacionesNVL1" name="operacionesNVL1">
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="col-md-4">
@@ -153,7 +161,7 @@
                                                         <label>Movimiento:</label>
                                                     </div>
                                                     <div class="col-md-2" style="text-align: center; font-size: 18px; padding-top: 5px;">
-                                                        <input type="radio" name="esDeposito" id="deposito" onchange=cambioMovimiento(event) checked>
+                                                        <input type="radio" name="esDeposito" id="deposito" onchange=cambioMovimiento(event)>
                                                         <label for="deposito">Depósito</label>
                                                     </div>
                                                     <div class="col-md-2" style="text-align: center; font-size: 18px; padding-top: 5px;">
