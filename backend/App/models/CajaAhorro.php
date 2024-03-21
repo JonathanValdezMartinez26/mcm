@@ -655,18 +655,27 @@ sql;
         SELECT
             CONCATENA_NOMBRE(CL_PQS.NOMBRE1, CL_PQS.NOMBRE2, CL_PQS.APELLIDO1, CL_PQS.APELLIDO2) AS NOMBRE,
             CL_PQS.CURP,
-            CL_PQS.CDG_CONTRATO
+            CL_PQS.CDG_CONTRATO,
+            CL_PQS.CDGCL,
+            NVL((
+                SELECT
+                    SALDO
+                FROM
+                    ASIGNA_PROD_AHORRO APA
+                WHERE
+                    APA.CONTRATO = CL_PQS.CDG_CONTRATO
+            ),0) AS SALDO
         FROM
             CL_PQS
         WHERE
-            CL_PQS.CDGCL = '{$datos['credito']}'
+            CL_PQS.CDGCL = '{$datos['cliente']}'
         sql;
 
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryAll($query);
             if ($res) return self::Responde(true, "Consulta realizada correctamente", $res);
-            return self::Responde(false, "No se encontraron datos para el cliente {$datos['credito']}");
+            return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());
         }
