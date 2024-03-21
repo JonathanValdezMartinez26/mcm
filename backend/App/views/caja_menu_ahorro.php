@@ -118,13 +118,13 @@
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-md-7">
+                                                    <div class="col-md-5">
                                                         <div class="form-group">
                                                             <label for="nombre">Nombre del cliente*</label>
                                                             <input type="text" class="form-control" id="nombre" name="nombre" readonly>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-5">
+                                                    <div class="col-md-4">
                                                         <div class="form-group">
                                                             <label for="curp">CURP*</label>
                                                             <input type="text" class="form-control" id="curp" name="curp" readonly>
@@ -133,32 +133,36 @@
                                                     <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label for="fecha_pago">Fecha del depósito*</label>
-                                                            <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" value="<?= $fecha; ?>">
+                                                            <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" value="<?= $fecha; ?>" readonly>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label for="contrato">Número de contrato*</label>
                                                             <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-2">
                                                         <div class="form-group">
                                                             <label for="cliente">Número cliente SICAFIN*</label>
                                                             <input type="number" class="form-control" id="cliente" name="cliente" readonly>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-4">
                                                         <div class="form-group">
                                                             <label for="nombre_ejecutivo">Nombre del ejecutivo*</label>
                                                             <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="Ejecutivo de Prueba" readonly>
                                                             <input type="hidden" class="form-control" id="ejecutivo" name="ejecutivo" value="SOOA">
                                                         </div>
                                                     </div>
+                                                    <div class="col-md-12">
+                                                       <hr>
+                                                    </div>
+
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-3" style="font-size: 18px; padding-top: 5px;">
-                                                        <label>Movimiento:</label>
+                                                        <label style ="color: #000000">Movimiento:</label>
                                                     </div>
                                                     <div class="col-md-2" style="text-align: center; font-size: 18px; padding-top: 5px;">
                                                         <input type="radio" name="esDeposito" id="deposito" onchange=cambioMovimiento(event)>
@@ -172,7 +176,7 @@
                                                         <h3>$</h3>
                                                     </div>
                                                     <div class="col-md-4" style="padding-top: 5px;">
-                                                        <input type="number" class="form-control" id="monto" name="monto" min="250" max="100000" placeholder="0.00" style="font-size: large; font-size: 25px;" oninput=validaDeposito(event) disabled>
+                                                        <input type="number" class="form-control" id="monto" name="monto" min="250" max="100000" placeholder="0.00" style="font-size: large; font-size: 25px;" oninput=validaDeposito(event) disabled  max="1000000" min="1">
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -184,7 +188,7 @@
                                             <div class="row">
                                                 <div class="col-md-12" style="text-align:center;">
                                                     <hr>
-                                                    <h3>Resumen de movimientos</h3>
+                                                    <h3 style ="color: #000000">Resumen de movimientos</h3>
                                                     <br>
                                                 </div>
                                             </div>
@@ -215,7 +219,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8" style="display: flex; justify-content: flex-start;">
-                                                    <h4>Saldo final cuenta ahorro corriente</h4>
+                                                    <h2>Saldo final cuenta ahorro corriente</h2>
                                                 </div>
                                                 <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                                     <h4>$</h4>
@@ -224,7 +228,7 @@
                                                     <input type="number" class="form-control" id="saldoFinal" name="saldoFinal" value="0.00" readonly>
                                                 </div>
                                                 <div class="col-md-12" style="display: flex; justify-content: center; color: red;">
-                                                    <label id="tipSaldo" style="opacity:0">El saldo final no puede ser menor a $0.00.</label>
+                                                    <label id="tipSaldo" style="opacity:0; font-size: 18px;">El saldo final no puede ser menor a $0.00.</label>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
