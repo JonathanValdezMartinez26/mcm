@@ -114,19 +114,14 @@
                                                         <input onkeydown="return false" type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?php echo $Cliente[0]['REGISTRO']; ?>">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="contrato">Número de contrato*</label>
-                                                        <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
-                                                    </div>
-                                                </div>
+
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="codigo_cl">Número cliente SICAFIN*</label>
-                                                        <input type="number" class="form-control" id="codigo_cl" name="codigo_cl" value="<?php echo $credito; ?>" readonly>
+                                                        <input type="number" class="form-control" id="codigo_cl" name="codigo_cl" readonly>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="nombre">CURP*</label>
                                                         <input type="text" class="form-control" id="curp_" name="curp_" readonly="" value="<?php echo $Cliente[0]['CURP']; ?>">
@@ -138,62 +133,44 @@
                                                         <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" value="<?php echo $Cliente[0]['NOMBRE']; ?>" readonly>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label for="fecha_pago">Fecha estimada del retiro*</label>
-                                                        <input onkeydown="return false" type="text" class="form-control" id="fecha_retiro" name="fecha_retiro" value="<?php echo $Cliente[0]['REGISTRO']; ?>">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
+
+                                                <div class="col-md-2" id="monto_div">
                                                     <div class="form-group">
                                                         <label for="monto">Monto del retiro*</label>
                                                         <input type="text" class="form-control" id="monto" name="monto" aria-describedby="monto" disabled>
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-12" style="text-align:center;">
-                                                    <hr>
-                                                    <h4>Selecciona la cuenta del retiro</h4>
+                                                <div class="card col-md-12" id="genera_tabla" style="display: none">
+                                                    <label for="monto">Monto del retiro*</label>
+                                                        <div class="dataTable_wrapper">
+                                                            <table class="table table-striped table-bordered table-hover">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th></th>
+                                                                    <th>Apertura</th>
+                                                                    <th>Contrato</th>
+                                                                    <th>Cuenta</th>
+                                                                    <th>Saldo Disponible</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                <tr>
+                                                                    <th><input type="radio" name="contrato" id="contrato1" checked></th>
+                                                                    <td style="padding: 0px !important;">15/03/2024 12:24:04</td>
+                                                                    <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>0030110147895210 &nbsp;</td>
+                                                                    <td style="padding: 0px !important;"> AHORRO CUENTA CORRIENTE SIMPLE</td>
+                                                                    <td style="padding: 0px !important;">$ 50,000.00</td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                 </div>
+
+
                                             </div>
 
-                                            <div class="card col-md-12">
-                                                <form name="all" id="all" method="POST">
-                                                    <div class="dataTable_wrapper">
-                                                        <table class="table table-striped table-bordered table-hover">
-                                                            <thead>
-                                                            <tr>
-                                                                <th></th>
-                                                                <th>Apertura</th>
-                                                                <th>Contrato</th>
-                                                                <th>Cuenta</th>
-                                                                <th>Saldo Disponible</th>
-                                                                <th>Cliente(s)</th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                            <tr style="padding: 0px !important;" role="row" class="odd">
-                                                                <th><input type="radio" name="contrato" id="contrato1"></th>
-                                                                <td style="padding: 0px !important;">15/03/2024 12:24:04</td>
-                                                                <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>0030110147895210 &nbsp;</td>
-                                                                <td style="padding: 0px !important;"> AHORRO CUENTA CORRIENTE SIMPLE</td>
-                                                                <td style="padding: 0px !important;">$ 50,000.00</td>
-                                                                <td style="padding: 0px !important;">EJEMPLO EJEMPLO EJEMPLO</td>
 
-                                                            </tr>
-                                                            <tr style="padding: 0px !important;" role="row" class="odd">
-                                                                <th><input type="radio" name="contrato" id="contrato2"></th>
-                                                                <td style="padding: 0px !important;">15/03/2024 12:24:04</td>
-                                                                <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>0030110147895210 &nbsp;</td>
-                                                                <td style="padding: 0px !important;">AHORRO CUENTA CORRIENTE MANCOMUNADA</td>
-                                                                <td style="padding: 0px !important;">$ 50,000.00</td>
-                                                                <td style="padding: 0px !important;">EJEMPLO EJEMPLO EJEMPLO<br>EJEMPLO EJEMPLO EJEMPLO 2</td>
-
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                            </div>
                                             <div class="row">
                                                 <div>
 

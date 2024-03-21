@@ -979,16 +979,31 @@ html;
                         if (!respuesta.success) {
                             return showError(respuesta.mensaje)
                         }
-                        const datosCliente = respuesta.datos
+                       
+                         const datosCliente = respuesta.datos
+                       
+                       
+                        var saldo = parseFloat(datosCliente.SALDO).toFixed(2);
                         
-                        console.log((datosCliente));
-                        
+                                   
                         document.querySelector("#nombre_cliente").value = datosCliente.NOMBRE
                         document.querySelector("#curp_").value = datosCliente.CURP
-                        document.querySelector("#contrato").value = datosCliente.CONTRATO
                         document.querySelector("#codigo_cl").value = noCliente.value
-                        //document.querySelector("#saldoActual").value = parseFloat(datosCliente.SALDO).toFixed(2)
-                        document.querySelector("#monto").disabled = false;
+                        
+                        var columnas = document.getElementsByTagName('td');
+                        //columnas[1].innerHTML = datosCliente.FAERTURA;
+                        columnas[2].innerHTML = datosCliente.CONTRATO;
+                        columnas[3].innerHTML = saldo;
+                        
+                        $("#genera_tabla").show();
+                        $("#monto_div").hide();
+                        
+                        if(saldo == 1150)
+                         {
+                                return showError("El cliente no tiene saldo disponible para solicitar un retiro.")
+                         }
+                        
+                        
                         noCliente.value = ""
                     },
                     error: (error) => {
