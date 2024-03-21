@@ -997,14 +997,21 @@ html;
                         
                         $("#genera_tabla").show();
                         $("#monto_div").hide();
+                        noCliente.value = ""
+                        
+                        document.querySelector("#codigo_cl").value = noCliente.value
                         
                         if(saldo == 1150)
                          {
                                 return showError("El cliente no tiene saldo disponible para solicitar un retiro.")
                          }
+                         //if(fregistro >= 30)
+                         //{
+                         //       return showError("El cliente no puede realizar un retiro hasta el día". suma_fecha )
+                         //}
                         
                         
-                        noCliente.value = ""
+                       
                     },
                     error: (error) => {
                         console.error(error)
