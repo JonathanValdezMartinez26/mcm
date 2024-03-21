@@ -370,7 +370,7 @@
                                                             <button type="button" $boton_ver_encuesta_fin_a class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_encuesta_aval" data-backdrop="static" data-keyboard="false">
                                                                 <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">$titulo_boton_encuesta_fin_a </label>
                                                             </button>
-    html;
+html;
 
                                                         }
                                                         else
@@ -379,7 +379,7 @@
                                                             <button type="button" class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-backdrop="static" data-keyboard="false" onclick="InfoDesactivaEncuesta();">
                                                                 <i class="fa fa-edit" style="color: #1c4e63"></i> <label style="color: #1c4e63">$titulo_boton_encuesta_fin_a </label>
                                                             </button>
-    html;
+html;
                                                         }
 
                                                         echo $tabla;
