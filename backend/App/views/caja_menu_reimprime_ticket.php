@@ -108,6 +108,7 @@
                                                                         <th>Contrato</th>
                                                                         <th>Fecha cobro</th>
                                                                         <th>Monto</th>
+                                                                        <th>Operación</th>
                                                                         <th>Cliente</th>
                                                                         <th>Caja</th>
                                                                         <th>Acciones</th>
