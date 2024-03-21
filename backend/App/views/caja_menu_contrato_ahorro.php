@@ -142,7 +142,7 @@
                                                 <div class="col-md-8">
                                                     <div class="form-group">
                                                         <label for="curp">CURP</label>
-                                                        <input type="text" class="form-control" id="curp" readonly="">
+                                                        <input type="text" class="form-control" id="curp" readonly>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -172,7 +172,6 @@
                                                     <div class="form-group">
                                                         <label for="Fecha">Fecha de apertura</label>
                                                         <input onkeydown="return false" type="date" class="form-control" id="fecha" name="fecha" min="2024-03-07" max="2024-03-11" value="2024-03-11">
-                                                        <!-- <small class="form-text text-muted">Fecha de registro en sistema.</small> -->
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -181,24 +180,15 @@
                                                         <select class="form-control mr-sm-3" autofocus="" type="select" id="tasa" name="tasa">
                                                             <option value="5">5 %</option>
                                                         </select>
-                                                        <!-- <small class="form-text text-muted">Rendimiento.</small> -->
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="tipo">Monto mínimo</label>
                                                         <input onkeydown="return false" type="text" class="form-control" id="monto_min" name="monto_min" value="$100.00" readonly>
-                                                        <!-- <small class="form-text text-muted">Ahorro para cuenta corriente.</small> -->
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!-- <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="tipo">Monto máximo</label>
-                                                        <input onkeydown="return false" type="text" class="form-control" id="monto_max" name="monto_max" value="NO APLICA" readonly>
-                                                        <small class="form-text text-muted">Ahorro para cuenta corriente.</small>
-                                                    </div>
-                                                </div> -->
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <div class="form-group">
@@ -308,8 +298,6 @@
     </div>
 </div>
 
-
-<!-- <div class="modal fade in" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block; padding-right: 15px;"> -->
 <div class="modal fade" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -427,10 +415,6 @@
         </div>
     </div>
 </div>
-
-
-
-
 
 <style>
     .imagen {
