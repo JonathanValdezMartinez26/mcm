@@ -396,7 +396,7 @@ class Ahorro extends Controller
                 document.querySelector("#beneficiario_" + numBeneficiario).disabled = !habilitar
                 document.querySelector("#parentesco_" + numBeneficiario).disabled = !habilitar
                 document.querySelector("#porcentaje_" + numBeneficiario).disabled = !habilitar
-                if (numBeneficiario < 3)document.querySelector("#btnBen" + numBeneficiario).disabled = !habilitar
+                document.querySelector("#btnBen" + numBeneficiario).disabled = !habilitar
             }
              
             const limpiaDatosCliente = () => {
@@ -455,7 +455,6 @@ class Ahorro extends Controller
                     if (continuar) {
                         const noCredito = document.querySelector("#noCliente").value
                         const datos = $("#registroInicialAhorro").serializeArray()
-                        console.log(datos)
                         datos.push({ name: "credito", value: noCredito })
             
                         let respuesta = await $.ajax({
@@ -1594,7 +1593,7 @@ html;
         // LEYENDA TIPO COMPROBANTE
         $mpdf->Ln(10);
         $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 4, 'COMPROBANTE DE DEPOSITO', 0, 1, 'C');
+        $mpdf->Cell(60, 4, 'COMPROBANTE DE ' . ($datos['ES_DEPOSITO'] == 1 ? 'DEPOSITO' : 'RETIRO'), 0, 1, 'C');
         $mpdf->Ln(3);
         $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
 
@@ -1603,7 +1602,7 @@ html;
         $mpdf->SetFont('Helvetica', '', 9);
         $mpdf->Cell(60, 4, 'Fecha de la operación: ' . $datos['FECHA'], 0, 1, '');
         $mpdf->Cell(60, 4, 'Método de pago: Efectivo', 0, 1, '');
-        $mpdf->MultiCell(60, 4, 'Recibió: NOMBRE DE LA CAJERA MCM', 0, 1, '');
+        $mpdf->MultiCell(60, 4, ($datos['ES_DEPOSITO'] == 1 ? 'Recibió' : 'Entrego') . ': NOMBRE DE LA CAJERA MCM', 0, 1, '');
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
 
@@ -1611,7 +1610,7 @@ html;
         $mpdf->Ln(5);
         $mpdf->SetFont('Helvetica', '', 9);
         $mpdf->MultiCell(60, 4, 'Nombre del cliente: ' . $datos['NOMBRE_CLIENTE'], 0, 1, '');
-        $mpdf->Cell(60, 4, 'Código de cliente: ' . $datos['CDGCL'], 0, 1, '');
+        $mpdf->Cell(60, 4, 'Código de cliente: ' . $datos['CODIGO'], 0, 1, '');
         $mpdf->Cell(60, 4, 'Código de contrato: ' . $datos['CONTRATO'], 0, 1, '');
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
@@ -1632,7 +1631,7 @@ html;
         // MONTO DE LA OPERACION
         $mpdf->Ln(3);
         $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 4, 'RECIBIMOS ' .  $datos['MONTO'], 0, 1, 'C');
+        $mpdf->Cell(60, 4, ($datos['ES_DEPOSITO'] == 1 ? 'RECIBIMOS ' : 'ENTREGAMOS ') .  "$" . number_format($datos['MONTO'], 2, '.', ','), 0, 1, 'C');
         $mpdf->SetFont('Helvetica', '', 8);
         $mpdf->MultiCell(60, 4, '(UN MIL DOSCIENTOS 00/100 M.N)', 0, 'C');
         $mpdf->SetFont('Helvetica', '', 12);
@@ -1642,13 +1641,14 @@ html;
         $mpdf->Ln(4);
         $mpdf->SetFont('Helvetica', '', 10);
         $mpdf->Cell(30, 10, 'SALDO ANTERIOR:', 0);
-        $mpdf->Cell(30, 10, $datos['SALDO_ANTERIOR'], 2, 0, 'R');
+        $mpdf->Cell(30, 10, "$" . number_format($datos['SALDO_ANTERIOR'], 2, '.', ','), 2, 0, 'R');
         $mpdf->Ln(8);
         $mpdf->Cell(30, 10, 'ABONO A CUENTA :', 0);
-        $mpdf->Cell(30, 10,  $datos['MONTO'], 2, 0, 'R');
+        $mpdf->Cell(30, 10,  "$" . number_format($datos['MONTO'], 2, '.', ','), 2, 0, 'R');
         $mpdf->Ln(8);
+        $nvoSaldo = ($datos['ES_DEPOSITO'] == 1 ? $datos['SALDO_ANTERIOR'] + $datos['MONTO'] : $datos['SALDO_ANTERIOR'] - $datos['MONTO']);
         $mpdf->Cell(30, 10, 'SALDO NUEVO: ', 0);
-        $mpdf->Cell(30, 10, $datos['SALDO_ANTERIOR'] + $datos['MONTO'], 2, 0, 'R');
+        $mpdf->Cell(30, 10, "$" . number_format($nvoSaldo, 2, '.', ','), 2, 0, 'R');
 
         // FIRMAS
         $mpdf->Ln(20);

@@ -218,7 +218,7 @@ sql;
             $fecha = DateTime::createFromFormat('Y-m-d', $datos['fecha']);
             $fecha = $fecha !== false && $fecha->format('Y-m-d') === $datos['fecha'] ? $fecha->format('d-m-Y') : $datos['fecha'];
 
-            $datos = [
+            $datosInsert = [
                 [
                     'contrato' => $noContrato,
                     'cliente' => $datos['credito'],
@@ -230,8 +230,8 @@ sql;
                 $query
             ];
 
-            if ($datos['beneficiario_1'] !== "") {
-                $datos[] = [
+            if ($datos['beneficiario_1']) {
+                $datosInsert[] = [
                     'contrato' => $noContrato,
                     'nombre' => $datos['beneficiario_1'],
                     'parentesco' => $datos['parentesco_1'],
@@ -240,8 +240,8 @@ sql;
                 $inserts[] = $queryBen;
             }
 
-            if ($datos['beneficiario_2'] !== "") {
-                $datos[] = [
+            if ($datos['beneficiario_2']) {
+                $datosInsert[] = [
                     'contrato' => $noContrato,
                     'nombre' => $datos['beneficiario_2'],
                     'parentesco' => $datos['parentesco_2'],
@@ -250,8 +250,8 @@ sql;
                 $inserts[] = $queryBen;
             }
 
-            if ($datos['beneficiario_3'] !== "") {
-                $datos[] = [
+            if ($datos['beneficiario_3']) {
+                $datosInsert[] = [
                     'contrato' => $noContrato,
                     'nombre' => $datos['beneficiario_3'],
                     'parentesco' => $datos['parentesco_3'],
@@ -260,9 +260,10 @@ sql;
                 $inserts[] = $queryBen;
             }
 
+
             try {
                 $mysqli = Database::getInstance();
-                $res = $mysqli->insertaMultiple($inserts, $datos);
+                $res = $mysqli->insertaMultiple($inserts, $datosInsert);
                 if ($res) return self::Responde(true, "Contrato de ahorro registrado correctamente", ['contrato' => $noContrato]);
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro");
             } catch (Exception $e) {
@@ -290,7 +291,7 @@ sql;
             'funcion' => [CajaAhorro::class, 'ValidaMovimientoAhorro']
         ];
 
-        $datos = [
+        $datosInsert = [
             [
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['deposito_inicial'],
@@ -312,12 +313,12 @@ sql;
 
         try {
             $mysqli = Database::getInstance();
-            $res = $mysqli->insertaMultiple($query, $datos, $validacion);
+            $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
 
 
             if ($res) {
                 $ticket = self::RecuperaTicket($datos['contrato']);
-                return self::Responde(true, "Pago de apertura registrado correctamente", ['ticket' => $ticket]);
+                return self::Responde(true, "Pago de apertura registrado correctamente", ['ticket' => $ticket['CODIGO']]);
             }
             return self::Responde(false, "Ocurrió un error al registrar el pago de apertura");
         } catch (Exception $e) {
@@ -334,7 +335,7 @@ sql;
 
         $esDeposito = $datos['esDeposito'] === true || $datos['esDeposito'] === 'true';
 
-        $datos = [
+        $datosInsert = [
             [
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['montoOperacion'],
@@ -352,10 +353,10 @@ sql;
 
         try {
             $mysqli = Database::getInstance();
-            $res = $mysqli->insertaMultiple($query, $datos);
+            $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
                 $ticket = self::RecuperaTicket($datos['contrato']);
-                return self::Responde(true, "El " . $tipoMov . " fue registrado correctamente", ['ticket' => $ticket]);
+                return self::Responde(true, "El " . $tipoMov . " fue registrado correctamente", ['ticket' => $ticket['CODIGO']]);
             }
             return self::Responde(false, "Ocurrió un error al registrar el " . $tipoMov);
         } catch (Exception $e) {
@@ -457,33 +458,49 @@ sql;
     {
         $query = <<< sql
         SELECT
-            T.FECHA,
+            TO_CHAR(T.FECHA, 'dd/mm/yyyy HH24:MI:SS') AS FECHA,
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE_CLIENTE,
-            CL.CDGCL,
+            CL.CODIGO,
             APA.CONTRATO,
             T.MONTO,
             (
                 SELECT
                     SUM(
                         CASE MA.MOVIMIENTO
-                            WHEN 0 THEN -MA.MOVIMIENTO
-                            ELSE MA.MOVIMIENTO
+                            WHEN '0' THEN -MA.MONTO
+                            ELSE MA.MONTO
+                        END 
                     )
                 FROM
                     MOVIMIENTOS_AHORRO MA
                 WHERE
-                    CDG_TICKET < T.CODIGO
-                    AND CDG_TIPO_PAGO != 2
-            ) AS SALDO_ANTERIOR
+                    TO_NUMBER(CDG_TICKET) < TO_NUMBER(T.CODIGO)
+                    AND T.CDG_CONTRATO = MA.CDG_CONTRATO
+            ) AS SALDO_ANTERIOR,
+            (
+                SELECT
+                    MOVIMIENTO
+                FROM
+                    MOVIMIENTOS_AHORRO
+                WHERE
+                    TO_NUMBER(CDG_TICKET) = TO_NUMBER(T.CODIGO)
+            ) AS ES_DEPOSITO
         FROM
-            TICKET T,
+            TICKETS_AHORRO T,
             ASIGNA_PROD_AHORRO APA,
             CL
         WHERE
-            CL.CDGCL = APA.CDGCL
-            AND T.CDG_CNTRATO = APA.CONTRATO
-
+            CL.CODIGO = APA.CDGCL
+            AND T.CDG_CONTRATO = APA.CONTRATO
+            AND T.CODIGO = '$ticket'
         sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryOne($query);
+        } catch (Exception $e) {
+            return 0;
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////
