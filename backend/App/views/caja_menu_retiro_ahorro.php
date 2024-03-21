@@ -134,7 +134,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-2" id="monto_div">
+                                                <div class="col-md-2" id="monto_div" style="display: none;">
                                                     <div class="form-group">
                                                         <label for="monto">Monto del retiro*</label>
                                                         <input type="text" class="form-control" id="monto" name="monto" aria-describedby="monto" disabled>
@@ -142,7 +142,7 @@
                                                 </div>
 
                                                 <div class="card col-md-12" id="genera_tabla" style="display: none">
-                                                    <label for="monto">Monto del retiro*</label>
+                                                    <label for="monto">Detalle de cuenta*</label>
                                                         <div class="dataTable_wrapper">
                                                             <table class="table table-striped table-bordered table-hover">
                                                                 <thead>
@@ -166,21 +166,19 @@
                                                             </table>
                                                         </div>
                                                 </div>
-
-
-                                            </div>
-
-
-                                            <div class="row">
-                                                <div>
-
+                                                <div id="leyenda_fin">
                                                     <center>
                                                         <p style="font-size: 17px;"> El cliente <u>EJEMPLO EJEMPLO EJEMPLO</u>, solicita el retiro de fondos de su cuenta <u>NUMERO_CONTRATO</u>, la cantidad de $0000 <b>(CANTIDAD CON LETRA M.N)</b>, para el día <b>18/03/2024.</b> <input type="checkbox" id="cbox1" value="first_checkbox" /></p>
                                                     </center>
-
                                                 </div>
 
+
+
+
                                             </div>
+
+
+
 
                                             <div class="modal-footer">
                                                 <button type="button" id="registraDepositoInicial" name="agregar" class="btn btn-primary" value="enviar" onclick=pagoApertura(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Enviar Solicitud a Tesorería</button>
