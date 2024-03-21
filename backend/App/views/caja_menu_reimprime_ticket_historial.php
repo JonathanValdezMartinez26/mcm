@@ -53,10 +53,10 @@
                 </a>
 
                 <a id="link" href="/Ahorro/ReimprimeTicket/">
-                    <div class="col-md-5" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                        <img src="https://cdn-icons-png.flaticon.com/512/7325/7325359.png" style="border-radius: 3px; padding-top: 5px;" width="98" height="110">
+                    <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/7325/7325275.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                         <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Reimprime Ticket </b></p>
-                        <! -- https://cdn-icons-png.flaticon.com/512/7325/7325275.png -->
+                        <! -- https://cdn-icons-png.flaticon.com/512/942/942752.png -->
                     </div>
                 </a>
 
