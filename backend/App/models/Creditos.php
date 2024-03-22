@@ -104,7 +104,7 @@ sql;
     public static function ListaSucursales(){
     //////cambiar el parametro CDGPE
         $query=<<<sql
-        SELECT
+        SELECT DISTINCT 
             RG.CODIGO ID_REGION,
             RG.NOMBRE REGION,
             CO.CODIGO ID_SUCURSAL,
@@ -115,10 +115,8 @@ sql;
             PCO.CDGCO = CO.CODIGO
             AND CO.CDGRG = RG.CODIGO 
             AND PCO.CDGEM = 'EMPFIN'
-            AND PCO.CDGPE = 'AMGM'
         ORDER BY
-            ID_REGION,
-            ID_SUCURSAL
+	            SUCURSAL ASC
 sql;
 
         $mysqli = Database::getInstance();
