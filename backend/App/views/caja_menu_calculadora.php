@@ -148,7 +148,46 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    ...
+                    <div class="mdl-card mdl-shadow--2dp animated slideInUp">
+                        <div class="mdl-card__supporting-text cyan">
+                            <p class="installment-label animated slideInDown">Monthly Installment</p>
+                            <p id="installment_value" class="installment-value animated slideInDown">$ 0.00</p>
+                        </div>
+                        <div class="mdl-card__supporting-text">
+                            <form action="#">
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="car_price" tabindex="1">
+                                    <label class="mdl-textfield__label" for="sample4">Car Price</label>
+                                    <span class="mdl-textfield__error">Price is not a number!</span>
+                                </div>
+                                <br>
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="deposit" tabindex="2">
+                                    <label class="mdl-textfield__label" for="sample4">Deposit</label>
+                                    <span class="mdl-textfield__error">Deposit is not a number!</span>
+                                </div>
+                                <br>
+                                <div class="mdl-textfield mdl-js-textfield animated slideInLeft">
+                                    <p>
+                                        <label class="slider-label">Repayment Period:</label>
+                                        <label id="repayment_value" class="slider-value"></label>
+                                        <label class="slider-value">Year(s)</label>
+                                    </p>
+                                    <input id="repayment_slider" class="mdl-slider mdl-js-slider" type="range" min="1" max="9" value="6" tabindex="3">
+                                </div>
+                                <br>
+                                <div class="mdl-textfield mdl-js-textfield animated slideInLeft">
+                                    <p>
+                                        <label class="slider-label">Interest rate / year:</label>
+                                        <label id="interest_value" class="slider-value"></label>
+                                        <label class="slider-value">%</label>
+                                    </p>
+                                    <input id="interest_slider" class="mdl-slider mdl-js-slider" type="range" min="0.1" max="5" value="2.5" step="0.1" tabindex="4">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -175,7 +214,55 @@
             cursor: pointer;
             text-decoration: underline;
         }
+
+        body {
+            padding: 20px;
+            background: #eceff1;
+            position: relative;
+        }
+
+        .mdl-card{
+            margin:0 auto;
+        }
+
+        .slider-label{
+            color:#9E9E9E;
+        }
+
+        .tool-label{
+            color:#00BCD4;
+            font-size: 24px;
+        }
+
+        .installment-label{
+            color:#FFFFFF;
+            text-align:center;
+        }
+
+        .installment-value{
+            color:#FFFFFF;
+            text-align:center;
+            font-size:28px;
+        }
+
+        .slider-value{
+            font-weight:bold;
+        }
+
+        .installment-value{
+            text-align:center;
+            font-weight:bold;
+        }
+
+        .cyan {
+            color:#FFFFFF;
+            background-color: #2196F3;
+        }
+
+
+
     </style>
+
 
 
 <?php echo $footer; ?>
