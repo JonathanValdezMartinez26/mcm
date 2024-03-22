@@ -323,7 +323,7 @@ class Ahorro extends Controller
 
     public function BuscaContrato()
     {
-        $datos = CajaAhorroDao::BuscaClienteContrato($_POST['cliente']);
+        $datos = CajaAhorroDao::BuscaClienteContrato($_POST);
         echo $datos;
     }
 
@@ -411,6 +411,7 @@ class Ahorro extends Controller
                 habilitaBeneficiario(1, false)
                 document.querySelector("#ben2").style.opacity = "0"
                 document.querySelector("#ben3").style.opacity = "0"
+                document.querySelector("#btnGeneraContrato").disabled = true
             }
              
             const boton_contrato = (numero_contrato) => {
@@ -443,7 +444,7 @@ class Ahorro extends Controller
                 try {
                     const continuar = await swal({
                         title:
-                            "¿Está seguro de continuar con la apertura de la cuenta de ahorro del cliente: " +
+                            "¿Está segura de continuar con la apertura de la cuenta de ahorro del cliente: " +
                             cliente +
                             "?",
                         text: "",
@@ -654,13 +655,20 @@ class Ahorro extends Controller
                         }
                         porcentaje += parseFloat(document.querySelector("#porcentaje_" + i).value) || 0
                     }
+                     
                     if (porcentaje > 100) {
                         e.preventDefault()
                         e.target.value = ""
                         showError("La suma de los porcentajes no puede ser mayor a 100%")
                     }
+                     
                     return porcentaje === 100
                 }
+                 
+                if (e.target.tagName === "SELECT") {
+                    actualizarOpciones(e.target)
+                }
+                 
                 document.querySelector("#btnGeneraContrato").disabled = !val()
             }
              
@@ -756,12 +764,39 @@ class Ahorro extends Controller
                 const url = URL.createObjectURL(blob)
                 window.open(url, "_blank")
             }
+             
+            const actualizarOpciones = (select) => {
+                const valoresUnicos = [
+                    "CÓNYUGE",
+                    "PADRE",
+                    "MADRE",
+                ]
+                     
+                const valorSeleccionado = select.value
+                const selects = document.querySelectorAll("#parentesco_1, #parentesco_2, #parentesco_3")
+                const valoresSeleccionados = [
+                    document.querySelector("#parentesco_1").value,
+                    document.querySelector("#parentesco_2").value,
+                    document.querySelector("#parentesco_3").value
+                ]     
+                 
+                selects.forEach(element => {
+                    if (element !== select) {
+                        element.querySelectorAll("option").forEach(opcion => {
+                            if (!valoresUnicos.includes(opcion.text)) return
+                            if (valoresUnicos.includes(opcion.text) &&
+                            valoresSeleccionados.includes(opcion.value)) return opcion.style.display = "none"
+                            opcion.style.display = opcion.value === valorSeleccionado ? "none" : "block"
+                        })
+                    }
+                })
+            }
         </script>
         html;
 
         $parentescos = CajaAhorroDao::GetCatalogoParentescos();
 
-        $opcParentescos = "";
+        $opcParentescos = "<option value='' disabled selected>Seleccionar</option>";
         foreach ($parentescos as $parentesco) {
             $opcParentescos .= "<option value='{$parentesco['CODIGO']}'>{$parentesco['DESCRIPCION']}</option>";
         }
@@ -769,6 +804,7 @@ class Ahorro extends Controller
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         view::set('saldoMinimoApertura', $saldoMinimoApertura);
+        View::set('fecha', date('d/m/Y'));
         view::set('opcParentescos', $opcParentescos);
         View::render("caja_menu_contrato_ahorro");
     }

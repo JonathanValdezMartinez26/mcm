@@ -171,7 +171,7 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="Fecha">Fecha de apertura</label>
-                                                        <input onkeydown="return false" type="date" class="form-control" id="fecha" name="fecha" min="2024-03-07" max="2024-03-11" value="2024-03-11">
+                                                        <input type="text" class="form-control" id="fecha" name="fecha" value="<?= $fecha; ?>" readonly>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -185,7 +185,7 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="tipo">Monto mínimo</label>
-                                                        <input onkeydown="return false" type="text" class="form-control" id="monto_min" name="monto_min" value="$100.00" readonly>
+                                                        <input type="text" class="form-control" id="monto_min" name="monto_min" value="<?= number_format($saldoMinimoApertura, 2, '.', ','); ?>" readonly>
                                                     </div>
                                                 </div>
                                             </div>
@@ -217,7 +217,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-4">
-                                                    <label for="tipo">Beneficiario</label>
+                                                    <label for="tipo">Nombre Beneficiario</label>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <label for="tipo">Parentesco</label>
@@ -236,7 +236,7 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_1" name="porcentaje_1" value="100" oninput=camposLlenos(event) disabled>
+                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_1" name="porcentaje_1" oninput=camposLlenos(event) disabled>
                                                 </div>
                                                 <div class="col-md-1">
                                                     <button type="button" id="btnBen1" class="btn btn-primary" onclick=addBeneficiario(event) disabled>
