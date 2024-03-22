@@ -212,7 +212,7 @@ sql;
             $res = $mysqli->queryOne($queryValidacion, ['cliente' => $datos['credito']]);
             if ($res) return self::Responde(false, "El cliente ya cuenta con un contrato de ahorro");
 
-            $noContrato = $datos['credito'] . date_format(date_create($datos['fecha']), 'Ymd');
+            $noContrato = $datos['credito'] . date('Ymd');
 
             $query = <<<sql
             INSERT INTO ASIGNA_PROD_AHORRO

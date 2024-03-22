@@ -218,7 +218,7 @@
                                                     <label for="tipo">Porcentaje</label>
                                                 </div>
                                             </div>
-                                            <div class="row" id="ben1">
+                                            <div class="row" id="ben1" style="opacity:1">
                                                 <div class="col-md-4">
                                                     <input type="text" class="form-control" id="beneficiario_1" name="beneficiario_1" oninput=camposLlenos(event) disabled>
                                                 </div>
@@ -290,6 +290,7 @@
     </div>
 </div>
 
+<!-- <div class="modal fade in" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block; padding-right: 15px;"> -->
 <div class="modal fade" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -303,7 +304,7 @@
                 <div class="container-fluid">
                     <form id="AddPagoApertura">
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="fecha_pago">Fecha</label>
                                     <input type="text" class="form-control" id="fecha_pago" name="fecha_pago" readonly>
@@ -315,7 +316,7 @@
                                     <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="codigo_cl">Número de cliente</label>
                                     <input type="number" class="form-control" id="codigo_cl" name="codigo_cl" value="<?php echo $credito; ?>" readonly>
@@ -345,7 +346,7 @@
                                 <h3>$</h3>
                             </div>
                             <div class="col-md-5" style="padding-top: 5px;">
-                                <input type="number" class="form-control" id="deposito_inicial" name="deposito_inicial" min=100 max=100000 placeholder="Ingrese el monto" style="font-size: large;" onkeyup=validaDeposito(event)>
+                                <input type="number" class="form-control" id="deposito_inicial" name="deposito_inicial" min=100 max=100000 placeholder="Ingrese el monto" style="font-size: large;" onkeyup=validaDeposito(event) onkeydown=soloNumeros(event)>
                             </div>
                             <div class="col-md-12">
                                 <input type="text" class="form-control" id="deposito_inicial_letra" name="deposito_inicial_letra" style="border: 1px solid #000000; text-align: center;" readonly>
