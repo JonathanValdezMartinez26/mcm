@@ -2399,4 +2399,9 @@ html;
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::render("caja_menu_calculadora");
     }
+
+    public function CalculadoraView()
+    {
+        View::render("calculadora_view");
+    }
 }
