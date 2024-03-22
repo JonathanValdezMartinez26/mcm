@@ -2236,6 +2236,8 @@ html;
         $solicitud = new \stdClass();
 
         $solicitud->_folio = MasterDom::getData('folio');
+        $solicitud->_descripcion = MasterDom::getData('descripcion');
+        $solicitud->_motivo = MasterDom::getData('motivo');
         $solicitud->_cdgpe = $this->__usuario;
 
 

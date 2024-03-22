@@ -69,16 +69,40 @@ sql;
 
     public static function insertSolicitudAhorro($solicitud){
 
-        $mysqli = Database::getInstance(1);
-
-        //Agregar un registro
-        $query=<<<sql
-        INSERT INTO ESIACOM.TICKETS_AHORRO_REIMPRIME
-        (CODIGO, CDGTICKET_AHORRO, FREGISTRO, FREIMPRESION, MOTIVO, ESTATUS, CDGPE_SOLICITA, CDGPE_AUTORIZA, AUTORIZA, DESCRIPCION_MOTIVO, FAUTORIZA, AUTORIZA_CLIENTE)
-        VALUES('1', '1', TIMESTAMP '2024-03-15 15:21:09.000000', TIMESTAMP '2024-03-15 15:21:09.000000', 'MOTIVO 1', '1', '1', '1', '1', '1', TIMESTAMP '2024-03-15 15:21:09.000000', '1')
+        $query_consulta_existe_sol=<<<sql
+            SELECT COUNT(*) AS EXISTE
+            FROM ESIACOM.TICKETS_AHORRO_REIMPRIME
+            WHERE CDGPE_SOLICITA = '$solicitud->_cdgpe' 
+            AND CDGTICKET_AHORRO = '$solicitud->_folio'
+            AND ESTATUS = '0'
+            AND AUTORIZA = '0'
 sql;
 
-        return $mysqli->insert($query);
+
+        $mysqli = Database::getInstance(1);
+        $res = $mysqli->queryOne($query_consulta_existe_sol);
+
+
+        if($res['EXISTE'] == 0)
+        {
+            //Agregar un registro
+            $query=<<<sql
+        INSERT INTO ESIACOM.TICKETS_AHORRO_REIMPRIME
+        (CODIGO, CDGTICKET_AHORRO, FREGISTRO, FREIMPRESION, MOTIVO, ESTATUS, CDGPE_SOLICITA, CDGPE_AUTORIZA, AUTORIZA, DESCRIPCION_MOTIVO, FAUTORIZA, AUTORIZA_CLIENTE)
+        VALUES('1', '$solicitud->_folio', TIMESTAMP '2024-03-15 15:21:09.000000', TIMESTAMP '2024-03-15 15:21:09.000000', '$solicitud->_motivo', '1', '$solicitud->_cdgpe', '', '0', '$solicitud->_descripcion', TIMESTAMP '2024-03-15 15:21:09.000000', '0')
+sql;
+
+            return $mysqli->insert($query);
+        }
+        else
+        {
+            echo "Ya solicitaste la reimpresión de este ticket, espere a su validacion o contacta a tesorería.";
+        }
+
+
+
+
+
     }
 
 

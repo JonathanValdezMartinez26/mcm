@@ -157,7 +157,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="folio">Folio del ticket*</label>
-                                        <input type="text" class="form-control" id="folio" readonly>
+                                        <input type="text" class="form-control" id="folio" name="folio" readonly>
                                         <small id="emailHelp" class="form-text text-muted">Medio de registro del pago.</small>
                                     </div>
                                 </div>
@@ -165,7 +165,7 @@
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="tipo">Motivo *</label>
+                                        <label for="motivo">Motivo *</label>
                                         <select class="form-control mr-sm-3"  autofocus type="select" id="motivo" name="motivo">
                                             <option value="SE EXTRAVIO">MOTIVO 1</option>
                                             <option value="SE EXTRAVIO">MOTIVO 2</option>
@@ -176,8 +176,8 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="tipo">Escriba brevemente el motivo de la reimpresión *</label>
-                                        <textarea type="text" class="form-control" id="direccion" name="direccion" rows="3" cols="50"></textarea>
+                                        <label for="descripcion">Escriba brevemente el motivo de la reimpresión *</label>
+                                        <textarea type="text" class="form-control" id="descripcion" name="descripcion" rows="3" cols="50"></textarea>
                                     </div>
                                 </div>
 
