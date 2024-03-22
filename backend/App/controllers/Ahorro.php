@@ -66,7 +66,6 @@ class Ahorro extends Controller
                         document.querySelector("#cliente").value = datosCliente.CDGCL
                         document.querySelector("#saldoActual").value = parseFloat(datosCliente.SALDO).toFixed(2)
                         document.querySelector("#monto").disabled = false
-                        noCliente.value = ""
                     },
                     error: (error) => {
                         console.error(error)
@@ -78,8 +77,8 @@ class Ahorro extends Controller
              
             const limpiaDatosCliente = () => {
                 document.querySelector("#registroOperacion").reset()
-                document.querySelector("#fecha_pago").value = getHoy()
                 document.querySelector("#monto").disabled = true
+                document.querySelector("#btnRegistraOperacion").disabled = true
             }
              
             const getHoy = () => {
@@ -90,55 +89,59 @@ class Ahorro extends Controller
                 return yyyy + "-" + mm + "-" + dd
             }
              
-            const boton_contrato = (numero_contrato) => {
-                const host = window.location.origin
-                
-                let plantilla = "<!DOCTYPE html>"
-                plantilla += '<html lang="es">'
-                plantilla += '<head>'
-                plantilla += '<meta charset="UTF-8">'
-                plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-                plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
-                plantilla += '<title>Contrato ' + numero_contrato + '</title>'
-                plantilla += '</head>'
-                plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
-                plantilla +=
-                    '<iframe src="' + host + '/Ahorro/ImprimeContrato/' +
-                    numero_contrato +
-                    '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
-                plantilla += "</body>"
-                plantilla += "</html>"
-            
-                const blob = new Blob([plantilla], { type: "text/html" })
-                const url = URL.createObjectURL(blob)
-                window.open(url, "_blank")
+            let valKD = false
+            const soloNumeros = (e) => {
+                valKD = false
+                if ((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58)) {
+                    valKD = true
+                    return
+                }
+                if (e.keyCode === 110 || e.keyCode === 190 || e.keyCode === 8) {
+                    valKD = true
+                    return
+                }
+                return e.preventDefault()
             }
              
             const validaDeposito = (e) => {
+                if (!valKD) return
+                 
                 const monto = parseFloat(e.target.value) || 0
                 if (monto <= 0) {
                     e.preventDefault()
                     e.target.value = ""
-                    return showError("El monto a depositar debe ser mayor a 0")
+                    showError("El monto a depositar debe ser mayor a 0")
                 }
                  
-                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
+                if (monto > 1000000) {
+                    e.preventDefault()
+                    e.target.value = 1000000.00
+                }
+                 
+                const valor = e.target.value.split(".")
+                if (valor[1] && valor[1].length > 2) {
+                    e.preventDefault()
+                    e.target.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
+                }
+                
+                document.querySelector("#monto_letra").value = numeroLetras(parseFloat(e.target.value))
+                if (document.querySelector("#deposito").checked || document.querySelector("#retiro").checked) calculaSaldoFinal()
+            }
+             
+            const calculaSaldoFinal = () => {
                 const esDeposito = document.querySelector("#deposito").checked
-                document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
-                document.querySelector("#montoOperacion").value = monto.toFixed(2)
-                const saldoFinal = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
-                document.querySelector("#saldoFinal").value = saldoFinal
-                compruebaSaldoFinal(saldoFinal)
+                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
+                const monto = parseFloat(document.querySelector("#monto").value) || 0
+                document.querySelector("#montoOperacion").value =monto.toFixed(2)
+                document.querySelector("#saldoFinal").value = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
+                compruebaSaldoFinal(document.querySelector("#saldoFinal").value)
             }
              
             const cambioMovimiento = (e) => {
                 const esDeposito = document.querySelector("#deposito").checked
-                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
-                const monto = parseFloat(document.querySelector("#montoOperacion").value) || 0
-                document.querySelector("#saldoFinal").value = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
                 document.querySelector("#simboloOperacion").innerText = esDeposito ? "+" : "-"
                 document.querySelector("#descOperacion").innerText = (esDeposito ? "Depósito" : "Retiro") + " a cuenta ahorro corriente"
-                compruebaSaldoFinal(document.querySelector("#saldoFinal").value)
+                calculaSaldoFinal()
             }
              
             const compruebaSaldoFinal = saldoFinal => {
@@ -247,7 +250,7 @@ class Ahorro extends Controller
             
                 const parteEntera = Math.floor(numero)
                 const parteDecimal = Math.round((numero - parteEntera) * 100).toString().padStart(2, "0")
-                return convertir(parteEntera) + (numero == 1 ? ' peso ' : ' pesos ') + parteDecimal + '/100 M.N.'
+                return primeraMayuscula(convertir(parteEntera)) + (numero == 1 ? ' peso ' : ' pesos ') + parteDecimal + '/100 M.N.'
             }
              
             const primeraMayuscula = (texto) => {
@@ -280,7 +283,7 @@ class Ahorro extends Controller
                         }
                         showSuccess(respuesta.mensaje)
                         imprimeTicket(respuesta.datos.ticket)
-                        document.querySelector("#registroOperacion").reset()
+                        limpiaDatosCliente()
                     },
                     error: (error) => {
                         console.error(error)
@@ -494,7 +497,7 @@ class Ahorro extends Controller
                 const dd = String(hoy.getDate()).padStart(2, "0")
                 const mm = String(hoy.getMonth() + 1).padStart(2, "0")
                 const yyyy = hoy.getFullYear()
-                return dd + "-" + mm + "-" + yyyy
+                return dd + "-" + mm + "-" + yyyy + " " + hoy.getHours() + ":" + hoy.getMinutes() + ":" + hoy.getSeconds()
             }
                         
             const pagoApertura = (e) => {
@@ -525,13 +528,52 @@ class Ahorro extends Controller
                 })
             }
             
+            let valKD = false
+            const soloNumeros = (e) => {
+                valKD = false
+                if ((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58)) {
+                    valKD = true
+                    return
+                }
+                if (e.keyCode === 110 || e.keyCode === 190 || e.keyCode === 8) {
+                    valKD = true
+                    return
+                }
+                return e.preventDefault()
+            }
+             
             const validaDeposito = (e) => {
+                if (!valKD) return
+                 
+                const monto = parseFloat(e.target.value) || 0
+                if (monto <= 0) {
+                    e.preventDefault()
+                    e.target.value = ""
+                    showError("El monto a depositar debe ser mayor a 0")
+                }
+                 
+                if (monto > 1000000) {
+                    e.preventDefault()
+                    e.target.value = 1000000.00
+                }
+                 
+                const valor = e.target.value.split(".")
+                if (valor[1] && valor[1].length > 2) {
+                    e.preventDefault()
+                    e.target.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
+                }
+                
+                document.querySelector("#deposito_inicial_letra").value = numeroLetras(parseFloat(e.target.value))
+                calculaSaldoFinal(e)
+            }
+             
+            const calculaSaldoFinal = (e) => {
                 const monto = parseFloat(e.target.value)
                 document.querySelector("#deposito").value = monto.toFixed(2)
                 const saldoInicial = (monto - parseFloat(document.querySelector("#inscripcion").value)).toFixed(2)
                 document.querySelector("#saldo_inicial").value = saldoInicial > 0 ? saldoInicial : "0.00"
                 document.querySelector("#deposito_inicial_letra").value = primeraMayuscula(numeroLetras(monto))
-                 
+                    
                 if (saldoInicial < saldoMinimoApertura) {
                     document.querySelector("#saldo_inicial").setAttribute("style", "color: red")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
@@ -637,7 +679,7 @@ class Ahorro extends Controller
         
                 const parteEntera = Math.floor(numero)
                 const parteDecimal = Math.round((numero - parteEntera) * 100).toString().padStart(2, "0")
-                return convertir(parteEntera) + (numero == 1 ? ' peso ' : ' pesos ') + parteDecimal + '/100 M.N.'
+                return primeraMayuscula(convertir(parteEntera)) + (numero == 1 ? ' peso ' : ' pesos ') + parteDecimal + '/100 M.N.'
             }
         
             const primeraMayuscula = (texto) => {
@@ -650,7 +692,7 @@ class Ahorro extends Controller
                     for (let i = 1; i <= 3; i++) {
                         if (document.querySelector("#ben" + i).style.opacity === "1") {
                             if (!document.querySelector("#beneficiario_" + i).value) return false
-                            if (!document.querySelector("#parentesco_" + i).value) return false
+                            if (document.querySelector("#parentesco_" + i).selectedIndex === 0) return false
                             if (!document.querySelector("#porcentaje_" + i).value) return false
                         }
                         porcentaje += parseFloat(document.querySelector("#porcentaje_" + i).value) || 0
@@ -665,9 +707,7 @@ class Ahorro extends Controller
                     return porcentaje === 100
                 }
                  
-                if (e.target.tagName === "SELECT") {
-                    actualizarOpciones(e.target)
-                }
+                if (e.target.tagName === "SELECT") actualizarOpciones(e.target)
                  
                 document.querySelector("#btnGeneraContrato").disabled = !val()
             }
@@ -1440,22 +1480,54 @@ html;
                 const url = URL.createObjectURL(blob)
                 window.open(url, "_blank")
             }
+            
+             
+            let valKD = false
+            const soloNumeros = (e) => {
+                valKD = false
+                if ((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58)) {
+                    valKD = true
+                    return
+                }
+                if (e.keyCode === 110 || e.keyCode === 190 || e.keyCode === 8) {
+                    valKD = true
+                    return
+                }
+                return e.preventDefault()
+            }
              
             const validaDeposito = (e) => {
+                if (!valKD) return
+                 
                 const monto = parseFloat(e.target.value) || 0
                 if (monto <= 0) {
                     e.preventDefault()
                     e.target.value = ""
-                    return showError("El monto a depositar debe ser mayor a 0")
+                    showError("El monto a depositar debe ser mayor a 0")
                 }
                  
-                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
+                if (monto > 1000000) {
+                    e.preventDefault()
+                    e.target.value = 1000000.00
+                }
+                 
+                const valor = e.target.value.split(".")
+                if (valor[1] && valor[1].length > 2) {
+                    e.preventDefault()
+                    e.target.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
+                }
+                
+                document.querySelector("#monto_letra").value = numeroLetras(parseFloat(e.target.value))
+                if (document.querySelector("#deposito").checked || document.querySelector("#retiro").checked) calculaSaldoFinal()
+            }
+             
+            const calculaSaldoFinal = () => {
                 const esDeposito = document.querySelector("#deposito").checked
-                document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
-                document.querySelector("#montoOperacion").value = monto.toFixed(2)
-                const saldoFinal = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
-                document.querySelector("#saldoFinal").value = saldoFinal
-                compruebaSaldoFinal(saldoFinal)
+                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
+                const monto = parseFloat(document.querySelector("#monto").value) || 0
+                document.querySelector("#montoOperacion").value =monto.toFixed(2)
+                document.querySelector("#saldoFinal").value = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
+                compruebaSaldoFinal(document.querySelector("#saldoFinal").value)
             }
              
             const cambioMovimiento = (e) => {
@@ -1574,7 +1646,7 @@ html;
             
                 const parteEntera = Math.floor(numero)
                 const parteDecimal = Math.round((numero - parteEntera) * 100).toString().padStart(2, "0")
-                return convertir(parteEntera) + (numero == 1 ? ' peso ' : ' pesos ') + parteDecimal + '/100 M.N.'
+                return primeraMayuscula(convertir(parteEntera)) + (numero == 1 ? ' peso ' : ' pesos ') + parteDecimal + '/100 M.N.'
             }
              
             const primeraMayuscula = (texto) => {
@@ -1832,13 +1904,53 @@ html;
                 })
             }
             
+            
+            let valKD = false
+            const soloNumeros = (e) => {
+                valKD = false
+                if ((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58)) {
+                    valKD = true
+                    return
+                }
+                if (e.keyCode === 110 || e.keyCode === 190 || e.keyCode === 8) {
+                    valKD = true
+                    return
+                }
+                return e.preventDefault()
+            }
+             
             const validaDeposito = (e) => {
+                if (!valKD) return
+                 
+                const monto = parseFloat(e.target.value) || 0
+                if (monto <= 0) {
+                    e.preventDefault()
+                    e.target.value = ""
+                    showError("El monto a depositar debe ser mayor a 0")
+                }
+                 
+                if (monto > 1000000) {
+                    e.preventDefault()
+                    e.target.value = 1000000.00
+                }
+                 
+                const valor = e.target.value.split(".")
+                if (valor[1] && valor[1].length > 2) {
+                    e.preventDefault()
+                    e.target.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
+                }
+                
+                document.querySelector("#deposito_inicial_letra").value = numeroLetras(parseFloat(e.target.value))
+                calculaSaldoFinal(e)
+            }
+             
+            const calculaSaldoFinal = (e) => {
                 const monto = parseFloat(e.target.value)
                 document.querySelector("#deposito").value = monto.toFixed(2)
                 const saldoInicial = (monto - parseFloat(document.querySelector("#inscripcion").value)).toFixed(2)
                 document.querySelector("#saldo_inicial").value = saldoInicial > 0 ? saldoInicial : "0.00"
                 document.querySelector("#deposito_inicial_letra").value = primeraMayuscula(numeroLetras(monto))
-                 
+                    
                 if (saldoInicial < saldoMinimoApertura) {
                     document.querySelector("#saldo_inicial").setAttribute("style", "color: red")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
@@ -2298,14 +2410,13 @@ html;
         $mpdf->Cell(60, 4, 'Más con Menos', 0, 1, 'C');
         $mpdf->Ln(2);
         $mpdf->SetFont('Helvetica', '', 8);
-        $mpdf->Cell(60, 4, 'Financiera', 0, 1, 'C');
         $mpdf->Cell(60, 4, 'Dirección de la sucursal, C.P 00000', 0, 1, 'C');
         $mpdf->Cell(60, 4, '000 000 00000', 0, 1, 'C');
 
         // LEYENDA TIPO COMPROBANTE
-        $mpdf->Ln(7);
+        $mpdf->Ln(5);
         $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 4, 'COMPROBANTE DE ' . ($datos['ES_DEPOSITO'] == 1 ? 'DEPOSITO' : 'RETIRO'), 0, 1, 'C');
+        $mpdf->Cell(60, 4, 'COMPROBANTE DE ' . ($datos['ES_DEPOSITO'] == 1 ? 'DEPÓSITO' : 'RETIRO'), 0, 1, 'C');
         $mpdf->Ln(3);
         $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
 
@@ -2313,7 +2424,7 @@ html;
         $mpdf->Ln(2);
         $mpdf->SetFont('Helvetica', '', 9);
         $mpdf->Cell(60, 4, 'Fecha de la operación: ' . $datos['FECHA'], 0, 1, '');
-        $mpdf->Cell(60, 4, 'Método de pago: Efectivo', 0, 1, '');
+        $mpdf->Cell(60, 4, 'Método de pago: EFECTIVO', 0, 1, '');
         $mpdf->MultiCell(60, 4, ($datos['ES_DEPOSITO'] == 1 ? 'Recibió' : 'Entrego') . ': NOMBRE DE LA CAJERA MCM', 0, 1, '');
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
@@ -2327,14 +2438,8 @@ html;
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
 
-        // FOLIO DE LA OPERACION
-        $mpdf->Ln(5);
-        $mpdf->SetFont('Helvetica', '', 10);
-        $mpdf->Cell(60, 4, 'FOLIO DE LA OPERACIÓN', 0, 1, 'C');
-        $mpdf->Cell(60, 4, '01050505051400000002024', 0, 1, 'C');
-
         // DETALLE DE LA OPERACION
-        $mpdf->Ln(7);
+        $mpdf->Ln(5);
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 4, 'CUENTA DE AHORRO CORRIENTE', 0, 1, 'C');
         $mpdf->Ln(3);
@@ -2367,11 +2472,17 @@ html;
         $mpdf->Cell(30, 10, 'SALDO NUEVO: ', 0);
         $mpdf->Cell(30, 10, "$" . number_format($nvoSaldo, 2, '.', ','), 2, 0, 'R');
 
-        // FIRMAS
-        $mpdf->Ln(20);
+        // FOLIO DE LA OPERACION
+        $mpdf->Ln(15);
         $mpdf->SetFont('Helvetica', '', 10);
-        $mpdf->Cell(60, 4, 'Firma de conformidad', 0, 1, 'C');
-        $mpdf->Ln(5);
+        $mpdf->Cell(60, 4, 'FOLIO DE LA OPERACIÓN', 0, 1, 'C');
+        $mpdf->Cell(60, 4, '01050505051400000002024', 0, 1, 'C');
+
+        // FIRMAS
+        $mpdf->Ln(15);
+        $mpdf->SetFont('Helvetica', '', 10);
+        $mpdf->Cell(60, 4, 'Firma de conformidad del cliente', 0, 1, 'C');
+        $mpdf->Ln(7);
         $mpdf->Cell(60, 0, str_repeat('_', 25), 0, 1, 'C');
 
         // PIE DE PAGINA
