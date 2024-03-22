@@ -87,11 +87,20 @@ sql;
     {
         $queryValidacion = <<<sql
         SELECT
-            *
+            CL.CODIGO,
+            (
+                SELECT
+                    COUNT(APA.CONTRATO)
+                FROM
+                    ASIGNA_PROD_AHORRO APA
+                WHERE
+                    APA.CDGCL = CL.CODIGO
+                    AND CDGPR_PRIORITARIO = 1
+            ) AS CONTRATOS
         FROM
-            ASIGNA_PROD_AHORRO
+            CL
         WHERE
-            CDGCL = :cliente
+            CL.CODIGO = :cliente
         sql;
 
         $parametros = [
@@ -101,7 +110,8 @@ sql;
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryOne($queryValidacion, $parametros);
-            if ($res) return self::Responde(false, "El cliente ya cuenta con un contrato de ahorro");
+            if (!$res) return self::Responde(false, "No se encontro el numero de cliente {$datos['cliente']}");
+            if ($res['CONTRATOS'] > 0) return self::Responde(false, "El cliente {$datos['cliente']} ya cuenta con un contrato de ahorro");
 
             $query = <<<sql
             SELECT
@@ -151,33 +161,36 @@ sql;
         }
     }
 
-    public static function BuscaClienteContrato($cliente)
+    public static function BuscaClienteContrato($datos)
     {
         $query = <<<sql
         SELECT
-            *
+            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
+            CL.CURP,
+            (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1) AS CONTRATO,
+            NVL((SELECT SALDO FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1)), 0) AS SALDO,
+            CL.CODIGO AS CDGCL,
+            (
+                SELECT
+                    COUNT(APA.CONTRATO)
+                FROM
+                    ASIGNA_PROD_AHORRO APA
+                WHERE
+                    APA.CDGCL = CL.CODIGO
+                    AND CDGPR_PRIORITARIO = 1
+            ) AS CONTRATO
         FROM
-        (
-            SELECT
-                CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
-                CL.CURP,
-                (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO) AS CONTRATO,
-                (SELECT SALDO FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO)) AS SALDO,
-                CL.CODIGO AS CDGCL
-            FROM
-                CL
-            WHERE
-                CL.CODIGO = '$cliente'
-        )
+            CL
         WHERE
-            CONTRATO IS NOT NULL
+            CL.CODIGO = '{$datos['cliente']}'
         sql;
 
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryOne($query);
-            if ($res) return self::Responde(true, "Consulta realizada correctamente", $res);
-            return self::Responde(false, "No se encontraron datos para el cliente $cliente");
+            if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
+            if ($res['CONTRATO'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro");
+            return self::Responde(true, "Consulta realizada correctamente", $res);
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());
         }
@@ -624,7 +637,7 @@ sql;
                     'apellido1' => $datos['apellido1'],
                     'apellido2' => $datos['apellido2'],
                     'fecha_nacimiento' => $fecha,
-                    'sexo' => $sexo ? 'M' : 'F',
+                    'sexo' => $sexo ? 'H' : 'M',
                     'curp' => $datos['curp'],
                     'pais' => $datos['pais'],
                     'entidad' => $datos['entidad']
