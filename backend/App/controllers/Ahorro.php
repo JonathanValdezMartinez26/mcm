@@ -2246,7 +2246,8 @@ html;
                     <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>{$value['CDG_CONTRATO']} &nbsp;</td>
                     <td style="padding: 0px !important;">{$value['FECHA_ALTA']} </td>
                     <td style="padding: 0px !important;">$ {$monto}</td>
-                    <td style="padding: 0px !important;"></td>
+                    <td style="padding: 0px !important;">{$value['TIPO_AHORRO']}</td>
+                    <td style="padding: 0px !important;">{$value['NOMBRE_CLIENTE']}</td>
                     <td style="padding: 0px !important;">{$value['CDGPE']}</td>
                     <td style="padding: 0px !important;" class="center">
                          <button type="button" class="btn btn-success btn-circle" onclick="Reimprime_ticket('{$value['CODIGO']}');"><i class="fa fa-print"></i></button>

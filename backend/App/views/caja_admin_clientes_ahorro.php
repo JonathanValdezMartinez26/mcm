@@ -16,36 +16,27 @@
                 </div>
             </a>
 
-            <a id="link" href="/AdminSucursales/SolicitudesRetiroInmediato/">
-                <div class="col-md-5 imagen" style="margin-top: 5px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/7379/7379586.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
-                    <span class="button__badge">4</span>
-                    <p style="font-size: 12px; padding-top: 5px; color: #000000"><b>Solicitudes </b></p>
-                    <! -- https://cdn-icons-png.flaticon.com/512/7379/7379556.png -->
-                </div>
-            </a>
-
-            <a id="link" href="/AdminSucursales/ClientesAhorro/">
-                <div class="col-md-5" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/7379/7379494.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
-                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Clientes</b></p>
-                    <! -- https://cdn-icons-png.flaticon.com/512/7379/7379524.png -->
-                </div>
-            </a>
-
-            <a id="link" href="/AdminSucursales/LogTransaccional/">
-                <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/7379/7379490.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
-                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Log Transaccional </b></p>
-                    <! -- https://cdn-icons-png.flaticon.com/512/7379/7379458.png -->
-                </div>
-            </a>
-
-            <a id="link" href="/AdminSucursales/Personal/">
+            <a id="link" href="/Ahorro/SaldosDia/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/10491/10491273.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
-                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Cajeras </b></p>
-                    <! -- https://cdn-icons-png.flaticon.com/512/10491/10491278.png -->
+                    <img src="https://cdn-icons-png.flaticon.com/512/5833/5833855.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
+                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Mis saldos del día </b></p>
+                    <! -- https://cdn-icons-png.flaticon.com/512/5833/5833897.png -->
+                </div>
+            </a>
+
+            <a id="link" href="/Ahorro/ReimprimeTicket/">
+                <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/7325/7325275.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
+                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Reimprime Ticket </b></p>
+                    <! -- https://cdn-icons-png.flaticon.com/512/942/942752.png -->
+                </div>
+            </a>
+
+            <a id="link" href="/Ahorro/Calculadora/">
+                <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/5833/5833756.png" style="border-radius: 3px; padding-top: 5px;" width="98" height="110">
+                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Calculadora</b></p>
+                    <! -- https://cdn-icons-png.flaticon.com/512/7325/7325359.png -->
                 </div>
             </a>
 
