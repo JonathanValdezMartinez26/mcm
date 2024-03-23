@@ -55,9 +55,7 @@ class Ahorro extends Controller
                     success: (respuesta) => {
                         limpiaDatosCliente()
                         respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) {
-                            return showError(respuesta.mensaje)
-                        }
+                        if (!respuesta.success) return showError(respuesta.mensaje)
                         const datosCliente = respuesta.datos
                          
                         document.querySelector("#nombre").value = datosCliente.NOMBRE
@@ -276,6 +274,7 @@ class Ahorro extends Controller
                     url: "/Ahorro/registraOperacion/",
                     data: $.param(datos),
                     success: (respuesta) => {
+                        console.log(respuesta)
                         respuesta = JSON.parse(respuesta)
                         if (!respuesta.success){
                             console.log(respuesta.error)
@@ -286,6 +285,7 @@ class Ahorro extends Controller
                         limpiaDatosCliente()
                     },
                     error: (error) => {
+                        console.log(respuesta)
                         console.error(error)
                         showError("Ocurrió un error al registrar la operación.")
                     }
@@ -1403,20 +1403,22 @@ html;
                     success: (respuesta) => {
                         limpiaDatosCliente()
                         respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) {
-                            return showError(respuesta.mensaje)
-                        }
+                        if (!respuesta.success) return showError(respuesta.mensaje)
                         const datosCliente = respuesta.datos
-                        
-                        console.log(datosCliente)
+                         
                         const contratos = document.createDocumentFragment()
+                        const seleccionar = document.createElement("option")
+                        seleccionar.value = ""
+                        seleccionar.innerText = "Seleccionar"
+                        contratos.appendChild(seleccionar)
+                         
                         datosCliente.forEach(cliente => {
                             const opcion = document.createElement("option")
                             opcion.value = cliente.CDG_CONTRATO
                             opcion.innerText = cliente.CDG_CONTRATO
                             contratos.appendChild(opcion)
                         })
-                          
+                         
                         document.querySelector("#contrato").appendChild(contratos)
                         document.querySelector("#contrato").disabled = false
                         document.querySelector("#contrato").addEventListener("change", (e) => {
@@ -1426,6 +1428,7 @@ html;
                                     document.querySelector("#curp").value = contrato.CURP
                                     document.querySelector("#cliente").value = contrato.CDGCL
                                     document.querySelector("#saldoActual").value = parseFloat(contrato.SALDO).toFixed(2)
+                                    if (document.querySelector("#deposito").checked || document.querySelector("#retiro").checked) calculaSaldoFinal()
                                 }
                             })
                         })
@@ -1525,19 +1528,16 @@ html;
                 const esDeposito = document.querySelector("#deposito").checked
                 const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
                 const monto = parseFloat(document.querySelector("#monto").value) || 0
-                document.querySelector("#montoOperacion").value =monto.toFixed(2)
+                document.querySelector("#montoOperacion").value = monto.toFixed(2)
                 document.querySelector("#saldoFinal").value = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
                 compruebaSaldoFinal(document.querySelector("#saldoFinal").value)
             }
              
             const cambioMovimiento = (e) => {
                 const esDeposito = document.querySelector("#deposito").checked
-                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
-                const monto = parseFloat(document.querySelector("#montoOperacion").value) || 0
-                document.querySelector("#saldoFinal").value = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
                 document.querySelector("#simboloOperacion").innerText = esDeposito ? "+" : "-"
                 document.querySelector("#descOperacion").innerText = (esDeposito ? "Depósito" : "Retiro") + " a cuenta ahorro corriente"
-                compruebaSaldoFinal(document.querySelector("#saldoFinal").value)
+                calculaSaldoFinal()
             }
              
             const compruebaSaldoFinal = saldoFinal => {
@@ -1677,9 +1677,10 @@ html;
                             console.log(respuesta.error)
                             return showError(respuesta.mensaje)
                         }
+                         
                         showSuccess(respuesta.mensaje)
                         imprimeTicket(respuesta.datos.ticket)
-                        document.querySelector("#registroOperacion").reset()
+                        limpiaDatosCliente()
                     },
                     error: (error) => {
                         console.error(error)
@@ -1873,7 +1874,7 @@ html;
                 const dd = String(hoy.getDate()).padStart(2, "0")
                 const mm = String(hoy.getMonth() + 1).padStart(2, "0")
                 const yyyy = hoy.getFullYear()
-                return dd + "-" + mm + "-" + yyyy
+                return dd + "/" + mm + "/" + yyyy + " " + hoy.getHours() + ":" + hoy.getMinutes() + ":" + hoy.getSeconds()
             }
                         
             const pagoApertura = (e) => {
@@ -2397,6 +2398,10 @@ html;
     public function Ticket($ticket)
     {
         $datos = CajaAhorroDao::DatosTicket($ticket);
+        if (!$datos) {
+            echo "No se encontraron datos para el ticket: " . $ticket;
+            return;
+        }
 
         $nombreArchivo = "Ticket " . $ticket;
 
@@ -2414,7 +2419,7 @@ html;
         $mpdf->Cell(60, 4, '000 000 00000', 0, 1, 'C');
 
         // LEYENDA TIPO COMPROBANTE
-        $mpdf->Ln(5);
+        $mpdf->Ln(3);
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 4, 'COMPROBANTE DE ' . ($datos['ES_DEPOSITO'] == 1 ? 'DEPÓSITO' : 'RETIRO'), 0, 1, 'C');
         $mpdf->Ln(3);
@@ -2425,7 +2430,7 @@ html;
         $mpdf->SetFont('Helvetica', '', 9);
         $mpdf->Cell(60, 4, 'Fecha de la operación: ' . $datos['FECHA'], 0, 1, '');
         $mpdf->Cell(60, 4, 'Método de pago: EFECTIVO', 0, 1, '');
-        $mpdf->MultiCell(60, 4, ($datos['ES_DEPOSITO'] == 1 ? 'Recibió' : 'Entrego') . ': NOMBRE DE LA CAJERA MCM', 0, 1, '');
+        $mpdf->MultiCell(60, 4, ($datos['ES_DEPOSITO'] == 1 ? 'Recibió' : 'Entrego') . ': ' . $datos['NOM_EJECUTIVO'] . ' (' . $datos['COD_EJECUTIVO'] . ')', 0, 1, '');
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
 
@@ -2439,7 +2444,7 @@ html;
         $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
 
         // DETALLE DE LA OPERACION
-        $mpdf->Ln(5);
+        $mpdf->Ln(7);
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 4, 'CUENTA DE AHORRO CORRIENTE', 0, 1, 'C');
         $mpdf->Ln(3);
@@ -2460,7 +2465,7 @@ html;
         $mpdf->Cell(30, 10, 'SALDO ANTERIOR:', 0);
         $mpdf->Cell(30, 10, "$" . number_format($datos['SALDO_ANTERIOR'], 2, '.', ','), 2, 0, 'R');
         $mpdf->Ln(8);
-        $mpdf->Cell(30, 10, 'ABONO A CUENTA :', 0);
+        $mpdf->Cell(30, 10, ($datos['ES_DEPOSITO'] == 1 ? 'ABONO' : 'RETIRO') . ' A CUENTA :', 0);
         $mpdf->Cell(30, 10,  "$" . number_format($datos['MONTO'], 2, '.', ','), 2, 0, 'R');
         $mpdf->Ln(8);
         if ($datos['COMISION'] > 0) {
@@ -2472,21 +2477,21 @@ html;
         $mpdf->Cell(30, 10, 'SALDO NUEVO: ', 0);
         $mpdf->Cell(30, 10, "$" . number_format($nvoSaldo, 2, '.', ','), 2, 0, 'R');
 
-        // FOLIO DE LA OPERACION
-        $mpdf->Ln(15);
-        $mpdf->SetFont('Helvetica', '', 10);
-        $mpdf->Cell(60, 4, 'FOLIO DE LA OPERACIÓN', 0, 1, 'C');
-        $mpdf->Cell(60, 4, '01050505051400000002024', 0, 1, 'C');
-
         // FIRMAS
         $mpdf->Ln(15);
         $mpdf->SetFont('Helvetica', '', 10);
         $mpdf->Cell(60, 4, 'Firma de conformidad del cliente', 0, 1, 'C');
-        $mpdf->Ln(7);
+        $mpdf->Ln(10);
         $mpdf->Cell(60, 0, str_repeat('_', 25), 0, 1, 'C');
 
+        // FOLIO DE LA OPERACION
+        $mpdf->Ln(10);
+        $mpdf->SetFont('Helvetica', '', 10);
+        $mpdf->Cell(60, 4, 'FOLIO DE LA OPERACIÓN', 0, 1, 'C');
+        $mpdf->WriteHTML('<barcode code="' . $ticket . '-' . $datos['CODIGO'] . '-' . $datos['MONTO'] . '-' . $datos['COD_EJECUTIVO'] . '" type="C128A" size=".63" height="1" class=""/>');
+
         // PIE DE PAGINA
-        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:11px;font-family:Helvetica;"><br>Fecha de impresión: ' . date('Y-m-d H:i:s') . '</div>');
+        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:11px;font-family:Helvetica;">Fecha de impresión: ' . date('Y-m-d H:i:s') . '</div>');
 
         $mpdf->Output($nombreArchivo . '.pdf', 'I');
         exit;
