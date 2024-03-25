@@ -1,26 +1,32 @@
 <?php
+
 namespace App\controllers;
-defined("APPPATH") OR die("Access denied");
+
+defined("APPPATH") or die("Access denied");
 
 use \Core\View;
 use \Core\MasterDom;
 use \App\controllers\Contenedor;
 use \Core\Controller;
-use \App\models\Devengo AS DevengoDao;
+use \App\models\Devengo as DevengoDao;
+use DateTime;
 
-class Devengo extends Controller{
+class Devengo extends Controller
+{
 
     private $_contenedor;
 
-    function __construct(){
+    function __construct()
+    {
         parent::__construct();
         $this->_contenedor = new Contenedor;
-        View::set('header',$this->_contenedor->header());
-        View::set('footer',$this->_contenedor->footer());
+        View::set('header', $this->_contenedor->header());
+        View::set('footer', $this->_contenedor->footer());
     }
 
-    public function getUsuario(){
-      return $this->__usuario;
+    public function getUsuario()
+    {
+        return $this->__usuario;
     }
 
     public function index()
@@ -28,95 +34,85 @@ class Devengo extends Controller{
         $extraHeader = <<<html
         <title>Devengar Crédito</title>
         <link rel="shortcut icon" href="/img/logo.png">
-html;
+        html;
+
         $extraFooter = <<<html
-      <script>
-     
-        function getParameterByName(name) {
-            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(location.search);
-            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-        }
-       
-        function BotonReactivar(fecha, cdgns, ciclo, inicio, dev_diario, dias_dev, int_dev, dev_diario_sin_iva, iva_int, plazo, plazo_dias, fin) {
-              swal({
-              title: "¿Segúro que desea reactivar el credito: "+ cdgns + ", ciclo: " + ciclo +"?",
-              text: "",
-              icon: "warning",
-              buttons: true,
-              dangerMode: true,
-            })
-            .then((willDelete) => {
-              if (willDelete) {
-                    $.ajax({
-                        type: "POST",
-                        url: "/Devengo/Calcular/",
-                        data: {"fecha" : fecha, "cdgns" : cdgns, "ciclo" : ciclo, "inicio" : inicio, "dev_diario" : dev_diario, "dias_dev" : dias_dev, "int_dev" : int_dev, "dev_diario_sin_iva" : dev_diario_sin_iva, "iva_int" : iva_int, "plazo" : plazo, "plazo_dias" : plazo_dias, "fin" : fin},
-                        success: function(respuesta){
-                            console.log(respuesta);
-                            //alert(respuesta);
-                            //if(respuesta != '0')
-                            //{
-                              //    swal("Registro fue eliminado correctamente", {
-                               //       icon: "success",
-                                 //   });
-                                  //  location.reload();
-    
-                            //}
-                            //else
-                            //{
-                             //   swal(respuesta, {
-                              //      icon: "error",
-                                //});
-                            //}
-                        }
-                    });
-              }
-            });
-    
-        }
-      </script>
-html;
+        <script>
+            const reactivaCredito = () => {
+                const tabla = document.querySelector('#devengoPendiente')
+                 
+                const datos = []
+                tabla.querySelectorAll('tr').forEach((tr, index) => {
+                    const tds = tr.querySelectorAll('td')
+                    datos.push({
+                        credito: document.querySelector('#credito').innerText,
+                        ciclo: document.querySelector('#ciclo').innerText,
+                        consecutivo: tds[0].innerText,
+                        interes_devengado: tds[1].innerText,
+                        fecha_calculo: tds[2].innerText
+                    })
+                })
+                 console.log(datos)
+                $.ajax({
+                    type: 'POST',
+                    url: '/Devengo/ReactivaCredito/',
+                    data: {d: datos},
+                    success: (resultado) => {
+                        console.log(resultado)
+                    },
+                    error: (error) => {
+                        console.log("Error: " + error)
+                    }
+                })
+            }
+        </script>
+        html;
 
         $credito = $_GET['Credito'];
         $ciclo = $_GET['Ciclo'];
 
-        if($credito != '' || $ciclo != '')
-        {
-            $Administracion = DevengoDao::ConsultaExiste($credito, $ciclo);
+        $Administracion = DevengoDao::ConsultaExiste($credito, $ciclo);
+        $Administracion = json_decode($Administracion, true);
 
-            if($Administracion[0]['CDGCLNS'] != '')
-            {
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer',$this->_contenedor->footer($extraFooter));
-                View::set('Administracion', $Administracion);
-                View::set('credito',$credito);
-                View::set('ciclo',$ciclo);
-                View::render("devengo_busqueda_all");
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('credito', $credito);
+        View::set('ciclo', $ciclo);
 
-            }
-            else
-            {
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer',$this->_contenedor->footer($extraFooter));
-                View::set('credito',$credito);
-                View::set('ciclo',$ciclo);
-                View::render("devengo_all");
+        if ($Administracion['success']) {
+            $tabla = "";
+            for ($i = 0; $i < $Administracion['datos']['DIAS_PENDIENTES']; $i++) {
+                $tabla .= "<tr>";
+                $tabla .= "<td>" . ($Administracion['datos']['CONSECUTIVO'] + $i) . "</td>";
+                $tabla .= "<td>" . number_format($Administracion['datos']['INT_DIARIO'] * ($Administracion['datos']['CONSECUTIVO'] + $i), 2, '.', ',') . "</td>";
+                $tabla .= "<td>" . self::ModificaFecha($Administracion['datos']['FECHA_LIQUIDACION'], $i + 1) . "</td>";
+                $tabla .= "</tr>";
             }
 
-        }
-        else
-        {
-            View::set('header', $this->_contenedor->header($extraHeader));
-            View::set('footer',$this->_contenedor->footer($extraFooter));
+            View::set('tabla', $tabla);
+            View::set('Administracion', $Administracion['datos']);
+            View::render("devengo_busqueda_all");
+        } else {
             View::render("devengo_all");
         }
-
     }
 
-    public function Calcular(){
+    public function ReactivaCredito()
+    {
+        $datos = $_POST;
+        $respuesta = DevengoDao::ReactivaCredito($datos['d']);
+        echo $respuesta;
+    }
 
+    public function ModificaFecha($fecha_str, $dias, $tipo = '+')
+    {
+        $fecha = DateTime::createFromFormat('Y-m-d', $fecha_str);
+        $fecha->modify($tipo . $dias . ' day');
+        return $fecha->format('Y-m-d');
+    }
+
+    public function Calcular()
+    {
         $fecha = $_POST['fecha'];
         $cdgns = $_POST['cdgns'];
         $ciclo = $_POST['ciclo'];
@@ -142,5 +138,4 @@ html;
         //return $query;
 
     }
-
 }
