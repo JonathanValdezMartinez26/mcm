@@ -171,7 +171,7 @@
                                                         <h3>$</h3>
                                                     </div>
                                                     <div class="col-md-4" style="padding-top: 5px;">
-                                                        <input type="number" class="form-control" id="monto" name="monto" min="250" max="100000" placeholder="0.00" style="font-size: large; font-size: 25px;" oninput=validaDeposito(event) disabled max="1000000" min="1">
+                                                        <input type="number" class="form-control" id="monto" name="monto" placeholder="0.00" style="font-size: large; font-size: 25px;" onkeyup=validaDeposito(event) onkeydown=soloNumeros(event) disabled>
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -223,7 +223,7 @@
                                                     <input type="number" class="form-control" id="saldoFinal" name="saldoFinal" value="0.00" readonly>
                                                 </div>
                                                 <div class="col-md-12" style="display: flex; justify-content: center; color: red;">
-                                                    <label id="tipSaldo" style="opacity:0; font-size: 18px;">El saldo final no puede ser menor a $0.00.</label>
+                                                    <label id="tipSaldo" style="opacity:0; font-size: 18px;">No se puede realizar un retirar mayor al saldo disponible.</label>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">

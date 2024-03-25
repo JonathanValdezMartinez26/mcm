@@ -242,7 +242,7 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="tipo">Monto mínimo</label>
-                                                        <input onkeydown="return false" type="text" class="form-control" id="monto_min" name="monto_min" value="$100.00" readonly>
+                                                        <input type="text" class="form-control" id="monto_min" name="monto_min" value="$100.00" readonly>
                                                     </div>
                                                 </div>
                                             </div>
@@ -345,7 +345,7 @@
                                 <h3>$</h3>
                             </div>
                             <div class="col-md-5" style="padding-top: 5px;">
-                                <input type="number" class="form-control" id="deposito_inicial" name="deposito_inicial" min=100 max=100000 placeholder="Ingrese el monto" style="font-size: large;" onkeyup=validaDeposito(event)>
+                                <input type="number" class="form-control" id="deposito_inicial" name="deposito_inicial" min=100 max=100000 placeholder="Ingrese el monto" style="font-size: large;" onkeyup=validaDeposito(event) onkeydown=soloNumeros(event)>
                             </div>
                             <div class="col-md-12">
                                 <input type="text" class="form-control" id="deposito_inicial_letra" name="deposito_inicial_letra" style="border: 1px solid #000000; text-align: center;" readonly>

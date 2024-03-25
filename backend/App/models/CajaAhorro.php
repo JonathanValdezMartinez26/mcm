@@ -178,7 +178,7 @@ sql;
                 WHERE
                     APA.CDGCL = CL.CODIGO
                     AND CDGPR_PRIORITARIO = 1
-            ) AS CONTRATO
+            ) AS NO_CONTRATOS
         FROM
             CL
         WHERE
@@ -189,7 +189,7 @@ sql;
             $mysqli = Database::getInstance();
             $res = $mysqli->queryOne($query);
             if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
-            if ($res['CONTRATO'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro");
+            if ($res['NO_CONTRATOS'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro");
             return self::Responde(true, "Consulta realizada correctamente", $res);
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());
@@ -293,7 +293,7 @@ sql;
         if ($datos['saldo_inicial'] < $datos['sma']) return self::Responde(false, "El saldo inicial no puede ser menor a " . $datos['sma']);
 
         $query = [
-            self::GetQueryTiecket(),
+            self::GetQueryTicket(),
             self::GetQueryMovimientoAhorro(),
             self::GetQueryMovimientoAhorro()
         ];
@@ -342,7 +342,7 @@ sql;
     public static function RegistraOperacion($datos)
     {
         $query = [
-            self::GetQueryTiecket(),
+            self::GetQueryTicket(),
             self::GetQueryMovimientoAhorro()
         ];
 
@@ -391,7 +391,7 @@ sql;
         return $resultado;
     }
 
-    public static function GetQueryTiecket()
+    public static function GetQueryTicket()
     {
         return <<<sql
         INSERT INTO TICKETS_AHORRO
@@ -507,7 +507,16 @@ sql;
                 WHERE
                     TO_NUMBER(CDG_TICKET) = TO_NUMBER(T.CODIGO)
                     AND CDG_TIPO_PAGO != 2
-            ) AS ES_DEPOSITO
+            ) AS ES_DEPOSITO,
+            (
+                SELECT
+                    CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS NOMBRE
+                FROM
+                    PE
+                WHERE
+                    PE.CODIGO = T.CDGPE
+            ) AS NOM_EJECUTIVO,
+            T.CDGPE AS COD_EJECUTIVO
         FROM
             TICKETS_AHORRO T,
             ASIGNA_PROD_AHORRO APA,
@@ -631,7 +640,7 @@ sql;
                 ],
                 [
                     'cliente' => $datos['credito'],
-                    'noHijo' => $noContrato,
+                    'contrato' => $noContrato,
                     'nombre1' => $datos['nombre1'],
                     'nombre2' => $datos['nombre2'],
                     'apellido1' => $datos['apellido1'],
