@@ -2241,7 +2241,7 @@ html;
 
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                   <td style="padding: 0px !important;">{$value['CODIGO']} </td>
+                   <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
                     <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>{$value['CDG_CONTRATO']} &nbsp;</td>
                     <td style="padding: 0px !important;">{$value['FECHA_ALTA']} </td>
                     <td style="padding: 0px !important;">$ {$monto}</td>

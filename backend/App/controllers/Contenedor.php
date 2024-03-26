@@ -121,20 +121,24 @@ html;
               <h3>General </h3>
               <ul class="nav side-menu">       
 html;
-    if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil == 'GTOCA' || $this->__perfil == 'AMOCA' || $this->__perfil == 'OCOF' || $this->__perfil == 'CPAGO' || $this->__perfil == 'ACALL' || $this->__perfil == 'LAYOU' || $this->__usuario == 'TESP') {
+    if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil == 'GTOCA' || $this->__perfil == 'AMOCA' || $this->__perfil == 'OCOF' || $this->__perfil == 'CPAGO' || $this->__perfil == 'ACALL' || $this->__perfil == 'LAYOU' || $this->__usuario == 'TESP' || $this->__usuario == 'MGJC') {
 
       $menu .= <<<html
                 <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
 html;
     }
-    if ($this->__perfil == 'ADMIN') {
+    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario == 'MGJC') {
       $menu .= <<<html
             <li><a href="/Pagos/">Administración Pagos</a></li>
+html;
+    }
+      if ($this->__perfil == 'ADMIN') {
+          $menu .= <<<html
             <li><a href="/Pagos/CorteEjecutivo/">Recepción Pagos App</a></li> 
             <li><a href="/Pagos/CorteEjecutivoReimprimir/">Reimprimir Recibos App</a></li> 
 html;
-    }
+      }
     if ($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL' || $this->__perfil == 'LAYOU') {
       $menu .= <<<html
             <li><a href="/Pagos/Layout/">Layout Contable</a></li> 
@@ -274,8 +278,13 @@ html;
                 <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
                 </i>&nbsp;Api Condusef<span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
+<<<<<<< HEAD
                    <li><a href="/ApiCondusef/AddRedeco/">Registrar Quejas REDECO</a></li>
                      <li><a href="/ApiCondusef/AddReune/">Registrar Quejas REUNE</a></li>
+=======
+                   <li><a href="/ApiCondusef/ComplaintsAdd/">Registrar Quejas REDECO</a></li>
+                     <li><a href="/REUNE/ComplaintsAdd/">Registrar Quejas REUNE</a></li>
+>>>>>>> 5ab46dc67e4671fdc902aa2a52a41d47abf5d1e6
                   
                   </ul>
                 </li>
@@ -283,7 +292,7 @@ html;
 html;
     }
 
-    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario == 'PLMV') {
+    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLMV') {
       $menu .= <<<html
         <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
@@ -297,7 +306,7 @@ html;
 html;
     }
 
-    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario == 'PLMV' || $this->__usuario == 'PHEE') {
+    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLMV' || $this->__usuario == 'PHEE') {
       $menu .= <<<html
         <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon glyphicon-cog"> 
@@ -314,12 +323,12 @@ html;
 html;
     }
 
-    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ' || $this->__usuario == 'ORHM') {
+    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ' || $this->__usuario == 'ORHM' || $this->__usuario == 'LGFR') {
       $menu .= <<<html
               <ul class="nav side-menu">
                 
 html;
-      if ($this->__perfil == 'ADMIN') {
+      if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' ) {
         $menu .= <<<html
                 <li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>
 html;
@@ -333,7 +342,7 @@ html;
                   <ul class="nav child_menu">
 html;
 
-      if ($this->__perfil == 'ADMIN') {
+      if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR') {
         $menu .= <<<html
                    <li><a href="/Pagos/AjusteHoraCierre/">Ajustar Hora de Cierre</a></li>
                    <li><a href="/Pagos/DiasFestivos/">Asignación Días Festivos</a></li>
