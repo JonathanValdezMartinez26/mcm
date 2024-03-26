@@ -128,13 +128,18 @@ html;
                   <ul class="nav child_menu">
 html;
     }
-    if ($this->__perfil == 'ADMIN') {
+    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' ) {
       $menu .= <<<html
+            <li><a href="/Pagos/">Administración Pagos</a></li>
+html;
+    }
+      if ($this->__perfil == 'ADMIN') {
+          $menu .= <<<html
             <li><a href="/Pagos/">Administración Pagos</a></li>
             <li><a href="/Pagos/CorteEjecutivo/">Recepción Pagos App</a></li> 
             <li><a href="/Pagos/CorteEjecutivoReimprimir/">Reimprimir Recibos App</a></li> 
 html;
-    }
+      }
     if ($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL' || $this->__perfil == 'LAYOU') {
       $menu .= <<<html
             <li><a href="/Pagos/Layout/">Layout Contable</a></li> 
@@ -275,7 +280,7 @@ html;
                 </i>&nbsp;Api Condusef<span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
                    <li><a href="/ApiCondusef/ComplaintsAdd/">Registrar Quejas REDECO</a></li>
-                     <li><a href="/ApiCondusef/ComplaintsAdd/">Registrar Quejas REUNE</a></li>
+                     <li><a href="/REUNE/ComplaintsAdd/">Registrar Quejas REUNE</a></li>
                   
                   </ul>
                 </li>
@@ -333,7 +338,7 @@ html;
                   <ul class="nav child_menu">
 html;
 
-      if ($this->__perfil == 'ADMIN') {
+      if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR') {
         $menu .= <<<html
                    <li><a href="/Pagos/AjusteHoraCierre/">Ajustar Hora de Cierre</a></li>
                    <li><a href="/Pagos/DiasFestivos/">Asignación Días Festivos</a></li>
