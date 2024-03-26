@@ -2239,16 +2239,52 @@ html;
         foreach ($Consulta as $key => $value) {
             $monto = number_format($value['MONTO'], 2);
 
+            if($value['AUTORIZA'] == 0)
+            {
+                $autoriza = "PENDIENTE";
+
+                $imprime = <<<html
+                    <span class="count_top" style="font-size: 22px"><i class="fa fa-clock-o" style="color: #ac8200"></i></span>
+html;
+            }
+            else if($value['AUTORIZA'] == 1)
+            {
+                $autoriza = "ACEPTADO";
+                $imprime = <<<html
+                    <button type="button" class="btn btn-success btn-circle" style="background: #b7b7b7;" onclick="Reimprime_ticket('{$value['CODIGO']}');"><i class="fa fa-print"></i></button>
+html;
+            }
+            else if($value['AUTORIZA'] == 2)
+            {
+                $imprime = <<<html
+                 <span class="count_top" style="font-size: 22px"><i class="fa fa-window-close" style="color: #ac0000"></i></span>
+html;
+                $autoriza = "RECHAZADO";
+            }
+
+
+            if($value['CDGPE_AUTORIZA'] == '')
+            {
+                $autoriza_nombre = "-";
+            }
+            else if($value['CDGPE_AUTORIZA'] != '')
+            {
+                $autoriza_nombre = $value['CDGPE_AUTORIZA'];
+            }
+
+
+
+
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
                     <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>{$value['CDG_CONTRATO']} &nbsp;</td>
-                    <td style="padding: 0px !important;">{$value['FECHA_ALTA']} </td>
-                    <td style="padding: 0px !important;">$ {$monto}</td>
-                    <td style="padding: 0px !important;"></td>
-                    <td style="padding: 0px !important;">{$value['CDGPE']}</td>
+                    <td style="padding: 0px !important;">{$value['FREGISTRO']} </td>
+                    <td style="padding: 0px !important;">{$value['MOTIVO']}</td>
+                    <td style="padding: 0px !important;"> {$autoriza}</td>
+                    <td style="padding: 0px !important;">{$autoriza_nombre}</td>
                     <td style="padding: 0px !important;" class="center">
-                         <button type="button" class="btn btn-success btn-circle" onclick="Reimprime_ticket('{$value['CODIGO']}');"><i class="fa fa-print"></i></button>
+                    {$imprime}
                     </td>
                 </td>
 html;

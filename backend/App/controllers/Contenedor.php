@@ -278,14 +278,8 @@ html;
                 <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
                 </i>&nbsp;Api Condusef<span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
-<<<<<<< HEAD
                    <li><a href="/ApiCondusef/AddRedeco/">Registrar Quejas REDECO</a></li>
                      <li><a href="/ApiCondusef/AddReune/">Registrar Quejas REUNE</a></li>
-=======
-                   <li><a href="/ApiCondusef/ComplaintsAdd/">Registrar Quejas REDECO</a></li>
-                     <li><a href="/REUNE/ComplaintsAdd/">Registrar Quejas REUNE</a></li>
->>>>>>> 5ab46dc67e4671fdc902aa2a52a41d47abf5d1e6
-                  
                   </ul>
                 </li>
               </ul>

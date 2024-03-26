@@ -101,12 +101,12 @@
                                                                 <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                                                     <thead>
                                                                     <tr>
-                                                                        <th>ID</th>
+                                                                        <th>ID Ticket</th>
                                                                         <th>Contrato</th>
-                                                                        <th>Fecha cobro</th>
-                                                                        <th>Monto</th>
-                                                                        <th>Cliente</th>
-                                                                        <th>Caja</th>
+                                                                        <th>Fecha Solicitud</th>
+                                                                        <th>Motivo</th>
+                                                                        <th>Estatus</th>
+                                                                        <th>Autoriza</th>
                                                                         <th>Acciones</th>
                                                                     </tr>
                                                                     </thead>
