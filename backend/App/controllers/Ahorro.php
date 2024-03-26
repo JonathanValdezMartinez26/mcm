@@ -2250,14 +2250,15 @@ html;
             else if($value['AUTORIZA'] == 1)
             {
                 $autoriza = "ACEPTADO";
+
                 $imprime = <<<html
-                    <button type="button" class="btn btn-success btn-circle" style="background: #b7b7b7;" onclick="Reimprime_ticket('{$value['CODIGO']}');"><i class="fa fa-print"></i></button>
+                    <button type="button" class="btn btn-success btn-circle" onclick="Reimprime_ticket('{$value['CODIGO']}');"><i class="fa fa-print"></i></button>
 html;
             }
             else if($value['AUTORIZA'] == 2)
             {
                 $imprime = <<<html
-                 <span class="count_top" style="font-size: 22px"><i class="fa fa-window-close" style="color: #ac0000"></i></span>
+                <span class="count_top" style="font-size: 22px"><i class="fa fa-close" style="color: #ac1d00"></i></span>
 html;
                 $autoriza = "RECHAZADO";
             }
