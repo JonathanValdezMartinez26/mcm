@@ -288,7 +288,7 @@ html;
 html;
     }
 
-    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario == 'PLMV') {
+    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLMV') {
       $menu .= <<<html
         <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
@@ -302,7 +302,7 @@ html;
 html;
     }
 
-    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario == 'PLMV' || $this->__usuario == 'PHEE') {
+    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLMV' || $this->__usuario == 'PHEE') {
       $menu .= <<<html
         <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon glyphicon-cog"> 
@@ -319,12 +319,12 @@ html;
 html;
     }
 
-    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ' || $this->__usuario == 'ORHM') {
+    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ' || $this->__usuario == 'ORHM' || $this->__usuario == 'LGFR') {
       $menu .= <<<html
               <ul class="nav side-menu">
                 
 html;
-      if ($this->__perfil == 'ADMIN') {
+      if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' ) {
         $menu .= <<<html
                 <li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>
 html;
