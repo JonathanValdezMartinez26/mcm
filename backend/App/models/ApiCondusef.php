@@ -4,13 +4,11 @@ namespace App\models;
 
 defined("APPPATH") or die("Access denied");
 
-use \Core\Database;
 use \Core\Database_cultiva;
 use Exception;
 
 class ApiCondusef
 {
-
     public static function Responde($respuesta, $mensaje, $datos = null, $error = null)
     {
         $res = array(
