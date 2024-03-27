@@ -83,8 +83,8 @@
                                         <div class="card col-md-12">
                                                     <div class="row">
                                                         <div class="col-md-12">
-                                                            <div class="col-md-6">
-                                                                <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p><hr>
+                                                            <div class="col-md-8">
+                                                                <p>Podrás encontrar tus solicitudes a traves del historial, en el que se marcaran con tres estatus:  <br> <span class="count_top" style="font-size: 18px"><i class="fa fa-clock-o" style="color: #ac8200"></i></span> PENDIENTE (Está en validación).  <br><span class="count_top" style="font-size: 18px"><i class="fa fa-close" style="color: #ac1d00"></i></span> RECHAZADA (Tú solicitud fue rechazada por tesorería).  <br><span class="count_top" style="font-size: 18px"><i class="fa fa-print" style="color: #26b99a"></i></span> APROBADA (Puedes imprimir tu ticket una vez más).</p><hr>
                                                             </div>
                                                         </div>
                                                     </div>
