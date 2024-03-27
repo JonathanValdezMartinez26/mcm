@@ -281,7 +281,7 @@
                                             <div class="modal-footer" style="margin-top:40px;">
                                                 <button type="button" name="btnGeneraContrato" id="btnGeneraContrato" class="btn btn-primary" onclick="generaContrato(event)" style="border: 1px solid #c4a603; background: #ffffff" data-keyboard="false" disabled>
                                                     <i class="fa fa-spinner" style="color: #1c4e63"></i>
-                                                    <span style="color: #1e283d"><b>GUARDAR DATOS Y PROCEDER AL COBRO </b></span>
+                                                    <span style="color: #1e283d" id="btnGuardar"><b>GUARDAR DATOS Y PROCEDER AL COBRO</b></span>
                                                 </button>
                                             </div>
                                         </form>

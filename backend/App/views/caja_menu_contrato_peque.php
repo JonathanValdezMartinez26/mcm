@@ -180,7 +180,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="fecha_nac">Fecha de nacimiento*</label>
-                                                <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" value="<?= $fecha ?>" oninput=camposLlenos(event)>
+                                                <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" value="<?= $fecha ?>" max="<?= $fecha ?>" oninput=camposLlenos(event)>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -192,7 +192,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="ciudad">Entidad de nacimiento</label>
-                                                <select class="form-control mr-sm-3" autofocus id="ciudad" name="ciudad" onchange=camposLlenos(event)>
+                                                <select class="form-control mr-sm-3" id="ciudad" name="ciudad" onchange=camposLlenos(event)>
                                                     <option value="P">CDMX</option>
                                                 </select>
                                             </div>
@@ -206,7 +206,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="edad">Edad*</label>
-                                                <input type="text" class="form-control" id="edad" oninput=camposLlenos(event)>
+                                                <input type="text" class="form-control" id="edad" oninput=camposLlenos(event) readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
