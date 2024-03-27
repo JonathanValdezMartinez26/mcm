@@ -109,4 +109,28 @@ sql;
     }
 
 
+    public static function ConsultaMovimientosDia($fecha)
+    {
+        if($fecha == 'AMGM')
+        {
+            $query=<<<sql
+            SELECT TAR.CODIGO, TAR.CDGTICKET_AHORRO, TAR.FREGISTRO, TAR.FREIMPRESION, TAR.MOTIVO, TAR.ESTATUS, TAR.CDGPE_SOLICITA, TAR.CDGPE_AUTORIZA, TAR.AUTORIZA, TAR.DESCRIPCION_MOTIVO, 
+            TAR.AUTORIZA_CLIENTE, TA.CDG_CONTRATO 
+            FROM ESIACOM.TICKETS_AHORRO_REIMPRIME TAR
+            INNER JOIN TICKETS_AHORRO TA ON TA.CODIGO = TAR.CDGTICKET_AHORRO 
+            
+sql;
+        }
+        else{
+            $query=<<<sql
+            SELECT * FROM MOVIMIENTOS_AHORRO
+sql;
+        }
+
+
+        $mysqli = Database::getInstance();
+        return $mysqli->queryAll($query);
+    }
+
+
 }

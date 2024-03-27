@@ -72,7 +72,7 @@
                             </div>
                             <div>
                                 <ul class="nav navbar-nav" >
-                                    <li><a href=""><p style="font-size: 16px;"><b>Saldos generales del día</b></p></a></li>
+                                    <li><a href=""><p style="font-size: 16px;"><b>Saldos generales del día <?php echo $fecha_actual; ?></b></p></a></li>
                                 </ul>
                             </div>
                         </div>
@@ -142,7 +142,7 @@
                                                     <div class="card col-md-12">
                                                         <form name="all" id="all" method="POST">
                                                             <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
-                                                            <hr style="border-top: 1px solid #787878; margin-top: 5px;">
+                                                            <hr >
 
                                                             <div class="dataTable_wrapper">
                                                                 <table class="table table-striped table-bordered table-hover" id="muestra-cupones">

@@ -2164,8 +2164,79 @@ html;
         </script>
 html;
 
+
+        $fechaActual = date('d-m-Y');
+
+        $inicio_dia = '';
+        $entradas = '';
+        $salidas = '';
+        $cierre = '';
+
+        $All_Movimientos = AhorroDao::ConsultaMovimientosDia($fechaActual);
+
+        $tabla = "";
+
+        foreach ($Consulta as $key => $value) {
+            $monto = number_format($value['MONTO'], 2);
+
+            if($value['AUTORIZA'] == 0)
+            {
+                $autoriza = "PENDIENTE";
+
+                $imprime = <<<html
+                    <span class="count_top" style="font-size: 22px"><i class="fa fa-clock-o" style="color: #ac8200"></i></span>
+html;
+            }
+            else if($value['AUTORIZA'] == 1)
+            {
+                $autoriza = "ACEPTADO";
+
+                $imprime = <<<html
+                    <button type="button" class="btn btn-success btn-circle" onclick="Reimprime_ticket('{$value['CODIGO']}');"><i class="fa fa-print"></i></button>
+html;
+            }
+            else if($value['AUTORIZA'] == 2)
+            {
+                $imprime = <<<html
+                <span class="count_top" style="font-size: 22px"><i class="fa fa-close" style="color: #ac1d00"></i></span>
+html;
+                $autoriza = "RECHAZADO";
+            }
+
+
+            if($value['CDGPE_AUTORIZA'] == '')
+            {
+                $autoriza_nombre = "-";
+            }
+            else if($value['CDGPE_AUTORIZA'] != '')
+            {
+                $autoriza_nombre = $value['CDGPE_AUTORIZA'];
+            }
+
+
+
+
+            $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                   <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>{$value['CDG_CONTRATO']} &nbsp;</td>
+                    <td style="padding: 0px !important;">{$value['FREGISTRO']} </td>
+                    <td style="padding: 0px !important;">{$value['MOTIVO']}</td>
+                    <td style="padding: 0px !important;"> {$autoriza}</td>
+                    <td style="padding: 0px !important;">{$autoriza_nombre}</td>
+                    <td style="padding: 0px !important;" class="center">
+                    {$imprime}
+                    </td>
+                </td>
+html;
+        }
+
+
+
+
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha_actual', $fechaActual);
         View::render("caja_menu_saldos_dia");
     }
 
