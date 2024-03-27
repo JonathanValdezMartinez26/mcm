@@ -87,7 +87,20 @@ sql;
     {
         $queryValidacion = <<<sql
         SELECT
-            CL.CODIGO,
+            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
+            CL.CURP,
+            (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1) AS CONTRATO,
+            NVL((SELECT SALDO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1), 0) AS SALDO,
+            CL.CODIGO AS CDGCL,
+            NVL(
+                (SELECT
+                    MA.MONTO
+                FROM
+                    MOVIMIENTOS_AHORRO MA
+                WHERE
+                    MA.CDG_TIPO_PAGO = 2
+                    AND MA.CDG_CONTRATO = (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1)
+            ),0) AS CONTRATO_COMPLETO,
             (
                 SELECT
                     COUNT(APA.CONTRATO)
@@ -96,22 +109,18 @@ sql;
                 WHERE
                     APA.CDGCL = CL.CODIGO
                     AND CDGPR_PRIORITARIO = 1
-            ) AS CONTRATOS
+            ) AS NO_CONTRATOS
         FROM
             CL
         WHERE
-            CL.CODIGO = :cliente
+            CL.CODIGO = '{$datos['cliente']}'
         sql;
-
-        $parametros = [
-            'cliente' => $datos['cliente']
-        ];
 
         try {
             $mysqli = Database::getInstance();
-            $res = $mysqli->queryOne($queryValidacion, $parametros);
-            if (!$res) return self::Responde(false, "No se encontro el numero de cliente {$datos['cliente']}");
-            if ($res['CONTRATOS'] > 0) return self::Responde(false, "El cliente {$datos['cliente']} ya cuenta con un contrato de ahorro");
+            $res = $mysqli->queryOne($queryValidacion);
+            if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
+            if ($res['NO_CONTRATOS'] == 1 && $res['CONTRATO_COMPLETO'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} ya cuenta con un contrato de ahorro", $res);
 
             $query = <<<sql
             SELECT
@@ -168,8 +177,17 @@ sql;
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
             CL.CURP,
             (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1) AS CONTRATO,
-            NVL((SELECT SALDO FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1)), 0) AS SALDO,
+            NVL((SELECT SALDO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1), 0) AS SALDO,
             CL.CODIGO AS CDGCL,
+            NVL(
+                (SELECT
+                    MA.MONTO
+                FROM
+                    MOVIMIENTOS_AHORRO MA
+                WHERE
+                    MA.CDG_TIPO_PAGO = 2
+                    AND MA.CDG_CONTRATO = (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1)
+            ),0) AS CONTRATO_COMPLETO,
             (
                 SELECT
                     COUNT(APA.CONTRATO)
@@ -537,20 +555,19 @@ sql;
 
     public static function BuscaClienteNvoContratoPQ($datos)
     {
-        $query = <<<sql
+        $queryValidacion = <<<sql
         SELECT
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
             CL.CURP,
             TO_CHAR(CL.REGISTRO, 'DD-MM-YYYY') AS FECHA_REGISTRO,
-            TRUNC(MONTHS_BETWEEN(TO_DATE(SYSDATE, 'dd-mm-yy'), CL.NACIMIENTO)/12)AS EDAD,
             UPPER((CL.CALLE
-                || ', '
-                || COL.NOMBRE
-                || ', '
-                || LO.NOMBRE
-                || ', '
-                || MU.NOMBRE
-                || ', '
+            || ', '
+            || COL.NOMBRE
+            || ', '
+            || LO.NOMBRE
+            || ', '
+            || MU.NOMBRE
+            || ', '
                 || EF.NOMBRE)) AS DIRECCION,
             (
                 SELECT
@@ -560,7 +577,25 @@ sql;
                 WHERE
                     CDGCL = CL.CODIGO
                     AND CDGPR_PRIORITARIO = 2
-            ) AS HIJAS
+            ) AS HIJAS,
+            NVL(
+                (SELECT
+                    MA.MONTO
+                FROM
+                    MOVIMIENTOS_AHORRO MA
+                WHERE
+                    MA.CDG_TIPO_PAGO = 2
+                    AND MA.CDG_CONTRATO = (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1)
+            ),0) AS CONTRATO_COMPLETO,
+            (
+                SELECT
+                    COUNT(APA.CONTRATO)
+                FROM
+                    ASIGNA_PROD_AHORRO APA
+                WHERE
+                    APA.CDGCL = CL.CODIGO
+                    AND CDGPR_PRIORITARIO = 1
+            ) AS NO_CONTRATOS
         FROM
             CL,
             COL,
@@ -583,9 +618,10 @@ sql;
 
         try {
             $mysqli = Database::getInstance();
-            $res = $mysqli->queryOne($query);
-            if ($res) return self::Responde(true, "Consulta realizada correctamente", $res);
-            return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
+            $res = $mysqli->queryOne($queryValidacion);
+            if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
+            if ($res['NO_CONTRATOS'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro", $res);
+            return self::Responde(true, "Consulta realizada correctamente", $res);
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());
         }
@@ -696,8 +732,22 @@ sql;
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryAll($query);
-            if ($res) return self::Responde(true, "Consulta realizada correctamente", $res);
-            return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
+            if (count($res) === 0) {
+                $qryVal = <<<sql
+                SELECT
+                    CL.CODIGO,
+                    (SELECT COUNT(CONTRATO) FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO) AS CONTRATO
+                FROM
+                    CL
+                WHERE
+                    CL.CODIGO = '{$datos['cliente']}'
+                sql;
+
+                $res2 = $mysqli->queryOne($qryVal);
+                if (!$res2) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
+                return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con cuentas Peques asignadas", $res2);
+            }
+            return self::Responde(true, "Consulta realizada correctamente", $res);
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());
         }
