@@ -25,6 +25,8 @@ class Ahorro extends Controller
     ///////////////////////////////////////////////////
     public function CuentaCorriente()
     {
+        $saldoMinimoApertura = 100;
+
         $extraHeader = <<<html
         <title>Caja Cobrar</title>
         <link rel="shortcut icon" href="/img/logo.png">
@@ -32,6 +34,7 @@ class Ahorro extends Controller
 
         $extraFooter = <<<html
         <script>
+            const saldoMinimoApertura = $saldoMinimoApertura
             const showError = (mensaje) => swal(mensaje, { icon: "error" })
             const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })
          
@@ -41,9 +44,9 @@ class Ahorro extends Controller
             }
             
             const buscaCliente = () => {
-                const noCliente = document.querySelector("#clienteBuscado")
+                const noCliente = document.querySelector("#clienteBuscado").value
                 
-                if (!noCliente.value) {
+                if (!noCliente) {
                     limpiaDatosCliente()
                     return showError("Ingrese un número de cliente a buscar.")
                 }
@@ -51,12 +54,23 @@ class Ahorro extends Controller
                 $.ajax({
                     type: "POST",
                     url: "/Ahorro/BuscaContrato/",
-                    data: { cliente: noCliente.value },
+                    data: { cliente: noCliente },
                     success: (respuesta) => {
                         limpiaDatosCliente()
                         respuesta = JSON.parse(respuesta)
                         if (!respuesta.success) return showError(respuesta.mensaje)
                         const datosCliente = respuesta.datos
+                        
+                        if (datosCliente.CONTRATO_COMPLETO == 0) {
+                            document.querySelector("#btnRegistraOperacion").disabled = true
+                            showError("La apertura de contrato no ha sido concluida correctamente.").then(() => {
+                                document.querySelector("#mdlFecha_pago").value = getHoy()
+                                document.querySelector("#mdlContrato").value = datosCliente.CONTRATO
+                                document.querySelector("#mdlCodigo_cl").value = noCliente
+                                document.querySelector("#mdlNombre_cliente").value = datosCliente.NOMBRE
+                                $("#modal_agregar_pago").modal("show")
+                            })
+                        }
                          
                         document.querySelector("#nombre").value = datosCliente.NOMBRE
                         document.querySelector("#curp").value = datosCliente.CURP
@@ -122,8 +136,31 @@ class Ahorro extends Controller
                     e.target.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
                 }
                 
+                if (e.target.id === "mdlDeposito_inicial") {
+                    return calculaSaldoInicial(e)
+                    //return document.querySelector("#mdlDeposito_inicial_letra").value = numeroLetras(parseFloat(e.target.value))
+                }
+                 
                 document.querySelector("#monto_letra").value = numeroLetras(parseFloat(e.target.value))
                 if (document.querySelector("#deposito").checked || document.querySelector("#retiro").checked) calculaSaldoFinal()
+            }
+             
+            const calculaSaldoInicial = (e) => {
+                const monto = parseFloat(e.target.value)
+                document.querySelector("#mdlDeposito").value = monto.toFixed(2)
+                const saldoInicial = (monto - parseFloat(document.querySelector("#mdlInscripcion").value)).toFixed(2)
+                document.querySelector("#mdlSaldo_inicial").value = saldoInicial > 0 ? saldoInicial : "0.00"
+                document.querySelector("#mdlDeposito_inicial_letra").value = primeraMayuscula(numeroLetras(monto))
+                    
+                if (saldoInicial < saldoMinimoApertura) {
+                    document.querySelector("#mdlSaldo_inicial").setAttribute("style", "color: red")
+                    document.querySelector("#mdlTipSaldo").setAttribute("style", "opacity: 100%;")
+                    document.querySelector("#mdlRegistraDepositoInicial").disabled = true
+                } else {
+                    document.querySelector("#mdlSaldo_inicial").removeAttribute("style")
+                    document.querySelector("#mdlTipSaldo").setAttribute("style", "opacity: 0%;")
+                    document.querySelector("#mdlRegistraDepositoInicial").disabled = false
+                }
             }
              
             const calculaSaldoFinal = () => {
@@ -315,11 +352,45 @@ class Ahorro extends Controller
                 const url = URL.createObjectURL(blob)
                 window.open(url, "_blank")
             }
+             
+            const cancelarRegistro = (e) => {
+                e.preventDefault()
+                document.querySelector("#AddPagoApertura").reset()
+                limpiaDatosCliente()
+            }
+             
+            const pagoApertura = (e) => {
+                e.preventDefault()
+                if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura)
+                            
+                const datos = $("#AddPagoApertura").serializeArray()
+                            
+                $.ajax({
+                    type: "POST",
+                    url: "/Ahorro/pagoApertura/",
+                    data: $.param(datos),
+                    success: (respuesta) => {
+                        respuesta = JSON.parse(respuesta)
+                        if (!respuesta.success) return showError(respuesta.mensaje)
+                    
+                        showSuccess(respuesta.mensaje)
+                        document.querySelector("#saldoActual").value = document.querySelector("#mdlSaldo_inicial").value
+                        document.querySelector("#AddPagoApertura").reset()
+                        $("#modal_agregar_pago").modal("hide")
+                        imprimeTicket(respuesta.datos.ticket)
+                    },
+                    error: (error) => {
+                        console.error(error)
+                        showError("Ocurrió un error al registrar el pago de apertura.")
+                    }
+                })
+            }
         </script>
         html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
+        view::set('saldoMinimoApertura', $saldoMinimoApertura);
         View::set('fecha', date('Y-m-d'));
         View::render("caja_menu_ahorro");
     }
@@ -347,8 +418,13 @@ class Ahorro extends Controller
 
         $extraFooter = <<<html
         <script>
+            window.onload = () => {
+                if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
+            }
+             
+            const txtGuardaContrato = "GUARDAR DATOS Y PROCEDER AL COBRO"
+            const txtGuardaPago = "REGISTRAR DEPÓSITO DE APERTURA"
             const saldoMinimoApertura = $saldoMinimoApertura
-         
             const showError = (mensaje) => swal(mensaje, { icon: "error" })
             const showSuccess = (mensaje) => swal(mensaje, { icon: "success" })
             const showInfo = (mensaje) => swal(mensaje, { icon: "info" })
@@ -359,27 +435,44 @@ class Ahorro extends Controller
             }
              
             const buscaCliente = () => {
-                const noCliente = document.querySelector("#clienteBuscado")
+                const noCliente = document.querySelector("#clienteBuscado").value
+                limpiaDatosCliente()
                  
-                if (!noCliente.value) {
-                    limpiaDatosCliente()
+                if (!noCliente) {
                     return showError("Ingrese un número de cliente a buscar.")
                 }
                 
                 $.ajax({
                     type: "POST",
                     url: "/Ahorro/BuscaCliente/",
-                    data: { cliente: noCliente.value },
+                    data: { cliente: noCliente },
                     success: (respuesta) => {
                         respuesta = JSON.parse(respuesta)
                         if (!respuesta.success) {
+                            if (respuesta.datos) {
+                                const datosCliente = respuesta.datos
+                                if (datosCliente.CONTRATO_COMPLETO == 0) {
+                                    document.querySelector("#btnGeneraContrato").disabled = true
+                                    showError("La apertura de contrato no ha sido concluida correctamente.").then(() => {
+                                        document.querySelector("#fecha_pago").value = getHoy()
+                                        document.querySelector("#contrato").value = datosCliente.CONTRATO
+                                        document.querySelector("#codigo_cl").value = datosCliente.CDGCL
+                                        document.querySelector("#nombre_cliente").value = datosCliente.NOMBRE
+                                        $("#modal_agregar_pago").modal("show")
+                                        document.querySelector("#chkCreacionContrato").classList.remove("red")
+                                        document.querySelector("#chkCreacionContrato").classList.add("green")
+                                    })
+                                    return
+                                }
+                            }
+                             
                             limpiaDatosCliente()
                             return showError(respuesta.mensaje)
                         }
                         const datosCliente = respuesta.datos
                          
                         document.querySelector("#fechaRegistro").value = datosCliente.FECHA_REGISTRO
-                        document.querySelector("#noCliente").value = noCliente.value
+                        document.querySelector("#noCliente").value = noCliente
                         document.querySelector("#nombre").value = datosCliente.NOMBRE
                         document.querySelector("#curp").value = datosCliente.CURP
                         document.querySelector("#edad").value = datosCliente.EDAD
@@ -403,8 +496,10 @@ class Ahorro extends Controller
             }
              
             const limpiaDatosCliente = () => {
+                document.querySelector("#AddPagoApertura").reset()
                 document.querySelector("#registroInicialAhorro").reset()
-                 
+                document.querySelector("#chkCreacionContrato").classList.remove("green")
+                document.querySelector("#chkCreacionContrato").classList.add("red")
                 document.querySelector("#fechaRegistro").value = ""
                 document.querySelector("#noCliente").value = ""
                 document.querySelector("#nombre").value = ""
@@ -415,6 +510,7 @@ class Ahorro extends Controller
                 document.querySelector("#ben2").style.opacity = "0"
                 document.querySelector("#ben3").style.opacity = "0"
                 document.querySelector("#btnGeneraContrato").disabled = true
+                document.querySelector("#btnGuardar").innerText = txtGuardaContrato
             }
              
             const boton_contrato = (numero_contrato) => {
@@ -443,6 +539,9 @@ class Ahorro extends Controller
             
             const generaContrato = async (e) => {
                 e.preventDefault()
+                const btnGuardar = document.querySelector("#btnGuardar")
+                if (btnGuardar.innerText === txtGuardaPago) return $("#modal_agregar_pago").modal("show")
+                 
                 const cliente = document.querySelector("#nombre").value
                 try {
                     const continuar = await swal({
@@ -482,9 +581,13 @@ class Ahorro extends Controller
                         document.querySelector("#nombre_cliente").value = document.querySelector("#nombre").value
                         boton_contrato(contrato.contrato)
                         
-                        const depositoInicial = await showInfo("Debe registrar el depósito por apertura de cuenta.")
-                        
-                        if (depositoInicial) $("#modal_agregar_pago").modal("show")
+                        document.querySelector("#chkCreacionContrato").classList.remove("red")
+                        document.querySelector("#chkCreacionContrato").classList.add("green")
+                         
+                        showInfo("Debe registrar el depósito por apertura de cuenta.").then(() => {
+                            btnGuardar.innerText = txtGuardaPago
+                            $("#modal_agregar_pago").modal("show")
+                        })
                     }
                 } catch (error) {
                     console.error(error)
@@ -841,6 +944,7 @@ class Ahorro extends Controller
             $opcParentescos .= "<option value='{$parentesco['CODIGO']}'>{$parentesco['DESCRIPCION']}</option>";
         }
 
+        if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         view::set('saldoMinimoApertura', $saldoMinimoApertura);
@@ -1008,13 +1112,13 @@ class Ahorro extends Controller
         $extraHeader = <<<html
         <title>Caja Cobrar</title>
         <link rel="shortcut icon" href="/img/logo.png">
-html;
+        html;
 
         $extraFooter = <<<html
         <script>
            
         </script>
-html;
+        html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -1026,10 +1130,14 @@ html;
         $extraHeader = <<<html
         <title>Solicitud de Retiro Ahorro</title>
         <link rel="shortcut icon" href="/img/logo.png">
-html;
+        html;
 
         $extraFooter = <<<html
         <script>
+            window.onload = () => {
+                if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
+            }
+             
             const showError = (mensaje) => swal(mensaje, { icon: "error" })
             const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })
          
@@ -1055,13 +1163,11 @@ html;
                         if (!respuesta.success) {
                             return showError(respuesta.mensaje)
                         }
-                       
-                         const datosCliente = respuesta.datos
-                       
-                       
+                         
+                        const datosCliente = respuesta.datos
+                         
                         var saldo = parseFloat(datosCliente.SALDO).toFixed(2);
-                        
-                                   
+                           
                         document.querySelector("#nombre_cliente").value = datosCliente.NOMBRE
                         document.querySelector("#curp_").value = datosCliente.CURP
                         document.querySelector("#codigo_cl").value = noCliente.value
@@ -1326,7 +1432,7 @@ html;
                 window.open(url, "_blank")
             }
         </script>
-html;
+        html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -1338,13 +1444,13 @@ html;
         $extraHeader = <<<html
         <title>Caja Cobrar</title>
         <link rel="shortcut icon" href="/img/logo.png">
-html;
+        html;
 
         $extraFooter = <<<html
         <script>
            
         </script>
-html;
+        html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -1356,13 +1462,13 @@ html;
         $extraHeader = <<<html
         <title>Caja Cobrar</title>
         <link rel="shortcut icon" href="/img/logo.png">
-html;
+        html;
 
         $extraFooter = <<<html
         <script>
            
         </script>
-html;
+        html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -1389,9 +1495,9 @@ html;
             }
             
             const buscaCliente = () => {
-                const noCliente = document.querySelector("#clienteBuscado")
+                const noCliente = document.querySelector("#clienteBuscado").value
                 
-                if (!noCliente.value) {
+                if (!noCliente) {
                     limpiaDatosCliente()
                     return showError("Ingrese un número de cliente a buscar.")
                 }
@@ -1399,11 +1505,59 @@ html;
                 $.ajax({
                     type: "POST",
                     url: "/Ahorro/BuscaContratoPQ/",
-                    data: { cliente: noCliente.value },
+                    data: { cliente: noCliente },
                     success: (respuesta) => {
                         limpiaDatosCliente()
                         respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) return showError(respuesta.mensaje)
+                        if (!respuesta.success) {
+                            if (!respuesta.datos) return showError(respuesta.mensaje)
+                            const datosCliente = respuesta.datos
+                             
+                            if (datosCliente["NO_CONTRATOS"] == 0) {
+                                swal({
+                                    title: "Cuenta de ahorro Peques™",
+                                    text: "La cuenta " + noCliente + " no tiene una cuenta de ahorro.\\nDesea realizar la apertura en este momento?",
+                                    icon: "info",
+                                    buttons: ["No", "Sí"],
+                                    dangerMode: true
+                                }).then((realizarDeposito) => {
+                                    if (realizarDeposito) {
+                                        window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
+                                        return
+                                    }
+                                })
+                                return
+                            }
+                            if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
+                                swal({
+                                    title: "Cuenta de ahorro Peques™",
+                                    text: "La cuenta " + noCliente + " no ha concluido con el proceso de apertua de la cuenta de ahorro.\\nDesea completar el contrato en este momento?",
+                                    icon: "info",
+                                    buttons: ["No", "Sí"],
+                                    dangerMode: true
+                                }).then((realizarDeposito) => {
+                                    if (realizarDeposito) {
+                                        window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
+                                        return
+                                    }
+                                })
+                            }
+                            if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 1) {
+                                swal({
+                                    title: "Cuenta de ahorro Peques™",
+                                    text: "La cuenta " + noCliente + " no tiene asignadas cuentas Peque™.\\nDesea aperturar una cuenta Peque™ en este momento?",
+                                    icon: "info",
+                                    buttons: ["No", "Sí"],
+                                    dangerMode: true
+                                }).then((realizarDeposito) => {
+                                    if (realizarDeposito) {
+                                        window.location.href = "/Ahorro/ContratoCuentaPeque/?cliente=" + noCliente
+                                        return
+                                    }
+                                })
+                                return
+                            }
+                        }
                         const datosCliente = respuesta.datos
                          
                         const contratos = document.createDocumentFragment()
@@ -1434,7 +1588,7 @@ html;
                         })
                         document.querySelector("#monto").disabled=false
                         
-                        noCliente.value = ""
+                        document.querySelector("#clienteBuscado").value = ""
                     },
                     error: (error) => {
                         console.error(error)
@@ -1723,8 +1877,6 @@ html;
 
     public function ContratoCuentaPeque()
     {
-        $saldoMinimoApertura = 50;
-
         $extraHeader = <<<html
         <title>Caja Cobrar</title>
         <link rel="shortcut icon" href="/img/logo.png">
@@ -1732,8 +1884,9 @@ html;
 
         $extraFooter = <<<html
         <script>
-            const saldoMinimoApertura = $saldoMinimoApertura
-         
+            window.onload = () => {
+                if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
+            }
             const showError = (mensaje) => swal(mensaje, { icon: "error" })
             const showSuccess = (mensaje) => swal(mensaje, { icon: "success" })
             const showInfo = (mensaje) => swal(mensaje, { icon: "info" })
@@ -1758,9 +1911,44 @@ html;
                     success: (respuesta) => {
                         respuesta = JSON.parse(respuesta)
                         if (!respuesta.success) {
+                            if (respuesta.datos) {
+                                const datosCliente = respuesta.datos
+                                if (datosCliente["NO_CONTRATOS"] == 0) {
+                                    swal({
+                                        title: "Cuenta de ahorro Peques™",
+                                        text: "El cliente " + noCliente.value + " no tiene una cuenta de ahorro.\\nDesea aperturar una cuenta de ahorro en este momento?",
+                                        icon: "info",
+                                        buttons: ["No", "Sí"],
+                                        dangerMode: true
+                                    }).then((abreCta) => {
+                                        if (abreCta) {
+                                            window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente.value
+                                            return
+                                        }
+                                    })
+                                    return
+                                }
+                                if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
+                                    swal({
+                                        title: "Cuenta de ahorro Peques™",
+                                        text: "El cliente " + noCliente.value + " no ha completado el proceso de apertura de la cuenta de ahorro.\\nDesea completar el proceso en este momento?",
+                                        icon: "info",
+                                        buttons: ["No", "Sí"],
+                                        dangerMode: true
+                                    }).then((abreCta) => {
+                                        if (abreCta) {
+                                            window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente.value
+                                            return
+                                        }
+                                    })
+                                    return
+                                }
+                            }
+                             
                             limpiaDatosCliente()
                             return showError(respuesta.mensaje)
                         }
+                         
                         const datosCliente = respuesta.datos
                          
                         document.querySelector("#fechaRegistro").value = datosCliente.FECHA_REGISTRO
@@ -1786,6 +1974,7 @@ html;
                 document.querySelector("#curp").value = ""
                 document.querySelector("#edad").value = ""
                 document.querySelector("#direccion").value = ""
+                document.querySelector("#btnGeneraContrato").disabled = true
             }
              
             const boton_contrato = (numero_contrato) => {
@@ -1814,11 +2003,17 @@ html;
             
             const generaContrato = async (e) => {
                 e.preventDefault()
+                 
+                if (document.querySelector("#curp").value.length !== 18) {
+                    showError("La CURP debe tener 18 caracteres.")
+                    return false
+                }
+                 
                 const cliente = document.querySelector("#nombre").value
                 try {
                     const continuar = await swal({
                         title:
-                            "¿Está seguro de continuar con la apertura de la cuenta de ahorro del cliente: " +
+                            "¿Está seguro de continuar con la apertura de la cuenta Peque™ asociada al cliente " +
                             cliente +
                             "?",
                         text: "",
@@ -1847,21 +2042,13 @@ html;
                         respuesta = JSON.parse(respuesta)
                         if (!respuesta.success) {
                             console.error(respuesta.error)
+                            limpiaDatosCliente()
                             return showError(respuesta.mensaje)
                         }
                         
                         const contrato = respuesta.datos
+                        limpiaDatosCliente()
                         await showSuccess("Se ha generado el contrato: " + contrato.contrato)
-                        
-                        document.querySelector("#fecha_pago").value = getHoy()
-                        document.querySelector("#contrato").value = contrato.contrato
-                        document.querySelector("#codigo_cl").value = noCredito
-                        document.querySelector("#nombre_cliente").value = document.querySelector("#nombre").value
-                        boton_contrato(contrato.contrato)
-                        
-                        const depositoInicial = await showInfo("Debe registrar el depósito por apertura de cuenta.")
-                        
-                        if (depositoInicial) $("#modal_agregar_pago").modal("show")
                     }
                 } catch (error) {
                     console.error(error)
@@ -1876,36 +2063,7 @@ html;
                 const yyyy = hoy.getFullYear()
                 return dd + "/" + mm + "/" + yyyy + " " + hoy.getHours() + ":" + hoy.getMinutes() + ":" + hoy.getSeconds()
             }
-                        
-            const pagoApertura = (e) => {
-                e.preventDefault()
-                if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura)
-                            
-                const datos = $("#AddPagoApertura").serializeArray()
-                            
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/pagoApertura/",
-                    data: $.param(datos),
-                    success: (respuesta) => {
-                        respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) return showError(respuesta.mensaje)
-                    
-                        showSuccess(respuesta.mensaje)
-                        document.querySelector("#registroInicialAhorro").reset()
-                        document.querySelector("#AddPagoApertura").reset()
-                        $("#modal_agregar_pago").modal("hide")
-                        limpiaDatosCliente()
-                        imprimeTicket(respuesta.datos.ticket)
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        showError("Ocurrió un error al registrar el pago de apertura.")
-                    }
-                })
-            }
-            
-            
+             
             let valKD = false
             const soloNumeros = (e) => {
                 valKD = false
@@ -2077,6 +2235,7 @@ html;
                     ]
                     return campos.every((campo) => campo)
                 }
+                if (e.target.id === "fecha_nac") calculaEdad(e)
                 document.querySelector("#btnGeneraContrato").disabled = !val()
             }
              
@@ -2103,12 +2262,26 @@ html;
                 const url = URL.createObjectURL(blob)
                 window.open(url, "_blank")
             }
+             
+            const calculaEdad = (e) => {
+                const fecha = new Date(e.target.value)
+                const hoy = new Date()
+                let edad = hoy.getFullYear() - fecha.getFullYear()
+                 
+                const mesActual = hoy.getMonth()
+                const diaActual = hoy.getDate()
+                const mesNacimiento = fecha.getMonth()
+                const diaNacimiento = fecha.getDate()
+                if (mesActual < mesNacimiento || (mesActual === mesNacimiento && diaActual < diaNacimiento)) edad--
+                 
+                document.querySelector("#edad").value = edad
+            }
         </script>
         html;
 
+        if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        view::set('saldoMinimoApertura', $saldoMinimoApertura);
         View::set('fecha', date('Y-m-d'));
         View::render("caja_menu_contrato_peque");
     }
@@ -2310,24 +2483,19 @@ html;
         foreach ($Consulta as $key => $value) {
             $monto = number_format($value['MONTO'], 2);
 
-            if($value['AUTORIZA'] == 0)
-            {
+            if ($value['AUTORIZA'] == 0) {
                 $autoriza = "PENDIENTE";
 
                 $imprime = <<<html
                     <span class="count_top" style="font-size: 22px"><i class="fa fa-clock-o" style="color: #ac8200"></i></span>
 html;
-            }
-            else if($value['AUTORIZA'] == 1)
-            {
+            } else if ($value['AUTORIZA'] == 1) {
                 $autoriza = "ACEPTADO";
 
                 $imprime = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="Reimprime_ticket('{$value['CODIGO']}');"><i class="fa fa-print"></i></button>
 html;
-            }
-            else if($value['AUTORIZA'] == 2)
-            {
+            } else if ($value['AUTORIZA'] == 2) {
                 $imprime = <<<html
                 <span class="count_top" style="font-size: 22px"><i class="fa fa-close" style="color: #ac1d00"></i></span>
 html;
@@ -2335,12 +2503,9 @@ html;
             }
 
 
-            if($value['CDGPE_AUTORIZA'] == '')
-            {
+            if ($value['CDGPE_AUTORIZA'] == '') {
                 $autoriza_nombre = "-";
-            }
-            else if($value['CDGPE_AUTORIZA'] != '')
-            {
+            } else if ($value['CDGPE_AUTORIZA'] != '') {
                 $autoriza_nombre = $value['CDGPE_AUTORIZA'];
             }
 

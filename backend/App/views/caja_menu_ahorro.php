@@ -239,6 +239,125 @@
     </div>
 </div>
 
+<!-- <div class="modal fade in" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block; padding-right: 15px;"> -->
+<div class="modal fade" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+                <center>
+                    <h4 class="modal-title" id="myModalLabel">Registro de pago por apertura y ahorro inicial cuenta corriente</h4>
+                </center>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form id="AddPagoApertura">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="mdlFecha_pago">Fecha</label>
+                                    <input type="text" class="form-control" id="mdlFecha_pago" name="fecha_pago" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="mdlContrato">Contrato</label>
+                                    <input type="text" class="form-control" id="mdlContrato" name="contrato" aria-describedby="contrato" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="mdlCodigo_cl">Número de cliente</label>
+                                    <input type="number" class="form-control" id="mdlCodigo_cl" name="codigo_cl" value="<?php echo $credito; ?>" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="mdlNombre_cliente">Nombre del Cliente</label>
+                                    <input type="text" class="form-control" id="mdlNombre_cliente" name="nombre_cliente" value="<?php echo $Cliente[0]['NOMBRE']; ?>" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="mdlNombre_ejecutivo">Nombre del Ejecutivo</label>
+                                    <input type="text" class="form-control" id="mdlNombre_ejecutivo" name="nombre_ejecutivo" value="Ejecutivo de Prueba" readonly>
+                                    <input type="hidden" class="form-control" id="mdlEjecutivo" name="ejecutivo" value="SOOA">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3>Deposito de Apertura</h3>
+                            </div>
+                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
+                                <h3>$</h3>
+                            </div>
+                            <div class="col-md-5" style="padding-top: 5px;">
+                                <input type="number" class="form-control" id="mdlDeposito_inicial" name="deposito_inicial" min=100 max=100000 placeholder="Ingrese el monto" style="font-size: large;" onkeyup=validaDeposito(event) onkeydown=soloNumeros(event)>
+                            </div>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" id="mdlDeposito_inicial_letra" name="deposito_inicial_letra" style="border: 1px solid #000000; text-align: center;" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" style="text-align:center;">
+                                <h4>Detalle de movimientos</h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-1">
+                                <h4>+</h4>
+                            </div>
+                            <div class="col-md-5">
+                                <h4>DEPOSITO</h4>
+                            </div>
+                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
+                                <h4>$</h4>
+                            </div>
+                            <div class="col-md-5">
+                                <input type="number" class="form-control" id="mdlDeposito" name="deposito" value="0.00" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-1">
+                                <h4>-</h4>
+                            </div>
+                            <div class="col-md-5">
+                                <h4>INSCRIPCIÓN</h4>
+                            </div>
+                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
+                                <h4>$</h4>
+                            </div>
+                            <div class="col-md-5">
+                                <input type="number" class="form-control" id="mdlInscripcion" name="inscripcion" value="<?= $saldoMinimoApertura ?>.00" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>SALDO INICIAL DE LA CUENTA</h4>
+                            </div>
+                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
+                                <h4>$</h4>
+                            </div>
+                            <div class="col-md-5">
+                                <input type="number" class="form-control" id="mdlSaldo_inicial" name="saldo_inicial" value="0.00" readonly>
+                                <input type="hidden" class="form-control" id="sma" name="sma" value="<?= $saldoMinimoApertura ?>" readonly>
+                                <small style="opacity: 0;" id="mdlTipSaldo">El saldo inicial debe ser mínimo de $<?= $saldoMinimoApertura ?>.00</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal" onclick=cancelarRegistro(event)><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                            <button type="button" id="mdlRegistraDepositoInicial" name="agregar" class="btn btn-primary" onclick=pagoApertura(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
     .imagen {
         transform: scale(var(--escala, 1));

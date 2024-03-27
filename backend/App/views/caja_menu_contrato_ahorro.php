@@ -97,7 +97,7 @@
                                         </div>
                                         <div class="col-md-4">
                                             <label for="movil">Código de cliente (SICAFIN)*</label>
-                                            <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" placeholder="000000">
+                                            <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" placeholder="000000" value="<?= $cliente ?>">
                                         </div>
 
                                         <div class="col-md-2" style="padding-top: 25px">
@@ -272,10 +272,16 @@
                                                     </button>
                                                 </div>
                                             </div>
+                                            <div class="col-md-6">
+                                                <span class="fa fa-check red" id="chkCreacionContrato"></span> Creación del contrato
+                                            </div>
+                                            <div class="col-md-6">
+                                                <span class="fa fa-check red" id="chkPagoApertura"></span> Deposito de apertura
+                                            </div>
                                             <div class="modal-footer" style="margin-top:40px;">
                                                 <button type="button" name="btnGeneraContrato" id="btnGeneraContrato" class="btn btn-primary" onclick="generaContrato(event)" style="border: 1px solid #c4a603; background: #ffffff" data-keyboard="false" disabled>
                                                     <i class="fa fa-spinner" style="color: #1c4e63"></i>
-                                                    <span style="color: #1e283d"><b>GUARDAR DATOS Y PROCEDER AL COBRO </b></span>
+                                                    <span style="color: #1e283d" id="btnGuardar"><b>GUARDAR DATOS Y PROCEDER AL COBRO</b></span>
                                                 </button>
                                             </div>
                                         </form>
@@ -295,7 +301,6 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <center>
                     <h4 class="modal-title" id="myModalLabel">Registro de pago por apertura y ahorro inicial cuenta corriente</h4>
                 </center>
@@ -399,7 +404,6 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
                             <button type="button" id="registraDepositoInicial" name="agregar" class="btn btn-primary" value="enviar" onclick=pagoApertura(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
                         </div>
                     </form>
