@@ -89,6 +89,9 @@ class CajaAhorro
         SELECT
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
             CL.CURP,
+            TO_CHAR(CL.REGISTRO, 'DD-MM-YYYY') AS FECHA_REGISTRO,
+            TRUNC(MONTHS_BETWEEN(TO_DATE(SYSDATE, 'dd-mm-yy'), CL.NACIMIENTO)/12)AS EDAD,
+            UPPER(DOMICILIO_CLIENTE(CL.CODIGO)) AS DIRECCION,
             (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1) AS CONTRATO,
             NVL((SELECT SALDO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1), 0) AS SALDO,
             CL.CODIGO AS CDGCL,
@@ -120,45 +123,8 @@ class CajaAhorro
             $mysqli = Database::getInstance();
             $res = $mysqli->queryOne($queryValidacion);
             if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
-            if ($res['NO_CONTRATOS'] >= 1 && $res['CONTRATO_COMPLETO'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} ya cuenta con un contrato de ahorro", $res);
-            if ($res['NO_CONTRATOS'] >= 1 && $res['CONTRATO_COMPLETO'] == 1) return self::Responde(false, "El cliente {$datos['cliente']} ya cuenta con un contrato de ahorro");
+            if ($res['NO_CONTRATOS'] >= 1) return self::Responde(false, "El cliente {$datos['cliente']} ya cuenta con un contrato de ahorro", $res);
 
-            $query = <<<sql
-            SELECT
-                CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
-                CL.CURP,
-                TO_CHAR(CL.REGISTRO, 'DD-MM-YYYY') AS FECHA_REGISTRO,
-                TRUNC(MONTHS_BETWEEN(TO_DATE(SYSDATE, 'dd-mm-yy'), CL.NACIMIENTO)/12)AS EDAD,
-                UPPER((CL.CALLE
-                    || ', '
-                    || COL.NOMBRE
-                    || ', '
-                    || LO.NOMBRE
-                    || ', '
-                    || MU.NOMBRE
-                    || ', '
-                    || EF.NOMBRE)) AS DIRECCION
-            FROM
-                CL,
-                COL,
-                LO,
-                MU,
-                EF
-            WHERE
-                EF.CODIGO = CL.CDGEF
-                AND MU.CODIGO = CL.CDGMU
-                AND LO.CODIGO = CL.CDGLO
-                AND COL.CODIGO = CL.CDGCOL
-                AND EF.CODIGO = MU.CDGEF
-                AND EF.CODIGO = LO.CDGEF
-                AND EF.CODIGO = COL.CDGEF
-                AND MU.CODIGO = LO.CDGMU
-                AND MU.CODIGO = COL.CDGMU
-                AND LO.CODIGO = COL.CDGLO
-                AND CL.CODIGO = '{$datos['cliente']}'
-            sql;
-
-            $res = $mysqli->queryOne($query);
             if ($res) return self::Responde(true, "Consulta realizada correctamente", $res);
             return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
         } catch (Exception $e) {
