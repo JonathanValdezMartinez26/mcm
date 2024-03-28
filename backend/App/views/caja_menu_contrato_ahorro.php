@@ -91,38 +91,38 @@
                             <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <div class="col-md-4">
-                                            <p>Para poder dar de alta un nuevo contrato de una cuenta de Ahorro, el cliente debe estar registrado en SICAFIN, si el cliente no tiene una cuenta abierta solicite el alta a su ADMINISTRADORA.</p>
-                                            <hr>
+                                        <div class="col-md-5" style="display: flex; justify-content: end;; margin-top:5px">
+                                            <label for="movil">Código de cliente SICAFIN</label>
                                         </div>
-                                        <div class="col-md-4">
-                                            <label for="movil">Código de cliente (SICAFIN)*</label>
+                                        <div class="col-md-3">
                                             <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" placeholder="000000" value="<?= $cliente ?>">
                                         </div>
-
-                                        <div class="col-md-2" style="padding-top: 25px">
+                                        <div class="col-md-4">
                                             <button type="button" class="btn btn-primary" onclick="buscaCliente()">
                                                 <i class="fa fa-search"></i> Buscar
                                             </button>
                                         </div>
+                                        <div class="col-md-12">
+                                            <p>Para poder dar de alta un nuevo contrato de una cuenta de Ahorro, el cliente debe estar registrado en SICAFIN, si el cliente no tiene una cuenta abierta solicite el alta a su ADMINISTRADORA.</p>
+                                            <hr>
+                                        </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <p><b><span class="fa fa-sticky-note"></span> Identificación del cliente</b></p>
-                                        <br>
+                                    <div class="col-md-5">
+                                        <div class="card col-md-12">
+                                            <p><b><span class="fa fa-sticky-note"></span> Identificación del cliente</b></p>
+                                        </div>
                                         <div class="card col-md-12">
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="fechaRegistro">Fecha de registro</label>
                                                         <input type="text" class="form-control" id="fechaRegistro" readonly>
-                                                        <small class="form-text text-muted">Fecha de registro.</small>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="noCliente">Clave de cliente</label>
                                                         <input type="number" class="form-control" id="noCliente" readonly>
-                                                        <small class="form-text text-muted">Número de acreditado MCM</small>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
@@ -156,7 +156,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-8" style="min-height: 400px;">
+                                    <div class="col-md-7" style="min-height: 400px;">
                                         <form id="registroInicialAhorro" name="registroInicialAhorro">
                                             <p><b><span class="fa fa-sticky-note"></span> Datos básicos de apertura para la cuenta de Ahorro Corriente</b></p>
                                             <div class="row">
@@ -272,13 +272,15 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
-                                                <span class="fa fa-check red" id="chkCreacionContrato"></span> Creación del contrato
+                                            <div class="row">
+                                                <div class="col-md-6" style="display: flex; justify-content: center;">
+                                                    <span class="fa fa-check red" id="chkCreacionContrato"></span><label>Creación del contrato</label>
+                                                </div>
+                                                <div class="col-md-6" style="display: flex; justify-content: center;">
+                                                    <span class="fa fa-check red" id="chkPagoApertura"></span><label>Deposito de apertura</label>
+                                                </div>
                                             </div>
-                                            <div class="col-md-6">
-                                                <span class="fa fa-check red" id="chkPagoApertura"></span> Deposito de apertura
-                                            </div>
-                                            <div class="modal-footer" style="margin-top:40px;">
+                                            <div class="modal-footer">
                                                 <button type="button" name="btnGeneraContrato" id="btnGeneraContrato" class="btn btn-primary" onclick="generaContrato(event)" style="border: 1px solid #c4a603; background: #ffffff" data-keyboard="false" disabled>
                                                     <i class="fa fa-spinner" style="color: #1c4e63"></i>
                                                     <span style="color: #1e283d" id="btnGuardar"><b>GUARDAR DATOS Y PROCEDER AL COBRO</b></span>
@@ -309,70 +311,79 @@
                 <div class="container-fluid">
                     <form id="AddPagoApertura">
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fecha_pago">Fecha</label>
+                                    <label for="nombre_cliente">Nombre del cliente</label>
+                                    <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" value="<?php echo $Cliente[0]['NOMBRE']; ?>" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="mdlCurp">CURP</label>
+                                    <input type="text" class="form-control" id="mdlCurp" name="mdlCurp" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="fecha_pago">Fecha del depósito</label>
                                     <input type="text" class="form-control" id="fecha_pago" name="fecha_pago" readonly>
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="contrato">Contrato</label>
+                                    <label for="contrato">Número de contrato</label>
                                     <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="codigo_cl">Número de cliente</label>
+                                    <label for="codigo_cl">Número de cliente SICAFIN</label>
                                     <input type="number" class="form-control" id="codigo_cl" name="codigo_cl" value="<?php echo $credito; ?>" readonly>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <div class="form-group">
-                                    <label for="nombre_cliente">Nombre del Cliente</label>
-                                    <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" value="<?php echo $Cliente[0]['NOMBRE']; ?>" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="nombre_ejecutivo">Nombre del Ejecutivo</label>
+                                    <label for="nombre_ejecutivo">Nombre del ejecutivo</label>
                                     <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="Ejecutivo de Prueba" readonly>
                                     <input type="hidden" class="form-control" id="ejecutivo" name="ejecutivo" value="SOOA">
                                 </div>
                             </div>
+                            <div class="col-md-12">
+                                <hr>
+                            </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
-                                <h3>Deposito de Apertura</h3>
+                            <div class="col-md-6" style="font-size: 18px; padding-top: 5px;">
+                                <label style="color: #000000">Depósito de apertura</label>
                             </div>
                             <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                 <h3>$</h3>
                             </div>
                             <div class="col-md-5" style="padding-top: 5px;">
-                                <input type="number" class="form-control" id="deposito_inicial" name="deposito_inicial" min=100 max=100000 placeholder="Ingrese el monto" style="font-size: large;" onkeyup=validaDeposito(event) onkeydown=soloNumeros(event)>
+                                <input type="number" class="form-control" id="deposito_inicial" name="deposito_inicial" min=100 max=100000 placeholder="0.00" style="font-size: 25px;" onkeyup=validaDeposito(event) onkeydown=soloNumeros(event)>
                             </div>
                             <div class="col-md-12">
-                                <input type="text" class="form-control" id="deposito_inicial_letra" name="deposito_inicial_letra" style="border: 1px solid #000000; text-align: center;" readonly>
+                                <input type="text" class="form-control" id="deposito_inicial_letra" name="deposito_inicial_letra" style="border: 1px solid #000000; text-align: center; font-size: 25px;" readonly>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12" style="text-align:center;">
-                                <h4>Detalle de movimientos</h4>
+                                <hr>
+                                <h3 style="color: #000000">Resumen de movimientos</h3>
+                                <br>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-1">
                                 <h4>+</h4>
                             </div>
-                            <div class="col-md-5">
-                                <h4>DEPOSITO</h4>
+                            <div class="col-md-7">
+                                <h4>Depósito</h4>
                             </div>
                             <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                 <h4>$</h4>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-3">
                                 <input type="number" class="form-control" id="deposito" name="deposito" value="0.00" readonly>
                             </div>
                         </div>
@@ -380,31 +391,33 @@
                             <div class="col-md-1">
                                 <h4>-</h4>
                             </div>
-                            <div class="col-md-5">
-                                <h4>INSCRIPCIÓN</h4>
+                            <div class="col-md-7">
+                                <h4>Inscripción</h4>
                             </div>
                             <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                 <h4>$</h4>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-3">
                                 <input type="number" class="form-control" id="inscripcion" name="inscripcion" value="<?= $saldoMinimoApertura ?>.00" readonly>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
-                                <h4>SALDO INICIAL DE LA CUENTA</h4>
+                            <div class="col-md-8">
+                                <h4>Saldo inicial de la cuenta ahorro corriente</h4>
                             </div>
                             <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                 <h4>$</h4>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-3">
                                 <input type="number" class="form-control" id="saldo_inicial" name="saldo_inicial" value="0.00" readonly>
                                 <input type="hidden" class="form-control" id="sma" name="sma" value="<?= $saldoMinimoApertura ?>" readonly>
-                                <small style="opacity: 0;" id="tipSaldo">El saldo inicial debe ser mínimo de $<?= $saldoMinimoApertura ?>.00</small>
+                            </div>
+                            <div class="col-md-12" style="display: flex; justify-content: center; color: red;">
+                                <label id="tipSaldo" style="opacity:0; font-size: 18px;">El saldo inicial debe ser mínimo de $<?= $saldoMinimoApertura ?>.00</label>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" id="registraDepositoInicial" name="agregar" class="btn btn-primary" value="enviar" onclick=pagoApertura(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
+                            <button type="button" id="registraDepositoInicial" name="agregar" class="btn btn-primary" value="enviar" onclick=pagoApertura(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Registrar depósito</button>
                         </div>
                     </form>
                 </div>

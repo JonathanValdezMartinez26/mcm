@@ -94,13 +94,13 @@
                                         <form id="operacionesNVL1" name="operacionesNVL1">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <div class="col-md-6" style="display: flex; justify-content: flex-end; margin-top: 5px;">
-                                                        <label for="movil">Clave de contrato o código del cliente (SICAFIN)</label>
+                                                    <div class="col-md-5" style="display: flex; justify-content: end; margin-top:5px">
+                                                        <label for="movil">Código de cliente SICAFIN</label>
                                                     </div>
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-3">
                                                         <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
                                                     </div>
-                                                    <div class="col-md-2">
+                                                    <div class="col-md-4">
                                                         <button type="button" class="btn btn-primary" onclick="buscaCliente()">
                                                             <i class="fa fa-search"></i> Buscar
                                                         </button>

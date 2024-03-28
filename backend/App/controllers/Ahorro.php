@@ -391,7 +391,7 @@ class Ahorro extends Controller
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         view::set('saldoMinimoApertura', $saldoMinimoApertura);
-        View::set('fecha', date('Y-m-d'));
+        View::set('fecha', date('d/m/Y H:i:s'));
         View::render("caja_menu_ahorro");
     }
 
@@ -449,36 +449,49 @@ class Ahorro extends Controller
                     success: (respuesta) => {
                         respuesta = JSON.parse(respuesta)
                         if (!respuesta.success) {
-                            if (respuesta.datos) {
-                                const datosCliente = respuesta.datos
-                                if (datosCliente.CONTRATO_COMPLETO == 0) {
-                                    document.querySelector("#btnGeneraContrato").disabled = true
-                                    showError("La apertura de contrato no ha sido concluida correctamente.").then(() => {
-                                        document.querySelector("#fecha_pago").value = getHoy()
-                                        document.querySelector("#contrato").value = datosCliente.CONTRATO
-                                        document.querySelector("#codigo_cl").value = datosCliente.CDGCL
-                                        document.querySelector("#nombre_cliente").value = datosCliente.NOMBRE
-                                        $("#modal_agregar_pago").modal("show")
-                                        document.querySelector("#chkCreacionContrato").classList.remove("red")
-                                        document.querySelector("#chkCreacionContrato").classList.add("green")
-                                    })
-                                    return
-                                }
+                            if (!respuesta.datos) {
+                                limpiaDatosCliente()
+                                return showError(respuesta.mensaje)
                             }
                              
-                            limpiaDatosCliente()
-                            return showError(respuesta.mensaje)
+                            const datosCliente = respuesta.datos
+                            document.querySelector("#btnGeneraContrato").disabled = true
+                            if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 0) {
+                                showInfo("La apertura del contrato no ha concluido, realice el deposito de apertura.").then(() => {
+                                    document.querySelector("#fecha_pago").value = getHoy()
+                                    document.querySelector("#contrato").value = datosCliente.CONTRATO
+                                    document.querySelector("#codigo_cl").value = datosCliente.CDGCL
+                                    document.querySelector("#nombre_cliente").value = datosCliente.NOMBRE
+                                    document.querySelector("#mdlCurp").value = datosCliente.CURP
+                                    $("#modal_agregar_pago").modal("show")
+                                    document.querySelector("#chkCreacionContrato").classList.remove("red")
+                                    document.querySelector("#chkCreacionContrato").classList.add("green")
+                                    document.querySelector("#chkPagoApertura").classList.remove("green")
+                                    document.querySelector("#chkPagoApertura").classList.add("red")
+                                    document.querySelector("#btnGuardar").innerText = txtGuardaPago
+                                    document.querySelector("#btnGeneraContrato").disabled = false
+                                })
+                            }
+                             
+                            if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 1) {
+                                showInfo(respuesta.mensaje)
+                                document.querySelector("#chkCreacionContrato").classList.remove("red")
+                                document.querySelector("#chkCreacionContrato").classList.add("green")
+                                document.querySelector("#chkPagoApertura").classList.remove("red")
+                                document.querySelector("#chkPagoApertura").classList.add("green")
+                            }
                         }
-                        const datosCliente = respuesta.datos
                          
-                        document.querySelector("#fechaRegistro").value = datosCliente.FECHA_REGISTRO
+                        const datosCL = respuesta.datos
+                         
+                        document.querySelector("#fechaRegistro").value = datosCL.FECHA_REGISTRO
                         document.querySelector("#noCliente").value = noCliente
-                        document.querySelector("#nombre").value = datosCliente.NOMBRE
-                        document.querySelector("#curp").value = datosCliente.CURP
-                        document.querySelector("#edad").value = datosCliente.EDAD
-                        document.querySelector("#direccion").value = datosCliente.DIRECCION
+                        document.querySelector("#nombre").value = datosCL.NOMBRE
+                        document.querySelector("#curp").value = datosCL.CURP
+                        document.querySelector("#edad").value = datosCL.EDAD
+                        document.querySelector("#direccion").value = datosCL.DIRECCION
                         noCliente.value = ""
-                        habilitaBeneficiario(1, true)
+                        if (respuesta.success) habilitaBeneficiario(1, true)
                     },
                     error: (error) => {
                         console.error(error)
@@ -500,6 +513,8 @@ class Ahorro extends Controller
                 document.querySelector("#registroInicialAhorro").reset()
                 document.querySelector("#chkCreacionContrato").classList.remove("green")
                 document.querySelector("#chkCreacionContrato").classList.add("red")
+                document.querySelector("#chkPagoApertura").classList.remove("green")
+                document.querySelector("#chkPagoApertura").classList.add("red")
                 document.querySelector("#fechaRegistro").value = ""
                 document.querySelector("#noCliente").value = ""
                 document.querySelector("#nombre").value = ""
@@ -600,7 +615,7 @@ class Ahorro extends Controller
                 const dd = String(hoy.getDate()).padStart(2, "0")
                 const mm = String(hoy.getMonth() + 1).padStart(2, "0")
                 const yyyy = hoy.getFullYear()
-                return dd + "-" + mm + "-" + yyyy + " " + hoy.getHours() + ":" + hoy.getMinutes() + ":" + hoy.getSeconds()
+                return dd + "-" + mm + "-" + yyyy + " " + hoy.getHours().toString().padStart(2, "0") + ":" + hoy.getMinutes().toString().padStart(2, "0") + ":" + hoy.getSeconds().toString().padStart(2, "0")
             }
                         
             const pagoApertura = (e) => {
@@ -948,7 +963,7 @@ class Ahorro extends Controller
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         view::set('saldoMinimoApertura', $saldoMinimoApertura);
-        View::set('fecha', date('d/m/Y'));
+        View::set('fecha', date('d/m/Y H:i:s'));
         view::set('opcParentescos', $opcParentescos);
         View::render("caja_menu_contrato_ahorro");
     }

@@ -71,18 +71,26 @@
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
-                                <li><a onclick=mostrarAhorro() href="">
+                                <li>
+                                    <a onclick=mostrarAhorro() href="">
                                         <p style="font-size: 16px;"><b>Ahorro Cuenta Corriente</b></p>
-                                    </a></li>
-                                <li class="linea"><a href="/Ahorro/SolicitudRetiroCuentaCorriente/">
+                                    </a>
+                                </li>
+                                <li class="linea">
+                                    <a href="/Ahorro/SolicitudRetiroCuentaCorriente/">
                                         <p style="font-size: 15px;">Solicitud de Retiro</p>
-                                    </a></li>
-                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/">
+                                    </a>
+                                </li>
+                                <li class="linea">
+                                    <a href="/Ahorro/ContratoCuentaCorriente/">
                                         <p style="font-size: 15px;">Nuevo Contrato</p>
-                                    </a></li>
-                                <li class="linea"><a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/">
+                                    </a>
+                                </li>
+                                <li class="linea">
+                                    <a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/">
                                         <p style="font-size: 15px;">Historial Solicitud de Retiro</p>
-                                    </a></li>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -90,270 +98,148 @@
                         <div class="container-fluid">
                             <div class="col-md-12">
                                 <div class="row">
-                                    <div class="card col-md-12">
-                                        <form id="operacionesNVL1" name="operacionesNVL1">
+                                    <form id="operacionesNVL1" name="operacionesNVL1">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-5" style="display: flex; justify-content: end; margin-top:5px">
+                                                    <label for="movil">Código de cliente SICAFIN</label>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <button type="button" class="btn btn-primary" onclick="buscaCliente()">
+                                                        <i class="fa fa-search"></i> Buscar
+                                                    </button>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p>
+                                                    <hr>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="nombre">Nombre del cliente</label>
+                                                        <input type="text" class="form-control" id="nombre" name="nombre" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="curp">CURP</label>
+                                                        <input type="text" class="form-control" id="curp" name="curp" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="fecha_pago">Fecha del depósito</label>
+                                                        <input type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?= $fecha; ?>" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="contrato">Número de contrato</label>
+                                                        <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="cliente">Número cliente SICAFIN</label>
+                                                        <input type="number" class="form-control" id="cliente" name="cliente" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <div class="form-group">
+                                                        <label for="nombre_ejecutivo">Nombre del ejecutivo</label>
+                                                        <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="Ejecutivo de Prueba" readonly>
+                                                        <input type="hidden" class="form-control" id="ejecutivo" name="ejecutivo" value="SOOA">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <hr>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3" style="font-size: 18px; padding-top: 5px;">
+                                                    <label style="color: #000000">Movimiento:</label>
+                                                </div>
+                                                <div class="col-md-2" style="text-align: center; font-size: 18px; padding-top: 5px;">
+                                                    <input type="radio" name="esDeposito" id="deposito" onchange=cambioMovimiento(event)>
+                                                    <label for="deposito">Depósito</label>
+                                                </div>
+                                                <div class="col-md-2" style="text-align: center; font-size: 18px; padding-top: 5px;">
+                                                    <input type="radio" name="esDeposito" id="retiro" onchange=cambioMovimiento(event)>
+                                                    <label for="retiro">Retiro</label>
+                                                </div>
+                                                <div class="col-md-1" style="display: flex; justify-content: flex-end;">
+                                                    <h3>$</h3>
+                                                </div>
+                                                <div class="col-md-4" style="padding-top: 5px;">
+                                                    <input type="number" class="form-control" id="monto" name="monto" min="1" max="100000" placeholder="0.00" style="font-size: 25px;" onkeyup=validaDeposito(event) onkeydown=soloNumeros(event) disabled>
+                                                </div>
+                                            </div>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <div class="col-md-6" style="display: flex; justify-content: flex-end; margin-top: 5px;">
-                                                        <label for="movil">Clave de contrato o código del cliente (SICAFIN)</label>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <button type="button" class="btn btn-primary" onclick="buscaCliente()">
-                                                            <i class="fa fa-search"></i> Buscar
-                                                        </button>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p>
-                                                        <hr>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label for="nombre">Nombre del cliente</label>
-                                                            <input type="text" class="form-control" id="nombre" name="nombre" readonly>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <div class="form-group">
-                                                            <label for="curp">CURP</label>
-                                                            <input type="text" class="form-control" id="curp" name="curp" readonly>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <div class="form-group">
-                                                            <label for="fecha_pago">Fecha del depósito</label>
-                                                            <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" value="<?= $fecha; ?>" readonly>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="contrato">Número de contrato</label>
-                                                            <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <div class="form-group">
-                                                            <label for="cliente">Número cliente SICAFIN</label>
-                                                            <input type="number" class="form-control" id="cliente" name="cliente" readonly>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-5">
-                                                        <div class="form-group">
-                                                            <label for="nombre_ejecutivo">Nombre del ejecutivo</label>
-                                                            <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="Ejecutivo de Prueba" readonly>
-                                                            <input type="hidden" class="form-control" id="ejecutivo" name="ejecutivo" value="SOOA">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <hr>
-                                                    </div>
-
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-3" style="font-size: 18px; padding-top: 5px;">
-                                                        <label style="color: #000000">Movimiento:</label>
-                                                    </div>
-                                                    <div class="col-md-2" style="text-align: center; font-size: 18px; padding-top: 5px;">
-                                                        <input type="radio" name="esDeposito" id="deposito" onchange=cambioMovimiento(event)>
-                                                        <label for="deposito">Depósito</label>
-                                                    </div>
-                                                    <div class="col-md-2" style="text-align: center; font-size: 18px; padding-top: 5px;">
-                                                        <input type="radio" name="esDeposito" id="retiro" onchange=cambioMovimiento(event)>
-                                                        <label for="retiro">Retiro</label>
-                                                    </div>
-                                                    <div class="col-md-1" style="display: flex; justify-content: flex-end;">
-                                                        <h3>$</h3>
-                                                    </div>
-                                                    <div class="col-md-4" style="padding-top: 5px;">
-                                                        <input type="number" class="form-control" id="monto" name="monto" min="1" max="100000" placeholder="0.00" style="font-size: large; font-size: 25px;" onkeyup=validaDeposito(event) onkeydown=soloNumeros(event) disabled>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <input type="text" class="form-control" id="monto_letra" name="monto_letra" style="border: 1px solid #000000; text-align: center; font-size: 25px;" readonly>
-                                                    </div>
+                                                    <input type="text" class="form-control" id="monto_letra" name="monto_letra" style="border: 1px solid #000000; text-align: center; font-size: 25px;" readonly>
                                                 </div>
                                             </div>
-                                            <div class="row">
-                                                <div class="col-md-12" style="text-align:center;">
-                                                    <hr>
-                                                    <h3 style="color: #000000">Resumen de movimientos</h3>
-                                                    <br>
-                                                </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12" style="text-align:center;">
+                                                <hr>
+                                                <h3 style="color: #000000">Resumen de movimientos</h3>
+                                                <br>
                                             </div>
-                                            <div class="row">
-                                                <div class="col-md-8" style="display: flex; justify-content: flex-start;">
-                                                    <h4>Saldo actual cuenta ahorro corriente</h4>
-                                                </div>
-                                                <div class="col-md-1" style="display: flex; justify-content: flex-end;">
-                                                    <h4>$</h4>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input type="number" class="form-control" id="saldoActual" name="saldoActual" value="0.00" readonly>
-                                                </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8" style="display: flex; justify-content: flex-start;">
+                                                <h4>Saldo actual cuenta ahorro corriente</h4>
                                             </div>
-                                            <div class="row">
-                                                <div class="col-md-1">
-                                                    <h4 id="simboloOperacion">+</h4>
-                                                </div>
-                                                <div class="col-md-7" style="display: flex; justify-content: flex-start;">
-                                                    <h4 id="descOperacion">Depósito a cuenta ahorro corriente</h4>
-                                                </div>
-                                                <div class="col-md-1" style="display: flex; justify-content: flex-end;">
-                                                    <h4>$</h4>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input type="number" class="form-control" id="montoOperacion" name="montoOperacion" value="0.00" readonly>
-                                                </div>
+                                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
+                                                <h4>$</h4>
                                             </div>
-                                            <div class="row">
-                                                <div class="col-md-8" style="display: flex; justify-content: flex-start;">
-                                                    <h2>Saldo final cuenta ahorro corriente</h2>
-                                                </div>
-                                                <div class="col-md-1" style="display: flex; justify-content: flex-end;">
-                                                    <h4>$</h4>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input type="number" class="form-control" id="saldoFinal" name="saldoFinal" value="0.00" readonly>
-                                                </div>
-                                                <div class="col-md-12" style="display: flex; justify-content: center; color: red;">
-                                                    <label id="tipSaldo" style="opacity:0; font-size: 18px;">El monto a retirar no puede ser mayor al saldo de la cuenta.</label>
-                                                </div>
+                                            <div class="col-md-3">
+                                                <input type="number" class="form-control" id="saldoActual" name="saldoActual" value="0.00" readonly>
                                             </div>
-                                            <div class="modal-footer">
-                                                <button type="button" id="btnRegistraOperacion" name="agregar" class="btn btn-primary" value="enviar" onclick=registraOperacion(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Procesar Transaccion</button>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                                <h4 id="simboloOperacion">+</h4>
                                             </div>
-                                        </form>
-                                    </div>
+                                            <div class="col-md-7" style="display: flex; justify-content: flex-start;">
+                                                <h4 id="descOperacion">Depósito a cuenta ahorro corriente</h4>
+                                            </div>
+                                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
+                                                <h4>$</h4>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input type="number" class="form-control" id="montoOperacion" name="montoOperacion" value="0.00" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8" style="display: flex; justify-content: flex-start;">
+                                                <h2>Saldo final cuenta ahorro corriente</h2>
+                                            </div>
+                                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
+                                                <h4>$</h4>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input type="number" class="form-control" id="saldoFinal" name="saldoFinal" value="0.00" readonly>
+                                            </div>
+                                            <div class="col-md-12" style="display: flex; justify-content: center; color: red;">
+                                                <label id="tipSaldo" style="opacity:0; font-size: 18px;">El monto a retirar no puede ser mayor al saldo de la cuenta.</label>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" id="btnRegistraOperacion" name="agregar" class="btn btn-primary" value="enviar" onclick=registraOperacion(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Registrar transacción</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </form>
-        </div>
-    </div>
-</div>
-
-<!-- <div class="modal fade in" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block; padding-right: 15px;"> -->
-<div class="modal fade" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <!-- <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
-                <center>
-                    <h4 class="modal-title" id="myModalLabel">Registro de pago por apertura y ahorro inicial cuenta corriente</h4>
-                </center>
-            </div>
-            <div class="modal-body">
-                <div class="container-fluid">
-                    <form id="AddPagoApertura">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="mdlFecha_pago">Fecha</label>
-                                    <input type="text" class="form-control" id="mdlFecha_pago" name="fecha_pago" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label for="mdlContrato">Contrato</label>
-                                    <input type="text" class="form-control" id="mdlContrato" name="contrato" aria-describedby="contrato" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="mdlCodigo_cl">Número de cliente</label>
-                                    <input type="number" class="form-control" id="mdlCodigo_cl" name="codigo_cl" value="<?php echo $credito; ?>" readonly>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="mdlNombre_cliente">Nombre del Cliente</label>
-                                    <input type="text" class="form-control" id="mdlNombre_cliente" name="nombre_cliente" value="<?php echo $Cliente[0]['NOMBRE']; ?>" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="mdlNombre_ejecutivo">Nombre del Ejecutivo</label>
-                                    <input type="text" class="form-control" id="mdlNombre_ejecutivo" name="nombre_ejecutivo" value="Ejecutivo de Prueba" readonly>
-                                    <input type="hidden" class="form-control" id="mdlEjecutivo" name="ejecutivo" value="SOOA">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h3>Deposito de Apertura</h3>
-                            </div>
-                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
-                                <h3>$</h3>
-                            </div>
-                            <div class="col-md-5" style="padding-top: 5px;">
-                                <input type="number" class="form-control" id="mdlDeposito_inicial" name="deposito_inicial" min=100 max=100000 placeholder="Ingrese el monto" style="font-size: large;" onkeyup=validaDeposito(event) onkeydown=soloNumeros(event)>
-                            </div>
-                            <div class="col-md-12">
-                                <input type="text" class="form-control" id="mdlDeposito_inicial_letra" name="deposito_inicial_letra" style="border: 1px solid #000000; text-align: center;" readonly>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12" style="text-align:center;">
-                                <h4>Detalle de movimientos</h4>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-1">
-                                <h4>+</h4>
-                            </div>
-                            <div class="col-md-5">
-                                <h4>DEPOSITO</h4>
-                            </div>
-                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
-                                <h4>$</h4>
-                            </div>
-                            <div class="col-md-5">
-                                <input type="number" class="form-control" id="mdlDeposito" name="deposito" value="0.00" readonly>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-1">
-                                <h4>-</h4>
-                            </div>
-                            <div class="col-md-5">
-                                <h4>INSCRIPCIÓN</h4>
-                            </div>
-                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
-                                <h4>$</h4>
-                            </div>
-                            <div class="col-md-5">
-                                <input type="number" class="form-control" id="mdlInscripcion" name="inscripcion" value="<?= $saldoMinimoApertura ?>.00" readonly>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h4>SALDO INICIAL DE LA CUENTA</h4>
-                            </div>
-                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
-                                <h4>$</h4>
-                            </div>
-                            <div class="col-md-5">
-                                <input type="number" class="form-control" id="mdlSaldo_inicial" name="saldo_inicial" value="0.00" readonly>
-                                <input type="hidden" class="form-control" id="sma" name="sma" value="<?= $saldoMinimoApertura ?>" readonly>
-                                <small style="opacity: 0;" id="mdlTipSaldo">El saldo inicial debe ser mínimo de $<?= $saldoMinimoApertura ?>.00</small>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal" onclick=cancelarRegistro(event)><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                            <button type="button" id="mdlRegistraDepositoInicial" name="agregar" class="btn btn-primary" onclick=pagoApertura(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
         </div>
     </div>
 </div>
