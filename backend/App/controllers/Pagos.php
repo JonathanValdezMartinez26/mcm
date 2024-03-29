@@ -1919,6 +1919,7 @@ html;
                     
                     var txt_ciclo = document.getElementById("ciclo");
                     var option = document.createElement("option");
+                    var option1 = document.createElement("option");
                     
                     
                     select = $("#tipo");
@@ -1930,9 +1931,18 @@ html;
                      
                     if(ciclo != '01')
                     {
-                        option.text = ciclo_anterior;
-                        option.value = ciclo_anterior;
-                        txt_ciclo.add(option);    
+                        $('#ciclo').empty();
+                        
+                        option.text = ciclo;
+                        option.value = ciclo;
+                        txt_ciclo.add(option); 
+                        
+                        
+                        option1.text = ciclo_anterior;
+                        option1.value = ciclo_anterior;
+                        txt_ciclo.add(option1);    
+                        
+                        
                     }
                 }
          }
