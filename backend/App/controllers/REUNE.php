@@ -26,7 +26,7 @@ class Reune extends Controller
         $extraHeader = <<<html
         <title>Registrar Quejas REDECO</title>
         <link rel="shortcut icon" href="/img/logo.png">
-        html;
+html;
 
         $extraFooter = <<<html
         <script>
@@ -226,7 +226,7 @@ class Reune extends Controller
                 consumeAPI("api-reune-pruebas.condusef.gob.mx/reune/consultas/general", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REUNE.")   
             }
         </script>
-        html;
+html;
 
         $meses = [
             "1" => "Enero",

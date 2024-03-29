@@ -44,7 +44,7 @@
             <div class="card col-md-12">
                 <hr style="border-top: 1px solid #e5e5e5; margin-top: 5px;">
                 <div>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_pago" onclick="BotonPago('<?php echo $Administracion[0]['SITUACION_NOMBRE']; ?>');">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_pago" onclick="BotonPago('<?php echo $Administracion[0]['SITUACION_NOMBRE']; ?>', '<?php echo $Administracion[0]['CICLO'];?>');">
                         <i class="fa fa-plus"></i> Agregar Pago
                     </button>
                     <hr style="border-top: 1px solid #787878; margin-top: 5px;">
@@ -160,14 +160,16 @@
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="ciclo">Ciclo</label>
-                                    <input type="number" class="form-control" id="ciclo" name="ciclo" readonly value="<?php echo $Administracion[0]['CICLO']; ?>">
+                                    <select class="form-control mr-sm-3"  autofocus type="select" id="ciclo" name="ciclo">
+                                        <option value="<?php echo $Administracion[0]['CICLO']; ?>"><?php echo $Administracion[0]['CICLO'];?></option>
+                                    </select>
                                 </div>
                             </div>
 
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="tipo">Tipo de Operación</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo" onchange="MultaCiclo(this,'<?php echo $Administracion[0]['CICLO'];?>');">
                                         <option value="P">PAGO</option>
                                         <option value="M">MULTA</option>
                                         <option value="G">GARANTÍA</option>

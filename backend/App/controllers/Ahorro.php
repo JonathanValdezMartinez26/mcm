@@ -30,7 +30,7 @@ class Ahorro extends Controller
         $extraHeader = <<<html
         <title>Caja Cobrar</title>
         <link rel="shortcut icon" href="/img/logo.png">
-        html;
+html;
 
         $extraFooter = <<<html
         <script>
@@ -386,7 +386,7 @@ class Ahorro extends Controller
                 })
             }
         </script>
-        html;
+html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -414,7 +414,7 @@ class Ahorro extends Controller
         $extraHeader = <<<html
         <title>Caja Cobrar</title>
         <link rel="shortcut icon" href="/img/logo.png">
-        html;
+html;
 
         $extraFooter = <<<html
         <script>
@@ -950,7 +950,7 @@ class Ahorro extends Controller
                 })
             }
         </script>
-        html;
+html;
 
         $parentescos = CajaAhorroDao::GetCatalogoParentescos();
 
@@ -1059,7 +1059,7 @@ class Ahorro extends Controller
                 }
             }
         </style>  
-        html;
+html;
 
         $tabla = <<<html
         <div class="receipt-main">
@@ -1104,7 +1104,7 @@ class Ahorro extends Controller
                 </table>
             </div>
         </div>
-        html;
+html;
 
         $nombreArchivo = "Contrato " . $numero_contrato;
 
@@ -1127,13 +1127,13 @@ class Ahorro extends Controller
         $extraHeader = <<<html
         <title>Caja Cobrar</title>
         <link rel="shortcut icon" href="/img/logo.png">
-        html;
+html;
 
         $extraFooter = <<<html
         <script>
            
         </script>
-        html;
+html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -1145,7 +1145,7 @@ class Ahorro extends Controller
         $extraHeader = <<<html
         <title>Solicitud de Retiro Ahorro</title>
         <link rel="shortcut icon" href="/img/logo.png">
-        html;
+html;
 
         $extraFooter = <<<html
         <script>
@@ -1447,7 +1447,7 @@ class Ahorro extends Controller
                 window.open(url, "_blank")
             }
         </script>
-        html;
+html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -1465,7 +1465,7 @@ class Ahorro extends Controller
         <script>
            
         </script>
-        html;
+html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -1483,7 +1483,7 @@ class Ahorro extends Controller
         <script>
            
         </script>
-        html;
+html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -1882,7 +1882,7 @@ class Ahorro extends Controller
                 window.open(url, "_blank")
             }
         </script>
-        html;
+html;
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -1895,7 +1895,7 @@ class Ahorro extends Controller
         $extraHeader = <<<html
         <title>Caja Cobrar</title>
         <link rel="shortcut icon" href="/img/logo.png">
-        html;
+html;
 
         $extraFooter = <<<html
         <script>
@@ -2292,7 +2292,7 @@ class Ahorro extends Controller
                 document.querySelector("#edad").value = edad
             }
         </script>
-        html;
+html;
 
         if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
         View::set('header', $this->_contenedor->header($extraHeader));
@@ -2703,8 +2703,8 @@ html;
         $mpdf->Cell(60, 4, 'Más con Menos', 0, 1, 'C');
         $mpdf->Ln(2);
         $mpdf->SetFont('Helvetica', '', 8);
-        $mpdf->Cell(60, 4, 'Dirección de la sucursal, C.P 00000', 0, 1, 'C');
-        $mpdf->Cell(60, 4, '000 000 00000', 0, 1, 'C');
+        $mpdf->Cell(60, 4, 'Dirección de la sucursal', 0, 1, 'C');
+        $mpdf->Cell(60, 4, 'Municipio, Estado, C.P 00000', 0, 1, 'C');
 
         // LEYENDA TIPO COMPROBANTE
         $mpdf->Ln(3);
@@ -2739,7 +2739,7 @@ html;
         $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
 
         // MONTO DE LA OPERACION
-        $mpdf->Ln(3);
+        $mpdf->Ln(5);
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 4, ($datos['ES_DEPOSITO'] == 1 ? 'RECIBIMOS ' : 'ENTREGAMOS ') .  "$" . number_format($datos['MONTO'], 2, '.', ','), 0, 1, 'C');
         $mpdf->SetFont('Helvetica', '', 8);
@@ -2765,15 +2765,26 @@ html;
         $mpdf->Cell(30, 10, 'SALDO NUEVO: ', 0);
         $mpdf->Cell(30, 10, "$" . number_format($nvoSaldo, 2, '.', ','), 2, 0, 'R');
 
+
+        // Linea
+
+        $mpdf->Ln(10);
+        $mpdf->SetFont('Helvetica', '', 12);
+        $mpdf->Ln(3);
+        $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
+
+
+
+
         // FIRMAS
-        $mpdf->Ln(15);
+        $mpdf->Ln(8);
         $mpdf->SetFont('Helvetica', '', 10);
         $mpdf->Cell(60, 4, 'Firma de conformidad del cliente', 0, 1, 'C');
         $mpdf->Ln(10);
-        $mpdf->Cell(60, 0, str_repeat('_', 25), 0, 1, 'C');
+        $mpdf->Cell(60, 0, str_repeat('_', 34), 0, 1, 'C');
 
         // FOLIO DE LA OPERACION
-        $mpdf->Ln(10);
+        $mpdf->Ln(12);
         $mpdf->SetFont('Helvetica', '', 10);
         $mpdf->Cell(60, 4, 'FOLIO DE LA OPERACIÓN', 0, 1, 'C');
         $mpdf->WriteHTML('<barcode code="' . $ticket . '-' . $datos['CODIGO'] . '-' . $datos['MONTO'] . '-' . $datos['COD_EJECUTIVO'] . '" type="C128A" size=".63" height="1" class=""/>');

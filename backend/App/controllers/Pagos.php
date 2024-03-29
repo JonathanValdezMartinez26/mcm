@@ -1903,18 +1903,56 @@ html;
              swal("Info", "Este registro fue capturado por un ejecutivo en campo y procesado por una administradora", "info");
          }
          
-         
-         function BotonPago(estatus)
+         function BotonPago(estatus, ciclo)
          {
             if(estatus == 'LIQUIDADO')
                 {
+                    let ciclo_anterior = '0'+(ciclo - 1);
+                    var txt_ciclo = document.getElementById("ciclo");
+                    var option = document.createElement("option");
+                    
+                    
                     select = $("#tipo");
-                     select.empty();
-                     select.append($("<option>", {
+                    select.empty();
+                    select.append($("<option>", {
                         value: 'M',
                         text: 'MULTA'
                       }));
+                     
+                    if(ciclo != '01')
+                    {
+                        option.text = ciclo_anterior;
+                        option.value = ciclo_anterior;
+                        txt_ciclo.add(option);    
+                    }
                 }
+         }
+         
+         function MultaCiclo(op, ciclo)
+         {
+              var value = op.value;  
+              var txt_ciclo = document.getElementById("ciclo");
+              var option = document.createElement("option");
+              let ciclo_anterior = '0'+(ciclo - 1);
+              
+              if(value == 'M')
+              {
+                    if(ciclo != '01')
+                    {
+                        option.text = ciclo_anterior;
+                        option.value = ciclo_anterior;
+                        txt_ciclo.add(option);    
+                    }
+                    
+              }
+              else 
+              {
+                   $('#ciclo').empty();
+                   option.text = ciclo;
+                   option.value = ciclo;
+                   txt_ciclo.add(option);  
+                  
+              }
          }
     
       </script>

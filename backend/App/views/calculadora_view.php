@@ -295,7 +295,7 @@
             // console.log(plazo);
             prestamo =  monto + gastosDeCierre;
             // console.log(prestamo);
-            tasa = ( checkMensual.checked ? tasaMensual : tasaQuincenal);++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            tasa = ( checkMensual.checked ? tasaMensual : tasaQuincenal);
 
             plural = ( valuePlazo == 1 ) ?  "" : "";
 
