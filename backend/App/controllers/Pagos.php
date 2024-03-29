@@ -1907,7 +1907,16 @@ html;
          {
             if(estatus == 'LIQUIDADO')
                 {
-                    let ciclo_anterior = '0'+(ciclo - 1);
+                    let ciclo_anterior = '';
+                    if(ciclo >=10)
+                    {
+                         ciclo_anterior = (ciclo - 1);   
+                    }
+                    else {
+                        ciclo_anterior = '0'+(ciclo - 1);
+                    }
+                    
+                    
                     var txt_ciclo = document.getElementById("ciclo");
                     var option = document.createElement("option");
                     
@@ -1933,7 +1942,15 @@ html;
               var value = op.value;  
               var txt_ciclo = document.getElementById("ciclo");
               var option = document.createElement("option");
-              let ciclo_anterior = '0'+(ciclo - 1);
+               let ciclo_anterior = '';
+               
+               if(ciclo >=10)
+               {
+                   ciclo_anterior = (ciclo - 1);   
+               }
+               else {
+                    ciclo_anterior = '0'+(ciclo - 1);
+               }
               
               if(value == 'M')
               {
