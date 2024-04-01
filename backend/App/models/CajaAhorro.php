@@ -30,7 +30,7 @@ class CajaAhorro
             *
         FROM
             CAT_PARENTESCO
-sql;
+        sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -129,7 +129,7 @@ sql;
         AND MU.CODIGO = COL.CDGMU 
         AND LO.CODIGO = COL.CDGLO 
         AND CL.CODIGO = '$cliente'
-sql;
+        sql;
 
 
         $query_tiene_creditos = <<<sql
@@ -138,7 +138,7 @@ sql;
 
         $query_es_aval = <<<sql
         SELECT * FROM CL WHERE CODIGO = '$cliente'
-sql;
+        sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -182,7 +182,7 @@ sql;
             CL
         WHERE
             CL.CODIGO = '{$datos['cliente']}'
-sql;
+        sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -228,7 +228,7 @@ sql;
             CL
         WHERE
             CL.CODIGO = '{$datos['cliente']}'
-sql;
+        sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -250,7 +250,7 @@ sql;
             ASIGNA_PROD_AHORRO
         WHERE
             CDGCL = :cliente
-sql;
+        sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -264,14 +264,14 @@ sql;
                 (CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, SALDO)
             VALUES
                 (:contrato, :cliente, :fecha_apertura, '1', 'A', 0)
-sql;
+            sql;
 
             $queryBen = <<<sql
             INSERT INTO BENEFICIARIOS_AHORRO
                 (CDG_CONTRATO, NOMBRE, CDGCT_PARENTESCO, ESTATUS, FECHA_MODIFICACION, PORCENTAJE)
             VALUES
                 (:contrato, :nombre, :parentesco, 'A', SYSDATE, :porcentaje)
-sql;
+            sql;
 
             $fecha = DateTime::createFromFormat('Y-m-d', $datos['fecha']);
             $fecha = $fecha !== false && $fecha->format('Y-m-d') === $datos['fecha'] ? $fecha->format('d-m-Y') : $datos['fecha'];
@@ -443,7 +443,7 @@ sql;
             (CODIGO, FECHA, CDG_CONTRATO, MONTO, CDGPE)
         VALUES
             ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM TICKETS_AHORRO) + 1, SYSDATE, :contrato, :monto, :ejecutivo)
-sql;
+        sql;
     }
 
     public static function GetQueryMovimientoAhorro()
@@ -453,7 +453,7 @@ sql;
             (CODIGO, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, MOVIMIENTO, DESCRIPCION, CDG_TICKET, FECHA_VALOR)
         VALUES
             ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(TO_NUMBER(CODIGO)) AS CODIGO FROM TICKETS_AHORRO WHERE CDG_CONTRATO = :contrato), SYSDATE)
-sql;
+        sql;
     }
 
     public static function GetQueryValidaAhorro()
@@ -490,7 +490,7 @@ sql;
             )
         WHERE
             DIFERENCIA != 0
-sql;
+        sql;
     }
 
     public static function RecuperaTicket($contrato)
@@ -502,7 +502,7 @@ sql;
             TICKETS_AHORRO
         WHERE
             CDG_CONTRATO = '$contrato'
-sql;
+        sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -570,7 +570,7 @@ sql;
             CL.CODIGO = APA.CDGCL
             AND T.CDG_CONTRATO = APA.CONTRATO
             AND T.CODIGO = '$ticket'
-sql;
+        sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -641,7 +641,7 @@ sql;
             AND MU.CODIGO = COL.CDGMU
             AND LO.CODIGO = COL.CDGLO
             AND CL.CODIGO = '{$datos['cliente']}'
-sql;
+        sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -664,7 +664,8 @@ sql;
             CL_PQS
         WHERE
             CDGCL = :cliente
-sql;
+        sql;
+
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryAll($queryValidacion, ['cliente' => $datos['credito']]);
@@ -683,14 +684,14 @@ sql;
                 (CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, SALDO)
             VALUES
                 (:contrato, :cliente, :fecha_apertura, '2', 'A', 0)
-sql;
+            sql;
 
             $queryCL_PQ = <<<sql
             INSERT INTO CL_PQS
                 (CDGCL,CDG_CONTRATO,NOMBRE1,NOMBRE2,APELLIDO1,APELLIDO2,FECHA_NACIMIENTO,SEXO,CURP,PAIS,ENTIDAD,FECHA_REGISTRO,FECHA_MODIFICACION,ESTATUS)
             VALUES
                 (:cliente, :contrato, :nombre1, :nombre2, :apellido1, :apellido2, :fecha_nacimiento, :sexo, :curp, :pais, :entidad, SYSDATE, SYSDATE, 'A')
-sql;
+            sql;
 
             $fecha = DateTime::createFromFormat('Y-m-d', $datos['fecha_nac']);
             $fecha = $fecha !== false && $fecha->format('Y-m-d') === $datos['fecha_nac'] ? $fecha->format('d-m-Y') : $datos['fecha_nac'];
@@ -755,7 +756,7 @@ sql;
             CL_PQS
         WHERE
             CL_PQS.CDGCL = '{$datos['cliente']}'
-sql;
+        sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -786,7 +787,7 @@ sql;
                     CL
                 WHERE
                     CL.CODIGO = '{$datos['cliente']}'
-sql;
+                sql;
 
                 $res2 = $mysqli->queryOne($qryVal);
                 if (!$res2) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
@@ -797,6 +798,55 @@ sql;
             return self::Responde(true, "Consulta realizada correctamente", $res);
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());
+        }
+    }
+
+    public static function RegistraInversion($datos)
+    {
+        $qryInversion = <<<sql
+        INSERT INTO CUENTA_INVERSION
+            (CDG_CONTRATO, CDG_TASA, CDG_PLAZO, MONTO_INVERSION, FECHA_APERTURA, ESTATUS, ACCION)
+        VALUES
+            (:contrato, :tasa, :plazo, :monto, SYSDATE, 'A', :accion)
+        sql;
+
+        $query = [
+            $qryInversion,
+            self::GetQueryTicket(),
+            self::GetQueryMovimientoAhorro()
+        ];
+
+        $datosInsert = [
+            [
+                'contrato' => $datos['contrato'],
+                'monto' => $datos['monto'],
+                'tasa' => $datos['tasa'],
+                'plazo' => $datos['plazo'],
+                'accion' => $datos['renovacion']
+            ],
+            [
+                'contrato' => $datos['contrato'],
+                'monto' => $datos['montoOperacion'],
+                'ejecutivo' => $datos['ejecutivo']
+            ],
+            [
+                'tipo_pago' => '5',
+                'contrato' => $datos['contrato'],
+                'monto' => $datos['montoOperacion'],
+                'movimiento' => '0'
+            ]
+        ];
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->insertaMultiple($query, $datosInsert);
+            if ($res) {
+                $ticket = self::RecuperaTicket($datos['contrato']);
+                return self::Responde(true, "Inversión registrada correctamente", ['ticket' => $ticket['CODIGO']]);
+            }
+            return self::Responde(false, "Ocurrió un error al registrar la inversión");
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al registrar la inversión", null, $e->getMessage());
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////

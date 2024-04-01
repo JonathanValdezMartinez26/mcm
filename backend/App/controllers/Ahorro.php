@@ -1196,6 +1196,7 @@ class Ahorro extends Controller
                 document.querySelector("#registroOperacion").reset()
                 document.querySelector("#monto").disabled = true
                 document.querySelector("#btnRegistraOperacion").disabled = true
+                habiltaEspecs()
             }
             
             const getHoy = () => {
@@ -1242,8 +1243,9 @@ class Ahorro extends Controller
                  
                 const saldoFinal = parseFloat(document.querySelector("#saldoActual").value) - monto
                 document.querySelector("#montoOperacion").value = monto.toFixed(2)
-                document.querySelector("#saldoFinal").value = saldoFinal.toFixed(2)
+                document.querySelector("#saldoFinal").value = (saldoFinal < 0 ? 0 : saldoFinal).toFixed(2)
                 document.querySelector("#monto_letra").value = numeroLetras(monto)
+                compruebaSaldoFinal(saldoFinal)
                 habiltaEspecs(monto)
             }
             
@@ -1255,8 +1257,15 @@ class Ahorro extends Controller
                     document.querySelector("#saldoFinal").removeAttribute("style")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
                 }
-                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value > 0)
-                
+                habilitaBoton()
+            }
+             
+            const habilitaBoton = () => {
+                if (document.querySelector("#plazo").selectedIndex === 0 || document.querySelector("#tasa").selectedIndex === 0) {
+                    document.querySelector("#btnRegistraOperacion").disabled = true
+                    return
+                }
+                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value >= saldoMinimoApertura)
             }
             
             const numeroLetras = (numero) => {
@@ -1375,23 +1384,16 @@ class Ahorro extends Controller
             const registraOperacion = (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
-                
-                if (!document.querySelector("#deposito").checked && !document.querySelector("#retiro").checked) {
-                    return showError("Seleccione el tipo de operación a realizar.")
-                }
-                
-                datos.forEach((dato) => {
-                    if (dato.name === "esDeposito") {
-                        dato.value = document.querySelector("#deposito").checked
-                    }
+                 
+                datos.forEach(dato => {
+                    if (dato.name === "tasa") dato.value = dato.value.split(":")[0]
                 })
                 
                 $.ajax({
                     type: "POST",
-                    url: "/Ahorro/registraOperacion/",
+                    url: "/Ahorro/RegistraInversion/",
                     data: $.param(datos),
                     success: (respuesta) => {
-                        console.log(respuesta)
                         respuesta = JSON.parse(respuesta)
                         if (!respuesta.success){
                             console.log(respuesta.error)
@@ -1465,13 +1467,13 @@ class Ahorro extends Controller
         $tasas = CajaAhorroDao::GetTasas();
         $opcTasas = "<option value='' disabled selected>Seleccionar</option>";
         foreach ($tasas as $tasa) {
-            $opcTasas .= "<option value='{$tasa['CODIGO']}'>{$tasa['TASA']} %</option>";
+            $opcTasas .= "<option value='{$tasa['CODIGO']}:{$tasa['MONTO_MINIMO']}'>{$tasa['TASA']} %</option>";
         }
 
         $plazos = CajaAhorroDao::GetPlazos();
         $opcPlazos = "<option value='' disabled selected>Seleccionar</option>";
         foreach ($plazos as $plazo) {
-            $opcPlazos .= "<option value='{$plazo['CODIGO']}:{$plazo['MONTO_MINIMO']}'>{$plazo['PLAZO']}</option>";
+            $opcPlazos .= "<option value='{$plazo['CODIGO']}'>{$plazo['PLAZO']}</option>";
         }
 
         View::set('header', $this->_contenedor->header($extraHeader));
@@ -1480,6 +1482,12 @@ class Ahorro extends Controller
         View::set('opcTasas', $opcTasas);
         View::set('opcPlazos', $opcPlazos);
         View::render("caja_menu_contrato_inversion");
+    }
+
+    public function RegistraInversion()
+    {
+        $contrato = CajaAhorroDao::RegistraInversion($_POST);
+        echo $contrato;
     }
 
     public function SolicitudRetiroCuentaCorriente()

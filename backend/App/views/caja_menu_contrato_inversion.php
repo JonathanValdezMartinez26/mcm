@@ -154,7 +154,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="plazo">Plazo</label>
-                                        <select class="form-control" id="plazo" name="plazo" disabled>
+                                        <select class="form-control" id="plazo" name="plazo" onchange=habilitaBoton() disabled>
                                             <?= $opcPlazos; ?>
                                         </select>
                                     </div>
@@ -162,7 +162,7 @@
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label for="tasa">Tasa</label>
-                                        <select class="form-control" id="tasa" name="tasa" disabled>
+                                        <select class="form-control" id="tasa" name="tasa" onchange=habilitaBoton() disabled>
                                             <?= $opcTasas; ?>
                                         </select>
                                     </div>
@@ -171,8 +171,8 @@
                                     <div class="form-group">
                                         <label for="renovacion">Acción al vencimiento?</label>
                                         <select class="form-control" id="renovacion" name="renovacion" disabled>
-                                            <option value="0">Renovar</option>
-                                            <option value="1">Depositar</option>
+                                            <option value="R">Renovar</option>
+                                            <option value="D">Depositar</option>
                                         </select>
                                     </div>
                                 </div>
@@ -225,7 +225,7 @@
                                     <input type="number" class="form-control" id="saldoFinal" name="saldoFinal" value="0.00" readonly>
                                 </div>
                                 <div class="col-md-12" style="display: flex; justify-content: center; color: red;">
-                                    <label id="tipSaldo" style="opacity:0; font-size: 18px;">El monto a retirar no puede ser mayor al saldo de la cuenta.</label>
+                                    <label id="tipSaldo" style="opacity:0; font-size: 18px;">El monto a invertir no puede ser mayor al saldo de la cuenta.</label>
                                 </div>
                             </div>
                             <div class="modal-footer">
