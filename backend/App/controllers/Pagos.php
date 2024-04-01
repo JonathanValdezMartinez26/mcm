@@ -226,7 +226,7 @@ html;
 
 
         if ($dia == 1) {
-            $date_past = strtotime('-3 days', strtotime($fechaActual));
+            $date_past = strtotime('-5 days', strtotime($fechaActual));
             $date_past = date('Y-m-d', $date_past);
 
             $inicio_f = $date_past;
@@ -295,7 +295,7 @@ html;
                     <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
 html;
                     } else {
-                        $date_past = strtotime('-4 days', strtotime($fechaActual));
+                        $date_past = strtotime('-5 days', strtotime($fechaActual));
                         $date_past = date('Y-m-d', $date_past);
 
                         $fecha_base = strtotime($value['FECHA']);
