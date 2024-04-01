@@ -2001,6 +2001,9 @@ html;
 
         $fue_dia_festivo = $AdministracionOne[2]['TOT'];
 
+
+
+
         $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
         if ($hora_cierre == '') {
             $hora_cierre = '10:00:00';
@@ -2010,13 +2013,13 @@ html;
 
         if ($horaActual <= $hora_cierre) {
             if ($dia == 1) {
-                $date_past = strtotime('-3 days', strtotime($fechaActual));
+                $date_past = strtotime('-5 days', strtotime($fechaActual));// Cambiar de 5 a 3
                 $date_past = date('Y-m-d', $date_past);
             } else {
-                if ($fue_dia_festivo == 1 && $dia == 2) {
+                if ($fue_dia_festivo >= 1 && $dia == 2) {
                     $date_past = strtotime('-4 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
-                } else if ($fue_dia_festivo == 1 && $dia != 2) {
+                } else if ($fue_dia_festivo >= 1 && $dia != 2) {
                     $date_past = strtotime('-2 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 } else {
