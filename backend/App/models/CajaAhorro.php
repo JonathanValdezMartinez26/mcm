@@ -42,6 +42,71 @@ sql;
         }
     }
 
+    public static function GetSaldoMinimoInversion()
+    {
+        $query = <<<sql
+        SELECT
+            MIN(MONTO_MINIMO) AS MONTO_MINIMO
+        FROM
+            TASA_INVERSION
+        WHERE
+            ESTATUS = 'A'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryOne($query);
+            if ($res) return $res['MONTO_MINIMO'];
+            return 0;
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public static function GetTasas()
+    {
+        $query = <<<sql
+        SELECT
+            *
+        FROM
+            TASA_INVERSION
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($query);
+            if ($res) return $res;
+            return array();
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
+    public static function GetPlazos()
+    {
+        $query = <<<sql
+        SELECT
+            CODIGO,
+            CONCAT(CONCAT(PLAZO, ' '), CASE PERIODICIDAD
+                WHEN 'D' THEN 'Días'
+                WHEN 'S' THEN 'Semanas'
+                WHEN 'M' THEN 'Meses'
+                WHEN 'A' THEN 'Años'
+            END) AS PLAZO
+        FROM
+            PLAZO_INVERSION
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($query);
+            if ($res) return $res;
+            return array();
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
     public static function ConsultaClientesProducto($cliente)
     {
 
