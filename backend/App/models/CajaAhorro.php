@@ -947,5 +947,26 @@ class CajaAhorro
             return self::Responde(false, "Ocurrió un error al registrar la inversión", null, $e->getMessage());
         }
     }
+
+    public static function GetInversiones($datos)
+    {
+        $query = <<<sql
+        SELECT
+            *
+        FROM
+            CUENTA_INVERSION CI
+        WHERE
+            CI.CDG_CONTRATO = '{$datos['contrato']}'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($query);
+            if (count($res) === 0) return self::Responde(false, "No se encontraron inversiones para el contrato {$datos['contrato']}");
+            return self::Responde(true, "Consulta realizada correctamente", $res);
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al consultar las inversiones", null, $e->getMessage());
+        }
+    }
     ////////////////////////////////////////////////////////////////////////////////////////
 }

@@ -89,7 +89,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <p>Para hacer la apertura de una cuenta de Inversión, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p>
+                                    <label>Para hacer la apertura de una cuenta de Inversión, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</label>
                                     <hr>
                                 </div>
                             </div>
@@ -138,14 +138,14 @@
                                 <hr>
                             </div>
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="monto">Monto a invertir</label>
                                         <div class="row">
                                             <div class="col-md-1">
-                                                <h3>$</h3>
+                                                <span style="font-size: x-large;">$</span>
                                             </div>
-                                            <div class="col-md-11">
+                                            <div class="col-md-10">
                                                 <input type="number" class="form-control" id="monto" name="monto" min="1" max="1000000" placeholder="0.00" style="font-size: 25px;" oninput=validaDeposito(event) onkeydown=soloNumeros(event) disabled>
                                             </div>
                                         </div>
@@ -159,10 +159,17 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="tasa">Tasa</label>
-                                        <input class="form-control" id="tasa" name="tasa" disabled />
+                                        <label for="rendimiento">Rendimiento *</label>
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                                <span style="font-size: x-large;">$</span>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <input type="number" class="form-control" id="rendimiento" name="rendimiento" placeholder="0.00" style="font-size: 25px;" disabled />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -175,16 +182,16 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <input type="text" class="form-control" id="monto_letra" name="monto_letra" style="border: 1px solid #000000; text-align: center; font-size: 25px;" readonly>
-                                </div>
+                            <div class="row" style="display: flex; justify-content: center; font-size: medium; height: 30px;">
+                                <span id="leyendaRendimiento"></span>
                             </div>
+                            <div class="row" style="display: flex; align-items: center; justify-content: center; font-size: medium">
+                                <input type="text" class="form-control" id="monto_letra" name="monto_letra" style="border: 1px solid #000000; text-align: center; font-size: 25px;" readonly>
+                            </div>
+                            <hr>
                             <div class="row">
                                 <div class="col-md-12" style="text-align:center;">
-                                    <hr>
                                     <h3 style="color: #000000">Resumen de movimientos</h3>
-                                    <br>
                                 </div>
                             </div>
                             <div class="row">

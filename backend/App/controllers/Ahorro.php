@@ -1109,7 +1109,14 @@ class Ahorro extends Controller
                     if (monto >= parseFloat(tasa.MONTO_MINIMO) && monto < parseFloat(tasas[i + 1].MONTO_MINIMO)) return true
                 })
                 
-                document.querySelector("#tasa").value = tasa ? tasa.TASA + " %"  : ""
+                if (tasa) {
+                    document.querySelector("#leyendaRendimiento").innerText = "* Rendimiento calculado con una tasa anual fija del " + tasa.TASA + "%"
+                    document.querySelector("#rendimiento").value = (monto * (tasa.TASA / 100)).toFixed(2)
+                    return
+                }
+                 
+                document.querySelector("#leyendaRendimiento").innerText = ""
+                document.querySelector("#rendimiento").value = ""
             }
              
             const compruebaSaldoFinal = saldoFinal => {
@@ -1124,8 +1131,7 @@ class Ahorro extends Controller
             }
              
             const habilitaBoton = () => {
-                //if (document.querySelector("#plazo").selectedIndex === 0 || document.querySelector("#tasa").selectedIndex === 0) {
-                    if (document.querySelector("#plazo").selectedIndex === 0 || document.querySelector("#tasa").value === "") {
+                if (document.querySelector("#plazo").selectedIndex === 0 || document.querySelector("#rendimiento").value === "") {
                     document.querySelector("#btnRegistraOperacion").disabled = true
                     return
                 }
@@ -1201,13 +1207,97 @@ class Ahorro extends Controller
     {
         $extraFooter = <<<html
         <script>
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
            
+            const buscaCliente = () => {
+                const noCliente = document.querySelector("#clienteBuscado").value
+                
+                if (!noCliente) {
+                    limpiaDatosCliente()
+                    return showError("Ingrese un número de cliente a buscar.")
+                }
+                
+                $.ajax({
+                    type: "POST",
+                    url: "/Ahorro/BuscaContrato/",
+                    data: { cliente: noCliente },
+                    success: (respuesta) => {
+                        limpiaDatos()
+                        respuesta = JSON.parse(respuesta)
+                         
+                        if (!respuesta.success) return showError(respuesta.mensaje)
+                        const datosCliente = respuesta.datos
+                         
+                        const inversiones = getInversiones(datosCliente.CONTRATO)
+                        if (!inversiones) return
+                         
+                        let inversionesTotal = 0
+                         
+                        const filas = document.createDocumentFragment()
+                        inversiones.forEach(inversion => {
+                            const fila = document.createElement("tr")
+                            Object.keys(inversion).forEach(key => {
+                                if (key === "Apertura") inversion[key] = new Date(inversion[key]).toLocaleDateString()
+                                if (key === "MONTO" || key === "RENDIMIENTO") inversion[key] = parseFloat(inversion[key]).toFixed(2)
+                                
+                                const celda = document.createElement("td")
+                                celda.innerText = inversion[key]
+                                fila.appendChild(celda)
+                            })
+                            filas.appendChild(fila)
+                        })
+                         
+                        document.querySelector("#datosTabla").appendChild(filas)
+                        document.querySelector("#inversion").innerText = inversionesTotal
+                        document.querySelector("#cliente").innerText = datosCliente.CDGCL
+                        document.querySelector("#contrato").innerText = datosCliente.CONTRATO
+                    },
+                    error: (error) => {
+                        console.error(error)
+                        limpiaDatosCliente()
+                        showError("Ocurrió un error al buscar el cliente.")
+                    }
+                })
+                 
+                const limpiaDatos = () => {
+                    document.querySelector("#datosTabla").innerHTML = ""
+                    document.querySelector("#cliente").innerText = ""
+                    document.querySelector("#contrato").innerText = ""
+                    document.querySelector("#inversion").innerText = ""
+                }
+                 
+                const getInversiones = (contrato) => {
+                    let inversiones = null
+                    $.ajax({
+                        type: "GET",
+                        url: "/Ahorro/GetInversiones/?contrato=" + contrato,
+                        success: (respuesta) => {
+                            respuesta = JSON.parse(respuesta)
+                            if (!respuesta.success) return showError(respuesta.mensaje)
+                            inversiones = respuesta.datos
+                        },
+                        error: (error) => {
+                            console.error(error)
+                            showError("Ocurrió un error al buscar las inversiones.")
+                        }
+                    })
+                    return inversiones
+                }
+            }
         </script>
         html;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Consulta Inversiones")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::render("caja_menu_estatus_inversion");
+    }
+
+    public function GetInversiones()
+    {
+        $inversiones = CajaAhorroDao::GetInversiones($_GET);
+        echo $inversiones;
     }
 
     //********************CUENTA PEQUES********************//
