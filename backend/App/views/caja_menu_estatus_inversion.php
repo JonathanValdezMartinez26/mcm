@@ -102,13 +102,22 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-4 tile_stats_count">
-                                    <span class="count_top" id="cliente" style="font-size: 15px">Cliente</span>
+                                    <div class="form-group">
+                                        <label for="cliente">Cliente</label>
+                                        <input type="text" class="form-control" id="cliente" name="cliente" readonly>
+                                    </div>
                                 </div>
                                 <div class="col-md-4 tile_stats_count">
-                                    <span class="count_top" id="contrato" style="font-size: 15px">Contrato</span>
+                                    <div class="form-group">
+                                        <label for="contrato">Contrato</label>
+                                        <input type="text" class="form-control" id="contrato" name="contrato" readonly>
+                                    </div>
                                 </div>
                                 <div class="col-md-4 tile_stats_count">
-                                    <span class="count_top" id="inversion" style="font-size: 15px">Total Invertido</span>
+                                    <div class="form-group">
+                                        <label for="inversion">Capital invertido</label>
+                                        <input type="text" class="form-control" id="inversion" name="inversion" readonly>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">

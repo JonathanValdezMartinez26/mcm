@@ -1239,9 +1239,10 @@ class Ahorro extends Controller
                         inversiones.forEach(inversion => {
                             const fila = document.createElement("tr")
                             Object.keys(inversion).forEach(key => {
-                                if (key === "Apertura") inversion[key] = new Date(inversion[key]).toLocaleDateString()
-                                if (key === "MONTO" || key === "RENDIMIENTO") inversion[key] = parseFloat(inversion[key]).toFixed(2)
-                                
+                                if (["APERTURA", "VENCIMIENTO", "LIQUIDACION"].includes(key)) inversion[key] = inversion[key] ? new Date(inversion[key]).toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' }) : ""
+                                if (["RENDIMIENTO", "MONTO"].includes(key)) inversion[key] = parseFloat(inversion[key]).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })
+                                 
+                                inversionesTotal += key === "MONTO" ? parseFloat(inversion[key]) : 0
                                 const celda = document.createElement("td")
                                 celda.innerText = inversion[key]
                                 fila.appendChild(celda)
@@ -1250,9 +1251,9 @@ class Ahorro extends Controller
                         })
                          
                         document.querySelector("#datosTabla").appendChild(filas)
-                        document.querySelector("#inversion").innerText = inversionesTotal
-                        document.querySelector("#cliente").innerText = datosCliente.CDGCL
-                        document.querySelector("#contrato").innerText = datosCliente.CONTRATO
+                        document.querySelector("#inversion").value = inversionesTotal.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })
+                        document.querySelector("#cliente").value = datosCliente.CDGCL
+                        document.querySelector("#contrato").value = datosCliente.CONTRATO
                     },
                     error: (error) => {
                         console.error(error)
@@ -1263,9 +1264,9 @@ class Ahorro extends Controller
                  
                 const limpiaDatos = () => {
                     document.querySelector("#datosTabla").innerHTML = ""
-                    document.querySelector("#cliente").innerText = ""
-                    document.querySelector("#contrato").innerText = ""
-                    document.querySelector("#inversion").innerText = ""
+                    document.querySelector("#cliente").value = ""
+                    document.querySelector("#contrato").value = ""
+                    document.querySelector("#inversion").value = ""
                 }
                  
                 const getInversiones = (contrato) => {
@@ -1273,6 +1274,7 @@ class Ahorro extends Controller
                     $.ajax({
                         type: "GET",
                         url: "/Ahorro/GetInversiones/?contrato=" + contrato,
+                        async: false,
                         success: (respuesta) => {
                             respuesta = JSON.parse(respuesta)
                             if (!respuesta.success) return showError(respuesta.mensaje)
@@ -1283,6 +1285,7 @@ class Ahorro extends Controller
                             showError("Ocurrió un error al buscar las inversiones.")
                         }
                     })
+                     
                     return inversiones
                 }
             }
