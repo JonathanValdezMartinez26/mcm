@@ -162,9 +162,7 @@
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label for="tasa">Tasa</label>
-                                        <select class="form-control" id="tasa" name="tasa" onchange=habilitaBoton() disabled>
-                                            <?= $opcTasas; ?>
-                                        </select>
+                                        <input class="form-control" id="tasa" name="tasa" disabled />
                                     </div>
                                 </div>
                                 <div class="col-md-3">
