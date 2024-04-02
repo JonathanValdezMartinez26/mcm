@@ -545,14 +545,112 @@ class CajaAhorro
                     AND CDG_TIPO_PAGO = 2
             ) AS COMISION,
             (
+                NVL((SELECT
+                    SUM(
+                        CASE MA.MOVIMIENTO
+                            WHEN '0' THEN -MA.MONTO
+                            ELSE MA.MONTO
+                        END 
+                    )
+                FROM
+                    MOVIMIENTOS_AHORRO MA
+                WHERE
+                    TO_NUMBER(CDG_TICKET) = TO_NUMBER(T.CODIGO)
+                    AND T.CDG_CONTRATO = MA.CDG_CONTRATO), 0)
+                +
+                NVL((SELECT
+                    SUM(
+                        CASE MA.MOVIMIENTO
+                            WHEN '0' THEN -MA.MONTO
+                            ELSE MA.MONTO
+                        END 
+                    )
+                FROM
+                    MOVIMIENTOS_AHORRO MA
+                WHERE
+                    TO_NUMBER(CDG_TICKET) < TO_NUMBER(T.CODIGO)
+                    AND T.CDG_CONTRATO = MA.CDG_CONTRATO), 0)
+                -
+                NVL((SELECT
+                    SUM(MONTO)
+                FROM
+                    MOVIMIENTOS_AHORRO
+                WHERE
+                    TO_NUMBER(CDG_TICKET) = TO_NUMBER(T.CODIGO)
+                    AND CDG_TIPO_PAGO = 2), 0)
+            ) AS SALDO_NUEVO,
+            (
                 SELECT
-                    MOVIMIENTO
+                    CASE CDG_TIPO_PAGO
+                        WHEN '5' THEN 'ENVIÓ A INVERSIÓN'
+                        ELSE CASE MOVIMIENTO
+                            WHEN '0' THEN 'RET. DE CTA. AHORRO'
+                            ELSE 'DEP. A CTA. AHORRO'
+                        END
+                    END
                 FROM
                     MOVIMIENTOS_AHORRO
                 WHERE
                     TO_NUMBER(CDG_TICKET) = TO_NUMBER(T.CODIGO)
                     AND CDG_TIPO_PAGO != 2
             ) AS ES_DEPOSITO,
+            (
+                SELECT
+                    CASE CDG_TIPO_PAGO
+                        WHEN '5' THEN 'TRANSFERENCIA'
+                        ELSE 'EFECTIVO'
+                    END
+                FROM
+                    MOVIMIENTOS_AHORRO
+                WHERE
+                    TO_NUMBER(CDG_TICKET) = TO_NUMBER(T.CODIGO)
+                    AND CDG_TIPO_PAGO != 2
+            ) AS METODO,
+            (
+                SELECT
+                    CASE CDG_TIPO_PAGO
+                        WHEN '5' THEN 'TRANSFERIMOS'
+                        ELSE CASE MOVIMIENTO
+                            WHEN '0' THEN 'ENTREGAMOS'
+                            ELSE 'RECIBIMOS'
+                        END
+                    END
+                FROM
+                    MOVIMIENTOS_AHORRO
+                WHERE
+                    TO_NUMBER(CDG_TICKET) = TO_NUMBER(T.CODIGO)
+                    AND CDG_TIPO_PAGO != 2
+            ) AS ENTREGA,
+            (
+                SELECT
+                    CASE CDG_TIPO_PAGO
+                        WHEN '5' THEN 'Atendió'
+                        ELSE CASE MOVIMIENTO
+                            WHEN '0' THEN 'Entrego'
+                            ELSE 'Recibió'
+                        END
+                    END
+                FROM
+                    MOVIMIENTOS_AHORRO
+                WHERE
+                    TO_NUMBER(CDG_TICKET) = TO_NUMBER(T.CODIGO)
+                    AND CDG_TIPO_PAGO != 2
+            ) AS RECIBIO,
+            (
+                SELECT
+                    CASE CDG_TIPO_PAGO
+                        WHEN '5' THEN 'INVERSIÓN'
+                        ELSE CASE MOVIMIENTO
+                            WHEN '0' THEN 'RETIRO'
+                            ELSE 'DEPÓSITO'
+                        END
+                    END
+                FROM
+                    MOVIMIENTOS_AHORRO
+                WHERE
+                    TO_NUMBER(CDG_TICKET) = TO_NUMBER(T.CODIGO)
+                    AND CDG_TIPO_PAGO != 2
+            ) AS COMPROBANTE,
             (
                 SELECT
                     CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS NOMBRE

@@ -1247,8 +1247,27 @@ class Ahorro extends Controller
                 document.querySelector("#monto_letra").value = numeroLetras(monto)
                 compruebaSaldoFinal(saldoFinal)
                 habiltaEspecs(monto)
+                compruebaSaldoMinimo()
             }
             
+            const compruebaSaldoMinimo = () => {
+                const monto = parseFloat(document.querySelector("#monto").value)
+                let blk;
+                 
+                document.querySelector("#tasa").querySelectorAll("option").forEach((opcion, i) => {
+                    if (opcion.value.includes(":")) {
+                        opcion.style.display = "none"
+                        
+                        if (!blk && parseFloat(opcion.value.split(":")[1]) >= monto) blk = opcion
+                    }
+                })
+                 
+                if (blk) {
+                    blk.style.display = "block"
+                    document.querySelector("#tasa").selectedIndex = 0
+                }
+            }
+             
             const compruebaSaldoFinal = saldoFinal => {
                 if (saldoFinal < 0) {
                     document.querySelector("#saldoFinal").setAttribute("style", "color: red")
@@ -3042,7 +3061,7 @@ html;
         // LEYENDA TIPO COMPROBANTE
         $mpdf->Ln(3);
         $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 4, 'COMPROBANTE DE ' . ($datos['ES_DEPOSITO'] == 1 ? 'DEPÓSITO' : 'RETIRO'), 0, 1, 'C');
+        $mpdf->Cell(60, 4, 'COMPROBANTE DE ' . $datos['COMPROBANTE'], 0, 1, 'C');
         $mpdf->Ln(3);
         $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
 
@@ -3050,8 +3069,8 @@ html;
         $mpdf->Ln(2);
         $mpdf->SetFont('Helvetica', '', 9);
         $mpdf->Cell(60, 4, 'Fecha de la operación: ' . $datos['FECHA'], 0, 1, '');
-        $mpdf->Cell(60, 4, 'Método de pago: EFECTIVO', 0, 1, '');
-        $mpdf->MultiCell(60, 4, ($datos['ES_DEPOSITO'] == 1 ? 'Recibió' : 'Entrego') . ': ' . $datos['NOM_EJECUTIVO'] . ' (' . $datos['COD_EJECUTIVO'] . ')', 0, 1, '');
+        $mpdf->Cell(60, 4, 'Método de pago: ' . $datos['METODO'], 0, 1, '');
+        $mpdf->MultiCell(60, 4, $datos['RECIBIO'] . ': ' . $datos['NOM_EJECUTIVO'] . ' (' . $datos['COD_EJECUTIVO'] . ')', 0, 1, '');
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
 
@@ -3074,7 +3093,7 @@ html;
         // MONTO DE LA OPERACION
         $mpdf->Ln(5);
         $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 4, ($datos['ES_DEPOSITO'] == 1 ? 'RECIBIMOS ' : 'ENTREGAMOS ') .  "$" . number_format($datos['MONTO'], 2, '.', ','), 0, 1, 'C');
+        $mpdf->Cell(60, 4, $datos['ENTREGA'] .  " $" . number_format($datos['MONTO'], 2, '.', ','), 0, 1, 'C');
         $mpdf->SetFont('Helvetica', '', 8);
         $mpdf->MultiCell(60, 4, '(UN MIL DOSCIENTOS 00/100 M.N)', 0, 'C');
         $mpdf->SetFont('Helvetica', '', 12);
@@ -3086,7 +3105,7 @@ html;
         $mpdf->Cell(30, 10, 'SALDO ANTERIOR:', 0);
         $mpdf->Cell(30, 10, "$" . number_format($datos['SALDO_ANTERIOR'], 2, '.', ','), 2, 0, 'R');
         $mpdf->Ln(8);
-        $mpdf->Cell(30, 10, ($datos['ES_DEPOSITO'] == 1 ? 'ABONO' : 'RETIRO') . ' A CUENTA :', 0);
+        $mpdf->Cell(30, 10, $datos['ES_DEPOSITO'], 0);
         $mpdf->Cell(30, 10,  "$" . number_format($datos['MONTO'], 2, '.', ','), 2, 0, 'R');
         $mpdf->Ln(8);
         if ($datos['COMISION'] > 0) {
@@ -3094,9 +3113,8 @@ html;
             $mpdf->Cell(30, 10,  "$" . number_format($datos['COMISION'], 2, '.', ','), 2, 0, 'R');
             $mpdf->Ln(8);
         }
-        $nvoSaldo = ($datos['ES_DEPOSITO'] == 1 ? $datos['SALDO_ANTERIOR'] + $datos['MONTO'] : $datos['SALDO_ANTERIOR'] - $datos['MONTO']) - $datos['COMISION'];
         $mpdf->Cell(30, 10, 'SALDO NUEVO: ', 0);
-        $mpdf->Cell(30, 10, "$" . number_format($nvoSaldo, 2, '.', ','), 2, 0, 'R');
+        $mpdf->Cell(30, 10, "$" . number_format($datos['SALDO_NUEVO'], 2, '.', ','), 2, 0, 'R');
 
 
         // Linea
@@ -3120,7 +3138,7 @@ html;
         $mpdf->Ln(12);
         $mpdf->SetFont('Helvetica', '', 10);
         $mpdf->Cell(60, 4, 'FOLIO DE LA OPERACIÓN', 0, 1, 'C');
-        $mpdf->WriteHTML('<barcode code="' . $ticket . '-' . $datos['CODIGO'] . '-' . $datos['MONTO'] . '-' . $datos['COD_EJECUTIVO'] . '" type="C128A" size=".63" height="1" class=""/>');
+        $mpdf->WriteHTML('<barcode code="' . $ticket . '-' . $datos['CODIGO'] . '-' . $datos['MONTO'] . '-' . $datos['COD_EJECUTIVO'] . '" type="C128A" size=".60" height="1" class=""/>');
 
         // PIE DE PAGINA
         $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:11px;font-family:Helvetica;">Fecha de impresión: ' . date('Y-m-d H:i:s') . '</div>');
