@@ -120,18 +120,6 @@
                                                 <input type="text" class="form-control" id="nombre" readonly>
                                             </div>
                                         </div>
-                                        <!-- <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="fechaRegistroPQ">Fecha de registro de peque</label>
-                                                <input type="text" class="form-control" id="fechaRegistroPQ" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="noClientePQ">Clave de cliente del peque</label>
-                                                <input type="number" class="form-control" id="noClientePQ" readonly>
-                                            </div>
-                                        </div> -->
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="nombre1">Primer nombre del peque *</label>
@@ -146,13 +134,13 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="apellido1">Apellido paterno del peque *</label>
+                                                <label for="apellido1">Primer apellido del peque *</label>
                                                 <input type="text" class="form-control" id="apellido1" name="apellido1" oninput=camposLlenos(event)>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="apellido2">Apellido materno del peque</label>
+                                                <label for="apellido2">Segundo apellido del peque</label>
                                                 <input type="text" class="form-control" id="apellido2" name="apellido2" oninput=camposLlenos(event)>
                                             </div>
                                         </div>
@@ -172,7 +160,7 @@
                                         <div class="col-md-5">
                                             <div class="form-group">
                                                 <label for="fecha_nac">Fecha de nacimiento *</label>
-                                                <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" value="<?= $fecha ?>" max="<?= $fecha ?>" oninput=camposLlenos(event)>
+                                                <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" max="<?= $fecha ?>" oninput=camposLlenos(event)>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
@@ -210,7 +198,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-12" style="display: flex; justify-content: center;font-size: 15px;">
-                                                <input type="radio" style="margin-right:15px; margin-bottom:15px">Autoriza usar la dirección del titular?</input>
+                                                <input type="radio" style="margin-right:15px; margin-bottom:15px">¿Autoriza usar la dirección del titular?</input>
                                             </div>
                                         </div>
                                         <hr>
@@ -220,12 +208,6 @@
                                             <div class="col-md-12">
                                                 <p><b><span class="fa fa-sticky-note"></span> Datos básicos de apertura para la cuenta de Ahorro Peque</b></p>
                                             </div>
-                                            <!-- <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="Fecha">Fecha de apertura</label>
-                                                        <input type="date" class="form-control" id="fecha" name="fecha" min="2024-03-07" max="2024-03-11" value="<?= $fecha ?>">
-                                                    </div>
-                                                </div> -->
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label for="tipo">Tasa Anual</label>
@@ -234,12 +216,6 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <!-- <div class="col-md-4">
-                                                    <div class="form-group">
-                                                        <label for="tipo">Monto mínimo</label>
-                                                        <input type="text" class="form-control" id="monto_min" name="monto_min" value="$100.00" readonly>
-                                                    </div>
-                                                </div> -->
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label for="Fecha">Sucursal</label>
@@ -256,14 +232,6 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <!-- <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label for="Fecha">Manejo de cuenta</label>
-                                                    <select class="form-control mr-sm-3" id="manejo_cta" name="manejo_cta" readonly>
-                                                        <option value="1">Aplica</option>
-                                                    </select>
-                                                </div>
-                                            </div> -->
                                             <div class="modal-footer" style="margin-top:40px;">
                                                 <button type="button" name="btnGeneraContrato" id="btnGeneraContrato" class="btn btn-primary" onclick="generaContrato(event)" style="border: 1px solid #c4a603; background: #ffffff" data-keyboard="false" disabled>
                                                     <i class="fa fa-spinner" style="color: #1c4e63"></i>

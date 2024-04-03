@@ -155,7 +155,6 @@
                                     <div class="form-group">
                                         <label for="plazo">Plazo</label>
                                         <select class="form-control" id="plazo" name="plazo" onchange=habilitaBoton() disabled>
-                                            <?= $opcPlazos; ?>
                                         </select>
                                     </div>
                                 </div>

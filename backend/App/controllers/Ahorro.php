@@ -826,7 +826,7 @@ class Ahorro extends Controller
             const validaDeposito = (e) => {
                 if (!valKD) return
                  
-                const monto = parseFloat(e.target.value) || 0
+                let monto = parseFloat(e.target.value) || 0
                 if (monto <= 0) {
                     e.preventDefault()
                     e.target.value = ""
@@ -1003,7 +1003,13 @@ class Ahorro extends Controller
         <script>
             const saldoMinimoApertura = $saldoMinimoApertura
             const montoMaximo = 1000000
-            const tasas = JSON.parse('$tasas')
+            let tasasDisponibles
+            try {
+                tasasDisponibles = JSON.parse('$tasas')
+            } catch (error) {
+                console.error(error)
+                tasasDisponibles = []
+            }
             let valKD = false
          
             {$this->showError}
@@ -1104,18 +1110,23 @@ class Ahorro extends Controller
             
             const compruebaSaldoMinimo = () => {
                 const monto = parseFloat(document.querySelector("#monto").value)
-                const tasa = tasas.find((tasa, i) => {
-                    if (monto >= saldoMinimoApertura && !tasas[i + 1]) return true
-                    if (monto >= parseFloat(tasa.MONTO_MINIMO) && monto < parseFloat(tasas[i + 1].MONTO_MINIMO)) return true
-                })
+                const mm = 0
                 
-                if (tasa) {
-                    document.querySelector("#leyendaRendimiento").innerText = "* Rendimiento calculado con una tasa anual fija del " + tasa.TASA + "%"
-                    document.querySelector("#rendimiento").value = (monto * (tasa.TASA / 100)).toFixed(2)
-                    return
+                const tasas =  tasasDisponibles
+                .filter(tasa => {
+                    return tasa.MONTO_MINIMO <= monto
+                })
+                .filter(tasa => tasa.MONTO_MINIMO > monto)
+                 
+                if (tasas.length > 0) {
+                    document.querySelector("#plazo").innerHTML = tasas.map(tasa => "<option value='" + tasa.CDG_PLAZO + "'>" + tasa.PLAZO + "</option>").join("")
+                    document.querySelector("#plazo").disabled = false
+                    document.querySelector("#rendimiento").value = (monto * parseFloat(tasas[0].TASA) / 100).toFixed(2)
+                    return 
                 }
                  
-                document.querySelector("#leyendaRendimiento").innerText = ""
+                document.querySelector("#plazo").innerHTML = ""
+                document.querySelector("#plazo").disabled = true
                 document.querySelector("#rendimiento").value = ""
             }
              
@@ -1140,13 +1151,11 @@ class Ahorro extends Controller
              
             const habiltaEspecs = (monto = parseFloat(document.querySelector("#monto").value)) => {
                 document.querySelector("#plazo").disabled = !(monto >= saldoMinimoApertura)
-                //document.querySelector("#tasa").disabled = !(monto >= saldoMinimoApertura)
                 document.querySelector("#renovacion").disabled = !(monto >= saldoMinimoApertura)
                  
                 if (monto < saldoMinimoApertura) {
-                    document.querySelector("#plazo").selectedIndex = 0
-                    //document.querySelector("#tasa").selectedIndex = 0
-                    document.querySelector("#tasa").value = ""
+                    document.querySelector("#plazo").innerHTML = ""
+                    document.querySelector("#rendimiento").value = ""
                     document.querySelector("#renovacion").selectedIndex = 0
                 }
             }
@@ -1183,16 +1192,9 @@ class Ahorro extends Controller
         </script>
         html;
 
-        $plazos = CajaAhorroDao::GetPlazos();
-        $opcPlazos = "<option value='' disabled selected>Seleccionar</option>";
-        foreach ($plazos as $plazo) {
-            $opcPlazos .= "<option value='{$plazo['CODIGO']}'>{$plazo['PLAZO']}</option>";
-        }
-
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Contrato Inversión")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('d/m/Y H:i:s'));
-        View::set('opcPlazos', $opcPlazos);
         View::render("caja_menu_contrato_inversion");
     }
 
@@ -1239,12 +1241,13 @@ class Ahorro extends Controller
                         inversiones.forEach(inversion => {
                             const fila = document.createElement("tr")
                             Object.keys(inversion).forEach(key => {
-                                if (["APERTURA", "VENCIMIENTO", "LIQUIDACION"].includes(key)) inversion[key] = inversion[key] ? new Date(inversion[key]).toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' }) : ""
-                                if (["RENDIMIENTO", "MONTO"].includes(key)) inversion[key] = parseFloat(inversion[key]).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })
+                                let dato = inversion[key]
+                                if (["APERTURA", "VENCIMIENTO", "LIQUIDACION"].includes(key)) dato = dato ? new Date(dato).toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' }) : ""
+                                if (["RENDIMIENTO", "MONTO"].includes(key)) dato = parseFloat(dato).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })
                                  
                                 inversionesTotal += key === "MONTO" ? parseFloat(inversion[key]) : 0
                                 const celda = document.createElement("td")
-                                celda.innerText = inversion[key]
+                                celda.innerText = dato
                                 fila.appendChild(celda)
                             })
                             filas.appendChild(fila)

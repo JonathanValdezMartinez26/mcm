@@ -67,34 +67,30 @@ class CajaAhorro
     {
         $query = <<<sql
         SELECT
-            *
+            TI.CODIGO,
+            TI.TASA,
+            TI.MONTO_MINIMO,
+            TI.CDG_PLAZO,
+            CONCAT(
+                CONCAT(PI.PLAZO, ' '),
+                CASE PI.PERIODICIDAD
+                    WHEN 'D' THEN 'Días'
+                    WHEN 'S' THEN 'Semanas'
+                    WHEN 'M' THEN 'Meses'
+                    WHEN 'A' THEN 'Años'
+                END
+            ) AS PLAZO
         FROM
-            TASA_INVERSION
-        sql;
-
-        try {
-            $mysqli = Database::getInstance();
-            $res = $mysqli->queryAll($query);
-            if ($res) return $res;
-            return array();
-        } catch (Exception $e) {
-            return array();
-        }
-    }
-
-    public static function GetPlazos()
-    {
-        $query = <<<sql
-        SELECT
-            CODIGO,
-            CONCAT(CONCAT(PLAZO, ' '), CASE PERIODICIDAD
-                WHEN 'D' THEN 'Días'
-                WHEN 'S' THEN 'Semanas'
-                WHEN 'M' THEN 'Meses'
-                WHEN 'A' THEN 'Años'
-            END) AS PLAZO
-        FROM
-            PLAZO_INVERSION
+            TASA_INVERSION TI
+        LEFT JOIN
+            PLAZO_INVERSION PI
+        ON
+            TI.CDG_PLAZO = PI.CODIGO
+        WHERE
+            TI.ESTATUS = 'A'
+        ORDER BY 
+            TI.MONTO_MINIMO,
+            TI.TASA
         sql;
 
         try {
