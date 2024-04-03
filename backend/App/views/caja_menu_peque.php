@@ -72,16 +72,16 @@
                 <div class="modal-content">
                     <div class="modal-header" style="padding-bottom: 0px">
                         <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                            <a class="navbar-brand">Mi espacio / Cuentas de ahorro peque</a>
+                            <a class="navbar-brand">Mi espacio / Cuentas de ahorro corriente peque</a>
                             &nbsp;&nbsp;
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Ahorro Cuenta Corriente - Peque</b></p>
+                                        <p style="font-size: 16px;"><b>Ahorro Cuenta Corriente Peque</b></p>
                                     </a></li>
                                 <li class="linea"><a href="/Ahorro/ContratoCuentaPeque/">
-                                        <p style="font-size: 15px;">Nuevo Contrato Cuenta - Peque</p>
+                                        <p style="font-size: 15px;">Nuevo Contrato</p>
                                     </a></li>
                             </ul>
                         </div>

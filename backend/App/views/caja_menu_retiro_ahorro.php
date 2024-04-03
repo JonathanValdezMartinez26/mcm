@@ -21,7 +21,7 @@
                 </div>
             </a>
 
-            <a id="link" href="/Ahorro/ContratoCuentaPeque/">
+            <a id="link" href="/Ahorro/CuentaPeque/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/2995/2995390.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                     <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Ahorro Peque </b></p>
@@ -80,8 +80,8 @@
                         <div>
                             <ul class="nav navbar-nav">
                                 <li class="linea"><a href="/Ahorro/CuentaCorriente/"><p style="font-size: 15px;">Ahorro Cuenta Corriente</p></a></li></a></li>
-                                <li><a href="/Ahorro/SolicitudRetiroCuentaCorriente/"><p style="font-size: 16px;"><b>Solicitud de Retiro</b></p></a></li></a></li>
                                 <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Nuevo Contrato</p>
+                                <li><a href="/Ahorro/SolicitudRetiroCuentaCorriente/"><p style="font-size: 16px;"><b>Solicitud de Retiro</b></p></a></li></a></li>
                                 <li class="linea"><a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/"><p style="font-size: 15px;">Historial Solicitud de Retiro</p></a></li>
                             </ul>
                         </div>
