@@ -766,7 +766,7 @@ class CajaAhorro
             if ($res) {
                 foreach ($res as $key => $value) {
                     if ($value['CURP'] == $datos['curp']) {
-                        return self::Responde(false, "El PQ ya cuenta con una cuenta de ahorro");
+                        return self::Responde(false, "El cliente (Peque), ya tiene registrada una cuenta de ahorro con el contrato: " . $value['CDG_CONTRATO']);
                     }
                 }
             }
@@ -899,9 +899,9 @@ class CajaAhorro
     {
         $qryInversion = <<<sql
         INSERT INTO CUENTA_INVERSION
-            (CDG_CONTRATO, CDG_TASA, CDG_PLAZO, MONTO_INVERSION, FECHA_APERTURA, ESTATUS, ACCION)
+            (CDG_CONTRATO, CDG_TASA, MONTO_INVERSION, FECHA_APERTURA, ESTATUS, ACCION)
         VALUES
-            (:contrato, :tasa, :plazo, :monto, SYSDATE, 'A', :accion)
+            (:contrato, :tasa, :monto, SYSDATE, 'A', :accion)
         sql;
 
         $query = [
@@ -915,7 +915,6 @@ class CajaAhorro
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['monto'],
                 'tasa' => $datos['tasa'],
-                'plazo' => $datos['plazo'],
                 'accion' => $datos['renovacion']
             ],
             [
@@ -951,8 +950,8 @@ class CajaAhorro
             CI.FECHA_APERTURA AS APERTURA,
             CI.MONTO_INVERSION AS MONTO,
             (SELECT TASA FROM TASA_INVERSION WHERE CODIGO = CI.CDG_TASA) AS TASA,
-            (SELECT PLAZO FROM PLAZO_INVERSION WHERE CODIGO = CI.CDG_PLAZO) AS PLAZO,
-            (SELECT CASE PERIODICIDAD WHEN 'D' THEN 'Días' WHEN 'S' THEN 'Semanas' WHEN 'M' THEN 'Meses' WHEN 'A' THEN 'Años' ELSE 'No definido' END FROM PLAZO_INVERSION WHERE CODIGO = CI.CDG_PLAZO) AS PERIODICIDAD,
+            (SELECT PLAZO FROM PLAZO_INVERSION WHERE CODIGO = (SELECT CDG_PLAZO FROM TASA_INVERSION WHERE CODIGO =CI.CDG_TASA)) AS PLAZO,
+            (SELECT CASE PERIODICIDAD WHEN 'D' THEN 'Días' WHEN 'S' THEN 'Semanas' WHEN 'M' THEN 'Meses' WHEN 'A' THEN 'Años' ELSE 'No definido' END FROM PLAZO_INVERSION WHERE CODIGO = (SELECT CDG_PLAZO FROM TASA_INVERSION WHERE CODIGO =CI.CDG_TASA)) AS PERIODICIDAD,
             CI.FECHA_VENCIMIENTO AS VENCIMIENTO,
             NVL(CI.RENDIMIENTO,0) AS RENDIMIENTO,
             CI.FECHA_LIQUIDACION AS LIQUIDACION,

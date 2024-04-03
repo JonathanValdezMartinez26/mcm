@@ -163,6 +163,31 @@ class Ahorro extends Controller
         window.open(url, "_blank")
     }
     script;
+    private $imprimeContrato = <<<script
+    const imprimeContrato = (numero_contrato) => {
+        const host = window.location.origin
+        
+        let plantilla = "<!DOCTYPE html>"
+        plantilla += '<html lang="es">'
+        plantilla += '<head>'
+        plantilla += '<meta charset="UTF-8">'
+        plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+        plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
+        plantilla += '<title>Contrato ' + numero_contrato + '</title>'
+        plantilla += '</head>'
+        plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
+        plantilla +=
+            '<iframe src="' + host + '/Ahorro/ImprimeContratoAhorro/' +
+            numero_contrato +
+            '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
+        plantilla += "</body>"
+        plantilla += "</html>"
+    
+        const blob = new Blob([plantilla], { type: "text/html" })
+        const url = URL.createObjectURL(blob)
+        window.open(url, "_blank")
+    }
+    script;
 
     function __construct()
     {
@@ -1110,24 +1135,39 @@ class Ahorro extends Controller
             
             const compruebaSaldoMinimo = () => {
                 const monto = parseFloat(document.querySelector("#monto").value)
-                const mm = 0
+                let mMax = 0
                 
                 const tasas =  tasasDisponibles
                 .filter(tasa => {
-                    return tasa.MONTO_MINIMO <= monto
+                    const r = monto >= saldoMinimoApertura && tasa.MONTO_MINIMO <= monto 
+                    mMax = r ? tasa.MONTO_MINIMO : mMax
+                    return r
                 })
-                .filter(tasa => tasa.MONTO_MINIMO > monto)
+                .filter(tasa => tasa.MONTO_MINIMO == mMax)
                  
                 if (tasas.length > 0) {
-                    document.querySelector("#plazo").innerHTML = tasas.map(tasa => "<option value='" + tasa.CDG_PLAZO + "'>" + tasa.PLAZO + "</option>").join("")
+                    document.querySelector("#plazo").innerHTML = tasas.map(tasa => "<option value='" + tasa.CODIGO + "'>" + tasa.PLAZO + "</option>").join("")
                     document.querySelector("#plazo").disabled = false
-                    document.querySelector("#rendimiento").value = (monto * parseFloat(tasas[0].TASA) / 100).toFixed(2)
+                    cambioPlazo()
                     return 
                 }
                  
                 document.querySelector("#plazo").innerHTML = ""
                 document.querySelector("#plazo").disabled = true
                 document.querySelector("#rendimiento").value = ""
+            }
+             
+            const cambioPlazo = () => {
+                const plazo = document.querySelector("#plazo").value
+                const tasa = tasasDisponibles.find(tasa => tasa.CODIGO == plazo)
+                if (tasa) {
+                    document.querySelector("#rendimiento").value = (parseFloat(document.querySelector("#monto").value) * parseFloat(tasa.TASA) / 100).toFixed(2)
+                    document.querySelector("#leyendaRendimiento").innerText = "* Rendimiento calculado con una tasa anual fija del " + tasa.TASA + "%"
+                    return
+                }
+                 
+                document.querySelector("#rendimiento").value = ""
+                document.querySelector("#leyendaRendimiento").innerText = ""
             }
              
             const compruebaSaldoFinal = saldoFinal => {
@@ -1141,11 +1181,12 @@ class Ahorro extends Controller
                 habilitaBoton()
             }
              
-            const habilitaBoton = () => {
-                if (document.querySelector("#plazo").selectedIndex === 0 || document.querySelector("#rendimiento").value === "") {
-                    document.querySelector("#btnRegistraOperacion").disabled = true
-                    return
-                }
+            const habilitaBoton = (e) => {
+                if (e && e.target.id === "plazo") cambioPlazo()
+                // if (document.querySelector("#plazo").value === "" || document.querySelector("#rendimiento").value === "") {
+                //     document.querySelector("#btnRegistraOperacion").disabled = true
+                //     return
+                // }
                 document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value >= saldoMinimoApertura)
             }
              
@@ -1164,9 +1205,7 @@ class Ahorro extends Controller
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
                  
-                datos.forEach(dato => {
-                    if (dato.name === "tasa") dato.value = dato.value.split(":")[0]
-                })
+                datos.push({ name: "tasa", value: document.querySelector("#plazo").value })
                 
                 $.ajax({
                     type: "POST",
@@ -1315,14 +1354,19 @@ class Ahorro extends Controller
             window.onload = () => {
                 if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
             }
-            const showError = (mensaje) => swal(mensaje, { icon: "error" })
-            const showSuccess = (mensaje) => swal(mensaje, { icon: "success" })
-            const showInfo = (mensaje) => swal(mensaje, { icon: "info" })
-         
-            const validarYbuscar = (e, buscar) => {
-                if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
-                if (e.keyCode === 13) buscaCliente()
-            }
+        
+            let valKD = false
+             
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->validarYbuscar}
+            {$this->getHoy}
+            {$this->soloNumeros}
+            {$this->numeroLetras}
+            {$this->primeraMayuscula}
+            {$this->imprimeTicket}
+            {$this->imprimeContrato}
              
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado")
@@ -1379,6 +1423,14 @@ class Ahorro extends Controller
                          
                         const datosCliente = respuesta.datos
                          
+                        document.querySelector("#nombre1").disabled = false
+                        document.querySelector("#nombre2").disabled = false
+                        document.querySelector("#apellido1").disabled = false
+                        document.querySelector("#apellido2").disabled = false
+                        document.querySelector("#fecha_nac").disabled = false
+                        document.querySelector("#ciudad").disabled = false
+                        document.querySelector("#curp").disabled = false
+                         
                         document.querySelector("#fechaRegistro").value = datosCliente.FECHA_REGISTRO
                         document.querySelector("#noCliente").value = noCliente.value
                         document.querySelector("#nombre").value = datosCliente.NOMBRE
@@ -1402,31 +1454,15 @@ class Ahorro extends Controller
                 document.querySelector("#curp").value = ""
                 document.querySelector("#edad").value = ""
                 document.querySelector("#direccion").value = ""
+                 
+                document.querySelector("#nombre1").disabled = true
+                document.querySelector("#nombre2").disabled = true
+                document.querySelector("#apellido1").disabled = true
+                document.querySelector("#apellido2").disabled = true
+                document.querySelector("#fecha_nac").disabled = true
+                document.querySelector("#ciudad").disabled = true
+                document.querySelector("#curp").disabled = true
                 document.querySelector("#btnGeneraContrato").disabled = true
-            }
-             
-            const boton_contrato = (numero_contrato) => {
-                const host = window.location.origin
-                
-                let plantilla = "<!DOCTYPE html>"
-                plantilla += '<html lang="es">'
-                plantilla += '<head>'
-                plantilla += '<meta charset="UTF-8">'
-                plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-                plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
-                plantilla += '<title>Contrato ' + numero_contrato + '</title>'
-                plantilla += '</head>'
-                plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
-                plantilla +=
-                    '<iframe src="' + host + '/Ahorro/ImprimeContratoAhorro/' +
-                    numero_contrato +
-                    '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
-                plantilla += "</body>"
-                plantilla += "</html>"
-            
-                const blob = new Blob([plantilla], { type: "text/html" })
-                const url = URL.createObjectURL(blob)
-                window.open(url, "_blank")
             }
             
             const generaContrato = async (e) => {
@@ -1477,33 +1513,12 @@ class Ahorro extends Controller
                         const contrato = respuesta.datos
                         limpiaDatosCliente()
                         await showSuccess("Se ha generado el contrato: " + contrato.contrato)
+                        imprimeContrato(contrato.contrato)
                     }
                 } catch (error) {
                     console.error(error)
                 }
                 return false
-            }
-             
-            const getHoy = () => {
-                const hoy = new Date()
-                const dd = String(hoy.getDate()).padStart(2, "0")
-                const mm = String(hoy.getMonth() + 1).padStart(2, "0")
-                const yyyy = hoy.getFullYear()
-                return dd + "/" + mm + "/" + yyyy + " " + hoy.getHours() + ":" + hoy.getMinutes() + ":" + hoy.getSeconds()
-            }
-             
-            let valKD = false
-            const soloNumeros = (e) => {
-                valKD = false
-                if ((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58)) {
-                    valKD = true
-                    return
-                }
-                if (e.keyCode === 110 || e.keyCode === 190 || e.keyCode === 8) {
-                    valKD = true
-                    return
-                }
-                return e.preventDefault()
             }
              
             const validaDeposito = (e) => {
@@ -1549,107 +1564,6 @@ class Ahorro extends Controller
                 }
             }
              
-            const numeroLetras = (numero) => {
-                if (!numero) return ""
-                const unidades = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"]
-                const especiales = [
-                    "",
-                    "once",
-                    "doce",
-                    "trece",
-                    "catorce",
-                    "quince",
-                    "dieciséis",
-                    "diecisiete",
-                    "dieciocho",
-                    "diecinueve",
-                    "veinte",
-                    "veintiún",
-                    "veintidós",
-                    "veintitrés",
-                    "veinticuatro",
-                    "veinticinco",
-                    "veintiséis",
-                    "veintisiete",
-                    "veintiocho",
-                    "veintinueve"
-                ]
-                const decenas = [
-                    "",
-                    "diez",
-                    "veinte",
-                    "treinta",
-                    "cuarenta",
-                    "cincuenta",
-                    "sesenta",
-                    "setenta",
-                    "ochenta",
-                    "noventa"
-                ]
-                const centenas = [
-                    "cien",
-                    "ciento",
-                    "doscientos",
-                    "trescientos",
-                    "cuatrocientos",
-                    "quinientos",
-                    "seiscientos",
-                    "setecientos",
-                    "ochocientos",
-                    "novecientos"
-                ]
-            
-                const convertirMenorA1000 = (numero) => {
-                    let letra = ""
-                    if (numero >= 100) {
-                        letra += centenas[(numero === 100 ? 0 : Math.floor(numero / 100))] + " "
-                        numero %= 100
-                    }
-                    if (numero === 10 || numero === 20 || (numero > 29 && numero < 100)) {
-                        letra += decenas[Math.floor(numero / 10)]
-                        numero %= 10
-                        letra += numero > 0 ? " y " : " "
-                    }
-                    if (numero != 20 && numero >= 11 && numero <= 29) {
-                        letra += especiales[numero % 10 + (numero > 20 ? 10 : 0)] + " "
-                        numero = 0
-                    }
-                    if (numero > 0) {
-                        letra += unidades[numero] + " "
-                    }
-                    return letra.trim()
-                }
-        
-                const convertir = (numero) => {
-                    if (numero === 0) {
-                        return "cero"
-                    }
-                
-                    let letra = ""
-                
-                    if (numero >= 1000000) {
-                        letra += convertirMenorA1000(Math.floor(numero / 1000000)) + (numero === 1000000 ? " millón " : " millones ")
-                        numero %= 1000000
-                    }
-                
-                    if (numero >= 1000) {
-                        letra += (numero === 1000 ? "" : convertirMenorA1000(Math.floor(numero / 1000))) + " mil "
-                        numero %= 1000
-                    }
-                
-                    letra += convertirMenorA1000(numero)
-                    return letra.trim()
-                }
-        
-                const parteEntera = Math.floor(numero)
-                const parteDecimal = Math.round((numero - parteEntera) * 100).toString().padStart(2, "0")
-                return convertir(parteEntera) + (numero == 1 ? ' peso ' : ' pesos ') + parteDecimal + '/100 M.N.'
-            }
-        
-            const primeraMayuscula = (texto) => {
-                return texto.charAt(0).toUpperCase() + texto.slice(1)
-            }
-             
             const camposLlenos = (e) => {
                 const val = () => {
                     const campos = [
@@ -1665,30 +1579,6 @@ class Ahorro extends Controller
                 }
                 if (e.target.id === "fecha_nac") calculaEdad(e)
                 document.querySelector("#btnGeneraContrato").disabled = !val()
-            }
-             
-            const imprimeTicket = (ticket) => {
-                const host = window.location.origin
-                
-                let plantilla = "<!DOCTYPE html>"
-                plantilla += '<html lang="es">'
-                plantilla += '<head>'
-                plantilla += '<meta charset="UTF-8">'
-                plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-                plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
-                plantilla += '<title>Ticket: ' + ticket + '</title>'
-                plantilla += '</head>'
-                plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
-                plantilla +=
-                    '<iframe src="' + host + '/Ahorro/Ticket/' +
-                    ticket +
-                    '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
-                plantilla += "</body>"
-                plantilla += "</html>"
-            
-                const blob = new Blob([plantilla], { type: "text/html" })
-                const url = URL.createObjectURL(blob)
-                window.open(url, "_blank")
             }
              
             const calculaEdad = (e) => {

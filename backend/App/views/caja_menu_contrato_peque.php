@@ -123,25 +123,25 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="nombre1">Primer nombre del peque *</label>
-                                                <input type="text" class="form-control" id="nombre1" name="nombre1" oninput=camposLlenos(event)>
+                                                <input type="text" class="form-control" id="nombre1" name="nombre1" oninput=camposLlenos(event) disabled>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="nombre2">Segundo nombre del peque</label>
-                                                <input type="text" class="form-control" id="nombre2" name="nombre2" oninput=camposLlenos(event)>
+                                                <input type="text" class="form-control" id="nombre2" name="nombre2" oninput=camposLlenos(event) disabled>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="apellido1">Primer apellido del peque *</label>
-                                                <input type="text" class="form-control" id="apellido1" name="apellido1" oninput=camposLlenos(event)>
+                                                <input type="text" class="form-control" id="apellido1" name="apellido1" oninput=camposLlenos(event) disabled>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="apellido2">Segundo apellido del peque</label>
-                                                <input type="text" class="form-control" id="apellido2" name="apellido2" oninput=camposLlenos(event)>
+                                                <input type="text" class="form-control" id="apellido2" name="apellido2" oninput=camposLlenos(event) disabled>
                                             </div>
                                         </div>
                                         <div class="col-md-5">
@@ -160,7 +160,7 @@
                                         <div class="col-md-5">
                                             <div class="form-group">
                                                 <label for="fecha_nac">Fecha de nacimiento *</label>
-                                                <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" max="<?= $fecha ?>" oninput=camposLlenos(event)>
+                                                <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" max="<?= $fecha ?>" oninput=camposLlenos(event) disabled>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
@@ -178,7 +178,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="ciudad">Entidad de nacimiento</label>
-                                                <select class="form-control mr-sm-3" id="ciudad" name="ciudad" onchange=camposLlenos(event)>
+                                                <select class="form-control mr-sm-3" id="ciudad" name="ciudad" onchange=camposLlenos(event) disabled>
                                                     <option value="P">CDMX</option>
                                                 </select>
                                             </div>
@@ -186,7 +186,7 @@
                                         <div class="col-md-5">
                                             <div class="form-group">
                                                 <label for="curp">CURP*</label>
-                                                <input type="text" class="form-control" name="curp" id="curp" maxlength="18" oninput=camposLlenos(event)>
+                                                <input type="text" class="form-control" name="curp" id="curp" maxlength="18" oninput=camposLlenos(event) disabled>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -211,7 +211,7 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label for="tipo">Tasa Anual</label>
-                                                    <select class="form-control mr-sm-3" autofocus="" type="select" id="tasa" name="tasa">
+                                                    <select class="form-control mr-sm-3" autofocus="" type="select" id="tasa" name="tasa" disabled>
                                                         <option value="5">5 %</option>
                                                     </select>
                                                 </div>
@@ -219,7 +219,7 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label for="Fecha">Sucursal</label>
-                                                    <select class="form-control mr-sm-3" id="sucursal" name="sucursal">
+                                                    <select class="form-control mr-sm-3" id="sucursal" name="sucursal" disabled>
                                                         <option value="1514">CORPORATIVO</option>
                                                     </select>
                                                 </div>
@@ -227,7 +227,7 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label for="Fecha">Ejecutivo</label>
-                                                    <select class="form-control mr-sm-3" id="ejecutivo" name="ejecutivo">
+                                                    <select class="form-control mr-sm-3" id="ejecutivo" name="ejecutivo" disabled>
                                                         <option value="135">Ejecutivo Prueba</option>
                                                     </select>
                                                 </div>
