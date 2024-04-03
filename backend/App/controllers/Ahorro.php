@@ -138,7 +138,7 @@ class Ahorro extends Controller
     }';
     private $primeraMayuscula = 'const primeraMayuscula = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1)';
     private $imprimeTicket = <<<script
-    const imprimeTicket = (ticket) => {
+    const imprimeTicket = (ticket, sucursal = "") => {
         const host = window.location.origin
     
         let plantilla = "<!DOCTYPE html>"
@@ -153,8 +153,8 @@ class Ahorro extends Controller
         plantilla +=
             "<iframe src='" +
             host +
-            "/Ahorro/Ticket/" +
-            ticket +
+            "/Ahorro/Ticket/?ticket?" +
+            ticket + '&sucursal=' + sucursal
             "/' style='width: 100%; height: 99vh; border: none; margin: 0; padding: 0;'></iframe>"
         plantilla += "</body>"
         plantilla += "</html>"
@@ -1717,8 +1717,10 @@ class Ahorro extends Controller
 
     //********************UTILS********************//
     // Generación de ticket's de operaciones realizadas
-    public function Ticket($ticket)
+    public function Ticket()
     {
+        $ticket = $_GET['ticket'];
+        $sucursal = $_GET['sucursal'] ?? "1";
         $datos = CajaAhorroDao::DatosTicket($ticket);
         if (!$datos) {
             echo "No se encontró información para el ticket: " . $ticket;
@@ -1728,36 +1730,36 @@ class Ahorro extends Controller
         $nombreArchivo = "Ticket " . $ticket;
 
         $mpdf = new \mPDF('UTF-8', array(90, 190));
-        $mpdf->SetMargins(0, 0, 10);
+        // PIE DE PAGINA
+        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:11px;font-family:Helvetica;">Fecha de impresión: ' . date('d/m/Y H:i:s') . ' Suc. ' . $sucursal . '</div>');
+
+        $mpdf->SetMargins(0, 0, 5);
         $mpdf->SetTitle($nombreArchivo);
         $mpdf->WriteHTML('<div></div>', 2);
 
         // CABECERA
         $mpdf->SetFont('Helvetica', '', 19);
         $mpdf->Cell(60, 4, 'Más con Menos', 0, 1, 'C');
-        $mpdf->Ln(2);
-        $mpdf->SetFont('Helvetica', '', 8);
-        $mpdf->Cell(60, 4, 'Dirección de la sucursal', 0, 1, 'C');
-        $mpdf->Cell(60, 4, 'Municipio, Estado, C.P 00000', 0, 1, 'C');
+        $mpdf->Ln(5);
 
         // LEYENDA TIPO COMPROBANTE
-        $mpdf->Ln(3);
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 4, 'COMPROBANTE DE ' . $datos['COMPROBANTE'], 0, 1, 'C');
         $mpdf->Ln(3);
         $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
+        $mpdf->Ln(2);
 
         // DATOS OPERACION
-        $mpdf->Ln(2);
         $mpdf->SetFont('Helvetica', '', 9);
         $mpdf->Cell(60, 4, 'Fecha de la operación: ' . $datos['FECHA'], 0, 1, '');
         $mpdf->Cell(60, 4, 'Método de pago: ' . $datos['METODO'], 0, 1, '');
         $mpdf->MultiCell(60, 4, $datos['RECIBIO'] . ': ' . $datos['NOM_EJECUTIVO'] . ' (' . $datos['COD_EJECUTIVO'] . ')', 0, 1, '');
+        $mpdf->Cell(60, 4, 'Sucursal: ' . $datos['CDG_SUCURSAL'], 0, 1, '');
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
+        $mpdf->Ln(5);
 
         // DATOS CLIENTE
-        $mpdf->Ln(5);
         $mpdf->SetFont('Helvetica', '', 9);
         $mpdf->MultiCell(60, 4, 'Nombre del cliente: ' . $datos['NOMBRE_CLIENTE'], 0, 1, '');
         $mpdf->Cell(60, 4, 'Código de cliente: ' . $datos['CODIGO'], 0, 1, '');
@@ -1817,16 +1819,12 @@ class Ahorro extends Controller
         $mpdf->Cell(60, 4, 'FOLIO DE LA OPERACIÓN', 0, 1, 'C');
         $mpdf->WriteHTML('<barcode code="' . $ticket . '-' . $datos['CODIGO'] . '-' . $datos['MONTO'] . '-' . $datos['COD_EJECUTIVO'] . '" type="C128A" size=".60" height="1" class=""/>');
 
-        // PIE DE PAGINA
-        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:11px;font-family:Helvetica;">Fecha de impresión: ' . date('Y-m-d H:i:s') . '</div>');
-
         $mpdf->Output($nombreArchivo . '.pdf', 'I');
         exit;
     }
 
     public function Contrato()
     {
-        setlocale(LC_MONETARY, 'es_MX');
         $contrato = $_GET['contrato'];
         $datos = CajaAhorroDao::DatosContrato($contrato);
         if (!$datos) {
@@ -1837,7 +1835,9 @@ class Ahorro extends Controller
         $style = <<<html
         <style>
             body {
-                font-family: Arial, sans-serif;
+                font-family: Helvetica, sans-serif;
+                margin: 0;
+                padding: 0;
             }
             .contenedor {
                 max-width: 800px;
@@ -1963,7 +1963,6 @@ class Ahorro extends Controller
 
         exit;
     }
-
 
     //********************BORRAR????********************//
     public function SolicitudRetiroCuentaCorriente()

@@ -349,7 +349,8 @@ class CajaAhorro
             [
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['deposito_inicial'],
-                'ejecutivo' => $datos['ejecutivo']
+                'ejecutivo' => $datos['ejecutivo'],
+                'sucursal' => $datos['sucursal']
             ],
             [
                 'tipo_pago' => '1',
@@ -393,7 +394,8 @@ class CajaAhorro
             [
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['montoOperacion'],
-                'ejecutivo' => $datos['ejecutivo']
+                'ejecutivo' => $datos['ejecutivo'],
+                'sucursal' => $datos['sucursal']
             ],
             [
                 'tipo_pago' => $esDeposito ? '3' : '4',
@@ -436,9 +438,9 @@ class CajaAhorro
     {
         return <<<sql
         INSERT INTO TICKETS_AHORRO
-            (CODIGO, FECHA, CDG_CONTRATO, MONTO, CDGPE)
+            (CODIGO, FECHA, CDG_CONTRATO, MONTO, CDGPE, CDG_SUCURSAL)
         VALUES
-            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM TICKETS_AHORRO) + 1, SYSDATE, :contrato, :monto, :ejecutivo)
+            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM TICKETS_AHORRO) + 1, SYSDATE, :contrato, :monto, :ejecutivo, :sucursal)
         sql;
     }
 
@@ -514,6 +516,7 @@ class CajaAhorro
         SELECT
             TO_CHAR(T.FECHA, 'dd/mm/yyyy HH24:MI:SS') AS FECHA,
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE_CLIENTE,
+            T.CDG_SUCURSAL,
             CL.CODIGO,
             APA.CONTRATO,
             T.MONTO,
@@ -920,7 +923,8 @@ class CajaAhorro
             [
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['montoOperacion'],
-                'ejecutivo' => $datos['ejecutivo']
+                'ejecutivo' => $datos['ejecutivo'],
+                'sucursal' => $datos['sucursal']
             ],
             [
                 'tipo_pago' => '5',
@@ -980,6 +984,7 @@ class CajaAhorro
             APA.CDGCL,
             TO_CHAR(APA.FECHA_APERTURA, 'DD/MM/YYYY') AS FECHA_APERTURA,
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE_CLIENTE,
+            
             (
                 SELECT
                     MONTO
