@@ -9,6 +9,7 @@ use \Core\Controller;
 use \Core\MasterDom;
 use \App\models\CajaAhorro as CajaAhorroDao;
 use \App\models\Ahorro as AhorroDao;
+use DateTime;
 
 class Ahorro extends Controller
 {
@@ -164,7 +165,7 @@ class Ahorro extends Controller
     }
     script;
     private $imprimeContrato = <<<script
-    const imprimeContrato = (numero_contrato) => {
+    const imprimeContrato = (numero_contrato, producto = 1) => {
         const host = window.location.origin
         
         let plantilla = "<!DOCTYPE html>"
@@ -177,8 +178,8 @@ class Ahorro extends Controller
         plantilla += '</head>'
         plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
         plantilla +=
-            '<iframe src="' + host + '/Ahorro/ImprimeContratoAhorro/' +
-            numero_contrato +
+            '<iframe src="' + host + '/Ahorro/Contrato/?contrato=' +
+            numero_contrato + '&producto=' + producto
             '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
         plantilla += "</body>"
         plantilla += "</html>"
@@ -237,6 +238,7 @@ class Ahorro extends Controller
             {$this->numeroLetras}
             {$this->primeraMayuscula}
             {$this->imprimeTicket}
+            {$this->imprimeContrato}
              
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado").value
@@ -331,30 +333,6 @@ class Ahorro extends Controller
                 document.querySelector("#btnGeneraContrato").disabled = true
                 document.querySelector("#btnGuardar").innerText = txtGuardaContrato
             }
-             
-            const boton_contrato = (numero_contrato) => {
-                const host = window.location.origin
-                
-                let plantilla = "<!DOCTYPE html>"
-                plantilla += '<html lang="es">'
-                plantilla += '<head>'
-                plantilla += '<meta charset="UTF-8">'
-                plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-                plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
-                plantilla += '<title>Contrato ' + numero_contrato + '</title>'
-                plantilla += '</head>'
-                plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
-                plantilla +=
-                    '<iframe src="' + host + '/Ahorro/ImprimeContratoAhorro/' +
-                    numero_contrato +
-                    '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
-                plantilla += "</body>"
-                plantilla += "</html>"
-            
-                const blob = new Blob([plantilla], { type: "text/html" })
-                const url = URL.createObjectURL(blob)
-                window.open(url, "_blank")
-            }
             
             const generaContrato = async (e) => {
                 e.preventDefault()
@@ -398,7 +376,7 @@ class Ahorro extends Controller
                         document.querySelector("#contrato").value = contrato.contrato
                         document.querySelector("#codigo_cl").value = noCredito
                         document.querySelector("#nombre_cliente").value = document.querySelector("#nombre").value
-                        boton_contrato(contrato.contrato)
+                        imprimeContrato(contrato.contrato)
                         
                         document.querySelector("#chkCreacionContrato").classList.remove("red")
                         document.querySelector("#chkCreacionContrato").classList.add("green")
@@ -643,139 +621,6 @@ class Ahorro extends Controller
         $pago = CajaAhorroDao::AddPagoApertura($_POST);
         echo $pago;
         return $pago;
-    }
-
-    public function ImprimeContratoAhorro($numero_contrato)
-    {
-        $style = <<<html
-        <style>
-            .titulo {
-                width: 100%;
-                margin-top: 30px;
-                color: #b92020;
-                margin-left: auto;
-                margin-right: auto;
-            }
-        
-            body {
-                padding: 50px;
-            }
-        
-            * {
-                box-sizing: border-box;
-            }
-        
-            .receipt-main {
-                display: inline-block;
-                width: 100%;
-                padding: 15px;
-                font-size: 12px;
-                border: 1px solid #000;
-            }
-        
-            .receipt-title {
-                text-align: center;
-                text-transform: uppercase;
-                font-size: 20px;
-                font-weight: 600;
-                margin: 0;
-            }
-        
-            .receipt-label {
-                font-weight: 600;
-            }
-        
-            .text-large {
-                font-size: 16px;
-            }
-        
-            .receipt-section {
-                margin-top: 10px;
-            }
-        
-            .receipt-footer {
-                text-align: center;
-                background: #ff0000;
-            }
-        
-            .receipt-signature {
-                height: 80px;
-                margin: 50px 0;
-                padding: 0 50px;
-                background: #fff;
-        
-                .receipt-line {
-                    margin-bottom: 10px;
-                    border-bottom: 1px solid #000;
-                }
-        
-                p {
-                    text-align: justify;
-                    margin: 0;
-                    font-size: 17px;
-                }
-            }
-        </style>  
-        html;
-
-        $tabla = <<<html
-        <div class="receipt-main">
-            <table class="table">
-                <tr>
-                    <th style="width: 600px" class="text-right">
-                        <p class="receipt-title"><b>Recibo de Pago</b></p>
-                    </th>
-                    <th style="width: 10px" class="text-right">
-                        <img
-                            src="img/logo.png"
-                            alt="Esta es una descripción alternativa de la imagen para cuando no se pueda mostrar"
-                            width="60"
-                            height="50"
-                            align="left"
-                        />
-                    </th>
-                </tr>
-            </table>
-            <div class="receipt-section pull-left">
-                <span class="receipt-label text-large">#FOLIO:</span>
-                <span class="text-large"><b></b></span>
-            </div>
-            <div class="receipt-section pull-left">
-                <span class="receipt-label text-large">FECHA DE COBRO:</span>
-                <span class="text-large"></span>
-            </div>
-            <div class="clearfix"></div>
-            <hr />
-            <div class="table-responsive-sm">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th># Crédito</th>
-                            <th>Nombre del Cliente</th>
-                            <th>Ciclo</th>
-                            <th width="19%" class="text-right">Tipo</th>
-                            <th class="text-right">Monto</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-        html;
-
-        $nombreArchivo = "Contrato " . $numero_contrato;
-
-        $mpdf = new \mPDF('c');
-        $mpdf->defaultPageNumStyle = 'I';
-        $mpdf->h2toc = array('H5' => 0, 'H6' => 1);
-        $mpdf->SetTitle($nombreArchivo);
-        $mpdf->WriteHTML($style, 1);
-        $mpdf->WriteHTML($tabla, 2);
-        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:opensans;">Este recibo de pago se genero el día ' . date('Y-m-d H:i:s') . '<br>{PAGENO}</div>');
-
-        $mpdf->Output($nombreArchivo . '.pdf', 'I');
-
-        exit;
     }
 
     // Movimientos sobre cuentas de ahorro corriente //
@@ -1876,7 +1721,7 @@ class Ahorro extends Controller
     {
         $datos = CajaAhorroDao::DatosTicket($ticket);
         if (!$datos) {
-            echo "No se encontraron datos para el ticket: " . $ticket;
+            echo "No se encontró información para el ticket: " . $ticket;
             return;
         }
 
@@ -1976,6 +1821,146 @@ class Ahorro extends Controller
         $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:11px;font-family:Helvetica;">Fecha de impresión: ' . date('Y-m-d H:i:s') . '</div>');
 
         $mpdf->Output($nombreArchivo . '.pdf', 'I');
+        exit;
+    }
+
+    public function Contrato()
+    {
+        setlocale(LC_MONETARY, 'es_MX');
+        $contrato = $_GET['contrato'];
+        $datos = CajaAhorroDao::DatosContrato($contrato);
+        if (!$datos) {
+            echo "No se encontró información para el contrato: " . $contrato;
+            return;
+        }
+
+        $style = <<<html
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
+            .contenedor {
+                max-width: 800px;
+                margin: 0 auto;
+                position: relative;
+            }
+            .logo {
+                position: absolute;
+                top: 0;
+                right: 0;
+                max-width: 100px;
+                height: auto;
+            }
+            h1, h2 {
+                text-align: center;
+            }
+            .seccion {
+                margin-bottom: 20px;
+            }
+            .seccion-title {
+                font-size: 1.2em;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+            .seccion-content {
+                border: 1px solid #ccc;
+                padding: 10px;
+                width: 100%;
+            }
+            .generales {
+                width: 100%;
+            }
+            .firma {
+                text-align: center;
+            }
+        </style>  
+        html;
+
+        $dep_ini = number_format($datos['DEP_INICIAL'], 2, '.', ',');
+        $comision = number_format($datos['COMISION'], 2, '.', ',');
+        $saldo_ini = number_format($datos['SALDO_INICIAL'], 2, '.', ',');
+
+        $tabla = <<<html
+        <div class="contenedor">
+            <img src="img/logo.png" alt="Logo de la Empresa" class="logo">
+            <h1>Contrato de Cuenta de Ahorro</h1>
+            <div class="seccion">
+                <h2 class="seccion-title">Datos Generales</h2>
+                <div class="seccion-content">
+                    <table class="generales">
+                        <tr>
+                            <td><b>Contrato:</b></td>
+                            <td>{$datos['CONTRATO']}</td>
+                            <td></td>
+                            <td></td>
+                            <td><b>Fecha de apertura:</b></td>
+                            <td>{$datos['FECHA_APERTURA']}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Cliente:</b></td>
+                            <td colspan="5">{$datos['NOMBRE_CLIENTE']}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Deposito inicial:</b></td>
+                            <td>$ $dep_ini</td>
+                            <td><b>Cargos y comisiones:</b></td>
+                            <td>$ $comision</td>
+                            <td><b>Saldo inicial:</b></td>
+                            <td>$ $saldo_ini</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="seccion">
+                <h2 class="seccion-title">Partes del Contrato</h2>
+                <div class="seccion-content">
+                    <p>En este contrato, se establece en común acuerdo entre Más con Menos S.A. de C.V. (en adelante "La Empresa") y el cliente {$datos['NOMBRE_CLIENTE']} (en adelante "El Cliente").</p>
+                </div>
+            </div>
+            <div class="seccion">
+                <h2 class="seccion-title">Servicios Ofrecidos</h2>
+                <div class="seccion-content">
+                    <p>La Empresa se compromete a proporcionar los siguientes servicios financieros:</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ac enim at justo luctus condimentum et eu eros. Duis molestie, mi in suscipit tristique, enim mauris lobortis dui, sit amet aliquam lorem odio eu nisl. Sed mi mi, pulvinar placerat tincidunt ut, pulvinar a nibh. Aliquam sapien nunc, auctor aliquet lacinia sit amet, convallis ut urna. Aenean lacinia molestie dui ut bibendum. Nullam iaculis pretium ante. In hac habitasse platea dictumst. Phasellus posuere in augue sed tincidunt.
+                        Aenean nec laoreet eros, egestas egestas nulla. Donec nec hendrerit tortor. Curabitur eu quam in nibh interdum convallis eget id massa. Vivamus eget eros at tellus mattis dapibus quis in est. Ut quis placerat ex. Nulla tempor vestibulum condimentum. Quisque vestibulum, urna eu sollicitudin finibus, arcu eros pretium lorem, id tempus eros odio sit amet justo. Suspendisse potenti. Sed accumsan nibh est, id tristique diam semper sed. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam eleifend urna dui. Nunc ac sapien molestie, semper neque nec, aliquet metus. Etiam eget pulvinar ligula. Proin volutpat ultricies sem, fermentum sagittis nisi ultrices id.
+                        Phasellus feugiat rutrum est, eu ullamcorper libero dictum sit amet. Praesent sit amet odio rutrum, lacinia diam vel, faucibus quam. Etiam rhoncus erat id convallis iaculis. Mauris euismod mollis quam viverra faucibus. Cras eget diam augue. Sed orci quam, placerat vitae nisl sed, mollis vehicula enim. Sed ullamcorper pretium metus, commodo tincidunt ipsum gravida nec. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur non.</p>
+                </div>
+            </div>
+            <div class="seccion">
+                <h2 class="seccion-title">Condiciones</h2>
+                <div class="seccion-content">
+                    <p>El Cliente se compromete a respetar y cumplir las siguientes condiciones:</p>
+                    <ul>
+                        <li>Condición 1</li>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.</p>
+                        <li>Condición 2</li>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.</p>
+                        <li>Condición 3</li>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.</p>
+                    </ul>
+                </div>
+            </div>
+            <div class="seccion">
+                <h2 class="seccion-title">Firma del Cliente</h2>
+                <div class="seccion-content firma">
+                    <p>___________________________</p>
+                    <p>Firma del Cliente</p>
+                </div>
+            </div>
+        </div>
+        html;
+
+        $nombreArchivo = "Contrato " . $contrato;
+
+        $mpdf = new \mPDF('c');
+        $mpdf->SetHTMLFooter('<div style="text-align:right; font-size: 10px;">Fecha de impresión  ' . date('d/m/Y H:i:s') . '</div><div style="text-align:center; font-size: 11px;">Página {PAGENO} de {nb}</div>');
+        $mpdf->h2toc = array('H5' => 0, 'H6' => 1);
+        $mpdf->SetTitle($nombreArchivo);
+        $mpdf->WriteHTML($style, 1);
+        $mpdf->WriteHTML($tabla, 2);
+
+        $mpdf->Output($nombreArchivo . '.pdf', 'I');
+
         exit;
     }
 
