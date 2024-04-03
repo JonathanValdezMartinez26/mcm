@@ -81,7 +81,7 @@
                                         <p style="font-size: 16px;"><b>Ahorro Cuenta Corriente - Peque</b></p>
                                     </a></li>
                                 <li class="linea"><a href="/Ahorro/ContratoCuentaPeque/">
-                                        <p style="font-size: 15px;">Nuevo Contrato Cuenta - Peque</p>
+                                        <p style="font-size: 15px;">Nuevo Contrato</p>
                                     </a></li>
                             </ul>
                         </div>
