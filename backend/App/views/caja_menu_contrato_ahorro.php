@@ -74,12 +74,12 @@
                                 <li class="linea"><a href="/Ahorro/CuentaCorriente/">
                                         <p style="font-size: 15px;">Ahorro Cuenta Corriente</p>
                                     </a></li></a></li>
-                                <li class="linea"><a href="/Ahorro/SolicitudRetiroCuentaCorriente/">
-                                        <p style="font-size: 15px;">Solicitud de Retiro</p>
-                                    </a></li></a></li>
                                 <li><a href="/Ahorro/ContratoCuentaCorriente/">
                                         <p style="font-size: 16px;"><b>Nuevo Contrato</b></p>
                                     </a></li>
+                                <li class="linea"><a href="/Ahorro/SolicitudRetiroCuentaCorriente/">
+                                        <p style="font-size: 15px;">Solicitud de Retiro</p>
+                                    </a></li></a></li>
                                 <li class="linea"><a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/">
                                         <p style="font-size: 15px;">Historial Solicitud de Retiro</p>
                                     </a></li>

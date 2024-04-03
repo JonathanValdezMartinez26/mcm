@@ -80,8 +80,8 @@
                         <div>
                             <ul class="nav navbar-nav">
                                 <li class="linea"><a href="/Ahorro/CuentaCorriente/"><p style="font-size: 15px;">Ahorro Cuenta Corriente</p></a></li></a></li>
-                                <li><a href="/Ahorro/SolicitudRetiroCuentaCorriente/"><p style="font-size: 16px;"><b>Solicitud de Retiro</b></p></a></li></a></li>
                                 <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Nuevo Contrato</p>
+                                <li><a href="/Ahorro/SolicitudRetiroCuentaCorriente/"><p style="font-size: 16px;"><b>Solicitud de Retiro</b></p></a></li></a></li>
                                 <li class="linea"><a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/"><p style="font-size: 15px;">Historial Solicitud de Retiro</p></a></li>
                             </ul>
                         </div>

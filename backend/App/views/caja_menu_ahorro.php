@@ -77,15 +77,16 @@
                                     </a>
                                 </li>
                                 <li class="linea">
-                                    <a href="/Ahorro/SolicitudRetiroCuentaCorriente/">
-                                        <p style="font-size: 15px;">Solicitud de Retiro</p>
-                                    </a>
-                                </li>
-                                <li class="linea">
                                     <a href="/Ahorro/ContratoCuentaCorriente/">
                                         <p style="font-size: 15px;">Nuevo Contrato</p>
                                     </a>
                                 </li>
+                                <li class="linea">
+                                    <a href="/Ahorro/SolicitudRetiroCuentaCorriente/">
+                                        <p style="font-size: 15px;">Solicitud de Retiro</p>
+                                    </a>
+                                </li>
+
                                 <li class="linea">
                                     <a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/">
                                         <p style="font-size: 15px;">Historial Solicitud de Retiro</p>

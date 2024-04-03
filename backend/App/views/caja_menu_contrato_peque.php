@@ -65,12 +65,12 @@
                             <ul class="nav navbar-nav">
                                 <li class="linea">
                                     <a href="/Ahorro/CuentaPeque/">
-                                        <p style="font-size: 15px;">Ahorro Cuenta Corriente - Peque</p>
+                                        <p style="font-size: 15px;">Ahorro Cuenta Corriente Peque</p>
                                     </a>
                                 </li>
                                 <li>
                                     <a onclick=mostrarAhorro() href="">
-                                        <p style="font-size: 16px;"><b>Nuevo Contrato - Peque </b></p>
+                                        <p style="font-size: 16px;"><b>Nuevo Contrato</b></p>
                                     </a>
                                 </li>
                             </ul>

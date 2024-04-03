@@ -78,7 +78,7 @@
                         <div>
                             <ul class="nav navbar-nav">
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Ahorro Cuenta Corriente - Peque</b></p>
+                                        <p style="font-size: 16px;"><b>Ahorro Cuenta Corriente Peque</b></p>
                                     </a></li>
                                 <li class="linea"><a href="/Ahorro/ContratoCuentaPeque/">
                                         <p style="font-size: 15px;">Nuevo Contrato</p>
