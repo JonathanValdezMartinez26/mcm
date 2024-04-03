@@ -971,5 +971,61 @@ class CajaAhorro
             return self::Responde(false, "Ocurrió un error al consultar las inversiones", null, $e->getMessage());
         }
     }
-    ////////////////////////////////////////////////////////////////////////////////////////
+
+    public static function DatosContrato($contrato)
+    {
+        $query = <<<sql
+        SELECT
+            APA.CONTRATO,
+            APA.CDGCL,
+            TO_CHAR(APA.FECHA_APERTURA, 'DD/MM/YYYY') AS FECHA_APERTURA,
+            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE_CLIENTE,
+            (
+                SELECT
+                    MONTO
+                FROM
+                    MOVIMIENTOS_AHORRO
+                WHERE
+                    CDG_TIPO_PAGO = 1
+                    AND CDG_CONTRATO = APA.CONTRATO
+            ) AS DEP_INICIAL,
+            (
+                SELECT
+                    MONTO
+                FROM
+                    MOVIMIENTOS_AHORRO
+                WHERE
+                    CDG_TIPO_PAGO = 2
+                    AND CDG_CONTRATO = APA.CONTRATO
+            ) AS COMISION,
+            (
+                SELECT
+                    SUM(CASE MOVIMIENTO
+                        WHEN '0' THEN -MONTO
+                        ELSE MONTO
+                    END)
+                FROM
+                    MOVIMIENTOS_AHORRO
+                WHERE
+                    (CDG_TIPO_PAGO = 1
+                    OR CDG_TIPO_PAGO = 2)
+                    AND CDG_CONTRATO = APA.CONTRATO
+            ) AS SALDO_INICIAL
+        FROM
+            ASIGNA_PROD_AHORRO APA
+        LEFT JOIN
+            CL
+        ON
+            CL.CODIGO = APA.CDGCL
+        WHERE
+            APA.CONTRATO = '{$contrato}'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryOne($query);
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
 }
