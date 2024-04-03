@@ -193,7 +193,7 @@ class CajaAhorro
         }
     }
 
-    public static function BuscaClienteContrato($datos)
+    public static function BuscaContratoAhorro($datos)
     {
         $query = <<<sql
         SELECT
@@ -230,7 +230,8 @@ class CajaAhorro
             $mysqli = Database::getInstance();
             $res = $mysqli->queryOne($query);
             if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
-            if ($res['NO_CONTRATOS'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro");
+            if ($res['NO_CONTRATOS'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro", $res);
+            if ($res['NO_CONTRATOS'] >= 1 && $res['CONTRATO_COMPLETO'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no ha concluido el proceso de apertura de su cuenta de ahorro", $res);
             return self::Responde(true, "Consulta realizada correctamente", $res);
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());

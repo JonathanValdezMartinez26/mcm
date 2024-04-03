@@ -296,6 +296,7 @@ class Ahorro extends Controller
                         document.querySelector("#curp").value = datosCL.CURP
                         document.querySelector("#edad").value = datosCL.EDAD
                         document.querySelector("#direccion").value = datosCL.DIRECCION
+                        document.querySelector("#marcadores").style.opacity = "1"
                         noCliente.value = ""
                         if (respuesta.success) habilitaBeneficiario(1, true)
                     },
@@ -332,6 +333,7 @@ class Ahorro extends Controller
                 document.querySelector("#ben3").style.opacity = "0"
                 document.querySelector("#btnGeneraContrato").disabled = true
                 document.querySelector("#btnGuardar").innerText = txtGuardaContrato
+                document.querySelector("#marcadores").style.opacity = "0"
             }
             
             const generaContrato = async (e) => {
@@ -636,6 +638,7 @@ class Ahorro extends Controller
          
             {$this->showError}
             {$this->showSuccess}
+            {$this->showInfo}
             {$this->validarYbuscar}
             {$this->getHoy}
             {$this->soloNumeros}
@@ -653,24 +656,51 @@ class Ahorro extends Controller
                 
                 $.ajax({
                     type: "POST",
-                    url: "/Ahorro/BuscaContrato/",
+                    url: "/Ahorro/BuscaContratoAhorro/",
                     data: { cliente: noCliente },
                     success: (respuesta) => {
                         limpiaDatosCliente()
                         respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) return showError(respuesta.mensaje)
-                        const datosCliente = respuesta.datos
-                        
-                        if (datosCliente.CONTRATO_COMPLETO == 0) {
-                            document.querySelector("#btnRegistraOperacion").disabled = true
-                            showError("La apertura de contrato no ha sido concluida correctamente.").then(() => {
-                                document.querySelector("#mdlFecha_pago").value = getHoy()
-                                document.querySelector("#mdlContrato").value = datosCliente.CONTRATO
-                                document.querySelector("#mdlCodigo_cl").value = noCliente
-                                document.querySelector("#mdlNombre_cliente").value = datosCliente.NOMBRE
-                                $("#modal_agregar_pago").modal("show")
-                            })
+                        if (!respuesta.success) {
+                            if (respuesta.datos) {
+                                const datosCliente = respuesta.datos
+                                if (datosCliente["NO_CONTRATOS"] == 0) {
+                                    swal({
+                                        title: "Cuenta de ahorro corriente",
+                                        text: "El cliente " + noCliente + " no tiene una cuenta de ahorro.\\nDesea aperturar una cuenta de ahorro en este momento?",
+                                        icon: "info",
+                                        buttons: ["No", "Sí"],
+                                        dangerMode: true
+                                    }).then((abreCta) => {
+                                        if (abreCta) {
+                                            window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
+                                            return
+                                        }
+                                    })
+                                    return
+                                }
+                                if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
+                                    swal({
+                                        title: "Cuenta de ahorro corriente",
+                                        text: "El cliente " + noCliente + " no ha completado el proceso de apertura de la cuenta de ahorro.\\nDesea completar el proceso en este momento?",
+                                        icon: "info",
+                                        buttons: ["No", "Sí"],
+                                        dangerMode: true
+                                    }).then((abreCta) => {
+                                        if (abreCta) {
+                                            window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
+                                            return
+                                        }
+                                    })
+                                    return
+                                }
+                            }
+                             
+                            limpiaDatosCliente()
+                            return showError(respuesta.mensaje)
                         }
+                         
+                        const datosCliente = respuesta.datos
                          
                         document.querySelector("#nombre").value = datosCliente.NOMBRE
                         document.querySelector("#curp").value = datosCliente.CURP
@@ -849,9 +879,9 @@ class Ahorro extends Controller
         View::render("caja_menu_ahorro");
     }
 
-    public function BuscaContrato()
+    public function BuscaContratoAhorro()
     {
-        $datos = CajaAhorroDao::BuscaClienteContrato($_POST);
+        $datos = CajaAhorroDao::BuscaContratoAhorro($_POST);
         echo $datos;
     }
 

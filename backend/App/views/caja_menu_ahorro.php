@@ -100,10 +100,11 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="col-md-6">
-                                        <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p><hr>
+                                        <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p>
+                                        <hr>
                                     </div>
                                     <div class="col-md-4">
-                                        <label for="movil">Código de cliente (SICAFIN)*</label>
+                                        <label for="movil">Código de cliente (SICAFIN) *</label>
                                         <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
                                     </div>
 

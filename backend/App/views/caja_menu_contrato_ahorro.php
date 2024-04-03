@@ -89,16 +89,14 @@
                     <div class="modal-body">
                         <div class="container-fluid">
                             <div class="col-md-12">
-
-
-
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="col-md-6">
-                                            <p>Para poder dar de alta un nuevo contrato de una cuenta de Ahorro, el cliente debe estar registrado en SICAFIN, si el cliente no tiene una cuenta abierta solicite el alta a su ADMINISTRADORA.</a>.</p><hr>
+                                            <p>Para poder dar de alta un nuevo contrato de una cuenta de Ahorro, el cliente debe estar registrado en SICAFIN, si el cliente no tiene una cuenta abierta solicite el alta a su ADMINISTRADORA.</a>.</p>
+                                            <hr>
                                         </div>
                                         <div class="col-md-4">
-                                            <label for="movil">Código de cliente (SICAFIN)*</label>
+                                            <label for="movil">Código de cliente (SICAFIN) *</label>
                                             <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" value="<?= $cliente ?>" required>
                                         </div>
 
@@ -109,9 +107,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-
-
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="card col-md-12">
@@ -161,7 +156,6 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="col-md-7" style="min-height: 400px;">
                                         <form id="registroInicialAhorro" name="registroInicialAhorro">
                                             <p><b><span class="fa fa-sticky-note"></span> Datos básicos de apertura para la cuenta de Ahorro Corriente</b></p>
@@ -278,7 +272,7 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div class="row">
+                                            <div class="row" id="marcadores" style="height: 20px; opacity:0;">
                                                 <div class="col-md-6" style="display: flex; justify-content: center;">
                                                     <span class="fa fa-check red" id="chkCreacionContrato"></span><label>Creación del contrato</label>
                                                 </div>
