@@ -84,6 +84,7 @@
                                     <th>Monto</th>
                                     <th>Tipo</th>
                                     <th>Ejecutivo</th>
+                                    <th>Capturó</th>
                                     <th>Acciones</th>
                                 </tr>
                                 </thead>

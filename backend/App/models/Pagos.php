@@ -25,6 +25,7 @@ class Pagos{
         PAGOSDIA.TIPO AS TIP,
         PAGOSDIA.EJECUTIVO,
         PAGOSDIA.CDGOCPE,
+        (PE.NOMBRE1 || ' ' || PE.NOMBRE2 || ' ' ||PE.PRIMAPE || ' ' ||PE.SEGAPE) AS NOMBRE,
         PAGOSDIA.FREGISTRO,
         ------PAGOSDIA.FIDENTIFICAPP,
         TRUNC(FECHA) AS DE,
@@ -41,7 +42,7 @@ class Pagos{
         Else 'NO'
         END AS DESIGNATION_ADMIN
     FROM
-        PAGOSDIA, NS, CO, RG
+        PAGOSDIA, NS, CO, RG, PE
     WHERE
         PAGOSDIA.CDGEM = 'EMPFIN'
         AND PAGOSDIA.ESTATUS = 'A'
@@ -49,6 +50,7 @@ class Pagos{
         AND NS.CODIGO = PAGOSDIA.CDGNS
         AND NS.CDGCO = CO.CODIGO 
         AND CO.CDGRG = RG.CODIGO
+        AND PE.CODIGO = PAGOSDIA.CDGPE
     ORDER BY
         FREGISTRO DESC, SECUENCIA
 sql;

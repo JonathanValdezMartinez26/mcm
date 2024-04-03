@@ -330,6 +330,7 @@ html;
                     <td style="padding: 0px !important;">$ {$monto}</td>
                     <td style="padding: 0px !important;">{$value['TIPO']}</td>
                     <td style="padding: 0px !important;">{$value['EJECUTIVO']}</td>
+                    <td style="padding: 0px !important;"><span class="fa fa-key"></span> {$value['NOMBRE']}</td>
                     <td style="padding: 0px !important;" class="center">{$editar}</td>
                 </tr>
 html;
