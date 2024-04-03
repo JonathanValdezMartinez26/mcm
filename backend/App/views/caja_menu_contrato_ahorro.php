@@ -89,24 +89,30 @@
                     <div class="modal-body">
                         <div class="container-fluid">
                             <div class="col-md-12">
+
+
+
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <div class="col-md-5" style="display: flex; justify-content: end;; margin-top:5px">
-                                            <label for="movil">Código de cliente SICAFIN</label>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" placeholder="000000" value="<?= $cliente ?>">
+                                        <div class="col-md-6">
+                                            <p>Para poder dar de alta un nuevo contrato de una cuenta de Ahorro, el cliente debe estar registrado en SICAFIN, si el cliente no tiene una cuenta abierta solicite el alta a su ADMINISTRADORA.</a>.</p><hr>
                                         </div>
                                         <div class="col-md-4">
+                                            <label for="movil">Código de cliente (SICAFIN)*</label>
+                                            <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" value="<?= $cliente ?>" required>
+                                        </div>
+
+                                        <div class="col-md-2" style="padding-top: 25px">
                                             <button type="button" class="btn btn-primary" onclick="buscaCliente()">
                                                 <i class="fa fa-search"></i> Buscar
                                             </button>
                                         </div>
-                                        <div class="col-md-12">
-                                            <p>Para poder dar de alta un nuevo contrato de una cuenta de Ahorro, el cliente debe estar registrado en SICAFIN, si el cliente no tiene una cuenta abierta solicite el alta a su ADMINISTRADORA.</p>
-                                            <hr>
-                                        </div>
                                     </div>
+                                </div>
+
+
+
+                                <div class="row">
                                     <div class="col-md-5">
                                         <div class="card col-md-12">
                                             <p><b><span class="fa fa-sticky-note"></span> Identificación del cliente</b></p>
