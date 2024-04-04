@@ -100,11 +100,11 @@
                                     <div class="col-md-8">
                                         <div class="col-md-12">
                                             <p>Los campos marcados con un asterisco (*) son obligatorios.</p>
-                                            <p><b><span class="fa fa-sticky-note"></span> Identificación del cliente</b></p>
+                                            <p><b><span class="fa fa-sticky-note"></span> Identificación del cliente SICAFIN</b></p>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="fechaRegistro">Fecha de registro del cliente</label>
+                                                <label for="fechaRegistro">Fecha de registro del cliente SICAFIN</label>
                                                 <input type="text" class="form-control" id="fechaRegistro" readonly>
                                             </div>
                                         </div>
@@ -116,7 +116,7 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label for="nombre">Nombre del cliente</label>
+                                                <label for="nombre">Nombre del cliente SICAFIN</label>
                                                 <input type="text" class="form-control" id="nombre" readonly>
                                             </div>
                                         </div>
