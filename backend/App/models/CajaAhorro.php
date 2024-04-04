@@ -8,6 +8,23 @@ use \Core\Database;
 use Exception;
 use DateTime;
 
+/**
+ * Tablas de registros:
+ * - ASIGNA_PROD_AHORRO
+ * - BENEFICIARIOS_AHORRO
+ * - MOVIMIENTOS_AHORRO
+ * - TICKETS_AHORRO
+ * - CUENTA_INVERSION
+ * 
+ * Limpieza de tablas:
+ * DELETE FROM ASIGNA_PROD_AHORRO;
+ * DELETE FROM BENEFICIARIOS_AHORRO;
+ * DELETE FROM MOVIMIENTOS_AHORRO;
+ * DELETE FROM TICKETS_AHORRO;
+ * DELETE FROM CUENTA_INVERSION;
+ * 
+ */
+
 class CajaAhorro
 {
     public static function Responde($respuesta, $mensaje, $datos = null, $error = null)

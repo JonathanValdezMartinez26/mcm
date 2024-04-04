@@ -138,30 +138,29 @@ class Ahorro extends Controller
     }';
     private $primeraMayuscula = 'const primeraMayuscula = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1)';
     private $imprimeTicket = <<<script
-    const imprimeTicket = (ticket, sucursal = "") => {
+    const imprimeTicket = (ticket, sucursal = '') => {
         const host = window.location.origin
     
-        let plantilla = "<!DOCTYPE html>"
-        plantilla += "<html lang='es'>"
-        plantilla += "<head>"
-        plantilla += "<meta charset='UTF-8'>"
-        plantilla += "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-        plantilla += "<link rel='shortcut icon' href='" + host + "/img/logo.png'>"
-        plantilla += "<title>Ticket: " + ticket + "</title>"
-        plantilla += "</head>"
-        plantilla += "<body style='margin: 0; padding: 0; background-color: #333333;'>"
-        plantilla +=
-            "<iframe src='" +
-            host +
-            "/Ahorro/Ticket/?ticket?" +
-            ticket + '&sucursal=' + sucursal
-            "/' style='width: 100%; height: 99vh; border: none; margin: 0; padding: 0;'></iframe>"
-        plantilla += "</body>"
-        plantilla += "</html>"
+        let plantilla = '<!DOCTYPE html>'
+        plantilla += '<html lang="es">'
+        plantilla += '<head>'
+        plantilla += '<meta charset="UTF-8">'
+        plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+        plantilla += '<link rel="shortcut icon" href="" + host + "/img/logo.png">'
+        plantilla += '<title>Ticket: ' + ticket + '</title>'
+        plantilla += '</head>'
+        plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
+        plantilla += '<iframe src="'
+            + host + '/Ahorro/Ticket/?'
+            + 'ticket=' + ticket
+            + '&sucursal=' + sucursal
+            + '" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
+        plantilla += '</body>'
+        plantilla += '</html>'
     
-        const blob = new Blob([plantilla], { type: "text/html" })
+        const blob = new Blob([plantilla], { type: 'text/html' })
         const url = URL.createObjectURL(blob)
-        window.open(url, "_blank")
+        window.open(url, '_blank')
     }
     script;
     private $imprimeContrato = <<<script
@@ -177,10 +176,12 @@ class Ahorro extends Controller
         plantilla += '<title>Contrato ' + numero_contrato + '</title>'
         plantilla += '</head>'
         plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
-        plantilla +=
-            '<iframe src="' + host + '/Ahorro/Contrato/?contrato=' +
-            numero_contrato + '&producto=' + producto +
-            '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
+        plantilla += '<iframe src="'
+            + host
+            + '/Ahorro/Contrato/?'
+            + 'contrato=' + numero_contrato
+            + '&producto=' + producto
+            + '" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
         plantilla += "</body>"
         plantilla += "</html>"
     
@@ -1924,7 +1925,6 @@ class Ahorro extends Controller
 
         $tabla = <<<html
         <div class="contenedor">
-            <img src="img/logo.png" alt="Logo de la Empresa" class="logo">
             <h1>Contrato de Cuenta de Ahorro</h1>
             <div class="seccion">
                 <h2 class="seccion-title">Datos Generales</h2>
@@ -1995,8 +1995,8 @@ class Ahorro extends Controller
         $nombreArchivo = "Contrato " . $contrato;
 
         $mpdf = new \mPDF('c');
-        $mpdf->SetHTMLFooter('<div style="text-align:right; font-size: 10px;">Fecha de impresión  ' . date('d/m/Y H:i:s') . '</div><div style="text-align:center; font-size: 11px;">Página {PAGENO} de {nb}</div>');
-        $mpdf->h2toc = array('H5' => 0, 'H6' => 1);
+        $mpdf->SetHTMLHeader('<div style="text-align:right; font-size: 10px;">Fecha de impresión  ' . date('d/m/Y H:i:s') . '</div>');
+        $mpdf->SetHTMLFooter('<div style="text-align:center; font-size: 11px;">Página {PAGENO} de {nb}</div>');
         $mpdf->SetTitle($nombreArchivo);
         $mpdf->WriteHTML($style, 1);
         $mpdf->WriteHTML($tabla, 2);
