@@ -298,8 +298,8 @@
     </div>
 </div>
 
-<!-- <div class="modal fade in" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block; padding-right: 15px;"> -->
-<div class="modal fade" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade in" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block; padding-right: 15px;">
+    <!-- <div class="modal fade" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> -->
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -353,17 +353,23 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6" style="font-size: 18px; padding-top: 5px;">
-                                <label style="color: #000000">Depósito de apertura</label>
+                            <div class="col-md-3" style="font-size: 18px; padding-top: 5px;">
+                                <label style="color: #000000">Movimiento:</label>
+                            </div>
+                            <div class="col-md-4" style="text-align: center; font-size: 18px; padding-top: 5px;">
+                                <input type="radio" name="esDeposito" id="deposito" onchange=cambioMovimiento(event) checked>
+                                <label for="deposito">Depósito</label>
                             </div>
                             <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                 <h3>$</h3>
                             </div>
-                            <div class="col-md-5" style="padding-top: 5px;">
-                                <input type="number" class="form-control" id="deposito_inicial" name="deposito_inicial" min=100 max=100000 placeholder="0.00" style="font-size: 25px;" onkeyup=validaDeposito(event) onkeydown=soloNumeros(event)>
+                            <div class="col-md-4" style="padding-top: 5px;">
+                                <input type="number" class="form-control" id="monto" name="monto" min="1" max="100000" placeholder="0.00" style="font-size: 25px;" onkeyup=validaDeposito(event) onkeydown=soloNumeros(event) disabled>
                             </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-12">
-                                <input type="text" class="form-control" id="deposito_inicial_letra" name="deposito_inicial_letra" style="border: 1px solid #000000; text-align: center; font-size: 25px;" readonly>
+                                <input type="text" class="form-control" id="monto_letra" name="monto_letra" style="border: 1px solid #000000; text-align: center; font-size: 25px;" readonly>
                             </div>
                         </div>
                         <div class="row">
