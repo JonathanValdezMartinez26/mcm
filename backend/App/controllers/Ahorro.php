@@ -1754,7 +1754,7 @@ class Ahorro extends Controller
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Cuenta Peque")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha', date('Y-m-d'));
+        View::set('fecha', date('d/m/Y H:i:s'));
         View::render("caja_menu_peque");
     }
 

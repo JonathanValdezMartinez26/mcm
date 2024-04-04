@@ -104,7 +104,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="fechaRegistro">Fecha de registro del titular</label>
+                                                <label for="fechaRegistro">Fecha de registro del titular (SICAFIN)</label>
                                                 <input type="text" class="form-control" id="fechaRegistro" readonly>
                                             </div>
                                         </div>

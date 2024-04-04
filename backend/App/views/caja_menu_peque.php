@@ -121,7 +121,7 @@
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="form-group">
-                                                            <label for="cliente">Número cliente SICAFIN</label>
+                                                            <label for="cliente">Código cliente SICAFIN</label>
                                                             <input type="number" class="form-control" id="cliente" name="cliente" readonly>
                                                         </div>
                                                     </div>
@@ -147,7 +147,7 @@
                                                     <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label for="fecha_pago">Fecha del depósito</label>
-                                                            <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" value="<?= $fecha; ?>" readonly>
+                                                            <input type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?= $fecha; ?>" readonly>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-12">
