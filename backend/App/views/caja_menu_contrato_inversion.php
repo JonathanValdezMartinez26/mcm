@@ -122,7 +122,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="cliente">Número cliente SICAFIN</label>
+                                        <label for="cliente">Código de cliente SICAFIN</label>
                                         <input type="number" class="form-control" id="cliente" name="cliente" readonly>
                                     </div>
                                 </div>
@@ -195,7 +195,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-8" style="display: flex; justify-content: flex-start;">
-                                    <h4>Saldo actual cuenta ahorro corriente</h4>
+                                    <h4>Saldo actual ahorro cuenta corriente</h4>
                                 </div>
                                 <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                     <h4>$</h4>
@@ -209,7 +209,7 @@
                                     <h4 id="simboloOperacion">-</h4>
                                 </div>
                                 <div class="col-md-7" style="display: flex; justify-content: flex-start;">
-                                    <h4 id="descOperacion">Transferencia a cuenta de Inversión</h4>
+                                    <h4 id="descOperacion">Transferencia a cuenta de inversión</h4>
                                 </div>
                                 <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                     <h4>$</h4>
@@ -220,7 +220,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-8" style="display: flex; justify-content: flex-start;">
-                                    <h2>Saldo final cuenta ahorro corriente</h2>
+                                    <h2>Saldo final ahorro cuenta corriente</h2>
                                 </div>
                                 <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                     <h4>$</h4>

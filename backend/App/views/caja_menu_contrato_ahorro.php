@@ -96,7 +96,7 @@
                                             <hr>
                                         </div>
                                         <div class="col-md-4">
-                                            <label for="movil">Código de cliente (SICAFIN) *</label>
+                                            <label for="movil">Código de cliente SICAFIN *</label>
                                             <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" value="<?= $cliente ?>" required>
                                         </div>
 
@@ -122,7 +122,7 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label for="noCliente">Clave de cliente</label>
+                                                        <label for="noCliente">Código de cliente SICAFIN</label>
                                                         <input type="number" class="form-control" id="noCliente" readonly>
                                                     </div>
                                                 </div>
@@ -337,7 +337,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="codigo_cl">Número de cliente SICAFIN</label>
+                                    <label for="codigo_cl">Código de cliente SICAFIN</label>
                                     <input type="number" class="form-control" id="codigo_cl" name="codigo_cl" value="<?php echo $credito; ?>" readonly>
                                 </div>
                             </div>

@@ -101,16 +101,28 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4 tile_stats_count">
+                                <div class="col-md-8 tile_stats_count">
                                     <div class="form-group">
-                                        <label for="cliente">Cliente</label>
-                                        <input type="text" class="form-control" id="cliente" name="cliente" readonly>
+                                        <label for="nombre">Nombre del cliente</label>
+                                        <input type="text" class="form-control" id="nombre" name="nombre" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-4 tile_stats_count">
                                     <div class="form-group">
-                                        <label for="contrato">Contrato</label>
+                                        <label for="curp">CURP</label>
+                                        <input type="text" class="form-control" id="curp" name="curp" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 tile_stats_count">
+                                    <div class="form-group">
+                                        <label for="contrato">Número de contrato</label>
                                         <input type="text" class="form-control" id="contrato" name="contrato" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 tile_stats_count">
+                                    <div class="form-group">
+                                        <label for="cliente">Código de cliente SICAFIN</label>
+                                        <input type="text" class="form-control" id="cliente" name="cliente" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-4 tile_stats_count">

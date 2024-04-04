@@ -104,7 +104,7 @@
                                         <hr>
                                     </div>
                                     <div class="col-md-4">
-                                        <label for="movil">Código de cliente (SICAFIN) *</label>
+                                        <label for="movil">Código de cliente SICAFIN *</label>
                                         <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
                                     </div>
 
@@ -145,7 +145,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="cliente">Número cliente SICAFIN</label>
+                                        <label for="cliente">Código de cliente SICAFIN</label>
                                         <input type="number" class="form-control" id="cliente" name="cliente" readonly>
                                     </div>
                                 </div>

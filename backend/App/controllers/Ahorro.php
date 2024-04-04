@@ -190,6 +190,41 @@ class Ahorro extends Controller
         window.open(url, "_blank")
     }
     script;
+    private $sinContrato = <<<script
+    const sinContrato = (datosCliente) => {
+        if (datosCliente["NO_CONTRATOS"] == 0) {
+            swal({
+                title: "Cuenta de ahorro corriente",
+                text: "El cliente " + datosCliente['CDGCL'] + " no tiene una cuenta de ahorro.\\nDesea aperturar una cuenta de ahorro en este momento?",
+                icon: "info",
+                buttons: ["No", "Sí"],
+                dangerMode: true
+            }).then((abreCta) => {
+                if (abreCta) {
+                    window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + datosCliente['CDGCL']
+                    return
+                }
+            })
+            return false
+        }
+        if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
+            swal({
+                title: "Cuenta de ahorro corriente",
+                text: "El cliente " + datosCliente['CDGCL'] + " no ha completado el proceso de apertura de la cuenta de ahorro.\\nDesea completar el proceso en este momento?",
+                icon: "info",
+                buttons: ["No", "Sí"],
+                dangerMode: true
+            }).then((abreCta) => {
+                if (abreCta) {
+                    window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + datosCliente['CDGCL']
+                    return
+                }
+            })
+            return false
+        }
+        return true
+    }
+    script;
 
     function __construct()
     {
@@ -657,6 +692,7 @@ class Ahorro extends Controller
             {$this->numeroLetras}
             {$this->primeraMayuscula}
             {$this->imprimeTicket}
+            {$this->sinContrato}
             
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado").value
@@ -674,39 +710,7 @@ class Ahorro extends Controller
                         limpiaDatosCliente()
                         respuesta = JSON.parse(respuesta)
                         if (!respuesta.success) {
-                            if (respuesta.datos) {
-                                const datosCliente = respuesta.datos
-                                if (datosCliente["NO_CONTRATOS"] == 0) {
-                                    swal({
-                                        title: "Cuenta de ahorro corriente",
-                                        text: "El cliente " + noCliente + " no tiene una cuenta de ahorro.\\nDesea aperturar una cuenta de ahorro en este momento?",
-                                        icon: "info",
-                                        buttons: ["No", "Sí"],
-                                        dangerMode: true
-                                    }).then((abreCta) => {
-                                        if (abreCta) {
-                                            window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
-                                            return
-                                        }
-                                    })
-                                    return
-                                }
-                                if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
-                                    swal({
-                                        title: "Cuenta de ahorro corriente",
-                                        text: "El cliente " + noCliente + " no ha completado el proceso de apertura de la cuenta de ahorro.\\nDesea completar el proceso en este momento?",
-                                        icon: "info",
-                                        buttons: ["No", "Sí"],
-                                        dangerMode: true
-                                    }).then((abreCta) => {
-                                        if (abreCta) {
-                                            window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
-                                            return
-                                        }
-                                    })
-                                    return
-                                }
-                            }
+                            if (respuesta.datos && !sinContrato(respuesta.datos)) return
                              
                             limpiaDatosCliente()
                             return showError(respuesta.mensaje)
@@ -933,6 +937,7 @@ class Ahorro extends Controller
             {$this->numeroLetras}
             {$this->primeraMayuscula}
             {$this->imprimeTicket}
+            {$this->sinContrato}
             
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado").value
@@ -944,25 +949,19 @@ class Ahorro extends Controller
                 
                 $.ajax({
                     type: "POST",
-                    url: "/Ahorro/BuscaContrato/",
+                    url: "/Ahorro/BuscaContratoAhorro/",
                     data: { cliente: noCliente },
                     success: (respuesta) => {
                         limpiaDatosCliente()
                         respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) return showError(respuesta.mensaje)
-                        const datosCliente = respuesta.datos
-                        
-                        if (datosCliente.CONTRATO_COMPLETO == 0) {
-                            document.querySelector("#btnRegistraOperacion").disabled = true
-                            showError("La apertura de contrato no ha sido concluida correctamente.").then(() => {
-                                document.querySelector("#mdlFecha_pago").value = getHoy()
-                                document.querySelector("#mdlContrato").value = datosCliente.CONTRATO
-                                document.querySelector("#mdlCodigo_cl").value = noCliente
-                                document.querySelector("#mdlNombre_cliente").value = datosCliente.NOMBRE
-                                $("#modal_agregar_pago").modal("show")
-                            })
+                        if (!respuesta.success) {
+                            if (respuesta.datos && !sinContrato(respuesta.datos)) return
+                             
+                            limpiaDatosCliente()
+                            return showError(respuesta.mensaje)
                         }
                          
+                        const datosCliente = respuesta.datos
                         const saldoActual = parseFloat(datosCliente.SALDO)
                          
                         document.querySelector("#nombre").value = datosCliente.NOMBRE
@@ -988,6 +987,8 @@ class Ahorro extends Controller
                 document.querySelector("#registroOperacion").reset()
                 document.querySelector("#monto").disabled = true
                 document.querySelector("#btnRegistraOperacion").disabled = true
+                document.querySelector("#plazo").innerHTML = ""
+                document.querySelector("#plazo").disabled = true
                 habiltaEspecs()
             }
             
@@ -1139,6 +1140,10 @@ class Ahorro extends Controller
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
+            {$this->sinContrato}
+            {$this->validarYbuscar}
+            {$this->soloNumeros}
+            {$this->primeraMayuscula}
            
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado").value
@@ -1150,28 +1155,41 @@ class Ahorro extends Controller
                 
                 $.ajax({
                     type: "POST",
-                    url: "/Ahorro/BuscaContrato/",
+                    url: "/Ahorro/BuscaContratoAhorro/",
                     data: { cliente: noCliente },
                     success: (respuesta) => {
-                        limpiaDatos()
+                        limpiaDatosCliente()
                         respuesta = JSON.parse(respuesta)
-                         
-                        if (!respuesta.success) return showError(respuesta.mensaje)
-                        const datosCliente = respuesta.datos
-                         
-                        const inversiones = getInversiones(datosCliente.CONTRATO)
+                        if (!respuesta.success) {
+                            if (respuesta.datos && !sinContrato(respuesta.datos)) return
+                
+                            limpiaDatosCliente()
+                            return showError(respuesta.mensaje)
+                        }
+                
+                        const inversiones = getInversiones(respuesta.datos.CONTRATO)
                         if (!inversiones) return
-                         
                         let inversionesTotal = 0
-                         
+                
                         const filas = document.createDocumentFragment()
-                        inversiones.forEach(inversion => {
+                        inversiones.forEach((inversion) => {
                             const fila = document.createElement("tr")
-                            Object.keys(inversion).forEach(key => {
+                            Object.keys(inversion).forEach((key) => {
                                 let dato = inversion[key]
-                                if (["APERTURA", "VENCIMIENTO", "LIQUIDACION"].includes(key)) dato = dato ? new Date(dato).toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' }) : ""
-                                if (["RENDIMIENTO", "MONTO"].includes(key)) dato = parseFloat(dato).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })
-                                 
+                                // if (["APERTURA", "VENCIMIENTO", "LIQUIDACION"].includes(key))
+                                //     dato = dato
+                                //         ? new Date(dato).toLocaleDateString("es-MX", {
+                                //               year: "numeric",
+                                //               month: "2-digit",
+                                //               day: "2-digit"
+                                //           })
+                                //         : ""
+                                if (["RENDIMIENTO", "MONTO"].includes(key))
+                                    dato = parseFloat(dato).toLocaleString("es-MX", {
+                                        style: "currency",
+                                        currency: "MXN"
+                                    })
+                
                                 inversionesTotal += key === "MONTO" ? parseFloat(inversion[key]) : 0
                                 const celda = document.createElement("td")
                                 celda.innerText = dato
@@ -1179,11 +1197,17 @@ class Ahorro extends Controller
                             })
                             filas.appendChild(fila)
                         })
-                         
+                
+                        const datosCliente = respuesta.datos
                         document.querySelector("#datosTabla").appendChild(filas)
-                        document.querySelector("#inversion").value = inversionesTotal.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })
+                        document.querySelector("#inversion").value = inversionesTotal.toLocaleString("es-MX", {
+                            style: "currency",
+                            currency: "MXN"
+                        })
                         document.querySelector("#cliente").value = datosCliente.CDGCL
                         document.querySelector("#contrato").value = datosCliente.CONTRATO
+                        document.querySelector("#nombre").value = datosCliente.NOMBRE
+                        document.querySelector("#curp").value = datosCliente.CURP
                     },
                     error: (error) => {
                         console.error(error)
@@ -1191,33 +1215,35 @@ class Ahorro extends Controller
                         showError("Ocurrió un error al buscar el cliente.")
                     }
                 })
+            }
                  
-                const limpiaDatos = () => {
-                    document.querySelector("#datosTabla").innerHTML = ""
-                    document.querySelector("#cliente").value = ""
-                    document.querySelector("#contrato").value = ""
-                    document.querySelector("#inversion").value = ""
-                }
-                 
-                const getInversiones = (contrato) => {
-                    let inversiones = null
-                    $.ajax({
-                        type: "GET",
-                        url: "/Ahorro/GetInversiones/?contrato=" + contrato,
-                        async: false,
-                        success: (respuesta) => {
-                            respuesta = JSON.parse(respuesta)
-                            if (!respuesta.success) return showError(respuesta.mensaje)
-                            inversiones = respuesta.datos
-                        },
-                        error: (error) => {
-                            console.error(error)
-                            showError("Ocurrió un error al buscar las inversiones.")
-                        }
-                    })
-                     
-                    return inversiones
-                }
+            const limpiaDatosCliente = () => {
+                document.querySelector("#datosTabla").innerHTML = ""
+                document.querySelector("#cliente").value = ""
+                document.querySelector("#contrato").value = ""
+                document.querySelector("#inversion").value = ""
+                document.querySelector("#nombre").value = ""
+                document.querySelector("#curp").value = ""
+            }
+                
+            const getInversiones = (contrato) => {
+                let inversiones = null
+                $.ajax({
+                    type: "GET",
+                    url: "/Ahorro/GetInversiones/?contrato=" + contrato,
+                    async: false,
+                    success: (respuesta) => {
+                        respuesta = JSON.parse(respuesta)
+                        if (!respuesta.success) return showError(respuesta.mensaje)
+                        inversiones = respuesta.datos
+                    },
+                    error: (error) => {
+                        console.error(error)
+                        showError("Ocurrió un error al buscar las inversiones.")
+                    }
+                })
+                    
+                return inversiones
             }
         </script>
         html;
@@ -1359,6 +1385,21 @@ class Ahorro extends Controller
                 if (document.querySelector("#curp").value.length !== 18) {
                     showError("La CURP debe tener 18 caracteres.")
                     return false
+                }
+                 
+                if (document.querySelector("#edad").value > 17) {
+                    showError("El peque a registrar debe tener menos de 18 años.")
+                    return false
+                }
+                 
+                if (document.querySelector("#apellido2").value === "") {
+                    const respuesta = await swal({
+                        title: "Cuenta de ahorro Peques™",
+                        text: "No se ha capturado el segundo apellido.\\n¿Desea continuar con el registro?",
+                        icon: "info",
+                        buttons: ["No", "Sí"]
+                    })
+                    if (!respuesta) return false
                 }
                  
                 const cliente = document.querySelector("#nombre").value

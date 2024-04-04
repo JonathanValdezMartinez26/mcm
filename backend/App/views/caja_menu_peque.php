@@ -121,7 +121,7 @@
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="form-group">
-                                                            <label for="cliente">Código cliente SICAFIN</label>
+                                                            <label for="cliente">Código de cliente SICAFIN</label>
                                                             <input type="number" class="form-control" id="cliente" name="cliente" readonly>
                                                         </div>
                                                     </div>

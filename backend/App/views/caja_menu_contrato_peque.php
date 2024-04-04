@@ -99,26 +99,29 @@
                                     </div>
                                     <div class="col-md-8">
                                         <div class="col-md-12">
-                                            <p><b><span class="fa fa-sticky-note"></span> Identificación del cliente</b></p>
                                             <p>Los campos marcados con un asterisco (*) son obligatorios.</p>
+                                            <p><b><span class="fa fa-sticky-note"></span> Identificación del cliente</b></p>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="fechaRegistro">Fecha de registro del titular (SICAFIN)</label>
+                                                <label for="fechaRegistro">Fecha de registro del cliente</label>
                                                 <input type="text" class="form-control" id="fechaRegistro" readonly>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="noCliente">Clave de cliente del titular</label>
+                                                <label for="noCliente">Código de cliente SICAFIN</label>
                                                 <input type="number" class="form-control" id="noCliente" readonly>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label for="nombre">Nombre completo del Titular</label>
+                                                <label for="nombre">Nombre del cliente</label>
                                                 <input type="text" class="form-control" id="nombre" readonly>
                                             </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <p><b><span class="fa fa-sticky-note"></span> Identificación del peque</b></p>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
