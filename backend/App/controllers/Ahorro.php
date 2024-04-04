@@ -179,7 +179,7 @@ class Ahorro extends Controller
         plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
         plantilla +=
             '<iframe src="' + host + '/Ahorro/Contrato/?contrato=' +
-            numero_contrato + '&producto=' + producto
+            numero_contrato + '&producto=' + producto +
             '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
         plantilla += "</body>"
         plantilla += "</html>"
@@ -263,7 +263,7 @@ class Ahorro extends Controller
                             const datosCliente = respuesta.datos
                             document.querySelector("#btnGeneraContrato").disabled = true
                             if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 0) {
-                                showInfo("La apertura del contrato no ha concluido, realice el deposito de apertura.").then(() => {
+                                showInfo("La apertura del contrato no ha concluido, realice el depósito de apertura.").then(() => {
                                     document.querySelector("#fecha_pago").value = getHoy()
                                     document.querySelector("#contrato").value = datosCliente.CONTRATO
                                     document.querySelector("#codigo_cl").value = datosCliente.CDGCL
@@ -313,6 +313,9 @@ class Ahorro extends Controller
                 document.querySelector("#parentesco_" + numBeneficiario).disabled = !habilitar
                 document.querySelector("#porcentaje_" + numBeneficiario).disabled = !habilitar
                 document.querySelector("#btnBen" + numBeneficiario).disabled = !habilitar
+                document.querySelector("#tasa").disabled = false
+                document.querySelector("#sucursal").disabled = false
+                document.querySelector("#ejecutivo").disabled = false
             }
              
             const limpiaDatosCliente = () => {
@@ -334,6 +337,9 @@ class Ahorro extends Controller
                 document.querySelector("#btnGeneraContrato").disabled = true
                 document.querySelector("#btnGuardar").innerText = txtGuardaContrato
                 document.querySelector("#marcadores").style.opacity = "0"
+                document.querySelector("#tasa").disabled = true
+                document.querySelector("#sucursal").disabled = true
+                document.querySelector("#ejecutivo").disabled = true
             }
             
             const generaContrato = async (e) => {
@@ -378,6 +384,7 @@ class Ahorro extends Controller
                         document.querySelector("#contrato").value = contrato.contrato
                         document.querySelector("#codigo_cl").value = noCredito
                         document.querySelector("#nombre_cliente").value = document.querySelector("#nombre").value
+                        document.querySelector("#mdlCurp").value = document.querySelector("#curp").value
                         imprimeContrato(contrato.contrato)
                         
                         document.querySelector("#chkCreacionContrato").classList.remove("red")
@@ -470,14 +477,18 @@ class Ahorro extends Controller
                 const val = () => {
                     let porcentaje = 0
                     for (let i = 1; i <= 3; i++) {
-                        if (document.querySelector("#ben" + i).style.opacity === "1") {
-                            if (!document.querySelector("#beneficiario_" + i).value) return false
-                            if (document.querySelector("#parentesco_" + i).selectedIndex === 0) return false
-                            if (!document.querySelector("#porcentaje_" + i).value) return false
-                        }
                         porcentaje += parseFloat(document.querySelector("#porcentaje_" + i).value) || 0
+                        // if (document.querySelector("#ben" + i).style.opacity === "1") {
+                        //     if (!document.querySelector("#beneficiario_" + i).value) return false
+                        //     if (document.querySelector("#parentesco_" + i).selectedIndex === 0) return false
+                        //     if (!document.querySelector("#porcentaje_" + i).value) return false
+                        // }
                     }
                      
+                    document.querySelector("#btnBen1").disabled = porcentaje >= 100 && document.querySelector("#btnBen1").querySelector("i").classList.contains("fa-plus")
+                    document.querySelector("#btnBen2").disabled = porcentaje >= 100 && document.querySelector("#btnBen2").querySelector("i").classList.contains("fa-plus")
+                    document.querySelector("#btnBen3").disabled = porcentaje >= 100 && document.querySelector("#btnBen3").querySelector("i").classList.contains("fa-plus")
+                    
                     if (porcentaje > 100) {
                         e.preventDefault()
                         e.target.value = ""
@@ -486,7 +497,6 @@ class Ahorro extends Controller
                      
                     return porcentaje === 100
                 }
-                 
                 if (e.target.tagName === "SELECT") actualizarOpciones(e.target)
                  
                 document.querySelector("#btnGeneraContrato").disabled = !val()
@@ -541,6 +551,7 @@ class Ahorro extends Controller
                         }
                     }
                 }
+                camposLlenos(event)
             }
              
             const moveData = (from, to) => {
@@ -730,7 +741,8 @@ class Ahorro extends Controller
                 if (monto <= 0) {
                     e.preventDefault()
                     e.target.value = ""
-                    showError("El monto a depositar debe ser mayor a 0")
+                    const tipo = document.querySelector("#deposito").checked ? "depositar" : (document.querySelector("#retiro").checked ? "retirar" : "registrar")
+                    showError("El monto a " + tipo + " debe ser mayor a 0")
                 }
                  
                 if (monto > montoMaximo) {

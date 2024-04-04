@@ -183,13 +183,13 @@ class CajaAhorro
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryOne($queryValidacion);
-            if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
-            if ($res['NO_CONTRATOS'] >= 1) return self::Responde(false, "El cliente {$datos['cliente']} ya cuenta con un contrato de ahorro", $res);
+            if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}.");
+            if ($res['NO_CONTRATOS'] >= 1) return self::Responde(false, "El cliente {$datos['cliente']} ya cuenta con un contrato de ahorro.", $res);
 
-            if ($res) return self::Responde(true, "Consulta realizada correctamente", $res);
-            return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
+            if ($res) return self::Responde(true, "Consulta realizada correctamente.", $res);
+            return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}.");
         } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());
+            return self::Responde(false, "Ocurrió un error al consultar los datos del cliente.", null, $e->getMessage());
         }
     }
 
@@ -229,12 +229,12 @@ class CajaAhorro
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryOne($query);
-            if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
-            if ($res['NO_CONTRATOS'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro", $res);
-            if ($res['NO_CONTRATOS'] >= 1 && $res['CONTRATO_COMPLETO'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no ha concluido el proceso de apertura de su cuenta de ahorro", $res);
-            return self::Responde(true, "Consulta realizada correctamente", $res);
+            if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}.");
+            if ($res['NO_CONTRATOS'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro.", $res);
+            if ($res['NO_CONTRATOS'] >= 1 && $res['CONTRATO_COMPLETO'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no ha concluido el proceso de apertura de su cuenta de ahorro.", $res);
+            return self::Responde(true, "Consulta realizada correctamente.", $res);
         } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());
+            return self::Responde(false, "Ocurrió un error al consultar los datos del cliente.", null, $e->getMessage());
         }
     }
 
@@ -319,20 +319,20 @@ class CajaAhorro
             try {
                 $mysqli = Database::getInstance();
                 $res = $mysqli->insertaMultiple($inserts, $datosInsert);
-                if ($res) return self::Responde(true, "Contrato de ahorro registrado correctamente", ['contrato' => $noContrato]);
-                return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro");
+                if ($res) return self::Responde(true, "Contrato de ahorro registrado correctamente.", ['contrato' => $noContrato]);
+                return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.");
             } catch (Exception $e) {
-                return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro", null, $e->getMessage());
+                return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.", null, $e->getMessage());
             }
         } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al validar si el cliente ya cuenta con un contrato de ahorro", null, $e->getMessage());
+            return self::Responde(false, "Ocurrió un error al validar si el cliente ya cuenta con un contrato de ahorro.", null, $e->getMessage());
         }
     }
 
     public static function AddPagoApertura($datos)
     {
-        if ($datos['deposito_inicial'] == 0) return self::Responde(false, "El monto de apertura no puede ser de 0");
-        if ($datos['saldo_inicial'] < $datos['sma']) return self::Responde(false, "El saldo inicial no puede ser menor a " . $datos['sma']);
+        if ($datos['deposito_inicial'] == 0) return self::Responde(false, "El monto de apertura no puede ser de 0.");
+        if ($datos['saldo_inicial'] < $datos['sma']) return self::Responde(false, "El saldo inicial no puede ser menor a " . $datos['sma'] . ".");
 
         $query = [
             self::GetQueryTicket(),
@@ -374,11 +374,11 @@ class CajaAhorro
 
             if ($res) {
                 $ticket = self::RecuperaTicket($datos['contrato']);
-                return self::Responde(true, "Pago de apertura registrado correctamente", ['ticket' => $ticket['CODIGO']]);
+                return self::Responde(true, "Pago de apertura registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
-            return self::Responde(false, "Ocurrió un error al registrar el pago de apertura");
+            return self::Responde(false, "Ocurrió un error al registrar el pago de apertura.");
         } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al registrar el pago de apertura", null, $e->getMessage());
+            return self::Responde(false, "Ocurrió un error al registrar el pago de apertura.", null, $e->getMessage());
         }
     }
 
@@ -413,11 +413,11 @@ class CajaAhorro
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
                 $ticket = self::RecuperaTicket($datos['contrato']);
-                return self::Responde(true, "El " . $tipoMov . " fue registrado correctamente", ['ticket' => $ticket['CODIGO']]);
+                return self::Responde(true, "El " . $tipoMov . " fue registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
-            return self::Responde(false, "Ocurrió un error al registrar el " . $tipoMov);
+            return self::Responde(false, "Ocurrió un error al registrar el " . $tipoMov . ".");
         } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al registrar el " . $tipoMov, null, $e->getMessage());
+            return self::Responde(false, "Ocurrió un error al registrar el " . $tipoMov  . ".", null, $e->getMessage());
         }
     }
 
@@ -431,7 +431,7 @@ class CajaAhorro
         if (count($validar) > 0) return $resultado;
 
         $resultado['success'] = false;
-        $resultado['mensaje'] = "Se detecto diferencia entre el registro del ticket y los movimiento de ahorro";
+        $resultado['mensaje'] = "Se detecto diferencia entre el registro del ticket y los movimiento de ahorro.";
         return $resultado;
     }
 
@@ -744,12 +744,12 @@ class CajaAhorro
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryOne($queryValidacion);
-            if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
-            if ($res['NO_CONTRATOS'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro", $res);
-            if ($res['NO_CONTRATOS'] >= 1 && $res['CONTRATO_COMPLETO'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no ha concluido el proceso de apertura de su cuenta de ahorro", $res);
-            return self::Responde(true, "Consulta realizada correctamente", $res);
+            if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}.");
+            if ($res['NO_CONTRATOS'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro.", $res);
+            if ($res['NO_CONTRATOS'] >= 1 && $res['CONTRATO_COMPLETO'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no ha concluido el proceso de apertura de su cuenta de ahorro.", $res);
+            return self::Responde(true, "Consulta realizada correctamente.", $res);
         } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());
+            return self::Responde(false, "Ocurrió un error al consultar los datos del cliente.", null, $e->getMessage());
         }
     }
 
@@ -770,7 +770,7 @@ class CajaAhorro
             if ($res) {
                 foreach ($res as $key => $value) {
                     if ($value['CURP'] == $datos['curp']) {
-                        return self::Responde(false, "El cliente (Peque), ya tiene registrada una cuenta de ahorro con el contrato: " . $value['CDG_CONTRATO']);
+                        return self::Responde(false, "El cliente (Peque), ya tiene registrada una cuenta de ahorro con el contrato: " . $value['CDG_CONTRATO'] . ".");
                     }
                 }
             }
@@ -824,13 +824,13 @@ class CajaAhorro
             try {
                 $mysqli = Database::getInstance();
                 $res = $mysqli->insertaMultiple($inserts, $parametros);
-                if ($res) return self::Responde(true, "Contrato de ahorro registrado correctamente", ['contrato' => $noContrato]);
-                return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro");
+                if ($res) return self::Responde(true, "Contrato de ahorro registrado correctamente.", ['contrato' => $noContrato]);
+                return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.");
             } catch (Exception $e) {
-                return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro", null, $e->getMessage());
+                return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.", null, $e->getMessage());
             }
         } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al validar si el cliente ya cuenta con un contrato de ahorro", null, $e->getMessage());
+            return self::Responde(false, "Ocurrió un error al validar si el cliente ya cuenta con un contrato de ahorro.", null, $e->getMessage());
         }
     }
 
@@ -888,14 +888,14 @@ class CajaAhorro
                 sql;
 
                 $res2 = $mysqli->queryOne($qryVal);
-                if (!$res2) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}");
-                if ($res2['NO_CONTRATOS'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro", $res2);
-                if ($res2['NO_CONTRATOS'] >= 1 && $res2['CONTRATO_COMPLETO'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no ha concluido el proceso de apertura de su cuenta de ahorro", $res2);
-                return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con cuentas de ahorro Peques", $res2);
+                if (!$res2) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}.");
+                if ($res2['NO_CONTRATOS'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro.", $res2);
+                if ($res2['NO_CONTRATOS'] >= 1 && $res2['CONTRATO_COMPLETO'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no ha concluido el proceso de apertura de su cuenta de ahorro.", $res2);
+                return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con cuentas de ahorro Peques.", $res2);
             }
-            return self::Responde(true, "Consulta realizada correctamente", $res);
+            return self::Responde(true, "Consulta realizada correctamente.", $res);
         } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al consultar los datos del cliente", null, $e->getMessage());
+            return self::Responde(false, "Ocurrió un error al consultar los datos del cliente.", null, $e->getMessage());
         }
     }
 
@@ -940,11 +940,11 @@ class CajaAhorro
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
                 $ticket = self::RecuperaTicket($datos['contrato']);
-                return self::Responde(true, "Inversión registrada correctamente", ['ticket' => $ticket['CODIGO']]);
+                return self::Responde(true, "Inversión registrada correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
-            return self::Responde(false, "Ocurrió un error al registrar la inversión");
+            return self::Responde(false, "Ocurrió un error al registrar la inversión.");
         } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al registrar la inversión", null, $e->getMessage());
+            return self::Responde(false, "Ocurrió un error al registrar la inversión.", null, $e->getMessage());
         }
     }
 
@@ -970,10 +970,10 @@ class CajaAhorro
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryAll($query);
-            if (count($res) === 0) return self::Responde(false, "No se encontraron inversiones para el contrato {$datos['contrato']}");
-            return self::Responde(true, "Consulta realizada correctamente", $res);
+            if (count($res) === 0) return self::Responde(false, "No se encontraron inversiones para el contrato {$datos['contrato']}.");
+            return self::Responde(true, "Consulta realizada correctamente.", $res);
         } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al consultar las inversiones", null, $e->getMessage());
+            return self::Responde(false, "Ocurrió un error al consultar las inversiones.", null, $e->getMessage());
         }
     }
 

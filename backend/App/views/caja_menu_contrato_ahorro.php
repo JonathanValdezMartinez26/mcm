@@ -169,7 +169,7 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="tipo">Tasa Anual</label>
-                                                        <select class="form-control mr-sm-3" autofocus="" type="select" id="tasa" name="tasa">
+                                                        <select class="form-control mr-sm-3" autofocus="" type="select" id="tasa" name="tasa" disabled>
                                                             <option value="5">5 %</option>
                                                         </select>
                                                     </div>
@@ -185,7 +185,7 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="Fecha">Sucursal</label>
-                                                        <select class="form-control mr-sm-3" id="sucursal" name="sucursal">
+                                                        <select class="form-control mr-sm-3" id="sucursal" name="sucursal" disabled>
                                                             <option value="1514">CORPORATIVO</option>
                                                         </select>
                                                     </div>
@@ -193,7 +193,7 @@
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="Fecha">Ejecutivo</label>
-                                                        <select class="form-control mr-sm-3" id="ejecutivo" name="ejecutivo">
+                                                        <select class="form-control mr-sm-3" id="ejecutivo" name="ejecutivo" disabled>
                                                             <option value="135">Ejecutivo Prueba</option>
                                                         </select>
                                                     </div>
@@ -246,7 +246,7 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_2" name="porcentaje_2" oninput=validaPorcentaje(event) disabled>
+                                                    <input type="number" min=1 max=100 class="form-control" id="porcentaje_2" name="porcentaje_2" oninput=camposLlenos(event) disabled>
                                                 </div>
                                                 <div class=" col-md-1">
                                                     <button type="button" id="btnBen2" class="btn btn-primary" onclick=addBeneficiario(event) disabled>
