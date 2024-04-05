@@ -536,6 +536,14 @@ class CajaAhorro
             TO_CHAR(T.FECHA, 'dd/mm/yyyy HH24:MI:SS') AS FECHA,
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE_CLIENTE,
             T.CDG_SUCURSAL,
+            (
+                SELECT
+                    NOMBRE
+                FROM
+                    CO
+                WHERE
+                    CODIGO = T.CDG_SUCURSAL
+            ) AS NOMBRE_SUCURSAL,
             CL.CODIGO,
             APA.CONTRATO,
             T.MONTO,
@@ -1043,6 +1051,26 @@ class CajaAhorro
             CL.CODIGO = APA.CDGCL
         WHERE
             APA.CONTRATO = '{$contrato}'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryOne($query);
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public static function getSucursal($noSuc)
+    {
+        $query = <<<sql
+        SELECT
+            CODIGO, 
+            NOMBRE
+        FROM
+            CO
+        WHERE
+            CODIGO = '$noSuc'
         sql;
 
         try {

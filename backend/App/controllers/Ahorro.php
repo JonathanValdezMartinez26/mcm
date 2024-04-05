@@ -225,6 +225,16 @@ class Ahorro extends Controller
         return true
     }
     script;
+    private $addParametro = <<<script
+    const addParametro = (parametros, newParametro, newValor) => {
+        parametros.push({ name: newParametro, value: newValor })
+    }
+    script;
+    private $remParametro = <<<script
+    const remParametro = (parametros, parametro) => {
+        parametros = parametros.filter((param) => param.name !== parametro)
+    }
+    script;
 
     function __construct()
     {
@@ -275,6 +285,7 @@ class Ahorro extends Controller
             {$this->primeraMayuscula}
             {$this->imprimeTicket}
             {$this->imprimeContrato}
+            {$this->addParametro}
              
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado").value
@@ -346,9 +357,9 @@ class Ahorro extends Controller
              
             const habilitaBeneficiario = (numBeneficiario, habilitar) => {
                 document.querySelector("#beneficiario_" + numBeneficiario).disabled = !habilitar
-                document.querySelector("#parentesco_" + numBeneficiario).disabled = !habilitar
-                document.querySelector("#porcentaje_" + numBeneficiario).disabled = !habilitar
-                document.querySelector("#btnBen" + numBeneficiario).disabled = !habilitar
+                // document.querySelector("#parentesco_" + numBeneficiario).disabled = !habilitar
+                // document.querySelector("#porcentaje_" + numBeneficiario).disabled = !habilitar
+                // document.querySelector("#btnBen" + numBeneficiario).disabled = !habilitar
                 document.querySelector("#tasa").disabled = false
                 document.querySelector("#sucursal").disabled = false
                 document.querySelector("#ejecutivo").disabled = false
@@ -414,7 +425,7 @@ class Ahorro extends Controller
                         }
                         
                         const contrato = respuesta.datos
-                        await showSuccess("Se ha generado el contrato: " + contrato.contrato)
+                        await showSuccess("Se ha generado el contrato: " + contrato.contrato + ".")
                         
                         document.querySelector("#fecha_pago").value = getHoy()
                         document.querySelector("#contrato").value = contrato.contrato
@@ -442,6 +453,7 @@ class Ahorro extends Controller
                 if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura)
                             
                 const datos = $("#AddPagoApertura").serializeArray()
+                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                             
                 $.ajax({
                     type: "POST",
@@ -456,7 +468,7 @@ class Ahorro extends Controller
                         document.querySelector("#AddPagoApertura").reset()
                         $("#modal_agregar_pago").modal("hide")
                         limpiaDatosCliente()
-                        imprimeTicket(respuesta.datos.ticket)
+                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
                     },
                     error: (error) => {
                         console.error(error)
@@ -514,25 +526,39 @@ class Ahorro extends Controller
                     let porcentaje = 0
                     for (let i = 1; i <= 3; i++) {
                         porcentaje += parseFloat(document.querySelector("#porcentaje_" + i).value) || 0
-                        // if (document.querySelector("#ben" + i).style.opacity === "1") {
-                        //     if (!document.querySelector("#beneficiario_" + i).value) return false
-                        //     if (document.querySelector("#parentesco_" + i).selectedIndex === 0) return false
-                        //     if (!document.querySelector("#porcentaje_" + i).value) return false
-                        // }
+                        if (document.querySelector("#ben" + i).style.opacity === "1") {
+                            if (!document.querySelector("#beneficiario_" + i).value) {
+                                document.querySelector("#parentesco_" + i).disabled = true
+                                document.querySelector("#porcentaje_" + i).disabled = true
+                                document.querySelector("#btnBen" + i).disabled = true
+                                return false
+                            }
+                            document.querySelector("#parentesco_" + i).disabled = false
+                             
+                            if (document.querySelector("#parentesco_" + i).selectedIndex === 0) {
+                                document.querySelector("#porcentaje_" + i).disabled = true
+                                document.querySelector("#btnBen" + i).disabled = true
+                                return false
+                            }
+                            document.querySelector("#porcentaje_" + i).disabled = false
+                             
+                            if (!document.querySelector("#porcentaje_" + i).value) {
+                                document.querySelector("#btnBen" + i).disabled = true
+                                return false
+                            }
+                            document.querySelector("#btnBen" + i).disabled = porcentaje >= 100 && document.querySelector("#btnBen1").querySelector("i").classList.contains("fa-plus")
+                        }
                     }
-                     
-                    document.querySelector("#btnBen1").disabled = porcentaje >= 100 && document.querySelector("#btnBen1").querySelector("i").classList.contains("fa-plus")
-                    document.querySelector("#btnBen2").disabled = porcentaje >= 100 && document.querySelector("#btnBen2").querySelector("i").classList.contains("fa-plus")
-                    document.querySelector("#btnBen3").disabled = porcentaje >= 100 && document.querySelector("#btnBen3").querySelector("i").classList.contains("fa-plus")
                     
                     if (porcentaje > 100) {
                         e.preventDefault()
                         e.target.value = ""
-                        showError("La suma de los porcentajes no puede ser mayor a 100%")
+                        showError("La suma de los porcentajes no puede ser mayor a 100%.")
                     }
                      
                     return porcentaje === 100
                 }
+                 
                 if (e.target.tagName === "SELECT") actualizarOpciones(e.target)
                  
                 document.querySelector("#btnGeneraContrato").disabled = !val()
@@ -676,6 +702,7 @@ class Ahorro extends Controller
     public function CuentaCorriente()
     {
         $saldoMinimoApertura = 100;
+        $sesionDat = json_encode($_SESSION);
 
         $extraFooter = <<<html
         <script>
@@ -693,6 +720,7 @@ class Ahorro extends Controller
             {$this->primeraMayuscula}
             {$this->imprimeTicket}
             {$this->sinContrato}
+            {$this->addParametro}
             
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado").value
@@ -820,6 +848,7 @@ class Ahorro extends Controller
             const registraOperacion = (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
+                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                  
                 if (!document.querySelector("#deposito").checked && !document.querySelector("#retiro").checked) {
                     return showError("Seleccione el tipo de operación a realizar.")
@@ -836,14 +865,13 @@ class Ahorro extends Controller
                     url: "/Ahorro/registraOperacion/",
                     data: $.param(datos),
                     success: (respuesta) => {
-                        console.log(respuesta)
                         respuesta = JSON.parse(respuesta)
                         if (!respuesta.success){
                             console.log(respuesta.error)
                             return showError(respuesta.mensaje)
                         }
                         showSuccess(respuesta.mensaje)
-                        imprimeTicket(respuesta.datos.ticket)
+                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
                         limpiaDatosCliente()
                     },
                     error: (error) => {
@@ -938,6 +966,7 @@ class Ahorro extends Controller
             {$this->primeraMayuscula}
             {$this->imprimeTicket}
             {$this->sinContrato}
+            {$this->addParametro}
             
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado").value
@@ -1093,6 +1122,7 @@ class Ahorro extends Controller
             const registraOperacion = (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
+                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                  
                 datos.push({ name: "tasa", value: document.querySelector("#plazo").value })
                 
@@ -1107,7 +1137,7 @@ class Ahorro extends Controller
                             return showError(respuesta.mensaje)
                         }
                         showSuccess(respuesta.mensaje)
-                        imprimeTicket(respuesta.datos.ticket)
+                        imprimeTicket(respuesta.datos.ticket, {$_SESSION['cdgco']})
                         limpiaDatosCliente()
                     },
                     error: (error) => {
@@ -1281,6 +1311,7 @@ class Ahorro extends Controller
             {$this->primeraMayuscula}
             {$this->imprimeTicket}
             {$this->imprimeContrato}
+            {$this->addParametro}
              
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado")
@@ -1758,6 +1789,7 @@ class Ahorro extends Controller
             const registraOperacion = (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
+                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                  
                 if (!document.querySelector("#deposito").checked && !document.querySelector("#retiro").checked) {
                     return showError("Seleccione el tipo de operación a realizar.")
@@ -1781,7 +1813,7 @@ class Ahorro extends Controller
                         }
                          
                         showSuccess(respuesta.mensaje)
-                        imprimeTicket(respuesta.datos.ticket)
+                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
                         limpiaDatosCliente()
                     },
                     error: (error) => {
@@ -1812,10 +1844,16 @@ class Ahorro extends Controller
         }
 
         $nombreArchivo = "Ticket " . $ticket;
+        $mensajeImpresion = 'Fecha de impresión:<br>' . date('d/m/Y H:i:s');
+        if ($sucursal) {
+            $datosImpresion = CajaAhorroDao::getSucursal($sucursal);
+            $mensajeImpresion = 'Fecha y sucursal de impresión:<br>' . date('d/m/Y H:i:s') . ' - ' . $datosImpresion['NOMBRE'] . ' (' . $datosImpresion['CODIGO'] . ')';
+        }
+
 
         $mpdf = new \mPDF('UTF-8', array(90, 190));
         // PIE DE PAGINA
-        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:11px;font-family:Helvetica;">Fecha de impresión: ' . date('d/m/Y H:i:s') . ' Suc. ' . $sucursal . '</div>');
+        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:Helvetica;">' . $mensajeImpresion . '</div>');
 
         $mpdf->SetMargins(0, 0, 5);
         $mpdf->SetTitle($nombreArchivo);
@@ -1838,7 +1876,7 @@ class Ahorro extends Controller
         $mpdf->Cell(60, 4, 'Fecha de la operación: ' . $datos['FECHA'], 0, 1, '');
         $mpdf->Cell(60, 4, 'Método de pago: ' . $datos['METODO'], 0, 1, '');
         $mpdf->MultiCell(60, 4, $datos['RECIBIO'] . ': ' . $datos['NOM_EJECUTIVO'] . ' (' . $datos['COD_EJECUTIVO'] . ')', 0, 1, '');
-        $mpdf->Cell(60, 4, 'Sucursal: ' . $datos['CDG_SUCURSAL'], 0, 1, '');
+        $mpdf->Cell(60, 4, 'Sucursal: ' . $datos['NOMBRE_SUCURSAL'] . ' (' . $datos['CDG_SUCURSAL'] . ')', 0, 1, '');
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
         $mpdf->Ln(5);
