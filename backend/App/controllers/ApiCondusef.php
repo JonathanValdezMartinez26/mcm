@@ -192,7 +192,7 @@ html;
                     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJhMmI1MTc4OC1hMzk3LTQxMjUtOGUxNi1lZWZjMmEyY2E1MzEiLCJ1c2VybmFtZSI6IkN1bHRpdmFPQyIsImluc3RpdHVjaW9uaWQiOiJGOUNGMjUzMy03RjRDLTQ3RkYtOTIyNi04MEE4QjA3OCIsImluc3RpdHVjaW9uQ2xhdmUiOjE1NDk0LCJkZW5vbWluYWNpb25fc29jaWFsIjoiRmluYW5jaWVyYSBDdWx0aXZhLCBTLkEuUC5JLiBkZSBDLlYuLCBTT0ZPTSwgRS5OLlIuIiwic2VjdG9yaWQiOjI0LCJzZWN0b3IiOiJTT0NJRURBREVTIEZJTkFOQ0lFUkFTIERFIE9CSkVUTyBNVUxUSVBMRSBFTlIiLCJpYXQiOjE3MTAzNTEwNTUsImV4cCI6MTcxMTIxNTA1NX0.aac7IoeyX7_JNNLb1z6iixtIqtALaxLi98Ttjx18RNs"
                     const datos = [{
                         QuejasNoTrim: Number(document.querySelector("#QuejasNoTrim").value),
-                        QuejasNum: document.querySelector("#QuejasNum").value,
+                        QuejasNum: Number(document.querySelector("#QuejasNum").value),
                         QuejasFolio: document.querySelector("#QuejasFolio").value,
                         QuejasFecRecepcion: formatoFecha(document.querySelector("#QuejasFecRecepcion").value),
                         MedioId: Number(document.querySelector("#MedioId").value),
@@ -460,10 +460,10 @@ html;
                 e.preventDefault()
                 const token = "token_api"
                 const datos = [{
-                    InstitucionClave: "Cultiva",
-                    Sector: "Sociedades Financieras de Objeto Múltiple E.N.R.",
+                    InstitucionClave: document.querySelector("#InstitucionClave").value,
+                    Sector: document.querySelector("#Sector").value,
                     ConsultasTrim: Number(document.querySelector("#ConsultasTrim").value),
-                    NumConsultas: 1,
+                    NumConsultas: Number(document.querySelector("#NumConsultas").value),
                     ConsultasFolio: document.querySelector("#ConsultasFolio").value,
                     ConsultasEstatusCon: Number(document.querySelector("#ConsultasEstatusCon").value),
                     ConsultasFecAten: formatoFecha(document.querySelector("#ConsultasFecAten").value),
