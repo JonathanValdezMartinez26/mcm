@@ -92,7 +92,8 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="col-md-6">
-                                            <p>Para poder dar de alta un nuevo contrato de una cuenta de Ahorro, el cliente debe estar registrado en SICAFIN, si el cliente no tiene una cuenta abierta solicite el alta a su ADMINISTRADORA.</a>.</p>
+                                            <p>Para la apertura de una cuenta ahorro corriente, el cliente debe estar registrado en SICAFIN, en caso contrario, es necesario solicitar el alta en SICAFIN con la ADMINISTRADORA.</p>
+                                            <!-- <p>Para poder dar de alta un nuevo contrato de una cuenta de Ahorro, el cliente debe estar registrado en SICAFIN, si el cliente no tiene una cuenta abierta solicite el alta a su ADMINISTRADORA.</a>.</p> -->
                                             <hr>
                                         </div>
                                         <div class="col-md-4">
@@ -192,10 +193,11 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <label for="Fecha">Ejecutivo</label>
-                                                        <select class="form-control mr-sm-3" id="ejecutivo" name="ejecutivo" disabled>
+                                                        <label for="nombre_ejecutivo">Ejecutivo</label>
+                                                        <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="<?= $_SESSION['nombre'] ?>" readonly>
+                                                        <!-- <select class="form-control mr-sm-3" id="ejecutivo" name="ejecutivo" disabled>
                                                             <option value="135">Ejecutivo Prueba</option>
-                                                        </select>
+                                                        </select> -->
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">

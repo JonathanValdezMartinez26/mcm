@@ -203,7 +203,6 @@ class CajaAhorro
             $res = $mysqli->queryOne($queryValidacion);
             if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}.");
             if ($res['NO_CONTRATOS'] >= 1) return self::Responde(false, "El cliente {$datos['cliente']} ya cuenta con un contrato de ahorro.", $res);
-
             if ($res) return self::Responde(true, "Consulta realizada correctamente.", $res);
             return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}.");
         } catch (Exception $e) {
@@ -388,7 +387,6 @@ class CajaAhorro
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
-
 
             if ($res) {
                 $ticket = self::RecuperaTicket($datos['contrato']);
@@ -679,7 +677,7 @@ class CajaAhorro
             ) AS COMPROBANTE,
             (
                 SELECT
-                    CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS NOMBRE
+                    DISTINCT CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS NOMBRE
                 FROM
                     PE
                 WHERE
@@ -1078,6 +1076,53 @@ class CajaAhorro
             return $mysqli->queryOne($query);
         } catch (Exception $e) {
             return 0;
+        }
+    }
+
+    public static function RegistraSolicitud($datos)
+    {
+        return self::Responde(true, "Solicitud registrada correctamente.", $datos);
+        $query = <<<sql
+        INSERT INTO SOLICITUD_AHORRO
+            (CDG_CONTRATO, CDG_SUCURSAL, CDG_EJECUTIVO, FECHA_SOLICITUD, ESTATUS)
+        VALUES
+            (:contrato, :sucursal, :ejecutivo, SYSDATE, 'A')
+        sql;
+
+        $queryMov = <<<sql
+        INSERT INTO MOVIMIENTOS_AHORRO
+            (CDG_CONTRATO, CDG_TIPO_PAGO, MONTO, MOVIMIENTO, DESCRIPCION, CDG_TICKET, FECHA_MOV)
+        VALUES
+            (:contrato, '6', :monto, '0', 'SOLICITUD DE APERTURA DE CUENTA DE AHORRO', (SELECT MAX(TO_NUMBER(CODIGO)) AS CODIGO FROM TICKETS_AHORRO WHERE CDG_CONTRATO = :contrato), SYSDATE)
+        sql;
+
+        $queryTicket = self::GetQueryTicket();
+
+        $datosInsert = [
+            [
+                'contrato' => $datos['contrato'],
+                'sucursal' => $datos['sucursal'],
+                'ejecutivo' => $datos['ejecutivo'],
+                'monto' => $datos['monto']
+            ]
+        ];
+
+        $query = [
+            $query,
+            $queryMov,
+            $queryTicket
+        ];
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->insertaMultiple($query, $datosInsert);
+            if ($res) {
+                $ticket = self::RecuperaTicket($datos['contrato']);
+                return self::Responde(true, "Solicitud registrada correctamente.", ['ticket' => $ticket['CODIGO']]);
+            }
+            return self::Responde(false, "Ocurrió un error al registrar la solicitud.");
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al registrar la solicitud.", null, $e->getMessage());
         }
     }
 }

@@ -86,7 +86,6 @@
                                         <p style="font-size: 15px;">Solicitud de Retiro</p>
                                     </a>
                                 </li>
-
                                 <li class="linea">
                                     <a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/">
                                         <p style="font-size: 15px;">Historial Solicitud de Retiro</p>
@@ -100,22 +99,21 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="col-md-6">
-                                        <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p>
+                                        <p>Para realizar un movimiento es necesario que el cliente tenga una cuenta ahorro corriente activa, de lo contrario, es necesaria la creación de una a través de la opción: <a href="/Ahorro/ContratoCuentaCorriente/" target="_blank">Nuevo Contrato</a>.</p>
+                                        <!-- <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p> -->
                                         <hr>
                                     </div>
                                     <div class="col-md-4">
                                         <label for="movil">Código de cliente SICAFIN *</label>
                                         <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
                                     </div>
-
                                     <div class="col-md-2" style="padding-top: 25px">
-                                        <button type="button" class="btn btn-primary" onclick="buscaCliente()">
+                                        <button type="button" class="btn btn-primary" id="btnBskClnt" onclick="buscaCliente()">
                                             <i class="fa fa-search"></i> Buscar
                                         </button>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -131,7 +129,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_pago">Fecha del depósito</label>
+                                        <label for="fecha_pago">Fecha del movimiento</label>
                                         <input type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?= $fecha; ?>" readonly>
                                     </div>
                                 </div>
@@ -152,8 +150,7 @@
                                 <div class="col-md-5">
                                     <div class="form-group">
                                         <label for="nombre_ejecutivo">Nombre del ejecutivo</label>
-                                        <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="Ejecutivo de Prueba" readonly>
-                                        <input type="hidden" class="form-control" id="ejecutivo" name="ejecutivo" value="SOOA">
+                                        <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="<?= $_SESSION['nombre'] ?>" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -176,7 +173,7 @@
                                     <h3>$</h3>
                                 </div>
                                 <div class="col-md-4" style="padding-top: 5px;">
-                                    <input type="number" class="form-control" id="monto" name="monto" min="1" max="100000" placeholder="0.00" style="font-size: 25px;" onkeyup=validaDeposito(event) onkeydown=soloNumeros(event) disabled>
+                                    <input type="number" class="form-control" id="monto" name="monto" min="1" max="<?= $montoMaximoRetiro ?>" placeholder="0.00" style="font-size: 25px;" oninput=validaDeposito(event) onkeydown=soloNumeros(event) disabled>
                                 </div>
                             </div>
                             <div class="row">

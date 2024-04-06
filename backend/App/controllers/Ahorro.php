@@ -17,16 +17,52 @@ class Ahorro extends Controller
     private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
     private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
-    private $validarYbuscar = 'const validarYbuscar = (e, buscar) => {
+    private $validarYbuscar = 'const validarYbuscar = (e) => {
         if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
         if (e.keyCode === 13) buscaCliente()
     }';
-    private $getHoy = 'const getHoy = () => {
+    private $buscaCliente = 'const buscaCliente = () => {
+        document.querySelector("#btnBskClnt").disabled = true
+        const noCliente = document.querySelector("#clienteBuscado").value
+        
+        if (!noCliente) {
+            limpiaDatosCliente()
+            document.querySelector("#btnBskClnt").disabled = false
+            return showError("Ingrese un número de cliente a buscar.")
+        }
+        
+        $.ajax({
+            type: "POST",
+            url: "/Ahorro/BuscaContratoAhorro/",
+            data: { cliente: noCliente },
+            success: (respuesta) => {
+                limpiaDatosCliente()
+                respuesta = JSON.parse(respuesta)
+                if (!respuesta.success) {
+                    if (respuesta.datos && !sinContrato(respuesta.datos)) return
+                     
+                    limpiaDatosCliente()
+                    return showError(respuesta.mensaje)
+                }
+                 
+                llenaDatosCliente(respuesta.datos)
+            },
+            error: (error) => {
+                console.error(error)
+                limpiaDatosCliente()
+                showError("Ocurrió un error al buscar el cliente.")
+            }
+        })
+        
+        document.querySelector("#btnBskClnt").disabled = false
+    }';
+    private $getHoy = 'const getHoy = (completo = true) => {
         const hoy = new Date()
         const dd = String(hoy.getDate()).padStart(2, "0")
         const mm = String(hoy.getMonth() + 1).padStart(2, "0")
         const yyyy = hoy.getFullYear()
-        return dd + "-" + mm + "-" + yyyy + " " + hoy.getHours().toString().padStart(2, "0") + ":" + hoy.getMinutes().toString().padStart(2, "0") + ":" + hoy.getSeconds().toString().padStart(2, "0")
+        const r = dd + "/" + mm + "/" + yyyy
+        return completo ? r  + " " + hoy.getHours().toString().padStart(2, "0") + ":" + hoy.getMinutes().toString().padStart(2, "0") + ":" + hoy.getSeconds().toString().padStart(2, "0") : r
     }';
     private $soloNumeros = 'const soloNumeros = (e) => {
         valKD = false
@@ -258,11 +294,6 @@ class Ahorro extends Controller
     {
         $saldoMinimoApertura = 100;
 
-        $extraHeader = <<<html
-        <title>Nuevo Contrato</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-        html;
-
         $extraFooter = <<<html
         <script>
             window.onload = () => {
@@ -357,9 +388,6 @@ class Ahorro extends Controller
              
             const habilitaBeneficiario = (numBeneficiario, habilitar) => {
                 document.querySelector("#beneficiario_" + numBeneficiario).disabled = !habilitar
-                // document.querySelector("#parentesco_" + numBeneficiario).disabled = !habilitar
-                // document.querySelector("#porcentaje_" + numBeneficiario).disabled = !habilitar
-                // document.querySelector("#btnBen" + numBeneficiario).disabled = !habilitar
                 document.querySelector("#tasa").disabled = false
                 document.querySelector("#sucursal").disabled = false
                 document.querySelector("#ejecutivo").disabled = false
@@ -702,18 +730,17 @@ class Ahorro extends Controller
     public function CuentaCorriente()
     {
         $saldoMinimoApertura = 100;
-        $sesionDat = json_encode($_SESSION);
+        $montoMaximoRetiro = 49999.99;
 
         $extraFooter = <<<html
         <script>
             const saldoMinimoApertura = $saldoMinimoApertura
-            const montoMaximo = 1000000
-            let valKD = false
-         
+            const montoMaximo = $montoMaximoRetiro
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
             {$this->validarYbuscar}
+            {$this->buscaCliente}
             {$this->getHoy}
             {$this->soloNumeros}
             {$this->numeroLetras}
@@ -721,44 +748,14 @@ class Ahorro extends Controller
             {$this->imprimeTicket}
             {$this->sinContrato}
             {$this->addParametro}
-            
-            const buscaCliente = () => {
-                const noCliente = document.querySelector("#clienteBuscado").value
-                
-                if (!noCliente) {
-                    limpiaDatosCliente()
-                    return showError("Ingrese un número de cliente a buscar.")
-                }
-                
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/BuscaContratoAhorro/",
-                    data: { cliente: noCliente },
-                    success: (respuesta) => {
-                        limpiaDatosCliente()
-                        respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) {
-                            if (respuesta.datos && !sinContrato(respuesta.datos)) return
-                             
-                            limpiaDatosCliente()
-                            return showError(respuesta.mensaje)
-                        }
-                         
-                        const datosCliente = respuesta.datos
-                         
-                        document.querySelector("#nombre").value = datosCliente.NOMBRE
-                        document.querySelector("#curp").value = datosCliente.CURP
-                        document.querySelector("#contrato").value = datosCliente.CONTRATO
-                        document.querySelector("#cliente").value = datosCliente.CDGCL
-                        document.querySelector("#saldoActual").value = parseFloat(datosCliente.SALDO).toFixed(2)
-                        document.querySelector("#monto").disabled = false
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        limpiaDatosCliente()
-                        showError("Ocurrió un error al buscar el cliente.")
-                    }
-                })
+         
+            const llenaDatosCliente = (datosCliente) => {
+                document.querySelector("#nombre").value = datosCliente.NOMBRE
+                document.querySelector("#curp").value = datosCliente.CURP
+                document.querySelector("#contrato").value = datosCliente.CONTRATO
+                document.querySelector("#cliente").value = datosCliente.CDGCL
+                document.querySelector("#saldoActual").value = parseFloat(datosCliente.SALDO).toFixed(2)
+                document.querySelector("#monto").disabled = false
             }
              
             const limpiaDatosCliente = () => {
@@ -790,10 +787,7 @@ class Ahorro extends Controller
                     e.target.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
                 }
                 
-                if (e.target.id === "mdlDeposito_inicial") {
-                    return calculaSaldoInicial(e)
-                    //return document.querySelector("#mdlDeposito_inicial_letra").value = numeroLetras(parseFloat(e.target.value))
-                }
+                if (e.target.id === "mdlDeposito_inicial") return calculaSaldoInicial(e)
                  
                 document.querySelector("#monto_letra").value = numeroLetras(parseFloat(e.target.value))
                 if (document.querySelector("#deposito").checked || document.querySelector("#retiro").checked) calculaSaldoFinal()
@@ -848,7 +842,9 @@ class Ahorro extends Controller
             const registraOperacion = (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
+                 
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                  
                 if (!document.querySelector("#deposito").checked && !document.querySelector("#retiro").checked) {
                     return showError("Seleccione el tipo de operación a realizar.")
@@ -881,45 +877,13 @@ class Ahorro extends Controller
                     }
                 })
             }
-             
-            const cancelarRegistro = (e) => {
-                e.preventDefault()
-                document.querySelector("#AddPagoApertura").reset()
-                limpiaDatosCliente()
-            }
-             
-            const pagoApertura = (e) => {
-                e.preventDefault()
-                if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura)
-                            
-                const datos = $("#AddPagoApertura").serializeArray()
-                            
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/pagoApertura/",
-                    data: $.param(datos),
-                    success: (respuesta) => {
-                        respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) return showError(respuesta.mensaje)
-                    
-                        showSuccess(respuesta.mensaje)
-                        document.querySelector("#saldoActual").value = document.querySelector("#mdlSaldo_inicial").value
-                        document.querySelector("#AddPagoApertura").reset()
-                        $("#modal_agregar_pago").modal("hide")
-                        imprimeTicket(respuesta.datos.ticket)
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        showError("Ocurrió un error al registrar el pago de apertura.")
-                    }
-                })
-            }
         </script>
         html;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Ahorro Corriente")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         view::set('saldoMinimoApertura', $saldoMinimoApertura);
+        view::set('montoMaximoRetiro', $montoMaximoRetiro);
         View::set('fecha', date('d/m/Y H:i:s'));
         View::render("caja_menu_ahorro");
     }
@@ -960,6 +924,7 @@ class Ahorro extends Controller
             {$this->showError}
             {$this->showSuccess}
             {$this->validarYbuscar}
+            {$this->buscaCliente}
             {$this->getHoy}
             {$this->soloNumeros}
             {$this->numeroLetras}
@@ -967,49 +932,20 @@ class Ahorro extends Controller
             {$this->imprimeTicket}
             {$this->sinContrato}
             {$this->addParametro}
-            
-            const buscaCliente = () => {
-                const noCliente = document.querySelector("#clienteBuscado").value
-                
-                if (!noCliente) {
-                    limpiaDatosCliente()
-                    return showError("Ingrese un número de cliente a buscar.")
-                }
-                
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/BuscaContratoAhorro/",
-                    data: { cliente: noCliente },
-                    success: (respuesta) => {
-                        limpiaDatosCliente()
-                        respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) {
-                            if (respuesta.datos && !sinContrato(respuesta.datos)) return
-                             
-                            limpiaDatosCliente()
-                            return showError(respuesta.mensaje)
-                        }
+             
+            const llenaDatosCliente = (datos) => {
+                const saldoActual = parseFloat(datos.SALDO)
                          
-                        const datosCliente = respuesta.datos
-                        const saldoActual = parseFloat(datosCliente.SALDO)
-                         
-                        document.querySelector("#nombre").value = datosCliente.NOMBRE
-                        document.querySelector("#curp").value = datosCliente.CURP
-                        document.querySelector("#contrato").value = datosCliente.CONTRATO
-                        document.querySelector("#cliente").value = datosCliente.CDGCL
-                        document.querySelector("#saldoActual").value = saldoActual.toFixed(2)
-                        
-                        if (saldoActual >= saldoMinimoApertura) return document.querySelector("#monto").disabled = false
-                        
-                        showError("No es posible hacer la apertura de inversión.\\nEl saldo mínimo de apertura es de " + saldoMinimoApertura.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }) + 
-                            "\\nEl saldo actual del cliente es de " + saldoActual.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }))
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        limpiaDatosCliente()
-                        showError("Ocurrió un error al buscar el cliente.")
-                    }
-                })
+                document.querySelector("#nombre").value = datos.NOMBRE
+                document.querySelector("#curp").value = datos.CURP
+                document.querySelector("#contrato").value = datos.CONTRATO
+                document.querySelector("#cliente").value = datos.CDGCL
+                document.querySelector("#saldoActual").value = saldoActual.toFixed(2)
+                
+                if (saldoActual >= saldoMinimoApertura) return document.querySelector("#monto").disabled = false
+                
+                showError("No es posible hacer la apertura de inversión.\\nEl saldo mínimo de apertura es de " + saldoMinimoApertura.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }) + 
+                    "\\nEl saldo actual del cliente es de " + saldoActual.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }))
             }
             
             const limpiaDatosCliente = () => {
@@ -1172,79 +1108,43 @@ class Ahorro extends Controller
             {$this->showInfo}
             {$this->sinContrato}
             {$this->validarYbuscar}
+            {$this->buscaCliente}
             {$this->soloNumeros}
             {$this->primeraMayuscula}
-           
-            const buscaCliente = () => {
-                const noCliente = document.querySelector("#clienteBuscado").value
-                
-                if (!noCliente) {
-                    limpiaDatosCliente()
-                    return showError("Ingrese un número de cliente a buscar.")
-                }
-                
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/BuscaContratoAhorro/",
-                    data: { cliente: noCliente },
-                    success: (respuesta) => {
-                        limpiaDatosCliente()
-                        respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) {
-                            if (respuesta.datos && !sinContrato(respuesta.datos)) return
-                
-                            limpiaDatosCliente()
-                            return showError(respuesta.mensaje)
-                        }
-                
-                        const inversiones = getInversiones(respuesta.datos.CONTRATO)
-                        if (!inversiones) return
-                        let inversionesTotal = 0
-                
-                        const filas = document.createDocumentFragment()
-                        inversiones.forEach((inversion) => {
-                            const fila = document.createElement("tr")
-                            Object.keys(inversion).forEach((key) => {
-                                let dato = inversion[key]
-                                // if (["APERTURA", "VENCIMIENTO", "LIQUIDACION"].includes(key))
-                                //     dato = dato
-                                //         ? new Date(dato).toLocaleDateString("es-MX", {
-                                //               year: "numeric",
-                                //               month: "2-digit",
-                                //               day: "2-digit"
-                                //           })
-                                //         : ""
-                                if (["RENDIMIENTO", "MONTO"].includes(key))
-                                    dato = parseFloat(dato).toLocaleString("es-MX", {
-                                        style: "currency",
-                                        currency: "MXN"
-                                    })
-                
-                                inversionesTotal += key === "MONTO" ? parseFloat(inversion[key]) : 0
-                                const celda = document.createElement("td")
-                                celda.innerText = dato
-                                fila.appendChild(celda)
+         
+            const llenaDatosCliente = (datosCliente) => {
+                const inversiones = getInversiones(datosCliente.CONTRATO)
+                if (!inversiones) return
+                let inversionesTotal = 0
+        
+                const filas = document.createDocumentFragment()
+                inversiones.forEach((inversion) => {
+                    const fila = document.createElement("tr")
+                    Object.keys(inversion).forEach((key) => {
+                        let dato = inversion[key]
+                        if (["RENDIMIENTO", "MONTO"].includes(key))
+                            dato = parseFloat(dato).toLocaleString("es-MX", {
+                                style: "currency",
+                                currency: "MXN"
                             })
-                            filas.appendChild(fila)
-                        })
-                
-                        const datosCliente = respuesta.datos
-                        document.querySelector("#datosTabla").appendChild(filas)
-                        document.querySelector("#inversion").value = inversionesTotal.toLocaleString("es-MX", {
-                            style: "currency",
-                            currency: "MXN"
-                        })
-                        document.querySelector("#cliente").value = datosCliente.CDGCL
-                        document.querySelector("#contrato").value = datosCliente.CONTRATO
-                        document.querySelector("#nombre").value = datosCliente.NOMBRE
-                        document.querySelector("#curp").value = datosCliente.CURP
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        limpiaDatosCliente()
-                        showError("Ocurrió un error al buscar el cliente.")
-                    }
+        
+                        inversionesTotal += key === "MONTO" ? parseFloat(inversion[key]) : 0
+                        const celda = document.createElement("td")
+                        celda.innerText = dato
+                        fila.appendChild(celda)
+                    })
+                    filas.appendChild(fila)
                 })
+                 
+                document.querySelector("#datosTabla").appendChild(filas)
+                document.querySelector("#inversion").value = inversionesTotal.toLocaleString("es-MX", {
+                    style: "currency",
+                    currency: "MXN"
+                })
+                document.querySelector("#cliente").value = datosCliente.CDGCL
+                document.querySelector("#contrato").value = datosCliente.CONTRATO
+                document.querySelector("#nombre").value = datosCliente.NOMBRE
+                document.querySelector("#curp").value = datosCliente.CURP
             }
                  
             const limpiaDatosCliente = () => {
@@ -1831,6 +1731,196 @@ class Ahorro extends Controller
         View::render("caja_menu_peque");
     }
 
+    //********************SOLICITUD DE RETIRO********************//
+    // Apertura de contratos para cuentas de ahorro Peques
+    public function SolicitudRetiroCuentaCorriente()
+    {
+        $montoMinimoRetiro = 10000;
+        $montoMaximoRetiro = 999999.99;
+
+        $extraFooter = <<<html
+        <script>
+            const montoMinimo = $montoMinimoRetiro
+            const montoMaximo = $montoMaximoRetiro
+            let valKD = false
+         
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->validarYbuscar}
+            {$this->buscaCliente}
+            {$this->soloNumeros}
+            {$this->primeraMayuscula}
+            {$this->numeroLetras}
+            {$this->imprimeTicket}
+            {$this->addParametro}
+            {$this->sinContrato}
+            {$this->getHoy}
+             
+            const llenaDatosCliente = (datosCliente) => {
+                document.querySelector("#nombre").value = datosCliente.NOMBRE
+                document.querySelector("#curp").value = datosCliente.CURP
+                document.querySelector("#contrato").value = datosCliente.CONTRATO
+                document.querySelector("#cliente").value = datosCliente.CDGCL
+                document.querySelector("#saldoActual").value = parseFloat(datosCliente.SALDO).toFixed(2)
+                document.querySelector("#monto").disabled = false
+                document.querySelector("#saldoFinal").value = parseFloat(datosCliente.SALDO).toFixed(2)
+                document.querySelector("#express").disabled = false
+                document.querySelector("#programado").disabled = false
+            }
+             
+            const limpiaDatosCliente = () => {
+                document.querySelector("#registroOperacion").reset()
+                document.querySelector("#monto").disabled = true
+                document.querySelector("#btnRegistraOperacion").disabled = true
+                document.querySelector("#express").disabled = true
+                document.querySelector("#programado").disabled = true
+                document.querySelector("#fecha_pago_hide").setAttribute("style", "display: none;")
+                document.querySelector("#fecha_pago").removeAttribute("style")
+            }
+             
+            const boton_contrato = (numero_contrato) => {
+                const host = window.location.origin
+                
+                let plantilla = "<!DOCTYPE html>"
+                plantilla += '<html lang="es">'
+                plantilla += '<head>'
+                plantilla += '<meta charset="UTF-8">'
+                plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+                plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
+                plantilla += '<title>Contrato ' + numero_contrato + '</title>'
+                plantilla += '</head>'
+                plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
+                plantilla +=
+                    '<iframe src="' + host + '/Ahorro/ImprimeContrato/' +
+                    numero_contrato +
+                    '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
+                plantilla += "</body>"
+                plantilla += "</html>"
+            
+                const blob = new Blob([plantilla], { type: "text/html" })
+                const url = URL.createObjectURL(blob)
+                window.open(url, "_blank")
+            }
+             
+            const validaDeposito = (e) => {
+                let monto = parseFloat(e.target.value) || 0
+                 
+                if (monto > montoMaximo) {
+                    e.preventDefault()
+                    monto = montoMaximo
+                    e.target.value = monto
+                }
+                                  
+                document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
+                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
+                document.querySelector("#montoOperacion").value = monto.toFixed(2)
+                const saldoFinal = (saldoActual - monto)
+                compruebaSaldoFinal(saldoFinal)
+                document.querySelector("#saldoFinal").value = saldoFinal.toFixed(2)
+            }
+             
+            const cambioMovimiento = (e) => {
+                const express = document.querySelector("#express").checked
+                
+                if (express) {
+                    document.querySelector("#fecha_pago").removeAttribute("style")
+                    document.querySelector("#fecha_pago_hide").setAttribute("style", "display: none;")
+                    document.querySelector("#fecha_pago").value = new Date().toLocaleDateString("es-MX", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit"
+                    })
+                    return
+                }
+                
+                document.querySelector("#fecha_pago_hide").removeAttribute("style")
+                document.querySelector("#fecha_pago").setAttribute("style", "display: none;")
+            }
+             
+            const compruebaSaldoFinal = saldoFinal => {
+                if (saldoFinal < 0) {
+                    document.querySelector("#saldoFinal").setAttribute("style", "color: red")
+                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
+                    document.querySelector("#btnRegistraOperacion").disabled = true
+                    return
+                } else {
+                    document.querySelector("#saldoFinal").removeAttribute("style")
+                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
+                }
+                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value >= montoMinimo && document.querySelector("#montoOperacion").value < montoMaximo)
+            }
+             
+            const pasaFecha = (e) => {
+                const fechaSeleccionada = new Date(e.target.value)
+                if (fechaSeleccionada.getDay() === 5 || fechaSeleccionada.getDay() === 6) {
+                    showError("No se pueden realizar retiros los fines de semana.")
+                    const f = getHoy(false).split("/")
+                    e.target.value = f[2] + "-" + f[1] + "-" + f[0]
+                    return
+                }
+                const f = document.querySelector("#fecha_pago_hide").value.split("-")
+                document.querySelector("#fecha_pago").value = f[2] + "/" + f[1] + "/" + f[0]
+            }
+             
+            const registraSolicitud = (e) => {
+                e.preventDefault()
+                const datos = $("#registroOperacion").serializeArray()
+                
+                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
+                 
+                datos.forEach((dato) => {
+                    if (dato.name === "tipoRetiro") {
+                        dato.value = document.querySelector("#express").checked
+                    }
+                })
+                 
+                $.ajax({
+                    type: "POST",
+                    url: "/Ahorro/registraSolicitud/",
+                    data: $.param(datos),
+                    success: (respuesta) => {
+                        respuesta = JSON.parse(respuesta)
+                        if (!respuesta.success) {
+                            console.log(respuesta.error)
+                            return showError(respuesta.mensaje)
+                        }
+                        showSuccess(respuesta.mensaje)
+                        // imprimeTicket(document.querySelector("#contrato").value, {$_SESSION['cdgco']})
+                        document.querySelector("#registroOperacion").reset()
+                    },
+                    error: (error) => {
+                        console.error(error)
+                        showError("Ocurrió un error al registrar la operación.")
+                    }
+                })
+            }
+        </script>
+        html;
+
+        $fechaMax = new DateTime();
+        for ($i = 0; $i < 7; $i++) {
+            $fechaMax->modify('+1 day');
+            if ($fechaMax->format('N') >= 6 || $fechaMax->format('N') === 0) $fechaMax->modify('+1 day');
+        }
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitud de Retiro")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('montoMinimoRetiro', $montoMinimoRetiro);
+        View::set('montoMaximoRetiro', $montoMaximoRetiro);
+        View::set('fecha', date('d/m/Y'));
+        View::set('fechaInput', date('Y-m-d'));
+        View::set('fechaInputMax', $fechaMax->format('Y-m-d'));
+        View::render("caja_menu_retiro_ahorro");
+    }
+
+    public function registraSolicitud()
+    {
+        $datos = CajaAhorroDao::RegistraSolicitud($_POST);
+        echo $datos;
+    }
+
     //********************UTILS********************//
     // Generación de ticket's de operaciones realizadas
     public function Ticket()
@@ -1875,8 +1965,9 @@ class Ahorro extends Controller
         $mpdf->SetFont('Helvetica', '', 9);
         $mpdf->Cell(60, 4, 'Fecha de la operación: ' . $datos['FECHA'], 0, 1, '');
         $mpdf->Cell(60, 4, 'Método de pago: ' . $datos['METODO'], 0, 1, '');
-        $mpdf->MultiCell(60, 4, $datos['RECIBIO'] . ': ' . $datos['NOM_EJECUTIVO'] . ' (' . $datos['COD_EJECUTIVO'] . ')', 0, 1, '');
-        $mpdf->Cell(60, 4, 'Sucursal: ' . $datos['NOMBRE_SUCURSAL'] . ' (' . $datos['CDG_SUCURSAL'] . ')', 0, 1, '');
+        if ($datos['COD_EJECUTIVO']) $mpdf->MultiCell(60, 4, $datos['RECIBIO'] . ': ' . $datos['NOM_EJECUTIVO'] . ' (' . $datos['COD_EJECUTIVO'] . ')', 0, 1, '');
+        if ($datos['CDG_SUCURSAL']) $mpdf->Cell(60, 4, 'Sucursal: ' . $datos['NOMBRE_SUCURSAL'] . ' (' . $datos['CDG_SUCURSAL'] . ')', 0, 1, '');
+
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
         $mpdf->Ln(5);
@@ -2086,311 +2177,6 @@ class Ahorro extends Controller
     }
 
     //********************BORRAR????********************//
-    public function SolicitudRetiroCuentaCorriente()
-    {
-        $extraHeader = <<<html
-        <title>Solicitud de Retiro Ahorro</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-        html;
-
-        $extraFooter = <<<html
-        <script>
-            window.onload = () => {
-                if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
-            }
-             
-            const showError = (mensaje) => swal(mensaje, { icon: "error" })
-            const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })
-         
-            const validarYbuscar = (e, buscar) => {
-                if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
-                if (e.keyCode === 13) buscaCliente()
-            }
-            
-            const buscaCliente = () => {
-                const noCliente = document.querySelector("#clienteBuscado")
-                
-                if (!noCliente.value) {
-                    return showError("Ingrese un número de cliente a buscar.")
-                }
-                
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/BuscaContrato/",
-                    data: { cliente: noCliente.value },
-                    success: (respuesta) => {
-                        //limpiaDatosCliente()
-                        respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) {
-                            return showError(respuesta.mensaje)
-                        }
-                         
-                        const datosCliente = respuesta.datos
-                         
-                        var saldo = parseFloat(datosCliente.SALDO).toFixed(2);
-                           
-                        document.querySelector("#nombre_cliente").value = datosCliente.NOMBRE
-                        document.querySelector("#curp_").value = datosCliente.CURP
-                        document.querySelector("#codigo_cl").value = noCliente.value
-                        
-                        var columnas = document.getElementsByTagName('td');
-                        //columnas[1].innerHTML = datosCliente.FAERTURA;
-                        columnas[2].innerHTML = datosCliente.CONTRATO;
-                        columnas[3].innerHTML = saldo;
-                        
-                        $("#genera_tabla").show();
-                        $("#monto_div").hide();
-                        noCliente.value = ""
-                        
-                        document.querySelector("#codigo_cl").value = noCliente.value
-                        
-                        if(saldo == 1150)
-                         {
-                                return showError("El cliente no tiene saldo disponible para solicitar un retiro.")
-                         }                       
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        limpiaDatosCliente()
-                        showError("Ocurrió un error al buscar el cliente.")
-                    }
-                })
-            }
-             
-            const getHoy = () => {
-                const hoy = new Date()
-                const dd = String(hoy.getDate()).padStart(2, "0")
-                const mm = String(hoy.getMonth() + 1).padStart(2, "0")
-                const yyyy = hoy.getFullYear()
-                return dd + "-" + mm + "-" + yyyy
-            }
-             
-            const boton_contrato = (numero_contrato) => {
-                const host = window.location.origin
-                
-                let plantilla = "<!DOCTYPE html>"
-                plantilla += '<html lang="es">'
-                plantilla += '<head>'
-                plantilla += '<meta charset="UTF-8">'
-                plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-                plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
-                plantilla += '<title>Contrato ' + numero_contrato + '</title>'
-                plantilla += '</head>'
-                plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
-                plantilla +=
-                    '<iframe src="' + host + '/Ahorro/ImprimeContrato/' +
-                    numero_contrato +
-                    '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
-                plantilla += "</body>"
-                plantilla += "</html>"
-            
-                const blob = new Blob([plantilla], { type: "text/html" })
-                const url = URL.createObjectURL(blob)
-                window.open(url, "_blank")
-            }
-             
-            const validaDeposito = (e) => {
-                const monto = parseFloat(e.target.value) || 0
-                if (monto <= 0) {
-                    e.preventDefault()
-                    e.target.value = ""
-                    return showError("El monto a depositar debe ser mayor a 0")
-                }
-                 
-                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
-                const esDeposito = document.querySelector("#deposito").checked
-                document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
-                document.querySelector("#montoOperacion").value = monto.toFixed(2)
-                const saldoFinal = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
-                document.querySelector("#saldoFinal").value = saldoFinal
-                compruebaSaldoFinal(saldoFinal)
-            }
-             
-            const cambioMovimiento = (e) => {
-                const esDeposito = document.querySelector("#deposito").checked
-                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
-                const monto = parseFloat(document.querySelector("#montoOperacion").value) || 0
-                document.querySelector("#saldoFinal").value = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
-                document.querySelector("#simboloOperacion").innerText = esDeposito ? "+" : "-"
-                document.querySelector("#descOperacion").innerText = (esDeposito ? "Depósito" : "Retiro") + " a cuenta ahorro corriente"
-                compruebaSaldoFinal(document.querySelector("#saldoFinal").value)
-            }
-             
-            const compruebaSaldoFinal = saldoFinal => {
-                if (saldoFinal < 0) {
-                    document.querySelector("#saldoFinal").setAttribute("style", "color: red")
-                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
-                } else {
-                    document.querySelector("#saldoFinal").removeAttribute("style")
-                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
-                }
-                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value > 0)
-                
-            }
-             
-            const numeroLetras = (numero) => {
-                if (!numero) return ""
-                const unidades = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"]
-                const especiales = [
-                    "",
-                    "once",
-                    "doce",
-                    "trece",
-                    "catorce",
-                    "quince",
-                    "dieciséis",
-                    "diecisiete",
-                    "dieciocho",
-                    "diecinueve",
-                    "veinte",
-                    "veintiún",
-                    "veintidós",
-                    "veintitrés",
-                    "veinticuatro",
-                    "veinticinco",
-                    "veintiséis",
-                    "veintisiete",
-                    "veintiocho",
-                    "veintinueve"
-                ]
-                const decenas = [
-                    "",
-                    "diez",
-                    "veinte",
-                    "treinta",
-                    "cuarenta",
-                    "cincuenta",
-                    "sesenta",
-                    "setenta",
-                    "ochenta",
-                    "noventa"
-                ]
-                const centenas = [
-                    "cien",
-                    "ciento",
-                    "doscientos",
-                    "trescientos",
-                    "cuatrocientos",
-                    "quinientos",
-                    "seiscientos",
-                    "setecientos",
-                    "ochocientos",
-                    "novecientos"
-                ]
-            
-                const convertirMenorA1000 = (numero) => {
-                    let letra = ""
-                    if (numero >= 100) {
-                        letra += centenas[(numero === 100 ? 0 : Math.floor(numero / 100))] + " "
-                        numero %= 100
-                    }
-                    if (numero === 10 || numero === 20 || (numero > 29 && numero < 100)) {
-                        letra += decenas[Math.floor(numero / 10)]
-                        numero %= 10
-                        letra += numero > 0 ? " y " : " "
-                    }
-                    if (numero != 20 && numero >= 11 && numero <= 29) {
-                        letra += especiales[numero % 10 + (numero > 20 ? 10 : 0)] + " "
-                        numero = 0
-                    }
-                    if (numero > 0) {
-                        letra += unidades[numero] + " "
-                    }
-                    return letra.trim()
-                }
-            
-                const convertir = (numero) => {
-                    if (numero === 0) {
-                        return "cero"
-                    }
-                
-                    let letra = ""
-                
-                    if (numero >= 1000000) {
-                        letra += convertirMenorA1000(Math.floor(numero / 1000000)) + (numero === 1000000 ? " millón " : " millones ")
-                        numero %= 1000000
-                    }
-                
-                    if (numero >= 1000) {
-                        letra += (numero === 1000 ? "" : convertirMenorA1000(Math.floor(numero / 1000))) + " mil "
-                        numero %= 1000
-                    }
-                
-                    letra += convertirMenorA1000(numero)
-                    return letra.trim()
-                }
-            
-                const parteEntera = Math.floor(numero)
-                const parteDecimal = Math.round((numero - parteEntera) * 100).toString().padStart(2, "0")
-                return convertir(parteEntera) + (numero == 1 ? ' peso ' : ' pesos ') + parteDecimal + '/100 M.N.'
-            }
-             
-            const primeraMayuscula = (texto) => {
-                return texto.charAt(0).toUpperCase() + texto.slice(1)
-            }
-             
-            const registraOperacion = (e) => {
-                e.preventDefault()
-                const datos = $("#registroOperacion").serializeArray()
-                
-                datos.forEach((dato) => {
-                    if (dato.name === "esDeposito") {
-                        dato.value = document.querySelector("#deposito").checked
-                    }
-                })
-                 
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/registraOperacion/",
-                    data: $.param(datos),
-                    success: (respuesta) => {
-                        respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success){
-                            console.log(respuesta.error)
-                            return showError(respuesta.mensaje)
-                        }
-                        showSuccess(respuesta.mensaje)
-                        imprimeTicket(document.querySelector("#contrato").value)
-                        document.querySelector("#registroOperacion").reset()
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        showError("Ocurrió un error al registrar la operación.")
-                    }
-                })
-            }
-             
-            const imprimeTicket = (ticket) => {
-                const host = window.location.origin
-                
-                let plantilla = "<!DOCTYPE html>"
-                plantilla += '<html lang="es">'
-                plantilla += '<head>'
-                plantilla += '<meta charset="UTF-8">'
-                plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-                plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
-                plantilla += '<title>Ticket: ' + ticket + '</title>'
-                plantilla += '</head>'
-                plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
-                plantilla +=
-                    '<iframe src="' + host + '/Ahorro/Ticket/' +
-                    ticket +
-                    '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
-                plantilla += "</body>"
-                plantilla += "</html>"
-            
-                const blob = new Blob([plantilla], { type: "text/html" })
-                const url = URL.createObjectURL(blob)
-                window.open(url, "_blank")
-            }
-        </script>
-        html;
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render("caja_menu_retiro_ahorro");
-    }
-
     public function HistorialSolicitudRetiroCuentaCorriente()
     {
         $extraHeader = <<<html
