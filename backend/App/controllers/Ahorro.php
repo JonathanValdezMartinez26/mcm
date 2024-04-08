@@ -2208,6 +2208,56 @@ class Ahorro extends Controller
         exit;
     }
 
+    public function SaldosDia()
+    {
+        $saldoInicial = 65493.52;
+        $entradas = 0;
+        $salidas = 0;
+
+        $extraFooter = <<<html
+        <script>
+           
+        </script>
+        html;
+
+        $detalles = CajaAhorroDao::DetalleMovimientosXdia();
+
+        $tabla = "";
+
+        foreach ($detalles as $key => $detalle) {
+            $tabla .= "<tr>";
+            foreach ($detalle as $key => $valor) {
+                $v = $valor;
+                if ($key === 'MOVIMIENTO') {
+                    if ($valor == 0) {
+                        $v = '<i class="fa fa-arrow-down" style="color: #00ac00"></i>';
+                        $entradas += floatval($detalle['MONTO']);
+                    }
+                    if ($valor == 1) {
+                        $v = '<i class="fa fa-arrow-up" style="color: #ac0000"></i>';
+                        $salidas += floatval($detalle['MONTO']);
+                    }
+                }
+
+                if ($key == 'MONTO') $v = "$ " . number_format($valor, 2);
+
+                $tabla .= "<td>$v</td>";
+            }
+
+            $tabla .= "</tr>";
+        }
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldos del día")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('tabla', $tabla);
+        View::set('fechaActual', date('d/m/Y'));
+        View::set('saldoInicial', number_format($saldoInicial, 2));
+        View::set('entradas', number_format($entradas, 2));
+        View::set('salidas', number_format($salidas, 2));
+        View::set('saldoFinal', number_format($saldoInicial + $entradas - $salidas, 2));
+        View::render("caja_menu_saldos_dia");
+    }
+
     //********************BORRAR????********************//
     public function HistorialSolicitudRetiroCuentaCorriente()
     {
@@ -2244,88 +2294,6 @@ html;
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::render("caja_menu_estado_cuenta");
-    }
-
-    //////////////////////////////////////////////////
-    public function SaldosDia()
-    {
-        $extraHeader = <<<html
-        <title>Caja Cobrar</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
-        $extraFooter = <<<html
-        <script>
-           
-        </script>
-html;
-
-
-        $fechaActual = date('d-m-Y');
-
-        $inicio_dia = '';
-        $entradas = '';
-        $salidas = '';
-        $cierre = '';
-
-        $All_Movimientos = AhorroDao::ConsultaMovimientosDia($fechaActual);
-
-        $tabla = "";
-
-        foreach ($Consulta as $key => $value) {
-            $monto = number_format($value['MONTO'], 2);
-
-            if ($value['AUTORIZA'] == 0) {
-                $autoriza = "PENDIENTE";
-
-                $imprime = <<<html
-                    <span class="count_top" style="font-size: 22px"><i class="fa fa-clock-o" style="color: #ac8200"></i></span>
-html;
-            } else if ($value['AUTORIZA'] == 1) {
-                $autoriza = "ACEPTADO";
-
-                $imprime = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="Reimprime_ticket('{$value['CODIGO']}');"><i class="fa fa-print"></i></button>
-html;
-            } else if ($value['AUTORIZA'] == 2) {
-                $imprime = <<<html
-                <span class="count_top" style="font-size: 22px"><i class="fa fa-close" style="color: #ac1d00"></i></span>
-html;
-                $autoriza = "RECHAZADO";
-            }
-
-
-            if ($value['CDGPE_AUTORIZA'] == '') {
-                $autoriza_nombre = "-";
-            } else if ($value['CDGPE_AUTORIZA'] != '') {
-                $autoriza_nombre = $value['CDGPE_AUTORIZA'];
-            }
-
-
-
-
-            $tabla .= <<<html
-                <tr style="padding: 0px !important;">
-                   <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
-                    <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>{$value['CDG_CONTRATO']} &nbsp;</td>
-                    <td style="padding: 0px !important;">{$value['FREGISTRO']} </td>
-                    <td style="padding: 0px !important;">{$value['MOTIVO']}</td>
-                    <td style="padding: 0px !important;"> {$autoriza}</td>
-                    <td style="padding: 0px !important;">{$autoriza_nombre}</td>
-                    <td style="padding: 0px !important;" class="center">
-                    {$imprime}
-                    </td>
-                </td>
-html;
-        }
-
-
-
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha_actual', $fechaActual);
-        View::render("caja_menu_saldos_dia");
     }
 
     //////////////////////////////////////////////////

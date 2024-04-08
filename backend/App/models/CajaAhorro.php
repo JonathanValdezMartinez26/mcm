@@ -1139,4 +1139,33 @@ class CajaAhorro
             return self::Responde(false, "Ocurrió un error al registrar el retiro " . $tipoMov  . ".", null, $e->getMessage());
         }
     }
+
+    public static function DetalleMovimientosXdia()
+    {
+        $qry = <<<sql
+        SELECT
+            MA.MOVIMIENTO,
+            TPA.DESCRIPCION AS OPERACION,
+            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
+            CL.CODIGO AS CLIENTE,
+            TO_CHAR(MA.FECHA_MOV,'DD/MM/YYYY HH24:MI:SS') AS FECHA,
+            MA.MONTO,
+            'AUT_CLIENTE' AS AUTORIZACION
+        FROM
+            MOVIMIENTOS_AHORRO MA
+            INNER JOIN CL ON CL.CODIGO = (SELECT CDGCL FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = MA.CDG_CONTRATO)
+            INNER JOIN TIPO_PAGO_AHORRO TPA ON TPA.CODIGO = MA.CDG_TIPO_PAGO
+        WHERE
+            MA.FECHA_MOV >= TRUNC(SYSDATE) AND MA.FECHA_MOV < TRUNC(SYSDATE) + 1
+        ORDER BY
+            MA.CODIGO
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryAll($qry);
+        } catch (Exception $e) {
+            return array();
+        }
+    }
 }
