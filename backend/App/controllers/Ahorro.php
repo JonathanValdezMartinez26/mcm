@@ -730,10 +730,14 @@ class Ahorro extends Controller
     public function CuentaCorriente()
     {
         $saldoMinimoApertura = 100;
-        $montoMaximoRetiro = 49999.99;
+        $montoMaximoRetiro = 9999.99;
 
         $extraFooter = <<<html
         <script>
+            window.onload = () => {
+                if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
+            }
+             
             const saldoMinimoApertura = $saldoMinimoApertura
             const montoMaximoRetiro = $montoMaximoRetiro
             const montoMaximoDeposito = 100000
@@ -770,16 +774,22 @@ class Ahorro extends Controller
                 const montoIngresado = document.querySelector("#monto")
                  
                 let monto = parseFloat(montoIngresado.value) || 0
-                if (monto <= 0) {
-                    montoIngresado.value = ""
-                    const tipo = document.querySelector("#deposito").checked ? "depositar" : (document.querySelector("#retiro").checked ? "retirar" : "registrar")
-                    showError("El monto a " + tipo + " debe ser mayor a 0")
-                }
                  
                 if (!document.querySelector("#deposito").checked && monto > montoMaximoRetiro) {
                     monto = montoMaximoRetiro
+                    swal({
+                        title: "Cuenta de ahorro corriente",
+                        text: "Para retiros mayores a " + montoMaximoRetiro + " es necesario realizar una solicitud de retiro\\nDesea generar una solicitud de retiro ahora?.",
+                        icon: "info",
+                        buttons: ["No", "Sí"],
+                        dangerMode: true
+                    }).then((regRetiro) => {
+                        if (regRetiro) {
+                            window.location.href = "/Ahorro/SolicitudRetiroCuentaCorriente/?cliente=" + document.querySelector("#cliente").value
+                            return
+                        }
+                    })
                     montoIngresado.value = monto
-                    showInfo("Para retiros de más de " + montoMaximoRetiro.toLocalString("es_MX", { style: "currency", currency: "MXN" }) + ", acuda a la sucursal.")
                 }
                  
                 if (document.querySelector("#deposito").checked && monto > montoMaximoDeposito) {
@@ -887,6 +897,8 @@ class Ahorro extends Controller
             }
         </script>
         html;
+
+        if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Ahorro Corriente")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -1744,12 +1756,18 @@ class Ahorro extends Controller
     public function SolicitudRetiroCuentaCorriente()
     {
         $montoMinimoRetiro = 10000;
-        $montoMaximoRetiro = 999999.99;
+        $montoMaximoExpress = 49999.99;
+        $montoMaximoRetiro = 1000000;
 
         $extraFooter = <<<html
         <script>
+            window.onload = () => {
+                if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
+            }
+         
             const montoMinimo = $montoMinimoRetiro
-            const montoMaximo = $montoMaximoRetiro
+            const montoMaximoExpress = $montoMaximoExpress
+            const montoMaximoRetiro = $montoMaximoRetiro
             let valKD = false
          
             {$this->showError}
@@ -1787,13 +1805,21 @@ class Ahorro extends Controller
                 document.querySelector("#fecha_retiro").removeAttribute("style")
             }
                           
-            const validaDeposito = (e) => {
-                let monto = parseFloat(e.target.value) || 0
+            const validaMonto = () => {
+                document.querySelector("#express").disabled = false
+                const montoIngresado = document.querySelector("#monto")
                  
-                if (monto > montoMaximo) {
-                    e.preventDefault()
-                    monto = montoMaximo
-                    e.target.value = monto
+                let monto = parseFloat(montoIngresado.value) || 0
+                 
+                if (monto > montoMaximoExpress) {
+                    document.querySelector("#programado").checked = true
+                    document.querySelector("#express").disabled = true
+                    cambioMovimiento()
+                }
+                 
+                if (monto > montoMaximoRetiro) {
+                    monto = montoMaximoRetiro
+                    montoIngresado.value = monto
                 }
                                   
                 document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
@@ -1802,6 +1828,30 @@ class Ahorro extends Controller
                 const saldoFinal = (saldoActual - monto)
                 compruebaSaldoFinal(saldoFinal)
                 document.querySelector("#saldoFinal").value = saldoFinal.toFixed(2)
+            }
+             
+            const valSalMin = () => {
+                const montoIngresado = document.querySelector("#monto")
+                 
+                let monto = parseFloat(montoIngresado.value) || 0
+                 
+                if (monto < montoMinimo) {
+                    monto = montoMinimo
+                    swal({
+                        title: "Retiro de cuenta corriente",
+                        text: "El monto mínimo para retiros express es de " + montoMinimo.toLocaleString("es-MX", {
+                            style: "currency",
+                            currency: "MXN"
+                        }) + ", para un monto menor debe realizar el retiro de manera simple.\\n¿Desea realizar el retiro de manera simple?",
+                        icon: "info",
+                        buttons: ["No", "Sí"]
+                    }).then((retSimple) => {
+                        if (retSimple) {
+                            window.location.href = "/Ahorro/CuentaCorriente/?cliente=" + document.querySelector("#cliente").value
+                            return
+                        }
+                    })
+                }
             }
              
             const cambioMovimiento = (e) => {
@@ -1832,7 +1882,7 @@ class Ahorro extends Controller
                     document.querySelector("#saldoFinal").removeAttribute("style")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
                 }
-                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value >= montoMinimo && document.querySelector("#montoOperacion").value < montoMaximo)
+                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value >= montoMinimo && document.querySelector("#montoOperacion").value < montoMaximoExpress)
             }
              
             const pasaFecha = (e) => {
@@ -1884,9 +1934,12 @@ class Ahorro extends Controller
             if ($fechaMax->format('N') >= 6 || $fechaMax->format('N') === 0) $fechaMax->modify('+1 day');
         }
 
+        if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
+
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitud de Retiro")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('montoMinimoRetiro', $montoMinimoRetiro);
+        View::set('montoMaximoExpress', $montoMaximoExpress);
         View::set('montoMaximoRetiro', $montoMaximoRetiro);
         View::set('fecha', date('d/m/Y'));
         View::set('fechaInput', date('Y-m-d'));
