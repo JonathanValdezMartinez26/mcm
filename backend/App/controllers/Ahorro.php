@@ -735,7 +735,8 @@ class Ahorro extends Controller
         $extraFooter = <<<html
         <script>
             const saldoMinimoApertura = $saldoMinimoApertura
-            const montoMaximo = $montoMaximoRetiro
+            const montoMaximoRetiro = $montoMaximoRetiro
+            const montoMaximoDeposito = 100000
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
@@ -764,32 +765,36 @@ class Ahorro extends Controller
                 document.querySelector("#btnRegistraOperacion").disabled = true
             }
              
-            const validaDeposito = (e) => {
+            const validaMonto = () => {
                 if (!valKD) return
+                const montoIngresado = document.querySelector("#monto")
                  
-                let monto = parseFloat(e.target.value) || 0
+                let monto = parseFloat(montoIngresado.value) || 0
                 if (monto <= 0) {
-                    e.preventDefault()
-                    e.target.value = ""
+                    montoIngresado.value = ""
                     const tipo = document.querySelector("#deposito").checked ? "depositar" : (document.querySelector("#retiro").checked ? "retirar" : "registrar")
                     showError("El monto a " + tipo + " debe ser mayor a 0")
                 }
                  
-                if (monto > montoMaximo) {
-                    e.preventDefault()
-                    monto = montoMaximo
-                    e.target.value = monto
+                if (!document.querySelector("#deposito").checked && monto > montoMaximoRetiro) {
+                    monto = montoMaximoRetiro
+                    montoIngresado.value = monto
+                    showInfo("Para retiros de más de " + montoMaximoRetiro.toLocalString("es_MX", { style: "currency", currency: "MXN" }) + ", acuda a la sucursal.")
                 }
                  
-                const valor = e.target.value.split(".")
+                if (document.querySelector("#deposito").checked && monto > montoMaximoDeposito) {
+                    monto = montoMaximoDeposito
+                    montoIngresado.value = monto
+                }
+                 
+                const valor = montoIngresado.value.split(".")
                 if (valor[1] && valor[1].length > 2) {
-                    e.preventDefault()
-                    e.target.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
+                    montoIngresado.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
                 }
                 
-                if (e.target.id === "mdlDeposito_inicial") return calculaSaldoInicial(e)
+                if (montoIngresado.id === "mdlDeposito_inicial") return calculaSaldoInicial(e)
                  
-                document.querySelector("#monto_letra").value = numeroLetras(parseFloat(e.target.value))
+                document.querySelector("#monto_letra").value = numeroLetras(parseFloat(montoIngresado.value))
                 if (document.querySelector("#deposito").checked || document.querySelector("#retiro").checked) calculaSaldoFinal()
             }
              
@@ -824,6 +829,9 @@ class Ahorro extends Controller
                 const esDeposito = document.querySelector("#deposito").checked
                 document.querySelector("#simboloOperacion").innerText = esDeposito ? "+" : "-"
                 document.querySelector("#descOperacion").innerText = (esDeposito ? "Depósito" : "Retiro") + " a cuenta ahorro corriente"
+                document.querySelector("#monto").max = esDeposito ? montoMaximoDeposito : montoMaximoRetiro
+                valKD = true
+                validaMonto()
                 calculaSaldoFinal()
             }
              
@@ -1732,7 +1740,7 @@ class Ahorro extends Controller
     }
 
     //********************SOLICITUD DE RETIRO********************//
-    // Apertura de contratos para cuentas de ahorro Peques
+    // Registro de solicitudes de retiro de cuentas de ahorro
     public function SolicitudRetiroCuentaCorriente()
     {
         $montoMinimoRetiro = 10000;

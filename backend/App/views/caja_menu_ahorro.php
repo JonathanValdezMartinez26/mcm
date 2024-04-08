@@ -173,7 +173,7 @@
                                     <h3>$</h3>
                                 </div>
                                 <div class="col-md-4" style="padding-top: 5px;">
-                                    <input type="number" class="form-control" id="monto" name="monto" min="1" max="<?= $montoMaximoRetiro ?>" placeholder="0.00" style="font-size: 25px;" oninput=validaDeposito(event) onkeydown=soloNumeros(event) disabled>
+                                    <input type="number" class="form-control" id="monto" name="monto" min="1" placeholder="0.00" style="font-size: 25px;" oninput=validaMonto(event) onkeydown=soloNumeros(event) disabled>
                                 </div>
                             </div>
                             <div class="row">
