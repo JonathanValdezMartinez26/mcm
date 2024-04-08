@@ -1145,6 +1145,7 @@ class CajaAhorro
         $qry = <<<sql
         SELECT
             MA.MOVIMIENTO,
+            TPA.CODIGO AS CODOP,
             TPA.DESCRIPCION AS OPERACION,
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
             CL.CODIGO AS CLIENTE,

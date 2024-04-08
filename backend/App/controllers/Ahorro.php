@@ -2227,16 +2227,14 @@ class Ahorro extends Controller
         foreach ($detalles as $key => $detalle) {
             $tabla .= "<tr>";
             foreach ($detalle as $key => $valor) {
+                if ($key === 'CODOP') continue;
+
                 $v = $valor;
                 if ($key === 'MOVIMIENTO') {
-                    if ($valor == 0) {
-                        $v = '<i class="fa fa-arrow-down" style="color: #00ac00"></i>';
-                        $entradas += floatval($detalle['MONTO']);
-                    }
-                    if ($valor == 1) {
-                        $v = '<i class="fa fa-arrow-up" style="color: #ac0000"></i>';
-                        $salidas += floatval($detalle['MONTO']);
-                    }
+                    $v = self::iconoOperacion($valor, $detalle['CODOP']);
+
+                    if ($valor == 0) $entradas += floatval($detalle['MONTO']);
+                    if ($valor == 1) $salidas += floatval($detalle['MONTO']);
                 }
 
                 if ($key == 'MONTO') $v = "$ " . number_format($valor, 2);
@@ -2256,6 +2254,15 @@ class Ahorro extends Controller
         View::set('salidas', number_format($salidas, 2));
         View::set('saldoFinal', number_format($saldoInicial + $entradas - $salidas, 2));
         View::render("caja_menu_saldos_dia");
+    }
+
+    public function iconoOperacion($movimiento, $operacion)
+    {
+        $operacionesNulas = [2, 5]; // [Comisión, Transferencia]
+
+        if (in_array($operacion, $operacionesNulas)) return '<i class="fa fa-equal" style="color: #0055CC"></i>';
+        if ($movimiento == 0) return '<i class="fa fa-arrow-down" style="color: #00ac00"></i>';
+        if ($movimiento == 1) return '<i class="fa fa-arrow-up" style="color: #ac0000"></i>';
     }
 
     //********************BORRAR????********************//
