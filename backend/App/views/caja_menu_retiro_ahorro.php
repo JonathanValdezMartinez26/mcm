@@ -127,9 +127,9 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_pago">Fecha del retiro</label>
-                                        <input type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?= $fecha; ?>" readonly>
-                                        <input type="date" class="form-control" id="fecha_pago_hide" name="fecha_pago" style="display: none" min="<?= $fechaInput; ?>" max="<?= $fechaInputMax; ?>" value="<?= $fechaInput; ?>" oninput=pasaFecha(event) />
+                                        <label for="fecha_retiro">Fecha del retiro</label>
+                                        <input type="text" class="form-control" id="fecha_retiro" name="fecha_retiro" value="<?= $fecha; ?>" readonly>
+                                        <input type="date" class="form-control" id="fecha_retiro_hide" name="fecha_retiro_sel" style="display: none" min="<?= $fechaInput; ?>" max="<?= $fechaInputMax; ?>" value="<?= $fechaInput; ?>" oninput=pasaFecha(event) />
                                     </div>
                                 </div>
                             </div>

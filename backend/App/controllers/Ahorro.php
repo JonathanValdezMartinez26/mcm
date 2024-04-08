@@ -1775,34 +1775,10 @@ class Ahorro extends Controller
                 document.querySelector("#btnRegistraOperacion").disabled = true
                 document.querySelector("#express").disabled = true
                 document.querySelector("#programado").disabled = true
-                document.querySelector("#fecha_pago_hide").setAttribute("style", "display: none;")
-                document.querySelector("#fecha_pago").removeAttribute("style")
+                document.querySelector("#fecha_retiro_hide").setAttribute("style", "display: none;")
+                document.querySelector("#fecha_retiro").removeAttribute("style")
             }
-             
-            const boton_contrato = (numero_contrato) => {
-                const host = window.location.origin
-                
-                let plantilla = "<!DOCTYPE html>"
-                plantilla += '<html lang="es">'
-                plantilla += '<head>'
-                plantilla += '<meta charset="UTF-8">'
-                plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-                plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
-                plantilla += '<title>Contrato ' + numero_contrato + '</title>'
-                plantilla += '</head>'
-                plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
-                plantilla +=
-                    '<iframe src="' + host + '/Ahorro/ImprimeContrato/' +
-                    numero_contrato +
-                    '/" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
-                plantilla += "</body>"
-                plantilla += "</html>"
-            
-                const blob = new Blob([plantilla], { type: "text/html" })
-                const url = URL.createObjectURL(blob)
-                window.open(url, "_blank")
-            }
-             
+                          
             const validaDeposito = (e) => {
                 let monto = parseFloat(e.target.value) || 0
                  
@@ -1824,9 +1800,9 @@ class Ahorro extends Controller
                 const express = document.querySelector("#express").checked
                 
                 if (express) {
-                    document.querySelector("#fecha_pago").removeAttribute("style")
-                    document.querySelector("#fecha_pago_hide").setAttribute("style", "display: none;")
-                    document.querySelector("#fecha_pago").value = new Date().toLocaleDateString("es-MX", {
+                    document.querySelector("#fecha_retiro").removeAttribute("style")
+                    document.querySelector("#fecha_retiro_hide").setAttribute("style", "display: none;")
+                    document.querySelector("#fecha_retiro").value = new Date().toLocaleDateString("es-MX", {
                         year: "numeric",
                         month: "2-digit",
                         day: "2-digit"
@@ -1834,8 +1810,8 @@ class Ahorro extends Controller
                     return
                 }
                 
-                document.querySelector("#fecha_pago_hide").removeAttribute("style")
-                document.querySelector("#fecha_pago").setAttribute("style", "display: none;")
+                document.querySelector("#fecha_retiro_hide").removeAttribute("style")
+                document.querySelector("#fecha_retiro").setAttribute("style", "display: none;")
             }
              
             const compruebaSaldoFinal = saldoFinal => {
@@ -1859,8 +1835,8 @@ class Ahorro extends Controller
                     e.target.value = f[2] + "-" + f[1] + "-" + f[0]
                     return
                 }
-                const f = document.querySelector("#fecha_pago_hide").value.split("-")
-                document.querySelector("#fecha_pago").value = f[2] + "/" + f[1] + "/" + f[0]
+                const f = document.querySelector("#fecha_retiro_hide").value.split("-")
+                document.querySelector("#fecha_retiro").value = f[2] + "/" + f[1] + "/" + f[0]
             }
              
             const registraSolicitud = (e) => {
@@ -1869,16 +1845,11 @@ class Ahorro extends Controller
                 
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
-                 
-                datos.forEach((dato) => {
-                    if (dato.name === "tipoRetiro") {
-                        dato.value = document.querySelector("#express").checked
-                    }
-                })
+                addParametro(datos, "retiroExpress", document.querySelector("#express").checked)
                  
                 $.ajax({
                     type: "POST",
-                    url: "/Ahorro/registraSolicitud/",
+                    url: "/Ahorro/RegistraSolicitud/",
                     data: $.param(datos),
                     success: (respuesta) => {
                         respuesta = JSON.parse(respuesta)
@@ -1915,7 +1886,7 @@ class Ahorro extends Controller
         View::render("caja_menu_retiro_ahorro");
     }
 
-    public function registraSolicitud()
+    public function RegistraSolicitud()
     {
         $datos = CajaAhorroDao::RegistraSolicitud($_POST);
         echo $datos;

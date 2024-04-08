@@ -1081,48 +1081,62 @@ class CajaAhorro
 
     public static function RegistraSolicitud($datos)
     {
-        return self::Responde(true, "Solicitud registrada correctamente.", $datos);
-        $query = <<<sql
-        INSERT INTO SOLICITUD_AHORRO
-            (CDG_CONTRATO, CDG_SUCURSAL, CDG_EJECUTIVO, FECHA_SOLICITUD, ESTATUS)
+        $qrySolicitud = <<<sql
+        INSERT INTO ESIACOM.SOLICITUD_RETIRO_AHORRO
+            (ID_SOL_RETIRO_AHORRO, CONTRATO, FECHA_SOLICITUD, CANTIDAD_SOLICITADA, AUTORIZACION_CLIENTE, CDGPE, ESTATUS, FECHA_ESTATUS, PRORROGA, TIPO_RETIRO)
         VALUES
-            (:contrato, :sucursal, :ejecutivo, SYSDATE, 'A')
+            ((SELECT NVL(MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)),0) FROM SOLICITUD_RETIRO_AHORRO) + 1, :contrato, :fecha_solicitud, :monto, NULL, :ejecutivo, 0, SYSDATE, 0, :tipo_retiro)
         sql;
+        $qryTicket = self::GetQueryTicket();
+        $qryMovimiento = self::GetQueryMovimientoAhorro();
 
-        $queryMov = <<<sql
-        INSERT INTO MOVIMIENTOS_AHORRO
-            (CDG_CONTRATO, CDG_TIPO_PAGO, MONTO, MOVIMIENTO, DESCRIPCION, CDG_TICKET, FECHA_MOV)
-        VALUES
-            (:contrato, '6', :monto, '0', 'SOLICITUD DE APERTURA DE CUENTA DE AHORRO', (SELECT MAX(TO_NUMBER(CODIGO)) AS CODIGO FROM TICKETS_AHORRO WHERE CDG_CONTRATO = :contrato), SYSDATE)
-        sql;
+        $tipoRetiro = $datos['retiroExpress'] === true || $datos['retiroExpress'] === 'true' ? 1 : 2;
 
-        $queryTicket = self::GetQueryTicket();
+        $datosSolicitud = [
+            'contrato' => $datos['contrato'],
+            'fecha_solicitud' => $datos['fecha_retiro'],
+            'monto' => $datos['monto'],
+            'ejecutivo' => $datos['ejecutivo'],
+            'tipo_retiro' => $tipoRetiro
+        ];
 
-        $datosInsert = [
-            [
-                'contrato' => $datos['contrato'],
-                'sucursal' => $datos['sucursal'],
-                'ejecutivo' => $datos['ejecutivo'],
-                'monto' => $datos['monto']
-            ]
+        $datosTicket = [
+            'contrato' => $datos['contrato'],
+            'monto' => $datos['monto'],
+            'ejecutivo' => $datos['ejecutivo'],
+            'sucursal' => $datos['sucursal']
+        ];
+
+        $datosMovimiento = [
+            'tipo_pago' => $tipoRetiro === 1 ? '6' : '7',
+            'contrato' => $datos['contrato'],
+            'monto' => $datos['monto'],
+            'movimiento' => '0'
         ];
 
         $query = [
-            $query,
-            $queryMov,
-            $queryTicket
+            $qrySolicitud,
+            $qryTicket,
+            $qryMovimiento
         ];
 
+        $datosInsert = [
+            $datosSolicitud,
+            $datosTicket,
+            $datosMovimiento
+        ];
+
+        $tipoMov = $tipoRetiro === 1 ? "express" : "programado";
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
                 $ticket = self::RecuperaTicket($datos['contrato']);
-                return self::Responde(true, "Solicitud registrada correctamente.", ['ticket' => $ticket['CODIGO']]);
+                return self::Responde(true, "El retiro " . $tipoMov . " fue registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
-            return self::Responde(false, "Ocurrió un error al registrar la solicitud.");
+            return self::Responde(false, "Ocurrió un error al registrar el retiro " . $tipoMov . ".");
         } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al registrar la solicitud.", null, $e->getMessage());
+            return self::Responde(false, "Ocurrió un error al registrar el retiro " . $tipoMov  . ".", null, $e->getMessage());
         }
     }
 }
