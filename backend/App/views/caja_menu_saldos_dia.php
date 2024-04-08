@@ -63,7 +63,7 @@
                         </div>
                         <div class="col-md-12">
                             <div class="col-md-8" style="height: 50px; display: flex; align-items: center;">
-                                <label style="font-size: 16px; font-weight: bold; margin: 0; padding: 0;">Saldos generales del día <?= $fecha_actual; ?>
+                                <label style="font-size: 16px; font-weight: bold; margin: 0; padding: 0;">Saldos generales del día <?= $fecha; ?>
                                 </label>
                             </div>
                             <div class="col-md-4" style="height: 50px; display: flex; align-items: center; justify-content: flex-end;">

@@ -2250,7 +2250,7 @@ class Ahorro extends Controller
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldos del día")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('tabla', $tabla);
-        View::set('fechaActual', date('d/m/Y'));
+        View::set('fecha', date('d/m/Y'));
         View::set('saldoInicial', number_format($saldoInicial, 2));
         View::set('entradas', number_format($entradas, 2));
         View::set('salidas', number_format($salidas, 2));
