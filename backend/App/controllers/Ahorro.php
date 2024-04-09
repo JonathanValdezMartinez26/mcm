@@ -14,6 +14,7 @@ use DateTime;
 class Ahorro extends Controller
 {
     private $_contenedor;
+    private $operacionesNulas = [2, 5]; // [Comisión, Transferencia]
     private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
     private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
@@ -1955,6 +1956,119 @@ class Ahorro extends Controller
 
     //********************UTILS********************//
     // Generación de ticket's de operaciones realizadas
+    public function SaldosDia()
+    {
+        $saldoInicial = 65493.52;
+        $entradas = 0;
+        $salidas = 0;
+
+        $extraFooter = <<<html
+        <script>
+            const imprimeExcel = () => {
+                window.location.href = "/Ahorro/ExportaExcel/"
+            }
+        </script>
+        html;
+
+        $detalles = CajaAhorroDao::DetalleMovimientosXdia();
+
+        $tabla = "";
+
+        foreach ($detalles as $key => $detalle) {
+            $tabla .= "<tr>";
+            foreach ($detalle as $key => $valor) {
+                if ($key === 'CODOP') continue;
+
+                $v = $valor;
+                if ($key === 'MOVIMIENTO') {
+                    $v = self::iconoOperacion($valor, $detalle['CODOP']);
+                    [$e, $s] = self::separaMontos($valor, $detalle['CODOP'], $detalle['MONTO']);
+                    $entradas += $e;
+                    $salidas += $s;
+                }
+
+                if ($key == 'MONTO') $v = "$ " . number_format($valor, 2);
+
+                $tabla .= "<td style='vertical-align: middle;'>$v</td>";
+            }
+
+            $tabla .= "</tr>";
+        }
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldos del día")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('tabla', $tabla);
+        View::set('fecha', date('d/m/Y'));
+        View::set('saldoInicial', number_format($saldoInicial, 2));
+        View::set('entradas', number_format($entradas, 2));
+        View::set('salidas', number_format($salidas, 2));
+        View::set('saldoFinal', number_format($saldoInicial + $entradas - $salidas, 2));
+        View::render("caja_menu_saldos_dia");
+    }
+
+    public function iconoOperacion($movimiento, $operacion)
+    {
+        if (in_array($operacion, $this->operacionesNulas)) return '<i class="fa fa-minus" style="color: #0000ac;"></i>';
+        if ($movimiento == 0) return '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
+        if ($movimiento == 1) return '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
+    }
+
+    public function separaMontos($movimiento, $operacion, $monto)
+    {
+        if (in_array($operacion, $this->operacionesNulas)) return [0, 0];
+        if ($movimiento == 0) return [$monto, 0];
+        if ($movimiento == 1) return [0, $monto];
+    }
+
+    public function ExportaExcel()
+    {
+        $detalles = CajaAhorroDao::DetalleMovimientosXdia();
+
+        $tabla = "<table border='1'>";
+        $tabla .= "<tr>";
+        foreach ($detalles[0] as $key => $valor) {
+            if ($key === 'CODOP') continue;
+            $tabla .= "<th>$key</th>";
+        }
+        $tabla .= "</tr>";
+
+        foreach ($detalles as $key => $detalle) {
+            $tabla .= "<tr>";
+            foreach ($detalle as $key => $valor) {
+                if ($key === 'CODOP') continue;
+                $tabla .= "<td>$valor</td>";
+            }
+            $tabla .= "</tr>";
+        }
+
+        $tabla .= "</table>";
+
+        header("Content-type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=DetallesMovimientos.xls");
+        echo $tabla;
+    }
+
+    //********************BORRAR????********************//
+    public function HistorialSolicitudRetiroCuentaCorriente()
+    {
+        $extraHeader = <<<html
+        <title>Caja Cobrar</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+        html;
+
+        $extraFooter = <<<html
+        <script>
+           
+        </script>
+        html;
+
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("caja_menu_retiro_ahorro");
+    }
+
+    //********************UTILS********************//
+    // Generación de ticket's de operaciones realizadas
     public function Ticket()
     {
         $ticket = $_GET['ticket'];
@@ -2206,82 +2320,6 @@ class Ahorro extends Controller
         $mpdf->Output($nombreArchivo . '.pdf', 'I');
 
         exit;
-    }
-
-    public function SaldosDia()
-    {
-        $saldoInicial = 65493.52;
-        $entradas = 0;
-        $salidas = 0;
-
-        $extraFooter = <<<html
-        <script>
-           
-        </script>
-        html;
-
-        $detalles = CajaAhorroDao::DetalleMovimientosXdia();
-
-        $tabla = "";
-
-        foreach ($detalles as $key => $detalle) {
-            $tabla .= "<tr>";
-            foreach ($detalle as $key => $valor) {
-                if ($key === 'CODOP') continue;
-
-                $v = $valor;
-                if ($key === 'MOVIMIENTO') {
-                    $v = self::iconoOperacion($valor, $detalle['CODOP']);
-
-                    if ($valor == 0) $entradas += floatval($detalle['MONTO']);
-                    if ($valor == 1) $salidas += floatval($detalle['MONTO']);
-                }
-
-                if ($key == 'MONTO') $v = "$ " . number_format($valor, 2);
-
-                $tabla .= "<td>$v</td>";
-            }
-
-            $tabla .= "</tr>";
-        }
-
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldos del día")));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('tabla', $tabla);
-        View::set('fecha', date('d/m/Y'));
-        View::set('saldoInicial', number_format($saldoInicial, 2));
-        View::set('entradas', number_format($entradas, 2));
-        View::set('salidas', number_format($salidas, 2));
-        View::set('saldoFinal', number_format($saldoInicial + $entradas - $salidas, 2));
-        View::render("caja_menu_saldos_dia");
-    }
-
-    public function iconoOperacion($movimiento, $operacion)
-    {
-        $operacionesNulas = [2, 5]; // [Comisión, Transferencia]
-
-        if (in_array($operacion, $operacionesNulas)) return '<i class="fa fa-equal" style="color: #0055CC"></i>';
-        if ($movimiento == 0) return '<i class="fa fa-arrow-down" style="color: #00ac00"></i>';
-        if ($movimiento == 1) return '<i class="fa fa-arrow-up" style="color: #ac0000"></i>';
-    }
-
-    //********************BORRAR????********************//
-    public function HistorialSolicitudRetiroCuentaCorriente()
-    {
-        $extraHeader = <<<html
-        <title>Caja Cobrar</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-        html;
-
-        $extraFooter = <<<html
-        <script>
-           
-        </script>
-        html;
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render("caja_menu_retiro_ahorro");
     }
 
 
