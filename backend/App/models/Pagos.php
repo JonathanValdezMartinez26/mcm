@@ -42,7 +42,7 @@ class Pagos{
         Else 'NO'
         END AS DESIGNATION_ADMIN
     FROM
-        PAGOSDIA, NS, CO, RG, PE
+        PAGOSDIA, NS, CO, RG, PE    
     WHERE
         PAGOSDIA.CDGEM = 'EMPFIN'
         AND PAGOSDIA.ESTATUS = 'A'
@@ -51,11 +51,12 @@ class Pagos{
         AND NS.CDGCO = CO.CODIGO 
         AND CO.CDGRG = RG.CODIGO
         AND PE.CODIGO = PAGOSDIA.CDGPE
+        AND PE.CDGEM = 'EMPFIN'
     ORDER BY
         FREGISTRO DESC, SECUENCIA
 sql;
 
-        //var_dump($query);
+       // var_dump($query);
       $mysqli = Database::getInstance();
       return $mysqli->queryAll($query);
     }
@@ -613,7 +614,7 @@ sql;
 		GET_NOMBRE_EMPLEADO(SN.CDGOCPE) EJECUTIVO,
 		SC.CDGPI ID_PROYECTO
 	FROM 
-		SN, SC, SC Q2, PRN 
+		SN, SC, SC Q2, PRN ,  PE
 	WHERE
 		SC.CDGNS = '$noCredito'
 		AND SC.CDGNS = Q2.CDGNS
@@ -625,6 +626,8 @@ sql;
 		AND PRN.CDGNS = SC.CDGNS 
 		AND PRN.SITUACION IN('E', 'L')
 	    $Q1
+	    AND PE.CODIGO = PAGOSDIA.CDGPE
+        AND PE.CDGEM = 'EMPFIN'
 		AND SC.CANTSOLIC <> '9999' order by SC.SOLICITUD  desc
 sql;
         //var_dump($query);
