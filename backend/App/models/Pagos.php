@@ -614,7 +614,7 @@ sql;
 		GET_NOMBRE_EMPLEADO(SN.CDGOCPE) EJECUTIVO,
 		SC.CDGPI ID_PROYECTO
 	FROM 
-		SN, SC, SC Q2, PRN ,  PE
+		SN, SC, SC Q2, PRN
 	WHERE
 		SC.CDGNS = '$noCredito'
 		AND SC.CDGNS = Q2.CDGNS
@@ -626,8 +626,6 @@ sql;
 		AND PRN.CDGNS = SC.CDGNS 
 		AND PRN.SITUACION IN('E', 'L')
 	    $Q1
-	    AND PE.CODIGO = PAGOSDIA.CDGPE
-        AND PE.CDGEM = 'EMPFIN'
 		AND SC.CANTSOLIC <> '9999' order by SC.SOLICITUD  desc
 sql;
         //var_dump($query);
