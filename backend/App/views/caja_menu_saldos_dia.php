@@ -67,7 +67,7 @@
                                 </label>
                             </div>
                             <div class="col-md-4" style="height: 50px; display: flex; align-items: center; justify-content: flex-end;">
-                                <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"></i><b> Exportar a Excel</b></button>
+                                <button id="btnExportaExcel" type="button" class="btn btn-success btn-circle" onclick=imprimeExcel()><i class="fa fa-file-excel-o"></i><b> Exportar a Excel</b></button>
                             </div>
                         </div>
                     </div>
@@ -96,14 +96,14 @@
                                                     </div>
                                                     <div class="col-md-3" style="border: 1px solid #dfdfdf; border-radius: 30px;display:flex; flex-direction: column;justify-content: center; align-items: center;" data-toggle="modal" data-target="#modal_agregar_pago">
                                                         <br>
-                                                        <p style="font-size: 16px"><b><i class="fa fa-arrow-down" style="color: #21ac29"></i> Entradas:</b></p>
+                                                        <p style="font-size: 16px"><b><i class="fa fa-arrow-down" style="color: #00ac00"></i> Entradas:</b></p>
                                                         <br>
                                                         <p style="font-size: 19px"><b> $ <?= $entradas; ?></b></p>
                                                         <br>
                                                     </div>
                                                     <div class="col-md-3" style="border: 1px solid #dfdfdf; border-radius: 30px;display:flex; flex-direction: column;justify-content: center; align-items: center;" data-toggle="modal" data-target="#modal_agregar_pago">
                                                         <br>
-                                                        <p style="font-size: 16px"><b> <i class="fa fa-arrow-up" style="color: #d1000d"></i> Salidas:</b></p>
+                                                        <p style="font-size: 16px"><b> <i class="fa fa-arrow-up" style="color: #ac0000"></i> Salidas:</b></p>
                                                         <br>
                                                         <p style="font-size: 19px"><b> $ <?= $salidas; ?></b></p>
                                                         <br>
