@@ -479,14 +479,14 @@ class Ahorro extends Controller
                         
             const pagoApertura = (e) => {
                 e.preventDefault()
-                if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura)
+                if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura.toLocalString("es-MX", {style:"currency", currency:"MXN"}) + ".")
                             
                 const datos = $("#AddPagoApertura").serializeArray()
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                             
                 $.ajax({
                     type: "POST",
-                    url: "/Ahorro/pagoApertura/",
+                    url: "/Ahorro/PagoApertura/",
                     data: $.param(datos),
                     success: (respuesta) => {
                         respuesta = JSON.parse(respuesta)
@@ -528,7 +528,7 @@ class Ahorro extends Controller
                     e.target.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
                 }
                 
-                document.querySelector("#deposito_inicial_letra").value = numeroLetras(parseFloat(e.target.value))
+                document.querySelector("#monto_letra").value = numeroLetras(parseFloat(e.target.value))
                 calculaSaldoFinal(e)
             }
              
@@ -537,7 +537,7 @@ class Ahorro extends Controller
                 document.querySelector("#deposito").value = monto.toFixed(2)
                 const saldoInicial = (monto - parseFloat(document.querySelector("#inscripcion").value)).toFixed(2)
                 document.querySelector("#saldo_inicial").value = saldoInicial > 0 ? saldoInicial : "0.00"
-                document.querySelector("#deposito_inicial_letra").value = primeraMayuscula(numeroLetras(monto))
+                document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
                     
                 if (saldoInicial < saldoMinimoApertura) {
                     document.querySelector("#saldo_inicial").setAttribute("style", "color: red")
@@ -1785,6 +1785,21 @@ class Ahorro extends Controller
             {$this->getHoy}
              
             const llenaDatosCliente = (datosCliente) => {
+                if (parseFloat(datosCliente.SALDO) < montoMinimo) {
+                    swal({
+                        title: "Retiro de cuenta corriente",
+                        text: "El saldo de la cuenta es menor al monto mínimo para retiros express (" + montoMinimo.toLocaleString("es-MX", {style:"currency", currency:"MXN"}) + ").\\n¿Desea realizar un retiro simple?",
+                        icon: "info",
+                        buttons: ["No", "Sí"]
+                    }).then((retSimple) => {
+                        if (retSimple) {
+                            window.location.href = "/Ahorro/CuentaCorriente/?cliente=" + datosCliente.CDGCL
+                            return
+                        }
+                    })
+                    return
+                }
+                 
                 document.querySelector("#nombre").value = datosCliente.NOMBRE
                 document.querySelector("#curp").value = datosCliente.CURP
                 document.querySelector("#contrato").value = datosCliente.CONTRATO
@@ -1954,8 +1969,8 @@ class Ahorro extends Controller
         echo $datos;
     }
 
-    //********************UTILS********************//
-    // Generación de ticket's de operaciones realizadas
+    //******************REPORTE DE SALDO EN CAJA******************//
+    // Muestra un reporte para el segimiento de los saldos en caja
     public function SaldosDia()
     {
         $saldoInicial = 65493.52;
@@ -1964,6 +1979,30 @@ class Ahorro extends Controller
 
         $extraFooter = <<<html
         <script>
+            $(document).ready(() => {
+                $("#muestra-cupones").tablesorter()
+                $("#muestra-cupones").DataTable({
+                    lengthMenu: [
+                        [10, 40, -1],
+                        [10, 40, "Todos"]
+                    ],
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 0
+                        }
+                    ],
+                    order: false
+                })
+            
+                $("#muestra-cupones input[type=search]").keyup(() => {
+                    $("#example")
+                        .DataTable()
+                        .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
+                        .draw()
+                })
+            })
+             
             const imprimeExcel = () => {
                 window.location.href = "/Ahorro/ExportaExcel/"
             }
@@ -2009,8 +2048,8 @@ class Ahorro extends Controller
     public function iconoOperacion($movimiento, $operacion)
     {
         if (in_array($operacion, $this->operacionesNulas)) return '<i class="fa fa-minus" style="color: #0000ac;"></i>';
-        if ($movimiento == 0) return '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
-        if ($movimiento == 1) return '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
+        if ($movimiento == 1) return '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
+        if ($movimiento == 0) return '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
     }
 
     public function separaMontos($movimiento, $operacion, $monto)
@@ -2046,25 +2085,6 @@ class Ahorro extends Controller
         header("Content-type: application/vnd.ms-excel");
         header("Content-Disposition: attachment; filename=DetallesMovimientos.xls");
         echo $tabla;
-    }
-
-    //********************BORRAR????********************//
-    public function HistorialSolicitudRetiroCuentaCorriente()
-    {
-        $extraHeader = <<<html
-        <title>Caja Cobrar</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-        html;
-
-        $extraFooter = <<<html
-        <script>
-           
-        </script>
-        html;
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render("caja_menu_retiro_ahorro");
     }
 
     //********************UTILS********************//
@@ -2322,6 +2342,24 @@ class Ahorro extends Controller
         exit;
     }
 
+    //********************BORRAR????********************//
+    public function HistorialSolicitudRetiroCuentaCorriente()
+    {
+        $extraHeader = <<<html
+        <title>Caja Cobrar</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+        html;
+
+        $extraFooter = <<<html
+        <script>
+           
+        </script>
+        html;
+
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("caja_menu_retiro_ahorro");
+    }
 
     public function EstadoCuenta()
     {

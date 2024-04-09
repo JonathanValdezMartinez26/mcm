@@ -172,7 +172,7 @@
                                     <h3>$</h3>
                                 </div>
                                 <div class="col-md-4" style="padding-top: 5px;">
-                                    <input type="number" class="form-control" id="monto" name="monto" min="<?= $montoMinimoRetiro ?>" max="<?= $montoMaximoRetiro ?>" placeholder="0.00" style="font-size: 25px;" value="<?= $montoMinimoRetiro ?>" oninput=validaMonto(event) onkeydown=soloNumeros(event) onblur=valSalMin() disabled>
+                                    <input type="number" class="form-control" id="monto" name="monto" min="<?= $montoMinimoRetiro ?>" max="<?= $montoMaximoRetiro ?>" placeholder="0.00" style="font-size: 25px;" oninput=validaMonto(event) onkeydown=soloNumeros(event) onblur=valSalMin() disabled>
                                 </div>
                             </div>
                             <div class="row">

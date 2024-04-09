@@ -350,23 +350,21 @@
                                     <input type="hidden" class="form-control" id="ejecutivo" name="ejecutivo" value="SOOA">
                                 </div>
                             </div>
-                            <div class="col-md-12">
-                                <hr>
-                            </div>
+                            <hr>
                         </div>
                         <div class="row">
                             <div class="col-md-3" style="font-size: 18px; padding-top: 5px;">
                                 <label style="color: #000000">Movimiento:</label>
                             </div>
                             <div class="col-md-4" style="text-align: center; font-size: 18px; padding-top: 5px;">
-                                <input type="radio" name="esDeposito" id="deposito" onchange=cambioMovimiento(event) checked>
+                                <input type="radio" name="esDeposito" onchange=cambioMovimiento(event) checked>
                                 <label for="deposito">Depósito</label>
                             </div>
                             <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                 <h3>$</h3>
                             </div>
                             <div class="col-md-4" style="padding-top: 5px;">
-                                <input type="number" class="form-control" id="monto" name="monto" min="1" max="100000" placeholder="0.00" style="font-size: 25px;" onkeyup=validaDeposito(event) onkeydown=soloNumeros(event) disabled>
+                                <input type="number" class="form-control" id="monto" name="monto" min="1" max="100000" placeholder="0.00" style="font-size: 25px;" oninput=validaDeposito(event) onkeydown=soloNumeros(event)>
                             </div>
                         </div>
                         <div class="row">
@@ -392,7 +390,7 @@
                                 <h4>$</h4>
                             </div>
                             <div class="col-md-3">
-                                <input type="number" class="form-control" id="deposito" name="deposito" value="0.00" readonly>
+                                <input type="number" class="form-control" id="deposito" name="deposito" value="0.00" disabled>
                             </div>
                         </div>
                         <div class="row">
