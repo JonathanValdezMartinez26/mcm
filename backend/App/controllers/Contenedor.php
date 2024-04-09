@@ -132,12 +132,12 @@ html;
             <li><a href="/Pagos/">Administración Pagos</a></li>
 html;
     }
-      if ($this->__perfil == 'ADMIN') {
-          $menu .= <<<html
+    if ($this->__perfil == 'ADMIN') {
+      $menu .= <<<html
             <li><a href="/Pagos/CorteEjecutivo/">Recepción Pagos App</a></li> 
             <li><a href="/Pagos/CorteEjecutivoReimprimir/">Reimprimir Recibos App</a></li> 
 html;
-      }
+    }
     if ($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL' || $this->__perfil == 'LAYOU') {
       $menu .= <<<html
             <li><a href="/Pagos/Layout/">Layout Contable</a></li> 
@@ -321,7 +321,7 @@ html;
               <ul class="nav side-menu">
                 
 html;
-      if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' ) {
+      if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR') {
         $menu .= <<<html
                 <li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>
 html;
