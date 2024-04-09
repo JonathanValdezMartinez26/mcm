@@ -61,14 +61,9 @@
                             <a class="navbar-brand">Mi espacio / Saldos del día</a>
                             &nbsp;&nbsp;
                         </div>
-                        <div class="col-md-12">
-                            <div class="col-md-8" style="height: 50px; display: flex; align-items: center;">
-                                <label style="font-size: 16px; font-weight: bold; margin: 0; padding: 0;">Saldos generales del día <?= $fecha; ?>
-                                </label>
-                            </div>
-                            <div class="col-md-4" style="height: 50px; display: flex; align-items: center; justify-content: flex-end;">
-                                <button id="btnExportaExcel" type="button" class="btn btn-success btn-circle" onclick=imprimeExcel()><i class="fa fa-file-excel-o"></i><b> Exportar a Excel</b></button>
-                            </div>
+                        <div class="col-md-12" style="display: flex; align-items: center; justify-content: center; height: 40px;">
+                            <label style="font-size: 16px; font-weight: bold; margin: 0; padding: 0;">Saldos generales del día <?= $fecha; ?>
+                            </label>
                         </div>
                     </div>
                     <div class="modal-body">
@@ -76,76 +71,71 @@
                             <div class="col-md-12">
                                 <div class="row">
                                     <div class="card col-md-12">
-                                        <form id="AddPagoApertura">
-                                            <!-- <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="col-md-6">
-                                                        <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p>
-                                                        <hr>
-                                                    </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="col-md-3" style="border: 1px solid #dfdfdf; border-radius: 30px;display:flex; flex-direction: column;justify-content: center; align-items: center;" data-toggle="modal" data-target="#modal_agregar_pago">
+                                                    <br>
+                                                    <p style="font-size: 16px"><b><i class="fa fa-sun-o" style="color: #ffdc3a"></i> Apertura:</b></p>
+                                                    <br>
+                                                    <p style="font-size: 19px"><b> $ <?= $saldoInicial; ?></b></p>
+                                                    <br>
                                                 </div>
-                                            </div> -->
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="col-md-3" style="border: 1px solid #dfdfdf; border-radius: 30px;display:flex; flex-direction: column;justify-content: center; align-items: center;" data-toggle="modal" data-target="#modal_agregar_pago">
-                                                        <br>
-                                                        <p style="font-size: 16px"><b><i class="fa fa-sun-o" style="color: #ffdc3a"></i> Apertura:</b></p>
-                                                        <br>
-                                                        <p style="font-size: 19px"><b> $ <?= $saldoInicial; ?></b></p>
-                                                        <br>
-                                                    </div>
-                                                    <div class="col-md-3" style="border: 1px solid #dfdfdf; border-radius: 30px;display:flex; flex-direction: column;justify-content: center; align-items: center;" data-toggle="modal" data-target="#modal_agregar_pago">
-                                                        <br>
-                                                        <p style="font-size: 16px"><b><i class="fa fa-arrow-down" style="color: #00ac00"></i> Entradas:</b></p>
-                                                        <br>
-                                                        <p style="font-size: 19px"><b> $ <?= $entradas; ?></b></p>
-                                                        <br>
-                                                    </div>
-                                                    <div class="col-md-3" style="border: 1px solid #dfdfdf; border-radius: 30px;display:flex; flex-direction: column;justify-content: center; align-items: center;" data-toggle="modal" data-target="#modal_agregar_pago">
-                                                        <br>
-                                                        <p style="font-size: 16px"><b> <i class="fa fa-arrow-up" style="color: #ac0000"></i> Salidas:</b></p>
-                                                        <br>
-                                                        <p style="font-size: 19px"><b> $ <?= $salidas; ?></b></p>
-                                                        <br>
-                                                    </div>
-                                                    <div class="col-md-3" style="border: 1px solid #dfdfdf; border-radius: 30px;display:flex; flex-direction: column;justify-content: center; align-items: center;" data-toggle="modal" data-target="#modal_agregar_pago">
-                                                        <br>
-                                                        <p style="font-size: 16px"><b><i class="fa fa-moon-o" style="color: #094471"></i> Cierre:</b></p>
-                                                        <br>
-                                                        <p style="font-size: 19px"><b> $ <?= $saldoFinal; ?></b></p>
-                                                        <br>
-                                                    </div>
+                                                <div class="col-md-3" style="border: 1px solid #dfdfdf; border-radius: 30px;display:flex; flex-direction: column;justify-content: center; align-items: center;" data-toggle="modal" data-target="#modal_agregar_pago">
+                                                    <br>
+                                                    <p style="font-size: 16px"><b><i class="fa fa-arrow-down" style="color: #00ac00"></i> Entradas:</b></p>
+                                                    <br>
+                                                    <p style="font-size: 19px"><b> $ <?= $entradas; ?></b></p>
+                                                    <br>
+                                                </div>
+                                                <div class="col-md-3" style="border: 1px solid #dfdfdf; border-radius: 30px;display:flex; flex-direction: column;justify-content: center; align-items: center;" data-toggle="modal" data-target="#modal_agregar_pago">
+                                                    <br>
+                                                    <p style="font-size: 16px"><b> <i class="fa fa-arrow-up" style="color: #ac0000"></i> Salidas:</b></p>
+                                                    <br>
+                                                    <p style="font-size: 19px"><b> $ <?= $salidas; ?></b></p>
+                                                    <br>
+                                                </div>
+                                                <div class="col-md-3" style="border: 1px solid #dfdfdf; border-radius: 30px;display:flex; flex-direction: column;justify-content: center; align-items: center;" data-toggle="modal" data-target="#modal_agregar_pago">
+                                                    <br>
+                                                    <p style="font-size: 16px"><b><i class="fa fa-moon-o" style="color: #094471"></i> Cierre:</b></p>
+                                                    <br>
+                                                    <p style="font-size: 19px"><b> $ <?= $saldoFinal; ?></b></p>
+                                                    <br>
                                                 </div>
                                             </div>
-                                            <hr>
-                                            <div class="row">
-                                                <div class="col-md-12" style="text-align:center;">
-                                                    <h4>Resumen de movimientos (entradas y salidas de efectivo)</h4>
+                                        </div>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-12" style="text-align: center">
+                                                <label style="font-size: 18px; margin: 0; padding: 0;">Resumen de movimientos (entradas y salidas de efectivo)</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button id="btnExportaExcel" type="button" class="btn btn-success btn-circle" onclick=imprimeExcel()><i class="fa fa-file-excel-o"></i><b> Exportar a Excel</b></button>
+                                            </div>
+                                        </div>
+                                        <div class="card col-md-12">
+                                            <form name="all" id="all" method="POST">
+                                                <div class="dataTable_wrapper">
+                                                    <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
+                                                        <thead>
+                                                            <tr>
+                                                                <th></th>
+                                                                <th>Operación</th>
+                                                                <th>Nombre del cliente</th>
+                                                                <th>Código cliente</th>
+                                                                <th>Fecha de movimiento</th>
+                                                                <th>Monto del movimiento</th>
+                                                                <th>Autorización</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <?= $tabla; ?>
+                                                        </tbody>
+                                                    </table>
                                                 </div>
-                                            </div>
-                                            <div class="card col-md-12">
-                                                <form name="all" id="all" method="POST">
-                                                    <div class="dataTable_wrapper">
-                                                        <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th></th>
-                                                                    <th>Operación</th>
-                                                                    <th>Nombre del cliente</th>
-                                                                    <th>Código cliente</th>
-                                                                    <th>Fecha de movimiento</th>
-                                                                    <th>Monto del movimiento</th>
-                                                                    <th>Autorización</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody id="detMov">
-                                                                <?= $tabla; ?>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </form>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

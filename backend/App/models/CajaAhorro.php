@@ -348,7 +348,7 @@ class CajaAhorro
 
     public static function AddPagoApertura($datos)
     {
-        if ($datos['deposito_inicial'] == 0) return self::Responde(false, "El monto de apertura no puede ser de 0.");
+        if ($datos['monto'] == 0) return self::Responde(false, "El monto de apertura no puede ser de 0.");
         if ($datos['saldo_inicial'] < $datos['sma']) return self::Responde(false, "El saldo inicial no puede ser menor a " . $datos['sma'] . ".");
 
         $query = [
@@ -366,14 +366,14 @@ class CajaAhorro
         $datosInsert = [
             [
                 'contrato' => $datos['contrato'],
-                'monto' => $datos['deposito_inicial'],
+                'monto' => $datos['monto'],
                 'ejecutivo' => $datos['ejecutivo'],
                 'sucursal' => $datos['sucursal']
             ],
             [
                 'tipo_pago' => '1',
                 'contrato' => $datos['contrato'],
-                'monto' => $datos['deposito'],
+                'monto' => $datos['monto'],
                 'movimiento' => '1'
             ],
             [
