@@ -344,7 +344,7 @@
             select.empty();
             select.append($("<option>", {
                 value: 'M',
-                text: 'MULTA'
+                text: 'MULTA GESTORES'
             }));
         }
 
