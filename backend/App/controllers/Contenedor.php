@@ -30,7 +30,8 @@ class Contenedor extends Controller
 
   public function header($extra = '')
   {
-    date_default_timezone_set('America/Mexico_City');
+    //date_default_timezone_set('America/Mexico_City');
+    date_default_timezone_set('America/Mazatlan');
     $usuario = $this->__usuario;
     $nombre = $this->__nombre;
     $sucursal = $this->__cdgco;
@@ -99,7 +100,7 @@ html;
             <div class="menu_section">
 html;
 
-    if ($this->__usuario == 'AMGM' || $this->__usuario == 'PHEE' || $this->__usuario == 'GASC') {
+    if ( $this->__usuario == 'PHEE' || $this->__usuario == 'GASC') {
       $menu .= <<<html
           <hr>
            <h3>General WEB AHORRO</h3>
