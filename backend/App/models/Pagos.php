@@ -25,7 +25,7 @@ class Pagos{
         PAGOSDIA.TIPO AS TIP,
         PAGOSDIA.EJECUTIVO,
         PAGOSDIA.CDGOCPE,
-        (PE.NOMBRE1 || ' ' || PE.NOMBRE2 || ' ' ||PE.PRIMAPE || ' ' ||PE.SEGAPE) AS NOMBRE,
+        (PE.NOMBRE1 || ' ' || PE.NOMBRE2 || ' ' ||PE.PRIMAPE || ' ' ||PE.SEGAPE) AS NOMBRE_CDGPE,
         PAGOSDIA.FREGISTRO,
         ------PAGOSDIA.FIDENTIFICAPP,
         TRUNC(FECHA) AS DE,
