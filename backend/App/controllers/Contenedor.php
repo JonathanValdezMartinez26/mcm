@@ -100,7 +100,7 @@ html;
             <div class="menu_section">
 html;
 
-    if ( $this->__usuario == 'PHEE' || $this->__usuario == 'GASC') {
+    if ($this->__usuario == 'AMGM' || $this->__usuario == 'PHEE' || $this->__usuario == 'GASC') {
       $menu .= <<<html
           <hr>
            <h3>General WEB AHORRO</h3>
