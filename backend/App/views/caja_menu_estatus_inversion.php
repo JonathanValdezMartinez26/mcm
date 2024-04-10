@@ -89,7 +89,7 @@
                                     <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
                                 </div>
                                 <div class="col-md-4">
-                                    <button type="button" class="btn btn-primary" onclick="buscaCliente()">
+                                    <button id="btnBskClnt" class="btn btn-primary" onclick="buscaCliente()">
                                         <i class="fa fa-search"></i> Buscar
                                     </button>
                                 </div>
