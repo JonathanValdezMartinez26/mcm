@@ -32,34 +32,36 @@ class Jobs
 
     public function sp_con_array()
     {
-        $esquema = [
-            "PRMCDGEM" => "string",
-            "PRMCDGCLNS" => "string",
-            "PRMCLNS" => "string",
-            "PRMCICLO" => "string",
-            "PRMT_CDGCL" => "string",
-            "PRMT_NOCHEQUE" => "string",
-            "PRMFECHA" => "string",
-            "PRMUSER" => "string",
-            "PRMCDGCB" => "string"
-        ];
+        $pDemo = [];
+        $cliente = [];
+        $cheque = [];
+        $creditos = JobsDao::CreditosAutorizados("11/04/2024");
+        foreach ($creditos as $key => $credito) {
+            $cliente[] = JobsDao::ClientesAutorizados($credito["CDGNS"], $credito["CICLO"]);
+            // $cliente = JobsDao::ClientesAutorizados($credito["CDGNS"], $credito["CICLO"]);
+            if (empty($cliente)) continue;
+            $chequera = JobsDao::GetNoChequera($creditos["CDGCO"]);
+            $cheque[] = JobsDao::GetNoCheque($chequera["CDGCB"]);
+            // var_dump($cliente[0]);
+            $parametros = [];
+            $parametros[":PRMCDGEM"] = "EMPFIN";
+            $parametros[":PRMCDGCLNS"] = $credito['CDGNS'];
+            $parametros[":PRMCLNS"] = 'G';
+            $parametros[":PRMCICLO"] = $credito['CICLO'];
+            $parametros[":PRMT_CDGCL"] = [$cliente];
+            $parametros[":PRMT_NOCHEQUE"] = [$cheque];
+            $parametros[":PRMFECHA"] = $credito['INICIO'];
+            $parametros[":PRMUSER"] = $_SESSION['USUARIO'] ?? 'AMGM';
+            $parametros[":PRMCDGCB"] = $chequera["CDGCB"];
+            $parametros[":VMENSAJE"] = "__RETURN__";
 
-        self::ValidaEsquema($esquema, $_POST);
-
-        $parametros = [];
-        $parametros[":PRMCDGEM"] = $_POST['PRMCDGEM'];
-        $parametros[":PRMCDGCLNS"] = $_POST['PRMCDGCLNS'];
-        $parametros[":PRMCLNS"] = $_POST['PRMCLNS'];
-        $parametros[":PRMCICLO"] = $_POST['PRMCICLO'];
-        $parametros[":PRMT_CDGCL"] = $_POST['PRMT_CDGCL'];
-        $parametros[":PRMT_NOCHEQUE"] = $_POST['PRMT_NOCHEQUE'];
-        $parametros[":PRMFECHA"] = $_POST['PRMFECHA'];
-        $parametros[":PRMUSER"] = $_POST['PRMUSER'];
-        $parametros[":PRMCDGCB"] = $_POST['PRMCDGCB'];
-        $parametros[":VMENSAJE"] = "__RETURN__";
-
-        // ('EMPFIN', '010407', 'G', '09', T_CDGCL('112690''), T_NOCHEQUE('4568''), '2024-04-11 00:00:00.000', 'AMGM', '28', ?)
-
-        echo JobsDao::sp_con_array($parametros);
+            $pDemo[] = [$parametros, JobsDao::sp_con_array($parametros)];
+            $creditos[$key]["CHEQUERA"] = $chequera["CDGCB"];
+            $creditos[$key]["CHEQUE"] = $cheque["CHQSIG"];
+        }
+        // CALL ESIACOM.PKG_SPS_CON_ARRAY.SP_INS_CHEQUES_CTE(:PRMCDGEM, :PRMCDGCLNS, :PRMCLNS, :PRMCICLO, :PRMT_CDGCL, :PRMT_NOCHEQUE, :PRMFECHA, :PRMUSER, :PRMCDGCB, ?)
+        // CALL ESIACOM.PKG_SPS_CON_ARRAY.SP_INS_CHEQUES_CTE('EMPFIN', '010407', 'G', '09', T_CDGCL('112690''), T_NOCHEQUE('4568''), '2024-04-11 00:00:00.000', 'AMGM', '28', ?)
+        echo json_encode($pDemo);
+        die();
     }
 }

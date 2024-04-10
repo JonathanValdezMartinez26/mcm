@@ -139,18 +139,16 @@ class Database
     {
         try {
             $stmt = $this->_mysqli->prepare($sp);
-            if (!$stmt) {
-                throw new \Exception("Error al preparar la declaración: " . json_encode($this->_mysqli->errorInfo()));
-            }
+            $outParam = 'OK';
             foreach ($parametros as $parametro => $valor) {
                 if ($valor === "__RETURN__") {
-                    $stmt->bindParam($parametro, $valor, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT, 4000);
+                    $stmt->bindParam($parametro, $outParam, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT, 4000);
                 } else {
                     $stmt->bindParam($parametro, $valor);
                 }
-                $stmt->bindParam($parametro, $valor);
             }
-            return $stmt->execute();
+            $stmt->execute();
+            return $outParam;
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
