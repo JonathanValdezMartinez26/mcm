@@ -43,6 +43,11 @@ class Database
         return self::$_instance;
     }
 
+    public static function getConexion()
+    {
+        return self::$_mysqli;
+    }
+
     private function conectar()
     {
 
@@ -127,6 +132,27 @@ class Database
         } catch (\PDOException $e) {
             $this->_mysqli->rollBack();
             throw new \Exception("Error en insertaMultiple: " . $e->getMessage() . "\nSql : $sql");
+        }
+    }
+
+    public function EjecutaSP($sp, $parametros)
+    {
+        try {
+            $stmt = $this->_mysqli->prepare($sp);
+            if (!$stmt) {
+                throw new \Exception("Error al preparar la declaración: " . json_encode($this->_mysqli->errorInfo()));
+            }
+            foreach ($parametros as $parametro => $valor) {
+                if ($valor === "__RETURN__") {
+                    $stmt->bindParam($parametro, $valor, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT, 4000);
+                } else {
+                    $stmt->bindParam($parametro, $valor);
+                }
+                $stmt->bindParam($parametro, $valor);
+            }
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            return $e->getMessage();
         }
     }
 

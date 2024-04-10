@@ -1205,3 +1205,41 @@ class CajaAhorro
         }
     }
 }
+
+// generar una calse para registrar todas las transacciones que se realizan en el modulo de Ahorro.
+// Los datos a guardar deberán seran los siguientes:
+// Identificador de la transacción
+// Fecha de transacción HH:MM:SS
+// Query de la transacción, Listo para copiar y ejecutar en el sistema gestor de base de datos. 
+// Usuario que genera la transaccin
+// Contrato
+// Modulo en donde se genero
+// Tipo de transacción (movimiento Deposito, Retiro, Nuevo Contrato, Alta de Peque)
+
+class TransaccionAhorro
+{
+    public static function RegistraTransaccion($datos)
+    {
+        $qry = <<<sql
+        INSERT INTO TRANSACCIONES_AHORRO
+            (CODIGO, FECHA, QUERY, USUARIO, CONTRATO, MODULO, TIPO_TRANSACCION)
+        VALUES
+            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM TRANSACCIONES_AHORRO) + 1, SYSDATE, :query, :usuario, :contrato, :modulo, :tipo_transaccion)
+        sql;
+
+        $parametros = [
+            'query' => $datos['query'],
+            'usuario' => $datos['usuario'],
+            'contrato' => $datos['contrato'],
+            'modulo' => $datos['modulo'],
+            'tipo_transaccion' => $datos['tipo_transaccion']
+        ];
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->inserta($qry, $parametros);
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+}
