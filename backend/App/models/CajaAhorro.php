@@ -336,7 +336,11 @@ class CajaAhorro
             try {
                 $mysqli = Database::getInstance();
                 $res = $mysqli->insertaMultiple($inserts, $datosInsert);
-                if ($res) return self::Responde(true, "Contrato de ahorro registrado correctamente.", ['contrato' => $noContrato]);
+                if ($res) {
+                    $tmp = LogTransaccionesAhorro::LogTransacciones($inserts, $datosInsert, $_SESSION['usuario'], $noContrato, "Nuevo contrato ahorro corriente");
+
+                    return self::Responde(true, "Contrato de ahorro registrado correctamente.", $tmp); //['contrato' => $noContrato]);
+                }
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.");
             } catch (Exception $e) {
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.", null, $e->getMessage());
@@ -1206,40 +1210,56 @@ class CajaAhorro
     }
 }
 
-// generar una calse para registrar todas las transacciones que se realizan en el modulo de Ahorro.
-// Los datos a guardar deberán seran los siguientes:
-// Identificador de la transacción
-// Fecha de transacción HH:MM:SS
-// Query de la transacción, Listo para copiar y ejecutar en el sistema gestor de base de datos. 
-// Usuario que genera la transaccin
-// Contrato
-// Modulo en donde se genero
-// Tipo de transacción (movimiento Deposito, Retiro, Nuevo Contrato, Alta de Peque)
-
-class TransaccionAhorro
+class LogTransaccionesAhorro
 {
-    public static function RegistraTransaccion($datos)
+    public function BindingQuery($qry, $parametros = null)
+    {
+        if ($parametros) {
+            foreach ($parametros as $parametro => $valor)
+                $qry = str_replace(":" . $parametro, "'" . $valor . "'", $qry);
+        }
+
+        return $qry;
+    }
+
+    public static function LogTransaccion($datos)
     {
         $qry = <<<sql
-        INSERT INTO TRANSACCIONES_AHORRO
-            (CODIGO, FECHA, QUERY, USUARIO, CONTRATO, MODULO, TIPO_TRANSACCION)
+        INSERT INTO LOG_TRANSACCIONES_AHORRO
+            (ID_TRANSACCION, FECHA_TRANSACCION, QUERY_TRANSACCION, USUARIO, CONTRATO, MODULO, TIPO)
         VALUES
-            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM TRANSACCIONES_AHORRO) + 1, SYSDATE, :query, :usuario, :contrato, :modulo, :tipo_transaccion)
+            ((SELECT NVL(MAX(TO_NUMBER(ID_TRANSACCION)),0) FROM LOG_TRANSACCIONES_AHORRO) + 1, SYSDATE, :query, :usuario, :contrato: :modulo, :tipo_transaccion)
         sql;
 
         $parametros = [
-            'query' => $datos['query'],
+            'query' => self::BindingQuery($datos['query'], $datos['parametros']),
             'usuario' => $datos['usuario'],
             'contrato' => $datos['contrato'],
             'modulo' => $datos['modulo'],
-            'tipo_transaccion' => $datos['tipo_transaccion']
+            'tipo_transaccion' => $datos['tipo']
         ];
 
         try {
-            $mysqli = Database::getInstance();
-            return $mysqli->inserta($qry, $parametros);
+            $db = Database::getInstance();
+            $db->insertar($qry, $parametros);
         } catch (Exception $e) {
-            return 0;
+            return $e->getMessage();
         }
+    }
+
+    public static function LogTransacciones($qyrs, $parametros, $usuario, $contrato, $tipo)
+    {
+        $tmp = [];
+        foreach ($qyrs as $qry => $q) {
+            $log['query'] = $q;
+            $log['parametros'] = $parametros[$qry];
+            $log['usuario'] = $usuario;
+            $log['contrato'] = $contrato;
+            $log['modulo'] = debug_backtrace()[1]['function'];
+            $log['tipo'] = $tipo;
+            self::LogTransaccion($log);
+            $tmp[] = $log;
+        }
+        return $tmp;
     }
 }

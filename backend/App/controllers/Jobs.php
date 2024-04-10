@@ -38,11 +38,11 @@ class Jobs
         $creditos = JobsDao::CreditosAutorizados("11/04/2024");
         foreach ($creditos as $key => $credito) {
             $cliente[] = JobsDao::ClientesAutorizados($credito["CDGNS"], $credito["CICLO"]);
-            // $cliente = JobsDao::ClientesAutorizados($credito["CDGNS"], $credito["CICLO"]);
+
             if (empty($cliente)) continue;
             $chequera = JobsDao::GetNoChequera($creditos["CDGCO"]);
             $cheque[] = JobsDao::GetNoCheque($chequera["CDGCB"]);
-            // var_dump($cliente[0]);
+
             $parametros = [];
             $parametros[":PRMCDGEM"] = "EMPFIN";
             $parametros[":PRMCDGCLNS"] = $credito['CDGNS'];
@@ -63,5 +63,10 @@ class Jobs
         // CALL ESIACOM.PKG_SPS_CON_ARRAY.SP_INS_CHEQUES_CTE('EMPFIN', '010407', 'G', '09', T_CDGCL('112690''), T_NOCHEQUE('4568''), '2024-04-11 00:00:00.000', 'AMGM', '28', ?)
         echo json_encode($pDemo);
         die();
+    }
+
+    public function Prueba()
+    {
+        echo json_encode(JobsDao::Prueba());
     }
 }

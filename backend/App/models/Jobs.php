@@ -51,7 +51,7 @@ class Jobs
         SELECT CDGCL FROM PRC WHERE CDGNS = :cdgns AND CICLO = :ciclo AND NOCHEQUE IS NULL
         sql;
         $db = Database::getInstance();
-        return $db->queryOne($qry, [":cdgns" => $cdgns, ":ciclo" => $ciclo]);
+        return $db->queryOne($qry, ["cdgns" => $cdgns, "ciclo" => $ciclo]);
     }
 
     // CONSULTAR LA CHEQUERA DE LA QUE SE VA A DESOMBOLSAR EL CREDITO
@@ -65,7 +65,7 @@ class Jobs
         sql;
 
         $db = Database::getInstance();
-        return $db->queryOne($qry, [":cdgco" => $cdgco]);
+        return $db->queryOne($qry, ["cdgco" => $cdgco]);
     }
 
     // AHORA QUE YA SABEMOS QUE CHEQUERA LE CORRESPONDE DEBEMOS CONSULTAR EL CHEQUE CONSECUTIVO DE ESA CUENTA, PARA
@@ -77,6 +77,6 @@ class Jobs
         sql;
 
         $db = Database::getInstance();
-        return $db->queryOne($qry, [":chequera" => $chequera]);
+        return $db->queryOne($qry, ["chequera" => $chequera]);
     }
 }
