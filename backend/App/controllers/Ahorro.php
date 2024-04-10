@@ -483,6 +483,7 @@ class Ahorro extends Controller
                             
                 const datos = $("#AddPagoApertura").serializeArray()
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                             
                 $.ajax({
                     type: "POST",
@@ -921,6 +922,276 @@ class Ahorro extends Controller
         echo $resutado;
     }
 
+    // Registro de solicitudes de retiros mayores de cuentas de ahorro //
+    public function SolicitudRetiroCuentaCorriente()
+    {
+        $montoMinimoRetiro = 10000;
+        $montoMaximoExpress = 49999.99;
+        $montoMaximoRetiro = 1000000;
+
+        $extraFooter = <<<html
+        <script>
+            window.onload = () => {
+                if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
+            }
+         
+            const montoMinimo = $montoMinimoRetiro
+            const montoMaximoExpress = $montoMaximoExpress
+            const montoMaximoRetiro = $montoMaximoRetiro
+            let valKD = false
+         
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->validarYbuscar}
+            {$this->buscaCliente}
+            {$this->soloNumeros}
+            {$this->primeraMayuscula}
+            {$this->numeroLetras}
+            {$this->imprimeTicket}
+            {$this->addParametro}
+            {$this->sinContrato}
+            {$this->getHoy}
+             
+            const llenaDatosCliente = (datosCliente) => {
+                if (parseFloat(datosCliente.SALDO) < montoMinimo) {
+                    swal({
+                        title: "Retiro de cuenta corriente",
+                        text: "El saldo de la cuenta es menor al monto mínimo para retiros express (" + montoMinimo.toLocaleString("es-MX", {style:"currency", currency:"MXN"}) + ").\\n¿Desea realizar un retiro simple?",
+                        icon: "info",
+                        buttons: ["No", "Sí"]
+                    }).then((retSimple) => {
+                        if (retSimple) {
+                            window.location.href = "/Ahorro/CuentaCorriente/?cliente=" + datosCliente.CDGCL
+                            return
+                        }
+                    })
+                    return
+                }
+                 
+                document.querySelector("#nombre").value = datosCliente.NOMBRE
+                document.querySelector("#curp").value = datosCliente.CURP
+                document.querySelector("#contrato").value = datosCliente.CONTRATO
+                document.querySelector("#cliente").value = datosCliente.CDGCL
+                document.querySelector("#saldoActual").value = parseFloat(datosCliente.SALDO).toFixed(2)
+                document.querySelector("#monto").disabled = false
+                document.querySelector("#saldoFinal").value = parseFloat(datosCliente.SALDO).toFixed(2)
+                document.querySelector("#express").disabled = false
+                document.querySelector("#programado").disabled = false
+            }
+             
+            const limpiaDatosCliente = () => {
+                document.querySelector("#registroOperacion").reset()
+                document.querySelector("#monto").disabled = true
+                document.querySelector("#btnRegistraOperacion").disabled = true
+                document.querySelector("#express").disabled = true
+                document.querySelector("#programado").disabled = true
+                document.querySelector("#fecha_retiro_hide").setAttribute("style", "display: none;")
+                document.querySelector("#fecha_retiro").removeAttribute("style")
+            }
+                          
+            const validaMonto = () => {
+                document.querySelector("#express").disabled = false
+                const montoIngresado = document.querySelector("#monto")
+                 
+                let monto = parseFloat(montoIngresado.value) || 0
+                 
+                if (monto > montoMaximoExpress) {
+                    document.querySelector("#programado").checked = true
+                    document.querySelector("#express").disabled = true
+                    cambioMovimiento()
+                }
+                 
+                if (monto > montoMaximoRetiro) {
+                    monto = montoMaximoRetiro
+                    montoIngresado.value = monto
+                }
+                                  
+                document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
+                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
+                document.querySelector("#montoOperacion").value = monto.toFixed(2)
+                const saldoFinal = (saldoActual - monto)
+                compruebaSaldoFinal(saldoFinal)
+                document.querySelector("#saldoFinal").value = saldoFinal.toFixed(2)
+            }
+             
+            const valSalMin = () => {
+                const montoIngresado = document.querySelector("#monto")
+                 
+                let monto = parseFloat(montoIngresado.value) || 0
+                 
+                if (monto < montoMinimo) {
+                    monto = montoMinimo
+                    swal({
+                        title: "Retiro de cuenta corriente",
+                        text: "El monto mínimo para retiros express es de " + montoMinimo.toLocaleString("es-MX", {
+                            style: "currency",
+                            currency: "MXN"
+                        }) + ", para un monto menor debe realizar el retiro de manera simple.\\n¿Desea realizar el retiro de manera simple?",
+                        icon: "info",
+                        buttons: ["No", "Sí"]
+                    }).then((retSimple) => {
+                        if (retSimple) {
+                            window.location.href = "/Ahorro/CuentaCorriente/?cliente=" + document.querySelector("#cliente").value
+                            return
+                        }
+                    })
+                }
+            }
+             
+            const cambioMovimiento = (e) => {
+                const express = document.querySelector("#express").checked
+                
+                if (express) {
+                    document.querySelector("#fecha_retiro").removeAttribute("style")
+                    document.querySelector("#fecha_retiro_hide").setAttribute("style", "display: none;")
+                    document.querySelector("#fecha_retiro").value = getHoy()
+                    return
+                }
+                
+                document.querySelector("#fecha_retiro_hide").removeAttribute("style")
+                document.querySelector("#fecha_retiro").setAttribute("style", "display: none;")
+            }
+             
+            const compruebaSaldoFinal = saldoFinal => {
+                if (saldoFinal < 0) {
+                    document.querySelector("#saldoFinal").setAttribute("style", "color: red")
+                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
+                    document.querySelector("#btnRegistraOperacion").disabled = true
+                    return
+                } else {
+                    document.querySelector("#saldoFinal").removeAttribute("style")
+                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
+                }
+                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value >= montoMinimo && document.querySelector("#montoOperacion").value < montoMaximoExpress)
+            }
+             
+            const pasaFecha = (e) => {
+                const fechaSeleccionada = new Date(e.target.value)
+                if (fechaSeleccionada.getDay() === 5 || fechaSeleccionada.getDay() === 6) {
+                    showError("No se pueden realizar retiros los fines de semana.")
+                    const f = getHoy(false).split("/")
+                    e.target.value = f[2] + "-" + f[1] + "-" + f[0]
+                    return
+                }
+                const f = document.querySelector("#fecha_retiro_hide").value.split("-")
+                document.querySelector("#fecha_retiro").value = f[2] + "/" + f[1] + "/" + f[0]
+            }
+             
+            const registraSolicitud = (e) => {
+                e.preventDefault()
+                const datos = $("#registroOperacion").serializeArray()
+                
+                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
+                addParametro(datos, "retiroExpress", document.querySelector("#express").checked)
+                 
+                $.ajax({
+                    type: "POST",
+                    url: "/Ahorro/RegistraSolicitud/",
+                    data: $.param(datos),
+                    success: (respuesta) => {
+                        respuesta = JSON.parse(respuesta)
+                        if (!respuesta.success) {
+                            console.log(respuesta.error)
+                            return showError(respuesta.mensaje)
+                        }
+                        showSuccess(respuesta.mensaje)
+                        document.querySelector("#registroOperacion").reset()
+                        limpiaDatosCliente()
+                    },
+                    error: (error) => {
+                        console.error(error)
+                        showError("Ocurrió un error al registrar la operación.")
+                    }
+                })
+            }
+        </script>
+        html;
+
+        $fechaMax = new DateTime();
+        for ($i = 0; $i < 7; $i++) {
+            $fechaMax->modify('+1 day');
+            if ($fechaMax->format('N') >= 6 || $fechaMax->format('N') === 0) $fechaMax->modify('+1 day');
+        }
+
+        if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitud de Retiro")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('montoMinimoRetiro', $montoMinimoRetiro);
+        View::set('montoMaximoExpress', $montoMaximoExpress);
+        View::set('montoMaximoRetiro', $montoMaximoRetiro);
+        View::set('fecha', date('d/m/Y H:i:s'));
+        View::set('fechaInput', date('Y-m-d'));
+        View::set('fechaInputMax', $fechaMax->format('Y-m-d'));
+        View::render("caja_menu_retiro_ahorro");
+    }
+
+    public function RegistraSolicitud()
+    {
+        $datos = CajaAhorroDao::RegistraSolicitud($_POST);
+        echo $datos;
+    }
+
+    // Historial de solicitudes de retiros de cuentas de ahorro //
+    public function HistorialSolicitudRetiroCuentaCorriente()
+    {
+        $extraFooter = <<<html
+        <script>
+            $(document).ready(() => {
+                $("#muestra-cupones").tablesorter()
+                $("#muestra-cupones").DataTable({
+                    lengthMenu: [
+                        [10, 40, -1],
+                        [10, 40, "Todos"]
+                    ],
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 0
+                        }
+                    ],
+                    order: false
+                })
+            
+                $("#muestra-cupones input[type=search]").keyup(() => {
+                    $("#example")
+                        .DataTable()
+                        .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
+                        .draw()
+                })
+            })
+             
+            const imprimeExcel = () => {
+                alert("Exportando a Excel")
+                // window.location.href = "/Ahorro/ExportaExcel/"
+            }
+        </script>
+        html;
+
+        $detalles = CajaAhorroDao::HistoricoSolicitudRetiro();
+
+        $tabla = "";
+
+        foreach ($detalles as $key1 => $detalle) {
+            $tabla .= "<tr>";
+            foreach ($detalle as $key2 => $valor) {
+                $v = $valor;
+                if ($key2 === "MONTO") $v = "$ " . number_format($valor, 2);
+
+                $tabla .= "<td style='vertical-align: middle;'>$v</td>";
+            }
+
+            $tabla .= "</tr>";
+        }
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial de solicitudes de retiro")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('tabla', $tabla);
+        View::render("caja_menu_solicitud_retiro_historial");
+    }
+
     //********************INVERSIONES********************//
     // Apertura de contratos para cuentas de inversión
     public function ContratoInversion()
@@ -1080,6 +1351,7 @@ class Ahorro extends Controller
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                  
                 datos.push({ name: "tasa", value: document.querySelector("#plazo").value })
                 
@@ -1711,6 +1983,7 @@ class Ahorro extends Controller
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                  
                 if (!document.querySelector("#deposito").checked && !document.querySelector("#retiro").checked) {
                     return showError("Seleccione el tipo de operación a realizar.")
@@ -1750,223 +2023,6 @@ class Ahorro extends Controller
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('d/m/Y H:i:s'));
         View::render("caja_menu_peque");
-    }
-
-    //********************SOLICITUD DE RETIRO********************//
-    // Registro de solicitudes de retiro de cuentas de ahorro
-    public function SolicitudRetiroCuentaCorriente()
-    {
-        $montoMinimoRetiro = 10000;
-        $montoMaximoExpress = 49999.99;
-        $montoMaximoRetiro = 1000000;
-
-        $extraFooter = <<<html
-        <script>
-            window.onload = () => {
-                if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
-            }
-         
-            const montoMinimo = $montoMinimoRetiro
-            const montoMaximoExpress = $montoMaximoExpress
-            const montoMaximoRetiro = $montoMaximoRetiro
-            let valKD = false
-         
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
-            {$this->validarYbuscar}
-            {$this->buscaCliente}
-            {$this->soloNumeros}
-            {$this->primeraMayuscula}
-            {$this->numeroLetras}
-            {$this->imprimeTicket}
-            {$this->addParametro}
-            {$this->sinContrato}
-            {$this->getHoy}
-             
-            const llenaDatosCliente = (datosCliente) => {
-                if (parseFloat(datosCliente.SALDO) < montoMinimo) {
-                    swal({
-                        title: "Retiro de cuenta corriente",
-                        text: "El saldo de la cuenta es menor al monto mínimo para retiros express (" + montoMinimo.toLocaleString("es-MX", {style:"currency", currency:"MXN"}) + ").\\n¿Desea realizar un retiro simple?",
-                        icon: "info",
-                        buttons: ["No", "Sí"]
-                    }).then((retSimple) => {
-                        if (retSimple) {
-                            window.location.href = "/Ahorro/CuentaCorriente/?cliente=" + datosCliente.CDGCL
-                            return
-                        }
-                    })
-                    return
-                }
-                 
-                document.querySelector("#nombre").value = datosCliente.NOMBRE
-                document.querySelector("#curp").value = datosCliente.CURP
-                document.querySelector("#contrato").value = datosCliente.CONTRATO
-                document.querySelector("#cliente").value = datosCliente.CDGCL
-                document.querySelector("#saldoActual").value = parseFloat(datosCliente.SALDO).toFixed(2)
-                document.querySelector("#monto").disabled = false
-                document.querySelector("#saldoFinal").value = parseFloat(datosCliente.SALDO).toFixed(2)
-                document.querySelector("#express").disabled = false
-                document.querySelector("#programado").disabled = false
-            }
-             
-            const limpiaDatosCliente = () => {
-                document.querySelector("#registroOperacion").reset()
-                document.querySelector("#monto").disabled = true
-                document.querySelector("#btnRegistraOperacion").disabled = true
-                document.querySelector("#express").disabled = true
-                document.querySelector("#programado").disabled = true
-                document.querySelector("#fecha_retiro_hide").setAttribute("style", "display: none;")
-                document.querySelector("#fecha_retiro").removeAttribute("style")
-            }
-                          
-            const validaMonto = () => {
-                document.querySelector("#express").disabled = false
-                const montoIngresado = document.querySelector("#monto")
-                 
-                let monto = parseFloat(montoIngresado.value) || 0
-                 
-                if (monto > montoMaximoExpress) {
-                    document.querySelector("#programado").checked = true
-                    document.querySelector("#express").disabled = true
-                    cambioMovimiento()
-                }
-                 
-                if (monto > montoMaximoRetiro) {
-                    monto = montoMaximoRetiro
-                    montoIngresado.value = monto
-                }
-                                  
-                document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
-                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
-                document.querySelector("#montoOperacion").value = monto.toFixed(2)
-                const saldoFinal = (saldoActual - monto)
-                compruebaSaldoFinal(saldoFinal)
-                document.querySelector("#saldoFinal").value = saldoFinal.toFixed(2)
-            }
-             
-            const valSalMin = () => {
-                const montoIngresado = document.querySelector("#monto")
-                 
-                let monto = parseFloat(montoIngresado.value) || 0
-                 
-                if (monto < montoMinimo) {
-                    monto = montoMinimo
-                    swal({
-                        title: "Retiro de cuenta corriente",
-                        text: "El monto mínimo para retiros express es de " + montoMinimo.toLocaleString("es-MX", {
-                            style: "currency",
-                            currency: "MXN"
-                        }) + ", para un monto menor debe realizar el retiro de manera simple.\\n¿Desea realizar el retiro de manera simple?",
-                        icon: "info",
-                        buttons: ["No", "Sí"]
-                    }).then((retSimple) => {
-                        if (retSimple) {
-                            window.location.href = "/Ahorro/CuentaCorriente/?cliente=" + document.querySelector("#cliente").value
-                            return
-                        }
-                    })
-                }
-            }
-             
-            const cambioMovimiento = (e) => {
-                const express = document.querySelector("#express").checked
-                
-                if (express) {
-                    document.querySelector("#fecha_retiro").removeAttribute("style")
-                    document.querySelector("#fecha_retiro_hide").setAttribute("style", "display: none;")
-                    document.querySelector("#fecha_retiro").value = new Date().toLocaleDateString("es-MX", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit"
-                    })
-                    return
-                }
-                
-                document.querySelector("#fecha_retiro_hide").removeAttribute("style")
-                document.querySelector("#fecha_retiro").setAttribute("style", "display: none;")
-            }
-             
-            const compruebaSaldoFinal = saldoFinal => {
-                if (saldoFinal < 0) {
-                    document.querySelector("#saldoFinal").setAttribute("style", "color: red")
-                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
-                    document.querySelector("#btnRegistraOperacion").disabled = true
-                    return
-                } else {
-                    document.querySelector("#saldoFinal").removeAttribute("style")
-                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
-                }
-                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value >= montoMinimo && document.querySelector("#montoOperacion").value < montoMaximoExpress)
-            }
-             
-            const pasaFecha = (e) => {
-                const fechaSeleccionada = new Date(e.target.value)
-                if (fechaSeleccionada.getDay() === 5 || fechaSeleccionada.getDay() === 6) {
-                    showError("No se pueden realizar retiros los fines de semana.")
-                    const f = getHoy(false).split("/")
-                    e.target.value = f[2] + "-" + f[1] + "-" + f[0]
-                    return
-                }
-                const f = document.querySelector("#fecha_retiro_hide").value.split("-")
-                document.querySelector("#fecha_retiro").value = f[2] + "/" + f[1] + "/" + f[0]
-            }
-             
-            const registraSolicitud = (e) => {
-                e.preventDefault()
-                const datos = $("#registroOperacion").serializeArray()
-                
-                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
-                addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
-                addParametro(datos, "retiroExpress", document.querySelector("#express").checked)
-                 
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/RegistraSolicitud/",
-                    data: $.param(datos),
-                    success: (respuesta) => {
-                        respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) {
-                            console.log(respuesta.error)
-                            return showError(respuesta.mensaje)
-                        }
-                        showSuccess(respuesta.mensaje)
-                        // imprimeTicket(document.querySelector("#contrato").value, {$_SESSION['cdgco']})
-                        document.querySelector("#registroOperacion").reset()
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        showError("Ocurrió un error al registrar la operación.")
-                    }
-                })
-            }
-        </script>
-        html;
-
-        $fechaMax = new DateTime();
-        for ($i = 0; $i < 7; $i++) {
-            $fechaMax->modify('+1 day');
-            if ($fechaMax->format('N') >= 6 || $fechaMax->format('N') === 0) $fechaMax->modify('+1 day');
-        }
-
-        if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
-
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitud de Retiro")));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('montoMinimoRetiro', $montoMinimoRetiro);
-        View::set('montoMaximoExpress', $montoMaximoExpress);
-        View::set('montoMaximoRetiro', $montoMaximoRetiro);
-        View::set('fecha', date('d/m/Y'));
-        View::set('fechaInput', date('Y-m-d'));
-        View::set('fechaInputMax', $fechaMax->format('Y-m-d'));
-        View::render("caja_menu_retiro_ahorro");
-    }
-
-    public function RegistraSolicitud()
-    {
-        $datos = CajaAhorroDao::RegistraSolicitud($_POST);
-        echo $datos;
     }
 
     //******************REPORTE DE SALDO EN CAJA******************//
@@ -2020,8 +2076,8 @@ class Ahorro extends Controller
 
                 $v = $valor;
                 if ($key === 'MOVIMIENTO') {
-                    $v = self::iconoOperacion($valor, $detalle['CODOP']);
-                    [$e, $s] = self::separaMontos($valor, $detalle['CODOP'], $detalle['MONTO']);
+                    $v = self::IconoOperacion($valor, $detalle['CODOP']);
+                    [$e, $s] = self::SeparaMontos($valor, $detalle['CODOP'], $detalle['MONTO']);
                     $entradas += $e;
                     $salidas += $s;
                 }
@@ -2045,18 +2101,18 @@ class Ahorro extends Controller
         View::render("caja_menu_saldos_dia");
     }
 
-    public function iconoOperacion($movimiento, $operacion)
+    public function IconoOperacion($movimiento, $operacion)
     {
         if (in_array($operacion, $this->operacionesNulas)) return '<i class="fa fa-minus" style="color: #0000ac;"></i>';
         if ($movimiento == 1) return '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
         if ($movimiento == 0) return '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
     }
 
-    public function separaMontos($movimiento, $operacion, $monto)
+    public function SeparaMontos($movimiento, $operacion, $monto)
     {
         if (in_array($operacion, $this->operacionesNulas)) return [0, 0];
-        if ($movimiento == 0) return [$monto, 0];
-        if ($movimiento == 1) return [0, $monto];
+        if ($movimiento == 0) return [0, $monto];
+        if ($movimiento == 1) return [$monto, 0];
     }
 
     public function ExportaExcel()
@@ -2083,7 +2139,7 @@ class Ahorro extends Controller
         $tabla .= "</table>";
 
         header("Content-type: application/vnd.ms-excel");
-        header("Content-Disposition: attachment; filename=DetallesMovimientos.xls");
+        header("Content-Disposition: attachment; filename=DetallesMovimientos.xlsx");
         echo $tabla;
     }
 
@@ -2343,23 +2399,6 @@ class Ahorro extends Controller
     }
 
     //********************BORRAR????********************//
-    public function HistorialSolicitudRetiroCuentaCorriente()
-    {
-        $extraHeader = <<<html
-        <title>Caja Cobrar</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-        html;
-
-        $extraFooter = <<<html
-        <script>
-           
-        </script>
-        html;
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render("caja_menu_retiro_ahorro");
-    }
 
     public function EstadoCuenta()
     {
@@ -2403,13 +2442,10 @@ html;
     //////////////////////////////////////////////////
     public function ReimprimeTicketSolicitudes()
     {
-        $extraHeader = <<<html
-        <title>Solicitudes de reimpresión Tickets</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
         $extraFooter = <<<html
         <script>
+            {$this->imprimeTicket}
+
            $(document).ready(function(){
             $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
@@ -2432,14 +2468,6 @@ html;
             });
             var checkAll = 0;
         });
-           
-        function Reimprime_ticket(folio)
-        {
-              $('#modal_ticket').modal('show');
-              document.getElementById("folio").value = folio;
-             
-        }
-        
         </script>
 html;
 
@@ -2459,7 +2487,7 @@ html;
                 $autoriza = "ACEPTADO";
 
                 $imprime = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="Reimprime_ticket('{$value['CODIGO']}');"><i class="fa fa-print"></i></button>
+                    <button type="button" class="btn btn-success btn-circle" onclick="imprimeTicket('{$value['CODIGO']}');"><i class="fa fa-print"></i></button>
 html;
             } else if ($value['AUTORIZA'] == 2) {
                 $imprime = <<<html
@@ -2497,7 +2525,7 @@ html;
 
 
 
-        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitudes de reimpresión Tickets")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('tabla', $tabla);
         View::set('fecha_actual', $fecha_y_hora);

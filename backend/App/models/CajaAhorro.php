@@ -1169,4 +1169,39 @@ class CajaAhorro
             return array();
         }
     }
+
+    public static function HistoricoSolicitudRetiro()
+    {
+        $qry = <<<sql
+        SELECT
+            CASE SR.TIPO_RETIRO
+                WHEN 1 THEN 'EXPRESS'
+                WHEN 2 THEN 'PROGRAMADO'
+                ELSE 'NO DEFINIDO'
+            END AS TIPO_RETIRO,
+            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
+            CL.CODIGO AS CLIENTE,
+            TO_CHAR(SR.FECHA_SOLICITUD, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_SOLICITUD,
+            SR.CANTIDAD_SOLICITADA AS MONTO,
+            CASE SR.ESTATUS
+                WHEN 0 THEN 'SOLICITADO'
+                WHEN 1 THEN 'APROBADO'
+                WHEN 2 THEN 'APROBADO CON CAMBIOS'
+                WHEN 3 THEN 'RECHAZADO'
+                ELSE 'NO DEFINIDO'
+            END AS ESTATUS
+        FROM
+            SOLICITUD_RETIRO_AHORRO SR
+            INNER JOIN CL ON CL.CODIGO = (SELECT CDGCL FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = SR.CONTRATO)
+        ORDER BY
+            SR.FECHA_SOLICITUD
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryAll($qry);
+        } catch (Exception $e) {
+            return array();
+        }
+    }
 }

@@ -10,6 +10,7 @@
                     <! -- https://cdn-icons-png.flaticon.com/512/5575/5575938.png -->
                 </div>
             </a>
+
             <a id="link" href="/Ahorro/ContratoInversion/">
                 <div class="col-md-5 imagen" style="margin-top: 5px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/5836/5836503.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
@@ -17,6 +18,7 @@
                     <! -- https://cdn-icons-png.flaticon.com/512/5836/5836477.png -->
                 </div>
             </a>
+
             <a id="link" href="/Ahorro/CuentaPeque/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/2995/2995390.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
@@ -24,6 +26,7 @@
                     <! -- https://cdn-icons-png.flaticon.com/512/2995/2995467.png -->
                 </div>
             </a>
+
             <a id="link" href="/Ahorro/EstadoCuenta/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/12202/12202939.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
@@ -31,6 +34,7 @@
                     <! -- https://cdn-icons-png.flaticon.com/512/12202/12202918.png -->
                 </div>
             </a>
+
             <a id="link" href="/Ahorro/SaldosDia/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/5833/5833855.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
@@ -38,25 +42,20 @@
                     <! -- https://cdn-icons-png.flaticon.com/512/5833/5833897.png -->
                 </div>
             </a>
-            <a id="link" href="/Ahorro/SolicitudRetiro/">
+
+            <a id="link" href="/Ahorro/ReimprimeTicket/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/942/942803.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
-                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Solicitud de retiro </b></p>
+                    <img src="https://cdn-icons-png.flaticon.com/512/7325/7325275.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
+                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Reimprime Ticket </b></p>
                     <! -- https://cdn-icons-png.flaticon.com/512/942/942752.png -->
                 </div>
             </a>
-            <a id="link" href="/Ahorro/ReimprimeTicket/">
-                <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/7325/7325275.png" style="border-radius: 3px; padding-top: 5px;" width="98" height="110">
-                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Reimprime Ticket </b></p>
-                    <! -- https://cdn-icons-png.flaticon.com/512/7325/7325359.png -->
-                </div>
-            </a>
+
             <a id="link" href="/Ahorro/Calculadora/">
-                <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
+                <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/5833/5833756.png" style="border-radius: 3px; padding-top: 5px;" width="98" height="110">
-                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Calculadora </b></p>
-                    <! -- https://cdn-icons-png.flaticon.com/512/5833/5833832.png -->
+                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Calculadora</b></p>
+                    <! -- https://cdn-icons-png.flaticon.com/512/7325/7325359.png -->
                 </div>
             </a>
         </div>
