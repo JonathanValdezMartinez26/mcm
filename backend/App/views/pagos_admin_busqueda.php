@@ -320,7 +320,7 @@
 </div>
 
 <script>
-    function EditarPago(fecha, cdgns, nombre, ciclo, tipo_pago, monto, ejecutivo, secuencia) {
+    function EditarPago(fecha, cdgns, nombre, ciclo, tipo_pago, monto, ejecutivo, secuencia, estatus) {
 
         var now = new Date(fecha);
 
@@ -337,6 +337,16 @@
         document.getElementById("ciclo_e").value = ciclo;
         document.getElementById("monto_e").value = monto;
         document.getElementById("secuencia_e").value = secuencia;
+
+        if(estatus == 'LIQUIDADO')
+        {
+            select = $("#tipo_e");
+            select.empty();
+            select.append($("<option>", {
+                value: 'M',
+                text: 'MULTA GESTORES'
+            }));
+        }
 
         const $select = document.querySelector('#tipo_e');
         $select.value = tipo_pago;
