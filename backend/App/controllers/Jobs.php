@@ -33,34 +33,29 @@ class Jobs
     public function sp_con_array()
     {
         $pDemo = [];
-        $cliente = [];
-        $cheque = [];
-        $creditos = JobsDao::CreditosAutorizados("11/04/2024");
+        $creditos = JobsDao::CreditosAutorizados("12/04/2024");
         foreach ($creditos as $key => $credito) {
-            $cliente[] = JobsDao::ClientesAutorizados($credito["CDGNS"], $credito["CICLO"]);
-
             if (empty($cliente)) continue;
-            $chequera = JobsDao::GetNoChequera($creditos["CDGCO"]);
-            $cheque[] = JobsDao::GetNoCheque($chequera["CDGCB"]);
+            $chequera = JobsDao::GetNoChequera($credito["CDGCO"]);
+            $cheque = JobsDao::GetNoCheque($chequera["CDGCB"]);
 
-            $parametros = [];
-            $parametros[":PRMCDGEM"] = "EMPFIN";
-            $parametros[":PRMCDGCLNS"] = $credito['CDGNS'];
-            $parametros[":PRMCLNS"] = 'G';
-            $parametros[":PRMCICLO"] = $credito['CICLO'];
-            $parametros[":PRMT_CDGCL"] = [$cliente];
-            $parametros[":PRMT_NOCHEQUE"] = [$cheque];
-            $parametros[":PRMFECHA"] = $credito['INICIO'];
-            $parametros[":PRMUSER"] = $_SESSION['USUARIO'] ?? 'AMGM';
-            $parametros[":PRMCDGCB"] = $chequera["CDGCB"];
-            $parametros[":VMENSAJE"] = "__RETURN__";
+            $datos = [
+                "cheque" => $cheque["CHQSIG"],
+                "fexp" => $credito["FEXP"],
+                "usuario" => $_SESSION["usuario"] ?? "AMGM",
+                "cdgcb" => $chequera["CDGCB"],
+                "cdgcl" => $credito["CDGCL"],
+                "cdgns" => $credito["CDGNS"],
+                "ciclo" => $credito["CICLO"]
+            ];
 
-            $pDemo[] = [$parametros, JobsDao::sp_con_array($parametros)];
-            $creditos[$key]["CHEQUERA"] = $chequera["CDGCB"];
-            $creditos[$key]["CHEQUE"] = $cheque["CHQSIG"];
+            $pDemo[] = [
+                $datos,
+                // JobsDao::ActualizaPRC($datos),
+                // JobsDao::ActualizaPRC($datos)
+            ];
         }
 
         echo json_encode($pDemo);
-        die();
     }
 }

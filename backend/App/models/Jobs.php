@@ -9,47 +9,12 @@ use Exception;
 
 class Jobs
 {
-    public static function sp_con_array($parametros)
+    public static function CreditosAutorizados($fecha)
     {
-        $db = Database::getInstance();
-        $sp = "CALL ESIACOM.PKG_SPS_CON_ARRAY.SP_INS_CHEQUES_CTE(
-            :PRMCDGEM,
-            :PRMCDGCLNS,
-            :PRMCLNS,
-            :PRMCICLO,
-            :PRMT_CDGCL,
-            :PRMT_NOCHEQUE,
-            :PRMFECHA,
-            :PRMUSER,
-            :PRMCDGCB,
-            :VMENSAJE
-        )";
-        return $db->EjecutaSP($sp, $parametros);
-    }
-
-    // CONSULTA QUE DEVUELVE TODOS LOS CREDTOS AUTORIZADOS QUE ESTAN EN TESORERIA Y A LOS CUALES SE LES DEBE ASIGNAR UN CHEQUE
-    public static function CreditosAutorizados()
-    {
-        $datoCredito = [
-            "fecha" => $datos["INICIO"],
-            "usuario" => $usuario,
-            "cdgcb" => $datos["CDGCB"],
-            "cdgcl" => $datos["CDGCL"],
-            "cdgclns" => $datos["CDGNS"],
-            "ciclo" => $datos["CICLO"]
-        ];
-
-        $datosChequera = [
-            "fecha" => $datos["INICIO"],
-            "usuario" => $usuario,
-            "cdgcb" => $datos["CDGCB"],
-            "cdgns" => $datos["CDGNS"],
-            "ciclo" => $datos["CICLO"]
-        ];
         $qry = <<<sql
-        SELECT PRNN.CDGNS, PRNN.CICLO, PRNN.INICIO, PRNN.CDGCO 
+        SELECT PRC.CDGCL, PRNN.CDGNS, PRNN.CICLO, PRNN.INICIO, PRNN.CDGCO, PRNN.CANTAUTOR, PRNN.FEXP  
         FROM PRN PRNN, PRC
-        WHERE PRNN.INICIO=TIMESTAMP '2024-04-11 00:00:00.000000' AND PRNN.SITUACION = 'T'
+        WHERE PRNN.INICIO = :fecha AND PRNN.SITUACION = 'T'
         AND (SELECT COUNT(*) FROM PRN WHERE PRN.SITUACION = 'E' AND PRN.CDGNS = PRNN.CDGNS) = 0
         AND PRC.CDGNS = PRNN.CDGNS 
         AND PRC.NOCHEQUE IS NULL
@@ -59,16 +24,6 @@ sql;
         return $db->queryAll($qry, ["fecha" => $fecha]);
     }
 
-    public static function ActualizaCheques($datos)
-    {
-        $qry = <<<sql
-        SELECT CDGCL FROM PRC WHERE CDGNS = :cdgns AND CICLO = :ciclo AND NOCHEQUE IS NULL
-sql;
-        $db = Database::getInstance();
-        return $db->queryOne($qry, ["cdgns" => $cdgns, "ciclo" => $ciclo]);
-    }
-
-    // CONSULTAR LA CHEQUERA DE LA QUE SE VA A DESOMBOLSAR EL CREDITO
     public static function GetNoChequera($cdgco)
     {
         $qry = <<<sql
@@ -82,35 +37,66 @@ sql;
         return $db->queryOne($qry, ["cdgco" => $cdgco]);
     }
 
-    // AHORA QUE YA SABEMOS QUE CHEQUERA LE CORRESPONDE DEBEMOS CONSULTAR EL CHEQUE CONSECUTIVO DE ESA CUENTA, PARA
-    // BUSCAR ESE REGISTRO LO DEBEMOS HACER CON LA SIGUIENTE QUERY, EL PARAMETRO QUE MUESTRA COMO 28 = CDGCB DE LA CONSULTA ANTERIOR
-    public static function GetNoCheque($datos)
+    public static function GetNoCheque($chequera)
     {
         $qry = <<<sql
         SELECT FNSIGCHEQUE('EMPFIN', :chequera) CHQSIG FROM DUAL
 sql;
 
-        $usuario = $_SESSION["usuario"] ?? "AMGM";
-        $datoCredito = [
-            "fecha" => $datos["INICIO"],
-            "usuario" => $usuario,
-            "cdgcb" => $datos["CDGCB"],
-            "cdgcl" => $datos["CDGCL"],
-            "cdgclns" => $datos["CDGNS"],
-            "ciclo" => $datos["CICLO"]
-        ];
-
-        $datosChequera = [
-            "fecha" => $datos["INICIO"],
-            "usuario" => $usuario,
-            "cdgcb" => $datos["CDGCB"],
-            "cdgns" => $datos["CDGNS"],
-            "ciclo" => $datos["CICLO"]
-        ];
-
-        $qrys = [$qryCredito, $qryChequera];
-        $datos = [$datoCredito, $datosChequera];
         $db = Database::getInstance();
-        $db->insertaMultiple($qrys, $datos);
+        return $db->queryOne($qry, ["chequera" => $chequera]);
+    }
+
+    public static function ActualizaPRC($datos)
+    {
+        $qry = <<<sql
+        UPDATE PRC SET
+            NOCHEQUE = :cheque,
+            FEXP = :fexp,
+            ACTUALIZACHPE = :usuario,
+            SITUACION = 'T',
+            CDGCB = :cdgcb,
+            REPORTE = '   C',
+            FEXPCHEQUE = SYSDATE
+        WHERE
+            CDGCL = :cdgcl
+            AND CDGCLNS = :cdgns
+            AND CICLO = :ciclo
+sql;
+
+        $db = Database::getInstance();
+        return $db->insertar($qry, [
+            "cheque" => $datos["cheque"],
+            "fexp" => $datos["fexp"],
+            "usuario" => $datos["usuario"],
+            "cdgcb" => $datos["cdgcb"],
+            "cdgcl" => $datos["cdgcl"],
+            "cdgns" => $datos["cdgns"],
+            "ciclo" => $datos["ciclo"]
+        ]);
+    }
+
+    public static function ActualizaPRN($datos)
+    {
+        $qry = <<<sql
+        UPDATE PRN SET
+            REPORTE = '   C',
+            FEXP = :fexp,
+            ACTUALIZACHPE= :usuario,
+            SITUACION = 'T',
+            CDGCB = :cdgcb
+        WHERE
+            CDGNS = :cdgns
+            AND CICLO = :ciclo;
+sql;
+
+        $db = Database::getInstance();
+        return $db->insertar($qry, [
+            "fexp" => $datos["fexp"],
+            "usuario" => $datos["usuario"],
+            "cdgcb" => $datos["cdgcb"],
+            "cdgns" => $datos["cdgns"],
+            "ciclo" => $datos["ciclo"]
+        ]);
     }
 }
