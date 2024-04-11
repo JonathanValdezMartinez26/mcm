@@ -45,7 +45,34 @@ class Jobs
                 "cdgcb" => $chequera["CDGCB"],
                 "cdgcl" => $credito["CDGCL"],
                 "cdgns" => $credito["CDGNS"],
-                "ciclo" => $credito["CICLO"]
+                "ciclo" => $credito["CICLO"],
+                "cantautor" => $credito["CANTAUTOR"]
+            ];
+
+            $resumen[] = [
+                $datos,
+                JobsDao::ActualizaPRC($datos),
+                JobsDao::ActualizaPRN($datos)
+            ];
+        }
+
+        echo json_encode($resumen);
+    }
+
+    public function sp_con_array_correcion()
+    {
+        $resumen = [];
+        $creditos = JobsDao::CreditosPendientes();
+        foreach ($creditos as $key => $credito) {
+            $datos = [
+                "cheque" => $credito["NOCHEQUE"],
+                "fexp" => $credito["FEXP"],
+                "usuario" => $credito["ACTUALIZACHPE"],
+                "cdgcb" => $chequera["CDGCB"],
+                "cdgcl" => $credito["CDGCL"],
+                "cdgns" => $credito["CDGNS"],
+                "ciclo" => $credito["CICLO"],
+                "cantautor" => $credito["CANTAUTOR"]
             ];
 
             $resumen[] = [

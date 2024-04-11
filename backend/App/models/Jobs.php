@@ -51,13 +51,15 @@ sql;
     {
         $qry = <<<sql
         UPDATE PRC SET
-            NOCHEQUE = :cheque,
+            NOCHEQUE = LPAD(:cheque,7,'0'),
             FEXP = :fexp,
             ACTUALIZACHPE = :usuario,
-            SITUACION = 'T',
+            SITUACION = 'E',
             CDGCB = :cdgcb,
             REPORTE = '   C',
-            FEXPCHEQUE = :fexp
+            FEXPCHEQUE = :fexp,
+            CANTENTRE = :cantautor,
+            ENTRREAL = :cantautor
         WHERE
             CDGCL = :cdgcl
             AND CDGCLNS = :cdgns
@@ -72,7 +74,8 @@ sql;
             "cdgcb" => $datos["cdgcb"],
             "cdgcl" => $datos["cdgcl"],
             "cdgns" => $datos["cdgns"],
-            "ciclo" => $datos["ciclo"]
+            "ciclo" => $datos["ciclo"],
+            "cantautor" => $datos["cantautor"]
         ]);
     }
 
@@ -83,11 +86,15 @@ sql;
             REPORTE = '   C',
             FEXP = :fexp,
             ACTUALIZACHPE= :usuario,
-            SITUACION = 'T',
-            CDGCB = :cdgcb
+            SITUACION = 'E',
+            CDGCB = :cdgcb,
+            CANTENTRE = :cantautor,
+            ACTUALIZAENPE = 'AMGM',
+            ACTUALIZACPE = 'AMGM',
+            FCOMITE = SYSDATE
         WHERE
             CDGNS = :cdgns
-            AND CICLO = :ciclo;
+            AND CICLO = :ciclo
 sql;
 
         $db = Database::getInstance();
@@ -96,7 +103,28 @@ sql;
             "usuario" => $datos["usuario"],
             "cdgcb" => $datos["cdgcb"],
             "cdgns" => $datos["cdgns"],
-            "ciclo" => $datos["ciclo"]
+            "ciclo" => $datos["ciclo"],
+            "cantautor" => $datos["cantautor"]
         ]);
+    }
+
+    public static function CreditosPendientes()
+    {
+        $qry = <<<sql
+        SELECT
+            *
+        FROM
+            PRN
+        LEFT JOIN
+            PRC
+        ON
+            PRN.CDGNS = PRC.CDGNS
+            AND PRN.CICLO = PRC.CICLO
+        WHERE
+            PRN.INICIO > '11/04/2024' AND PRN.ACTUALIZACHPE = 'AMGM'
+sql;
+
+        $db = Database::getInstance();
+        return $db->queryAll($qry);
     }
 }
