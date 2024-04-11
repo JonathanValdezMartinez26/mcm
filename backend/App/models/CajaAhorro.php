@@ -1225,10 +1225,24 @@ class LogTransaccionesAhorro
     public static function LogTransaccion($datos)
     {
         $qry = <<<sql
-        INSERT INTO LOG_TRANSACCIONES_AHORRO
-            (ID_TRANSACCION, FECHA_TRANSACCION, QUERY_TRANSACCION, USUARIO, CONTRATO, MODULO, TIPO)
-        VALUES
-            ((SELECT NVL(MAX(TO_NUMBER(ID_TRANSACCION)),0) FROM LOG_TRANSACCIONES_AHORRO) + 1, SYSDATE, :query, :usuario, :contrato: :modulo, :tipo_transaccion)
+        INSERT INTO LOG_TRANSACCIONES_AHORRO (
+            ID_TRANSACCION,
+            FECHA_TRANSACCION,
+            QUERY_TRANSACCION,
+            USUARIO,
+            CONTRATO,
+            MODULO,
+            TIPO
+        )
+        VALUES (
+            (SELECT NVL(MAX(TO_NUMBER(ID_TRANSACCION)),0) FROM LOG_TRANSACCIONES_AHORRO) + 1,
+            SYSDATE,
+            :query,
+            :usuario,
+            :contrato,
+            :modulo,
+            :tipo_transaccion
+        )
         sql;
 
         $parametros = [
@@ -1242,6 +1256,7 @@ class LogTransaccionesAhorro
         try {
             $db = Database::getInstance();
             $db->insertar($qry, $parametros);
+            return [$qry, $parametros];
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -1257,8 +1272,7 @@ class LogTransaccionesAhorro
             $log['contrato'] = $contrato;
             $log['modulo'] = debug_backtrace()[1]['function'];
             $log['tipo'] = $tipo;
-            self::LogTransaccion($log);
-            $tmp[] = $log;
+            $tmp[] = self::LogTransaccion($log);
         }
         return $tmp;
     }

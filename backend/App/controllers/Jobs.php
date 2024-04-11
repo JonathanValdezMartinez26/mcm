@@ -32,10 +32,9 @@ class Jobs
 
     public function sp_con_array()
     {
-        $pDemo = [];
-        $creditos = JobsDao::CreditosAutorizados("12/04/2024");
+        $resumen = [];
+        $creditos = JobsDao::CreditosAutorizados();
         foreach ($creditos as $key => $credito) {
-            if (empty($cliente)) continue;
             $chequera = JobsDao::GetNoChequera($credito["CDGCO"]);
             $cheque = JobsDao::GetNoCheque($chequera["CDGCB"]);
 
@@ -49,13 +48,13 @@ class Jobs
                 "ciclo" => $credito["CICLO"]
             ];
 
-            $pDemo[] = [
+            $resumen[] = [
                 $datos,
-                // JobsDao::ActualizaPRC($datos),
-                // JobsDao::ActualizaPRC($datos)
+                JobsDao::ActualizaPRC($datos),
+                JobsDao::ActualizaPRN($datos)
             ];
         }
 
-        echo json_encode($pDemo);
+        echo json_encode($resumen);
     }
 }
