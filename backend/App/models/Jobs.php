@@ -9,74 +9,124 @@ use Exception;
 
 class Jobs
 {
-    public static function sp_con_array($parametros)
-    {
-        $db = Database::getInstance();
-        $sp = "CALL ESIACOM.PKG_SPS_CON_ARRAY.SP_INS_CHEQUES_CTE(
-            :PRMCDGEM,
-            :PRMCDGCLNS,
-            :PRMCLNS,
-            :PRMCICLO,
-            :PRMT_CDGCL,
-            :PRMT_NOCHEQUE,
-            :PRMFECHA,
-            :PRMUSER,
-            :PRMCDGCB,
-            :VMENSAJE
-        )";
-        return $db->EjecutaSP($sp, $parametros);
-    }
-
-    // CONSULTA QUE DEVUELVE TODOS LOS CREDTOS AUTORIZADOS QUE ESTAN EN TESORERIA Y A LOS CUALES SE LES DEBE ASIGNAR UN CHEQUE
     public static function CreditosAutorizados($fecha)
     {
+        $datoCredito = [
+            "fecha" => $datos["INICIO"],
+            "usuario" => $usuario,
+            "cdgcb" => $datos["CDGCB"],
+            "cdgcl" => $datos["CDGCL"],
+            "cdgclns" => $datos["CDGNS"],
+            "ciclo" => $datos["CICLO"]
+        ];
+
+        $datosChequera = [
+            "fecha" => $datos["INICIO"],
+            "usuario" => $usuario,
+            "cdgcb" => $datos["CDGCB"],
+            "cdgns" => $datos["CDGNS"],
+            "ciclo" => $datos["CICLO"]
+        ];
         $qry = <<<sql
-        SELECT PRNN.CDGNS, PRNN.CICLO, PRNN.INICIO, PRNN.CDGCO 
-        FROM PRN PRNN, PRC
-        WHERE PRNN.INICIO=TIMESTAMP '2024-04-11 00:00:00.000000' AND PRNN.SITUACION = 'T'
-        AND (SELECT COUNT(*) FROM PRN WHERE PRN.SITUACION = 'E' AND PRN.CDGNS = PRNN.CDGNS) = 0
-        AND PRC.CDGNS = PRNN.CDGNS 
-        AND PRC.NOCHEQUE IS NULL
+        SELECT
+            PRC.CDGCL,
+            PRN.CDGNS,
+            PRN.CICLO,
+            PRN.INICIO,
+            PRN.CDGCO,
+            PRN.CANTAUTOR,
+            PRN.FEXP,
+            CHEQ.CDGCB,
+            CHEQ.CDGCO,
+            CHEQ.CODIGO,
+            CHEQ.CHEQUEINICIAL,
+            CHEQ.CHEQUEFINAL
+        FROM
+            PRN
+        INNER JOIN
+            PRC ON PRC.CDGNS = PRN.CDGNS
+        LEFT JOIN
+            CHEQUERA CHEQ ON CHEQ.CDGCO = PRN.CDGCO
+        WHERE
+            PRN.INICIO = :fecha
+            AND PRN.SITUACION = 'T'
+            AND (
+                SELECT
+                    COUNT(*)
+                FROM
+                    PRN P
+                WHERE
+                    PRN.SITUACION = 'E'
+                    AND P.CDGNS = PRN.CDGNS
+            ) = 0
+            AND CHEQ.CODIGO = (
+                SELECT
+                    MAX(TO_NUMBER(CODIGO))
+                FROM
+                    CHEQUERA
+                WHERE
+                    CDGCO = PRN.CDGCO
+            )
+            AND CHEQ.CDGCO = PRN.CDGCO
+            AND PRC.NOCHEQUE IS NULL
         sql;
 
-
         $db = Database::getInstance();
-        return $db->queryAll($qry); //, [":fecha" => $fecha]
+        return $db->queryAll($qry, ["fecha" => $fecha]);
     }
 
-    // SELECT CDGCL, CICLO, CANTAUTOR  FROM PRC WHERE CDGNS = '037034' AND CICLO = '01' AND NOCHEQUE IS NULL
-    public static function ClientesAutorizados($cdgns, $ciclo)
+    public static function ActualizaCheques($datos)
     {
-        $qry = <<<sql
-        SELECT CDGCL FROM PRC WHERE CDGNS = :cdgns AND CICLO = :ciclo AND NOCHEQUE IS NULL
-        sql;
-        $db = Database::getInstance();
-        return $db->queryOne($qry, ["cdgns" => $cdgns, "ciclo" => $ciclo]);
-    }
-
-    // CONSULTAR LA CHEQUERA DE LA QUE SE VA A DESOMBOLSAR EL CREDITO
-    public static function GetNoChequera($cdgco)
-    {
-        $qry = <<<sql
-        SELECT CDGCB, CDGCO, CODIGO, CHEQUEINICIAL, CHEQUEFINAL  
-        FROM CHEQUERA
-        WHERE TO_NUMBER(CODIGO) = (SELECT MAX(TO_NUMBER(CODIGO)) AS int_column FROM CHEQUERA WHERE CDGCO = :cdgco)
-        AND CDGCO = :cdgco
+        $qryCredito = <<<sql
+        UPDATE PRC
+        SET
+            NOCHEQUE = (SELECT FNSIGCHEQUE('EMPFIN', :cdgcb) FROM DUAL),
+            FEXP = :fecha,
+            ACTUALIZACHPE = :usuario,
+            SITUACION = 'T',
+            CDGCB = :cdgcb,
+            REPORTE = '   C',
+            FEXPCHEQUE = SYSDATE
+        WHERE
+            CDGCL = :cdgcl
+            AND CDGCLNS = :cdgclns
+            AND CICLO = :ciclo
         sql;
 
-        $db = Database::getInstance();
-        return $db->queryOne($qry, ["cdgco" => $cdgco]);
-    }
-
-    // AHORA QUE YA SABEMOS QUE CHEQUERA LE CORRESPONDE DEBEMOS CONSULTAR EL CHEQUE CONSECUTIVO DE ESA CUENTA, PARA
-    // BUSCAR ESE REGISTRO LO DEBEMOS HACER CON LA SIGUIENTE QUERY, EL PARAMETRO QUE MUESTRA COMO 28 = CDGCB DE LA CONSULTA ANTERIOR
-    public static function GetNoCheque($chequera)
-    {
-        $qry = <<<sql
-        SELECT FNSIGCHEQUE('EMPFIN', :chequera) CHQSIG FROM DUAL
+        $qryChequera = <<<sql
+        UPDATE PRN
+        SET
+            REPORTE = '   C',
+            FEXP = :fecha,
+            ACTUALIZACHPE= :usuario,
+            SITUACION = 'T',
+            CDGCB = :cdgcb,
+        WHERE
+            CDGNS = :cdgns
+            AND CICLO = :ciclo
         sql;
 
+        $usuario = $_SESSION["usuario"] ?? "AMGM";
+        $datoCredito = [
+            "fecha" => $datos["INICIO"],
+            "usuario" => $usuario,
+            "cdgcb" => $datos["CDGCB"],
+            "cdgcl" => $datos["CDGCL"],
+            "cdgclns" => $datos["CDGNS"],
+            "ciclo" => $datos["CICLO"]
+        ];
+
+        $datosChequera = [
+            "fecha" => $datos["INICIO"],
+            "usuario" => $usuario,
+            "cdgcb" => $datos["CDGCB"],
+            "cdgns" => $datos["CDGNS"],
+            "ciclo" => $datos["CICLO"]
+        ];
+
+        $qrys = [$qryCredito, $qryChequera];
+        $datos = [$datoCredito, $datosChequera];
         $db = Database::getInstance();
-        return $db->queryOne($qry, ["chequera" => $chequera]);
+        $db->insertaMultiple($qrys, $datos);
     }
 }
