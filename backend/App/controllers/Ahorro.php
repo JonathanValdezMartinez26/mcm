@@ -2143,6 +2143,17 @@ class Ahorro extends Controller
         echo $tabla;
     }
 
+    public function Log()
+    {
+        $extraFooter = <<<html
+       
+        html;
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Log Transacciones Ahorro")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("caja_admin_log");
+    }
+
     //********************UTILS********************//
     // Generación de ticket's de operaciones realizadas
     public function Ticket()

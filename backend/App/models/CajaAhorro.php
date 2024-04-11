@@ -337,9 +337,8 @@ class CajaAhorro
                 $mysqli = Database::getInstance();
                 $res = $mysqli->insertaMultiple($inserts, $datosInsert);
                 if ($res) {
-                    $tmp = LogTransaccionesAhorro::LogTransacciones($inserts, $datosInsert, $_SESSION['usuario'], $noContrato, "Nuevo contrato ahorro corriente");
-
-                    return self::Responde(true, "Contrato de ahorro registrado correctamente.", $tmp); //['contrato' => $noContrato]);
+                    LogTransaccionesAhorro::LogTransacciones($inserts, $datosInsert, $_SESSION['usuario'], $noContrato, "Nuevo contrato ahorro corriente");
+                    return self::Responde(true, "Contrato de ahorro registrado correctamente.", ['contrato' => $noContrato]);
                 }
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.");
             } catch (Exception $e) {

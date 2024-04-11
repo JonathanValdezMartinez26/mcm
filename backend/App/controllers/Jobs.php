@@ -68,7 +68,7 @@ class Jobs
                 "cheque" => $credito["NOCHEQUE"],
                 "fexp" => $credito["FEXP"],
                 "usuario" => $credito["ACTUALIZACHPE"],
-                "cdgcb" => $chequera["CDGCB"],
+                "cdgcb" => $credito["CDGCB"],
                 "cdgcl" => $credito["CDGCL"],
                 "cdgns" => $credito["CDGNS"],
                 "ciclo" => $credito["CICLO"],
