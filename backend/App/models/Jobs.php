@@ -28,7 +28,7 @@ class Jobs
     }
 
     // CONSULTA QUE DEVUELVE TODOS LOS CREDTOS AUTORIZADOS QUE ESTAN EN TESORERIA Y A LOS CUALES SE LES DEBE ASIGNAR UN CHEQUE
-    public static function CreditosAutorizados($fecha)
+    public static function CreditosAutorizados()
     {
         $qry = <<<sql
         SELECT PRNN.CDGNS, PRNN.CICLO, PRNN.INICIO, PRNN.CDGCO 
@@ -37,7 +37,7 @@ class Jobs
         AND (SELECT COUNT(*) FROM PRN WHERE PRN.SITUACION = 'E' AND PRN.CDGNS = PRNN.CDGNS) = 0
         AND PRC.CDGNS = PRNN.CDGNS 
         AND PRC.NOCHEQUE IS NULL
-        sql;
+sql;
 
 
         $db = Database::getInstance();
@@ -49,7 +49,7 @@ class Jobs
     {
         $qry = <<<sql
         SELECT CDGCL FROM PRC WHERE CDGNS = :cdgns AND CICLO = :ciclo AND NOCHEQUE IS NULL
-        sql;
+sql;
         $db = Database::getInstance();
         return $db->queryOne($qry, [":cdgns" => $cdgns, ":ciclo" => $ciclo]);
     }
@@ -62,7 +62,7 @@ class Jobs
         FROM CHEQUERA
         WHERE TO_NUMBER(CODIGO) = (SELECT MAX(TO_NUMBER(CODIGO)) AS int_column FROM CHEQUERA WHERE CDGCO = :cdgco)
         AND CDGCO = :cdgco
-        sql;
+sql;
 
         $db = Database::getInstance();
         return $db->queryOne($qry, [":cdgco" => $cdgco]);
@@ -74,7 +74,7 @@ class Jobs
     {
         $qry = <<<sql
         SELECT FNSIGCHEQUE('EMPFIN', :chequera) CHQSIG FROM DUAL
-        sql;
+sql;
 
         $db = Database::getInstance();
         return $db->queryOne($qry, [":chequera" => $chequera]);

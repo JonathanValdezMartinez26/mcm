@@ -35,10 +35,14 @@ class Jobs
         $pDemo = [];
         $cliente = [];
         $cheque = [];
-        $creditos = JobsDao::CreditosAutorizados("11/04/2024");
+        $creditos = JobsDao::CreditosAutorizados();
+
+
         foreach ($creditos as $key => $credito) {
             $cliente[] = JobsDao::ClientesAutorizados($credito["CDGNS"], $credito["CICLO"]);
             // $cliente = JobsDao::ClientesAutorizados($credito["CDGNS"], $credito["CICLO"]);
+
+
             if (empty($cliente)) continue;
             $chequera = JobsDao::GetNoChequera($creditos["CDGCO"]);
             $cheque[] = JobsDao::GetNoCheque($chequera["CDGCB"]);
@@ -48,8 +52,8 @@ class Jobs
             $parametros[":PRMCDGCLNS"] = $credito['CDGNS'];
             $parametros[":PRMCLNS"] = 'G';
             $parametros[":PRMCICLO"] = $credito['CICLO'];
-            $parametros[":PRMT_CDGCL"] = [$cliente];
-            $parametros[":PRMT_NOCHEQUE"] = [$cheque];
+            $parametros[":PRMT_CDGCL"] = $cliente;
+            $parametros[":PRMT_NOCHEQUE"] = $cheque;
             $parametros[":PRMFECHA"] = $credito['INICIO'];
             $parametros[":PRMUSER"] = $_SESSION['USUARIO'] ?? 'AMGM';
             $parametros[":PRMCDGCB"] = $chequera["CDGCB"];
