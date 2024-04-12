@@ -34,6 +34,8 @@ class Jobs
     {
         $resumen = [];
         $creditos = JobsDao::CreditosAutorizados();
+        var_dump($creditos);
+
         foreach ($creditos as $key => $credito) {
             $chequera = JobsDao::GetNoChequera($credito["CDGCO"]);
             $cheque = JobsDao::GetNoCheque($chequera["CDGCB"]);
