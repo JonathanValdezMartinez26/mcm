@@ -68,18 +68,57 @@
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid">
-                        <div class="col-md-12">
+                        <div class="row">
                             <div class="col-md-6">
                                 <p>Para generar un estado de cuenta es necesario que el cliente tenga una cuenta ahorro corriente activa, de lo contrario, es necesaria la creación de una a través de la opción: <a href="/Ahorro/ContratoCuentaCorriente/" target="_blank">Nuevo Contrato</a>.</p>
                                 <hr>
                             </div>
                             <div class="col-md-4">
-                                <label for="cliente">Código de cliente SICAFIN *</label>
-                                <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="cliente" name="cliente" value="" placeholder="000000" required>
+                                <label for="clienteBuscado">Código de cliente SICAFIN *</label>
+                                <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" value="" placeholder="000000" required>
                             </div>
                             <div class="col-md-2" style="padding-top: 25px">
-                                <button type="button" class="btn btn-primary" onclick="imprimeEdoCta()">
-                                    <i class="fa fa-search"></i> Generar
+                                <button class="btn btn-primary" id="btnBskClnt" onclick=buscaCliente(event)>
+                                    <i class="fa fa-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nombre">Nombre del cliente</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="cliente">Código de cliente SICAFIN</label>
+                                    <input type="number" class="form-control" id="cliente" name="cliente" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="contrato">Número de contrato</label>
+                                    <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="fechaInicio">Fecha inicial</label>
+                                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" value="<?= $fechaInicio; ?>" disabled>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="fechaFin">Fecha final</label>
+                                    <input type="date" class="form-control" id="fechaFin" name="fechaFin" value="<?= $fecha; ?>" max="<?= $fecha; ?>" disabled>
+                                </div>
+                            </div>
+                            <div class="col-md-2" style="padding-top: 25px">
+                                <button class="btn btn-primary" id="generarEdoCta" onclick=imprimeEdoCta() disabled>
+                                    <i class="fa fa-file-pdf-o"></i> Generar
                                 </button>
                             </div>
                         </div>
