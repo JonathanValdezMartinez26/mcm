@@ -2253,120 +2253,59 @@ class Ahorro extends Controller
         echo $log;
     }
 
+    public function EstadoCuenta()
+    {
+        $extraFooter = <<<script
+        <script>
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->validarYbuscar}
+            {
+            {$this->getHoy}
+            {$this->soloNumeros}
+            
+
+
+
+            const limpiaDatos = () => {
+                document.querySelector("#cliente").value = ""
+            }
+
+            const mostrar = (contrato) => {
+                const host = window.location.origin
+            
+                let plantilla = '<!DOCTYPE html>'
+                plantilla += '<html lang="es">'
+                plantilla += '<head>'
+                plantilla += '<meta charset="UTF-8">'
+                plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+                plantilla += '<link rel="shortcut icon" href="" + host + "/img/logo.png">'
+                plantilla += '<title>Estado de Cuenta: ' + contrato + '</title>'
+                plantilla += '</head>'
+                plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
+                plantilla += '<iframe src="'
+                    + host + '/Ahorro/EdoCta/?'
+                    + 'contrato=' + contrato
+                    + '&sucursal=' + sucursal
+                    + '" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
+                plantilla += '</body>'
+                plantilla += '</html>'
+            
+                const blob = new Blob([plantilla], { type: 'text/html' })
+                const url = URL.createObjectURL(blob)
+                window.open(url, '_blank')
+            }
+        </script>
+        script;
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Estado de Cuenta")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("caja_menu_estado_cuenta");
+    }
+
     //********************UTILS********************//
     // Generación de ticket's de operaciones realizadas
-    public function Ticket()
-    {
-        $ticket = $_GET['ticket'];
-        $sucursal = $_GET['sucursal'] ?? "1";
-        $datos = CajaAhorroDao::DatosTicket($ticket);
-        if (!$datos) {
-            echo "No se encontró información para el ticket: " . $ticket;
-            return;
-        }
-
-        $nombreArchivo = "Ticket " . $ticket;
-        $mensajeImpresion = 'Fecha de impresión:<br>' . date('d/m/Y H:i:s');
-        if ($sucursal) {
-            $datosImpresion = CajaAhorroDao::getSucursal($sucursal);
-            $mensajeImpresion = 'Fecha y sucursal de impresión:<br>' . date('d/m/Y H:i:s') . ' - ' . $datosImpresion['NOMBRE'] . ' (' . $datosImpresion['CODIGO'] . ')';
-        }
-
-
-        $mpdf = new \mPDF('UTF-8', array(90, 190));
-        // PIE DE PAGINA
-        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:Helvetica;">' . $mensajeImpresion . '</div>');
-
-        $mpdf->SetMargins(0, 0, 5);
-        $mpdf->SetTitle($nombreArchivo);
-        $mpdf->WriteHTML('<div></div>', 2);
-
-        // CABECERA
-        $mpdf->SetFont('Helvetica', '', 19);
-        $mpdf->Cell(60, 4, 'Más con Menos', 0, 1, 'C');
-        $mpdf->Ln(5);
-
-        // LEYENDA TIPO COMPROBANTE
-        $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 4, 'COMPROBANTE DE ' . $datos['COMPROBANTE'], 0, 1, 'C');
-        $mpdf->Ln(3);
-        $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
-        $mpdf->Ln(2);
-
-        // DATOS OPERACION
-        $mpdf->SetFont('Helvetica', '', 9);
-        $mpdf->Cell(60, 4, 'Fecha de la operación: ' . $datos['FECHA'], 0, 1, '');
-        $mpdf->Cell(60, 4, 'Método de pago: ' . $datos['METODO'], 0, 1, '');
-        if ($datos['COD_EJECUTIVO']) $mpdf->MultiCell(60, 4, $datos['RECIBIO'] . ': ' . $datos['NOM_EJECUTIVO'] . ' (' . $datos['COD_EJECUTIVO'] . ')', 0, 1, '');
-        if ($datos['CDG_SUCURSAL']) $mpdf->Cell(60, 4, 'Sucursal: ' . $datos['NOMBRE_SUCURSAL'] . ' (' . $datos['CDG_SUCURSAL'] . ')', 0, 1, '');
-
-        $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
-        $mpdf->Ln(5);
-
-        // DATOS CLIENTE
-        $mpdf->SetFont('Helvetica', '', 9);
-        $mpdf->MultiCell(60, 4, 'Nombre del cliente: ' . $datos['NOMBRE_CLIENTE'], 0, 1, '');
-        $mpdf->Cell(60, 4, 'Código de cliente: ' . $datos['CODIGO'], 0, 1, '');
-        $mpdf->Cell(60, 4, 'Código de contrato: ' . $datos['CONTRATO'], 0, 1, '');
-        $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
-
-        // DETALLE DE LA OPERACION
-        $mpdf->Ln(7);
-        $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 4, 'CUENTA DE AHORRO CORRIENTE', 0, 1, 'C');
-        $mpdf->Ln(3);
-        $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
-
-        // MONTO DE LA OPERACION
-        $mpdf->Ln(5);
-        $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 4, $datos['ENTREGA'] .  " $" . number_format($datos['MONTO'], 2, '.', ','), 0, 1, 'C');
-        $mpdf->SetFont('Helvetica', '', 8);
-        $mpdf->MultiCell(60, 4, '(' . self::NumeroLetras($datos['MONTO']) . ')', 0, 'C');
-        $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
-
-        // DESGLOSE DE LA OPERACION
-        $mpdf->Ln(4);
-        $mpdf->SetFont('Helvetica', '', 10);
-        $mpdf->Cell(30, 10, 'SALDO ANTERIOR:', 0);
-        $mpdf->Cell(30, 10, "$" . number_format($datos['SALDO_ANTERIOR'], 2, '.', ','), 2, 0, 'R');
-        $mpdf->Ln(8);
-        $mpdf->Cell(30, 10, $datos['ES_DEPOSITO'], 0);
-        $mpdf->Cell(30, 10,  "$" . number_format($datos['MONTO'], 2, '.', ','), 2, 0, 'R');
-        $mpdf->Ln(8);
-        if ($datos['COMISION'] > 0) {
-            $mpdf->Cell(30, 10, 'COMISIÓN :', 0);
-            $mpdf->Cell(30, 10,  "$" . number_format($datos['COMISION'], 2, '.', ','), 2, 0, 'R');
-            $mpdf->Ln(8);
-        }
-        $mpdf->Cell(30, 10, 'SALDO NUEVO: ', 0);
-        $mpdf->Cell(30, 10, "$" . number_format($datos['SALDO_NUEVO'], 2, '.', ','), 2, 0, 'R');
-
-        // Linea
-        $mpdf->Ln(10);
-        $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Ln(3);
-        $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
-
-        // FIRMAS
-        $mpdf->Ln(8);
-        $mpdf->SetFont('Helvetica', '', 10);
-        $mpdf->Cell(60, 4, 'Firma de conformidad del cliente', 0, 1, 'C');
-        $mpdf->Ln(10);
-        $mpdf->Cell(60, 0, str_repeat('_', 34), 0, 1, 'C');
-
-        // FOLIO DE LA OPERACION
-        $mpdf->Ln(12);
-        $mpdf->SetFont('Helvetica', '', 10);
-        $mpdf->Cell(60, 4, 'FOLIO DE LA OPERACIÓN', 0, 1, 'C');
-        $mpdf->WriteHTML('<barcode code="' . $ticket . '-' . $datos['CODIGO'] . '-' . $datos['MONTO'] . '-' . $datos['COD_EJECUTIVO'] . '" type="C128A" size=".60" height="1" class=""/>');
-
-        $mpdf->Output($nombreArchivo . '.pdf', 'I');
-        exit;
-    }
 
     public function Contrato()
     {
@@ -2504,118 +2443,382 @@ class Ahorro extends Controller
         $mpdf->WriteHTML($tabla, 2);
 
         $mpdf->Output($nombreArchivo . '.pdf', 'I');
+    }
 
+    public function Ticket()
+    {
+        $ticket = $_GET['ticket'];
+        $sucursal = $_GET['sucursal'] ?? "1";
+        $datos = CajaAhorroDao::DatosTicket($ticket);
+        if (!$datos) {
+            echo "No se encontró información para el ticket: " . $ticket;
+            return;
+        }
+
+        $nombreArchivo = "Ticket " . $ticket;
+        $mensajeImpresion = 'Fecha de impresión:<br>' . date('d/m/Y H:i:s');
+        if ($sucursal) {
+            $datosImpresion = CajaAhorroDao::getSucursal($sucursal);
+            $mensajeImpresion = 'Fecha y sucursal de impresión:<br>' . date('d/m/Y H:i:s') . ' - ' . $datosImpresion['NOMBRE'] . ' (' . $datosImpresion['CODIGO'] . ')';
+        }
+
+
+        $mpdf = new \mPDF('UTF-8', array(90, 190));
+        // PIE DE PAGINA
+        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:Helvetica;">' . $mensajeImpresion . '</div>');
+
+        $mpdf->SetMargins(0, 0, 5);
+        $mpdf->SetTitle($nombreArchivo);
+        $mpdf->WriteHTML('<div></div>', 2);
+
+        // CABECERA
+        $mpdf->SetFont('Helvetica', '', 19);
+        $mpdf->Cell(60, 4, 'Más con Menos', 0, 1, 'C');
+        $mpdf->Ln(5);
+
+        // LEYENDA TIPO COMPROBANTE
+        $mpdf->SetFont('Helvetica', '', 12);
+        $mpdf->Cell(60, 4, 'COMPROBANTE DE ' . $datos['COMPROBANTE'], 0, 1, 'C');
+        $mpdf->Ln(3);
+        $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
+        $mpdf->Ln(2);
+
+        // DATOS OPERACION
+        $mpdf->SetFont('Helvetica', '', 9);
+        $mpdf->Cell(60, 4, 'Fecha de la operación: ' . $datos['FECHA'], 0, 1, '');
+        $mpdf->Cell(60, 4, 'Método de pago: ' . $datos['METODO'], 0, 1, '');
+        if ($datos['COD_EJECUTIVO']) $mpdf->MultiCell(60, 4, $datos['RECIBIO'] . ': ' . $datos['NOM_EJECUTIVO'] . ' (' . $datos['COD_EJECUTIVO'] . ')', 0, 1, '');
+        if ($datos['CDG_SUCURSAL']) $mpdf->Cell(60, 4, 'Sucursal: ' . $datos['NOMBRE_SUCURSAL'] . ' (' . $datos['CDG_SUCURSAL'] . ')', 0, 1, '');
+
+        $mpdf->SetFont('Helvetica', '', 12);
+        $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
+        $mpdf->Ln(5);
+
+        // DATOS CLIENTE
+        $mpdf->SetFont('Helvetica', '', 9);
+        $mpdf->MultiCell(60, 4, 'Nombre del cliente: ' . $datos['NOMBRE_CLIENTE'], 0, 1, '');
+        $mpdf->Cell(60, 4, 'Código de cliente: ' . $datos['CODIGO'], 0, 1, '');
+        $mpdf->Cell(60, 4, 'Código de contrato: ' . $datos['CONTRATO'], 0, 1, '');
+        $mpdf->SetFont('Helvetica', '', 12);
+        $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
+
+        // DETALLE DE LA OPERACION
+        $mpdf->Ln(7);
+        $mpdf->SetFont('Helvetica', '', 12);
+        $mpdf->Cell(60, 4, 'CUENTA DE AHORRO CORRIENTE', 0, 1, 'C');
+        $mpdf->Ln(3);
+        $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
+
+        // MONTO DE LA OPERACION
+        $mpdf->Ln(5);
+        $mpdf->SetFont('Helvetica', '', 12);
+        $mpdf->Cell(60, 4, $datos['ENTREGA'] .  " $" . number_format($datos['MONTO'], 2, '.', ','), 0, 1, 'C');
+        $mpdf->SetFont('Helvetica', '', 8);
+        $mpdf->MultiCell(60, 4, '(' . self::NumeroLetras($datos['MONTO']) . ')', 0, 'C');
+        $mpdf->SetFont('Helvetica', '', 12);
+        $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
+
+        // DESGLOSE DE LA OPERACION
+        $mpdf->Ln(4);
+        $mpdf->SetFont('Helvetica', '', 10);
+        $mpdf->Cell(30, 10, 'SALDO ANTERIOR:', 0);
+        $mpdf->Cell(30, 10, "$" . number_format($datos['SALDO_ANTERIOR'], 2, '.', ','), 2, 0, 'R');
+        $mpdf->Ln(8);
+        $mpdf->Cell(30, 10, $datos['ES_DEPOSITO'], 0);
+        $mpdf->Cell(30, 10,  "$" . number_format($datos['MONTO'], 2, '.', ','), 2, 0, 'R');
+        $mpdf->Ln(8);
+        if ($datos['COMISION'] > 0) {
+            $mpdf->Cell(30, 10, 'COMISIÓN :', 0);
+            $mpdf->Cell(30, 10,  "$" . number_format($datos['COMISION'], 2, '.', ','), 2, 0, 'R');
+            $mpdf->Ln(8);
+        }
+        $mpdf->Cell(30, 10, 'SALDO NUEVO: ', 0);
+        $mpdf->Cell(30, 10, "$" . number_format($datos['SALDO_NUEVO'], 2, '.', ','), 2, 0, 'R');
+
+        // Linea
+        $mpdf->Ln(10);
+        $mpdf->SetFont('Helvetica', '', 12);
+        $mpdf->Ln(3);
+        $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
+
+        // FIRMAS
+        $mpdf->Ln(8);
+        $mpdf->SetFont('Helvetica', '', 10);
+        $mpdf->Cell(60, 4, 'Firma de conformidad del cliente', 0, 1, 'C');
+        $mpdf->Ln(10);
+        $mpdf->Cell(60, 0, str_repeat('_', 34), 0, 1, 'C');
+
+        // FOLIO DE LA OPERACION
+        $mpdf->Ln(12);
+        $mpdf->SetFont('Helvetica', '', 10);
+        $mpdf->Cell(60, 4, 'FOLIO DE LA OPERACIÓN', 0, 1, 'C');
+        $mpdf->WriteHTML('<barcode code="' . $ticket . '-' . $datos['CODIGO'] . '-' . $datos['MONTO'] . '-' . $datos['COD_EJECUTIVO'] . '" type="C128A" size=".60" height="1" class=""/>');
+
+        $mpdf->Output($nombreArchivo . '.pdf', 'I');
         exit;
+    }
+
+    public function EdoCta()
+    {
+        $estilo = <<<css
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                width: 95%;
+                margin: 0 auto;
+                padding: 0;
+            }
+            .header {
+                margin-bottom: 20px;
+            }
+            .info-table {
+                width: 100%;
+                border-collapse: collapse;
+                border: 1px solid #000;
+            }
+            .info-table td {
+                text-align: center;
+                margin: 15px 0;
+            }
+            .statement {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            .statement th {
+                background-color: #f2f2f2;
+            }
+            .statement th, .statement td {
+                border: 1px solid #ddd;
+            }
+        </style>
+        css;
+
+        $cuerpo = <<<html
+        <body>
+            <div class="container">
+                <div class="header" style="text-align:center;">
+                    <h1>Estado de Cuenta</h1>
+                    <table class="info-table">
+                        <tr>
+                            <td colspan="4">
+                                <b>Nombre del Cliente: </b>Cliente de Prueba
+                            </td>
+                            <td colspan="2">
+                                <b>Número de Cliente: </b>000000
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <b>Fecha de Inicio del Período: </b>01/01/2024
+                            </td>
+                            <td colspan="3">
+                                <b>Fecha de Fin del Período: </b>31/01/2024
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6">
+                                <b>Saldo cuenta ahorro corriente: </b>$ 1,000,000.00
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <b>Saldo cuenta ahorro peque: </b>$ 100,000.00
+                            </td>
+                            <td colspan="3">
+                                <b>Saldo cuenta inversión: </b>$ 1,000,000.00
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <h2>Transacciones Inversiones</h2>
+                <table class="statement">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Descripcion</th>
+                            <th>Cargo</th>
+                            <th>Abono</th>
+                            <th>Saldo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>[Fecha de la transacción]</td>
+                            <td>[Descripción de la transacción]</td>
+                            <td>[Monto del cargo]</td>
+                            <td>[Monto del abono]</td>
+                            <td>[Saldo después de la transacción]</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h2>Transacciones Ahorro</h2>
+                <table class="statement">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Descripción</th>
+                            <th>Cargo</th>
+                            <th>Abono</th>
+                            <th>Saldo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>[Fecha de la transacción]</td>
+                            <td>[Descripción de la transacción]</td>
+                            <td>[Monto del cargo]</td>
+                            <td>[Monto del abono]</td>
+                            <td>[Saldo después de la transacción]</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h2>Transacciones Ahorro Peque</h2>
+                <table class="statement">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Descripcion</th>
+                            <th>Cargo</th>
+                            <th>Abono</th>
+                            <th>Saldo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>[Fecha de la transacción]</td>
+                            <td>[Descripción de la transacción]</td>
+                            <td>[Monto del cargo]</td>
+                            <td>[Monto del abono]</td>
+                            <td>[Saldo después de la transacción]</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="notices">
+                    <h2>Avisos y Leyendas</h2>
+                    <p>[Avisos y Leyendas Legales]</p>
+                </div>
+            </div>
+        </body>
+        html;
+
+        $nombreArchivo = "Estado de Cuenta: " . 'Ejemplo'; //$contrato;
+
+        $mpdf = new \mPDF(['mode' => 'utf-8', 'format' => 'Letter', 'default_font' => 'helvetica']);
+        // $mpdf->SetHTMLHeader('<div style="text-align:right; font-size: 10px;">Fecha de impresión  ' . date('d/m/Y H:i:s') . '</div>');
+        $mpdf->SetHTMLFooter('<div style="text-align:center; font-size: 11px;">Página {PAGENO} de {nb}</div>');
+        $mpdf->SetTitle($nombreArchivo);
+        $mpdf->WriteHTML($estilo, 1);
+        $mpdf->WriteHTML($cuerpo, 2);
+
+        $mpdf->Output($nombreArchivo . '.pdf', 'I');
+    }
+
+    public function toLetras($numero)
+    {
+        $cifras = array(
+            0 => 'cero',
+            1 => 'uno',
+            2 => 'dos',
+            3 => 'tres',
+            4 => 'cuatro',
+            5 => 'cinco',
+            6 => 'seis',
+            7 => 'siete',
+            8 => 'ocho',
+            9 => 'nueve',
+            11 => 'once',
+            12 => 'doce',
+            13 => 'trece',
+            14 => 'catorce',
+            15 => 'quince',
+            16 => 'dieciséis',
+            17 => 'diecisiete',
+            18 => 'dieciocho',
+            19 => 'diecinueve',
+            21 => 'veintiuno',
+            22 => 'veintidós',
+            23 => 'veintitrés',
+            24 => 'veinticuatro',
+            25 => 'veinticinco',
+            26 => 'veintiséis',
+            27 => 'veintisiete',
+            28 => 'veintiocho',
+            29 => 'veintinueve',
+            10 => 'diez',
+            20 => 'veinte',
+            30 => 'treinta',
+            40 => 'cuarenta',
+            50 => 'cincuenta',
+            60 => 'sesenta',
+            70 => 'setenta',
+            80 => 'ochenta',
+            90 => 'noventa',
+            100 => 'cien',
+            200 => 'doscientos',
+            300 => 'trescientos',
+            400 => 'cuatrocientos',
+            500 => 'quinientos',
+            600 => 'seiscientos',
+            700 => 'setecientos',
+            800 => 'ochocientos',
+            900 => 'novecientos'
+        );
+
+        $letra = '';
+
+        if ($numero >= 1000000) {
+            $letra .= floor($numero / 1000000) == 1 ? 'un' : $cifras[floor($numero / 1000000)];
+            $numero %= 1000000;
+            $letra .= (floor($numero / 1000000) > 1 ? ' millones' : ' millón') . ($numero > 0 ? ' ' : '');
+            $letra .= $letra == 'un millón' ? ' de' : '';
+        }
+
+        if ($numero >= 1000) {
+            $letra .= floor($numero / 1000) == 1 ? ' un' : $cifras[floor($numero / 1000)];
+            $numero %= 1000;
+            $letra .= ' mil' . ($numero > 0 ? ' ' : '');
+        }
+
+        if ($numero >= 100) {
+            $letra .= $cifras[floor($numero / 100) * 100];
+            $letra .= floor($numero / 100) == 1 ? 'to' : '';
+            $numero %= 100;
+            $letra .= $numero > 0 ? ' ' : '';
+        }
+
+        if ($numero >= 30) {
+            $letra .= $cifras[floor($numero / 10) * 10];
+            $numero %= 10;
+            $letra .= $numero > 0 ? ' y' : '';
+        }
+
+
+        if ($numero == 1) $letra .= ' un';
+        else if ($numero == 21) $letra .= ' veintiún';
+        else if ($numero > 0) $letra .= ' ' . $cifras[$numero];
+
+        return trim($letra);
     }
 
     public function NumeroLetras($numero)
     {
-        function letras($numero)
-        {
-            $cifras = array(
-                0 => 'cero',
-                1 => 'un',
-                2 => 'dos',
-                3 => 'tres',
-                4 => 'cuatro',
-                5 => 'cinco',
-                6 => 'seis',
-                7 => 'siete',
-                8 => 'ocho',
-                9 => 'nueve',
-                11 => 'once',
-                12 => 'doce',
-                13 => 'trece',
-                14 => 'catorce',
-                15 => 'quince',
-                16 => 'dieciséis',
-                17 => 'diecisiete',
-                18 => 'dieciocho',
-                19 => 'diecinueve',
-                10 => 'diez',
-                20 => 'veinte',
-                30 => 'treinta',
-                40 => 'cuarenta',
-                50 => 'cincuenta',
-                60 => 'sesenta',
-                70 => 'setenta',
-                80 => 'ochenta',
-                90 => 'noventa',
-                100 => 'cien',
-                200 => 'doscientos',
-                300 => 'trescientos',
-                400 => 'cuatrocientos',
-                500 => 'quinientos',
-                600 => 'seiscientos',
-                700 => 'setecientos',
-                800 => 'ochocientos',
-                900 => 'novecientos'
-            );
+        $letra = '';
+        $letra = ($numero == 0) ? 'cero' : self::toLetras(floor($numero));
 
-            $letra = '';
-            if ($numero >= 100) {
-                $letra .= $cifras[floor($numero / 100) * 100];
-                $numero %= 100;
-            }
+        $tmp = [
+            ucfirst($letra),
+            (floor($numero) == 1 ? "peso" : "pesos"),
+            str_pad(round(($numero - floor($numero)) * 100), 2, "0", STR_PAD_LEFT) . "/100 M.N."
+        ];
 
-            if ($numero >= 20) {
-                $letra .= $cifras[floor($numero / 10) * 10];
-                $numero %= 10;
-            }
-
-            if ($numero > 0) $letra .= $cifras[$numero];
-
-            return $letra;
-        }
-
-        function convertir($numero)
-        {
-            $letra = '';
-            if ($numero >= 1000000) {
-                $letra .= letras(floor($numero / 1000000)) . ' millón' . (floor($numero / 1000000) > 1 ? 'es' : '') . ' ' . convertir($numero % 1000000);
-                $numero %= 1000000;
-            }
-
-            if ($numero >= 1000) {
-                $letra .= letras(floor($numero / 1000)) . ' mil ';
-                $numero %= 1000;
-            }
-
-            if ($numero > 0) {
-                $letra .= letras($numero);
-            }
-
-            return $letra;
-        }
-
-        $parteEntera = floor($numero);
-        $parteDecimal = round(($numero - floor($numero)) * 100);
-        return ucfirst(convertir($parteEntera)) . ($numero == 1 ? " peso " : " pesos ") . str_pad($parteDecimal, 2, "0", STR_PAD_LEFT) . "/100 M.N.";
+        return implode(" ", $tmp);
     }
 
     //********************BORRAR????********************//
-
-    public function EstadoCuenta()
-    {
-        $extraHeader = <<<html
-        <title>Caja Cobrar</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
-        $extraFooter = <<<html
-        <script>
-           
-        </script>
-html;
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render("caja_menu_estado_cuenta");
-    }
-
-    //////////////////////////////////////////////////
-
-
     public function SolicitudRetiroHistorial()
     {
         $extraHeader = <<<html
