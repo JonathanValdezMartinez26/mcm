@@ -121,6 +121,75 @@ class CajaAhorro
         }
     }
 
+    public static function GetOperacionesLog()
+    {
+        $qry = <<<sql
+        SELECT
+            TIPO
+        FROM
+            LOG_TRANSACCIONES_AHORRO
+        GROUP BY
+            TIPO
+        ORDER BY
+            TIPO
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qry);
+            if ($res) return $res;
+            return array();
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
+    public static function GetUsuariosLog()
+    {
+        $qry = <<<sql
+        SELECT
+            USUARIO
+        FROM
+            LOG_TRANSACCIONES_AHORRO
+        GROUP BY
+            USUARIO
+        ORDER BY
+            USUARIO
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qry);
+            if ($res) return $res;
+            return array();
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
+    public static function GetSucursalesLog()
+    {
+        $qry = <<<sql
+        SELECT
+            SUCURSAL
+        FROM
+            LOG_TRANSACCIONES_AHORRO
+        GROUP BY
+            SUCURSAL
+        ORDER BY
+            SUCURSAL
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qry);
+            if ($res) return $res;
+            return array();
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
     public static function ConsultaClientesProducto($cliente)
     {
 
@@ -337,9 +406,8 @@ class CajaAhorro
                 $mysqli = Database::getInstance();
                 $res = $mysqli->insertaMultiple($inserts, $datosInsert);
                 if ($res) {
-                    $tmp = LogTransaccionesAhorro::LogTransacciones($inserts, $datosInsert, $_SESSION['usuario'], $noContrato, "Nuevo contrato ahorro corriente");
-
-                    return self::Responde(true, "Contrato de ahorro registrado correctamente.", $tmp); //['contrato' => $noContrato]);
+                    LogTransaccionesAhorro::LogTransacciones($inserts, $datosInsert, $_SESSION['cdgco'], $_SESSION['usuario'], $noContrato, "Nuevo contrato ahorro corriente");
+                    return self::Responde(true, "Contrato de ahorro registrado correctamente.", ['contrato' => $noContrato]);
                 }
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.");
             } catch (Exception $e) {
@@ -1208,6 +1276,36 @@ class CajaAhorro
             return array();
         }
     }
+
+    public static function GetLogTransacciones($parametros)
+    {
+        $qry = <<<sql
+        SELECT
+            TO_CHAR(LTA.FECHA_TRANSACCION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
+            LTA.SUCURSAL,
+            LTA.USUARIO,
+            (SELECT CDGCL FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = LTA.CONTRATO) AS CLIENTE,
+            LTA.CONTRATO,
+            LTA.TIPO
+        FROM
+            LOG_TRANSACCIONES_AHORRO LTA
+        WHERE
+            TRUNC(LTA.FECHA_TRANSACCION) BETWEEN TO_DATE(:fecha_inicio, 'YYYY-MM-DD') AND TO_DATE(:fecha_fin, 'YYYY-MM-DD')
+        sql;
+
+        $qry .= $parametros["operacion"] ? " AND LTA.TIPO = :operacion" : "";
+        $qry .= $parametros["usuario"] ? " AND LTA.USUARIO = :usuario" : "";
+        $qry .= $parametros["sucursal"] ? " AND LTA.SUCURSAL = :sucursal" : "";
+
+        try {
+            $mysqli = Database::getInstance();
+            $resultado = $mysqli->queryAll($qry, $parametros);
+            if (count($resultado) === 0) return self::Responde(false, "No se encontraron registros para la consulta.", $qry);
+            return self::Responde(true, "Consulta realizada correctamente.", $resultado);
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al consultar los registros.", null, $e->getMessage());
+        }
+    }
 }
 
 class LogTransaccionesAhorro
@@ -1229,6 +1327,7 @@ class LogTransaccionesAhorro
             ID_TRANSACCION,
             FECHA_TRANSACCION,
             QUERY_TRANSACCION,
+            SUCURSAL,
             USUARIO,
             CONTRATO,
             MODULO,
@@ -1238,6 +1337,7 @@ class LogTransaccionesAhorro
             (SELECT NVL(MAX(TO_NUMBER(ID_TRANSACCION)),0) FROM LOG_TRANSACCIONES_AHORRO) + 1,
             SYSDATE,
             :query,
+            :sucursal,
             :usuario,
             :contrato,
             :modulo,
@@ -1247,6 +1347,7 @@ class LogTransaccionesAhorro
 
         $parametros = [
             'query' => self::BindingQuery($datos['query'], $datos['parametros']),
+            'sucursal' => $datos['sucursal'],
             'usuario' => $datos['usuario'],
             'contrato' => $datos['contrato'],
             'modulo' => $datos['modulo'],
@@ -1262,12 +1363,13 @@ class LogTransaccionesAhorro
         }
     }
 
-    public static function LogTransacciones($qyrs, $parametros, $usuario, $contrato, $tipo)
+    public static function LogTransacciones($qyrs, $parametros, $sucursal, $usuario, $contrato, $tipo)
     {
         $tmp = [];
         foreach ($qyrs as $qry => $q) {
             $log['query'] = $q;
             $log['parametros'] = $parametros[$qry];
+            $log['sucursal'] = $sucursal;
             $log['usuario'] = $usuario;
             $log['contrato'] = $contrato;
             $log['modulo'] = debug_backtrace()[1]['function'];
