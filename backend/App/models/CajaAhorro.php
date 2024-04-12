@@ -1306,6 +1306,53 @@ class CajaAhorro
             return self::Responde(false, "Ocurrió un error al consultar los registros.", null, $e->getMessage());
         }
     }
+
+    public static function GetDatosEdoCta($cliente, $fInicio, $fFin)
+    {
+        $qryDatosGenerale = <<<sql
+            SELECT
+                CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
+                CL.CODIGO AS CLIENTE,
+                APA.CONTRATO,
+                TO_CHAR(APA.FECHA_APERTURA, 'DD/MM/YYYY') AS FECHA_APERTURA,
+                NVL((
+                    SELECT
+                        SUM(CASE MOVIMIENTO
+                            WHEN '0' THEN -MONTO
+                            ELSE MONTO
+                        END)
+                    FROM
+                        MOVIMIENTOS_AHORRO
+                    WHERE
+                        CDG_CONTRATO = APA.CONTRATO
+                        AND CDG_TIPO_PAGO = 1
+                ),0) AS DEP_INICIAL,
+                NVL((
+                    SELECT
+                        SUM(CASE MOVIMIENTO
+                            WHEN '0' THEN -MONTO
+                            ELSE MONTO
+                        END)
+                    FROM
+                        MOVIMIENTOS_AHORRO
+                    WHERE
+                        CDG_CONTRATO = APA.CONTRATO
+                        AND CDG_TIPO_PAGO = 2
+                ),0) AS COMISION,
+                NVL((
+                    SELECT
+                        SUM(CASE MOVIMIENTO
+                            WHEN '0' THEN -MONTO
+                            ELSE MONTO
+                        END)
+                    FROM
+                        MOVIMIENTOS_AHORRO
+                    WHERE
+                        CDG_CONTRATO = APA.CONTRATO
+                        AND (CDG_TIPO_PAGO = 1 OR CDG_TIPO_PAGO = 2)
+                ),0) AS SALDO_INICIAL
+        sql;
+    }
 }
 
 class LogTransaccionesAhorro
