@@ -30,7 +30,7 @@ class Jobs
         }
     }
 
-    public function sp_con_array()
+    public function index()
     {
         $resumen = [];
         $creditos = JobsDao::CreditosAutorizados();
