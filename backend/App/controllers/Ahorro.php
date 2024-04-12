@@ -2264,14 +2264,9 @@ class Ahorro extends Controller
             {
             {$this->getHoy}
             {$this->soloNumeros}
-            
-
-
-
             const limpiaDatos = () => {
                 document.querySelector("#cliente").value = ""
             }
-
             const mostrar = (contrato) => {
                 const host = window.location.origin
             
