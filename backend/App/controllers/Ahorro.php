@@ -2636,11 +2636,16 @@ class Ahorro extends Controller
                     <h1>Estado de Cuenta</h1>
                     <table class="info-table">
                         <tr>
-                            <td colspan="4">
+                            <td colspan="6">
                                 <b>Nombre del Cliente: </b>Cliente de Prueba
                             </td>
-                            <td colspan="2">
+                        </tr>
+                        <tr>
+                            <td colspan="3">
                                 <b>Número de Cliente: </b>000000
+                            </td>
+                            <td colspan="3">
+                                <b>Número de Contrato: </b>0000000000
                             </td>
                         </tr>
                         <tr>
@@ -2652,7 +2657,7 @@ class Ahorro extends Controller
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="3">
                                 <b>Saldo cuenta ahorro corriente: </b>$ 1,000,000.00
                             </td>
                         </tr>
