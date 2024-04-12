@@ -2324,7 +2324,7 @@ class Ahorro extends Controller
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 4, $datos['ENTREGA'] .  " $" . number_format($datos['MONTO'], 2, '.', ','), 0, 1, 'C');
         $mpdf->SetFont('Helvetica', '', 8);
-        $mpdf->MultiCell(60, 4, '(UN MIL DOSCIENTOS 00/100 M.N)', 0, 'C');
+        $mpdf->MultiCell(60, 4, '(' . self::NumeroLetras($datos['MONTO']) . ')', 0, 'C');
         $mpdf->SetFont('Helvetica', '', 12);
         $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
 
@@ -2506,6 +2506,91 @@ class Ahorro extends Controller
         $mpdf->Output($nombreArchivo . '.pdf', 'I');
 
         exit;
+    }
+
+    public function NumeroLetras($numero)
+    {
+        function letras($numero)
+        {
+            $cifras = array(
+                0 => 'cero',
+                1 => 'un',
+                2 => 'dos',
+                3 => 'tres',
+                4 => 'cuatro',
+                5 => 'cinco',
+                6 => 'seis',
+                7 => 'siete',
+                8 => 'ocho',
+                9 => 'nueve',
+                11 => 'once',
+                12 => 'doce',
+                13 => 'trece',
+                14 => 'catorce',
+                15 => 'quince',
+                16 => 'dieciséis',
+                17 => 'diecisiete',
+                18 => 'dieciocho',
+                19 => 'diecinueve',
+                10 => 'diez',
+                20 => 'veinte',
+                30 => 'treinta',
+                40 => 'cuarenta',
+                50 => 'cincuenta',
+                60 => 'sesenta',
+                70 => 'setenta',
+                80 => 'ochenta',
+                90 => 'noventa',
+                100 => 'cien',
+                200 => 'doscientos',
+                300 => 'trescientos',
+                400 => 'cuatrocientos',
+                500 => 'quinientos',
+                600 => 'seiscientos',
+                700 => 'setecientos',
+                800 => 'ochocientos',
+                900 => 'novecientos'
+            );
+
+            $letra = '';
+            if ($numero >= 100) {
+                $letra .= $cifras[floor($numero / 100) * 100];
+                $numero %= 100;
+            }
+
+            if ($numero >= 20) {
+                $letra .= $cifras[floor($numero / 10) * 10];
+                $numero %= 10;
+            }
+
+            if ($numero > 0) $letra .= $cifras[$numero];
+
+            return $letra;
+        }
+
+        function convertir($numero)
+        {
+            $letra = '';
+            if ($numero >= 1000000) {
+                $letra .= letras(floor($numero / 1000000)) . ' millón' . (floor($numero / 1000000) > 1 ? 'es' : '') . ' ' . convertir($numero % 1000000);
+                $numero %= 1000000;
+            }
+
+            if ($numero >= 1000) {
+                $letra .= letras(floor($numero / 1000)) . ' mil ';
+                $numero %= 1000;
+            }
+
+            if ($numero > 0) {
+                $letra .= letras($numero);
+            }
+
+            return $letra;
+        }
+
+        $parteEntera = floor($numero);
+        $parteDecimal = round(($numero - floor($numero)) * 100);
+        return ucfirst(convertir($parteEntera)) . ($numero == 1 ? " peso " : " pesos ") . str_pad($parteDecimal, 2, "0", STR_PAD_LEFT) . "/100 M.N.";
     }
 
     //********************BORRAR????********************//
