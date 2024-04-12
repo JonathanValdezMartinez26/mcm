@@ -25,7 +25,7 @@ class Ahorro extends Controller
     private $buscaCliente = 'const buscaCliente = () => {
         document.querySelector("#btnBskClnt").disabled = true
         const noCliente = document.querySelector("#clienteBuscado").value
-        
+         
         if (!noCliente) {
             limpiaDatosCliente()
             document.querySelector("#btnBskClnt").disabled = false
@@ -2255,18 +2255,54 @@ class Ahorro extends Controller
 
     public function EstadoCuenta()
     {
+        $fecha = date('Y-m-d');
+        $fechaInicio =  date('Y-m-d', strtotime('-1 month'));
+
         $extraFooter = <<<script
         <script>
+            let datosCliente = {}
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
             {$this->validarYbuscar}
-            {
+            {$this->buscaCliente}
+            {$this->sinContrato}
             {$this->getHoy}
             {$this->soloNumeros}
-            const limpiaDatos = () => {
+         
+            const limpiaDatosCliente = () => {
+                datosCliente = {}
                 document.querySelector("#cliente").value = ""
+                document.querySelector("#nombre").value = ""
+                document.querySelector("#contrato").value = ""
+                document.querySelector("#fechaInicio").value = "{$fechaInicio}"
+                document.querySelector("#fechaFin").value = "{$fecha}"
+                document.querySelector("#cliente").disabled = true
+                document.querySelector("#nombre").disabled = true
+                document.querySelector("#contrato").disabled = true
+                document.querySelector("#fechaInicio").disabled = true
+                document.querySelector("#fechaFin").disabled = true
+                document.querySelector("#generarEdoCta").disabled = true
             }
+             
+            const llenaDatosCliente = (datos) => {
+                if (!datos) return
+                datosCliente = datos
+                document.querySelector("#clienteBuscado").value = ""
+                document.querySelector("#nombre").value = datos.NOMBRE
+                document.querySelector("#cliente").value = datos.CDGCL
+                document.querySelector("#contrato").value = datos.CONTRATO
+                document.querySelector("#fechaInicio").disabled = false
+                document.querySelector("#fechaFin").disabled = false
+                document.querySelector("#generarEdoCta").disabled = false
+            }
+             
+            const imprimeEdoCta = () => {
+                const contrato = document.querySelector("#cliente").value
+                if (!contrato) return showError("Ingrese un número de contrato.")
+                mostrar(contrato)
+            }
+             
             const mostrar = (contrato) => {
                 const host = window.location.origin
             
@@ -2282,7 +2318,6 @@ class Ahorro extends Controller
                 plantilla += '<iframe src="'
                     + host + '/Ahorro/EdoCta/?'
                     + 'contrato=' + contrato
-                    + '&sucursal=' + sucursal
                     + '" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
                 plantilla += '</body>'
                 plantilla += '</html>'
@@ -2296,6 +2331,8 @@ class Ahorro extends Controller
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Estado de Cuenta")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha', $fecha);
+        View::set('fechaInicio', date('Y-m-d', strtotime('-1 month')));
         View::render("caja_menu_estado_cuenta");
     }
 
@@ -2915,8 +2952,6 @@ html;
         }
 
         $fecha_y_hora = date("Y-m-d H:i:s");
-
-
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitudes de reimpresión Tickets")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
