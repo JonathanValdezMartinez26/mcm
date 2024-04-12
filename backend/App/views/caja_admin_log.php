@@ -44,124 +44,91 @@
             </a>
         </div>
         <div class="col-md-9">
-            <form id="registroOperacion" name="registroOperacion">
-                <div class="modal-content">
-                    <div class="modal-header" style="padding-bottom: 0px">
-                        <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                            <a class="navbar-brand">Admin sucursales / Saldos del día</a>
-                            &nbsp;&nbsp;
-                        </div>
-                        <div class="col-md-12" style="display: flex; align-items: center; height: 40px; color: #000">
-                            <label style="font-size: 16px; font-weight: bold; margin: 0; padding: 0;">Log diario global
-                            </label>
-                        </div>
+            <div class="modal-content">
+                <div class="modal-header" style="padding-bottom: 0px">
+                    <div class="navbar-header card col-md-12" style="background: #2b2b2b">
+                        <a class="navbar-brand">Admin sucursales / Saldos del día</a>
+                        &nbsp;&nbsp;
                     </div>
-                    <div class="modal-body">
-                        <div class="container-fluid">
-                            <div class="col-md-12">
-                                <div class="row">
-                                    <div class="card col-md-12">
-                                        <form id="AddPagoApertura">
-                                            <div class="row">
-                                                <div class="col-md-2 col-sm-2">
-                                                    <div class="form-group">
-                                                        <label for="ejecutivosuc">Desde* </label>
-                                                        <input class="form-control mr-sm-2" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $fechaActual; ?>">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2 col-sm-2">
-                                                    <div class="form-group">
-                                                        <label for="ejecutivosuc">Hasta* </label>
-                                                        <input class="form-control mr-sm-2" autofocus type="date" id="Inicial" name="Inicial" placeholder="000000" aria-label="Search" value="<?php echo $fechaActual; ?>">
-
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3 col-sm-3">
-                                                    <div class="form-group">
-                                                        <label for="ejecutivosuc">Operación* </label>
-                                                        <select class="form-control" autofocus type="select" id="Suc" name="Suc" aria-label="Search">
-                                                            <option value="000">TODAS LAS OPERACIONES</option>
-                                                            <option value="000">ALTA CONTRATO AHORRO (+)</option>
-                                                            <option value="000">ALTA CONTRATO PEQUE (+)</option>
-                                                            <option value="000">ALTA CONTRATO INVERSIÓN (+)</option>
-                                                            <option value="000">ABONOS AHORRO (+)</option>
-                                                            <option value="000">RETIROS AHORRO (-)</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2 col-sm-2">
-                                                    <div class="form-group">
-                                                        <label for="ejecutivosuc">Usuario* </label>
-                                                        <select class="form-control" autofocus type="select" id="Suc" name="Suc" aria-label="Search">
-                                                            <option value="000">TODOS</option>
-                                                            <option value="000">AUTOMATICO (+)</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-2" style="padding-top: 25px">
-                                                    <button type="button" class="btn btn-primary" onclick="buscaCliente()">
-                                                        <i class="fa fa-search"></i> Buscar
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-12" style="text-align:center;">
-                                                    <hr>
-                                                    <h3>Log de Transacciones</h3>
-                                                    <br>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-8" style="display: flex; justify-content: flex-start;">
-                                                    <h4>Saldo actual cuenta ahorro corriente</h4>
-                                                </div>
-                                                <div class="col-md-1" style="display: flex; justify-content: flex-end;">
-                                                    <h4>$</h4>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input type="number" class="form-control" id="saldoActual" name="saldoActual" value="0.00" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-1">
-                                                    <h4 id="simboloOperacion">+</h4>
-                                                </div>
-                                                <div class="col-md-7" style="display: flex; justify-content: flex-start;">
-                                                    <h4 id="descOperacion">Depósito a cuenta ahorro corriente</h4>
-                                                </div>
-                                                <div class="col-md-1" style="display: flex; justify-content: flex-end;">
-                                                    <h4>$</h4>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input type="number" class="form-control" id="montoOperacion" name="montoOperacion" value="0.00" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-8" style="display: flex; justify-content: flex-start;">
-                                                    <h4>Saldo final cuenta ahorro corriente</h4>
-                                                </div>
-                                                <div class="col-md-1" style="display: flex; justify-content: flex-end;">
-                                                    <h4>$</h4>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input type="number" class="form-control" id="saldoFinal" name="saldoFinal" value="0.00" readonly>
-                                                </div>
-                                                <div class="col-md-12" style="display: flex; justify-content: center; color: red;">
-                                                    <label id="tipSaldo" style="opacity:0">El saldo final no puede ser menor a $0.00.</label>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" id="btnRegistraOperacion" name="agregar" class="btn btn-primary" value="enviar" onclick=registraOperacion(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Procesar Transaccion</button>
-                                            </div>
-                                        </form>
+                    <div class="col-md-12" style="display: flex; align-items: center; height: 40px; color: #000">
+                        <label style="font-size: 16px; font-weight: bold; margin: 0; padding: 0;">Log diario global
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="fInicio">Desde *</label>
+                                        <input type="date" class="form-control" id="fInicio" name="fInicio" value="<?= $fecha; ?>">
                                     </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="fFin">Hasta *</label>
+                                        <input type="date" class="form-control" id="fFin" name="fFin" value="<?= $fecha; ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="operacion">Operación *</label>
+                                        <select class="form-control" id="operacion" name="operacion">
+                                            <?= $opcOperaciones ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="sucrusal">Sucursal *</label>
+                                        <select class="form-control" id="sucrusal" name="sucrusal">
+                                            <?= $opcSucursales ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="usuario">Usuario *</label>
+                                        <select class="form-control" id="usuario" name="usuario">
+                                            <?= $opcUsuarios ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4" style="padding-top: 25px">
+                                    <button class="btn btn-primary" onclick=getLog()>
+                                        <i class="fa fa-search"></i> Buscar
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <hr>
+                                <div class="col-md-12" style="text-align:center;">
+                                    <h3>Log de Transacciones</h3>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="dataTable_wrapper">
+                                    <table class="table table-striped table-bordered table-hover" id="log">
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Sucursal</th>
+                                                <th>Usuario</th>
+                                                <th>Cliente</th>
+                                                <th>Contrato</th>
+                                                <th>Operación</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
