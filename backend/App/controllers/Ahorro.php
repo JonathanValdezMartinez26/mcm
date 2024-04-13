@@ -2592,6 +2592,8 @@ class Ahorro extends Controller
 
     public function EdoCta()
     {
+        $cliente = $_GET['cliente'];
+
         $estilo = <<<css
         <style>
             body {
@@ -2657,7 +2659,7 @@ class Ahorro extends Controller
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="3">
+                            <td colspan="6">
                                 <b>Saldo cuenta ahorro corriente: </b>$ 1,000,000.00
                             </td>
                         </tr>
@@ -2742,7 +2744,7 @@ class Ahorro extends Controller
         </body>
         html;
 
-        $nombreArchivo = "Estado de Cuenta: " . 'Ejemplo'; //$contrato;
+        $nombreArchivo = "Estado de Cuenta: " . $cliente;
 
         $mpdf = new \mPDF(['mode' => 'utf-8', 'format' => 'Letter', 'default_font' => 'helvetica']);
         // $mpdf->SetHTMLHeader('<div style="text-align:right; font-size: 10px;">Fecha de impresión  ' . date('d/m/Y H:i:s') . '</div>');

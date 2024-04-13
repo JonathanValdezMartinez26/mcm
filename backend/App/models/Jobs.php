@@ -2,10 +2,9 @@
 
 namespace App\models;
 
-defined("APPPATH") or die("Access denied");
+include 'C:/xampp/htdocs/mcm/backend/Core/Database.php';
 
 use \Core\Database;
-use Exception;
 
 class Jobs
 {
@@ -106,25 +105,5 @@ sql;
             "ciclo" => $datos["ciclo"],
             "cantautor" => $datos["cantautor"]
         ]);
-    }
-
-    public static function CreditosPendientes()
-    {
-        $qry = <<<sql
-        SELECT
-            *
-        FROM
-            PRN
-        LEFT JOIN
-            PRC
-        ON
-            PRN.CDGNS = PRC.CDGNS
-            AND PRN.CICLO = PRC.CICLO
-        WHERE
-            PRN.INICIO > '11/04/2024' AND PRN.ACTUALIZACHPE = 'AMGM'
-sql;
-
-        $db = Database::getInstance();
-        return $db->queryAll($qry);
     }
 }

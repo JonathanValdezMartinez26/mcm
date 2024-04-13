@@ -2,9 +2,13 @@
 
 namespace App\controllers;
 
-defined("APPPATH") or die("Access denied");
+include 'C:/xampp/htdocs/mcm/backend/App/models/Jobs.php';
 
 use \App\models\Jobs as JobsDao;
+
+$j = new Jobs();
+
+$j->JobCheques();
 
 class Jobs
 {
@@ -30,8 +34,9 @@ class Jobs
         }
     }
 
-    public function sp_con_array()
+    public function JobCheques()
     {
+        self::SaveLog("Iniciando Job Cheques");
         $resumen = [];
         $creditos = JobsDao::CreditosAutorizados();
         var_dump($creditos);
@@ -52,38 +57,27 @@ class Jobs
             ];
 
             $resumen[] = [
-                $datos,
-                JobsDao::ActualizaPRC($datos),
-                JobsDao::ActualizaPRN($datos)
+                "fecha" => date("Y-m-d H:i:s"),
+                "datos" => $datos,
+                "RES_PRC_UPDATE" => JobsDao::ActualizaPRC($datos),
+                "RES_PRN_UPDATE" => JobsDao::ActualizaPRN($datos)
             ];
         }
 
-        echo json_encode($resumen);
+        self::SaveLog(json_encode($resumen, JSON_PRETTY_PRINT));
+        self::SaveLog("Finalizando Job Cheques");
+
+        echo "Job Cheques finalizado";
     }
 
-    public function sp_con_array_correcion()
+    public function SaveLog($tdatos)
     {
-        $resumen = [];
-        $creditos = JobsDao::CreditosPendientes();
-        foreach ($creditos as $key => $credito) {
-            $datos = [
-                "cheque" => $credito["NOCHEQUE"],
-                "fexp" => $credito["FEXP"],
-                "usuario" => $credito["ACTUALIZACHPE"],
-                "cdgcb" => $credito["CDGCB"],
-                "cdgcl" => $credito["CDGCL"],
-                "cdgns" => $credito["CDGNS"],
-                "ciclo" => $credito["CICLO"],
-                "cantautor" => $credito["CANTAUTOR"]
-            ];
+        $archivo = "C:/xampp/Jobs_php.log";
+        $log = fopen($archivo, "a");
 
-            $resumen[] = [
-                $datos,
-                JobsDao::ActualizaPRC($datos),
-                JobsDao::ActualizaPRN($datos)
-            ];
-        }
+        $infoReg = date("Y-m-d H:i:s") . " - job_fnc: " . debug_backtrace()[1]['function'] . " -> " . $tdatos;
 
-        echo json_encode($resumen);
+        fwrite($log, $infoReg . PHP_EOL);
+        fclose($log);
     }
 }

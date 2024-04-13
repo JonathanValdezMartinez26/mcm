@@ -2,7 +2,7 @@
 
 namespace Core;
 
-defined("APPPATH") or die("Access denied");
+// defined("APPPATH") or die("Access denied");
 
 use \Core\App;
 use \PDO;
