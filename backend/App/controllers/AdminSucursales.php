@@ -299,5 +299,22 @@ script;
         echo $log;
     }
 
+    public function AltaSucursal()
+    {
+        $extraHeader = <<<html
+        <title>Alta Sucursal</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
+        $extraFooter = <<<html
+       
+html;
+
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha', date('Y-m-d'));
+        View::render("caja_admin_saldos_dia");
+    }
+
 
 }

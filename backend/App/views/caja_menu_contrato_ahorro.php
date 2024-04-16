@@ -212,7 +212,7 @@
                                         </div>
                                         <div class="row" id="ben1" style="opacity:1">
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control" id="beneficiario_1" name="beneficiario_1" oninput=camposLlenos(event) disabled>
+                                                <input type="text" class="form-control" id="beneficiario_1" name="beneficiario_1" oninput=camposLlenos(event) disabled maxlength="30"/>
                                             </div>
                                             <div class="col-md-4">
                                                 <select class="form-control mr-sm-3" id="parentesco_1" name="parentesco_1" onchange=camposLlenos(event) disabled>
@@ -230,7 +230,7 @@
                                         </div>
                                         <div class="row" id="ben2" style="opacity:0">
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control" id="beneficiario_2" name="beneficiario_2" oninput=camposLlenos(event) disabled>
+                                                <input type="text" class="form-control" id="beneficiario_2" name="beneficiario_2" oninput=camposLlenos(event) disabled maxlength="30"/>
                                             </div>
                                             <div class="col-md-4">
                                                 <select class="form-control mr-sm-3" id="parentesco_2" name="parentesco_2" onchange=camposLlenos(event) disabled>
@@ -248,7 +248,7 @@
                                         </div>
                                         <div class="row" id="ben3" style="opacity:0">
                                             <div class="col-md-4">
-                                                <input type="text" class="form-control" id="beneficiario_3" name="beneficiario_3" oninput=camposLlenos(event) disabled>
+                                                <input type="text" class="form-control" id="beneficiario_3" name="beneficiario_3" oninput=camposLlenos(event) disabled maxlength="30"/>
                                             </div>
                                             <div class="col-md-4">
                                                 <select class="form-control mr-sm-3" id="parentesco_3" name="parentesco_3" onchange=camposLlenos(event) disabled>
@@ -295,6 +295,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <center>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title" id="myModalLabel">Registro de pago por apertura y ahorro inicial cuenta corriente</h4>
                 </center>
             </div>
