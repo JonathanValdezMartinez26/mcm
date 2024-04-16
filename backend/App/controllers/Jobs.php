@@ -1,5 +1,7 @@
 <?PHP
 
+date_default_timezone_set('America/Mexico_City');
+
 namespace App\controllers;
 
 include 'C:/xampp/htdocs/mcm/backend/App/models/Jobs.php';
@@ -73,6 +75,12 @@ class Jobs
     public function SaveLog($tdatos)
     {
         $archivo = "C:/xampp/Jobs_php.log";
+
+        if (file_exists($archivo) && filesize($archivo) > 10 * 1024 * 1024) { // 10 MB
+            $nuevoNombre = "C:/xampp/Jobs_php_" . date('Ymd') . ".log";
+            rename($archivo, $nuevoNombre);
+        }
+
         $log = fopen($archivo, "a");
 
         $infoReg = date("Y-m-d H:i:s") . " - job_fnc: " . debug_backtrace()[1]['function'] . " -> " . $tdatos;

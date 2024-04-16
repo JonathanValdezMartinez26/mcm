@@ -1307,7 +1307,7 @@ class CajaAhorro
         }
     }
 
-    public static function GetDatosEdoCta($cliente, $fInicio, $fFin)
+    public static function GetDatosEdoCta($cliente)
     {
         $qryDatosGenerale = <<<sql
             SELECT
@@ -1320,7 +1320,130 @@ class CajaAhorro
                 INNER JOIN CL ON CL.CODIGO = APA.CDGCL
             WHERE
                 APA.CDGCL = '$cliente'
+                AND APA.CDGPR_PRIORITARIO = 1
         sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryOne($qryDatosGenerale);
+            if (!$res) return array();
+            return $res;
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
+    public static function GetMovimientosAhorro($contrato)
+    {
+        $qryMovimientos = <<<sql
+        SELECT
+            TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY') AS FECHA,
+            (
+                SELECT
+                    DESCRIPCION
+                FROM
+                    TIPO_PAGO_AHORRO
+                WHERE
+                    CODIGO = MA.CDG_TIPO_PAGO
+            ) AS DESCRIPCION,
+            CASE MA.MOVIMIENTO
+                WHEN '0' THEN MA.MONTO
+                ELSE 0
+            END AS CARGO,
+            CASE MA.MOVIMIENTO
+                WHEN '1' THEN MA.MONTO
+                ELSE 0
+            END AS ABONO,
+            SUM(
+                CASE MA.MOVIMIENTO
+                    WHEN '0' THEN -MA.MONTO
+                    WHEN '1' THEN MA.MONTO
+                END
+            ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO
+        FROM
+            MOVIMIENTOS_AHORRO MA
+            INNER JOIN TIPO_PAGO_AHORRO TPA ON TPA.CODIGO = MA.CDG_TIPO_PAGO
+        WHERE
+            MA.CDG_CONTRATO = '$contrato'
+        ORDER BY
+            MA.FECHA_MOV, MA.MOVIMIENTO DESC
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qryMovimientos);
+            if (count($res) === 0) return array();
+            return $res;
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
+    public static function GetMovimientosInversion($contrato)
+    {
+        $qryMovimientos = <<<sql
+        SELECT
+            TO_CHAR(FECHA_APERTURA, 'DD/MM/YYYY') AS FECHA_APERTURA,
+            TO_CHAR(FECHA_VENCIMIENTO, 'DD/MM/YYYY') AS FECHA_VENCIMIENTO,
+            MONTO_INVERSION AS MONTO,
+            (
+                SELECT
+                    CONCAT(
+                        CONCAT(PI.PLAZO, ' '),
+                        CASE PI.PERIODICIDAD
+                            WHEN 'D' THEN 'Días'
+                            WHEN 'S' THEN 'Semanas'
+                            WHEN 'M' THEN 'Meses'
+                            WHEN 'A' THEN 'Años'
+                        END
+                    )
+                FROM
+                    PLAZO_INVERSION PI
+                WHERE
+                    CODIGO = (
+                        SELECT
+                            TI.CDG_PLAZO
+                        FROM
+                            TASA_INVERSION TI
+                        WHERE
+                            CODIGO = CI.CDG_TASA
+                    )
+            ) AS PLAZO,
+            (
+                SELECT
+                    TASA
+                FROM
+                    TASA_INVERSION
+                WHERE
+                    CODIGO = CI.CDG_TASA
+            ) AS TASA,
+            CASE CI.ESTATUS
+                WHEN 'A' THEN 'Activa'
+                WHEN 'C' THEN 'Cancelada'
+                WHEN 'L' THEN 'Liquidada'
+                ELSE 'No definido'
+            END AS ESTATUS,
+            TO_CHAR(FECHA_LIQUIDACION, 'DD/MM/YYYY') AS FECHA_LIQUIDACION,
+            NVL(RENDIMIENTO,0) AS RENDIMIENTO,
+            CASE ACCION
+                WHEN 'D' THEN 'Cuenta ahorro'
+                WHEN 'R' THEN 'Renovación'
+                ELSE 'No definido'
+            END AS ACCION
+        FROM
+            CUENTA_INVERSION CI
+        WHERE
+            CDG_CONTRATO = '$contrato'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qryMovimientos);
+            if (count($res) === 0) return array();
+            return $res;
+        } catch (Exception $e) {
+            return array();
+        }
     }
 }
 

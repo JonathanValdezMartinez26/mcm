@@ -2467,9 +2467,21 @@ class Ahorro extends Controller
 
         $nombreArchivo = "Contrato " . $contrato;
 
-        $mpdf = new \mPDF('c');
-        $mpdf->SetHTMLHeader('<div style="text-align:right; font-size: 10px;">Fecha de impresión  ' . date('d/m/Y H:i:s') . '</div>');
-        $mpdf->SetHTMLFooter('<div style="text-align:center; font-size: 11px;">Página {PAGENO} de {nb}</div>');
+        $mpdf = new \mPDF('utf-8', 'Letter', 10, 'Arial');
+        $fi = date('d/m/Y H:i:s');
+        $pie = <<< html
+        <table style="width: 100%; font-size: 10px">
+            <tr>
+            <td style="text-align: left; width: 50%;">
+                Fecha de impresión  {$fi}
+            </td>
+            <td style="text-align: right; width: 50%;">
+                Página {PAGENO} de {nb}
+            </td>
+            </tr>
+        </table>
+        html;
+        $mpdf->SetHTMLFooter($pie);
         $mpdf->SetTitle($nombreArchivo);
         $mpdf->WriteHTML($style, 1);
         $mpdf->WriteHTML($tabla, 2);
@@ -2592,40 +2604,68 @@ class Ahorro extends Controller
 
     public function EdoCta()
     {
-        $cliente = $_GET['cliente'];
+        $msjError = "";
+        $msjError .= !isset($_GET['cliente']) ? "No se proporcionó un número de cliente.<br>" : "";
+        $msjError .= !isset($_GET['fInicio']) ? "No se proporcionó una fecha de inicio.<br>" : "";
+        $msjError .= !isset($_GET['fFin']) ? "No se proporcionó una fecha de fin.<br>" : "";
+        if ($msjError) {
+            echo $msjError;
+            return;
+        }
+
+        $dtsGrls = CajaAhorroDao::GetDatosEdoCta($_GET['cliente']);
+        if (!$dtsGrls) {
+            echo "No se encontró información para el cliente: " . $_GET['cliente'];
+            return;
+        }
+
+        $fInicio = $_GET['fInicio'] ?? date('d/m/Y', strtotime('-1 month'));
+        $fFin = $_GET['fFin'] ?? date('d/m/Y');
 
         $estilo = <<<css
         <style>
             body {
-                font-family: Arial, sans-serif;
                 margin: 0;
                 padding: 0;
             }
-            .container {
-                width: 95%;
-                margin: 0 auto;
-                padding: 0;
-            }
-            .header {
+            .datosGenerales {
                 margin-bottom: 20px;
             }
-            .info-table {
+            .tablaTotales {
+                margin: 5px 0;
+            }
+            .tituloTablas {
+                font-size: 20px;
+                font-weight: bold;
+            }
+            .datosCliente {
                 width: 100%;
                 border-collapse: collapse;
                 border: 1px solid #000;
             }
-            .info-table td {
+            .datosCliente td {
                 text-align: center;
                 margin: 15px 0;
             }
-            .statement {
+            .contenedorTotales {
+                margin: 10px 0;
+            }
+            .tablaTotales {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .contenedorDetalle {
+                margin: 5px 0;
+            }
+            .tablaDetalle {
                 border-collapse: collapse;
                 width: 100%;
+                margin: 0 0 20px 0;
             }
-            .statement th {
+            .tablaDetalle th {
                 background-color: #f2f2f2;
             }
-            .statement th, .statement td {
+            .tablaDetalle th, .tablaDetalle td {
                 border: 1px solid #ddd;
             }
         </style>
@@ -2633,127 +2673,238 @@ class Ahorro extends Controller
 
         $cuerpo = <<<html
         <body>
-            <div class="container">
-                <div class="header" style="text-align:center;">
-                    <h1>Estado de Cuenta</h1>
-                    <table class="info-table">
-                        <tr>
-                            <td colspan="6">
-                                <b>Nombre del Cliente: </b>Cliente de Prueba
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="3">
-                                <b>Número de Cliente: </b>000000
-                            </td>
-                            <td colspan="3">
-                                <b>Número de Contrato: </b>0000000000
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="3">
-                                <b>Fecha de Inicio del Período: </b>01/01/2024
-                            </td>
-                            <td colspan="3">
-                                <b>Fecha de Fin del Período: </b>31/01/2024
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="6">
-                                <b>Saldo cuenta ahorro corriente: </b>$ 1,000,000.00
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="3">
-                                <b>Saldo cuenta ahorro peque: </b>$ 100,000.00
-                            </td>
-                            <td colspan="3">
-                                <b>Saldo cuenta inversión: </b>$ 1,000,000.00
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                <h2>Transacciones Inversiones</h2>
-                <table class="statement">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Descripcion</th>
-                            <th>Cargo</th>
-                            <th>Abono</th>
-                            <th>Saldo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>[Fecha de la transacción]</td>
-                            <td>[Descripción de la transacción]</td>
-                            <td>[Monto del cargo]</td>
-                            <td>[Monto del abono]</td>
-                            <td>[Saldo después de la transacción]</td>
-                        </tr>
-                    </tbody>
+            <div class="datosGenerales" style="text-align:center;">
+                <h1>Estado de Cuenta</h1>
+                <table class="datosCliente">
+                    <tr>
+                        <td colspan="6">
+                            <b>Nombre del Cliente: </b>{$dtsGrls['NOMBRE']}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="width: 50%;">
+                            <b>Número de Contrato: </b>{$dtsGrls['CONTRATO']}
+                        </td>
+                        <td colspan="3" style="width: 50%;">
+                            <b>Número de Cliente: </b>{$dtsGrls['CLIENTE']}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="width: 50%;">
+                            <b>Inicio del Período: </b>{$fInicio}
+                        </td>
+                        <td colspan="3" style="width: 50%;">
+                            <b>Fin del Período: </b>{$fFin}
+                        </td>
+                    </tr>
                 </table>
-                <h2>Transacciones Ahorro</h2>
-                <table class="statement">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Descripción</th>
-                            <th>Cargo</th>
-                            <th>Abono</th>
-                            <th>Saldo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>[Fecha de la transacción]</td>
-                            <td>[Descripción de la transacción]</td>
-                            <td>[Monto del cargo]</td>
-                            <td>[Monto del abono]</td>
-                            <td>[Saldo después de la transacción]</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <h2>Transacciones Ahorro Peque</h2>
-                <table class="statement">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Descripcion</th>
-                            <th>Cargo</th>
-                            <th>Abono</th>
-                            <th>Saldo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>[Fecha de la transacción]</td>
-                            <td>[Descripción de la transacción]</td>
-                            <td>[Monto del cargo]</td>
-                            <td>[Monto del abono]</td>
-                            <td>[Saldo después de la transacción]</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="notices">
-                    <h2>Avisos y Leyendas</h2>
-                    <p>[Avisos y Leyendas Legales]</p>
-                </div>
+            </div>
+        html;
+
+        $cuerpo .= self::TablaMovimientosAhorro($dtsGrls['CONTRATO']);
+        $cuerpo .= self::TablaMovimientosInversion($dtsGrls['CONTRATO']);
+        // $cuerpo .= self::tablaTransacciones("Cuenta Ahorro Peque");
+
+        $cuerpo .= <<<html
+            <div class="notices">
+                <h2>Avisos y Leyendas</h2>
+                <p>[Avisos y Leyendas Legales]</p>
             </div>
         </body>
         html;
 
-        $nombreArchivo = "Estado de Cuenta: " . $cliente;
+        $nombreArchivo = "Estado de Cuenta: " . $_GET['cliente'];
 
-        $mpdf = new \mPDF(['mode' => 'utf-8', 'format' => 'Letter', 'default_font' => 'helvetica']);
-        // $mpdf->SetHTMLHeader('<div style="text-align:right; font-size: 10px;">Fecha de impresión  ' . date('d/m/Y H:i:s') . '</div>');
-        $mpdf->SetHTMLFooter('<div style="text-align:center; font-size: 11px;">Página {PAGENO} de {nb}</div>');
+        $mpdf = new \mPDF('utf-8', 'Letter', 10, 'Arial');
+        $fi = date('d/m/Y H:i:s');
+        $pie = <<< html
+        <table style="width: 100%; font-size: 10px">
+            <tr>
+            <td style="text-align: left; width: 50%;">
+                Fecha de impresión  {$fi}
+            </td>
+            <td style="text-align: right; width: 50%;">
+                Página {PAGENO} de {nb}
+            </td>
+            </tr>
+        </table>
+        html;
+        $mpdf->SetHTMLFooter($pie);
         $mpdf->SetTitle($nombreArchivo);
         $mpdf->WriteHTML($estilo, 1);
         $mpdf->WriteHTML($cuerpo, 2);
 
         $mpdf->Output($nombreArchivo . '.pdf', 'I');
+    }
+
+    public function TablaMovimientosAhorro($contrato)
+    {
+        $datos = CajaAhorroDao::GetMovimientosAhorro($contrato);
+        $cargos = 0;
+        $abonos = 0;
+        $filas = "<tr><td colspan='5' style='text-align: center;'>Sin movimientos en el periodo.</td></tr>";
+        $salto = false;
+        if ($datos || count($datos) > 0) {
+            $filas = "";
+            foreach ($datos as $dato) {
+                $cargo = number_format($dato['CARGO'], 2, '.', ',');
+                $abono = number_format($dato['ABONO'], 2, '.', ',');
+                $saldo = number_format($dato['SALDO'], 2, '.', ',');
+                $cargos += $dato['CARGO'];
+                $abonos += $dato['ABONO'];
+
+                $filas .= <<<html
+                <tr>
+                    <td style="text-align: center;">{$dato['FECHA']}</td>
+                    <td>{$dato['DESCRIPCION']}</td>
+                    <td style="text-align: right;">$ $cargo</td>
+                    <td style="text-align: right;">$ $abono</td>
+                    <td style="text-align: right;">$ $saldo</td>
+                </tr>
+                html;
+            }
+            $salto = true;
+        }
+
+        $si = number_format($datos[0]['SALDO'] + $datos[0]['CARGO'] - $datos[0]['ABONO'], 2, '.', ',');
+        $sf = number_format($datos[count($datos) - 1]['SALDO'], 2, '.', ',');
+        $c = number_format($cargos, 2, '.', ',');
+        $a = number_format($abonos, 2, '.', ',');
+        $tabla = <<<html
+        <span class="tituloTablas">Cuenta Ahorro Corriente</span>
+        <div class="contenedorTotales">
+            <table class="tablaTotales">
+                <thead>
+                    <tr>
+                        <th>Saldo Inicial</th>
+                        <th>Abonos</th>
+                        <th>Cargos</th>
+                        <th>Saldo Final</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: center; width: 25%;">
+                            $ $si
+                        </td>
+                        <td style="text-align: center; width: 25%;">
+                            $ $a
+                        </td>
+                        <td style="text-align: center; width: 25%;">
+                            $ $c
+                        </td>
+                        <td style="text-align: center; width: 25%;">
+                            $ $sf
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="contenedorDetalle">
+            <table class="tablaDetalle">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Fecha</th>
+                        <th>Descripcion</th>
+                        <th style="width: 100px;">Cargo</th>
+                        <th style="width: 100px;">Abono</th>
+                        <th style="width: 100px;">Saldo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    $filas
+                </tbody>
+            </table>
+        </div>
+        html;
+
+        return $tabla . ($salto ? "<div style='page-break-after: always;'></div>" : "");
+    }
+
+    public function TablaMovimientosInversion($contrato)
+    {
+        $datos = CajaAhorroDao::GetMovimientosInversion($contrato);
+        $inversionTotal = 0;
+        $rendimientoTotal = 0;
+        $salto = false;
+        $filas = "<tr><td colspan='8' style='text-align: center;'>Sin movimientos en el periodo.</td></tr>";
+        if ($datos || count($datos) > 0) {
+            $filas = "";
+            foreach ($datos as $dato) {
+                $inversion = number_format($dato['MONTO'] || 0, 2, '.', ',');
+                $rendimiento = number_format($dato['RENDIMIENTO'] || 0, 2, '.', ',');
+                $inversionTotal += $dato['MONTO'];
+                $rendimientoTotal += $dato['RENDIMIENTO'];
+
+                $filas .= <<<html
+                <tr>
+                    <td style="text-align: center;">{$dato['FECHA_APERTURA']}</td>
+                    <td style="text-align: center;">{$dato['FECHA_VENCIMIENTO']}</td>
+                    <td style="text-align: right;">$ {$inversion}</td>
+                    <td style="text-align: center;">{$dato['PLAZO']}</td>
+                    <td style="text-align: center;">{$dato['TASA']} %</td>
+                    <td style="text-align: center;">{$dato['ESTATUS']}</td>
+                    <td style="text-align: center;">{$dato['FECHA_LIQUIDACION']}</td>
+                    <td style="text-align: right;">$ {$rendimiento}</td>
+                    <td style="text-align: center;">{$dato['ACCION']}</td>
+                </tr>
+                html;
+            }
+            $salto = true;
+        }
+
+        $it = number_format($inversionTotal, 2, '.', ',');
+        $rt = number_format($rendimientoTotal, 2, '.', ',');
+
+        $tabla = <<<html
+        <span class="tituloTablas">Cuenta Inversión</span>
+        <div class="contenedorTotales">
+            <table class="tablaTotales">
+                <thead>
+                    <tr>
+                        <th>Monto Invertido</th>
+                        <th>Rendimientos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: center; width: 50%;">
+                            $ $it
+                        </td>
+                        <td style="text-align: center; width: 50%;">
+                            $ $rt
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="contenedorDetalle">
+            <table class="tablaDetalle">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Fecha Apertura</th>
+                        <th style="width: 80px;">Fecha Cierre</th>
+                        <th style="width: 100px;">Monto</th>
+                        <th>Plazo</th>
+                        <th style="width: 60px;">Tasa Anual</th>
+                        <th>Estatus</th>
+                        <th style="width: 100px;">Fecha Liquidación</th>
+                        <th>Rendimiento</th>
+                        <th>Destino</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    $filas
+                </tbody>
+            </table>
+        </div>
+        html;
+
+        return $tabla . ($salto ? "<div style='page-break-after: always;'></div>" : "");
+    }
+
+    public function TablaMovimientosPeque()
+    {
     }
 
     public function toLetras($numero)
@@ -2939,9 +3090,6 @@ html;
             } else if ($value['CDGPE_AUTORIZA'] != '') {
                 $autoriza_nombre = $value['CDGPE_AUTORIZA'];
             }
-
-
-
 
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
