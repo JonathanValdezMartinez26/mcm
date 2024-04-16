@@ -1717,7 +1717,14 @@ class Ahorro extends Controller
                 }
             }
              
+            const iniveCambio = (e) => e.preventDefault()
+             
             const camposLlenos = (e) => {
+                document.querySelector("#nombre1").value = document.querySelector("#nombre1").value.toUpperCase().trim()
+                document.querySelector("#nombre2").value = document.querySelector("#nombre2").value.toUpperCase().trim()
+                document.querySelector("#apellido1").value = document.querySelector("#apellido1").value.toUpperCase().trim()
+                document.querySelector("#apellido2").value = document.querySelector("#apellido2").value.toUpperCase().trim()
+                 
                 const val = () => {
                     const campos = [
                         document.querySelector("#nombre1").value,
@@ -1726,8 +1733,10 @@ class Ahorro extends Controller
                         document.querySelector("#ciudad").value,
                         document.querySelector("#curp").value,
                         document.querySelector("#edad").value,
-                        document.querySelector("#direccion").value
+                        document.querySelector("#direccion").value,
+                        document.querySelector("#confirmaDir").checked
                     ]
+                    
                     return campos.every((campo) => campo)
                 }
                 if (e.target.id === "fecha_nac") calculaEdad(e)
@@ -2143,110 +2152,6 @@ class Ahorro extends Controller
         echo $tabla;
     }
 
-    public function Log()
-    {
-        $extraFooter = <<<script
-        <script>
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
-         
-            const getLog = () => {
-                const datos = {
-                    fecha_inicio: $("#fInicio").val(),
-                    fecha_fin: $("#fFin").val()
-                }
-                 
-                const op = document.querySelector("#operacion")
-                const us = document.querySelector("#usuario")
-                
-                if (op.value !== "0") datos.operacion = op.options[op.selectedIndex].text
-                if (us.value !== "0") datos.usuario = us.options[us.selectedIndex].text
-                 
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/GetLogTransacciones/",
-                    data: datos,
-                    success: (log) => {
-                        log = JSON.parse(log)
-                        if (!log.success) return
-                        
-                        $("#log").DataTable().destroy()
-                        $("#log tbody").html(creaFilas(log.datos))
-                        $("#log").DataTable({
-                            lengthMenu: [
-                                [10, 40, -1],
-                                [10, 40, "Todos"]
-                            ],
-                            columnDefs: [
-                                {
-                                    orderable: false,
-                                    targets: 0
-                                }
-                            ],
-                            order: false
-                        })
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        showError("Ocurrió un error al buscar el log de transacciones.")
-                    }
-                })
-                 
-                return false
-            }
-             
-            const creaFilas = (datos) => {
-                const filas = document.createDocumentFragment()
-                datos.forEach((dato) => {
-                    const fila = document.createElement("tr")
-                    Object.keys(dato).forEach((key) => {
-                        const celda = document.createElement("td")
-                        celda.innerText = dato[key]
-                        fila.appendChild(celda)
-                    })
-                    filas.appendChild(fila)
-                })
-                return filas
-            }
-             
-            $(document).ready(() => {
-                getLog()
-            })
-        </script>
-        script;
-
-        $operaciones = CajaAhorroDao::GetOperacionesLog();
-        $usuarios = CajaAhorroDao::GetUsuariosLog();
-        $sucursales = CajaAhorroDao::GetSucursalesLog();
-
-        $opcOperaciones = "<option value='0'>Todas</option>";
-        foreach ($operaciones as $key => $operacion) {
-            $i = $key + 1;
-            $opcOperaciones .= "<option value='{$i}'>{$operacion['TIPO']}</option>";
-        }
-
-        $opcUsuarios = "<option value='0'>Todos</option>";
-        foreach ($usuarios as $key => $usuario) {
-            $i = $key + 1;
-            $opcUsuarios .= "<option value='{$i}'>{$usuario['USUARIO']}</option>";
-        }
-
-        $opcSucursales = "<option value='0'>Todas</option>";
-        foreach ($sucursales as $key => $sucursal) {
-            $i = $key + 1;
-            $opcSucursales .= "<option value='{$i}'>{$sucursal['NOMBRE']}</option>";
-        }
-
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Log Transacciones Ahorro")));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('opcOperaciones', $opcOperaciones);
-        View::set('opcUsuarios', $opcUsuarios);
-        View::set('opcSucursales', $opcSucursales);
-        View::set(('fecha'), date('Y-m-d'));
-        View::render("caja_admin_log");
-    }
-
     public function GetLogTransacciones()
     {
         $log = CajaAhorroDao::GetLogTransacciones($_POST);
@@ -2298,13 +2203,15 @@ class Ahorro extends Controller
             }
              
             const imprimeEdoCta = () => {
-                const contrato = document.querySelector("#cliente").value
-                if (!contrato) return showError("Ingrese un número de contrato.")
-                mostrar(contrato)
+                const cliente = document.querySelector("#cliente").value
+                if (!cliente) return showError("Ingrese un código de cliente.")
+                mostrar(cliente)
             }
              
-            const mostrar = (contrato) => {
+            const mostrar = (cliente) => {
                 const host = window.location.origin
+                fInicio = getFecha(document.querySelector("#fechaInicio").value)
+                fFin = getFecha(document.querySelector("#fechaFin").value)
             
                 let plantilla = '<!DOCTYPE html>'
                 plantilla += '<html lang="es">'
@@ -2312,12 +2219,14 @@ class Ahorro extends Controller
                 plantilla += '<meta charset="UTF-8">'
                 plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
                 plantilla += '<link rel="shortcut icon" href="" + host + "/img/logo.png">'
-                plantilla += '<title>Estado de Cuenta: ' + contrato + '</title>'
+                plantilla += '<title>Estado de Cuenta: ' + cliente + '</title>'
                 plantilla += '</head>'
                 plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
                 plantilla += '<iframe src="'
                     + host + '/Ahorro/EdoCta/?'
-                    + 'contrato=' + contrato
+                    + 'cliente=' + cliente
+                    + '&fInicio=' + fInicio
+                    + '&fFin=' + fFin
                     + '" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
                 plantilla += '</body>'
                 plantilla += '</html>'
@@ -2325,6 +2234,11 @@ class Ahorro extends Controller
                 const blob = new Blob([plantilla], { type: 'text/html' })
                 const url = URL.createObjectURL(blob)
                 window.open(url, '_blank')
+            }
+             
+            const getFecha = (fecha) => {
+                const f = new Date(fecha)
+                return f.getDate() + '/' + (f.getMonth() + 1) + '/' + f.getFullYear()
             }
         </script>
         script;
@@ -2608,6 +2522,11 @@ class Ahorro extends Controller
         $msjError .= !isset($_GET['cliente']) ? "No se proporcionó un número de cliente.<br>" : "";
         $msjError .= !isset($_GET['fInicio']) ? "No se proporcionó una fecha de inicio.<br>" : "";
         $msjError .= !isset($_GET['fFin']) ? "No se proporcionó una fecha de fin.<br>" : "";
+        $fi = DateTime::createFromFormat('d/m/Y', $_GET['fInicio']);
+        $ff = DateTime::createFromFormat('d/m/Y', $_GET['fFin']);
+        $msjError .= !$fi ? "La fecha de inicio no es válida.<br>" : "";
+        $msjError .= !$ff ? "La fecha de final no es válida.<br>" : "";
+        $msjError .= ($fi > $ff) ? "La fecha de inicio no puede ser mayor a la fecha de final.<br>" : "";
         if ($msjError) {
             echo $msjError;
             return;

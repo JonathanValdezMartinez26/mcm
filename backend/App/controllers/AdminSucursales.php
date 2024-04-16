@@ -13,6 +13,9 @@ use \App\models\Ahorro as AhorroDao;
 class AdminSucursales extends Controller
 {
     private $_contenedor;
+    private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
+    private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
+    private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
 
     function __construct()
     {
@@ -20,175 +23,68 @@ class AdminSucursales extends Controller
         $this->_contenedor = new Contenedor;
         View::set('header', $this->_contenedor->header());
         View::set('footer', $this->_contenedor->footer());
-        
     }
-
 
     private function GetExtraHeader($titulo)
     {
         return <<<html
         <title>$titulo</title>
         <link rel="shortcut icon" href="/img/logo.png">
-html;
+        html;
     }
 
-    ///////////////////////////////////////////////////
+    //********************Saldos y movimientos de efectivo en sucursal********************//
+    // Reporte de saldos diarios por sucursal
     public function SaldosDiarios()
     {
-        $extraHeader = <<<html
-        <title>Saldos Sucursales</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
         $extraFooter = <<<html
        
-html;
+        html;
 
-        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldo Diario")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
         View::render("caja_admin_saldos_dia");
     }
 
-    public function SolicitudesRetiroPeriodo()
+    // Reporte de saldos diarios por sucursal
+    public function ArqueoSucursal()
     {
-        $extraHeader = <<<html
-        <title>Saldos Sucursales</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
-        $extraFooter = <<<html
+        $extraFooter = <<<script
        
-html;
+        script;
 
-        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Arqueo de Caja")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
-        View::render("caja_admin_saldos_dia");
+        View::render("en_construccion");
     }
 
-    public function SolicitudesRetiroInmediato()
+    // Ingreso de efectivo a sucursal
+    public function FondearSucursal()
     {
-        $extraHeader = <<<html
-        <title>Saldos Sucursales</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
-        $extraFooter = <<<html
+        $extraFooter = <<<script
        
-html;
+        script;
 
-        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Arqueo de Caja")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
-        View::render("caja_admin_solicitudes_ret_inm");
+        View::render("en_construccion");
     }
 
-
-    public function SolicitudesReimpresionTicket()
+    // Egreso de efectivo de sucursal
+    public function RetiroSucursal()
     {
-        $extraHeader = <<<html
-        <title>Saldos Sucursales</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
-        $extraFooter = <<<html
-       
-html;
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha', date('Y-m-d'));
-        View::render("caja_admin_saldos_dia");
     }
 
-    public function SolicitudesIncidencias()
+    // Historial de movimientos de efectivo de sucursal
+    public function Historial()
     {
-        $extraHeader = <<<html
-        <title>Saldos Sucursales</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
-        $extraFooter = <<<html
-       
-html;
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha', date('Y-m-d'));
-        View::render("caja_admin_saldos_dia");
     }
 
-
-    public function ClientesAhorro()
-    {
-        $extraHeader = <<<html
-        <title>Saldos Sucursales</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
-        $extraFooter = <<<html
-       
-html;
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha', date('Y-m-d'));
-        View::render("caja_admin_clientes_ahorro");
-    }
-
-    public function ClientesInversiones()
-    {
-        $extraHeader = <<<html
-        <title>Saldos Sucursales</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
-        $extraFooter = <<<html
-       
-html;
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha', date('Y-m-d'));
-        View::render("caja_admin_saldos_dia");
-    }
-
-    public function ClientesPeques()
-    {
-        $extraHeader = <<<html
-        <title>Saldos Sucursales</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
-        $extraFooter = <<<html
-       
-html;
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha', date('Y-m-d'));
-        View::render("caja_admin_saldos_dia");
-    }
-
-    public function LogTransaccional()
-    {
-        $extraHeader = <<<html
-        <title>Saldos Sucursales</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
-        $extraFooter = <<<html
-       
-html;
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha', date('Y-m-d'));
-        View::render("caja_admin_log");
-    }
-
-
+    //********************Log de transacciones de ahorro********************//
+    // Reporte de trnasacciones 
     public function Log()
     {
         $extraFooter = <<<script
@@ -214,11 +110,17 @@ html;
                     url: "/Ahorro/GetLogTransacciones/",
                     data: datos,
                     success: (log) => {
-                        log = JSON.parse(log)
-                        if (!log.success) return
-                        
                         $("#log").DataTable().destroy()
-                        $("#log tbody").html(creaFilas(log.datos))
+                         
+                        log = JSON.parse(log)
+                        let datos = log.datos
+                         
+                        if (!log.success) {
+                            showError(log.mensaje)
+                            datos = []
+                        }
+                        
+                        $("#log tbody").html(creaFilas(datos))
                         $("#log").DataTable({
                             lengthMenu: [
                                 [10, 40, -1],
@@ -260,7 +162,7 @@ html;
                 getLog()
             })
         </script>
-script;
+        script;
 
         $operaciones = CajaAhorroDao::GetOperacionesLog();
         $usuarios = CajaAhorroDao::GetUsuariosLog();
@@ -298,23 +200,4 @@ script;
         $log = CajaAhorroDao::GetLogTransacciones($_POST);
         echo $log;
     }
-
-    public function AltaSucursal()
-    {
-        $extraHeader = <<<html
-        <title>Alta Sucursal</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
-        $extraFooter = <<<html
-       
-html;
-
-        View::set('header', $this->_contenedor->header($extraHeader));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha', date('Y-m-d'));
-        View::render("caja_admin_saldos_dia");
-    }
-
-
 }

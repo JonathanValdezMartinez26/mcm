@@ -107,7 +107,7 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="fechaInicio">Fecha inicial</label>
-                                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" value="<?= $fechaInicio; ?>" disabled>
+                                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" value="<?= $fechaInicio; ?>" max="<?= $fecha; ?>" disabled>
                                 </div>
                             </div>
                             <div class="col-md-3">

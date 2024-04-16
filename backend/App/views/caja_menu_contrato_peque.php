@@ -163,7 +163,7 @@
                                         <div class="col-md-5">
                                             <div class="form-group">
                                                 <label for="fecha_nac">Fecha de nacimiento *</label>
-                                                <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" max="<?= $fecha ?>" oninput=camposLlenos(event) disabled>
+                                                <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" max="<?= $fecha ?>" oninput=camposLlenos(event) onkeydown=iniveCambio(event) disabled>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
@@ -194,14 +194,19 @@
                                         </div>
                                         <div class="form-group">
                                             <div class="col-md-12">
-                                                <label for="direccion">Dirección</label>
+                                                <div style="display: flex; justify-content: space-between;">
+                                                    <div class="izquierda">
+                                                        <label for="direccion">Dirección *</label>
+                                                    </div>
+                                                    <div class="derecha" style="margin-left: 15px; font-size:12px">
+                                                        <input type="radio" name="confirmaDir" id="confirmaDir" onchange=camposLlenos(event) />
+                                                        <label for="confirmaDir"><b>Se autoriza usar la dirección del titular</b></label>
+                                                    </div>
+                                                </div>
                                                 <div class="form-group">
                                                     <textarea type="text" style="resize: none;" class="form-control" id="direccion" rows="3" cols="50" readonly>
                                                         </textarea>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-12" style="display: flex; justify-content: center;font-size: 15px;">
-                                                <input type="radio" style="margin-right:15px; margin-bottom:15px">¿Autoriza usar la dirección del titular?</input>
                                             </div>
                                         </div>
                                         <hr>

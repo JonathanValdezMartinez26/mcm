@@ -780,7 +780,7 @@ class CajaAhorro
         SELECT
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
             CL.CURP,
-            TO_CHAR(CL.REGISTRO, 'DD-MM-YYYY') AS FECHA_REGISTRO,
+            TO_CHAR(CL.REGISTRO, 'DD/MM/YYYY') AS FECHA_REGISTRO,
             UPPER((CL.CALLE
             || ', '
             || COL.NOMBRE
