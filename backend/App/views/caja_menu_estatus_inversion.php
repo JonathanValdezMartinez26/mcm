@@ -74,22 +74,18 @@
                 <div class="modal-body">
                     <div class="container-fluid">
                         <div class="row">
-                            <div class="col-md-5" style="display: flex; justify-content: end; margin-top:5px">
-                                <label for="movil">Código de cliente SICAFIN</label>
-                            </div>
-                            <div class="col-md-3">
-                                <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
+                            <div class="col-md-6">
+                                <label>Para poder dar de alta un nuevo contrato de una cuenta de Ahorro, el cliente debe estar registrado en SICAFIN, si el cliente no tiene una cuenta abierta solicite el alta a su ADMINISTRADORA.</label>
+                                <hr>
                             </div>
                             <div class="col-md-4">
+                                <label for="movil">Código de cliente SICAFIN</label>
+                                <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
+                            </div>
+                            <div class="col-md-2" style="padding-top: 25px;">
                                 <button id="btnBskClnt" class="btn btn-primary" onclick="buscaCliente()">
                                     <i class="fa fa-search"></i> Buscar
                                 </button>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <label>Para poder dar de alta un nuevo contrato de una cuenta de Ahorro, el cliente debe estar registrado en SICAFIN, si el cliente no tiene una cuenta abierta solicite el alta a su ADMINISTRADORA.</label>
-                                <hr>
                             </div>
                         </div>
                         <div class="row">

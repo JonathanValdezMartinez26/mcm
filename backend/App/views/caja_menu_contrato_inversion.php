@@ -75,22 +75,18 @@
                     <div class="modal-body">
                         <div class="container-fluid">
                             <div class="row">
-                                <div class="col-md-5" style="display: flex; justify-content: end; margin-top:5px">
-                                    <label for="movil">Código de cliente SICAFIN</label>
-                                </div>
-                                <div class="col-md-3">
-                                    <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
+                                <div class="col-md-6">
+                                    <label>Para hacer la apertura de una cuenta de Inversión, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</label>
+                                    <hr>
                                 </div>
                                 <div class="col-md-4">
+                                    <label for="movil">Código de cliente SICAFIN</label>
+                                    <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
+                                </div>
+                                <div class="col-md-2" style="padding-top: 25px;">
                                     <button type="button" class="btn btn-primary" id="btnBskClnt" onclick="buscaCliente()">
                                         <i class="fa fa-search"></i> Buscar
                                     </button>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <label>Para hacer la apertura de una cuenta de Inversión, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</label>
-                                    <hr>
                                 </div>
                             </div>
                             <div class="row">
@@ -140,7 +136,7 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="monto">Monto a invertir</label>
+                                        <label for="monto">Monto a invertir *</label>
                                         <div class="row">
                                             <div class="col-md-1">
                                                 <span style="font-size: x-large;">$</span>
@@ -153,14 +149,14 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="plazo">Plazo</label>
+                                        <label for="plazo">Plazo *</label>
                                         <select class="form-control" id="plazo" name="plazo" onchange=habilitaBoton(event) disabled>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="rendimiento">Rendimiento *</label>
+                                        <label for="rendimiento">Rendimiento</label>
                                         <div class="row">
                                             <div class="col-md-1">
                                                 <span style="font-size: x-large;">$</span>
@@ -173,7 +169,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="renovacion">Acción al vencimiento?</label>
+                                        <label for="renovacion">Acción al vencimiento *</label>
                                         <select class="form-control" id="renovacion" name="renovacion" disabled>
                                             <option value="R">Renovar</option>
                                             <option value="D">Depositar</option>

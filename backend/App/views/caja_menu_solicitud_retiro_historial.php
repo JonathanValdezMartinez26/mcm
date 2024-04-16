@@ -57,7 +57,7 @@
             <div class="modal-content">
                 <div class="modal-header" style="padding-bottom: 0px">
                     <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                        <a class="navbar-brand">Mi espacio / Historial solicitud de retiro</a>
+                        <a class="navbar-brand">Mi espacio / Procesar solicitudes de retiro</a>
                     </div>
                     <div>
                         <ul class="nav navbar-nav">
@@ -71,7 +71,7 @@
                                     <p style="font-size: 15px;">Solicitud de Retiro</p>
                                 </a></li></a></li>
                             <li class="linea"><a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/">
-                                    <p style="font-size: 15px;"><b>Historial Solicitud de Retiro</b></p>
+                                    <p style="font-size: 15px;"><b>Procesar Solicitudes de Retiro</b></p>
                                 </a></li>
                         </ul>
                     </div>

@@ -1764,6 +1764,7 @@ class Ahorro extends Controller
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
         View::render("caja_menu_contrato_peque");
+        // procesar solicitudes de retiro
     }
 
     public function BuscaClientePQ()

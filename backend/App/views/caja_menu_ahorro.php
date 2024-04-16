@@ -88,7 +88,7 @@
                                 </li>
                                 <li class="linea">
                                     <a href="/Ahorro/HistorialSolicitudRetiroCuentaCorriente/">
-                                        <p style="font-size: 15px;">Historial Solicitud de Retiro</p>
+                                        <p style="font-size: 15px;">Procesar Solicitudes de Retiro</p>
                                     </a>
                                 </li>
                             </ul>
