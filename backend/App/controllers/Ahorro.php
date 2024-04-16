@@ -2701,9 +2701,9 @@ class Ahorro extends Controller
             </div>
         html;
 
-        $cuerpo .= self::TablaMovimientosAhorro($dtsGrls['CONTRATO']);
+        $cuerpo .= self::TablaMovimientosAhorro($dtsGrls['CONTRATO'], $_GET['fInicio'], $_GET['fFin']);
         $cuerpo .= self::TablaMovimientosInversion($dtsGrls['CONTRATO']);
-        // $cuerpo .= self::tablaTransacciones("Cuenta Ahorro Peque");
+        $cuerpo .= self::TablaMovimientosPeque($_GET['cliente'], $_GET['fInicio'], $_GET['fFin']);
 
         $cuerpo .= <<<html
             <div class="notices">
@@ -2729,6 +2729,7 @@ class Ahorro extends Controller
             </tr>
         </table>
         html;
+
         $mpdf->SetHTMLFooter($pie);
         $mpdf->SetTitle($nombreArchivo);
         $mpdf->WriteHTML($estilo, 1);
@@ -2737,9 +2738,9 @@ class Ahorro extends Controller
         $mpdf->Output($nombreArchivo . '.pdf', 'I');
     }
 
-    public function TablaMovimientosAhorro($contrato)
+    public function TablaMovimientosAhorro($contrato, $fIni, $fFin)
     {
-        $datos = CajaAhorroDao::GetMovimientosAhorro($contrato);
+        $datos = CajaAhorroDao::GetMovimientosAhorro($contrato, $fIni, $fFin);
         $cargos = 0;
         $abonos = 0;
         $filas = "<tr><td colspan='5' style='text-align: center;'>Sin movimientos en el periodo.</td></tr>";
@@ -2805,7 +2806,7 @@ class Ahorro extends Controller
                 <thead>
                     <tr>
                         <th style="width: 80px;">Fecha</th>
-                        <th>Descripcion</th>
+                        <th>Descripción</th>
                         <th style="width: 100px;">Cargo</th>
                         <th style="width: 100px;">Abono</th>
                         <th style="width: 100px;">Saldo</th>
@@ -2824,15 +2825,15 @@ class Ahorro extends Controller
     public function TablaMovimientosInversion($contrato)
     {
         $datos = CajaAhorroDao::GetMovimientosInversion($contrato);
-        $inversionTotal = 0;
-        $rendimientoTotal = 0;
-        $salto = false;
-        $filas = "<tr><td colspan='8' style='text-align: center;'>Sin movimientos en el periodo.</td></tr>";
         if ($datos || count($datos) > 0) {
+            $inversionTotal = 0;
+            $rendimientoTotal = 0;
+            $salto = false;
+            // $filas = "<tr><td colspan='8' style='text-align: center;'>Sin movimientos en el periodo.</td></tr>";
             $filas = "";
             foreach ($datos as $dato) {
-                $inversion = number_format($dato['MONTO'] || 0, 2, '.', ',');
-                $rendimiento = number_format($dato['RENDIMIENTO'] || 0, 2, '.', ',');
+                $inversion = number_format($dato['MONTO'], 2, '.', ',');
+                $rendimiento = number_format($dato['RENDIMIENTO'], 2, '.', ',');
                 $inversionTotal += $dato['MONTO'];
                 $rendimientoTotal += $dato['RENDIMIENTO'];
 
@@ -2851,60 +2852,149 @@ class Ahorro extends Controller
                 html;
             }
             $salto = true;
+
+            $it = number_format($inversionTotal, 2, '.', ',');
+            $rt = number_format($rendimientoTotal, 2, '.', ',');
+
+            $tabla = <<<html
+            <span class="tituloTablas">Cuenta Inversión</span>
+            <div class="contenedorTotales">
+                <table class="tablaTotales">
+                    <thead>
+                        <tr>
+                            <th>Monto Total Invertido</th>
+                            <th>Rendimientos Recibidos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: center; width: 50%;">
+                                $ $it
+                            </td>
+                            <td style="text-align: center; width: 50%;">
+                                $ $rt
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="contenedorDetalle">
+                <table class="tablaDetalle">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">Fecha Apertura</th>
+                            <th style="width: 80px;">Fecha Cierre</th>
+                            <th style="width: 100px;">Monto</th>
+                            <th>Plazo</th>
+                            <th style="width: 60px;">Tasa Anual</th>
+                            <th>Estatus</th>
+                            <th style="width: 100px;">Fecha Liquidación</th>
+                            <th>Rendimiento</th>
+                            <th>Destino</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        $filas
+                    </tbody>
+                </table>
+            </div>
+            html;
+
+            return $tabla . ($salto ? "<div style='page-break-after: always;'></div>" : "");
         }
-
-        $it = number_format($inversionTotal, 2, '.', ',');
-        $rt = number_format($rendimientoTotal, 2, '.', ',');
-
-        $tabla = <<<html
-        <span class="tituloTablas">Cuenta Inversión</span>
-        <div class="contenedorTotales">
-            <table class="tablaTotales">
-                <thead>
-                    <tr>
-                        <th>Monto Invertido</th>
-                        <th>Rendimientos</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="text-align: center; width: 50%;">
-                            $ $it
-                        </td>
-                        <td style="text-align: center; width: 50%;">
-                            $ $rt
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="contenedorDetalle">
-            <table class="tablaDetalle">
-                <thead>
-                    <tr>
-                        <th style="width: 80px;">Fecha Apertura</th>
-                        <th style="width: 80px;">Fecha Cierre</th>
-                        <th style="width: 100px;">Monto</th>
-                        <th>Plazo</th>
-                        <th style="width: 60px;">Tasa Anual</th>
-                        <th>Estatus</th>
-                        <th style="width: 100px;">Fecha Liquidación</th>
-                        <th>Rendimiento</th>
-                        <th>Destino</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    $filas
-                </tbody>
-            </table>
-        </div>
-        html;
-
-        return $tabla . ($salto ? "<div style='page-break-after: always;'></div>" : "");
     }
 
-    public function TablaMovimientosPeque()
+    public function TablaMovimientosPeque($clPadre, $fIni, $fFin)
     {
+        $cuentas = CajaAhorroDao::GetCuentasPeque($clPadre);
+        if ($cuentas || count($cuentas) > 0) {
+            $tabla = "<span class='tituloTablas'>Cuenta Ahorro Peque</span>";
+            $salto = false;
+            foreach ($cuentas as $cuenta) {
+                $cargos = 0;
+                $abonos = 0;
+                $filas = "";
+                $datos = CajaAhorroDao::GetMovimientosPeque($cuenta['CONTRATO'], $fIni, $fFin);
+                if ($datos || count($datos) > 0) {
+                    foreach ($datos as $dato) {
+                        $cargo = number_format($dato['CARGO'], 2, '.', ',');
+                        $abono = number_format($dato['ABONO'], 2, '.', ',');
+                        $saldo = number_format($dato['SALDO'], 2, '.', ',');
+                        $cargos += $dato['CARGO'];
+                        $abonos += $dato['ABONO'];
+
+                        $filas .= <<<html
+                        <tr>
+                            <td style="text-align: center;">{$dato['FECHA']}</td>
+                            <td>{$dato['DESCRIPCION']}</td>
+                            <td style="text-align: right;">$ $cargo</td>
+                            <td style="text-align: right;">$ $abono</td>
+                            <td style="text-align: right;">$ $saldo</td>
+                        </tr>
+                        html;
+                    }
+                    $salto = true;
+                }
+                $filas = $filas ? $filas : "<tr><td colspan='5' style='text-align: center;'>Sin movimientos en el periodo.</td></tr>";
+
+                $si = number_format($datos[0]['SALDO'] + $datos[0]['CARGO'] - $datos[0]['ABONO'], 2, '.', ',');
+                $sf = number_format($datos[count($datos) - 1]['SALDO'], 2, '.', ',');
+                $c = number_format($cargos, 2, '.', ',');
+                $a = number_format($abonos, 2, '.', ',');
+                $tabla .= <<<html
+                <div class="contenedorTotales">
+                    <table class="tablaTotales">
+                        <tr>
+                            <td colspan="2" style="text-align: center; width: 50%;">
+                                <b>Nombre: </b>{$cuenta['NOMBRE']}
+                            </td>
+                            <td colspan="2" style="text-align: center; width: 50%;">
+                                <b>No. Cuenta: </b>{$cuenta['CONTRATO']}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Saldo Inicial</th>
+                            <th>Abonos</th>
+                            <th>Cargos</th>
+                            <th>Saldo Final</th>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; width: 25%;">
+                                $ $si
+                            </td>
+                            <td style="text-align: center; width: 25%;">
+                                $ $a
+                            </td>
+                            <td style="text-align: center; width: 25%;">
+                                $ $c
+                            </td>
+                            <td style="text-align: center; width: 25%;">
+                                $ $sf
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="contenedorDetalle">
+                    <table class="tablaDetalle">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Fecha</th>
+                                <th>Descripción</th>
+                                <th style="width: 100px;">Cargo</th>
+                                <th style="width: 100px;">Abono</th>
+                                <th style="width: 100px;">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            $filas
+                        </tbody>
+                    </table>
+                </div>
+                html;
+            }
+
+            return $tabla . ($salto ? "<div style='page-break-after: always;'></div>" : "");
+        }
     }
 
     public function toLetras($numero)
