@@ -1321,6 +1321,7 @@ class CajaAhorro
             WHERE
                 APA.CDGCL = '$cliente'
                 AND APA.CDGPR_PRIORITARIO = 1
+                AND APA.ESTATUS = 'A'
         sql;
 
         try {
@@ -1333,40 +1334,44 @@ class CajaAhorro
         }
     }
 
-    public static function GetMovimientosAhorro($contrato)
+    public static function GetMovimientosAhorro($contrato, $fI, $fF)
     {
         $qryMovimientos = <<<sql
         SELECT
-            TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY') AS FECHA,
-            (
-                SELECT
-                    DESCRIPCION
-                FROM
-                    TIPO_PAGO_AHORRO
-                WHERE
-                    CODIGO = MA.CDG_TIPO_PAGO
-            ) AS DESCRIPCION,
-            CASE MA.MOVIMIENTO
-                WHEN '0' THEN MA.MONTO
-                ELSE 0
-            END AS CARGO,
-            CASE MA.MOVIMIENTO
-                WHEN '1' THEN MA.MONTO
-                ELSE 0
-            END AS ABONO,
-            SUM(
+            *
+        FROM (
+            SELECT
+                TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY') AS FECHA,
+                (
+                    SELECT
+                        DESCRIPCION
+                    FROM
+                        TIPO_PAGO_AHORRO
+                    WHERE
+                        CODIGO = MA.CDG_TIPO_PAGO
+                ) AS DESCRIPCION,
                 CASE MA.MOVIMIENTO
-                    WHEN '0' THEN -MA.MONTO
+                    WHEN '0' THEN MA.MONTO
+                    ELSE 0
+                END AS CARGO,
+                CASE MA.MOVIMIENTO
                     WHEN '1' THEN MA.MONTO
-                END
-            ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO
-        FROM
-            MOVIMIENTOS_AHORRO MA
-            INNER JOIN TIPO_PAGO_AHORRO TPA ON TPA.CODIGO = MA.CDG_TIPO_PAGO
-        WHERE
-            MA.CDG_CONTRATO = '$contrato'
-        ORDER BY
-            MA.FECHA_MOV, MA.MOVIMIENTO DESC
+                    ELSE 0
+                END AS ABONO,
+                SUM(
+                    CASE MA.MOVIMIENTO
+                        WHEN '0' THEN -MA.MONTO
+                        WHEN '1' THEN MA.MONTO
+                    END
+                ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO
+            FROM
+                MOVIMIENTOS_AHORRO MA
+                INNER JOIN TIPO_PAGO_AHORRO TPA ON TPA.CODIGO = MA.CDG_TIPO_PAGO
+            WHERE
+                MA.CDG_CONTRATO = '$contrato'
+            ORDER BY
+                MA.FECHA_MOV, MA.MOVIMIENTO DESC
+        ) WHERE TO_DATE(FECHA, 'DD/MM/YYYY') BETWEEN TO_DATE('$fI', 'DD/MM/YYYY') AND TO_DATE('$fF', 'DD/MM/YYYY')
         sql;
 
         try {
@@ -1385,7 +1390,7 @@ class CajaAhorro
         SELECT
             TO_CHAR(FECHA_APERTURA, 'DD/MM/YYYY') AS FECHA_APERTURA,
             TO_CHAR(FECHA_VENCIMIENTO, 'DD/MM/YYYY') AS FECHA_VENCIMIENTO,
-            MONTO_INVERSION AS MONTO,
+            NVL(MONTO_INVERSION, 0) AS MONTO,
             (
                 SELECT
                     CONCAT(
@@ -1434,6 +1439,83 @@ class CajaAhorro
             CUENTA_INVERSION CI
         WHERE
             CDG_CONTRATO = '$contrato'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qryMovimientos);
+            if (count($res) === 0) return array();
+            return $res;
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
+    public static function GetCuentasPeque($contrato)
+    {
+        $qryCuentas = <<<sql
+        SELECT
+            APA.CONTRATO,
+            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.APELLIDO1, CL.APELLIDO2) AS NOMBRE,
+            TO_CHAR(APA.FECHA_APERTURA, 'DD/MM/YYYY') AS FECHA_APERTURA,
+            APA.SALDO
+        FROM
+            ASIGNA_PROD_AHORRO APA
+            RIGHT JOIN CL_PQS CL ON CL.CDG_CONTRATO = APA.CONTRATO
+        WHERE
+            APA.CDGCL = '$contrato'
+            AND APA.CDGPR_PRIORITARIO = 2
+            AND APA.ESTATUS = 'A'
+        ORDER BY
+            APA.CONTRATO
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qryCuentas);
+            if (count($res) === 0) return array();
+            return $res;
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
+    public static function GetMovimientosPeque($contrato, $fI, $fF)
+    {
+        $qryMovimientos = <<<sql
+        SELECT * FROM (
+            SELECT
+                TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY') AS FECHA,
+                (
+                    SELECT
+                        DESCRIPCION
+                    FROM
+                        TIPO_PAGO_AHORRO
+                    WHERE
+                        CODIGO = MA.CDG_TIPO_PAGO
+                ) AS DESCRIPCION,
+                CASE MA.MOVIMIENTO
+                    WHEN '0' THEN MA.MONTO
+                    ELSE 0
+                END AS CARGO,
+                CASE MA.MOVIMIENTO
+                    WHEN '1' THEN MA.MONTO
+                    ELSE 0
+                END AS ABONO,
+                SUM(
+                    CASE MA.MOVIMIENTO
+                        WHEN '0' THEN -MA.MONTO
+                        WHEN '1' THEN MA.MONTO
+                    END
+                ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO
+            FROM
+                MOVIMIENTOS_AHORRO MA
+                INNER JOIN TIPO_PAGO_AHORRO TPA ON TPA.CODIGO = MA.CDG_TIPO_PAGO
+            WHERE
+                MA.CDG_CONTRATO = '$contrato'
+            ORDER BY
+                MA.FECHA_MOV, MA.MOVIMIENTO DESC
+        ) WHERE TO_DATE(FECHA, 'DD/MM/YYYY') BETWEEN TO_DATE('$fI', 'DD/MM/YYYY') AND TO_DATE('$fF', 'DD/MM/YYYY')
         sql;
 
         try {
