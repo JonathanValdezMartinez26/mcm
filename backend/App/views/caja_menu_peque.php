@@ -80,20 +80,18 @@
                                         <form id="operacionesNVL1" name="operacionesNVL1">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <div class="col-md-5" style="display: flex; justify-content: end; margin-top:5px">
-                                                        <label for="movil">Código de cliente SICAFIN</label>
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
+                                                    <div class="col-md-6">
+                                                        <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p>
+                                                        <hr>
                                                     </div>
                                                     <div class="col-md-4">
+                                                        <label for="movil">Código de cliente SICAFIN</label>
+                                                        <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
+                                                    </div>
+                                                    <div class="col-md-2" style="padding-top: 25px">
                                                         <button type="button" class="btn btn-primary" id="btnBskClnt" onclick="buscaCliente()">
                                                             <i class="fa fa-search"></i> Buscar
                                                         </button>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p>
-                                                        <hr>
                                                     </div>
                                                 </div>
                                                 <div class="row">
