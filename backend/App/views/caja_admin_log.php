@@ -4,8 +4,9 @@
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="col-md-3 panel panel-body" style="margin-bottom: 0px;">
             <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" />
-            <a id="link" href="/AdminSucursales/SaldosDiarios/">
-                <div class="col-md-5 imagen" style="margin-top: 5px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
+
+            <a id="link" href="/AdminSucursales/Saldos/">
+                <div class="col-md-5" style="margin-top: 5px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <span class="button__badge">4</span>
                     <img src="https://cdn-icons-png.flaticon.com/512/2910/2910156.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                     <span class="button__badge">4</span>
@@ -13,35 +14,32 @@
                     <! -- https://cdn-icons-png.flaticon.com/512/2910/2910306.png -->
                 </div>
             </a>
-            <a id="link" href="/AdminSucursales/SolicitudesRetiroInmediato/">
+
+            <a id="link" href="/AdminSucursales/Solicitudes/">
                 <div class="col-md-5 imagen" style="margin-top: 5px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/7379/7379586.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2972/2972449.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                     <span class="button__badge">4</span>
-                    <p style="font-size: 12px; padding-top: 5px; color: #000000"><b>Solicitudes </b></p>
-                    <! -- https://cdn-icons-png.flaticon.com/512/7379/7379556.png -->
+                    <p style="font-size: 12px; padding-top: 5px; color: #000000"><b>Solicitudes de Sucursales</b></p>
+                    <! -- https://cdn-icons-png.flaticon.com/512/2972/2972528.png IAMGEN EN COLOR -->
                 </div>
             </a>
-            <a id="link" href="/AdminSucursales/ClientesAhorro/">
+
+            <a id="link" href="/AdminSucursales/Clientes/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/7379/7379524.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1605/1605401.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
                     <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Clientes</b></p>
-                    <! -- https://cdn-icons-png.flaticon.com/512/7379/7379494.png -->
+                    <! --https://cdn-icons-png.flaticon.com/512/1605/1605350.png IMAGEN EN COLOR -->
                 </div>
             </a>
-            <a id="link" href="/AdminSucursales/LogTransaccional/">
-                <div class="col-md-5" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/7379/7379458.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
+
+            <a id="link" href="/AdminSucursales/Log/">
+                <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2856/2856838.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                     <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Log Transaccional </b></p>
-                    <! -- https://cdn-icons-png.flaticon.com/512/7379/7379490.png -->
+                    <! -- https://cdn-icons-png.flaticon.com/512/2761/2761001.png IMAGEN EN COLOR -->
                 </div>
             </a>
-            <a id="link" href="/AdminSucursales/Personal/">
-                <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/10491/10491273.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
-                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Cajeras </b></p>
-                    <! -- https://cdn-icons-png.flaticon.com/512/10491/10491278.png -->
-                </div>
-            </a>
+
         </div>
         <div class="col-md-9">
             <div class="modal-content">
