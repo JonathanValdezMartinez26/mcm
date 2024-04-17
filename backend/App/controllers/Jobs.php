@@ -1,6 +1,5 @@
 <?PHP
 
-date_default_timezone_set('America/Mexico_City');
 
 namespace App\controllers;
 
@@ -8,6 +7,7 @@ include 'C:/xampp/htdocs/mcm/backend/App/models/Jobs.php';
 
 use \App\models\Jobs as JobsDao;
 
+date_default_timezone_set('America/Mexico_City');
 $j = new Jobs();
 
 $j->JobCheques();
