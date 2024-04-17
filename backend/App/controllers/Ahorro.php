@@ -191,6 +191,7 @@ class Ahorro extends Controller
             + host + '/Ahorro/Ticket/?'
             + 'ticket=' + ticket
             + '&sucursal=' + sucursal
+            + '&copiaCliente=true'
             + '" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
         plantilla += '</body>'
         plantilla += '</html>'
@@ -2423,98 +2424,120 @@ class Ahorro extends Controller
         $mpdf = new \mPDF('UTF-8', array(90, 190));
         // PIE DE PAGINA
         $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:Helvetica;">' . $mensajeImpresion . '</div>');
-
-        $mpdf->SetMargins(0, 0, 5);
         $mpdf->SetTitle($nombreArchivo);
-        $mpdf->WriteHTML('<div></div>', 2);
+        $mpdf->SetFont('Helvetica');
+        $mpdf->SetMargins(0, 0, 5);
 
-        // CABECERA
-        $mpdf->SetFont('Helvetica', '', 19);
-        $mpdf->Cell(60, 4, 'Más con Menos', 0, 1, 'C');
-        $mpdf->Ln(5);
+        $tktEjecutivo = $datos['COD_EJECUTIVO'] ? "<label>" . $datos['RECIBIO'] . ": " . $datos['NOM_EJECUTIVO'] . " (" . $datos['COD_EJECUTIVO'] . ")</label><br>" : "";
+        $tktSucursal = $datos['CDG_SUCURSAL'] ? '<label>Sucursal: ' . $datos['NOMBRE_SUCURSAL'] . ' (' . $datos['CDG_SUCURSAL'] . ')</label>' : "";
+        $tktMontoLetra = self::NumeroLetras($datos['MONTO']);
+        $tktSaldoA = number_format($datos['SALDO_ANTERIOR'], 2, '.', ',');
+        $tktMontoOP = number_format($datos['MONTO'], 2, '.', ',');
+        $tktSaldoN = number_format($datos['SALDO_NUEVO'], 2, '.', ',');
+        $tktComision =  $datos['COMISION'] > 0 ?  '<tr><td style="text-align: left; width: 60%;">COMISION:</td><td style="text-align: right; width: 40%;">$ ' . number_format($datos['COMISION'], 2, '.', ',') . '</td></tr>' : "";
 
-        // LEYENDA TIPO COMPROBANTE
-        $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 4, 'COMPROBANTE DE ' . $datos['COMPROBANTE'], 0, 1, 'C');
-        $mpdf->Ln(3);
-        $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
-        $mpdf->Ln(2);
+        $ticketHTML = <<<html
+        <body style="font-family:Helvetica; padding: 0; margin: 0">
+            <div>
+                <div style="text-align:center; font-size: 20px;">
+                    <label><b>Más con Menos</b></label>
+                </div>
+                <div style="text-align:center; font-size: 15px;">
+                    <label>COMPROBANTE DE {$datos['COMPROBANTE']}</label>
+                </div>
+                <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
+                    ***********************************
+                </div>
+                <div style="font-size: 11px;">
+                    <label>Fecha de la operación: {$datos['FECHA']}</label>
+                    <br>
+                    <label>Método de pago: {$datos['METODO']}</label>
+                    <br>
+                    $tktEjecutivo
+                    $tktSucursal
+                </div>
+                <div style="text-align:center; font-size: 10px;margin-top:5px; margin-bottom: 5px">
+                    <b>------------------------------------------------------------</b>
+                </div>
+                <div style="font-size: 11px;">
+                    <label>Nombre del cliente: {$datos['NOMBRE_CLIENTE']}</label>
+                    <br>
+                    <label>Código de cliente: {$datos['CODIGO']}</label>
+                    <br>
+                    <label>Código de contrato: {$datos['CONTRATO']}</label>
+                </div>
+                <div style="text-align:center; font-size: 10px;margin-top:5px; margin-bottom: 5px">
+                    <b>------------------------------------------------------------</b>
+                </div>
+                <div style="text-align:center; font-size: 13px;">
+                    <label><b>CUENTA DE AHORRO CORRIENTE</b></label>
+                </div>
+                <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
+                    ***********************************
+                </div>
+                <div style="text-align:center; font-size: 15px;">
+                    <label><b>{$datos['ENTREGA']} $ {$tktMontoOP}</b></label>
+                </div>
+                <div style="text-align:center; font-size: 11px;">
+                    <label>($tktMontoLetra)</label>
+                </div>
+                <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
+                    ***********************************
+                </div>
+                <div style="text-align:center; font-size: 13px;">
+                    <table style="width: 100%; font-size: 11spx">
+                        <tr>
+                            <td style="text-align: left; width: 60%;">
+                                SALDO ANTERIOR:
+                            </td>
+                            <td style="text-align: right; width: 40%;">
+                                $ {$tktSaldoA}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; width: 60%;">
+                                {$datos['ES_DEPOSITO']}:
+                            </td>
+                            <td style="text-align: right; width: 40%;">
+                                $ {$tktMontoOP}
+                            </td>
+                        </tr>
+                        $tktComision
+                        <tr>
+                            <td style="text-align: left; width: 60%;">
+                                SALDO FINAL:
+                            </td>
+                            <td style="text-align: right; width: 40%;">
+                                $ {$tktSaldoN}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
+                    ***********************************
+                </div>
+                <div style="text-align:center; font-size: 15px;">
+                    <label><b>Firma de conformidad del cliente</b></label>
+                    <div style="text-align:center; font-size: 14px;margin-top:20px; margin-bottom: 5px">
+                        ______________________
+                    </div>
+                </div>
+                <div style="text-align:center; font-size: 12px;">
+                    <label><b>FOLIO DE LA OPERACIÓN</b></label>
+                    <barcode code="$ticket-{$datos['CODIGO']}-{$datos['MONTO']}-{$datos['COD_EJECUTIVO']}" type="C128A" size=".60" height="1" />
+                </div>
+            </div>
+        </body>
+        html;
 
-        // DATOS OPERACION
-        $mpdf->SetFont('Helvetica', '', 9);
-        $mpdf->Cell(60, 4, 'Fecha de la operación: ' . $datos['FECHA'], 0, 1, '');
-        $mpdf->Cell(60, 4, 'Método de pago: ' . $datos['METODO'], 0, 1, '');
-        if ($datos['COD_EJECUTIVO']) $mpdf->MultiCell(60, 4, $datos['RECIBIO'] . ': ' . $datos['NOM_EJECUTIVO'] . ' (' . $datos['COD_EJECUTIVO'] . ')', 0, 1, '');
-        if ($datos['CDG_SUCURSAL']) $mpdf->Cell(60, 4, 'Sucursal: ' . $datos['NOMBRE_SUCURSAL'] . ' (' . $datos['CDG_SUCURSAL'] . ')', 0, 1, '');
-
-        $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
-        $mpdf->Ln(5);
-
-        // DATOS CLIENTE
-        $mpdf->SetFont('Helvetica', '', 9);
-        $mpdf->MultiCell(60, 4, 'Nombre del cliente: ' . $datos['NOMBRE_CLIENTE'], 0, 1, '');
-        $mpdf->Cell(60, 4, 'Código de cliente: ' . $datos['CODIGO'], 0, 1, '');
-        $mpdf->Cell(60, 4, 'Código de contrato: ' . $datos['CONTRATO'], 0, 1, '');
-        $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
-
-        // DETALLE DE LA OPERACION
-        $mpdf->Ln(7);
-        $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 4, 'CUENTA DE AHORRO CORRIENTE', 0, 1, 'C');
-        $mpdf->Ln(3);
-        $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
-
-        // MONTO DE LA OPERACION
-        $mpdf->Ln(5);
-        $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 4, $datos['ENTREGA'] .  " $" . number_format($datos['MONTO'], 2, '.', ','), 0, 1, 'C');
-        $mpdf->SetFont('Helvetica', '', 8);
-        $mpdf->MultiCell(60, 4, '(' . self::NumeroLetras($datos['MONTO']) . ')', 0, 'C');
-        $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Cell(60, 0, str_repeat('_', 32), 0, 1, 'C');
-
-        // DESGLOSE DE LA OPERACION
-        $mpdf->Ln(4);
-        $mpdf->SetFont('Helvetica', '', 10);
-        $mpdf->Cell(30, 10, 'SALDO ANTERIOR:', 0);
-        $mpdf->Cell(30, 10, "$" . number_format($datos['SALDO_ANTERIOR'], 2, '.', ','), 2, 0, 'R');
-        $mpdf->Ln(8);
-        $mpdf->Cell(30, 10, $datos['ES_DEPOSITO'], 0);
-        $mpdf->Cell(30, 10,  "$" . number_format($datos['MONTO'], 2, '.', ','), 2, 0, 'R');
-        $mpdf->Ln(8);
-        if ($datos['COMISION'] > 0) {
-            $mpdf->Cell(30, 10, 'COMISIÓN :', 0);
-            $mpdf->Cell(30, 10,  "$" . number_format($datos['COMISION'], 2, '.', ','), 2, 0, 'R');
-            $mpdf->Ln(8);
-        }
-        $mpdf->Cell(30, 10, 'SALDO NUEVO: ', 0);
-        $mpdf->Cell(30, 10, "$" . number_format($datos['SALDO_NUEVO'], 2, '.', ','), 2, 0, 'R');
-
-        // Linea
-        $mpdf->Ln(10);
-        $mpdf->SetFont('Helvetica', '', 12);
-        $mpdf->Ln(3);
-        $mpdf->Cell(60, 0, str_repeat('*', 35), 0, 1, 'C');
-
-        // FIRMAS
-        $mpdf->Ln(8);
-        $mpdf->SetFont('Helvetica', '', 10);
-        $mpdf->Cell(60, 4, 'Firma de conformidad del cliente', 0, 1, 'C');
-        $mpdf->Ln(10);
-        $mpdf->Cell(60, 0, str_repeat('_', 34), 0, 1, 'C');
-
-        // FOLIO DE LA OPERACION
-        $mpdf->Ln(12);
-        $mpdf->SetFont('Helvetica', '', 10);
-        $mpdf->Cell(60, 4, 'FOLIO DE LA OPERACIÓN', 0, 1, 'C');
-        $mpdf->WriteHTML('<barcode code="' . $ticket . '-' . $datos['CODIGO'] . '-' . $datos['MONTO'] . '-' . $datos['COD_EJECUTIVO'] . '" type="C128A" size=".60" height="1" class=""/>');
+        // Agregar contenido al PDF
+        $mpdf->WriteHTML($ticketHTML);
 
         if ($_GET['copiaCliente']) {
-            $original = $mpdf->pages[0];
+            $mpdf->WriteHTML('<div style="text-align:center; font-size: 15px;"><label><b>COPIA SUCURSAL</b></label></div>');
             $mpdf->AddPage();
-            $mpdf->WriteHTML($original);
+            $mpdf->WriteHTML($ticketHTML);
+            $mpdf->WriteHTML('<div style="text-align:center; font-size: 15px;"><label><b>COPIA CLIENTE</b></label></div>');
         }
 
         $mpdf->Output($nombreArchivo . '.pdf', 'I');
