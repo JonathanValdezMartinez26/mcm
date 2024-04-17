@@ -224,7 +224,7 @@ html;
         View::set('fecha', date('Y-m-d'));
         View::render("caja_admin_configurar");
     }
-<<<<<<< HEAD
+
 
     public function Clientes()
     {
@@ -277,6 +277,4 @@ html;
     }
 
 
-=======
->>>>>>> eb8d8a5b63744ac420a4b4779a8a78fa13236d03
 }
