@@ -7,8 +7,8 @@ include 'C:/xampp/htdocs/mcm/backend/App/models/Jobs.php';
 use \App\models\Jobs as JobsDao;
 
 date_default_timezone_set('America/Mexico_City');
-$j = new Jobs();
 
+$j = new Jobs();
 $j->JobCheques();
 
 class Jobs
@@ -75,6 +75,7 @@ class Jobs
     {
         $archivo = "C:/xampp/Jobs_php.log";
 
+        clearstatcache();
         if (file_exists($archivo) && filesize($archivo) > 10 * 1024 * 1024) { // 10 MB
             $nuevoNombre = "C:/xampp/Jobs_php_" . date('Ymd') . ".log";
             rename($archivo, $nuevoNombre);

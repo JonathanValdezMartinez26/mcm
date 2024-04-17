@@ -461,7 +461,7 @@ class Ahorro extends Controller
                         document.querySelector("#codigo_cl").value = noCredito
                         document.querySelector("#nombre_cliente").value = document.querySelector("#nombre").value
                         document.querySelector("#mdlCurp").value = document.querySelector("#curp").value
-                        imprimeContrato(contrato.contrato)
+                        imprimeContrato(contrato.contrato, 1)
                         
                         document.querySelector("#chkCreacionContrato").classList.remove("red")
                         document.querySelector("#chkCreacionContrato").classList.add("green")
@@ -1236,6 +1236,7 @@ class Ahorro extends Controller
             {$this->numeroLetras}
             {$this->primeraMayuscula}
             {$this->imprimeTicket}
+            {$this->imprimeContrato}
             {$this->sinContrato}
             {$this->addParametro}
              
@@ -1379,6 +1380,7 @@ class Ahorro extends Controller
                             return showError(respuesta.mensaje)
                         }
                         showSuccess(respuesta.mensaje)
+                        imprimeContrato(document.querySelector("#contrato").value, 2)
                         imprimeTicket(respuesta.datos.ticket, {$_SESSION['cdgco']})
                         limpiaDatosCliente()
                     },
@@ -1679,7 +1681,7 @@ class Ahorro extends Controller
                         const contrato = respuesta.datos
                         limpiaDatosCliente()
                         await showSuccess("Se ha generado el contrato: " + contrato.contrato)
-                        imprimeContrato(contrato.contrato)
+                        imprimeContrato(contrato.contrato, 3)
                     }
                 } catch (error) {
                     console.error(error)
@@ -2276,6 +2278,11 @@ class Ahorro extends Controller
 
     public function Contrato()
     {
+        $productos = [
+            1 => 'Cuenta de Ahorro Corriente',
+            2 => 'Cuenta de Inversión',
+            3 => 'Cuenta de Ahorro Peque',
+        ];
         $contrato = $_GET['contrato'];
         $datos = CajaAhorroDao::DatosContrato($contrato);
         if (!$datos) {
@@ -2333,7 +2340,7 @@ class Ahorro extends Controller
 
         $tabla = <<<html
         <div class="contenedor">
-            <h1>Contrato de Cuenta de Ahorro</h1>
+            <h1>Contrato de {$productos[$_GET['producto']]}</h1>
             <div class="seccion">
                 <h2 class="seccion-title">Datos Generales</h2>
                 <div class="seccion-content">
