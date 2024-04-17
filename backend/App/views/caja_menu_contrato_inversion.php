@@ -172,7 +172,7 @@
                                         <label for="renovacion">Acción al vencimiento *</label>
                                         <select class="form-control" id="renovacion" name="renovacion" disabled>
                                             <!-- <option value="R">Renovar</option> -->
-                                            <option value="D">Depositar</option>
+                                            <option value="D">Depositar a cuenta</option>
                                         </select>
                                     </div>
                                 </div>
