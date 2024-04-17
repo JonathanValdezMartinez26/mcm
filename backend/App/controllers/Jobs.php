@@ -1,6 +1,5 @@
 <?PHP
 
-
 namespace App\controllers;
 
 include 'C:/xampp/htdocs/mcm/backend/App/models/Jobs.php';
