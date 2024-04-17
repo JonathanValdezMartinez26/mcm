@@ -171,7 +171,7 @@
                                     <div class="form-group">
                                         <label for="renovacion">Acción al vencimiento *</label>
                                         <select class="form-control" id="renovacion" name="renovacion" disabled>
-                                            <option value="R">Renovar</option>
+                                            <!-- <option value="R">Renovar</option> -->
                                             <option value="D">Depositar</option>
                                         </select>
                                     </div>
