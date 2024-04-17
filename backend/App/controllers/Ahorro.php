@@ -18,6 +18,9 @@ class Ahorro extends Controller
     private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
     private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
+    private $confirmarMovimiento = 'const confirmarMovimiento = async (movimiento, monto, letra) => {
+        return await swal({ title: "Confirmación movimiento ahorro", text: "¿Esta segura de continuar con el registro de un " + movimiento + ", por la cantidad de " + parseFloat(monto).toLocaleString("es-MX", { style: "currency", currency: "MXN" }) + " (" + letra + ")?", icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
+    }';
     private $validarYbuscar = 'const validarYbuscar = (e) => {
         if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
         if (e.keyCode === 13) buscaCliente()
@@ -306,6 +309,7 @@ class Ahorro extends Controller
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
+            {$this->confirmarMovimiento}
             {$this->validarYbuscar}
             {$this->getHoy}
             {$this->soloNumeros}
@@ -457,7 +461,7 @@ class Ahorro extends Controller
                         document.querySelector("#codigo_cl").value = noCredito
                         document.querySelector("#nombre_cliente").value = document.querySelector("#nombre").value
                         document.querySelector("#mdlCurp").value = document.querySelector("#curp").value
-                        imprimeContrato(contrato.contrato)
+                        imprimeContrato(contrato.contrato, 1)
                         
                         document.querySelector("#chkCreacionContrato").classList.remove("red")
                         document.querySelector("#chkCreacionContrato").classList.add("green")
@@ -473,14 +477,17 @@ class Ahorro extends Controller
                 return false
             }
                         
-            const pagoApertura = (e) => {
+            const pagoApertura = async (e) => {
                 e.preventDefault()
                 if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura.toLocalString("es-MX", {style:"currency", currency:"MXN"}) + ".")
-                            
+                
                 const datos = $("#AddPagoApertura").serializeArray()
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
-                            
+                 
+                const c = await confirmarMovimiento("depósito de apertura", document.querySelector("#deposito").value, document.querySelector("#monto_letra").value)
+                if (!c) return
+                 
                 $.ajax({
                     type: "POST",
                     url: "/Ahorro/PagoApertura/",
@@ -743,6 +750,7 @@ class Ahorro extends Controller
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
+            {$this->confirmarMovimiento}
             {$this->validarYbuscar}
             {$this->buscaCliente}
             {$this->getHoy}
@@ -856,7 +864,7 @@ class Ahorro extends Controller
                 
             }
              
-            const registraOperacion = (e) => {
+            const registraOperacion = async (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
                  
@@ -872,6 +880,9 @@ class Ahorro extends Controller
                         dato.value = document.querySelector("#deposito").checked
                     }
                 })
+                 
+                const c = await confirmarMovimiento((document.querySelector("#deposito").checked ? "depósito" : "retiro"), document.querySelector("#montoOperacion").value, document.querySelector("#monto_letra").value)
+                if (!c) return
                  
                 $.ajax({
                     type: "POST",
@@ -940,6 +951,7 @@ class Ahorro extends Controller
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
+            {$this->confirmarMovimiento}
             {$this->validarYbuscar}
             {$this->buscaCliente}
             {$this->soloNumeros}
@@ -1060,7 +1072,7 @@ class Ahorro extends Controller
                     document.querySelector("#saldoFinal").removeAttribute("style")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
                 }
-                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value >= montoMinimo && document.querySelector("#montoOperacion").value < montoMaximoExpress)
+                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value >= montoMinimo && document.querySelector("#montoOperacion").value < montoMaximoRetiro)
             }
              
             const pasaFecha = (e) => {
@@ -1075,13 +1087,16 @@ class Ahorro extends Controller
                 document.querySelector("#fecha_retiro").value = f[2] + "/" + f[1] + "/" + f[0]
             }
              
-            const registraSolicitud = (e) => {
+            const registraSolicitud = async (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
                 
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                 addParametro(datos, "retiroExpress", document.querySelector("#express").checked)
+                 
+                const c = await confirmarMovimiento("retiro " + (document.querySelector("#express").checked ? "express" : "programado"), document.querySelector("#montoOperacion").value, document.querySelector("#monto_letra").value)
+                if (!c) return
                  
                 $.ajax({
                     type: "POST",
@@ -1212,6 +1227,8 @@ class Ahorro extends Controller
          
             {$this->showError}
             {$this->showSuccess}
+            {$this->showInfo}
+            {$this->confirmarMovimiento}
             {$this->validarYbuscar}
             {$this->buscaCliente}
             {$this->getHoy}
@@ -1219,6 +1236,7 @@ class Ahorro extends Controller
             {$this->numeroLetras}
             {$this->primeraMayuscula}
             {$this->imprimeTicket}
+            {$this->imprimeContrato}
             {$this->sinContrato}
             {$this->addParametro}
              
@@ -1326,10 +1344,6 @@ class Ahorro extends Controller
              
             const habilitaBoton = (e) => {
                 if (e && e.target.id === "plazo") cambioPlazo()
-                // if (document.querySelector("#plazo").value === "" || document.querySelector("#rendimiento").value === "") {
-                //     document.querySelector("#btnRegistraOperacion").disabled = true
-                //     return
-                // }
                 document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value >= saldoMinimoApertura)
             }
              
@@ -1344,14 +1358,17 @@ class Ahorro extends Controller
                 }
             }
             
-            const registraOperacion = (e) => {
+            const registraOperacion = async (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                  
                 datos.push({ name: "tasa", value: document.querySelector("#plazo").value })
-                
+                 
+                const c = await confirmarMovimiento("fondeo de inversión", document.querySelector("#montoOperacion").value, document.querySelector("#monto_letra").value)
+                if (!c) return
+                 
                 $.ajax({
                     type: "POST",
                     url: "/Ahorro/RegistraInversion/",
@@ -1363,6 +1380,7 @@ class Ahorro extends Controller
                             return showError(respuesta.mensaje)
                         }
                         showSuccess(respuesta.mensaje)
+                        imprimeContrato(document.querySelector("#contrato").value, 2)
                         imprimeTicket(respuesta.datos.ticket, {$_SESSION['cdgco']})
                         limpiaDatosCliente()
                     },
@@ -1663,7 +1681,7 @@ class Ahorro extends Controller
                         const contrato = respuesta.datos
                         limpiaDatosCliente()
                         await showSuccess("Se ha generado el contrato: " + contrato.contrato)
-                        imprimeContrato(contrato.contrato)
+                        imprimeContrato(contrato.contrato, 3)
                     }
                 } catch (error) {
                     console.error(error)
@@ -1791,6 +1809,8 @@ class Ahorro extends Controller
          
             {$this->showError}
             {$this->showSuccess}
+            {$this->showInfo}
+            {$this->confirmarMovimiento}
             {$this->validarYbuscar}
             {$this->getHoy}
             {$this->soloNumeros}
@@ -1988,7 +2008,7 @@ class Ahorro extends Controller
                 document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value > 0)
             }
              
-            const registraOperacion = (e) => {
+            const registraOperacion = async (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
@@ -2003,6 +2023,9 @@ class Ahorro extends Controller
                         dato.value = document.querySelector("#deposito").checked
                     }
                 })
+                 
+                const c = await confirmarMovimiento((document.querySelector("#deposito").checked ? "depósito" : "retiro") + " de cuenta peque", document.querySelector("#montoOperacion").value, document.querySelector("#monto_letra").value)
+                if (!c) return
                  
                 $.ajax({
                     type: "POST",
@@ -2255,6 +2278,11 @@ class Ahorro extends Controller
 
     public function Contrato()
     {
+        $productos = [
+            1 => 'Cuenta de Ahorro Corriente',
+            2 => 'Cuenta de Inversión',
+            3 => 'Cuenta de Ahorro Peque',
+        ];
         $contrato = $_GET['contrato'];
         $datos = CajaAhorroDao::DatosContrato($contrato);
         if (!$datos) {
@@ -2312,7 +2340,7 @@ class Ahorro extends Controller
 
         $tabla = <<<html
         <div class="contenedor">
-            <h1>Contrato de Cuenta de Ahorro</h1>
+            <h1>Contrato de {$productos[$_GET['producto']]}</h1>
             <div class="seccion">
                 <h2 class="seccion-title">Datos Generales</h2>
                 <div class="seccion-content">

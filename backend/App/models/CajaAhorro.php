@@ -1266,7 +1266,7 @@ class CajaAhorro
             SOLICITUD_RETIRO_AHORRO SR
             INNER JOIN CL ON CL.CODIGO = (SELECT CDGCL FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = SR.CONTRATO)
         ORDER BY
-            SR.FECHA_SOLICITUD
+            SR.FECHA_SOLICITUD DESC
         sql;
 
         try {

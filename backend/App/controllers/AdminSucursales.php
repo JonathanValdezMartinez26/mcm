@@ -6,9 +6,8 @@ defined("APPPATH") or die("Access denied");
 
 use \Core\View;
 use \Core\Controller;
-use \Core\MasterDom;
 use \App\models\AdminSucursales as AdminSucursalesDao;
-use \App\models\Ahorro as AhorroDao;
+use \App\models\CajaAhorro as CajaAhorroDao;
 
 class AdminSucursales extends Controller
 {
@@ -225,6 +224,7 @@ html;
         View::set('fecha', date('Y-m-d'));
         View::render("caja_admin_configurar");
     }
+<<<<<<< HEAD
 
     public function Clientes()
     {
@@ -277,4 +277,6 @@ html;
     }
 
 
+=======
+>>>>>>> eb8d8a5b63744ac420a4b4779a8a78fa13236d03
 }
