@@ -96,9 +96,9 @@
                                                 </div>
                                                 <div class="row">
 
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-5">
                                                         <div class="form-group">
-                                                            <label for="contrato">Número de contrato</label>
+                                                            <label for="contrato">Nombre del peque</label>
                                                             <select class="form-control" id="contrato" name="contrato" disabled>
                                                             </select>
                                                         </div>
@@ -109,20 +109,20 @@
                                                             <input type="number" class="form-control" id="cliente" name="cliente" readonly>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-5">
+                                                    <div class="col-md-4">
                                                         <div class="form-group">
                                                             <label for="nombre_ejecutivo">Nombre del ejecutivo</label>
-                                                            <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="Ejecutivo de Prueba" readonly>
+                                                            <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="<?= $_SESSION['nombre'] ?>" readonly>
                                                             <input type="hidden" class="form-control" id="ejecutivo" name="ejecutivo" value="SOOA">
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-5">
                                                         <div class="form-group">
-                                                            <label for="nombre">Nombre del cliente</label>
+                                                            <label for="nombre">Contrato del peque</label>
                                                             <input type="text" class="form-control" id="nombre" name="nombre" readonly>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-4">
                                                         <div class="form-group">
                                                             <label for="curp">CURP</label>
                                                             <input type="text" class="form-control" id="curp" name="curp" readonly>

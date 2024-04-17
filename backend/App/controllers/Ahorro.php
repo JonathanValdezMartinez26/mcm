@@ -267,11 +267,6 @@ class Ahorro extends Controller
         parametros.push({ name: newParametro, value: newValor })
     }
     script;
-    private $remParametro = <<<script
-    const remParametro = (parametros, parametro) => {
-        parametros = parametros.filter((param) => param.name !== parametro)
-    }
-    script;
 
     function __construct()
     {
@@ -555,6 +550,7 @@ class Ahorro extends Controller
                 const val = () => {
                     let porcentaje = 0
                     for (let i = 1; i <= 3; i++) {
+                        document.querySelector("#beneficiario_" + i).value = document.querySelector("#beneficiario_" + i).value.toUpperCase()
                         porcentaje += parseFloat(document.querySelector("#porcentaje_" + i).value) || 0
                         if (document.querySelector("#ben" + i).style.opacity === "1") {
                             if (!document.querySelector("#beneficiario_" + i).value) {
@@ -762,7 +758,6 @@ class Ahorro extends Controller
                 document.querySelector("#contrato").value = datosCliente.CONTRATO
                 document.querySelector("#cliente").value = datosCliente.CDGCL
                 document.querySelector("#saldoActual").value = parseFloat(datosCliente.SALDO).toFixed(2)
-                document.querySelector("#monto").disabled = false
             }
              
             const limpiaDatosCliente = () => {
@@ -781,7 +776,7 @@ class Ahorro extends Controller
                     monto = montoMaximoRetiro
                     swal({
                         title: "Cuenta de ahorro corriente",
-                        text: "Para retiros mayores a " + montoMaximoRetiro + " es necesario realizar una solicitud de retiro\\nDesea generar una solicitud de retiro ahora?.",
+                        text: "Para retiros mayores a " + montoMaximoRetiro.toLocaleString("es-MX", { style: "currency", currency: "MXN" }) + " es necesario realizar una solicitud de retiro\\nDesea generar una solicitud de retiro ahora?.",
                         icon: "info",
                         buttons: ["No", "Sí"],
                         dangerMode: true
@@ -838,6 +833,7 @@ class Ahorro extends Controller
             }
              
             const cambioMovimiento = (e) => {
+                document.querySelector("#monto").disabled = false
                 const esDeposito = document.querySelector("#deposito").checked
                 document.querySelector("#simboloOperacion").innerText = esDeposito ? "+" : "-"
                 document.querySelector("#descOperacion").innerText = (esDeposito ? "Depósito" : "Retiro") + " a cuenta ahorro corriente"
@@ -1720,10 +1716,10 @@ class Ahorro extends Controller
             const iniveCambio = (e) => e.preventDefault()
              
             const camposLlenos = (e) => {
-                document.querySelector("#nombre1").value = document.querySelector("#nombre1").value.toUpperCase().trim()
-                document.querySelector("#nombre2").value = document.querySelector("#nombre2").value.toUpperCase().trim()
-                document.querySelector("#apellido1").value = document.querySelector("#apellido1").value.toUpperCase().trim()
-                document.querySelector("#apellido2").value = document.querySelector("#apellido2").value.toUpperCase().trim()
+                document.querySelector("#nombre1").value = document.querySelector("#nombre1").value.toUpperCase()
+                document.querySelector("#nombre2").value = document.querySelector("#nombre2").value.toUpperCase()
+                document.querySelector("#apellido1").value = document.querySelector("#apellido1").value.toUpperCase()
+                document.querySelector("#apellido2").value = document.querySelector("#apellido2").value.toUpperCase()
                  
                 const val = () => {
                     const campos = [
@@ -1800,6 +1796,7 @@ class Ahorro extends Controller
             {$this->numeroLetras}
             {$this->primeraMayuscula}
             {$this->imprimeTicket}
+            {$this->addParametro}
             
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado").value
@@ -1876,7 +1873,7 @@ class Ahorro extends Controller
                         datosCliente.forEach(cliente => {
                             const opcion = document.createElement("option")
                             opcion.value = cliente.CDG_CONTRATO
-                            opcion.innerText = cliente.CDG_CONTRATO
+                            opcion.innerText = cliente.NOMBRE
                             contratos.appendChild(opcion)
                         })
                          
@@ -1885,7 +1882,7 @@ class Ahorro extends Controller
                         document.querySelector("#contrato").addEventListener("change", (e) => {
                             datosCliente.forEach(contrato => {
                                 if (contrato.CDG_CONTRATO == e.target.value) {
-                                    document.querySelector("#nombre").value = contrato.NOMBRE
+                                    document.querySelector("#nombre").value = contrato.CDG_CONTRATO
                                     document.querySelector("#curp").value = contrato.CURP
                                     document.querySelector("#cliente").value = contrato.CDGCL
                                     document.querySelector("#saldoActual").value = parseFloat(contrato.SALDO).toFixed(2)
@@ -1893,7 +1890,6 @@ class Ahorro extends Controller
                                 }
                             })
                         })
-                        document.querySelector("#monto").disabled=false
                         
                         document.querySelector("#clienteBuscado").value = ""
                     },
@@ -1972,6 +1968,8 @@ class Ahorro extends Controller
             }
              
             const cambioMovimiento = (e) => {
+                
+                document.querySelector("#monto").disabled = false
                 const esDeposito = document.querySelector("#deposito").checked
                 document.querySelector("#simboloOperacion").innerText = esDeposito ? "+" : "-"
                 document.querySelector("#descOperacion").innerText = (esDeposito ? "Depósito" : "Retiro") + " a cuenta ahorro corriente"
@@ -2513,6 +2511,12 @@ class Ahorro extends Controller
         $mpdf->Cell(60, 4, 'FOLIO DE LA OPERACIÓN', 0, 1, 'C');
         $mpdf->WriteHTML('<barcode code="' . $ticket . '-' . $datos['CODIGO'] . '-' . $datos['MONTO'] . '-' . $datos['COD_EJECUTIVO'] . '" type="C128A" size=".60" height="1" class=""/>');
 
+        if ($_GET['copiaCliente']) {
+            $original = $mpdf->pages[0];
+            $mpdf->AddPage();
+            $mpdf->WriteHTML($original);
+        }
+
         $mpdf->Output($nombreArchivo . '.pdf', 'I');
         exit;
     }
@@ -3043,11 +3047,11 @@ html;
         $extraFooter = <<<html
         <script>
             {$this->imprimeTicket}
-
-           $(document).ready(function(){
+         
+            $(document).ready(function(){
             $("#muestra-cupones").tablesorter();
-          var oTable = $('#muestra-cupones').DataTable({
-           "lengthMenu": [
+            var oTable = $('#muestra-cupones').DataTable({
+            "lengthMenu": [
                     [10, 50, -1],
                     [10, 50, 'Todos'],
                 ],
@@ -3055,7 +3059,7 @@ html;
                     "orderable": false,
                     "targets": 0
                 }],
-                 "order": false
+                    "order": false
             });
             // Remove accented character from search input as well
             $('#muestra-cupones input[type=search]').keyup( function () {
@@ -3065,9 +3069,9 @@ html;
                 ).draw();
             });
             var checkAll = 0;
-        });
+            });
         </script>
-html;
+        html;
 
         $Consulta = AhorroDao::ConsultaSolicitudesTickets($this->__usuario);
         $tabla = "";
