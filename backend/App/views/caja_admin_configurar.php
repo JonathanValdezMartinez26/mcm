@@ -117,18 +117,15 @@
                         <form onsubmit="enviar_add_horario(); return false" id="Add_AHC">
                             <div class="row">
 
-                                <div class="col-md-6">
-                                    <div class="col-md-12">
+                                <div class="col-md-12">
+                                    <div class="col-md-5">
                                         <div class="form-group">
                                             <label for="fecha_registro">Fecha de Registro</label>
                                             <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" readonly placeholder=""  value="<?php $fechaActual = date('Y-m-d H:i:s'); echo $fechaActual; ?>">
                                             <small id="emailHelp" class="form-text text-muted">Fecha de registro para la asignación.</small>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <div class="col-md-8">
+                                    <div class="col-md-7">
                                         <div class="form-group">
                                             <label for="sucursal">Sucursal *</label>
                                             <select class="form-control" autofocus type="select" id="sucursal" name="sucursal">
@@ -136,25 +133,79 @@
                                             </select>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="sucursal">Cajera *</label>
+                                            <select class="form-control" autofocus type="select" id="sucursal" name="sucursal">
+                                                <?php echo $opciones_suc; ?>
+                                            </select>
+                                            <small id="emailHelp" class="form-text text-muted"></small>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="hora">Horario de Apertura *</label>
+                                            <select class="form-control" autofocus type="select" id="hora" name="hora">
+                                                <option value="09:00:00">09:00 a.m</option>
+                                                <option value="10:00:00">10:00 a.m</option>
+                                                <option value="11:00:00">11:00 a.m</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="hora">Horario de Cierre *</label>
                                             <select class="form-control" autofocus type="select" id="hora" name="hora">
-                                                <option value="10:00:00">10:00 a.m</option>
-                                                <option value="10:10:00">10:10 a.m</option>
-                                                <option value="10:15:00">10:15 a.m</option>
-                                                <option value="10:30:00">10:30 a.m</option>
-                                                <option value="11:00:00">11:00 a.m</option>
-                                                <option value="11:10:00">11:10 a.m</option>
-                                                <option value="11:15:00">11:15 a.m</option>
-                                                <option value="11:30:00">11:30 a.m</option>
-                                                <option value="11:40:00">11:40 a.m</option>
-                                                <option value="11:50:00">11:50 a.m</option>
-                                                <option value="11:59:00">11:59 p.m</option>
+                                                <option value="15:00:00">03:00 p.m</option>
+                                                <option value="16:00:00">04:00 p.m</option>
+                                                <option value="17:00:00">05:00 p.m</option>
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-12">
+                                        <small id="emailHelp" class="form-text text-muted">ATENCIÓN: La cajera no tendrá acceso antes del horario de apertura y después del horario de cierre solo podrá acceder al arqueo y cierre de día.</small>
+                                    </div>
+
                                 </div>
+                                <div class="col-md-12">
+                                    <br>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="hora">Horario de Apertura *</label>
+                                            <select class="form-control" autofocus type="select" id="hora" name="hora">
+                                                <option value="09:00:00">09:00 a.m</option>
+                                                <option value="10:00:00">10:00 a.m</option>
+                                                <option value="11:00:00">11:00 a.m</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="hora">Horario de Cierre *</label>
+                                            <select class="form-control" autofocus type="select" id="hora" name="hora">
+                                                <option value="15:00:00">03:00 p.m</option>
+                                                <option value="16:00:00">04:00 p.m</option>
+                                                <option value="17:00:00">05:00 p.m</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <small id="emailHelp" class="form-text text-muted">ATENCIÓN: La cajera no tendrá acceso antes del horario de apertura y después del horario de cierre solo podrá acceder al arqueo y cierre de día.</small>
+                                    </div>
+
+                                </div>
+
+
+
 
                             </div>
                     </div>
