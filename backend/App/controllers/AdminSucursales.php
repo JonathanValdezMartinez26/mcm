@@ -7,7 +7,7 @@ defined("APPPATH") or die("Access denied");
 use \Core\View;
 use \Core\Controller;
 use \Core\MasterDom;
-use \App\models\CajaAhorro as CajaAhorroDao;
+use \App\models\AdminSucursales as AdminSucursalesDao;
 use \App\models\Ahorro as AhorroDao;
 
 class AdminSucursales extends Controller
@@ -30,7 +30,7 @@ class AdminSucursales extends Controller
         return <<<html
         <title>$titulo</title>
         <link rel="shortcut icon" href="/img/logo.png">
-        html;
+html;
     }
 
     //********************Saldos y movimientos de efectivo en sucursal********************//
@@ -39,7 +39,7 @@ class AdminSucursales extends Controller
     {
         $extraFooter = <<<html
        
-        html;
+html;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldo Diario")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -52,7 +52,7 @@ class AdminSucursales extends Controller
     {
         $extraFooter = <<<script
        
-        script;
+script;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Arqueo de Caja")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -65,7 +65,7 @@ class AdminSucursales extends Controller
     {
         $extraFooter = <<<script
        
-        script;
+script;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Arqueo de Caja")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -207,9 +207,24 @@ class AdminSucursales extends Controller
        
 html;
 
+        $opciones_suc = '';
+
+        $ComboSucursales = AdminSucursalesDao::getComboSucursalesHorario();
+
+
+        foreach ($ComboSucursales as $key => $val2) {
+
+            $opciones_suc .= <<<html
+                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+html;
+        }
+
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldo Diario")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('opciones_suc', $opciones_suc);
         View::set('fecha', date('Y-m-d'));
-        View::render("caja_admin_saldos_dia");
+        View::render("caja_admin_configurar");
     }
+
+
 }
