@@ -200,4 +200,16 @@ class AdminSucursales extends Controller
         $log = CajaAhorroDao::GetLogTransacciones($_POST);
         echo $log;
     }
+
+    public function Configuracion()
+    {
+        $extraFooter = <<<html
+       
+html;
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldo Diario")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha', date('Y-m-d'));
+        View::render("caja_admin_saldos_dia");
+    }
 }

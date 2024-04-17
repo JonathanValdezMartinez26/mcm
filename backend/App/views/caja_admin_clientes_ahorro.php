@@ -52,11 +52,11 @@
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
-                                <li><a onclick=mostrarAhorro() href=""><p style="font-size: 16px;"><b>Saldos del día por Sucursal</b></p> </a></li>
-                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Cierres de Día por Sucursal</p> </a></li>
-                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Fondear Sucursal</p> </a></li>
-                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Retiro Efectivo</p> </a></li>
-                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Historial Saldos por Sucursal</p> </a></li>
+                                <li><a onclick=mostrarAhorro() href=""><p style="font-size: 16px;"><b>Saldos al Día</b></p> </a></li>
+                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Cierres de Día</p> </a></li>
+                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Fondear</p> </a></li>
+                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Retirar</p> </a></li>
+                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Historial de Saldos</p> </a></li>
                             </ul>
                         </div>
                     </div>

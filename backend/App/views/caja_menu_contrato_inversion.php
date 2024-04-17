@@ -52,6 +52,7 @@
                     <! -- https://cdn-icons-png.flaticon.com/512/7325/7325359.png -->
                 </div>
             </a>
+
         </div>
         <div class="col-md-9">
             <form id="registroOperacion" name="registroOperacion">

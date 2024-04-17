@@ -24,7 +24,7 @@
             <a id="link" href="/AdminSucursales/Clientes/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/1605/1605401.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
-                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Clientes</b></p>
+                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Catalogo de Clientes </b></p>
                     <! --https://cdn-icons-png.flaticon.com/512/1605/1605350.png IMAGEN EN COLOR -->
                 </div>
             </a>
@@ -33,6 +33,14 @@
                     <img src="https://cdn-icons-png.flaticon.com/512/2761/2761001.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                     <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Log Transaccional </b></p>
                     <! -- https://cdn-icons-png.flaticon.com/512/2761/2761118.png IMAGEN EN COLOR -->
+                </div>
+            </a>
+
+            <a id="link" href="/AdminSucursales/Configuracion/">
+                <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/900/900797.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
+                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Configurar Módulo </b></p>
+                    <! --https://cdn-icons-png.flaticon.com/512/900/900834.png IMAGEN EN COLOR -->
                 </div>
             </a>
         </div>
