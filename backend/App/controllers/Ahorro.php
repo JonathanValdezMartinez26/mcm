@@ -2260,7 +2260,7 @@ class Ahorro extends Controller
             }
              
             const getFecha = (fecha) => {
-                const f = new Date(fecha)
+                const f = new Date(fecha + 'T06:00:00Z')
                 return f.toLocaleString("es-MX", { year: "numeric", month:"2-digit", day:"2-digit" })
             }
         </script>
@@ -2776,7 +2776,7 @@ class Ahorro extends Controller
             </table>
         </div>
         <div class="contenedorDetalle">
-            <table class="tablaDetalle" >
+            <table class="tablaDetalle">
                 <thead>
                     <tr>
                         <th style="width: 80px;">Fecha</th>
