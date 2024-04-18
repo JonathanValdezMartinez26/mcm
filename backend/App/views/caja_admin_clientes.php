@@ -21,7 +21,7 @@
                     <! -- https://cdn-icons-png.flaticon.com/512/2972/2972528.png IAMGEN EN COLOR -->
                 </div>
             </a>
-            <a id="link" href="/AdminSucursales/Clientes/">
+            <a id="link" href="/AdminSucursales/EstadoCuentaCliente/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/5864/5864348.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
                     <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Catalogo de Clientes </b></p>
@@ -85,23 +85,22 @@
                                 <li><a href="">
                                         <p style="font-size: 16px;"><b>Resumen de cuenta</b></p>
                                     </a></li>
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Historial de transacciones</b></p>
+                                <li class="linea"><a href="">
+                                        <p style="font-size: 15px;">Historial de transacciones</p>
                                     </a></li>
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Rendimiento</b></p>
+                                <li class="linea"><a href="">
+                                        <p style="font-size: 15px;">Rendimiento</p>
                                     </a></li>
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Tendencias de ahorro</b></p>
+                                <li class="linea"><a href="">
+                                        <p style="font-size: 15px;">Tendencias de ahorro</p>
                                     </a></li>
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Tendencias de inversión </b></p>
-                                    </a></li>
-
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Incidencias</b></p>
+                                <li class="linea"><a href="">
+                                        <p style="font-size: 15px;">Tendencias de inversión</p>
                                     </a></li>
 
+                                <li class="linea"><a href="">
+                                        <p style="font-size: 15px;">Incidencias</p>
+                                    </a></li>
 
                             </ul>
                         </div>

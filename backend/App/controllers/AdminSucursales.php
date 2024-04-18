@@ -226,7 +226,133 @@ html;
     }
 
 
-    public function Clientes()
+    public function EstadoCuentaCliente()
+    {
+        $extraFooter = <<<html
+       
+html;
+
+        $opciones_suc = '';
+
+        $ComboSucursales = AdminSucursalesDao::getComboSucursalesHorario();
+
+
+        foreach ($ComboSucursales as $key => $val2) {
+
+            $opciones_suc .= <<<html
+                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+html;
+        }
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldo Diario")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('opciones_suc', $opciones_suc);
+        View::set('fecha', date('Y-m-d'));
+        View::render("caja_admin_clientes");
+    }
+
+    public function TransaccionesCliente()
+    {
+        $extraFooter = <<<html
+       
+html;
+
+        $opciones_suc = '';
+
+        $ComboSucursales = AdminSucursalesDao::getComboSucursalesHorario();
+
+
+        foreach ($ComboSucursales as $key => $val2) {
+
+            $opciones_suc .= <<<html
+                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+html;
+        }
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldo Diario")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('opciones_suc', $opciones_suc);
+        View::set('fecha', date('Y-m-d'));
+        View::render("caja_admin_clientes");
+    }
+
+    public function RendimientoCliente()
+    {
+        $extraFooter = <<<html
+       
+html;
+
+        $opciones_suc = '';
+
+        $ComboSucursales = AdminSucursalesDao::getComboSucursalesHorario();
+
+
+        foreach ($ComboSucursales as $key => $val2) {
+
+            $opciones_suc .= <<<html
+                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+html;
+        }
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldo Diario")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('opciones_suc', $opciones_suc);
+        View::set('fecha', date('Y-m-d'));
+        View::render("caja_admin_clientes");
+    }
+
+    public function TendenciasAhorroCliente()
+    {
+        $extraFooter = <<<html
+       
+html;
+
+        $opciones_suc = '';
+
+        $ComboSucursales = AdminSucursalesDao::getComboSucursalesHorario();
+
+
+        foreach ($ComboSucursales as $key => $val2) {
+
+            $opciones_suc .= <<<html
+                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+html;
+        }
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldo Diario")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('opciones_suc', $opciones_suc);
+        View::set('fecha', date('Y-m-d'));
+        View::render("caja_admin_clientes");
+    }
+
+    public function TendenciasInversionCliente()
+    {
+        $extraFooter = <<<html
+       
+html;
+
+        $opciones_suc = '';
+
+        $ComboSucursales = AdminSucursalesDao::getComboSucursalesHorario();
+
+
+        foreach ($ComboSucursales as $key => $val2) {
+
+            $opciones_suc .= <<<html
+                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+html;
+        }
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldo Diario")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('opciones_suc', $opciones_suc);
+        View::set('fecha', date('Y-m-d'));
+        View::render("caja_admin_clientes");
+    }
+
+
+    public function IncidenciasCuentaCliente()
     {
         $extraFooter = <<<html
        
