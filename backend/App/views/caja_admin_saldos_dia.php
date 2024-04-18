@@ -64,7 +64,7 @@
                                         <p style="font-size: 16px;"><b>Saldos del día por sucursal</b></p>
                                     </a></li>
                                 <li class="linea"><a href="/AdminSucursales/ArqueoSucursal/">
-                                        <p style="font-size: 15px;">Arqueo por sucursal</p>
+                                        <p style="font-size: 15px;">Cierre de día</p>
                                     </a></li>
                                 <li class="linea"><a href="/AdminSucursales/FondearSucursal/">
                                         <p style="font-size: 15px;">Fondear sucursal</p>

@@ -2434,7 +2434,7 @@ class Ahorro extends Controller
     public function Ticket()
     {
         $ticket = $_GET['ticket'];
-        $sucursal = $_GET['sucursal'] ?? "1";
+        $sucursal = $_GET['sucursal'] ?? "";
         $datos = CajaAhorroDao::DatosTicket($ticket);
         if (!$datos) {
             echo "No se encontró información para el ticket: " . $ticket;
@@ -2449,7 +2449,7 @@ class Ahorro extends Controller
         }
 
 
-        $mpdf = new \mPDF('UTF-8', array(90, 190), 10, 'Arial');
+        $mpdf = new \mPDF('UTF-8', array(90, 190), 10, 'Arial', 10, 10, 0, 0, 0, 5);
         // PIE DE PAGINA
         $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:Arial;">' . $mensajeImpresion . '</div>');
         $mpdf->SetTitle($nombreArchivo);
@@ -2473,7 +2473,7 @@ class Ahorro extends Controller
                     <label>COMPROBANTE DE {$datos['COMPROBANTE']}</label>
                 </div>
                 <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
-                    ***********************************
+                    *****************************************
                 </div>
                 <div style="font-size: 11px;">
                     <label>Fecha de la operación: {$datos['FECHA']}</label>
@@ -2484,7 +2484,7 @@ class Ahorro extends Controller
                     $tktSucursal
                 </div>
                 <div style="text-align:center; font-size: 10px;margin-top:5px; margin-bottom: 5px">
-                    <b>------------------------------------------------------------</b>
+                    <b>__________________________________________________________</b>
                 </div>
                 <div style="font-size: 11px;">
                     <label>Nombre del cliente: {$datos['NOMBRE_CLIENTE']}</label>
@@ -2494,13 +2494,13 @@ class Ahorro extends Controller
                     <label>Código de contrato: {$datos['CONTRATO']}</label>
                 </div>
                 <div style="text-align:center; font-size: 10px;margin-top:5px; margin-bottom: 5px">
-                    <b>------------------------------------------------------------</b>
+                    <b>__________________________________________________________</b>
                 </div>
                 <div style="text-align:center; font-size: 13px;">
                     <label><b>CUENTA DE AHORRO CORRIENTE</b></label>
                 </div>
                 <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
-                    ***********************************
+                    *****************************************
                 </div>
                 <div style="text-align:center; font-size: 15px;">
                     <label><b>{$datos['ENTREGA']} $ {$tktMontoOP}</b></label>
@@ -2509,7 +2509,7 @@ class Ahorro extends Controller
                     <label>($tktMontoLetra)</label>
                 </div>
                 <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
-                    ***********************************
+                    *****************************************
                 </div>
                 <div style="text-align:center; font-size: 13px;">
                     <table style="width: 100%; font-size: 11spx">
@@ -2541,11 +2541,11 @@ class Ahorro extends Controller
                     </table>
                 </div>
                 <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
-                    ***********************************
+                    *****************************************
                 </div>
-                <div style="text-align:center; font-size: 15px;">
+                <div style="text-align:center; font-size: 15px; margin-top:25px">
                     <label><b>Firma de conformidad del cliente</b></label>
-                    <div style="text-align:center; font-size: 14px;margin-top:20px; margin-bottom: 5px">
+                    <div style="text-align:center; font-size: 15px; margin-top:25px; margin-bottom: 5px">
                         ______________________
                     </div>
                 </div>

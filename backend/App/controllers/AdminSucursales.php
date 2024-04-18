@@ -15,6 +15,48 @@ class AdminSucursales extends Controller
     private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
     private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
+    private $validarYbuscar = 'const validarYbuscar = (e) => {
+        if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
+        if (e.keyCode === 13) buscar()
+    }';
+    private $soloNumeros = 'const soloNumeros = (e) => {
+        valKD = false
+        if ((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58)) {
+            valKD = true
+            return
+        }
+        if (e.keyCode === 110 || e.keyCode === 190 || e.keyCode === 8  || e.keyCode === 8 || e.keyCode === 9  || e.keyCode === 37 || e.keyCode === 39 || e.keyCode === 46) {
+            valKD = true
+            return
+        }
+        return e.preventDefault()
+    }';
+    private $consultaServidor = 'const consultaServidor = (url, datos, fncOK, metodo = "POST") => {
+        swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false })
+        $.ajax({
+            type: metodo,
+            url: url,
+            data: datos,
+            success: (res) => {
+                try {
+                    res = JSON.parse(res)
+                } catch (error) {
+                    console.error(error)
+                    res =  {
+                        success: false,
+                        mensaje: "Ocurrió un error al procesar la respuesta del servidor."
+                    }
+                }
+                swal.close()
+                fncOK(res)
+            },
+            error: (error) => {
+                console.error(error)
+                showError("Ocurrió un error al procesar la solicitud.")
+                swal.close()
+            }
+        })
+    }';
 
     function __construct()
     {
@@ -29,7 +71,7 @@ class AdminSucursales extends Controller
         return <<<html
         <title>$titulo</title>
         <link rel="shortcut icon" href="/img/logo.png">
-html;
+        html;
     }
 
     //********************Saldos y movimientos de efectivo en sucursal********************//
@@ -38,7 +80,7 @@ html;
     {
         $extraFooter = <<<html
        
-html;
+        html;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldo Diario")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -51,12 +93,12 @@ html;
     {
         $extraFooter = <<<script
        
-script;
+        script;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Arqueo de Caja")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
-        View::render("en_construccion");
+        View::render("caja_admin_saldos_dia");
     }
 
     // Ingreso de efectivo a sucursal
@@ -64,7 +106,7 @@ script;
     {
         $extraFooter = <<<script
        
-script;
+        script;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Arqueo de Caja")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -200,29 +242,156 @@ script;
         echo $log;
     }
 
+    //********************BORRAR????********************//
     public function Configuracion()
     {
-        $extraFooter = <<<html
-       
-html;
+        $extraFooter = <<<script
+        <script>
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->soloNumeros}
+            {$this->consultaServidor}
+            let cjeraRegistrada = false
+         
+            const noSUBMIT = (e) => e.preventDefault()
+         
+            const cambioSucursal = () => {
+                consultaServidor(
+                    "/AdminSucursales/GetCajeras/",
+                    { sucursal: $("#sucursal").val() },
+                    (datos) => {
+                        if (!datos.success) return showError(datos.mensaje)
+                        if (datos.datos.length === 0) {
+                            $("#cajera").html("<option value='0' disabled selected>No hay cajeras en esta sucursal</option>")
+                            $("#cajera").prop("disabled", true)
+                        } else {
+                            let opciones = "<option value='0' disabled selected>Seleccione una cajera</option>"
+                            datos.datos.forEach((cajera) => {
+                                opciones += "<option value='" + cajera.CODIGO + "'>" + cajera.NOMBRE + "</option>"
+                            })
+                            $("#cajera").html(opciones)
+                            $("#cajera").prop("disabled", false)
+                        }
+                    }
+                )
+                     
+                consultaServidor(
+                    "/AdminSucursales/GetMontoSucursal/",
+                    { sucursal: $("#sucursal").val() },
+                    (datos) => {
+                        if (!datos.success) return
+                        if (datos.datos.length === 0) {
+                            $("#montoMin").val("")
+                            $("#montoMax").val("")
+                        } else {
+                            $("#montoMin").val(datos.datos[0].MONTO_MIN)
+                            $("#montoMax").val(datos.datos[0].MONTO_MAX)
+                        }
+                    }
+                )
+            }
+             
+            const cambioCajera = () => {
+                consultaServidor(
+                    "/AdminSucursales/GetHorarioCajera/",
+                    { cajera: $("#cajera").val() },
+                    (datos) => {
+                        // if (!datos.success) return showError(datos.mensaje)
+                        if (datos.datos.length === 0) {
+                            $("#horaA").val("")
+                            $("#horaC").val("")
+                            $("#montoMin").val("")
+                            $("#montoMax").val("")
+                        } else {
+                            $("#horaA").val(datos.datos[0].HORA_APERTURA)
+                            $("#horaC").val(datos.datos[0].HORA_CIERRE)
+                            $("#montoMin").val(datos.datos[0].MONTO_MIN)
+                            $("#montoMax").val(datos.datos[0].MONTO_MAX)
+                        }
+                    }
+                )
+                
+                $("#horaA").prop("disabled", false)
+                $("#horaC").prop("disabled", false)
+                $("#montoMin").prop("disabled", false)
+                $("#montoMax").prop("disabled", false)
+            }
+             
+            const cambioMonto = () => {
+                const min = parseFloat(document.querySelector("#montoMin").value) || 0
+                const max = parseFloat(document.querySelector("#montoMax").value) || 0
+                document.querySelector("#guardar").disabled = !(min > 0 && max > 0 && max >= min)
+            }
+             
+            const validaMaxMin = () => {
+                const min = parseFloat(document.querySelector("#montoMin").value) || 0
+                const max = parseFloat(document.querySelector("#montoMax").value) || 0
+                if (min > max) document.querySelector("#montoMax").value = min
+            }
+             
+            const activarSucursal = () => {
+                consultaServidor(
+                        "/AdminSucursales/ActivarSucursal/",
+                        $("#datos").serialize(),
+                        (res) => {
+                            if (!res.success) return showError(res.mensaje)
+                            showSuccess(res.mensaje)
+                            limpiarCampos()
+                        }
+                    )
+            }
+             
+            const limpiarDatos = () => {
+                document.querySelector("#datos").reset()
+                document.querySelector("#cajera").innerHTML = "<option value='0' disabled selected>Seleccione una cajera</option>"
+                document.querySelector("#cajera").disabled = true
+                document.querySelector("#horaA").disabled = true
+                document.querySelector("#horaC").disabled = true
+                document.querySelector("#montoMin").disabled = true
+                document.querySelector("#montoMax").disabled = true
+            }
+        </script>
+        script;
 
-        $opciones_suc = '';
+        $opcSucursales = "<option value='0' disabled selected>Seleccione una sucursal</option>";
+        $sucursales = AdminSucursalesDao::GetSucursales();
 
-        $ComboSucursales = AdminSucursalesDao::getComboSucursalesHorario();
 
+        foreach ($sucursales as $key => $val2) {
 
-        foreach ($ComboSucursales as $key => $val2) {
-
-            $opciones_suc .= <<<html
-                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
-html;
+            $opcSucursales .= "<option  value='" . $val2['CODIGO'] . "'>(" . $val2['CODIGO'] . ") " . $val2['NOMBRE'] . "</option>";
         }
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldo Diario")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Configuración de Caja")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('opciones_suc', $opciones_suc);
-        View::set('fecha', date('Y-m-d'));
+        View::set('opcSucursales', $opcSucursales);
+        View::set('fecha', date('d/m/Y H:i:s'));
         View::render("caja_admin_configurar");
+    }
+
+    public function GetMontoSucursal()
+    {
+        $monto = AdminSucursalesDao::GetMontoSucursal($_POST['sucursal']);
+        echo $monto;
+    }
+
+    public function GetCajeras()
+    {
+        $cajeras = AdminSucursalesDao::GetCajeras($_POST['sucursal']);
+        echo $cajeras;
+    }
+
+    public function GetHorarioCajera()
+    {
+        $horario = AdminSucursalesDao::GetHorarioCajera($_POST);
+        echo $horario;
+    }
+
+    public function ActivarSucursal()
+    {
+        $res = AdminSucursalesDao::ActivarSucursal($_POST);
+        echo $res;
     }
 
 
@@ -275,6 +444,4 @@ html;
         View::set('fecha', date('Y-m-d'));
         View::render("caja_admin_solicitudes");
     }
-
-
 }
