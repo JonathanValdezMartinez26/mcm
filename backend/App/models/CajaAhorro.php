@@ -537,9 +537,9 @@ class CajaAhorro
     {
         return <<<sql
         INSERT INTO MOVIMIENTOS_AHORRO
-            (CODIGO, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, MOVIMIENTO, DESCRIPCION, CDG_TICKET, FECHA_VALOR)
+            (CODIGO, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, MOVIMIENTO, DESCRIPCION, CDG_TICKET, FECHA_VALOR, CDG_RETIRO)
         VALUES
-            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(TO_NUMBER(CODIGO)) AS CODIGO FROM TICKETS_AHORRO WHERE CDG_CONTRATO = :contrato), SYSDATE)
+            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(TO_NUMBER(CODIGO)) AS CODIGO FROM TICKETS_AHORRO WHERE CDG_CONTRATO = :contrato), SYSDATE, (SELECT CASE :tipo_pago WHEN '7' THEN MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)) ELSE NULL END FROM SOLICITUD_RETIRO_AHORRO WHERE CONTRATO = :contrato))
         sql;
     }
 
@@ -877,7 +877,7 @@ class CajaAhorro
             INSERT INTO ASIGNA_PROD_AHORRO
                 (CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, SALDO)
             VALUES
-                (:contrato, :cliente, :fecha_apertura, '2', 'A', 0)
+                (:contrato, :cliente, SYSDATE, '2', 'A', 0)
             sql;
 
             $queryCL_PQ = <<<sql
@@ -894,8 +894,7 @@ class CajaAhorro
             $parametros = [
                 [
                     'contrato' => $noContrato,
-                    'cliente' => $datos['credito'],
-                    'fecha_apertura' => $fecha
+                    'cliente' => $datos['credito']
                 ],
                 [
                     'cliente' => $datos['credito'],
@@ -1081,7 +1080,6 @@ class CajaAhorro
             APA.CDGCL,
             TO_CHAR(APA.FECHA_APERTURA, 'DD/MM/YYYY') AS FECHA_APERTURA,
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE_CLIENTE,
-            
             (
                 SELECT
                     MONTO
@@ -1266,7 +1264,7 @@ class CajaAhorro
             SOLICITUD_RETIRO_AHORRO SR
             INNER JOIN CL ON CL.CODIGO = (SELECT CDGCL FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = SR.CONTRATO)
         ORDER BY
-            SR.FECHA_SOLICITUD DESC
+            SR.FECHA_ESTATUS DESC
         sql;
 
         try {
@@ -1336,20 +1334,29 @@ class CajaAhorro
 
     public static function GetMovimientosAhorro($contrato, $fI, $fF)
     {
+        // (
+        //     SELECT
+        //         DESCRIPCION
+        //     FROM
+        //         TIPO_PAGO_AHORRO
+        //     WHERE
+        //         CODIGO = MA.CDG_TIPO_PAGO
+        // ) AS DESCRIPCION,
         $qryMovimientos = <<<sql
         SELECT
             *
         FROM (
             SELECT
                 TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY') AS FECHA,
-                (
-                    SELECT
-                        DESCRIPCION
-                    FROM
-                        TIPO_PAGO_AHORRO
-                    WHERE
-                        CODIGO = MA.CDG_TIPO_PAGO
-                ) AS DESCRIPCION,
+                CONCAT(
+                        (SELECT DESCRIPCION
+                        FROM TIPO_PAGO_AHORRO
+                        WHERE CODIGO = MA.CDG_TIPO_PAGO),  CASE 
+                    WHEN SRA.FECHA_SOLICITUD IS NULL THEN ''
+                    ELSE TO_CHAR(SRA.FECHA_SOLICITUD, ' - DD/MM/YYYY')
+                    END 
+                    )
+                AS DESCRIPCION,
                 CASE MA.MOVIMIENTO
                     WHEN '0' THEN MA.MONTO
                     ELSE 0
@@ -1367,6 +1374,7 @@ class CajaAhorro
             FROM
                 MOVIMIENTOS_AHORRO MA
                 INNER JOIN TIPO_PAGO_AHORRO TPA ON TPA.CODIGO = MA.CDG_TIPO_PAGO
+                LEFT JOIN SOLICITUD_RETIRO_AHORRO SRA ON SRA.ID_SOL_RETIRO_AHORRO = MA.CDG_RETIRO 
             WHERE
                 MA.CDG_CONTRATO = '$contrato'
             ORDER BY

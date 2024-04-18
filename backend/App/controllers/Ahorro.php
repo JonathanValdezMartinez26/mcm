@@ -236,7 +236,7 @@ class Ahorro extends Controller
         if (datosCliente["NO_CONTRATOS"] == 0) {
             swal({
                 title: "Cuenta de ahorro corriente",
-                text: "El cliente " + datosCliente['CDGCL'] + " no tiene una cuenta de ahorro.\\nDesea aperturar una cuenta de ahorro en este momento?",
+                text: "El cliente " + datosCliente['CDGCL'] + " no tiene una cuenta de ahorro.\\n¿Desea aperturar una cuenta de ahorro en este momento?",
                 icon: "info",
                 buttons: ["No", "Sí"],
                 dangerMode: true
@@ -251,7 +251,7 @@ class Ahorro extends Controller
         if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
             swal({
                 title: "Cuenta de ahorro corriente",
-                text: "El cliente " + datosCliente['CDGCL'] + " no ha completado el proceso de apertura de la cuenta de ahorro.\\nDesea completar el proceso en este momento?",
+                text: "El cliente " + datosCliente['CDGCL'] + " no ha completado el proceso de apertura de la cuenta de ahorro.\\n¿Desea completar el proceso en este momento?",
                 icon: "info",
                 buttons: ["No", "Sí"],
                 dangerMode: true
@@ -2261,7 +2261,7 @@ class Ahorro extends Controller
              
             const getFecha = (fecha) => {
                 const f = new Date(fecha)
-                return f.getDate() + '/' + (f.getMonth() + 1) + '/' + f.getFullYear()
+                return f.toLocaleString("es-MX", { year: "numeric", month:"2-digit", day:"2-digit" })
             }
         </script>
         script;
@@ -2449,11 +2449,10 @@ class Ahorro extends Controller
         }
 
 
-        $mpdf = new \mPDF('UTF-8', array(90, 190));
+        $mpdf = new \mPDF('UTF-8', array(90, 190), 10, 'Arial');
         // PIE DE PAGINA
-        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:Helvetica;">' . $mensajeImpresion . '</div>');
+        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:Arial;">' . $mensajeImpresion . '</div>');
         $mpdf->SetTitle($nombreArchivo);
-        $mpdf->SetFont('Helvetica');
         $mpdf->SetMargins(0, 0, 5);
 
         $tktEjecutivo = $datos['COD_EJECUTIVO'] ? "<label>" . $datos['RECIBIO'] . ": " . $datos['NOM_EJECUTIVO'] . " (" . $datos['COD_EJECUTIVO'] . ")</label><br>" : "";
@@ -2777,7 +2776,7 @@ class Ahorro extends Controller
             </table>
         </div>
         <div class="contenedorDetalle">
-            <table class="tablaDetalle">
+            <table class="tablaDetalle" >
                 <thead>
                     <tr>
                         <th style="width: 80px;">Fecha</th>
