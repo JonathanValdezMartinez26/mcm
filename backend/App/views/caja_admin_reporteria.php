@@ -15,7 +15,7 @@
             </a>
             <a id="link" href="/AdminSucursales/Solicitudes/">
                 <div class="col-md-5 imagen" style="margin-top: 5px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2972/2972528.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2972/2972449.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                     <span class="button__badge">4</span>
                     <p style="font-size: 12px; padding-top: 5px; color: #000000"><b>Solicitudes de Sucursales</b></p>
                     <! -- https://cdn-icons-png.flaticon.com/512/2972/2972528.png IAMGEN EN COLOR -->
@@ -44,9 +44,9 @@
                 </div>
             </a>
 
-            <a id="link" href="/AdminSucursales/Log/">
+            <a id="link" href="/AdminSucursales/Reporteria/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/3201/3201495.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3201/3201558.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                     <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Consultar Reportes </b></p>
                     <! -- https://cdn-icons-png.flaticon.com/512/3201/3201558.png IMAGEN EN COLOR -->
                 </div>
@@ -62,8 +62,24 @@
                         <div>
                             <ul class="nav navbar-nav">
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Expediente</b></p>
+                                        <p style="font-size: 16px;"><b>Resumen de cuenta</b></p>
+                                </a></li>
+                                <li><a href="">
+                                        <p style="font-size: 16px;"><b>Historial de transacciones</b></p>
+                                 </a></li>
+                                <li><a href="">
+                                        <p style="font-size: 16px;"><b>Comparativa de rendimiento</b></p>
                                     </a></li>
+                                <li><a href="">
+                                        <p style="font-size: 16px;"><b>Tendencias de ahorro</b></p>
+                                    </a></li>
+                                <li><a href="">
+                                        <p style="font-size: 16px;"><b>Tendencias de inversi´´on</b></p>
+                                    </a></li>
+                                <li><a href="">
+                                        <p style="font-size: 16px;"><b>Reporte de saldos promedio</b></p>
+                                    </a></li>
+
                             </ul>
                         </div>
                     </div>

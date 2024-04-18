@@ -21,7 +21,7 @@
                     <! -- https://cdn-icons-png.flaticon.com/512/2972/2972528.png IAMGEN EN COLOR -->
                 </div>
             </a>
-            <a id="link" href="/AdminSucursales/Clientes/">
+            <a id="link" href="/AdminSucursales/EstadoCuentaCliente/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/5864/5864275.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
                     <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Catalogo de Clientes </b></p>
@@ -30,14 +30,14 @@
             </a>
             <a id="link" href="/AdminSucursales/Log/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2761/2761001.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
+                    <img src="https://cdn-icons-png.flaticon.com/512/10491/10491361.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                     <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Log Transaccional </b></p>
                     <! -- https://cdn-icons-png.flaticon.com/512/2761/2761118.png IMAGEN EN COLOR -->
                 </div>
             </a>
             <a id="link" href="/AdminSucursales/Configuracion/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/900/900834.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
+                    <img src="https://cdn-icons-png.flaticon.com/512/10491/10491253.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
                     <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Configurar Módulo </b></p>
                     <! -- IMAGEN EN COLOR -->
                 </div>
@@ -188,6 +188,108 @@
                             <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
                             <button class="btn btn-primary" id="guardar" onclick=activarSucursal() disabled><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
                         </div>
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <center>
+                                        <h4 class="modal-title" id="myModalLabel">Activar Modulo de Ahorro para Sucursal</h4>
+                                    </center>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="container-fluid">
+                                        <form onsubmit="enviar_add_horario(); return false" id="Add_AHC">
+                                            <div class="row">
+
+                                                <div class="col-md-12">
+                                                    <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label for="fecha_registro">Fecha de Registro</label>
+                                                            <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" readonly placeholder="" value="<?php $fechaActual = date('Y-m-d H:i:s');
+                                                                                                                                                                                echo $fechaActual; ?>">
+                                                            <small id="emailHelp" class="form-text text-muted">Fecha de registro para la asignación.</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-7">
+                                                        <div class="form-group">
+                                                            <label for="sucursal">Sucursal *</label>
+                                                            <select class="form-control" autofocus type="select" id="sucursal" name="sucursal">
+                                                                <?php echo $opciones_suc; ?>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label for="sucursal">Cajera *</label>
+                                                            <select class="form-control" autofocus type="select" id="sucursal" name="sucursal">
+                                                                <?php echo $opciones_suc; ?>
+                                                            </select>
+                                                            <small id="emailHelp" class="form-text text-muted"></small>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label for="hora">Horario de Apertura *</label>
+                                                            <select class="form-control" autofocus type="select" id="hora" name="hora">
+                                                                <option value="09:00:00">09:00 a.m</option>
+                                                                <option value="10:00:00">10:00 a.m</option>
+                                                                <option value="11:00:00">11:00 a.m</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label for="hora">Horario de Cierre *</label>
+                                                            <select class="form-control" autofocus type="select" id="hora" name="hora">
+                                                                <option value="15:00:00">03:00 p.m</option>
+                                                                <option value="16:00:00">04:00 p.m</option>
+                                                                <option value="17:00:00">05:00 p.m</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <small id="emailHelp" class="form-text text-muted">ATENCIÓN: La cajera no tendrá acceso antes del horario de apertura y después del horario de cierre solo podrá acceder al arqueo y cierre de día.</small>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <br>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label for="hora">Monto mínimo en caja*</label>
+                                                            <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" placeholder="">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label for="hora">Monto máximo en caja*</label>
+                                                            <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" placeholder="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <small id="emailHelp" class="form-text text-muted">ATENCIÓN: La cajera no podr´´a realizar retiros una vez que el monto este en el mínimo, solo podra realizar retiros express, que deben ser aprobados por tesorer´´ia .</small>
+                                                    </div>
+
+                                                </div>
+
+
+
+
+                                            </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                                    <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
                     </form>
                 </div>
             </div>
