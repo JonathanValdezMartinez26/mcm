@@ -62,8 +62,24 @@
                         <div>
                             <ul class="nav navbar-nav">
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Expediente</b></p>
+                                        <p style="font-size: 16px;"><b>Resumen de cuenta</b></p>
+                                </a></li>
+                                <li><a href="">
+                                        <p style="font-size: 16px;"><b>Historial de transacciones</b></p>
+                                 </a></li>
+                                <li><a href="">
+                                        <p style="font-size: 16px;"><b>Comparativa de rendimiento</b></p>
                                     </a></li>
+                                <li><a href="">
+                                        <p style="font-size: 16px;"><b>Tendencias de ahorro</b></p>
+                                    </a></li>
+                                <li><a href="">
+                                        <p style="font-size: 16px;"><b>Tendencias de inversi´´on</b></p>
+                                    </a></li>
+                                <li><a href="">
+                                        <p style="font-size: 16px;"><b>Reporte de saldos promedio</b></p>
+                                    </a></li>
+
                             </ul>
                         </div>
                     </div>

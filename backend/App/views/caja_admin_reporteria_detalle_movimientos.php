@@ -23,7 +23,7 @@
             </a>
             <a id="link" href="/AdminSucursales/Clientes/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/5864/5864348.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
+                    <img src="https://cdn-icons-png.flaticon.com/512/5864/5864275.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
                     <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Catalogo de Clientes </b></p>
                     <! -- IMAGEN EN COLOR -->
                 </div>
@@ -44,9 +44,9 @@
                 </div>
             </a>
 
-            <a id="link" href="/AdminSucursales/Log/">
+            <a id="link" href="/AdminSucursales/Reporteria/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/3201/3201495.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3201/3201558.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                     <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Consultar Reportes </b></p>
                     <! -- https://cdn-icons-png.flaticon.com/512/3201/3201558.png IMAGEN EN COLOR -->
                 </div>
@@ -59,50 +59,17 @@
                         <div class="navbar-header card col-md-12" style="background: #2b2b2b">
                             <a class="navbar-brand">Admin sucursales / Catálogo de Clientes</a>
                         </div>
-
-                        <div class="col-md-12">
-                            <br>
-                            <br>
-                            <div class="col-md-6">
-                                <p>Para realizar un movimiento es necesario que el cliente tenga una cuenta ahorro corriente activa, de lo contrario, es necesaria la creación de una a través de la opción: <a href="/Ahorro/ContratoCuentaCorriente/" target="_blank">Nuevo Contrato</a>.</p>
-                                <!-- <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p> -->
-                                <hr>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="movil">Código de cliente SICAFIN *</label>
-                                <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" value="<?= $cliente ?>" required>
-                            </div>
-                            <div class="col-md-2" style="padding-top: 25px">
-                                <button type="button" class="btn btn-primary" id="btnBskClnt" onclick="buscaCliente()">
-                                    <i class="fa fa-search"></i> Buscar
-                                </button>
-                            </div>
-                        </div>
-
                         <div>
                             <ul class="nav navbar-nav">
-
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Resumen de cuenta</b></p>
-                                    </a></li>
+                                        <p style="font-size: 16px;"><b>Saldos al d´´ia</b></p>
+                                </a></li>
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Historial de transacciones</b></p>
-                                    </a></li>
+                                        <p style="font-size: 16px;"><b>Cuentas</b></p>
+                                </a></li>
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Rendimiento</b></p>
+                                        <p style="font-size: 16px;"><b>Detalle Movimientos</b></p>
                                     </a></li>
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Tendencias de ahorro</b></p>
-                                    </a></li>
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Tendencias de inversión </b></p>
-                                    </a></li>
-
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Incidencias</b></p>
-                                    </a></li>
-
-
                             </ul>
                         </div>
                     </div>
