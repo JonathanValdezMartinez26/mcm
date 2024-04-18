@@ -276,5 +276,30 @@ html;
         View::render("caja_admin_solicitudes");
     }
 
+    public function Reporteria()
+    {
+        $extraFooter = <<<html
+       
+html;
+
+        $opciones_suc = '';
+
+        $ComboSucursales = AdminSucursalesDao::getComboSucursalesHorario();
+
+
+        foreach ($ComboSucursales as $key => $val2) {
+
+            $opciones_suc .= <<<html
+                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+html;
+        }
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldo Diario")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('opciones_suc', $opciones_suc);
+        View::set('fecha', date('Y-m-d'));
+        View::render("caja_admin_reporteria");
+    }
+
 
 }

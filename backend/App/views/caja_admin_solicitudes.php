@@ -30,7 +30,7 @@
             </a>
             <a id="link" href="/AdminSucursales/Log/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2761/2761001.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
+                    <img src="https://cdn-icons-png.flaticon.com/512/10491/10491361.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                     <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Log Transaccional </b></p>
                     <! -- https://cdn-icons-png.flaticon.com/512/2761/2761118.png IMAGEN EN COLOR -->
                 </div>
@@ -38,7 +38,7 @@
 
             <a id="link" href="/AdminSucursales/Configuracion/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/900/900797.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
+                    <img src="https://cdn-icons-png.flaticon.com/512/10491/10491249.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
                     <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Configurar Módulo </b></p>
                     <! -- IMAGEN EN COLOR -->
                 </div>
