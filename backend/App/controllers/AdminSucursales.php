@@ -396,4 +396,18 @@ class AdminSucursales extends Controller
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///
+    public function EstadoCuentaCliente()
+    {
+        $extraFooter = <<<script
+       
+script;
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Estado de Cuenta Mensual")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha', date('Y-m-d'));
+        View::render("caja_admin_clientes");
+    }
+
+
 }
