@@ -183,113 +183,14 @@
                                     <input type="number" class="form-control" id="montoMax" name="montoMax" placeholder="0.00" min="0" max="100000" onkeydown=soloNumeros(event) onblur=validaMaxMin() oninput=cambioMonto() onchange=cambioMonto() disabled />
                                 </div>
                             </div>
+                            <div class="col-md-12">
+                                <small id="emailHelp" class="form-text text-muted">ATENCIÓN: La cajera no podrá realizar retiros una vez que el monto este en el mínimo, solo podrá realizar retiros express, que deben ser aprobados por tesorería .</small>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
                             <button class="btn btn-primary" id="guardar" onclick=activarSucursal() disabled><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
                         </div>
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                    <center>
-                                        <h4 class="modal-title" id="myModalLabel">Activar Modulo de Ahorro para Sucursal</h4>
-                                    </center>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="container-fluid">
-                                        <form onsubmit="enviar_add_horario(); return false" id="Add_AHC">
-                                            <div class="row">
-
-                                                <div class="col-md-12">
-                                                    <div class="col-md-5">
-                                                        <div class="form-group">
-                                                            <label for="fecha_registro">Fecha de Registro</label>
-                                                            <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" readonly placeholder="" value="<?php $fechaActual = date('Y-m-d H:i:s');
-                                                                                                                                                                                echo $fechaActual; ?>">
-                                                            <small id="emailHelp" class="form-text text-muted">Fecha de registro para la asignación.</small>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-7">
-                                                        <div class="form-group">
-                                                            <label for="sucursal">Sucursal *</label>
-                                                            <select class="form-control" autofocus type="select" id="sucursal" name="sucursal">
-                                                                <?php echo $opciones_suc; ?>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <label for="sucursal">Cajera *</label>
-                                                            <select class="form-control" autofocus type="select" id="sucursal" name="sucursal">
-                                                                <?php echo $opciones_suc; ?>
-                                                            </select>
-                                                            <small id="emailHelp" class="form-text text-muted"></small>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-12">
-
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="hora">Horario de Apertura *</label>
-                                                            <select class="form-control" autofocus type="select" id="hora" name="hora">
-                                                                <option value="09:00:00">09:00 a.m</option>
-                                                                <option value="10:00:00">10:00 a.m</option>
-                                                                <option value="11:00:00">11:00 a.m</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="hora">Horario de Cierre *</label>
-                                                            <select class="form-control" autofocus type="select" id="hora" name="hora">
-                                                                <option value="15:00:00">03:00 p.m</option>
-                                                                <option value="16:00:00">04:00 p.m</option>
-                                                                <option value="17:00:00">05:00 p.m</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <small id="emailHelp" class="form-text text-muted">ATENCIÓN: La cajera no tendrá acceso antes del horario de apertura y después del horario de cierre solo podrá acceder al arqueo y cierre de día.</small>
-                                                    </div>
-
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <br>
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="hora">Monto mínimo en caja*</label>
-                                                            <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" placeholder="">
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-md-4">
-                                                        <div class="form-group">
-                                                            <label for="hora">Monto máximo en caja*</label>
-                                                            <input type="text" class="form-control" id="fecha_registro" name="fecha_registro" placeholder="">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <small id="emailHelp" class="form-text text-muted">ATENCIÓN: La cajera no podr´´a realizar retiros una vez que el monto este en el mínimo, solo podra realizar retiros express, que deben ser aprobados por tesorer´´ia .</small>
-                                                    </div>
-
-                                                </div>
-
-
-
-
-                                            </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                                    <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
                     </form>
                 </div>
             </div>
