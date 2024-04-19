@@ -23,10 +23,66 @@ class AdminSucursales
         return json_encode($res);
     }
 
+    public static function GetSucursalesActivas()
+    {
+        $query = <<<sql
+            SELECT
+                TO_CHAR(FECHA_REGISTRO, 'DD/MM/YYYY') FECHA_REGISTRO,
+                SEA.CDG_SUCURSAL,
+                CO.NOMBRE,
+                SCA.CDG_USUARIO,
+                (
+                    SELECT
+                        CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE)
+                    FROM 
+                        PE
+                    WHERE
+                        PE.CODIGO = SCA.CDG_USUARIO
+                ) NOMBRE_CAJERA,
+                TO_CHAR(TO_DATE(SCA.HORA_APERTURA, 'HH24:MI:SS'), 'HH:MI AM') HORA_APERTURA,
+                TO_CHAR(TO_DATE(SCA.HORA_CIERRE, 'HH24:MI:SS'), 'HH:MI AM') HORA_CIERRE,
+                TO_CHAR(TO_NUMBER(SEA.SALDO_MINIMO), 'FM$999,999,999.00') SALDO_MINIMO,
+                TO_CHAR(TO_NUMBER(SEA.SALDO_MAXIMO), 'FM$999,999,999.00') SALDO_MAXIMO,
+                NULL ACCIONES
+            FROM
+                SUC_ESTADO_AHORRO SEA
+            JOIN
+                CO ON CO.CODIGO = SEA.CDG_SUCURSAL
+            RIGHT JOIN
+                SUC_CAJERA_AHORRO SCA ON SCA.CDG_ESTADO_AHORRO = SEA.CODIGO
+            WHERE
+                SEA.ESTATUS = 'A'
+            ORDER BY
+                CO.NOMBRE
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryAll($query);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
     public static function GetSucursales()
     {
         $query = <<<sql
-            SELECT CO.CODIGO, CO.NOMBRE FROM CO ORDER BY CO.NOMBRE
+            SELECT
+                CO.CODIGO,
+                CO.NOMBRE
+            FROM
+                CO
+            WHERE
+                CO.CODIGO NOT IN (
+                    SELECT
+                        CDG_SUCURSAL
+                    FROM
+                        SUC_ESTADO_AHORRO
+                    WHERE
+                        ESTATUS = 'A'
+                    )
+            ORDER BY
+                CO.NOMBRE
         sql;
 
         try {

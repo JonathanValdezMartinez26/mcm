@@ -256,6 +256,30 @@ class AdminSucursales extends Controller
          
             const noSUBMIT = (e) => e.preventDefault()
          
+            $(document).ready(() => {
+                $("#sucursalesActivas").tablesorter()
+                $("#sucursalesActivas").DataTable({
+                    lengthMenu: [
+                        [10, 40, -1],
+                        [10, 40, "Todos"]
+                    ],
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 0
+                        }
+                    ],
+                    order: false
+                })
+            
+                $("#sucursalesActivas input[type=search]").keyup(() => {
+                    $("#example")
+                        .DataTable()
+                        .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
+                        .draw()
+                })
+            })
+         
             const cambioSucursal = () => {
                 consultaServidor(
                     "/AdminSucursales/GetCajeras/",
@@ -297,17 +321,16 @@ class AdminSucursales extends Controller
                     "/AdminSucursales/GetHorarioCajera/",
                     { cajera: $("#cajera").val() },
                     (datos) => {
-                        // if (!datos.success) return showError(datos.mensaje)
-                        if (datos.datos.length === 0) {
-                            $("#horaA").val("")
-                            $("#horaC").val("")
-                            $("#montoMin").val("")
-                            $("#montoMax").val("")
-                        } else {
+                        if (datos.datos && datos.datos.length === 0) {
                             $("#horaA").val(datos.datos[0].HORA_APERTURA)
                             $("#horaC").val(datos.datos[0].HORA_CIERRE)
                             $("#montoMin").val(datos.datos[0].MONTO_MIN)
                             $("#montoMax").val(datos.datos[0].MONTO_MAX)
+                        } else {
+                            $("#horaA").select(0)
+                            $("#horaC").select(0)
+                            $("#montoMin").val("")
+                            $("#montoMax").val("")
                         }
                     }
                 )
@@ -336,8 +359,13 @@ class AdminSucursales extends Controller
                         $("#datos").serialize(),
                         (res) => {
                             if (!res.success) return showError(res.mensaje)
-                            showSuccess(res.mensaje)
-                            limpiarCampos()
+                            // let select = document.querySelector("#sucursal")
+                            // select.options[select.selectedIndex].remove()
+                            
+                            showSuccess(res.mensaje).then(() => {
+                                window.location.reload()
+                                // limpiarDatos()
+                            })
                         }
                     )
             }
@@ -354,18 +382,26 @@ class AdminSucursales extends Controller
         </script>
         script;
 
-        $opcSucursales = "<option value='0' disabled selected>Seleccione una sucursal</option>";
         $sucursales = AdminSucursalesDao::GetSucursales();
-
-
+        $opcSucursales = "<option value='0' disabled selected>Seleccione una sucursal</option>";
         foreach ($sucursales as $key => $val2) {
-
             $opcSucursales .= "<option  value='" . $val2['CODIGO'] . "'>(" . $val2['CODIGO'] . ") " . $val2['NOMBRE'] . "</option>";
+        }
+
+        $sucActivas = AdminSucursalesDao::GetSucursalesActivas();
+        $tabla = "";
+        foreach ($sucActivas as $key => $val) {
+            $tabla .= "<tr>";
+            foreach ($val as $key2 => $val2) {
+                $tabla .= "<td style='vertical-align: middle;'>{$val2}</td>";
+            }
+            $tabla .= "</tr>";
         }
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Configuración de Caja")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('opcSucursales', $opcSucursales);
+        View::set('tabla', $tabla);
         View::set('fecha', date('d/m/Y H:i:s'));
         View::render("caja_admin_configurar");
     }
@@ -408,6 +444,4 @@ script;
         View::set('fecha', date('Y-m-d'));
         View::render("caja_admin_clientes");
     }
-
-
 }

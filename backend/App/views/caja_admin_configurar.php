@@ -81,13 +81,14 @@
                             </div>
                             <div class="row">
                                 <div class="dataTable_wrapper">
-                                    <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
+                                    <table class="table table-striped table-bordered table-hover" id="sucursalesActivas">
                                         <thead>
                                             <tr>
                                                 <th>Fecha de Registro</th>
                                                 <th>Cod Sucursal</th>
                                                 <th>Nombre Sucursal</th>
                                                 <th>Cod Cajera</th>
+                                                <th>Nombre Cajera</th>
                                                 <th>Hora Apertura</th>
                                                 <th>Hora Cierre</th>
                                                 <th>Monto Mínimo</th>
@@ -139,10 +140,12 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group">
-                                <label for="sucursal">Cajera *</label>
-                                <select class="form-control" id="cajera" name="cajera" onchange=cambioCajera() disabled>
-                                </select>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="sucursal">Cajera *</label>
+                                    <select class="form-control" id="cajera" name="cajera" onchange=cambioCajera() disabled>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="row">
@@ -166,9 +169,9 @@
                                     </select>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <small id="emailHelp" class="form-text text-muted">ATENCIÓN: La cajera no tendrá acceso antes del horario de apertura y después del horario de cierre solo podrá acceder al arqueo y cierre de día.</small>
+                            <div class="col-md-12">
+                                <small id="emailHelp" class="form-text text-muted">ATENCIÓN: La cajera no tendrá acceso antes del horario de apertura y después del horario de cierre solo podrá acceder al arqueo y cierre de día.</small>
+                            </div>
                         </div>
                         <div class="row" style="margin-top:20px">
                             <div class="col-md-4">
