@@ -266,11 +266,9 @@ class Ahorro extends Controller
         return true
     }
     script;
-    private $addParametro = <<<script
-    const addParametro = (parametros, newParametro, newValor) => {
+    private $addParametro = 'const addParametro = (parametros, newParametro, newValor) => {
         parametros.push({ name: newParametro, value: newValor })
-    }
-    script;
+    }';
 
     function __construct()
     {

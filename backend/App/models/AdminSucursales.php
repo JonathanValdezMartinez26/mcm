@@ -220,4 +220,81 @@ class AdminSucursales
             return self::Responde(false, "Error al activar sucursal", null, $e->getMessage());
         }
     }
+
+    public static function GetDatosFondeo($datos)
+    {
+        $qry = <<<sql
+        SELECT
+            SEA.CODIGO,
+            SEA.CDG_SUCURSAL AS CODIGO_SUCURSAL,
+            (
+                SELECT
+                    NOMBRE
+                FROM
+                    CO
+                WHERE
+                    CODIGO = SEA.CDG_SUCURSAL
+            ) AS NOMBRE_SUCURSAL,
+            SCA.CDG_USUARIO AS CODIGO_CAJERA,
+            (
+                SELECT
+                    CONCATENA_NOMBRE(NOMBRE1, NOMBRE2, PRIMAPE, SEGAPE)
+                FROM
+                    PE
+                WHERE
+                    CODIGO = SCA.CDG_USUARIO
+            ) AS NOMBRE_CAJERA,
+            NULL AS FECHA_CIERRE,
+            SEA.SALDO_MINIMO AS MONTO_MIN,
+            SEA.SALDO_MAXIMO AS MONTO_MAX,
+            NVL(SEA.SALDO, 0) AS SALDO
+        FROM
+            SUC_ESTADO_AHORRO SEA
+        RIGHT JOIN
+            SUC_CAJERA_AHORRO SCA ON SCA.CDG_ESTADO_AHORRO = SEA.CODIGO
+        WHERE
+            SEA.CDG_SUCURSAL = '{$datos["sucursal"]}'
+            AND SEA.ESTATUS = 'A'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryOne($qry);
+            if ($res) return self::Responde(true, "Datos encontrados.", $res);
+            else return self::Responde(false, "No se encontraron datos para la sucursal " . $datos["sucursal"] . ".");
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al buscar información de la sucursal.", null, $e->getMessage());
+        }
+    }
+
+    public static function AplicarFondeo($datos)
+    {
+        $qry = <<<sql
+        INSERT INTO SUC_MOVIMIENTOS_AHORRO
+            (CODIGO, CDG_ESTADO_AHORRO, FECHA, MONTO, MOVIMIENTO, CDG_USUARIO)
+        VALUES
+            (
+                (SELECT NVL(MAX(TO_NUMBER(CODIGO)), 0) FROM SUC_MOVIMIENTOS_AHORRO) + 1,
+                :codigo,
+                SYSDATE,
+                :monto,
+                '1',
+                :usuario
+            )
+        sql;
+
+        $params = [
+            "codigo" => $datos["codigoSEA"],
+            "monto" => $datos["montoOperacion"],
+            "usuario" => $datos["usuario"]
+        ];
+
+        try {
+            $mysqli = Database::getInstance();
+            $mysqli->insertar($qry, $params);
+            return self::Responde(true, "Fondeo realizado correctamente.");
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al realizar fondeo.", null, $e->getMessage());
+        }
+    }
 }

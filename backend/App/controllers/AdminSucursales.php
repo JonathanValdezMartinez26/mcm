@@ -15,6 +15,7 @@ class AdminSucursales extends Controller
     private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
     private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
+    private $noSubmit = 'const noSUBMIT = (e) => e.preventDefault()';
     private $validarYbuscar = 'const validarYbuscar = (e) => {
         if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
         if (e.keyCode === 13) buscar()
@@ -31,6 +32,103 @@ class AdminSucursales extends Controller
         }
         return e.preventDefault()
     }';
+    private $numeroLetras = 'const numeroLetras = (numero) => {
+        if (!numero) return ""
+        const unidades = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"]
+        const especiales = [
+            "",
+            "once",
+            "doce",
+            "trece",
+            "catorce",
+            "quince",
+            "dieciséis",
+            "diecisiete",
+            "dieciocho",
+            "diecinueve",
+            "veinte",
+            "veintiún",
+            "veintidós",
+            "veintitrés",
+            "veinticuatro",
+            "veinticinco",
+            "veintiséis",
+            "veintisiete",
+            "veintiocho",
+            "veintinueve"
+        ]
+        const decenas = [
+            "",
+            "diez",
+            "veinte",
+            "treinta",
+            "cuarenta",
+            "cincuenta",
+            "sesenta",
+            "setenta",
+            "ochenta",
+            "noventa"
+        ]
+        const centenas = [
+            "cien",
+            "ciento",
+            "doscientos",
+            "trescientos",
+            "cuatrocientos",
+            "quinientos",
+            "seiscientos",
+            "setecientos",
+            "ochocientos",
+            "novecientos"
+        ]
+    
+        const convertirMenorA1000 = (numero) => {
+            let letra = ""
+            if (numero >= 100) {
+                letra += centenas[(numero === 100 ? 0 : Math.floor(numero / 100))] + " "
+                numero %= 100
+            }
+            if (numero === 10 || numero === 20 || (numero > 29 && numero < 100)) {
+                letra += decenas[Math.floor(numero / 10)]
+                numero %= 10
+                letra += numero > 0 ? " y " : " "
+            }
+            if (numero != 20 && numero >= 11 && numero <= 29) {
+                letra += especiales[numero % 10 + (numero > 20 ? 10 : 0)] + " "
+                numero = 0
+            }
+            if (numero > 0) {
+                letra += unidades[numero] + " "
+            }
+            return letra.trim()
+        }
+    
+        const convertir = (numero) => {
+            if (numero === 0) {
+                return "cero"
+            }
+        
+            let letra = ""
+        
+            if (numero >= 1000000) {
+                letra += convertirMenorA1000(Math.floor(numero / 1000000)) + (numero === 1000000 ? " millón " : " millones ")
+                numero %= 1000000
+            }
+        
+            if (numero >= 1000) {
+                letra += (numero === 1000 ? "" : convertirMenorA1000(Math.floor(numero / 1000))) + " mil "
+                numero %= 1000
+            }
+        
+            letra += convertirMenorA1000(numero)
+            return letra.trim()
+        }
+    
+        const parteEntera = Math.floor(numero)
+        const parteDecimal = Math.round((numero - parteEntera) * 100).toString().padStart(2, "0")
+        return primeraMayuscula(convertir(parteEntera)) + (numero == 1 ? " peso " : " pesos ") + parteDecimal + "/100 M.N."
+    }';
+    private $primeraMayuscula = 'const primeraMayuscula = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1)';
     private $consultaServidor = 'const consultaServidor = (url, datos, fncOK, metodo = "POST") => {
         swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false })
         $.ajax({
@@ -56,6 +154,9 @@ class AdminSucursales extends Controller
                 swal.close()
             }
         })
+    }';
+    private $addParametro = 'const addParametro = (parametros, newParametro, newValor) => {
+        parametros.push({ name: newParametro, value: newValor })
     }';
 
     function __construct()
@@ -105,13 +206,128 @@ class AdminSucursales extends Controller
     public function FondearSucursal()
     {
         $extraFooter = <<<script
-       
+        <script>
+            let montoMaximo = 0
+            let montoMinimo = 0
+            let valKD = false
+            let codigoSEA = 0
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->noSubmit}
+            {$this->soloNumeros}
+            {$this->validarYbuscar}
+            {$this->consultaServidor}
+            {$this->numeroLetras}
+            {$this->primeraMayuscula}
+            {$this->addParametro}
+         
+            const buscar = () => {
+                const sucursal = document.querySelector("#sucursalBuscada").value
+                if (sucursal === "0") return showError("Seleccione una sucursal")
+                consultaServidor(
+                    "/AdminSucursales/GetDatosFondeo/",
+                    { sucursal },
+                    (res) => {
+                        if (!res.success) return showError(res.mensaje)
+                        if (parseFloat(res.datos.SALDO) === parseFloat(res.datos.MONTO_MAX)) return showError("La sucursal " + sucursal + " ya tiene el saldo máximo permitido (" + parseFloat(res.datos.MONTO_MAX).toLocaleString("es-MX", { style: "currency", currency: "MXN" }) + ").")
+                        document.querySelector("#sucursalBuscada").value = ""
+                        document.querySelector("#codigoSuc").value = res.datos.CODIGO_SUCURSAL
+                        document.querySelector("#nombreSuc").value = res.datos.NOMBRE_SUCURSAL
+                        document.querySelector("#codigoCajera").value = res.datos.CODIGO_CAJERA
+                        document.querySelector("#nombreCajera").value = res.datos.NOMBRE_CAJERA
+                        document.querySelector("#fechaCierre").value = res.datos.FECHA_CIERRE
+                        document.querySelector("#saldoActual").value = parseFloat(res.datos.SALDO).toFixed(2)
+                        document.querySelector("#montoOperacion").value = "0.00"
+                        document.querySelector("#saldoFinal").value = parseFloat(res.datos.SALDO).toFixed(2)
+                        document.querySelector("#monto").disabled = false
+                        document.querySelector("#monto").focus()
+                        montoMinimo = parseFloat(res.datos.MONTO_MIN)
+                        montoMaximo = parseFloat(res.datos.MONTO_MAX)
+                        codigoSEA = res.datos.CODIGO
+                    }
+                )
+            }
+             
+            const limpiarCampos = () => {
+                document.querySelector("#codigoSuc").value = ""
+                document.querySelector("#nombreSuc").value = ""
+                document.querySelector("#codigoCajera").value = ""
+                document.querySelector("#nombreCajera").value = ""
+                document.querySelector("#fechaCierre").value = ""
+                document.querySelector("#saldoActual").value = "0.00"
+                document.querySelector("#montoOperacion").value = "0.00"
+                document.querySelector("#saldoFinal").value = "0.00"
+                document.querySelector("#monto").value = ""
+                document.querySelector("#monto").disabled = true
+            }
+             
+            const validaMonto = () => {
+                const montoIngresado = document.querySelector("#monto")
+                if (!parseFloat(montoIngresado.value)) {
+                    document.querySelector("#montoOperacion").value = "0.00"
+                    return
+                }
+                 
+                let monto = parseFloat(montoIngresado.value) || 0
+                let disponible = montoMaximo - parseFloat(document.querySelector("#saldoActual").value)
+                 
+                if (monto > disponible) {
+                    monto = disponible
+                    showError("La sucursal no puede tener un saldo mayor a " + montoMaximo.toLocaleString("es-MX", { style: "currency", currency: "MXN" }) + ", si requiere un monto mayor comuníquese con el administrador.")
+                    montoIngresado.value = monto
+                }
+                 
+                const valor = montoIngresado.value.split(".")
+                if (valor[1] && valor[1].length > 2) {
+                    montoIngresado.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
+                }
+                 
+                document.querySelector("#montoOperacion").value = monto.toFixed(2)
+                const nuevoSaldo = (monto + parseFloat(document.querySelector("#saldoActual").value)).toFixed(2)
+                document.querySelector("#saldoFinal").value = nuevoSaldo > 0 ? nuevoSaldo : "0.00"
+                document.querySelector("#monto_letra").value = numeroLetras(parseFloat(montoIngresado.value))
+                document.querySelector("#btnFondear").disabled = !(monto <= montoMaximo && monto >= montoMinimo)
+            }
+             
+            const fondear = () => {
+                const monto = parseFloat(document.querySelector("#monto").value)
+                if (monto < montoMinimo) return showError("El saldo final debe ser mayor o igual a " + montoMinimo.toLocaleString("es-MX", { style: "currency", currency: "MXN" }))
+                
+                let datos = $("#datos").serializeArray()
+                addParametro(datos, "codigoSEA", codigoSEA)
+                addParametro(datos, "usuario", '{$_SESSION["usuario"]}')
+                 
+                consultaServidor(
+                    "/AdminSucursales/AplicarFondeo/",
+                    datos,
+                    (res) => {
+                        if (!res.success) return showError(res.mensaje)
+                        showSuccess(res.mensaje).then(() => {
+                            window.location.reload()
+                        })
+                    }
+                )
+            }
+        </script>
         script;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Arqueo de Caja")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha', date('Y-m-d'));
-        View::render("en_construccion");
+        View::set('fecha', date('d/m/Y H:i:s'));
+        View::render("caja_admin_fondeo");
+    }
+
+    public function GetDatosFondeo()
+    {
+        $datos = AdminSucursalesDao::GetDatosFondeo($_POST);
+        echo $datos;
+    }
+
+    public function AplicarFondeo()
+    {
+        $res = AdminSucursalesDao::AplicarFondeo($_POST);
+        echo $res;
     }
 
     // Egreso de efectivo de sucursal
@@ -242,7 +458,8 @@ class AdminSucursales extends Controller
         echo $log;
     }
 
-    //********************BORRAR????********************//
+    //********************Activación de sucursales y cajeras********************//
+    // Permite activar una sucursal y configurar los horarios de cajeras
     public function Configuracion()
     {
         $extraFooter = <<<script
@@ -250,11 +467,10 @@ class AdminSucursales extends Controller
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
+            {$this->noSubmit}
             {$this->soloNumeros}
             {$this->consultaServidor}
             let cjeraRegistrada = false
-         
-            const noSUBMIT = (e) => e.preventDefault()
          
             $(document).ready(() => {
                 $("#sucursalesActivas").tablesorter()
@@ -358,26 +574,12 @@ class AdminSucursales extends Controller
                         "/AdminSucursales/ActivarSucursal/",
                         $("#datos").serialize(),
                         (res) => {
-                            if (!res.success) return showError(res.mensaje)
-                            // let select = document.querySelector("#sucursal")
-                            // select.options[select.selectedIndex].remove()
-                            
+                            if (!res.success) return showError(res.mensaje)                            
                             showSuccess(res.mensaje).then(() => {
                                 window.location.reload()
-                                // limpiarDatos()
                             })
                         }
                     )
-            }
-             
-            const limpiarDatos = () => {
-                document.querySelector("#datos").reset()
-                document.querySelector("#cajera").innerHTML = "<option value='0' disabled selected>Seleccione una cajera</option>"
-                document.querySelector("#cajera").disabled = true
-                document.querySelector("#horaA").disabled = true
-                document.querySelector("#horaC").disabled = true
-                document.querySelector("#montoMin").disabled = true
-                document.querySelector("#montoMax").disabled = true
             }
         </script>
         script;
@@ -429,7 +631,6 @@ class AdminSucursales extends Controller
         $res = AdminSucursalesDao::ActivarSucursal($_POST);
         echo $res;
     }
-
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///
