@@ -78,11 +78,11 @@
                                 <li class="linea"><a href="/AdminSucursales/ArqueoSucursal/">
                                         <p style="font-size: 15px;">Cierre de día</p>
                                     </a></li>
-                                <li><a href="">
-                                        <p style="font-size: 15px;"><b>Fondear sucursal</b></p>
+                                <li class="linea"><a href="/AdminSucursales/FondearSucursal">
+                                        <p style="font-size: 15px;">Fondear sucursal</p>
                                     </a></li>
-                                <li class="linea"><a href="/AdminSucursales/RetiroSucursal/">
-                                        <p style="font-size: 15px;">Retiro efectivo</p>
+                                <li><a href="">
+                                        <p style="font-size: 15px;"><b>Retiro efectivo</b></p>
                                     </a></li>
                                 <li class="linea"><a href="/AdminSucursales/Historial/">
                                         <p style="font-size: 15px;">Historial saldos por sucursal</p>
@@ -157,7 +157,7 @@
                                 </div>
                                 <div class="col-md-4" style="text-align: center; font-size: 18px; padding-top: 5px;">
                                     <input type="radio" name="esFondeo" id="esFondeo" checked>
-                                    <label for="esFondeo">Fondeo</label>
+                                    <label for="esFondeo">Retiro</label>
                                 </div>
                                 <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                     <h3>$</h3>
@@ -194,7 +194,7 @@
                                     <h4 id="simboloOperacion">+</h4>
                                 </div>
                                 <div class="col-md-7" style="display: flex; justify-content: flex-start;">
-                                    <h4 id="descOperacion">Fondeo</h4>
+                                    <h4 id="descOperacion">Retiro</h4>
                                 </div>
                                 <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                     <h4>$</h4>
@@ -218,7 +218,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button id="btnFondear" class="btn btn-primary" onclick=fondear(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Confirmar fondeo</button>
+                                <button id="btnFondear" class="btn btn-primary" onclick=retirar(event) disabled><span class="glyphicon glyphicon-floppy-disk"></span> Confirmar retiro</button>
                             </div>
                         </div>
                     </div>

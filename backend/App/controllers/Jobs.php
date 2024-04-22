@@ -13,29 +13,7 @@ $j->JobCheques();
 
 class Jobs
 {
-    public function ValidaEsquema($esquema, $datos)
-    {
-        $res = [
-            "errores" => []
-        ];
-        foreach ($esquema as $key => $value) {
-            if (!isset($datos[$key])) {
-                $res["errores"][] = "El campo " . $key . " es requerido";
-                continue;
-            }
-            if (gettype($datos[$key]) != $value) {
-                $res["errores"][] = "El campo " . $key . " debe ser de tipo " . $value;
-                continue;
-            }
-        }
-
-        if (count($res["errores"]) > 0) {
-            echo json_encode($res);
-            die();
-        }
-    }
-
-    public function JobCheques()
+    public function JobCheques_OLD()
     {
         self::SaveLog("Iniciando Job Cheques");
         $resumen = [];
@@ -62,6 +40,62 @@ class Jobs
                 "datos" => $datos,
                 "RES_PRC_UPDATE" => JobsDao::ActualizaPRC($datos),
                 "RES_PRN_UPDATE" => JobsDao::ActualizaPRN($datos)
+            ];
+        }
+
+        self::SaveLog(json_encode($resumen, JSON_PRETTY_PRINT));
+        self::SaveLog("Finalizando Job Cheques");
+
+        echo "Job Cheques finalizado";
+    }
+
+    public function JobCheques()
+    {
+        self::SaveLog("Iniciando Job Cheques");
+        $resumen = [];
+        $creditos = JobsDao::CreditosAutorizados();
+        var_dump($creditos);
+
+        foreach ($creditos as $key => $credito) {
+            $chequera = JobsDao::GetNoChequera($credito["CDGCO"]);
+            $cheque = JobsDao::GetNoCheque($chequera["CDGCB"]);
+
+            $datos = [
+                //Datos para actualizar PRC y PRN
+                "cheque" => $cheque["CHQSIG"],
+                "fexp" => $credito["FEXP"],
+                "usuario" => $_SESSION["usuario"] ?? "AMGM",
+                "cdgcb" => $chequera["CDGCB"],
+                "cdgcl" => $credito["CDGCL"],
+                "cdgns" => $credito["CDGNS"],
+                "ciclo" => $credito["CICLO"],
+                "cantautor" => $credito["CANTAUTOR"],
+                //Datos para nuevas querys
+                "prmCDGEM" => 'EMPFIN',
+                "prmCDGCLNS" => $credito["CDGNS"],
+                "prmCLNS" => $credito["CDGCL"],
+                "prmCICLO" => $credito["CICLO"],
+                "prmINICIO" => $credito["FEXP"],
+                "vINTCTE" => 0,
+                "vINTERES" => 0
+            ];
+
+            // $datos["vINTCTE"] = JobsDao::GET_vINTCTE($datos)["vINTCTE"];
+            // $datos["vINTERES"] = JobsDao::GET_vINTERES($datos)["vINTERES"];
+
+            $resumen[] = [
+                "fecha" => date("Y-m-d H:i:s"),
+                "datos" => $datos,
+                "INCCTE" => JobsDao::GET_vINTCTE($datos)["vINTCTE"],
+                "INTERES" => JobsDao::GET_vINTERES($datos)["vINTERES"],
+                "RES_PRC_UPDATE" => JobsDao::ActualizaPRC($datos),
+                "RES_PRN_UPDATE" => JobsDao::ActualizaPRN($datos),
+                "RES_MPC_DELETE" => JobsDao::LimpiarMPC($datos),
+                "RES_JP_DELETE" => JobsDao::LimpiarJP($datos),
+                "RES_MP_DELETE" => JobsDao::LimpiarMP($datos),
+                "RES_MP_INSERT" => JobsDao::InsertarMP($datos),
+                "RES_JP_INSERT" => JobsDao::InsertarJP($datos),
+                "RES_MPC_INSERT" => JobsDao::InsertarMPC($datos),
             ];
         }
 

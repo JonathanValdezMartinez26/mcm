@@ -130,7 +130,7 @@ class AdminSucursales extends Controller
     }';
     private $primeraMayuscula = 'const primeraMayuscula = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1)';
     private $consultaServidor = 'const consultaServidor = (url, datos, fncOK, metodo = "POST") => {
-        swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false })
+        swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
         $.ajax({
             type: metodo,
             url: url,
@@ -226,11 +226,11 @@ class AdminSucursales extends Controller
                 const sucursal = document.querySelector("#sucursalBuscada").value
                 if (sucursal === "0") return showError("Seleccione una sucursal")
                 consultaServidor(
-                    "/AdminSucursales/GetDatosFondeo/",
+                    "/AdminSucursales/GetDatos/",
                     { sucursal },
                     (res) => {
                         if (!res.success) return showError(res.mensaje)
-                        if (parseFloat(res.datos.SALDO) === parseFloat(res.datos.MONTO_MAX)) return showError("La sucursal " + sucursal + " ya tiene el saldo máximo permitido (" + parseFloat(res.datos.MONTO_MAX).toLocaleString("es-MX", { style: "currency", currency: "MXN" }) + ").")
+                        if (parseFloat(res.datos.SALDO) >= parseFloat(res.datos.MONTO_MAX)) return showError("La sucursal " + sucursal + " cuenta con el saldo máximo permitido (" + parseFloat(res.datos.MONTO_MAX).toLocaleString("es-MX", { style: "currency", currency: "MXN" }) + ") para su operación.")
                         document.querySelector("#sucursalBuscada").value = ""
                         document.querySelector("#codigoSuc").value = res.datos.CODIGO_SUCURSAL
                         document.querySelector("#nombreSuc").value = res.datos.NOMBRE_SUCURSAL
@@ -265,6 +265,8 @@ class AdminSucursales extends Controller
             const validaMonto = () => {
                 const montoIngresado = document.querySelector("#monto")
                 if (!parseFloat(montoIngresado.value)) {
+                    document.querySelector("#btnFondear").disabled = true
+                    document.querySelector("#saldoFinal").value = document.querySelector("#saldoActual").value
                     document.querySelector("#montoOperacion").value = "0.00"
                     return
                 }
@@ -287,11 +289,14 @@ class AdminSucursales extends Controller
                 const nuevoSaldo = (monto + parseFloat(document.querySelector("#saldoActual").value)).toFixed(2)
                 document.querySelector("#saldoFinal").value = nuevoSaldo > 0 ? nuevoSaldo : "0.00"
                 document.querySelector("#monto_letra").value = numeroLetras(parseFloat(montoIngresado.value))
-                document.querySelector("#btnFondear").disabled = !(monto <= montoMaximo && monto >= montoMinimo)
+                document.querySelector("#btnFondear").disabled = !(nuevoSaldo <= montoMaximo && nuevoSaldo >= montoMinimo)
+                document.querySelector("#tipSaldo").innerText = ""
+                if (nuevoSaldo > montoMaximo) document.querySelector("#tipSaldo").innerText = "El saldo final no puede ser mayor a " + montoMaximo.toLocaleString("es-MX", { style: "currency", currency: "MXN" })
+                if (nuevoSaldo < montoMinimo) document.querySelector("#tipSaldo").innerText = "El saldo final no puede ser menor a " + montoMinimo.toLocaleString("es-MX", { style: "currency", currency: "MXN" })
             }
              
             const fondear = () => {
-                const monto = parseFloat(document.querySelector("#monto").value)
+                const monto = parseFloat(document.querySelector("#saldoFinal").value)
                 if (monto < montoMinimo) return showError("El saldo final debe ser mayor o igual a " + montoMinimo.toLocaleString("es-MX", { style: "currency", currency: "MXN" }))
                 
                 let datos = $("#datos").serializeArray()
@@ -318,12 +323,6 @@ class AdminSucursales extends Controller
         View::render("caja_admin_fondeo");
     }
 
-    public function GetDatosFondeo()
-    {
-        $datos = AdminSucursalesDao::GetDatosFondeo($_POST);
-        echo $datos;
-    }
-
     public function AplicarFondeo()
     {
         $res = AdminSucursalesDao::AplicarFondeo($_POST);
@@ -333,6 +332,134 @@ class AdminSucursales extends Controller
     // Egreso de efectivo de sucursal
     public function RetiroSucursal()
     {
+        $extraFooter = <<<script
+        <script>
+            let montoMaximo = 0
+            let montoMinimo = 0
+            let valKD = false
+            let codigoSEA = 0
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->noSubmit}
+            {$this->soloNumeros}
+            {$this->validarYbuscar}
+            {$this->consultaServidor}
+            {$this->numeroLetras}
+            {$this->primeraMayuscula}
+            {$this->addParametro}
+         
+            const buscar = () => {
+                const sucursal = document.querySelector("#sucursalBuscada").value
+                if (sucursal === "0") return showError("Seleccione una sucursal")
+                consultaServidor(
+                    "/AdminSucursales/GetDatos/",
+                    { sucursal },
+                    (res) => {
+                        if (!res.success) return showError(res.mensaje)
+                        document.querySelector("#sucursalBuscada").value = ""
+                        document.querySelector("#codigoSuc").value = res.datos.CODIGO_SUCURSAL
+                        document.querySelector("#nombreSuc").value = res.datos.NOMBRE_SUCURSAL
+                        document.querySelector("#codigoCajera").value = res.datos.CODIGO_CAJERA
+                        document.querySelector("#nombreCajera").value = res.datos.NOMBRE_CAJERA
+                        document.querySelector("#fechaCierre").value = res.datos.FECHA_CIERRE
+                        document.querySelector("#saldoActual").value = parseFloat(res.datos.SALDO).toFixed(2)
+                        document.querySelector("#montoOperacion").value = "0.00"
+                        document.querySelector("#saldoFinal").value = parseFloat(res.datos.SALDO).toFixed(2)
+                        document.querySelector("#monto").disabled = false
+                        document.querySelector("#monto").focus()
+                        montoMinimo = parseFloat(res.datos.MONTO_MIN)
+                        montoMaximo = parseFloat(res.datos.MONTO_MAX)
+                        codigoSEA = res.datos.CODIGO
+                    }
+                )
+            }
+             
+            const limpiarCampos = () => {
+                document.querySelector("#codigoSuc").value = ""
+                document.querySelector("#nombreSuc").value = ""
+                document.querySelector("#codigoCajera").value = ""
+                document.querySelector("#nombreCajera").value = ""
+                document.querySelector("#fechaCierre").value = ""
+                document.querySelector("#saldoActual").value = "0.00"
+                document.querySelector("#montoOperacion").value = "0.00"
+                document.querySelector("#saldoFinal").value = "0.00"
+                document.querySelector("#monto").value = ""
+                document.querySelector("#monto").disabled = true
+                document.querySelector("#tipSaldo").innerText = ""
+            }
+             
+            const validaMonto = () => {
+                const montoIngresado = document.querySelector("#monto")
+                if (!parseFloat(montoIngresado.value)) {
+                    document.querySelector("#btnFondear").disabled = true
+                    document.querySelector("#montoOperacion").value = "0.00"
+                    return
+                }
+                
+                let monto = parseFloat(montoIngresado.value) || 0
+                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
+                let nuevoSaldo = saldoActual - monto
+                 
+                if (nuevoSaldo < montoMinimo) {
+                    monto = saldoActual - montoMinimo
+                    nuevoSaldo = saldoActual - monto
+                    showError("La sucursal no puede tener un saldo menor a " + montoMinimo.toLocaleString("es-MX", { style: "currency", currency: "MXN" }) + ", si requiere que la sucursal tenga un monto menor comuníquese con el administrador.")
+                    montoIngresado.value = monto
+                }
+                 
+                const valor = montoIngresado.value.split(".")
+                if (valor[1] && valor[1].length > 2) {
+                    montoIngresado.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
+                }
+                 
+                document.querySelector("#montoOperacion").value = monto.toFixed(2)
+                document.querySelector("#saldoFinal").value = nuevoSaldo > 0 ? nuevoSaldo.toFixed(2) : "0.00"
+                document.querySelector("#monto_letra").value = numeroLetras(parseFloat(montoIngresado.value))
+                document.querySelector("#btnFondear").disabled = !(nuevoSaldo <= montoMaximo && nuevoSaldo >= montoMinimo)
+                document.querySelector("#tipSaldo").innerText = ""
+                if (nuevoSaldo > montoMaximo) document.querySelector("#tipSaldo").innerText = "El saldo final no puede ser mayor a " + montoMaximo.toLocaleString("es-MX", { style: "currency", currency: "MXN" })
+                if (nuevoSaldo < montoMinimo) document.querySelector("#tipSaldo").innerText = "El saldo final no puede ser menor a " + montoMinimo.toLocaleString("es-MX", { style: "currency", currency: "MXN" })
+            }
+             
+            const retirar = () => {
+                const monto = parseFloat(document.querySelector("#saldoFinal").value)
+                if (monto < montoMinimo) return showError("El saldo final debe ser mayor o igual a " + montoMinimo.toLocaleString("es-MX", { style: "currency", currency: "MXN" }))
+                
+                let datos = $("#datos").serializeArray()
+                addParametro(datos, "codigoSEA", codigoSEA)
+                addParametro(datos, "usuario", '{$_SESSION["usuario"]}')
+                 
+                consultaServidor(
+                    "/AdminSucursales/AplicarRetiro/",
+                    datos,
+                    (res) => {
+                        if (!res.success) return showError(res.mensaje)
+                        showSuccess(res.mensaje).then(() => {
+                            window.location.reload()
+                        })
+                    }
+                )
+            }
+        </script>
+        script;
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Retiro de Caja")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha', date('d/m/Y H:i:s'));
+        View::render("caja_admin_retiro");
+    }
+
+    public function AplicarRetiro()
+    {
+        $res = AdminSucursalesDao::AplicarRetiro($_POST);
+        echo $res;
+    }
+
+    public function GetDatos()
+    {
+        $datos = AdminSucursalesDao::GetDatosFondeoRetiro($_POST);
+        echo $datos;
     }
 
     // Historial de movimientos de efectivo de sucursal
@@ -638,7 +765,7 @@ class AdminSucursales extends Controller
     {
         $extraFooter = <<<script
        
-script;
+        script;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Estado de Cuenta Mensual")));
         View::set('footer', $this->_contenedor->footer($extraFooter));

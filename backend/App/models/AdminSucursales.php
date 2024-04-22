@@ -220,8 +220,7 @@ class AdminSucursales
             return self::Responde(false, "Error al activar sucursal", null, $e->getMessage());
         }
     }
-
-    public static function GetDatosFondeo($datos)
+    public static function GetDatosFondeoRetiro($datos)
     {
         $qry = <<<sql
         SELECT
@@ -295,6 +294,73 @@ class AdminSucursales
             return self::Responde(true, "Fondeo realizado correctamente.");
         } catch (Exception $e) {
             return self::Responde(false, "Error al realizar fondeo.", null, $e->getMessage());
+        }
+    }
+
+    public static function AplicarRetiro($datos)
+    {
+        $qry = <<<sql
+        INSERT INTO SUC_MOVIMIENTOS_AHORRO
+            (CODIGO, CDG_ESTADO_AHORRO, FECHA, MONTO, MOVIMIENTO, CDG_USUARIO)
+        VALUES
+            (
+                (SELECT NVL(MAX(TO_NUMBER(CODIGO)), 0) FROM SUC_MOVIMIENTOS_AHORRO) + 1,
+                :codigo,
+                SYSDATE,
+                :monto,
+                '0',
+                :usuario
+            )
+        sql;
+
+        $params = [
+            "codigo" => $datos["codigoSEA"],
+            "monto" => $datos["montoOperacion"],
+            "usuario" => $datos["usuario"]
+        ];
+
+        try {
+            $mysqli = Database::getInstance();
+            $mysqli->insertar($qry, $params);
+            return self::Responde(true, "Retiro realizado correctamente.");
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al realizar retiro.", null, $e->getMessage());
+        }
+    }
+
+    public static function GetMovimientos($datos)
+    {
+        $qry = <<<sql
+        SELECT
+            TO_CHAR(FECHA, 'DD/MM/YYYY HH24:MI:SS') FECHA,
+            MONTO,
+            CASE
+                WHEN MOVIMIENTO = '1' THEN 'FONDEO'
+                WHEN MOVIMIENTO = '2' THEN 'RETIRO'
+                ELSE 'DESCONOCIDO'
+            END MOVIMIENTO,
+            (
+                SELECT
+                    CONCATENA_NOMBRE(NOMBRE1, NOMBRE2, PRIMAPE, SEGAPE)
+                FROM
+                    PE
+                WHERE
+                    CODIGO = CDG_USUARIO
+            ) USUARIO
+        FROM
+            SUC_MOVIMIENTOS_AHORRO
+        WHERE
+            CDG_ESTADO_AHORRO = '{$datos["codigo"]}'
+        ORDER BY
+            FECHA DESC
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qry);
+            return self::Responde(true, "Movimientos encontrados.", $res);
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al buscar movimientos.", null, $e->getMessage());
         }
     }
 }
