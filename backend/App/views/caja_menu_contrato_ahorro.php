@@ -263,7 +263,8 @@
                                         </div>
                                         <div class="row" id="marcadores" style="height: 20px; opacity:0;">
                                             <div class="col-md-6" style="display: flex; justify-content: center;">
-                                                <span class="fa fa-check red" id="chkCreacionContrato"></span><label>Creación del contrato</label>
+                                                <input id="contratoOK" type="hidden" />
+                                                <span class="fa fa-check red" id="chkCreacionContrato"></span><a href="#" onclick=reImprimeContrato(event)>Creación del contrato</a>
                                             </div>
                                             <div class="col-md-6" style="display: flex; justify-content: center;">
                                                 <span class="fa fa-check red" id="chkPagoApertura"></span><label>Deposito de apertura</label>

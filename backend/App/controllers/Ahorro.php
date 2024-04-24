@@ -179,58 +179,49 @@ class Ahorro extends Controller
         return primeraMayuscula(convertir(parteEntera)) + (numero == 1 ? " peso " : " pesos ") + parteDecimal + "/100 M.N."
     }';
     private $primeraMayuscula = 'const primeraMayuscula = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1)';
+    private $muestraPDF = <<<script
+    const muestraPDF = (titulo, ruta) => {
+        let plantilla = '<!DOCTYPE html>'
+            plantilla += '<html lang="es">'
+            plantilla += '<head>'
+            plantilla += '<meta charset="UTF-8">'
+            plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+            plantilla += '<link rel="shortcut icon" href="" + host + "/img/logo.png">'
+            plantilla += '<title>' + titulo + '</title>'
+            plantilla += '</head>'
+            plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
+            plantilla += '<iframe src="' + ruta + '" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
+            plantilla += '</body>'
+            plantilla += '</html>'
+        
+            const blob = new Blob([plantilla], { type: 'text/html' })
+            const url = URL.createObjectURL(blob)
+            window.open(url, '_blank')
+    }
+    script;
     private $imprimeTicket = <<<script
     const imprimeTicket = (ticket, sucursal = '') => {
         const host = window.location.origin
-    
-        let plantilla = '<!DOCTYPE html>'
-        plantilla += '<html lang="es">'
-        plantilla += '<head>'
-        plantilla += '<meta charset="UTF-8">'
-        plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-        plantilla += '<link rel="shortcut icon" href="" + host + "/img/logo.png">'
-        plantilla += '<title>Ticket: ' + ticket + '</title>'
-        plantilla += '</head>'
-        plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
-        plantilla += '<iframe src="'
-            + host + '/Ahorro/Ticket/?'
-            + 'ticket=' + ticket
-            + '&sucursal=' + sucursal
-            + '&copiaCliente=true'
-            + '" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
-        plantilla += '</body>'
-        plantilla += '</html>'
-    
-        const blob = new Blob([plantilla], { type: 'text/html' })
-        const url = URL.createObjectURL(blob)
-        window.open(url, '_blank')
+        const titulo = 'Ticket: ' + ticket
+        const ruta = host + '/Ahorro/Ticket/?'
+        + 'ticket=' + ticket
+        + '&sucursal=' + sucursal
+        + '&copiaCliente=true'
+        
+        muestraPDF(titulo, ruta)
     }
     script;
     private $imprimeContrato = <<<script
     const imprimeContrato = (numero_contrato, producto = 1) => {
+        if (!numero_contrato) return
         const host = window.location.origin
-        
-        let plantilla = "<!DOCTYPE html>"
-        plantilla += '<html lang="es">'
-        plantilla += '<head>'
-        plantilla += '<meta charset="UTF-8">'
-        plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-        plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo.png">'
-        plantilla += '<title>Contrato ' + numero_contrato + '</title>'
-        plantilla += '</head>'
-        plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
-        plantilla += '<iframe src="'
-            + host
+        const titulo = 'Contrato ' + numero_contrato
+        const ruta = host
             + '/Ahorro/Contrato/?'
             + 'contrato=' + numero_contrato
             + '&producto=' + producto
-            + '" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
-        plantilla += "</body>"
-        plantilla += "</html>"
-    
-        const blob = new Blob([plantilla], { type: "text/html" })
-        const url = URL.createObjectURL(blob)
-        window.open(url, "_blank")
+         
+        muestraPDF(titulo, ruta)
     }
     script;
     private $sinContrato = <<<script
@@ -345,6 +336,7 @@ class Ahorro extends Controller
             {$this->soloNumeros}
             {$this->numeroLetras}
             {$this->primeraMayuscula}
+            {$this->muestraPDF}
             {$this->imprimeTicket}
             {$this->imprimeContrato}
             {$this->addParametro}
@@ -367,6 +359,7 @@ class Ahorro extends Controller
                          
                         const datosCliente = respuesta.datos
                         document.querySelector("#btnGeneraContrato").disabled = true
+                        document.querySelector("#contratoOK").value = datosCliente.CONTRATO
                         if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 0) {
                                 await showInfo("La apertura del contrato no ha concluido, realice el depósito de apertura.")
                                 document.querySelector("#fecha_pago").value = getHoy()
@@ -450,6 +443,7 @@ class Ahorro extends Controller
                 document.querySelector("#tasa").disabled = true
                 document.querySelector("#sucursal").disabled = true
                 document.querySelector("#ejecutivo").disabled = true
+                document.querySelector("#contratoOK").value = ""
             }
             
             const generaContrato = (e) => {
@@ -723,6 +717,16 @@ class Ahorro extends Controller
                     }
                 })
             }
+             
+            const reImprimeContrato = (e) => {
+                const c = document.querySelector('#contratoOK').value
+                if (!c) {
+                    e.preventDefault()
+                    return
+                }
+                 
+                imprimeContrato(c)
+            }
         </script>
         html;
 
@@ -792,6 +796,7 @@ class Ahorro extends Controller
             {$this->soloNumeros}
             {$this->numeroLetras}
             {$this->primeraMayuscula}
+            {$this->muestraPDF}
             {$this->imprimeTicket}
             {$this->sinContrato}
             {$this->addParametro}
@@ -994,6 +999,7 @@ class Ahorro extends Controller
             {$this->soloNumeros}
             {$this->primeraMayuscula}
             {$this->numeroLetras}
+            {$this->muestraPDF}
             {$this->imprimeTicket}
             {$this->addParametro}
             {$this->sinContrato}
@@ -1274,6 +1280,7 @@ class Ahorro extends Controller
             {$this->soloNumeros}
             {$this->numeroLetras}
             {$this->primeraMayuscula}
+            {$this->muestraPDF}
             {$this->imprimeTicket}
             {$this->imprimeContrato}
             {$this->sinContrato}
@@ -1558,6 +1565,7 @@ class Ahorro extends Controller
             {$this->soloNumeros}
             {$this->numeroLetras}
             {$this->primeraMayuscula}
+            {$this->muestraPDF}
             {$this->imprimeTicket}
             {$this->imprimeContrato}
             {$this->addParametro}
@@ -1857,6 +1865,7 @@ class Ahorro extends Controller
             {$this->soloNumeros}
             {$this->numeroLetras}
             {$this->primeraMayuscula}
+            {$this->muestraPDF}
             {$this->imprimeTicket}
             {$this->addParametro}
             {$this->parseaNumero}
@@ -3139,6 +3148,7 @@ html;
     {
         $extraFooter = <<<html
         <script>
+            {$this->muestraPDF}
             {$this->imprimeTicket}
          
             $(document).ready(function(){
