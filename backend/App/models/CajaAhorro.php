@@ -1550,6 +1550,28 @@ class CajaAhorro
             return array();
         }
     }
+
+    public static function GetSaldoMinimoApertura($sucursal)
+    {
+        $qry = <<<sql
+        SELECT
+            NVL(MONTO_MINIMO, 100),
+            NVL(MONTO_MAXIMO, 1000)
+        FROM
+            PARAMETROS_AHORRO
+        WHERE
+            CDG_SUCURSAL = '$sucursal'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryOne($qry);
+            if (!$res) return ['MONTO_MINIMO' => 100, 'MONTO_MAXIMO' => 10000];
+            return $res;
+        } catch (Exception $e) {
+            return ['MONTO_MINIMO' => 100, 'MONTO_MAXIMO' => 10000];
+        }
+    }
 }
 
 class LogTransaccionesAhorro

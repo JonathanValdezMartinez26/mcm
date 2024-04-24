@@ -313,7 +313,9 @@ class Ahorro extends Controller
     // Apertura de contratos para cuentas de ahorro corriente
     public function ContratoCuentaCorriente()
     {
-        $saldoMinimoApertura = 100;
+
+        $saldosMM = CajaAhorroDao::GetSaldoMinimoApertura($_SESSION['cdgco']);
+        $saldoMinimoApertura = $saldosMM['MONTO_MINIMO'];
 
         $extraFooter = <<<html
         <script>
@@ -821,7 +823,7 @@ class Ahorro extends Controller
                 if (!valKD) return
                 const montoIngresado = document.querySelector("#monto")
                  
-                let monto = parseFloat(montoIngresado.value) || 0
+                let monto = parseaNumero(montoIngresado.value)
                  
                 if (!document.querySelector("#deposito").checked && monto > montoMaximoRetiro) {
                     monto = montoMaximoRetiro

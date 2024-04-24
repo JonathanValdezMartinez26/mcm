@@ -220,6 +220,7 @@ class AdminSucursales
             return self::Responde(false, "Error al activar sucursal", null, $e->getMessage());
         }
     }
+
     public static function GetDatosFondeoRetiro($datos)
     {
         $qry = <<<sql
@@ -361,6 +362,59 @@ class AdminSucursales
             return self::Responde(true, "Movimientos encontrados.", $res);
         } catch (Exception $e) {
             return self::Responde(false, "Error al buscar movimientos.", null, $e->getMessage());
+        }
+    }
+
+    public static function GetMontosApertura($sucursal)
+    {
+        $qry = <<<sql
+        SELECT
+            MONTO_MINIMO,
+            MONTO_MAXIMO
+        FROM
+            PARAMETROS_AHORRO
+        WHERE
+            CDG_SUCURSAL = '$sucursal'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryOne($qry);
+            if ($res) return self::Responde(true, "Montos de apertura encontrados.", $res);
+            return self::Responde(false, "No se encontraron montos de apertura.");
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al buscar montos de apertura.", null, $e->getMessage());
+        }
+    }
+
+    public static function GuardarMontosApertura($datos)
+    {
+        $qry = <<<sql
+        INSERT INTO PARAMETROS_AHORRO
+            (CODIGO, MONTO_MINIMO, MONTO_MAXIMO, CDG_SUCURSAL, FECHA_ALTA, MODIFICACION)
+        VALUES
+            (
+                (SELECT NVL(MAX(TO_NUMBER(CODIGO)), 0) + 1 FROM PARAMETROS_AHORRO),
+                :minimo,
+                :maximo,
+                :sucursal,
+                SYSDATE,
+                SYSDATE
+            )
+        sql;
+
+        $params = [
+            "sucursal" => $datos["codSucMontos"],
+            "minimo" => $datos["minimoApertura"],
+            "maximo" => $datos["maximoApertura"]
+        ];
+
+        try {
+            $mysqli = Database::getInstance();
+            $mysqli->insertar($qry, $params);
+            return self::Responde(true, "Montos de apertura guardados correctamente.");
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al guardar montos de apertura.", null, $e->getMessage());
         }
     }
 }

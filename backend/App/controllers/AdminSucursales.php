@@ -710,6 +710,44 @@ class AdminSucursales extends Controller
                         }
                     )
             }
+             
+            const llenarModal = () => {
+                document.querySelector("#configMontos").reset()
+                const fila = event.target.parentElement.parentElement
+                document.querySelector("#codSucMontos").value = fila.children[1].innerText
+                document.querySelector("#nomSucMontos").value = fila.children[2].innerText
+                consultaServidor(
+                    "/AdminSucursales/GetMontosApertura/",
+                    { sucursal: fila.children[1].innerText },
+                    (datos) => {
+                        if (!datos.success) return
+                        document.querySelector("#minimoApertura").value = datos.datos.MONTO_MINIMO
+                        document.querySelector("#maximoApertura").value = datos.datos.MONTO_MAXIMO
+                    }
+                )
+            }
+             
+            const validaMontoMinMax = (e) => {
+                const m = parseFloat(e.target.value)
+                if (m < 0) e.target.value = ""
+                if (m > 1000000) e.target.value = "1000000.00"
+                const valor = e.target.value.split(".")
+                valor[1] = valor[1] || "00"
+                if (valor[1] && valor[1].length > 2) e.target.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
+            }
+             
+            const guardarMontos = () => {
+                consultaServidor(
+                    "/AdminSucursales/GuardarMontosApertura/",
+                    $("#configMontos").serialize(),
+                    (res) => {
+                        if (!res.success) return showError(res.mensaje)
+                        showSuccess(res.mensaje).then(() => {
+                            window.location.reload()
+                        })
+                    }
+                )
+            }
         </script>
         script;
 
@@ -724,7 +762,11 @@ class AdminSucursales extends Controller
         foreach ($sucActivas as $key => $val) {
             $tabla .= "<tr>";
             foreach ($val as $key2 => $val2) {
-                $tabla .= "<td style='vertical-align: middle;'>{$val2}</td>";
+                if ($key2 === "ACCIONES") {
+                    $tabla .= "<td style='vertical-align: middle; text-align: center;'><i class='fa fa-usd' title='Configurar montos' data-toggle='modal' data-target='#modal_configurar_montos' style='cursor: pointer;' onclick=llenarModal(event)></i></td>";
+                } else {
+                    $tabla .= "<td style='vertical-align: middle;'>{$val2}</td>";
+                }
             }
             $tabla .= "</tr>";
         }
@@ -758,6 +800,18 @@ class AdminSucursales extends Controller
     public function ActivarSucursal()
     {
         $res = AdminSucursalesDao::ActivarSucursal($_POST);
+        echo $res;
+    }
+
+    public function GetMontosApertura()
+    {
+        $montos = AdminSucursalesDao::GetMontosApertura($_POST['sucursal']);
+        echo $montos;
+    }
+
+    public function GuardarMontosApertura()
+    {
+        $res = AdminSucursalesDao::GuardarMontosApertura($_POST);
         echo $res;
     }
 
