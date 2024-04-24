@@ -196,7 +196,7 @@
                                     <h4>$</h4>
                                 </div>
                                 <div class="col-md-3">
-                                    <input type="number" class="form-control" id="saldoActual" name="saldoActual" value="0.00" readonly>
+                                    <input class="form-control" id="saldoActual" name="saldoActual" value="0.00" readonly>
                                 </div>
                             </div>
                             <div class="row">
@@ -210,7 +210,7 @@
                                     <h4>$</h4>
                                 </div>
                                 <div class="col-md-3">
-                                    <input type="number" class="form-control" id="montoOperacion" name="montoOperacion" value="0.00" readonly>
+                                    <input class="form-control" id="montoOperacion" name="montoOperacion" value="0.00" readonly>
                                 </div>
                             </div>
                             <div class="row">
@@ -221,7 +221,7 @@
                                     <h4>$</h4>
                                 </div>
                                 <div class="col-md-3">
-                                    <input type="number" class="form-control" id="saldoFinal" name="saldoFinal" value="0.00" readonly>
+                                    <input class="form-control" id="saldoFinal" name="saldoFinal" value="0.00" readonly>
                                 </div>
                                 <div class="col-md-12" style="display: flex; justify-content: center; color: red;">
                                     <label id="tipSaldo" style="opacity:0; font-size: 18px;">El monto a retirar no puede ser mayor al saldo de la cuenta.</label>

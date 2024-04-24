@@ -21,11 +21,11 @@ class Ahorro extends Controller
     private $confirmarMovimiento = 'const confirmarMovimiento = async (movimiento, monto, letra) => {
         return await swal({ title: "Confirmación movimiento ahorro", text: "¿Esta segura de continuar con el registro de un " + movimiento + ", por la cantidad de " + parseFloat(monto).toLocaleString("es-MX", { style: "currency", currency: "MXN" }) + " (" + letra + ")?", icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
     }';
-    private $validarYbuscar = 'const validarYbuscar = (e) => {
+    private $validarYbuscar = 'const validarYbuscar = (e, t) => {
         if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
-        if (e.keyCode === 13) buscaCliente()
+        if (e.keyCode === 13) buscaCliente(t)
     }';
-    private $buscaCliente = 'const buscaCliente = () => {
+    private $buscaCliente = 'const buscaCliente = (t) => {
         document.querySelector("#btnBskClnt").disabled = true
         const noCliente = document.querySelector("#clienteBuscado").value
          
@@ -70,15 +70,17 @@ class Ahorro extends Controller
     }';
     private $soloNumeros = 'const soloNumeros = (e) => {
         valKD = false
-        if ((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58)) {
-            valKD = true
-            return
-        }
-        if (e.keyCode === 110 || e.keyCode === 190 || e.keyCode === 8  || e.keyCode === 8 || e.keyCode === 9  || e.keyCode === 37 || e.keyCode === 39 || e.keyCode === 46) {
-            valKD = true
-            return
-        }
-        return e.preventDefault()
+        if (
+            !(e.key >= "0" && e.key <= "9") &&
+            e.key !== "." &&
+            e.key !== "Backspace" &&
+            e.key !== "Delete" &&
+            e.key !== "ArrowLeft" &&
+            e.key !== "ArrowRight" &&
+            e.key !== "Tab"
+        ) e.preventDefault()
+        if (e.key === "." && e.target.value.includes(".")) e.preventDefault()
+        valKD = true
     }';
     private $numeroLetras = 'const numeroLetras = (numero) => {
         if (!numero) return ""
@@ -248,10 +250,12 @@ class Ahorro extends Controller
             })
             return false
         }
+        const msj2 = (typeof mEdoCta !== 'undefined') ? "No podemos generar un estado de cuenta para el cliente  " + datosCliente['CDGCL'] + ", porque este no ha concluido con su proceso de apertura de la cuenta de ahorro corriente.\\n¿Desea completar el proceso en este momento?" 
+        : "El cliente " + datosCliente['CDGCL'] + " no ha completado el proceso de apertura de la cuenta de ahorro.\\n¿Desea completar el proceso en este momento?"
         if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
             swal({
                 title: "Cuenta de ahorro corriente",
-                text: "El cliente " + datosCliente['CDGCL'] + " no ha completado el proceso de apertura de la cuenta de ahorro.\\n¿Desea completar el proceso en este momento?",
+                text: msj2,
                 icon: "info",
                 buttons: ["No", "Sí"],
                 dangerMode: true
@@ -269,6 +273,34 @@ class Ahorro extends Controller
     private $addParametro = 'const addParametro = (parametros, newParametro, newValor) => {
         parametros.push({ name: newParametro, value: newValor })
     }';
+    private $consultaServidor = 'const consultaServidor = (url, datos, fncOK, metodo = "POST") => {
+        const espera = swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+        $.ajax({
+            type: metodo,
+            url: url,
+            data: datos,
+            success: (res) => {
+                try {
+                    res = JSON.parse(res)
+                } catch (error) {
+                    console.error(error)
+                    res =  {
+                        success: false,
+                        mensaje: "Ocurrió un error al procesar la respuesta del servidor."
+                    }
+                }
+                swal.close()
+                fncOK(res)
+            },
+            error: (error) => {
+                console.error(error)
+                showError("Ocurrió un error al procesar la solicitud.")
+                msjW.close()
+            }
+        })
+    }';
+    private $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/[^0-9.]/g, "")) || 0';
+    private $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { minimumFractionDigits: 2 })';
 
     function __construct()
     {
@@ -316,72 +348,76 @@ class Ahorro extends Controller
             {$this->imprimeTicket}
             {$this->imprimeContrato}
             {$this->addParametro}
+            {$this->consultaServidor}
+            {$this->parseaNumero}
+            {$this->formatoMoneda}
              
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado").value
                 limpiaDatosCliente()
                  
-                if (!noCliente) {
-                    return showError("Ingrese un número de cliente a buscar.")
-                }
-                
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/BuscaCliente/",
-                    data: { cliente: noCliente },
-                    success: (respuesta) => {
-                        respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) {
-                            if (!respuesta.datos) {
-                                limpiaDatosCliente()
-                                return showError(respuesta.mensaje)
-                            }
-                             
-                            const datosCliente = respuesta.datos
-                            document.querySelector("#btnGeneraContrato").disabled = true
-                            if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 0) {
-                                showInfo("La apertura del contrato no ha concluido, realice el depósito de apertura.").then(() => {
-                                    document.querySelector("#fecha_pago").value = getHoy()
-                                    document.querySelector("#contrato").value = datosCliente.CONTRATO
-                                    document.querySelector("#codigo_cl").value = datosCliente.CDGCL
-                                    document.querySelector("#nombre_cliente").value = datosCliente.NOMBRE
-                                    document.querySelector("#mdlCurp").value = datosCliente.CURP
-                                    $("#modal_agregar_pago").modal("show")
-                                    document.querySelector("#chkCreacionContrato").classList.remove("red")
-                                    document.querySelector("#chkCreacionContrato").classList.add("green")
-                                    document.querySelector("#chkPagoApertura").classList.remove("green")
-                                    document.querySelector("#chkPagoApertura").classList.add("red")
-                                    document.querySelector("#btnGuardar").innerText = txtGuardaPago
-                                    document.querySelector("#btnGeneraContrato").disabled = false
-                                })
-                            }
-                             
-                            if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 1) {
-                                showInfo(respuesta.mensaje)
-                                document.querySelector("#chkCreacionContrato").classList.remove("red")
-                                document.querySelector("#chkCreacionContrato").classList.add("green")
-                                document.querySelector("#chkPagoApertura").classList.remove("red")
-                                document.querySelector("#chkPagoApertura").classList.add("green")
-                            }
+                if (!noCliente) return showError("Ingrese un número de cliente a buscar.")
+                 
+                consultaServidor("/Ahorro/BuscaCliente/", { cliente: noCliente }, async (respuesta) => {
+                    if (!respuesta.success) {
+                        if (!respuesta.datos) {
+                            limpiaDatosCliente()
+                            return showError(respuesta.mensaje)
                         }
                          
-                        const datosCL = respuesta.datos
+                        const datosCliente = respuesta.datos
+                        document.querySelector("#btnGeneraContrato").disabled = true
+                        if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 0) {
+                                await showInfo("La apertura del contrato no ha concluido, realice el depósito de apertura.")
+                                document.querySelector("#fecha_pago").value = getHoy()
+                                document.querySelector("#contrato").value = datosCliente.CONTRATO
+                                document.querySelector("#codigo_cl").value = datosCliente.CDGCL
+                                document.querySelector("#nombre_cliente").value = datosCliente.NOMBRE
+                                document.querySelector("#mdlCurp").value = datosCliente.CURP
+                                $("#modal_agregar_pago").modal("show")
+                                document.querySelector("#chkCreacionContrato").classList.remove("red")
+                                document.querySelector("#chkCreacionContrato").classList.add("green")
+                                document.querySelector("#chkPagoApertura").classList.remove("green")
+                                document.querySelector("#chkPagoApertura").classList.add("red")
+                                document.querySelector("#btnGuardar").innerText = txtGuardaPago
+                                document.querySelector("#btnGeneraContrato").disabled = false
+                        }
                          
-                        document.querySelector("#fechaRegistro").value = datosCL.FECHA_REGISTRO
-                        document.querySelector("#noCliente").value = noCliente
-                        document.querySelector("#nombre").value = datosCL.NOMBRE
-                        document.querySelector("#curp").value = datosCL.CURP
-                        document.querySelector("#edad").value = datosCL.EDAD
-                        document.querySelector("#direccion").value = datosCL.DIRECCION
-                        document.querySelector("#marcadores").style.opacity = "1"
-                        noCliente.value = ""
-                        if (respuesta.success) habilitaBeneficiario(1, true)
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        limpiaDatosCliente()
-                        showError("Ocurrió un error al buscar el cliente.")
+                        if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 1) {
+                            await showInfo(respuesta.mensaje)
+                            document.querySelector("#chkCreacionContrato").classList.remove("red")
+                            document.querySelector("#chkCreacionContrato").classList.add("green")
+                            document.querySelector("#chkPagoApertura").classList.remove("red")
+                            document.querySelector("#chkPagoApertura").classList.add("green")
+                        }
+                         
+                        consultaServidor("/Ahorro/GetBeneficiarios/", { contrato: datosCliente.CONTRATO }, (respuesta) => {
+                            if (!respuesta.success) return showError(respuesta.mensaje)
+                             
+                            const beneficiarios = respuesta.datos
+                            for (let i = 0; i < beneficiarios.length; i++) {
+                                document.querySelector("#beneficiario_" + (i + 1)).value = beneficiarios[i].NOMBRE
+                                document.querySelector("#parentesco_" + (i + 1)).value = beneficiarios[i].CDGCT_PARENTESCO
+                                document.querySelector("#porcentaje_" + (i + 1)).value = beneficiarios[i].PORCENTAJE
+                                document.querySelector("#btnBen" + (i + 1)).disabled = true
+                                document.querySelector("#parentesco_" + (i + 1)).disabled = true
+                                document.querySelector("#porcentaje_" + (i + 1)).disabled = true
+                                document.querySelector("#ben" + (i + 1)).style.opacity = "1"
+                            }
+                        })
                     }
+                     
+                    const datosCL = respuesta.datos
+                     
+                    document.querySelector("#fechaRegistro").value = datosCL.FECHA_REGISTRO
+                    document.querySelector("#noCliente").value = noCliente
+                    document.querySelector("#nombre").value = datosCL.NOMBRE
+                    document.querySelector("#curp").value = datosCL.CURP
+                    document.querySelector("#edad").value = datosCL.EDAD
+                    document.querySelector("#direccion").value = datosCL.DIRECCION
+                    document.querySelector("#marcadores").style.opacity = "1"
+                    noCliente.value = ""
+                    if (respuesta.success) habilitaBeneficiario(1, true)
                 })
             }
              
@@ -416,59 +452,54 @@ class Ahorro extends Controller
                 document.querySelector("#ejecutivo").disabled = true
             }
             
-            const generaContrato = async (e) => {
+            const generaContrato = (e) => {
                 e.preventDefault()
                 const btnGuardar = document.querySelector("#btnGuardar")
                 if (btnGuardar.innerText === txtGuardaPago) return $("#modal_agregar_pago").modal("show")
                  
                 const cliente = document.querySelector("#nombre").value
                 try {
-                    const continuar = await swal({
+                    swal({
                         title:
-                            "¿Está segura de continuar con la apertura de la cuenta de ahorro del cliente: " +
-                            cliente +
-                            "?",
-                        text: "",
+                            "Cuenta de ahorro corriente",
+                        text: "¿Está segura de continuar con la apertura de la cuenta de ahorro del cliente: " +
+                        cliente +
+                        "?",
                         icon: "warning",
                         buttons: true,
                         dangerMode: true
-                    })
-            
-                    if (continuar) {
+                    }).then((continuar) => {
+                        if (!continuar) return false
+                        
                         const noCredito = document.querySelector("#noCliente").value
                         const datos = $("#registroInicialAhorro").serializeArray()
                         datos.push({ name: "credito", value: noCredito })
             
-                        let respuesta = await $.ajax({
-                            type: "POST",
-                            url: "/Ahorro/AgregaContratoAhorro/",
-                            data: $.param(datos)
+                        consultaServidor("/Ahorro/AgregaContratoAhorro/", $.param(datos), (respuesta) => {
+                            if (!respuesta.success) {
+                                console.error(respuesta.error)
+                                return showError(respuesta.mensaje)
+                            }
+                            
+                            const contrato = respuesta.datos
+                            showSuccess("Se ha generado el contrato: " + contrato.contrato + ".").then(() => {
+                                document.querySelector("#fecha_pago").value = getHoy()
+                                document.querySelector("#contrato").value = contrato.contrato
+                                document.querySelector("#codigo_cl").value = noCredito
+                                document.querySelector("#nombre_cliente").value = document.querySelector("#nombre").value
+                                document.querySelector("#mdlCurp").value = document.querySelector("#curp").value
+                                imprimeContrato(contrato.contrato, 1)
+                                
+                                document.querySelector("#chkCreacionContrato").classList.remove("red")
+                                document.querySelector("#chkCreacionContrato").classList.add("green")
+                                
+                                showInfo("Debe registrar el depósito por apertura de cuenta.").then(() => {
+                                    btnGuardar.innerText = txtGuardaPago
+                                    $("#modal_agregar_pago").modal("show")
+                                })
+                            })
                         })
-                        
-                        respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) {
-                            console.error(respuesta.error)
-                            return showError(respuesta.mensaje)
-                        }
-                        
-                        const contrato = respuesta.datos
-                        await showSuccess("Se ha generado el contrato: " + contrato.contrato + ".")
-                        
-                        document.querySelector("#fecha_pago").value = getHoy()
-                        document.querySelector("#contrato").value = contrato.contrato
-                        document.querySelector("#codigo_cl").value = noCredito
-                        document.querySelector("#nombre_cliente").value = document.querySelector("#nombre").value
-                        document.querySelector("#mdlCurp").value = document.querySelector("#curp").value
-                        imprimeContrato(contrato.contrato, 1)
-                        
-                        document.querySelector("#chkCreacionContrato").classList.remove("red")
-                        document.querySelector("#chkCreacionContrato").classList.add("green")
-                         
-                        showInfo("Debe registrar el depósito por apertura de cuenta.").then(() => {
-                            btnGuardar.innerText = txtGuardaPago
-                            $("#modal_agregar_pago").modal("show")
-                        })
-                    }
+                    })
                 } catch (error) {
                     console.error(error)
                 }
@@ -511,11 +542,11 @@ class Ahorro extends Controller
             const validaDeposito = (e) => {
                 if (!valKD) return
                  
-                let monto = parseFloat(e.target.value) || 0
+                let monto = parseaNumero(e.target.value)
                 if (monto <= 0) {
                     e.preventDefault()
                     e.target.value = ""
-                    showError("El monto a depositar debe ser mayor a 0")
+                    showError("El monto a depositar debe ser mayor a 0.")
                 }
                  
                 if (monto > montoMaximo) {
@@ -535,10 +566,10 @@ class Ahorro extends Controller
             }
              
             const calculaSaldoFinal = (e) => {
-                const monto = parseFloat(e.target.value)
-                document.querySelector("#deposito").value = monto.toFixed(2)
-                const saldoInicial = (monto - parseFloat(document.querySelector("#inscripcion").value)).toFixed(2)
-                document.querySelector("#saldo_inicial").value = saldoInicial > 0 ? saldoInicial : "0.00"
+                const monto = parseaNumero(e.target.value)
+                document.querySelector("#deposito").value = formatoMoneda(monto)
+                const saldoInicial = (monto - parseaNumero(document.querySelector("#inscripcion").value))
+                document.querySelector("#saldo_inicial").value = formatoMoneda(saldoInicial > 0 ? saldoInicial : 0)
                 document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
                     
                 if (saldoInicial < saldoMinimoApertura) {
@@ -717,6 +748,12 @@ class Ahorro extends Controller
         echo $datos;
     }
 
+    public function GetBeneficiarios()
+    {
+        $beneficiarios = CajaAhorroDao::GetBeneficiarios($_POST['contrato']);
+        echo $beneficiarios;
+    }
+
     public function AgregaContratoAhorro()
     {
         $contrato = CajaAhorroDao::AgregaContratoAhorro($_POST);
@@ -758,13 +795,15 @@ class Ahorro extends Controller
             {$this->imprimeTicket}
             {$this->sinContrato}
             {$this->addParametro}
+            {$this->parseaNumero}
+            {$this->formatoMoneda}
          
             const llenaDatosCliente = (datosCliente) => {
                 document.querySelector("#nombre").value = datosCliente.NOMBRE
                 document.querySelector("#curp").value = datosCliente.CURP
                 document.querySelector("#contrato").value = datosCliente.CONTRATO
                 document.querySelector("#cliente").value = datosCliente.CDGCL
-                document.querySelector("#saldoActual").value = parseFloat(datosCliente.SALDO).toFixed(2)
+                document.querySelector("#saldoActual").value = formatoMoneda(datosCliente.SALDO)
             }
              
             const limpiaDatosCliente = () => {
@@ -813,10 +852,10 @@ class Ahorro extends Controller
             }
              
             const calculaSaldoInicial = (e) => {
-                const monto = parseFloat(e.target.value)
-                document.querySelector("#mdlDeposito").value = monto.toFixed(2)
-                const saldoInicial = (monto - parseFloat(document.querySelector("#mdlInscripcion").value)).toFixed(2)
-                document.querySelector("#mdlSaldo_inicial").value = saldoInicial > 0 ? saldoInicial : "0.00"
+                const monto = parseaNumero(e.target.value)
+                document.querySelector("#mdlDeposito").value = formatoMoneda(monto)
+                const saldoInicial = (monto - parseaNumero(document.querySelector("#mdlInscripcion").value)).toFixed(2)
+                document.querySelector("#mdlSaldo_inicial").value = formatoMoneda(saldoInicial > 0 ? saldoInicial : 0)
                 document.querySelector("#mdlDeposito_inicial_letra").value = primeraMayuscula(numeroLetras(monto))
                     
                 if (saldoInicial < saldoMinimoApertura) {
@@ -834,8 +873,8 @@ class Ahorro extends Controller
                 const esDeposito = document.querySelector("#deposito").checked
                 const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
                 const monto = parseFloat(document.querySelector("#monto").value) || 0
-                document.querySelector("#montoOperacion").value =monto.toFixed(2)
-                document.querySelector("#saldoFinal").value = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
+                document.querySelector("#montoOperacion").value = formatoMoneda(monto)
+                document.querySelector("#saldoFinal").value = formatoMoneda(esDeposito ? saldoActual + monto : saldoActual - monto)
                 compruebaSaldoFinal(document.querySelector("#saldoFinal").value)
             }
              
@@ -959,9 +998,11 @@ class Ahorro extends Controller
             {$this->addParametro}
             {$this->sinContrato}
             {$this->getHoy}
+            {$this->parseaNumero}
+            {$this->formatoMoneda}
              
             const llenaDatosCliente = (datosCliente) => {
-                if (parseFloat(datosCliente.SALDO) < montoMinimo) {
+                if (parseaNumero(datosCliente.SALDO) < montoMinimo) {
                     swal({
                         title: "Retiro de cuenta corriente",
                         text: "El saldo de la cuenta es menor al monto mínimo para retiros express (" + montoMinimo.toLocaleString("es-MX", {style:"currency", currency:"MXN"}) + ").\\n¿Desea realizar un retiro simple?",
@@ -980,9 +1021,9 @@ class Ahorro extends Controller
                 document.querySelector("#curp").value = datosCliente.CURP
                 document.querySelector("#contrato").value = datosCliente.CONTRATO
                 document.querySelector("#cliente").value = datosCliente.CDGCL
-                document.querySelector("#saldoActual").value = parseFloat(datosCliente.SALDO).toFixed(2)
+                document.querySelector("#saldoActual").value = formatoMoneda(datosCliente.SALDO)
                 document.querySelector("#monto").disabled = false
-                document.querySelector("#saldoFinal").value = parseFloat(datosCliente.SALDO).toFixed(2)
+                document.querySelector("#saldoFinal").value = formatoMoneda(datosCliente.SALDO)
                 document.querySelector("#express").disabled = false
                 document.querySelector("#programado").disabled = false
             }
@@ -1001,7 +1042,7 @@ class Ahorro extends Controller
                 document.querySelector("#express").disabled = false
                 const montoIngresado = document.querySelector("#monto")
                  
-                let monto = parseFloat(montoIngresado.value) || 0
+                let monto = parseaNumero(montoIngresado.value) || 0
                  
                 if (monto > montoMaximoExpress) {
                     document.querySelector("#programado").checked = true
@@ -1015,11 +1056,11 @@ class Ahorro extends Controller
                 }
                                   
                 document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
-                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
-                document.querySelector("#montoOperacion").value = monto.toFixed(2)
+                const saldoActual = parseaNumero(document.querySelector("#saldoActual").value)
+                document.querySelector("#montoOperacion").value = formatoMoneda(monto)
                 const saldoFinal = (saldoActual - monto)
                 compruebaSaldoFinal(saldoFinal)
-                document.querySelector("#saldoFinal").value = saldoFinal.toFixed(2)
+                document.querySelector("#saldoFinal").value = formatoMoneda(saldoFinal)
             }
              
             const valSalMin = () => {
@@ -1237,15 +1278,17 @@ class Ahorro extends Controller
             {$this->imprimeContrato}
             {$this->sinContrato}
             {$this->addParametro}
+            {$this->parseaNumero}
+            {$this->formatoMoneda}
              
             const llenaDatosCliente = (datos) => {
-                const saldoActual = parseFloat(datos.SALDO)
+                const saldoActual = parseaNumero(datos.SALDO)
                          
                 document.querySelector("#nombre").value = datos.NOMBRE
                 document.querySelector("#curp").value = datos.CURP
                 document.querySelector("#contrato").value = datos.CONTRATO
                 document.querySelector("#cliente").value = datos.CDGCL
-                document.querySelector("#saldoActual").value = saldoActual.toFixed(2)
+                document.querySelector("#saldoActual").value = formatoMoneda(saldoActual)
                 
                 if (saldoActual >= saldoMinimoApertura) return document.querySelector("#monto").disabled = false
                 
@@ -1265,7 +1308,7 @@ class Ahorro extends Controller
             const validaDeposito = (e) => {
                 if (!valKD) return
                 
-                let monto = parseFloat(e.target.value) || 0
+                let monto = parseaNumero(e.target.value) || 0
                 if (monto <= 0) {
                     e.preventDefault()
                     e.target.value = ""
@@ -1280,12 +1323,12 @@ class Ahorro extends Controller
                 const valor = e.target.value.split(".")
                 if (valor[1] && valor[1].length > 2) {
                     e.preventDefault()
-                    e.target.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
+                    e.target.value = parseaNumero(valor[0] + "." + valor[1].substring(0, 2))
                 }
                  
-                const saldoFinal = parseFloat(document.querySelector("#saldoActual").value) - monto
-                document.querySelector("#montoOperacion").value = monto.toFixed(2)
-                document.querySelector("#saldoFinal").value = (saldoFinal < 0 ? 0 : saldoFinal).toFixed(2)
+                const saldoFinal = parseaNumero(document.querySelector("#saldoActual").value) - monto
+                document.querySelector("#montoOperacion").value = formatoMoneda(monto)
+                document.querySelector("#saldoFinal").value = formatoMoneda(saldoFinal < 0 ? 0 : saldoFinal)
                 document.querySelector("#monto_letra").value = numeroLetras(monto)
                 compruebaSaldoFinal(saldoFinal)
                 habiltaEspecs(monto)
@@ -1293,7 +1336,7 @@ class Ahorro extends Controller
             }
             
             const compruebaSaldoMinimo = () => {
-                const monto = parseFloat(document.querySelector("#monto").value)
+                const monto = parseaNumero(document.querySelector("#monto").value)
                 let mMax = 0
                 
                 const tasas =  tasasDisponibles
@@ -1320,7 +1363,7 @@ class Ahorro extends Controller
                 const plazo = document.querySelector("#plazo").value
                 const tasa = tasasDisponibles.find(tasa => tasa.CODIGO == plazo)
                 if (tasa) {
-                    document.querySelector("#rendimiento").value = (parseFloat(document.querySelector("#monto").value) * parseFloat(tasa.TASA) / 100).toFixed(2)
+                    document.querySelector("#rendimiento").value = formatoMoneda(parseaNumero(document.querySelector("#monto").value) * parseaNumero(tasa.TASA) / 100)
                     document.querySelector("#leyendaRendimiento").innerText = "* Rendimiento calculado con una tasa anual fija del " + tasa.TASA + "%"
                     return
                 }
@@ -1345,7 +1388,7 @@ class Ahorro extends Controller
                 document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value >= saldoMinimoApertura)
             }
              
-            const habiltaEspecs = (monto = parseFloat(document.querySelector("#monto").value)) => {
+            const habiltaEspecs = (monto = parseaNumero(document.querySelector("#monto").value)) => {
                 document.querySelector("#plazo").disabled = !(monto >= saldoMinimoApertura)
                 document.querySelector("#renovacion").disabled = !(monto >= saldoMinimoApertura)
                  
@@ -1816,6 +1859,8 @@ class Ahorro extends Controller
             {$this->primeraMayuscula}
             {$this->imprimeTicket}
             {$this->addParametro}
+            {$this->parseaNumero}
+            {$this->formatoMoneda}
             
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado").value
@@ -1904,7 +1949,7 @@ class Ahorro extends Controller
                                     document.querySelector("#nombre").value = contrato.CDG_CONTRATO
                                     document.querySelector("#curp").value = contrato.CURP
                                     document.querySelector("#cliente").value = contrato.CDGCL
-                                    document.querySelector("#saldoActual").value = parseFloat(contrato.SALDO).toFixed(2)
+                                    document.querySelector("#saldoActual").value = formatoMoneda(contrato.SALDO)
                                     if (document.querySelector("#deposito").checked || document.querySelector("#retiro").checked) calculaSaldoFinal()
                                 }
                             })
@@ -1955,7 +2000,7 @@ class Ahorro extends Controller
             const validaDeposito = (e) => {
                 if (!valKD) return
                  
-                const monto = parseFloat(e.target.value) || 0
+                const monto = parseaNumero(e.target.value) || 0
                 if (monto <= 0) {
                     e.preventDefault()
                     e.target.value = ""
@@ -1970,24 +2015,23 @@ class Ahorro extends Controller
                 const valor = e.target.value.split(".")
                 if (valor[1] && valor[1].length > 2) {
                     e.preventDefault()
-                    e.target.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
+                    e.target.value = parseaNumero(valor[0] + "." + valor[1].substring(0, 2))
                 }
                 
-                document.querySelector("#monto_letra").value = numeroLetras(parseFloat(e.target.value))
+                document.querySelector("#monto_letra").value = numeroLetras(parseaNumero(e.target.value))
                 if (document.querySelector("#deposito").checked || document.querySelector("#retiro").checked) calculaSaldoFinal()
             }
              
             const calculaSaldoFinal = () => {
                 const esDeposito = document.querySelector("#deposito").checked
-                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
-                const monto = parseFloat(document.querySelector("#monto").value) || 0
-                document.querySelector("#montoOperacion").value = monto.toFixed(2)
-                document.querySelector("#saldoFinal").value = (esDeposito ? saldoActual + monto : saldoActual - monto).toFixed(2)
+                const saldoActual = parseaNumero(document.querySelector("#saldoActual").value)
+                const monto = parseaNumero(document.querySelector("#monto").value)
+                document.querySelector("#montoOperacion").value = formatoMoneda(monto)
+                document.querySelector("#saldoFinal").value = formatoMoneda(esDeposito ? saldoActual + monto : saldoActual - monto)
                 compruebaSaldoFinal(document.querySelector("#saldoFinal").value)
             }
              
             const cambioMovimiento = (e) => {
-                
                 document.querySelector("#monto").disabled = false
                 const esDeposito = document.querySelector("#deposito").checked
                 document.querySelector("#simboloOperacion").innerText = esDeposito ? "+" : "-"
@@ -2186,6 +2230,7 @@ class Ahorro extends Controller
 
         $extraFooter = <<<script
         <script>
+            const mEdoCta = true
             let datosCliente = {}
             {$this->showError}
             {$this->showSuccess}

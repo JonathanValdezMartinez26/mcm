@@ -185,9 +185,6 @@
                                                 <div class="form-group">
                                                     <label for="nombre_ejecutivo">Ejecutivo</label>
                                                     <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="<?= $_SESSION['nombre'] ?>" readonly>
-                                                    <!-- <select class="form-control mr-sm-3" id="ejecutivo" name="ejecutivo" disabled>
-                                                            <option value="135">Ejecutivo Prueba</option>
-                                                        </select> -->
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
@@ -201,13 +198,13 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <label for="tipo">Nombre Beneficiario</label>
+                                                <label for="tipo">Nombre Beneficiario *</label>
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="tipo">Parentesco</label>
+                                                <label for="tipo">Parentesco *</label>
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="tipo">Porcentaje</label>
+                                                <label for="tipo">Porcentaje *</label>
                                             </div>
                                         </div>
                                         <div class="row" id="ben1" style="opacity:1">
@@ -380,7 +377,7 @@
                                 <h4>$</h4>
                             </div>
                             <div class="col-md-3">
-                                <input type="number" class="form-control" id="deposito" name="deposito" value="0.00" disabled>
+                                <input class="form-control" id="deposito" name="deposito" value="0.00" disabled>
                             </div>
                         </div>
                         <div class="row">
@@ -394,7 +391,7 @@
                                 <h4>$</h4>
                             </div>
                             <div class="col-md-3">
-                                <input type="number" class="form-control" id="inscripcion" name="inscripcion" value="<?= $saldoMinimoApertura ?>.00" readonly>
+                                <input class="form-control" id="inscripcion" name="inscripcion" value="<?= $saldoMinimoApertura ?>.00" readonly>
                             </div>
                         </div>
                         <div class="row">
@@ -405,7 +402,7 @@
                                 <h4>$</h4>
                             </div>
                             <div class="col-md-3">
-                                <input type="number" class="form-control" id="saldo_inicial" name="saldo_inicial" value="0.00" readonly>
+                                <input class="form-control" id="saldo_inicial" name="saldo_inicial" value="0.00" readonly>
                                 <input type="hidden" class="form-control" id="sma" name="sma" value="<?= $saldoMinimoApertura ?>" readonly>
                             </div>
                             <div class="col-md-12" style="display: flex; justify-content: center; color: red;">

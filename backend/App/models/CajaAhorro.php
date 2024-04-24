@@ -190,6 +190,28 @@ class CajaAhorro
         }
     }
 
+    public static function GetBeneficiarios($contrato)
+    {
+        $query = <<<sql
+        SELECT
+            *
+        FROM
+            BENEFICIARIOS_AHORRO
+        WHERE
+            CDG_CONTRATO = '$contrato'
+            AND ESTATUS = 'A'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($query);
+            if ($res) return self::Responde(true, "Consulta realizada correctamente.", $res);
+            return self::Responde(false, "No se encontraron beneficiarios para el contrato {$contrato}.");
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al consultar los beneficiarios del contrato {$contrato}.", null, $e->getMessage());
+        }
+    }
+
     public static function ConsultaClientesProducto($cliente)
     {
 
@@ -666,14 +688,6 @@ class CajaAhorro
                 WHERE
                     TO_NUMBER(CDG_TICKET) < TO_NUMBER(T.CODIGO)
                     AND T.CDG_CONTRATO = MA.CDG_CONTRATO), 0)
-                -
-                NVL((SELECT
-                    SUM(MONTO)
-                FROM
-                    MOVIMIENTOS_AHORRO
-                WHERE
-                    TO_NUMBER(CDG_TICKET) = TO_NUMBER(T.CODIGO)
-                    AND CDG_TIPO_PAGO = 2), 0)
             ) AS SALDO_NUEVO,
             (
                 SELECT

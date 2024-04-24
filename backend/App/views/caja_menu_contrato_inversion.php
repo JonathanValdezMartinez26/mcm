@@ -163,7 +163,7 @@
                                                 <span style="font-size: x-large;">$</span>
                                             </div>
                                             <div class="col-md-10">
-                                                <input type="number" class="form-control" id="rendimiento" name="rendimiento" placeholder="0.00" style="font-size: 25px;" disabled />
+                                                <input class="form-control" id="rendimiento" name="rendimiento" placeholder="0.00" style="font-size: 25px;" disabled />
                                             </div>
                                         </div>
                                     </div>
@@ -198,7 +198,7 @@
                                     <h4>$</h4>
                                 </div>
                                 <div class="col-md-3">
-                                    <input type="number" class="form-control" id="saldoActual" name="saldoActual" value="0.00" readonly>
+                                    <input class="form-control" id="saldoActual" name="saldoActual" value="0.00" readonly>
                                 </div>
                             </div>
                             <div class="row">
@@ -212,7 +212,7 @@
                                     <h4>$</h4>
                                 </div>
                                 <div class="col-md-3">
-                                    <input type="number" class="form-control" id="montoOperacion" name="montoOperacion" value="0.00" readonly>
+                                    <input class="form-control" id="montoOperacion" name="montoOperacion" value="0.00" readonly>
                                 </div>
                             </div>
                             <div class="row">
@@ -223,7 +223,7 @@
                                     <h4>$</h4>
                                 </div>
                                 <div class="col-md-3">
-                                    <input type="number" class="form-control" id="saldoFinal" name="saldoFinal" value="0.00" readonly>
+                                    <input class="form-control" id="saldoFinal" name="saldoFinal" value="0.00" readonly>
                                 </div>
                                 <div class="col-md-12" style="display: flex; justify-content: center; color: red;">
                                     <label id="tipSaldo" style="opacity:0; font-size: 18px;">El monto a invertir no puede ser mayor al saldo de la cuenta.</label>

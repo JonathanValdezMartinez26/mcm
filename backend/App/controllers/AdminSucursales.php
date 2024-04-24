@@ -22,15 +22,17 @@ class AdminSucursales extends Controller
     }';
     private $soloNumeros = 'const soloNumeros = (e) => {
         valKD = false
-        if ((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58)) {
-            valKD = true
-            return
-        }
-        if (e.keyCode === 110 || e.keyCode === 190 || e.keyCode === 8  || e.keyCode === 8 || e.keyCode === 9  || e.keyCode === 37 || e.keyCode === 39 || e.keyCode === 46) {
-            valKD = true
-            return
-        }
-        return e.preventDefault()
+        if (
+            !(e.key >= "0" && e.key <= "9") &&
+            e.key !== "." &&
+            e.key !== "Backspace" &&
+            e.key !== "Delete" &&
+            e.key !== "ArrowLeft" &&
+            e.key !== "ArrowRight" &&
+            e.key !== "Tab"
+        ) e.preventDefault()
+        if (e.key === "." && e.target.value.includes(".")) e.preventDefault()
+        valKD = true
     }';
     private $numeroLetras = 'const numeroLetras = (numero) => {
         if (!numero) return ""
