@@ -1662,4 +1662,19 @@ class LogTransaccionesAhorro
         }
         return $tmp;
     }
+
+    public static function GetSaldoMinimoInversion()
+    {
+        $query = <<<sql
+       SELECT NOMBRE FROM EF WHERE NOMBRE != 'Desconocido'
+sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($query);
+            return $res;
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
 }

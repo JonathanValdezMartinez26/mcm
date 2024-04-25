@@ -1810,6 +1810,17 @@ class Ahorro extends Controller
         </script>
         html;
 
+
+        $ComboEntidades = CallCenterDao::getComboSucursalesHorario();
+
+
+        foreach ($ComboEntidades as $key => $val2) {
+
+            $opciones_suc .= <<<html
+                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+html;
+        }
+
         if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Contrato Cuenta Peque")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
