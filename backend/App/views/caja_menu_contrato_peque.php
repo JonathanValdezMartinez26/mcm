@@ -186,7 +186,7 @@
                                         </div>
                                         <div class="col-md-5">
                                             <div class="form-group">
-                                                <label for="curp">CURP*</label>
+                                                <label for="curp">CURP *</label>
                                                 <input type="text" class="form-control" name="curp" id="curp" maxlength="18" oninput=camposLlenos(event) disabled>
                                             </div>
                                         </div>
@@ -232,10 +232,8 @@
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <label for="Fecha">Ejecutivo</label>
-                                                    <select class="form-control mr-sm-3" id="ejecutivo" name="ejecutivo" disabled>
-                                                        <option value="135">Ejecutivo Prueba</option>
-                                                    </select>
+                                                    <label for="ejecutivo">Ejecutivo</label>
+                                                    <input id="ejecutivo" name="ejecutivo" class="form-control" value="<?= $_SESSION['nombre']; ?>" disabled />
                                                 </div>
                                             </div>
                                             <div class="modal-footer" style="margin-top:40px;">

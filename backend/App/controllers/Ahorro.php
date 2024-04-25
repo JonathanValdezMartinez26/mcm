@@ -292,6 +292,13 @@ class Ahorro extends Controller
     }';
     private $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/[^0-9.]/g, "")) || 0';
     private $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { minimumFractionDigits: 2 })';
+    private $limpiaMontos = 'const limpiaMontos = (datos, campos = []) => {
+        datos.forEach(dato => {
+            if (campos.includes(dato.name)) {
+                dato.value = parseaNumero(dato.value)
+            }
+        })
+    }';
 
     function __construct()
     {
@@ -345,6 +352,7 @@ class Ahorro extends Controller
             {$this->consultaServidor}
             {$this->parseaNumero}
             {$this->formatoMoneda}
+            {$this->limpiaMontos}
              
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado").value
@@ -507,6 +515,7 @@ class Ahorro extends Controller
                 if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura.toLocalString("es-MX", {style:"currency", currency:"MXN"}) + ".")
                 
                 const datos = $("#AddPagoApertura").serializeArray()
+                limpiaMontos(datos, ["deposito", "inscripcion", "saldo_inicial"])
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                  
@@ -804,6 +813,8 @@ class Ahorro extends Controller
             {$this->addParametro}
             {$this->parseaNumero}
             {$this->formatoMoneda}
+            {$this->consultaServidor}
+            {$this->limpiaMontos}
          
             const llenaDatosCliente = (datosCliente) => {
                 document.querySelector("#nombre").value = datosCliente.NOMBRE
@@ -878,11 +889,11 @@ class Ahorro extends Controller
              
             const calculaSaldoFinal = () => {
                 const esDeposito = document.querySelector("#deposito").checked
-                const saldoActual = parseFloat(document.querySelector("#saldoActual").value)
-                const monto = parseFloat(document.querySelector("#monto").value) || 0
+                const saldoActual = parseaNumero(document.querySelector("#saldoActual").value)
+                const monto = parseaNumero(document.querySelector("#monto").value)
                 document.querySelector("#montoOperacion").value = formatoMoneda(monto)
                 document.querySelector("#saldoFinal").value = formatoMoneda(esDeposito ? saldoActual + monto : saldoActual - monto)
-                compruebaSaldoFinal(document.querySelector("#saldoFinal").value)
+                compruebaSaldoFinal()
             }
              
             const cambioMovimiento = (e) => {
@@ -896,7 +907,8 @@ class Ahorro extends Controller
                 calculaSaldoFinal()
             }
              
-            const compruebaSaldoFinal = saldoFinal => {
+            const compruebaSaldoFinal = () => {
+                const saldoFinal = parseaNumero(document.querySelector("#saldoFinal").value)
                 if (saldoFinal < 0) {
                     document.querySelector("#saldoFinal").setAttribute("style", "color: red")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
@@ -904,14 +916,15 @@ class Ahorro extends Controller
                     document.querySelector("#saldoFinal").removeAttribute("style")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
                 }
-                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value > 0)
+                document.querySelector("#btnRegistraOperacion").disabled = !(saldoFinal >= 0 && parseaNumero(document.querySelector("#montoOperacion").value) > 0)
                 
             }
              
             const registraOperacion = async (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
-                 
+                
+                limpiaMontos(datos, ["saldoActual", "montoOperacion", "saldoFinal"])
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                  
@@ -925,29 +938,18 @@ class Ahorro extends Controller
                     }
                 })
                  
-                const c = await confirmarMovimiento((document.querySelector("#deposito").checked ? "depósito" : "retiro"), document.querySelector("#montoOperacion").value, document.querySelector("#monto_letra").value)
+                const c = await confirmarMovimiento((document.querySelector("#deposito").checked ? "depósito" : "retiro"), parseaNumero(document.querySelector("#montoOperacion").value), document.querySelector("#monto_letra").value)
                 if (!c) return
                  
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/registraOperacion/",
-                    data: $.param(datos),
-                    success: (respuesta) => {
-                        respuesta = JSON.parse(respuesta)
+                consultaServidor("/Ahorro/RegistraOperacion/", $.param(datos), async (respuesta) => {
                         if (!respuesta.success){
                             console.log(respuesta.error)
                             return showError(respuesta.mensaje)
                         }
-                        showSuccess(respuesta.mensaje)
+                        await showSuccess(respuesta.mensaje)
                         imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
                         limpiaDatosCliente()
-                    },
-                    error: (error) => {
-                        console.log(respuesta)
-                        console.error(error)
-                        showError("Ocurrió un error al registrar la operación.")
-                    }
-                })
+                    })
             }
         </script>
         html;
@@ -1008,6 +1010,7 @@ class Ahorro extends Controller
             {$this->getHoy}
             {$this->parseaNumero}
             {$this->formatoMoneda}
+            {$this->limpiaMontos}
              
             const llenaDatosCliente = (datosCliente) => {
                 if (parseaNumero(datosCliente.SALDO) < montoMinimo) {
@@ -1138,6 +1141,7 @@ class Ahorro extends Controller
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
                 
+                limpiaMontos(datos, ["saldoActual", "montoOperacion", "saldoFinal"])
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                 addParametro(datos, "retiroExpress", document.querySelector("#express").checked)
@@ -1289,6 +1293,7 @@ class Ahorro extends Controller
             {$this->addParametro}
             {$this->parseaNumero}
             {$this->formatoMoneda}
+            {$this->limpiaMontos}
              
             const llenaDatosCliente = (datos) => {
                 const saldoActual = parseaNumero(datos.SALDO)
@@ -1298,7 +1303,7 @@ class Ahorro extends Controller
                 document.querySelector("#contrato").value = datos.CONTRATO
                 document.querySelector("#cliente").value = datos.CDGCL
                 document.querySelector("#saldoActual").value = formatoMoneda(saldoActual)
-                
+                document.querySelector("#saldoFinal").value = formatoMoneda(saldoActual)
                 if (saldoActual >= saldoMinimoApertura) return document.querySelector("#monto").disabled = false
                 
                 showError("No es posible hacer la apertura de inversión.\\nEl saldo mínimo de apertura es de " + saldoMinimoApertura.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }) + 
@@ -1394,7 +1399,7 @@ class Ahorro extends Controller
              
             const habilitaBoton = (e) => {
                 if (e && e.target.id === "plazo") cambioPlazo()
-                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value >= saldoMinimoApertura)
+                document.querySelector("#btnRegistraOperacion").disabled = !(parseaNumero(document.querySelector("#saldoFinal").value) >= 0 && parseaNumero(document.querySelector("#montoOperacion").value) >= saldoMinimoApertura)
             }
              
             const habiltaEspecs = (monto = parseaNumero(document.querySelector("#monto").value)) => {
@@ -1411,6 +1416,8 @@ class Ahorro extends Controller
             const registraOperacion = async (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
+                 
+                limpiaMontos(datos, ["saldoActual", "montoOperacion", "saldoFinal"])
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                  
@@ -1571,6 +1578,7 @@ class Ahorro extends Controller
             {$this->imprimeTicket}
             {$this->imprimeContrato}
             {$this->addParametro}
+            {$this->consultaServidor}
              
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado")
@@ -1580,43 +1588,36 @@ class Ahorro extends Controller
                     return showError("Ingrese un número de cliente a buscar.")
                 }
                 
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/BuscaClientePQ/",
-                    data: { cliente: noCliente.value },
-                    success: (respuesta) => {
-                        respuesta = JSON.parse(respuesta)
+                consultaServidor("/Ahorro/BuscaClientePQ/", { cliente: noCliente.value }, async (respuesta) => {
                         if (!respuesta.success) {
                             if (respuesta.datos) {
                                 const datosCliente = respuesta.datos
                                 if (datosCliente["NO_CONTRATOS"] == 0) {
-                                    swal({
+                                    const abreCta = await swal({
                                         title: "Cuenta de ahorro Peques™",
                                         text: "El cliente " + noCliente.value + " no tiene una cuenta de ahorro.\\nDesea aperturar una cuenta de ahorro en este momento?",
                                         icon: "info",
                                         buttons: ["No", "Sí"],
                                         dangerMode: true
-                                    }).then((abreCta) => {
-                                        if (abreCta) {
-                                            window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente.value
-                                            return
-                                        }
                                     })
+                                    if (abreCta) {
+                                        window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente.value
+                                        return
+                                    }
                                     return
                                 }
                                 if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
-                                    swal({
+                                    const abreCta = await swal({
                                         title: "Cuenta de ahorro Peques™",
                                         text: "El cliente " + noCliente.value + " no ha completado el proceso de apertura de la cuenta de ahorro.\\nDesea completar el proceso en este momento?",
                                         icon: "info",
                                         buttons: ["No", "Sí"],
                                         dangerMode: true
-                                    }).then((abreCta) => {
-                                        if (abreCta) {
-                                            window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente.value
-                                            return
-                                        }
                                     })
+                                    if (abreCta) {
+                                        window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente.value
+                                        return
+                                    }
                                     return
                                 }
                             }
@@ -1640,13 +1641,7 @@ class Ahorro extends Controller
                         document.querySelector("#nombre").value = datosCliente.NOMBRE
                         document.querySelector("#direccion").value = datosCliente.DIRECCION
                         noCliente.value = ""
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        limpiaDatosCliente()
-                        showError("Ocurrió un error al buscar el cliente.")
-                    }
-                })
+                    })
             }
              
             const limpiaDatosCliente = () => {
@@ -1695,11 +1690,10 @@ class Ahorro extends Controller
                 const cliente = document.querySelector("#nombre").value
                 try {
                     const continuar = await swal({
-                        title:
-                            "¿Está seguro de continuar con la apertura de la cuenta Peque™ asociada al cliente " +
+                        title: "Cuenta de ahorro Peques™",
+                        text: "¿Está segura de continuar con la apertura de la cuenta Peque™ asociada al cliente " +
                             cliente +
                             "?",
-                        text: "",
                         icon: "warning",
                         buttons: true,
                         dangerMode: true
@@ -1716,23 +1710,18 @@ class Ahorro extends Controller
                             }
                         })
                          
-                        let respuesta = await $.ajax({
-                            type: "POST",
-                            url: "/Ahorro/AgregaContratoAhorroPQ/",
-                            data: $.param(datos)
-                        })
+                        consultaServidor("/Ahorro/AgregaContratoAhorroPQ/", $.param(datos), async (respuesta) => {
+                            if (!respuesta.success) {
+                                console.error(respuesta.error)
+                                limpiaDatosCliente()
+                                return showError(respuesta.mensaje)
+                            }
                         
-                        respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) {
-                            console.error(respuesta.error)
+                            const contrato = respuesta.datos
                             limpiaDatosCliente()
-                            return showError(respuesta.mensaje)
-                        }
-                        
-                        const contrato = respuesta.datos
-                        limpiaDatosCliente()
-                        await showSuccess("Se ha generado el contrato: " + contrato.contrato)
-                        imprimeContrato(contrato.contrato, 3)
+                            await showSuccess("Se ha generado el contrato: " + contrato.contrato)
+                            imprimeContrato(contrato.contrato, 3)
+                        })
                     }
                 } catch (error) {
                     console.error(error)
@@ -1872,6 +1861,8 @@ class Ahorro extends Controller
             {$this->addParametro}
             {$this->parseaNumero}
             {$this->formatoMoneda}
+            {$this->limpiaMontos}
+            {$this->consultaServidor}
             
             const buscaCliente = () => {
                 const noCliente = document.querySelector("#clienteBuscado").value
@@ -1881,59 +1872,51 @@ class Ahorro extends Controller
                     return showError("Ingrese un número de cliente a buscar.")
                 }
                  
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/BuscaContratoPQ/",
-                    data: { cliente: noCliente },
-                    success: (respuesta) => {
+                consultaServidor("/Ahorro/BuscaContratoPQ/", { cliente: noCliente }, async (respuesta) => {
                         limpiaDatosCliente()
-                        respuesta = JSON.parse(respuesta)
                         if (!respuesta.success) {
                             if (!respuesta.datos) return showError(respuesta.mensaje)
                             const datosCliente = respuesta.datos
                              
                             if (datosCliente["NO_CONTRATOS"] == 0) {
-                                swal({
+                                const realizarDeposito = swal({
                                     title: "Cuenta de ahorro Peques™",
                                     text: "La cuenta " + noCliente + " no tiene una cuenta de ahorro.\\nDesea realizar la apertura en este momento?",
                                     icon: "info",
                                     buttons: ["No", "Sí"],
                                     dangerMode: true
-                                }).then((realizarDeposito) => {
-                                    if (realizarDeposito) {
-                                        window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
-                                        return
-                                    }
                                 })
+                                if (realizarDeposito) {
+                                    window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
+                                    return
+                                }
                                 return
                             }
                             if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
-                                swal({
+                                const realizarDeposito = swal({
                                     title: "Cuenta de ahorro Peques™",
                                     text: "La cuenta " + noCliente + " no ha concluido con el proceso de apertua de la cuenta de ahorro.\\nDesea completar el contrato en este momento?",
                                     icon: "info",
                                     buttons: ["No", "Sí"],
                                     dangerMode: true
-                                }).then((realizarDeposito) => {
-                                    if (realizarDeposito) {
-                                        window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
-                                        return
-                                    }
                                 })
+                                if (realizarDeposito) {
+                                    window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
+                                    return
+                                }
                             }
                             if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 1) {
-                                swal({
+                                const realizarDeposito = swal({
                                     title: "Cuenta de ahorro Peques™",
                                     text: "La cuenta " + noCliente + " no tiene asignadas cuentas Peque™.\\nDesea aperturar una cuenta Peque™ en este momento?",
                                     icon: "info",
                                     buttons: ["No", "Sí"],
                                     dangerMode: true
-                                }).then((realizarDeposito) => {
-                                    if (realizarDeposito) {
-                                        window.location.href = "/Ahorro/ContratoCuentaPeque/?cliente=" + noCliente
-                                        return
-                                    }
                                 })
+                                if (realizarDeposito) {
+                                    window.location.href = "/Ahorro/ContratoCuentaPeque/?cliente=" + noCliente
+                                    return
+                                }
                                 return
                             }
                         }
@@ -1967,13 +1950,7 @@ class Ahorro extends Controller
                         })
                         
                         document.querySelector("#clienteBuscado").value = ""
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        limpiaDatosCliente()
-                        showError("Ocurrió un error al buscar el cliente.")
-                    }
-                })
+                    })
             }
              
             const limpiaDatosCliente = () => {
@@ -2050,7 +2027,8 @@ class Ahorro extends Controller
                 calculaSaldoFinal()
             }
              
-            const compruebaSaldoFinal = saldoFinal => {
+            const compruebaSaldoFinal = () => {
+                const saldoFinal = parseaNumero(document.querySelector("#saldoFinal").value)
                 if (saldoFinal < 0) {
                     document.querySelector("#saldoFinal").setAttribute("style", "color: red")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
@@ -2058,12 +2036,14 @@ class Ahorro extends Controller
                     document.querySelector("#saldoFinal").removeAttribute("style")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
                 }
-                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value > 0)
+                document.querySelector("#btnRegistraOperacion").disabled = !(saldoFinal >= 0 && parseaNumero(document.querySelector("#montoOperacion").value) > 0)
             }
              
             const registraOperacion = async (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
+                 
+                limpiaMontos(datos, ["saldoActual", "montoOperacion", "saldoFinal"])
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                  
@@ -2077,29 +2057,19 @@ class Ahorro extends Controller
                     }
                 })
                  
-                const c = await confirmarMovimiento((document.querySelector("#deposito").checked ? "depósito" : "retiro") + " de cuenta peque", document.querySelector("#montoOperacion").value, document.querySelector("#monto_letra").value)
+                const c = await confirmarMovimiento((document.querySelector("#deposito").checked ? "depósito" : "retiro") + " de cuenta peque", parseaNumero(document.querySelector("#montoOperacion").value), document.querySelector("#monto_letra").value)
                 if (!c) return
                  
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/registraOperacion/",
-                    data: $.param(datos),
-                    success: (respuesta) => {
-                        respuesta = JSON.parse(respuesta)
+                consultaServidor("/Ahorro/registraOperacion/", $.param(datos), async (respuesta) => {
                         if (!respuesta.success){
                             console.log(respuesta.error)
                             return showError(respuesta.mensaje)
                         }
                          
-                        showSuccess(respuesta.mensaje)
+                        await showSuccess(respuesta.mensaje)
                         imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
                         limpiaDatosCliente()
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        showError("Ocurrió un error al registrar la operación.")
-                    }
-                })
+                    })
             }
         </script>
         html;

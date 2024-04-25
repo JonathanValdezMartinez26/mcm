@@ -126,8 +126,7 @@
                                 <div class="col-md-5">
                                     <div class="form-group">
                                         <label for="nombre_ejecutivo">Nombre del ejecutivo</label>
-                                        <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="Ejecutivo de Prueba" readonly>
-                                        <input type="hidden" class="form-control" id="ejecutivo" name="ejecutivo" value="SOOA">
+                                        <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="<?= $_SESSION['nombre']; ?>" readonly>
                                     </div>
                                 </div>
                             </div>
