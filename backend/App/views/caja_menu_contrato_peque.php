@@ -97,8 +97,8 @@
                                     </div>
                                     <div class="col-md-8">
                                         <div class="col-md-12">
-                                            <p>Los campos marcados con un asterisco (*) son obligatorios.</p>
                                             <p><b><span class="fa fa-sticky-note"></span> Identificación del cliente SICAFIN</b></p>
+                                            <hr>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -120,6 +120,7 @@
                                         </div>
                                         <div class="col-md-12">
                                             <p><b><span class="fa fa-sticky-note"></span> Identificación del peque</b></p>
+                                            <hr>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -172,13 +173,13 @@
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
-                                                <label for="pais">País</label>
+                                                <label for="pais">País *</label>
                                                 <input type="text" class="form-control" id="pais" name="pais" value="MÉXICO" readonly>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="ciudad">Entidad de nacimiento</label>
+                                                <label for="ciudad">Entidad de nacimiento *</label>
                                                 <select class="form-control mr-sm-3" id="ciudad" name="ciudad" onchange=camposLlenos(event) disabled>
                                                     <?php echo $opciones_ent; ?>
                                                 </select>
