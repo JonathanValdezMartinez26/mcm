@@ -854,8 +854,6 @@ class AdminSucursales extends Controller
             {$this->primeraMayuscula}
             {$this->addParametro}
             {$this->buscaCliente}
-
-
         </script>
         script;
 
