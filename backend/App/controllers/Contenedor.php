@@ -89,30 +89,23 @@ html;
               <img src="https://static.vecteezy.com/system/resources/previews/013/042/571/large_2x/default-avatar-profile-icon-social-media-user-photo-in-flat-style-vector.jpg" alt="..." class="img-circle profile_img">
             </div>
             <div class="profile_info">
-              <span><b>USUARIO:</b> <u>{$usuario}</u></span>
+              <span><b>USUARIO:</b> {$usuario}</span>
               <br>
-              <span class="fa fa-key"></span> <b>CAJA</b>: <span><b>{$perfil}</b></span>
+              <span><b>PERFIL:</b> <span class="fa fa-key"></span> {$perfil}</span>
               
 html;
-    if($permiso_ahorro == '1')
-    {
-      $menu .= <<<html
-              <br>
-              <span class="fa fa-key"></span><b> CAJA AHORRO</b>
-html;
-    }
 
     $menu .= <<<html
             </div>
           </div>
-          <br/>
           <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
             <div class="menu_section">
 html;
 
     if ($permiso_ahorro == '1') {
       $menu .= <<<html
-           <h3>General WEB AHORRO</h3>
+           <hr>
+           <h3>General WEB AHORRO </h3>
             <ul class="nav side-menu">     
                 <li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
         
@@ -124,12 +117,11 @@ html;
                 <li><a href="/AdminSucursales/SaldosDiarios/"><i class="glyphicon glyphicon-paste"> </i>&nbsp; Admin Sucursales </a> </li>
              </ul>
           
-          <br>
 html;
       }
 
     $menu .= <<<html
-    
+              <hr>
               <h3>GENERAL </h3>
               <ul class="nav side-menu">       
 html;
