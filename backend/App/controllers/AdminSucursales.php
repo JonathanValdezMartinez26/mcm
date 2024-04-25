@@ -862,4 +862,29 @@ class AdminSucursales extends Controller
         View::set('fecha', date('Y-m-d'));
         View::render("caja_admin_clientes");
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///
+    public function Reporteria()
+    {
+        $extraFooter = <<<script
+        <script>
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->noSubmit}
+            {$this->soloNumeros}
+            {$this->consultaServidor}
+            {$this->numeroLetras}
+            {$this->primeraMayuscula}
+            {$this->addParametro}
+            {$this->buscaCliente}
+        </script>
+script;
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Catalogo de Clientes")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha', date('Y-m-d'));
+        View::render("caja_admin_reporteria");
+    }
 }
