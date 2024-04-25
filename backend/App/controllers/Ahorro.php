@@ -312,6 +312,7 @@ class Ahorro extends Controller
 
         $saldosMM = CajaAhorroDao::GetSaldoMinimoApertura($_SESSION['cdgco']);
         $saldoMinimoApertura = $saldosMM['MONTO_MINIMO'];
+        $costoInscripcion = 100;
 
         $extraFooter = <<<html
         <script>
@@ -320,6 +321,7 @@ class Ahorro extends Controller
             }
              
             const saldoMinimoApertura = $saldoMinimoApertura
+            const costoInscripcion = $costoInscripcion
             const montoMaximo = 1000000
             const txtGuardaContrato = "GUARDAR DATOS Y PROCEDER AL COBRO"
             const txtGuardaPago = "REGISTRAR DEPÓSITO DE APERTURA"
@@ -427,7 +429,6 @@ class Ahorro extends Controller
                 document.querySelector("#beneficiario_" + numBeneficiario).disabled = !habilitar
                 document.querySelector("#tasa").disabled = false
                 document.querySelector("#sucursal").disabled = false
-                document.querySelector("#ejecutivo").disabled = false
             }
              
             const limpiaDatosCliente = () => {
@@ -456,86 +457,76 @@ class Ahorro extends Controller
                 document.querySelector("#marcadores").style.opacity = "0"
                 document.querySelector("#tasa").disabled = true
                 document.querySelector("#sucursal").disabled = true
-                document.querySelector("#ejecutivo").disabled = true
                 document.querySelector("#contratoOK").value = ""
             }
             
-            const generaContrato = (e) => {
+            const generaContrato = async (e) => {
                 e.preventDefault()
                 const btnGuardar = document.querySelector("#btnGuardar")
                 if (btnGuardar.innerText === txtGuardaPago) return $("#modal_agregar_pago").modal("show")
                  
-                const cliente = document.querySelector("#nombre").value
-                try {
-                    swal({
+                document.querySelector("#fecha_pago").value = getHoy()
+                document.querySelector("#contrato").value = ""
+                document.querySelector("#codigo_cl").value = document.querySelector("#noCliente").value
+                document.querySelector("#nombre_cliente").value = document.querySelector("#nombre").value
+                document.querySelector("#mdlCurp").value = document.querySelector("#curp").value
+                    
+                await showInfo("Debe registrar el depósito por apertura de cuenta.")
+                btnGuardar.innerText = txtGuardaPago
+                $("#modal_agregar_pago").modal("show")
+            }
+                        
+            const pagoApertura = async (e) => {
+                e.preventDefault()
+                if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura.toLocalString("es-MX", {style:"currency", currency:"MXN"}) + ".")
+                 
+                // const c = await confirmarMovimiento("depósito de apertura", parseaNumero(document.querySelector("#deposito").value), document.querySelector("#monto_letra").value)
+                // if (!c) return
+                 
+                swal({
                         title:
                             "Cuenta de ahorro corriente",
                         text: "¿Está segura de continuar con la apertura de la cuenta de ahorro del cliente: " +
-                        cliente +
+                        document.querySelector("#nombre").value +
                         "?",
                         icon: "warning",
                         buttons: ["No", "Si, continuar"],
                         dangerMode: true
                     }).then((continuar) => {
                         if (!continuar) return false
-                        
+                 
                         const noCredito = document.querySelector("#noCliente").value
-                        const datos = $("#registroInicialAhorro").serializeArray()
-                        datos.push({ name: "credito", value: noCredito })
-            
-                        consultaServidor("/Ahorro/AgregaContratoAhorro/", $.param(datos), (respuesta) => {
+                        const datosContrato = $("#registroInicialAhorro").serializeArray()
+                        addParametro(datosContrato, "credito", noCredito)
+                        
+                        consultaServidor("/Ahorro/AgregaContratoAhorro/", $.param(datosContrato), async (respuesta) => {
                             if (!respuesta.success) {
                                 console.error(respuesta.error)
                                 return showError(respuesta.mensaje)
                             }
                             
                             const contrato = respuesta.datos
-                            showSuccess("Se ha generado el contrato: " + contrato.contrato + ".").then(() => {
-                                document.querySelector("#fecha_pago").value = getHoy()
-                                document.querySelector("#contrato").value = contrato.contrato
-                                document.querySelector("#codigo_cl").value = noCredito
-                                document.querySelector("#nombre_cliente").value = document.querySelector("#nombre").value
-                                document.querySelector("#mdlCurp").value = document.querySelector("#curp").value
-                                imprimeContrato(contrato.contrato, 1)
+                                            
+                            const datos = $("#AddPagoApertura").serializeArray()
+                            limpiaMontos(datos, ["deposito", "inscripcion", "saldo_inicial"])
+                            addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                            addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
+                            addParametro(datos, "contrato", contrato.contrato)
+                            
+                            consultaServidor("/Ahorro/PagoApertura/", $.param(datos), async (respuesta) => {
+                                    if (!respuesta.success) return showError(respuesta.mensaje)
                                 
-                                document.querySelector("#chkCreacionContrato").classList.remove("red")
-                                document.querySelector("#chkCreacionContrato").classList.add("green")
-                                document.querySelector("#lnkContrato").style.cursor = "pointer"
+                                    await showSuccess(respuesta.mensaje)
+                                    document.querySelector("#registroInicialAhorro").reset()
+                                    document.querySelector("#AddPagoApertura").reset()
+                                    $("#modal_agregar_pago").modal("hide")
+                                    limpiaDatosCliente()
+                                    imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
                                 
-                                showInfo("Debe registrar el depósito por apertura de cuenta.").then(() => {
-                                    btnGuardar.innerText = txtGuardaPago
-                                    $("#modal_agregar_pago").modal("show")
+                                    await showSuccess("Se ha generado el contrato: " + contrato.contrato + ".")
+                                    imprimeContrato(contrato.contrato, 1)
                                 })
-                            })
                         })
-                    })
-                } catch (error) {
-                    console.error(error)
-                }
-                return false
-            }
-                        
-            const pagoApertura = async (e) => {
-                e.preventDefault()
-                if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura.toLocalString("es-MX", {style:"currency", currency:"MXN"}) + ".")
-                
-                const datos = $("#AddPagoApertura").serializeArray()
-                limpiaMontos(datos, ["deposito", "inscripcion", "saldo_inicial"])
-                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
-                addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
-                 
-                const c = await confirmarMovimiento("depósito de apertura", parseaNumero(document.querySelector("#deposito").value), document.querySelector("#monto_letra").value)
-                if (!c) return
-                 
-                consultaServidor("/Ahorro/PagoApertura/", $.param(datos), async (respuesta) => {
-                        if (!respuesta.success) return showError(respuesta.mensaje)
-                    
-                        await showSuccess(respuesta.mensaje)
-                        document.querySelector("#registroInicialAhorro").reset()
-                        document.querySelector("#AddPagoApertura").reset()
-                        $("#modal_agregar_pago").modal("hide")
-                        limpiaDatosCliente()
-                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
                     })
             }
              
@@ -572,7 +563,7 @@ class Ahorro extends Controller
                 document.querySelector("#saldo_inicial").value = formatoMoneda(saldoInicial > 0 ? saldoInicial : 0)
                 document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
                     
-                if (saldoInicial < saldoMinimoApertura) {
+                if (saldoInicial < (saldoMinimoApertura - costoInscripcion)) {
                     document.querySelector("#saldo_inicial").setAttribute("style", "color: red")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
                     document.querySelector("#registraDepositoInicial").disabled = true
@@ -747,6 +738,7 @@ class Ahorro extends Controller
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Contrato Ahorro Corriente")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         view::set('saldoMinimoApertura', $saldoMinimoApertura);
+        view::set('costoInscripcion', $costoInscripcion);
         View::set('fecha', date('d/m/Y H:i:s'));
         view::set('opcParentescos', $opcParentescos);
         View::render("caja_menu_contrato_ahorro");
@@ -1428,6 +1420,15 @@ class Ahorro extends Controller
                         imprimeTicket(respuesta.datos.ticket, {$_SESSION['cdgco']})
                         limpiaDatosCliente()
                     })
+            }
+             
+            const validaBlur = (e) => {
+                const monto = parseaNumero(e.target.value)
+                 
+                if (monto < saldoMinimoApertura) {
+                    e.target.value = ""
+                    return showError("El monto mínimo de apertura es de " + saldoMinimoApertura.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }))
+                }
             }
         </script>
         html;
@@ -2482,6 +2483,48 @@ class Ahorro extends Controller
         $tktSaldoN = number_format($datos['SALDO_NUEVO'], 2, '.', ',');
         $tktComision =  $datos['COMISION'] > 0 ?  '<tr><td style="text-align: left; width: 60%;">COMISION:</td><td style="text-align: right; width: 40%;">$ ' . number_format($datos['COMISION'], 2, '.', ',') . '</td></tr>' : "";
 
+        $detalleMovimietnos = "";
+        if ($datos['COMPROBANTE'] == 'DEPÓSITO') {
+            $detalleMovimietnos = <<<html
+            <tr>
+                <td style="text-align: left; width: 60%;">
+                    {$datos['ES_DEPOSITO']}:
+                </td>
+                <td style="text-align: right; width: 40%;">
+                    $ {$tktMontoOP}
+                </td>
+            </tr>
+            html;
+        } else {
+            $detalleMovimietnos = <<<html
+            <tr>
+                <td style="text-align: left; width: 60%;">
+                    SALDO ANTERIOR:
+                </td>
+                <td style="text-align: right; width: 40%;">
+                    $ {$tktSaldoA}
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: left; width: 60%;">
+                    {$datos['ES_DEPOSITO']}:
+                </td>
+                <td style="text-align: right; width: 40%;">
+                    $ {$tktMontoOP}
+                </td>
+            </tr>
+            $tktComision
+            <tr>
+                <td style="text-align: left; width: 60%;">
+                    SALDO FINAL:
+                </td>
+                <td style="text-align: right; width: 40%;">
+                    $ {$tktSaldoN}
+                </td>
+            </tr>
+            html;
+        }
+
         $ticketHTML = <<<html
         <body style="font-family:Helvetica; padding: 0; margin: 0">
             <div>
@@ -2516,7 +2559,7 @@ class Ahorro extends Controller
                     <b>__________________________________________________________</b>
                 </div>
                 <div style="text-align:center; font-size: 13px;">
-                    <label><b>CUENTA DE AHORRO CORRIENTE</b></label>
+                    <label><b>{$datos['PRODUCTO']}</b></label>
                 </div>
                 <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
                     *****************************************
@@ -2532,31 +2575,7 @@ class Ahorro extends Controller
                 </div>
                 <div style="text-align:center; font-size: 13px;">
                     <table style="width: 100%; font-size: 11spx">
-                        <tr>
-                            <td style="text-align: left; width: 60%;">
-                                SALDO ANTERIOR:
-                            </td>
-                            <td style="text-align: right; width: 40%;">
-                                $ {$tktSaldoA}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: left; width: 60%;">
-                                {$datos['ES_DEPOSITO']}:
-                            </td>
-                            <td style="text-align: right; width: 40%;">
-                                $ {$tktMontoOP}
-                            </td>
-                        </tr>
-                        $tktComision
-                        <tr>
-                            <td style="text-align: left; width: 60%;">
-                                SALDO FINAL:
-                            </td>
-                            <td style="text-align: right; width: 40%;">
-                                $ {$tktSaldoN}
-                            </td>
-                        </tr>
+                        $detalleMovimietnos
                     </table>
                 </div>
                 <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">

@@ -334,8 +334,7 @@
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="nombre_ejecutivo">Nombre del ejecutivo</label>
-                                    <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="Ejecutivo de Prueba" readonly>
-                                    <input type="hidden" class="form-control" id="ejecutivo" name="ejecutivo" value="SOOA">
+                                    <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="<?= $_SESSION['nombre']; ?>" readonly>
                                 </div>
                             </div>
                             <hr>
@@ -392,7 +391,7 @@
                                 <h4>$</h4>
                             </div>
                             <div class="col-md-3">
-                                <input class="form-control" id="inscripcion" name="inscripcion" value="<?= $saldoMinimoApertura ?>.00" readonly>
+                                <input class="form-control" id="inscripcion" name="inscripcion" value="<?= $costoInscripcion ?>.00" readonly>
                             </div>
                         </div>
                         <div class="row">
@@ -407,7 +406,7 @@
                                 <input type="hidden" class="form-control" id="sma" name="sma" value="<?= $saldoMinimoApertura ?>" readonly>
                             </div>
                             <div class="col-md-12" style="display: flex; justify-content: center; color: red;">
-                                <label id="tipSaldo" style="opacity:0; font-size: 18px;">El saldo inicial debe ser mínimo de $<?= $saldoMinimoApertura ?>.00</label>
+                                <label id="tipSaldo" style="opacity:0; font-size: 18px;">El saldo inicial debe ser mínimo de $<?= $saldoMinimoApertura - $costoInscripcion ?>.00</label>
                             </div>
                         </div>
                         <div class="modal-footer">

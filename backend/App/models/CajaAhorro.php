@@ -770,6 +770,22 @@ class CajaAhorro
                 WHERE
                     PE.CODIGO = T.CDGPE
             ) AS NOM_EJECUTIVO,
+            (
+                SELECT
+                    CASE CDG_TIPO_PAGO
+                        WHEN '5' THEN 'CUENTA DE AHORRO CORRIENTE'
+                        ELSE CASE APA.CDGPR_PRIORITARIO
+                            WHEN '1' THEN 'CUENTA DE AHORRO CORRIENTE'
+                            WHEN '2' THEN 'CUENTA DE AHORRO PEQUE'
+                            ELSE 'NO DEFINIDO'
+                        END
+                    END
+                FROM
+                    MOVIMIENTOS_AHORRO
+                WHERE
+                    TO_NUMBER(CDG_TICKET) = TO_NUMBER(T.CODIGO)
+                    AND CDG_TIPO_PAGO != 2
+            ) AS PRODUCTO,
             T.CDGPE AS COD_EJECUTIVO
         FROM
             TICKETS_AHORRO T,
