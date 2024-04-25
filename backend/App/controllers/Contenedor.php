@@ -36,6 +36,7 @@ class Contenedor extends Controller
     $nombre = $this->__nombre;
     $sucursal = $this->__cdgco;
     $perfil = $this->__perfil;
+    $permiso_ahorro = $this->__ahorro;
 
     //var_dump($this->__perfil);
 
@@ -88,10 +89,19 @@ html;
               <img src="https://static.vecteezy.com/system/resources/previews/013/042/571/large_2x/default-avatar-profile-icon-social-media-user-photo-in-flat-style-vector.jpg" alt="..." class="img-circle profile_img">
             </div>
             <div class="profile_info">
-              <span>USUARIO: {$usuario}</span>
+              <span><b>USUARIO:</b> <u>{$usuario}</u></span>
               <br>
-              <span class="fa fa-key">: {$perfil}</span>
+              <span class="fa fa-key"></span> <b>CAJA</b>: <span><b>{$perfil}</b></span>
+              
 html;
+    if($permiso_ahorro == '1')
+    {
+      $menu .= <<<html
+              <br>
+              <span class="fa fa-key"></span><b> CAJA AHORRO</b>
+html;
+    }
+
     $menu .= <<<html
             </div>
           </div>
@@ -100,25 +110,27 @@ html;
             <div class="menu_section">
 html;
 
-    if ($this->__usuario == 'AMGM' || $this->__usuario == 'PHEE' || $this->__usuario == 'GASC' || $this->__usuario == 'GBNA') {
+    if ($permiso_ahorro == '1') {
       $menu .= <<<html
-          <hr>
            <h3>General WEB AHORRO</h3>
             <ul class="nav side-menu">     
-            
-              
                 <li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
+        
+html;
+    }
+
+      if ( $this->__usuario == 'AMGM') {
+          $menu .= <<<html
                 <li><a href="/AdminSucursales/SaldosDiarios/"><i class="glyphicon glyphicon-paste"> </i>&nbsp; Admin Sucursales </a> </li>
              </ul>
           
           <br>
 html;
-    }
-
+      }
 
     $menu .= <<<html
-      <hr>
-              <h3>General </h3>
+    
+              <h3>GENERAL </h3>
               <ul class="nav side-menu">       
 html;
     if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil == 'GTOCA' || $this->__perfil == 'AMOCA' || $this->__perfil == 'OCOF' || $this->__perfil == 'CPAGO' || $this->__perfil == 'ACALL' || $this->__perfil == 'LAYOU' || $this->__usuario == 'TESP' || $this->__usuario == 'MGJC') {

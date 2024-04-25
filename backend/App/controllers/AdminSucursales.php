@@ -882,7 +882,7 @@ class AdminSucursales extends Controller
         </script>
 script;
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Catalogo de Clientes")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporteria")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
         View::render("caja_admin_reporteria");

@@ -62,9 +62,23 @@ sql;
             ':password' => $pass['PASS']
         );
 
+        $params_ahorro = array(
+            ':usuario' => $usuario->_usuario,
+        );
+
+        $query_ahorro = <<<sql
+        SELECT  '1' as PERMISO
+        FROM
+            SUC_CAJERA_AHORRO
+        WHERE CDG_USUARIO = :usuario
+
+sql;
+
 
         //var_dump($query1);
-        return $mysqli->queryOne($query1, $params1);
+        return [$mysqli->queryOne($query1, $params1), $mysqli->queryOne($query_ahorro, $params_ahorro)];
+
+
     }
 
     public static function getUser($usuario)
@@ -91,4 +105,6 @@ sql;
 
         return $mysqli->queryAll($query);
     }
+
+
 }

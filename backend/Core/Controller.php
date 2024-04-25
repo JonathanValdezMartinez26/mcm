@@ -24,6 +24,7 @@ class Controller{
             $this->__puesto = $_SESSION['puesto'];
             $this->__cdgco = $_SESSION['cdgco'];
             $this->__perfil = $_SESSION['perfil'];
+            $this->__ahorro = $_SESSION['ahorro'];
 
     	}
     }

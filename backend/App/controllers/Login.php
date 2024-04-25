@@ -150,12 +150,23 @@ html;
         $usuario->_usuario = MasterDom::getData("usuario");
         $usuario->_password = MasterDom::getData("password");
         $user = LoginDao::getById($usuario);
+
+        if($user[1]['PERMISO'] == '')
+        {
+            $permiso = 0;
+        }
+        else
+        {
+            $permiso = $user[1]['PERMISO'];
+        }
+
         session_start();
-        $_SESSION['usuario'] = $user['CODIGO'];
-        $_SESSION['nombre'] = $user['NOMBRE'];
-        $_SESSION['puesto'] = $user['PUESTO'];
-        $_SESSION['cdgco'] = $user['CDGCO'];
-        $_SESSION['perfil'] = $user['PERFIL'];
+        $_SESSION['usuario'] = $user[0]['CODIGO'];
+        $_SESSION['nombre'] = $user[0]['NOMBRE'];
+        $_SESSION['puesto'] = $user[0]['PUESTO'];
+        $_SESSION['cdgco'] = $user[0]['CDGCO'];
+        $_SESSION['perfil'] = $user[0]['PERFIL'];
+        $_SESSION['ahorro'] = $permiso;
 
         header("location: /Principal/");
     }

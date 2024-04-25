@@ -38,6 +38,7 @@ class AdminSucursales
                         PE
                     WHERE
                         PE.CODIGO = SCA.CDG_USUARIO
+                        AND PE.CDGEM = 'EMPFIN'
                 ) NOMBRE_CAJERA,
                 TO_CHAR(TO_DATE(SCA.HORA_APERTURA, 'HH24:MI:SS'), 'HH:MI AM') HORA_APERTURA,
                 TO_CHAR(TO_DATE(SCA.HORA_CIERRE, 'HH24:MI:SS'), 'HH:MI AM') HORA_CIERRE,
@@ -53,8 +54,8 @@ class AdminSucursales
             WHERE
                 SEA.ESTATUS = 'A'
             ORDER BY
-                CO.NOMBRE
-        sql;
+               SEA.CDG_SUCURSAL
+sql;
 
         try {
             $mysqli = Database::getInstance();
