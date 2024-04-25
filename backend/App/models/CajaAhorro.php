@@ -94,6 +94,38 @@ sql;
         }
     }
 
+
+    public static function GetEjecutivosSucursal($sucursal)
+    {
+        $query = <<<sql
+                      SELECT
+	CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) EJECUTIVO,
+	CODIGO ID_EJECUTIVO
+FROM
+	PE
+WHERE
+	CDGEM = 'EMPFIN' 
+    AND CDGCO IN( '$sucursal')
+	AND ACTIVO = 'S'
+    AND BLOQUEO = 'N'
+ORDER BY 1
+
+
+
+sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($query);
+            if ($res) return $res;
+            return array();
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
+
+
     public static function GetSaldoMinimoInversion()
     {
         $query = <<<sql

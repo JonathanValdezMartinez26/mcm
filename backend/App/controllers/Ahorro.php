@@ -729,11 +729,16 @@ class Ahorro extends Controller
 
 
         $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro($this->__usuario);
-
         foreach ($sucursales as $sucursales) {
             $opcSucursales .= "<option value='{$sucursales['CODIGO']}'>{$sucursales['NOMBRE']}</option>";
+            $suc_eje = $sucursales['CODIGO'];
         }
 
+        $ejecutivos = CajaAhorroDao::GetEjecutivosSucursal($suc_eje);
+        foreach ($ejecutivos as $ejecutivos) {
+            $opcEjecutivos .= "<option value='{$ejecutivos['ID_EJECUTIVO']}'>{$ejecutivos['EJECUTIVO']}</option>";
+        }
+        $opcEjecutivos .= "<option value='{$this->__usuario}'>{$this->__nombre}</option>";
 
         $parentescos = CajaAhorroDao::GetCatalogoParentescos();
         $opcParentescos = "<option value='' disabled selected>Seleccionar</option>";
@@ -750,6 +755,7 @@ class Ahorro extends Controller
         View::set('fecha', date('d/m/Y H:i:s'));
         view::set('opcParentescos', $opcParentescos);
         view::set('sucursales', $opcSucursales);
+        view::set('ejecutivos', $opcEjecutivos);
         View::render("caja_menu_contrato_ahorro");
     }
 

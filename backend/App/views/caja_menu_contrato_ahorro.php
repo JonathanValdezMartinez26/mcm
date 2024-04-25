@@ -151,13 +151,13 @@
                                     <form id="registroInicialAhorro" name="registroInicialAhorro">
                                         <p><b><span class="fa fa-sticky-note"></span> Datos básicos de apertura para la cuenta de Ahorro Corriente</b></p>
                                         <div class="row">
-                                            <div class="col-md-4">
+                                            <div class="col-md-5">
                                                 <div class="form-group">
                                                     <label for="Fecha">Fecha de apertura</label>
                                                     <input type="text" class="form-control" id="fecha" name="fecha" value="<?= $fecha; ?>" readonly>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <div class="form-group">
                                                     <label for="tipo">Tasa Anual</label>
                                                     <select class="form-control mr-sm-3" autofocus="" type="select" id="tasa" name="tasa" disabled>
@@ -173,7 +173,15 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-4">
+                                            <div class="col-md-5">
+                                                <div class="form-group">
+                                                    <label for="Fecha">Manejo de ahorro cuenta</label>
+                                                    <select class="form-control mr-sm-3" id="manejo_cta" name="manejo_cta" readonly>
+                                                        <option value="1">APLICA</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-7">
                                                 <div class="form-group">
                                                     <label for="Fecha">Sucursal</label>
                                                     <select class="form-control mr-sm-3" id="sucursal" name="sucursal" disabled>
@@ -181,20 +189,17 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+
+                                            <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label for="nombre_ejecutivo">Comisión Ejecutivo </label>
-                                                    <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="<?= $_SESSION['nombre'] ?>" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label for="Fecha">Manejo de cuenta</label>
-                                                    <select class="form-control mr-sm-3" id="manejo_cta" name="manejo_cta" readonly>
-                                                        <option value="1">APLICA</option>
+                                                    <select class="form-control mr-sm-3" id="nombre_ejecutivo" name="nombre_ejecutivo" readonly>
+                                                        <?php echo $ejecutivos; ?>
                                                     </select>
+
                                                 </div>
                                             </div>
+
                                         </div>
                                         <div class="row">
                                             <div class="col-md-4">
