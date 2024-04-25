@@ -173,7 +173,7 @@
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label for="pais">País</label>
-                                                <input type="text" class="form-control" id="pais" name="pais" value="México" readonly>
+                                                <input type="text" class="form-control" id="pais" name="pais" value="MÉXICO" readonly>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
