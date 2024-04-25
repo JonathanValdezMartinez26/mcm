@@ -1808,16 +1808,14 @@ class Ahorro extends Controller
                 document.querySelector("#edad").value = edad
             }
         </script>
-        html;
+html;
 
 
-        $ComboEntidades = CallCenterDao::getComboSucursalesHorario();
-
+        $ComboEntidades = CajaAhorroDao::GetEFed();
 
         foreach ($ComboEntidades as $key => $val2) {
-
-            $opciones_suc .= <<<html
-                <option  value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+            $opciones_ent .= <<<html
+                <option  value="{$val2['NOMBRE']}"> {$val2['NOMBRE']}</option>
 html;
         }
 
@@ -1825,6 +1823,7 @@ html;
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Contrato Cuenta Peque")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
+        View::set('opciones_ent', $opciones_ent);
         View::render("caja_menu_contrato_peque");
         // procesar solicitudes de retiro
     }

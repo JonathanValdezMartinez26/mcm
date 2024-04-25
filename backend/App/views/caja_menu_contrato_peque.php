@@ -180,7 +180,7 @@
                                             <div class="form-group">
                                                 <label for="ciudad">Entidad de nacimiento</label>
                                                 <select class="form-control mr-sm-3" id="ciudad" name="ciudad" onchange=camposLlenos(event) disabled>
-                                                    <option value="P">CDMX</option>
+                                                    <?php echo $opciones_ent; ?>
                                                 </select>
                                             </div>
                                         </div>

@@ -9,14 +9,14 @@ use Exception;
 use DateTime;
 
 /**
- * Tablas de registros:
+* Tablas de registros:
  * - ASIGNA_PROD_AHORRO
- * - BENEFICIARIOS_AHORRO
- * - MOVIMIENTOS_AHORRO
- * - TICKETS_AHORRO
- * - CUENTA_INVERSION
- * - CL_PQS
- * 
+* - BENEFICIARIOS_AHORRO
+* - MOVIMIENTOS_AHORRO
+* - TICKETS_AHORRO
+* - CUENTA_INVERSION
+* - CL_PQS
+*
  * Limpieza de tablas:
  * DELETE FROM ASIGNA_PROD_AHORRO;
  * DELETE FROM BENEFICIARIOS_AHORRO;
@@ -28,6 +28,17 @@ use DateTime;
 
 class CajaAhorro
 {
+    public static function GetEFed()
+    {
+        $query = <<<sql
+       SELECT NOMBRE FROM EF WHERE NOMBRE != 'Desconocido'
+sql;
+
+        $mysqli = Database::getInstance();
+        return $mysqli->queryAll($query);
+
+    }
+
     public static function Responde($respuesta, $mensaje, $datos = null, $error = null)
     {
         $res = array(
@@ -1647,6 +1658,7 @@ class LogTransaccionesAhorro
         }
     }
 
+
     public static function LogTransacciones($qyrs, $parametros, $sucursal, $usuario, $contrato, $tipo)
     {
         $tmp = [];
@@ -1663,18 +1675,5 @@ class LogTransaccionesAhorro
         return $tmp;
     }
 
-    public static function GetSaldoMinimoInversion()
-    {
-        $query = <<<sql
-       SELECT NOMBRE FROM EF WHERE NOMBRE != 'Desconocido'
-sql;
 
-        try {
-            $mysqli = Database::getInstance();
-            $res = $mysqli->queryAll($query);
-            return $res;
-        } catch (Exception $e) {
-            return 0;
-        }
-    }
 }
