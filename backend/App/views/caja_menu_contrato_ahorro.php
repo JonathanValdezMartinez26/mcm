@@ -167,7 +167,7 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <label for="tipo">Monto mínimo</label>
+                                                    <label for="tipo">Monto mínimo <span class="fa fa-info"></span></label>
                                                     <input type="text" class="form-control" id="monto_min" name="monto_min" value="<?= number_format($saldoMinimoApertura, 2, '.', ','); ?>" readonly>
                                                 </div>
                                             </div>
@@ -177,13 +177,13 @@
                                                 <div class="form-group">
                                                     <label for="Fecha">Sucursal</label>
                                                     <select class="form-control mr-sm-3" id="sucursal" name="sucursal" disabled>
-                                                        <option value="1514">CORPORATIVO</option>
+                                                        <?php echo $sucursales; ?>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <label for="nombre_ejecutivo">Ejecutivo</label>
+                                                    <label for="nombre_ejecutivo">Comisión Ejecutivo </label>
                                                     <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="<?= $_SESSION['nombre'] ?>" readonly>
                                                 </div>
                                             </div>
@@ -191,7 +191,7 @@
                                                 <div class="form-group">
                                                     <label for="Fecha">Manejo de cuenta</label>
                                                     <select class="form-control mr-sm-3" id="manejo_cta" name="manejo_cta" readonly>
-                                                        <option value="1">Aplica</option>
+                                                        <option value="1">APLICA</option>
                                                     </select>
                                                 </div>
                                             </div>

@@ -71,6 +71,29 @@ sql;
         }
     }
 
+
+    public static function GetSucursalAsignadaCajeraAhorro($usuario)
+    {
+        $query = <<<sql
+       SELECT
+            CO.CODIGO, CO.NOMBRE  
+        FROM
+            SUC_ESTADO_AHORRO 
+        INNER JOIN SUC_CAJERA_AHORRO ON SUC_ESTADO_AHORRO.CODIGO = SUC_CAJERA_AHORRO.CDG_ESTADO_AHORRO
+        INNER JOIN CO ON CO.CODIGO = SUC_ESTADO_AHORRO.CDG_SUCURSAL 
+        WHERE SUC_CAJERA_AHORRO.CDG_USUARIO = '$usuario'
+sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($query);
+            if ($res) return $res;
+            return array();
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
     public static function GetSaldoMinimoInversion()
     {
         $query = <<<sql

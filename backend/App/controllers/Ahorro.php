@@ -727,12 +727,20 @@ class Ahorro extends Controller
         </script>
         html;
 
-        $parentescos = CajaAhorroDao::GetCatalogoParentescos();
 
+        $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro($this->__usuario);
+
+        foreach ($sucursales as $sucursales) {
+            $opcSucursales .= "<option value='{$sucursales['CODIGO']}'>{$sucursales['NOMBRE']}</option>";
+        }
+
+
+        $parentescos = CajaAhorroDao::GetCatalogoParentescos();
         $opcParentescos = "<option value='' disabled selected>Seleccionar</option>";
         foreach ($parentescos as $parentesco) {
             $opcParentescos .= "<option value='{$parentesco['CODIGO']}'>{$parentesco['DESCRIPCION']}</option>";
         }
+
 
         if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Contrato Ahorro Corriente")));
@@ -741,6 +749,7 @@ class Ahorro extends Controller
         view::set('costoInscripcion', $costoInscripcion);
         View::set('fecha', date('d/m/Y H:i:s'));
         view::set('opcParentescos', $opcParentescos);
+        view::set('sucursales', $opcSucursales);
         View::render("caja_menu_contrato_ahorro");
     }
 
