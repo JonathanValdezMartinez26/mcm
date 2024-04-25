@@ -35,13 +35,8 @@ class Ahorro extends Controller
             return showError("Ingrese un número de cliente a buscar.")
         }
         
-        $.ajax({
-            type: "POST",
-            url: "/Ahorro/BuscaContratoAhorro/",
-            data: { cliente: noCliente },
-            success: (respuesta) => {
+        consultaServidor("/Ahorro/BuscaContratoAhorro/", { cliente: noCliente }, (respuesta) => {
                 limpiaDatosCliente()
-                respuesta = JSON.parse(respuesta)
                 if (!respuesta.success) {
                     if (respuesta.datos && !sinContrato(respuesta.datos)) return
                      
@@ -50,13 +45,7 @@ class Ahorro extends Controller
                 }
                  
                 llenaDatosCliente(respuesta.datos)
-            },
-            error: (error) => {
-                console.error(error)
-                limpiaDatosCliente()
-                showError("Ocurrió un error al buscar el cliente.")
-            }
-        })
+            })
         
         document.querySelector("#btnBskClnt").disabled = false
     }';
@@ -519,29 +508,19 @@ class Ahorro extends Controller
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                  
-                const c = await confirmarMovimiento("depósito de apertura", document.querySelector("#deposito").value, document.querySelector("#monto_letra").value)
+                const c = await confirmarMovimiento("depósito de apertura", parseaNumero(document.querySelector("#deposito").value), document.querySelector("#monto_letra").value)
                 if (!c) return
                  
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/PagoApertura/",
-                    data: $.param(datos),
-                    success: (respuesta) => {
-                        respuesta = JSON.parse(respuesta)
+                consultaServidor("/Ahorro/PagoApertura/", $.param(datos), async (respuesta) => {
                         if (!respuesta.success) return showError(respuesta.mensaje)
                     
-                        showSuccess(respuesta.mensaje)
+                        await showSuccess(respuesta.mensaje)
                         document.querySelector("#registroInicialAhorro").reset()
                         document.querySelector("#AddPagoApertura").reset()
                         $("#modal_agregar_pago").modal("hide")
                         limpiaDatosCliente()
                         imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        showError("Ocurrió un error al registrar el pago de apertura.")
-                    }
-                })
+                    })
             }
              
             const validaDeposito = (e) => {
@@ -928,14 +907,10 @@ class Ahorro extends Controller
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                  
-                if (!document.querySelector("#deposito").checked && !document.querySelector("#retiro").checked) {
-                    return showError("Seleccione el tipo de operación a realizar.")
-                }
+                if (!document.querySelector("#deposito").checked && !document.querySelector("#retiro").checked) return showError("Seleccione el tipo de operación a realizar.")
                 
                 datos.forEach((dato) => {
-                    if (dato.name === "esDeposito") {
-                        dato.value = document.querySelector("#deposito").checked
-                    }
+                    if (dato.name === "esDeposito") dato.value = document.querySelector("#deposito").checked
                 })
                  
                 const c = await confirmarMovimiento((document.querySelector("#deposito").checked ? "depósito" : "retiro"), parseaNumero(document.querySelector("#montoOperacion").value), document.querySelector("#monto_letra").value)
@@ -1294,6 +1269,7 @@ class Ahorro extends Controller
             {$this->parseaNumero}
             {$this->formatoMoneda}
             {$this->limpiaMontos}
+            {$this->consultaServidor}
              
             const llenaDatosCliente = (datos) => {
                 const saldoActual = parseaNumero(datos.SALDO)
@@ -1423,30 +1399,19 @@ class Ahorro extends Controller
                  
                 datos.push({ name: "tasa", value: document.querySelector("#plazo").value })
                  
-                const c = await confirmarMovimiento("fondeo de inversión", document.querySelector("#montoOperacion").value, document.querySelector("#monto_letra").value)
+                const c = await confirmarMovimiento("fondeo de inversión", parseaNumero(document.querySelector("#montoOperacion").value), document.querySelector("#monto_letra").value)
                 if (!c) return
                  
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/RegistraInversion/",
-                    data: $.param(datos),
-                    success: (respuesta) => {
-                        respuesta = JSON.parse(respuesta)
+                consultaServidor("/Ahorro/RegistraInversion/", $.param(datos), async (respuesta) => {
                         if (!respuesta.success){
                             console.log(respuesta.error)
                             return showError(respuesta.mensaje)
                         }
-                        showSuccess(respuesta.mensaje)
+                        await showSuccess(respuesta.mensaje)
                         imprimeContrato(document.querySelector("#contrato").value, 2)
                         imprimeTicket(respuesta.datos.ticket, {$_SESSION['cdgco']})
                         limpiaDatosCliente()
-                    },
-                    error: (error) => {
-                        console.log(respuesta)
-                        console.error(error)
-                        showError("Ocurrió un error al registrar la operación.")
-                    }
-                })
+                    })
             }
         </script>
         html;
@@ -1476,40 +1441,74 @@ class Ahorro extends Controller
             {$this->buscaCliente}
             {$this->soloNumeros}
             {$this->primeraMayuscula}
+            {$this->consultaServidor}
          
+            const configuraTabla = (idTabla = "muestra-cupones") => {
+                $("#" + idTabla).tablesorter()
+                $("#" + idTabla).DataTable({
+                    lengthMenu: [
+                        [10, 40, -1],
+                        [10, 40, "Todos"]
+                    ],
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 0
+                        }
+                    ],
+                    order: false
+                })
+            
+                $("#"  + idTabla + " input[type=search]").keyup(() => {
+                    $("#example")
+                        .DataTable()
+                        .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
+                        .draw()
+                })
+            }
+             
+            $(document).ready(configuraTabla())
+             
             const llenaDatosCliente = (datosCliente) => {
-                const inversiones = getInversiones(datosCliente.CONTRATO)
-                if (!inversiones) return
-                let inversionesTotal = 0
-        
-                const filas = document.createDocumentFragment()
-                inversiones.forEach((inversion) => {
-                    const fila = document.createElement("tr")
-                    Object.keys(inversion).forEach((key) => {
-                        let dato = inversion[key]
-                        if (["RENDIMIENTO", "MONTO"].includes(key))
-                            dato = parseFloat(dato).toLocaleString("es-MX", {
-                                style: "currency",
-                                currency: "MXN"
-                            })
-        
-                        inversionesTotal += key === "MONTO" ? parseFloat(inversion[key]) : 0
-                        const celda = document.createElement("td")
-                        celda.innerText = dato
-                        fila.appendChild(celda)
+                consultaServidor("/Ahorro/GetInversiones/", { contrato: datosCliente.CONTRATO }, (respuesta) => {
+                    if (!respuesta.success) return showError(respuesta.mensaje)
+                    const inversiones = respuesta.datos
+                    if (!inversiones) return
+                    let inversionesTotal = 0
+                    
+                    const tTMP = $("#muestra-cupones").DataTable()
+                    if (tTMP) tTMP.destroy()
+                    
+                    const filas = document.createDocumentFragment()
+                    inversiones.forEach((inversion) => {
+                        const fila = document.createElement("tr")
+                        Object.keys(inversion).forEach((key) => {
+                            let dato = inversion[key]
+                            if (["RENDIMIENTO", "MONTO"].includes(key))
+                                dato = parseFloat(dato).toLocaleString("es-MX", {
+                                    style: "currency",
+                                    currency: "MXN"
+                                })
+            
+                            inversionesTotal += key === "MONTO" ? parseFloat(inversion[key]) : 0
+                            const celda = document.createElement("td")
+                            celda.innerText = dato
+                            fila.appendChild(celda)
+                        })
+                        filas.appendChild(fila)
                     })
-                    filas.appendChild(fila)
-                })
-                 
-                document.querySelector("#datosTabla").appendChild(filas)
-                document.querySelector("#inversion").value = inversionesTotal.toLocaleString("es-MX", {
-                    style: "currency",
-                    currency: "MXN"
-                })
-                document.querySelector("#cliente").value = datosCliente.CDGCL
-                document.querySelector("#contrato").value = datosCliente.CONTRATO
-                document.querySelector("#nombre").value = datosCliente.NOMBRE
-                document.querySelector("#curp").value = datosCliente.CURP
+                    
+                    document.querySelector("#datosTabla").appendChild(filas)
+                    document.querySelector("#inversion").value = inversionesTotal.toLocaleString("es-MX", {
+                        style: "currency",
+                        currency: "MXN"
+                    })
+                    document.querySelector("#cliente").value = datosCliente.CDGCL
+                    document.querySelector("#contrato").value = datosCliente.CONTRATO
+                    document.querySelector("#nombre").value = datosCliente.NOMBRE
+                    document.querySelector("#curp").value = datosCliente.CURP
+                    configuraTabla()
+                }, "GET")
             }
                  
             const limpiaDatosCliente = () => {
@@ -1519,26 +1518,6 @@ class Ahorro extends Controller
                 document.querySelector("#inversion").value = ""
                 document.querySelector("#nombre").value = ""
                 document.querySelector("#curp").value = ""
-            }
-                
-            const getInversiones = (contrato) => {
-                let inversiones = null
-                $.ajax({
-                    type: "GET",
-                    url: "/Ahorro/GetInversiones/?contrato=" + contrato,
-                    async: false,
-                    success: (respuesta) => {
-                        respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) return showError(respuesta.mensaje)
-                        inversiones = respuesta.datos
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        showError("Ocurrió un error al buscar las inversiones.")
-                    }
-                })
-                    
-                return inversiones
             }
         </script>
         html;

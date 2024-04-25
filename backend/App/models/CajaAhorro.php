@@ -1075,6 +1075,8 @@ class CajaAhorro
             CUENTA_INVERSION CI
         WHERE
             CI.CDG_CONTRATO = '{$datos['contrato']}'
+        ORDER BY
+            CI.FECHA_VENCIMIENTO
         sql;
 
         try {

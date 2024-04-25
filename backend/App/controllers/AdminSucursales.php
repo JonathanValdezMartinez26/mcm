@@ -160,6 +160,30 @@ class AdminSucursales extends Controller
     private $addParametro = 'const addParametro = (parametros, newParametro, newValor) => {
         parametros.push({ name: newParametro, value: newValor })
     }';
+    private $buscaCliente = 'const buscaCliente = (t) => {
+        document.querySelector("#btnBskClnt").disabled = true
+        const noCliente = document.querySelector("#clienteBuscado").value
+         
+        if (!noCliente) {
+            limpiaDatosCliente()
+            document.querySelector("#btnBskClnt").disabled = false
+            return showError("Ingrese un número de cliente a buscar.")
+        }
+        
+        consultaServidor("/Ahorro/BuscaContratoAhorro/", { cliente: noCliente }, (respuesta) => {
+                limpiaDatosCliente()
+                if (!respuesta.success) {
+                    if (respuesta.datos && !sinContrato(respuesta.datos)) return
+                     
+                    limpiaDatosCliente()
+                    return showError(respuesta.mensaje)
+                }
+                 
+                llenaDatosCliente(respuesta.datos)
+            })
+        
+        document.querySelector("#btnBskClnt").disabled = false
+    }';
 
     function __construct()
     {
@@ -599,7 +623,6 @@ class AdminSucursales extends Controller
             {$this->noSubmit}
             {$this->soloNumeros}
             {$this->consultaServidor}
-            let cjeraRegistrada = false
          
             $(document).ready(() => {
                 $("#sucursalesActivas").tablesorter()
@@ -820,10 +843,23 @@ class AdminSucursales extends Controller
     public function EstadoCuentaCliente()
     {
         $extraFooter = <<<script
-       
+        <script>
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->noSubmit}
+            {$this->soloNumeros}
+            {$this->consultaServidor}
+            {$this->numeroLetras}
+            {$this->primeraMayuscula}
+            {$this->addParametro}
+            {$this->buscaCliente}
+
+
+        </script>
         script;
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Estado de Cuenta Mensual")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Catalogo de Clientes")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
         View::render("caja_admin_clientes");
