@@ -1568,10 +1568,10 @@ class CajaAhorro
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryOne($qry);
-            if (!$res) return ['MONTO_MINIMO' => 100, 'MONTO_MAXIMO' => 10000];
+            if (!$res) return ['MONTO_MINIMO' => 300, 'MONTO_MAXIMO' => 10000];
             return $res;
         } catch (Exception $e) {
-            return ['MONTO_MINIMO' => 100, 'MONTO_MAXIMO' => 10000];
+            return ['MONTO_MINIMO' => 300, 'MONTO_MAXIMO' => 10000];
         }
     }
 }

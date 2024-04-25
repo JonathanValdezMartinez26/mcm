@@ -357,7 +357,7 @@ class Ahorro extends Controller
                         }
                          
                         const datosCliente = respuesta.datos
-                        document.querySelector("#btnGeneraContrato").disabled = true
+                        document.querySelector("#btnGeneraContrato").style.display = "none"
                         document.querySelector("#contratoOK").value = datosCliente.CONTRATO
                         if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 0) {
                                 await showInfo("La apertura del contrato no ha concluido, realice el depósito de apertura.")
@@ -367,20 +367,30 @@ class Ahorro extends Controller
                                 document.querySelector("#nombre_cliente").value = datosCliente.NOMBRE
                                 document.querySelector("#mdlCurp").value = datosCliente.CURP
                                 $("#modal_agregar_pago").modal("show")
-                                document.querySelector("#chkCreacionContrato").classList.remove("red")
                                 document.querySelector("#chkCreacionContrato").classList.add("green")
+                                document.querySelector("#chkCreacionContrato").classList.add("fa-check")
+                                document.querySelector("#chkCreacionContrato").classList.remove("red")
+                                document.querySelector("#chkCreacionContrato").classList.remove("fa-times")
+                                document.querySelector("#lnkContrato").style.cursor = "pointer"
                                 document.querySelector("#chkPagoApertura").classList.remove("green")
+                                document.querySelector("#chkPagoApertura").classList.remove("fa-check")
+                                document.querySelector("#chkPagoApertura").classList.add("fa-times")
                                 document.querySelector("#chkPagoApertura").classList.add("red")
                                 document.querySelector("#btnGuardar").innerText = txtGuardaPago
-                                document.querySelector("#btnGeneraContrato").disabled = false
+                                document.querySelector("#btnGeneraContrato").style.display = "block"
                         }
                          
                         if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 1) {
                             await showInfo(respuesta.mensaje)
                             document.querySelector("#chkCreacionContrato").classList.remove("red")
+                            document.querySelector("#chkCreacionContrato").classList.remove("fa-times")
                             document.querySelector("#chkCreacionContrato").classList.add("green")
+                            document.querySelector("#chkCreacionContrato").classList.add("fa-check")
+                            document.querySelector("#lnkContrato").style.cursor = "pointer"
                             document.querySelector("#chkPagoApertura").classList.remove("red")
+                            document.querySelector("#chkPagoApertura").classList.remove("fa-times")
                             document.querySelector("#chkPagoApertura").classList.add("green")
+                            document.querySelector("#chkPagoApertura").classList.add("fa-check")
                         }
                          
                         consultaServidor("/Ahorro/GetBeneficiarios/", { contrato: datosCliente.CONTRATO }, (respuesta) => {
@@ -424,9 +434,14 @@ class Ahorro extends Controller
                 document.querySelector("#AddPagoApertura").reset()
                 document.querySelector("#registroInicialAhorro").reset()
                 document.querySelector("#chkCreacionContrato").classList.remove("green")
+                document.querySelector("#chkCreacionContrato").classList.remove("fa-check")
                 document.querySelector("#chkCreacionContrato").classList.add("red")
+                document.querySelector("#chkCreacionContrato").classList.add("fa-times")
+                document.querySelector("#lnkContrato").style.cursor = "default"
                 document.querySelector("#chkPagoApertura").classList.remove("green")
+                document.querySelector("#chkPagoApertura").classList.remove("fa-check")
                 document.querySelector("#chkPagoApertura").classList.add("red")
+                document.querySelector("#chkPagoApertura").classList.add("fa-times")
                 document.querySelector("#fechaRegistro").value = ""
                 document.querySelector("#noCliente").value = ""
                 document.querySelector("#nombre").value = ""
@@ -436,7 +451,7 @@ class Ahorro extends Controller
                 habilitaBeneficiario(1, false)
                 document.querySelector("#ben2").style.opacity = "0"
                 document.querySelector("#ben3").style.opacity = "0"
-                document.querySelector("#btnGeneraContrato").disabled = true
+                document.querySelector("#btnGeneraContrato").style.display = "none"
                 document.querySelector("#btnGuardar").innerText = txtGuardaContrato
                 document.querySelector("#marcadores").style.opacity = "0"
                 document.querySelector("#tasa").disabled = true
@@ -459,7 +474,7 @@ class Ahorro extends Controller
                         cliente +
                         "?",
                         icon: "warning",
-                        buttons: true,
+                        buttons: ["No", "Si, continuar"],
                         dangerMode: true
                     }).then((continuar) => {
                         if (!continuar) return false
@@ -485,6 +500,7 @@ class Ahorro extends Controller
                                 
                                 document.querySelector("#chkCreacionContrato").classList.remove("red")
                                 document.querySelector("#chkCreacionContrato").classList.add("green")
+                                document.querySelector("#lnkContrato").style.cursor = "pointer"
                                 
                                 showInfo("Debe registrar el depósito por apertura de cuenta.").then(() => {
                                     btnGuardar.innerText = txtGuardaPago
@@ -608,7 +624,7 @@ class Ahorro extends Controller
                  
                 if (e.target.tagName === "SELECT") actualizarOpciones(e.target)
                  
-                document.querySelector("#btnGeneraContrato").disabled = !val()
+                document.querySelector("#btnGeneraContrato").style.display = !val() ? "none" : "block"
             }
              
             const validaPorcentaje = (e) => {
@@ -625,7 +641,7 @@ class Ahorro extends Controller
                     return showError("La suma de los porcentajes no puede ser mayor a 100%")
                 }
                  
-                document.querySelector("#btnGeneraContrato").disabled = porcentaje !== 100
+                document.querySelector("#btnGeneraContrato").style.display = porcentaje !== 100 ? "none" : "block"
             }
              
             const toggleBeneficiario = (numBeneficiario) => {
@@ -1674,7 +1690,7 @@ class Ahorro extends Controller
                             cliente +
                             "?",
                         icon: "warning",
-                        buttons: true,
+                        buttons: ["No", "Si, continuar"],
                         dangerMode: true
                     })
             

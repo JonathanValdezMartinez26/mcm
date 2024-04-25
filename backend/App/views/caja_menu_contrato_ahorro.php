@@ -261,17 +261,17 @@
                                                 </button>
                                             </div>
                                         </div>
-                                        <div class="row" id="marcadores" style="height: 20px; opacity:0;">
-                                            <div class="col-md-6" style="display: flex; justify-content: center;">
+                                        <div class="row" id="marcadores" style="height: 20px; opacity: 0">
+                                            <div class="col-md-6" style="display: flex; justify-content: center; align-items: center;">
                                                 <input id="contratoOK" type="hidden" />
-                                                <span class="fa fa-check red" id="chkCreacionContrato"></span><a href="#" onclick=reImprimeContrato(event)>Creación del contrato</a>
+                                                <i class="fa fa-times red" id="chkCreacionContrato"></i><a href="javascript:void(0);" onclick=reImprimeContrato(event) style="color: #000; cursor: default;" id="lnkContrato">Creación del contrato</a>
                                             </div>
-                                            <div class="col-md-6" style="display: flex; justify-content: center;">
-                                                <span class="fa fa-check red" id="chkPagoApertura"></span><label>Deposito de apertura</label>
+                                            <div class="col-md-6" style="display: flex; justify-content: center; align-items: center;">
+                                                <i class="fa fa-times red" id="chkPagoApertura"></i><span style="color: #000; user-select: none;">Deposito de apertura</span>
                                             </div>
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="button" name="btnGeneraContrato" id="btnGeneraContrato" class="btn btn-primary" onclick="generaContrato(event)" style="border: 1px solid #c4a603; background: #ffffff" data-keyboard="false" disabled>
+                                        <div class="modal-footer" style="height: 20px;">
+                                            <button id="btnGeneraContrato" class="btn btn-primary" onclick="generaContrato(event)" style="border: 1px solid #c4a603; background: #ffffff; display: none;">
                                                 <i class="fa fa-spinner" style="color: #1c4e63"></i>
                                                 <span style="color: #1e283d" id="btnGuardar"><b>GUARDAR DATOS Y PROCEDER AL COBRO</b></span>
                                             </button>
