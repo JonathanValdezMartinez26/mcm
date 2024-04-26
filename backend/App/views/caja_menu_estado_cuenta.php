@@ -26,7 +26,7 @@
             </a>
             <div class="col-md-5" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
                 <img src="https://cdn-icons-png.flaticon.com/512/12202/12202918.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
-                <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Estado de Cuenta </b></p>
+                <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Resumen Movimientos </b></p>
                 <! -- https://cdn-icons-png.flaticon.com/512/12202/12202939.png -->
             </div>
             <a id="link" href="/Ahorro/SaldosDia/">
