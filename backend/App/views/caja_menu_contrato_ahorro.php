@@ -182,7 +182,7 @@
                                             </div>
                                             <div class="col-md-7">
                                                 <div class="form-group">
-                                                    <label for="Fecha">Sucursal</label>
+                                                    <label for="Fecha">Sucursal *</label>
                                                     <select class="form-control mr-sm-3" id="sucursal" name="sucursal" disabled>
                                                         <?php echo $sucursales; ?>
                                                     </select>
@@ -191,7 +191,7 @@
 
                                             <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <label for="nombre_ejecutivo">Comisión Ejecutivo </label>
+                                                    <label for="nombre_ejecutivo">Comisión Ejecutivo *</label>
                                                     <select class="form-control mr-sm-3" id="nombre_ejecutivo" name="nombre_ejecutivo" readonly>
                                                         <?php echo $ejecutivos; ?>
                                                     </select>

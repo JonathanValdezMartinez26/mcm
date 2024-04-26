@@ -1464,11 +1464,26 @@ class Ahorro extends Controller
                 }
             }
         </script>
-        html;
+html;
+
+        $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro($this->__usuario);
+        $opcSucursales = "";
+        foreach ($sucursales as $sucursales) {
+            $opcSucursales .= "<option value='{$sucursales['CODIGO']}'>{$sucursales['NOMBRE']}</option>";
+            $suc_eje = $sucursales['CODIGO'];
+        }
+
+        $ejecutivos = CajaAhorroDao::GetEjecutivosSucursal($suc_eje);
+        $opcEjecutivos = "";
+        foreach ($ejecutivos as $ejecutivos) {
+            $opcEjecutivos .= "<option value='{$ejecutivos['ID_EJECUTIVO']}'>{$ejecutivos['EJECUTIVO']}</option>";
+        }
+        $opcEjecutivos .= "<option value='{$this->__usuario}'>{$this->__nombre}</option>";
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Contrato Inversión")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('d/m/Y H:i:s'));
+        view::set('ejecutivos', $opcEjecutivos);
         View::render("caja_menu_contrato_inversion");
     }
 

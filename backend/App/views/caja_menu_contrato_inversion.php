@@ -125,10 +125,16 @@
                                 </div>
                                 <div class="col-md-5">
                                     <div class="form-group">
-                                        <label for="nombre_ejecutivo">Nombre del ejecutivo</label>
-                                        <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="<?= $_SESSION['nombre']; ?>" readonly>
+                                        <label for="nombre_ejecutivo">Comisión ejecutivo </label>
+                                        <select class="form-control mr-sm-3" id="nombre_ejecutivo" name="nombre_ejecutivo" readonly>
+                                            <?php echo $ejecutivos; ?>
+                                        </select>
                                     </div>
                                 </div>
+
+
+
+
                             </div>
                             <div class="row">
                                 <hr>
