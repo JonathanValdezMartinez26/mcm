@@ -81,7 +81,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="col-md-9">
-                                                <p>Calcula el rendimiento de tus clientes.</p><hr>
+                                                <p style="font-size: 16px;">Calcula el rendimiento de tus clientes.</p><hr>
                                             </div>
 
                                         </div>

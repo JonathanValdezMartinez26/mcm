@@ -86,7 +86,7 @@
                                             <hr>
                                         </div>
                                         <div class="col-md-4">
-                                            <label for="movil">Código de cliente SICAFIN</label>
+                                            <label for="movil">Código de cliente SICAFIN *</label>
                                             <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" placeholder="000000" value="<?= $cliente ?>">
                                         </div>
                                         <div class="col-md-2" style="padding-top: 25px">
