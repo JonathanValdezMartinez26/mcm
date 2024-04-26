@@ -31,8 +31,8 @@ class CajaAhorro
     public static function GetEFed()
     {
         $query = <<<sql
-       SELECT NOMBRE FROM EF WHERE NOMBRE != 'Desconocido'
-sql;
+        SELECT NOMBRE FROM EF WHERE NOMBRE != 'Desconocido'
+        sql;
 
         $mysqli = Database::getInstance();
         return $mysqli->queryAll($query);
@@ -70,18 +70,17 @@ sql;
         }
     }
 
-
     public static function GetSucursalAsignadaCajeraAhorro($usuario)
     {
         $query = <<<sql
-       SELECT
+        SELECT
             CO.CODIGO, CO.NOMBRE  
         FROM
             SUC_ESTADO_AHORRO 
         INNER JOIN SUC_CAJERA_AHORRO ON SUC_ESTADO_AHORRO.CODIGO = SUC_CAJERA_AHORRO.CDG_ESTADO_AHORRO
         INNER JOIN CO ON CO.CODIGO = SUC_ESTADO_AHORRO.CDG_SUCURSAL 
         WHERE SUC_CAJERA_AHORRO.CDG_USUARIO = '$usuario'
-sql;
+        sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -92,26 +91,22 @@ sql;
             return array();
         }
     }
-
 
     public static function GetEjecutivosSucursal($sucursal)
     {
         $query = <<<sql
-                      SELECT
-	CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) EJECUTIVO,
-	CODIGO ID_EJECUTIVO
-FROM
-	PE
-WHERE
-	CDGEM = 'EMPFIN' 
-    AND CDGCO IN( '$sucursal')
-	AND ACTIVO = 'S'
-    AND BLOQUEO = 'N'
-ORDER BY 1
-
-
-
-sql;
+        SELECT
+            CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) EJECUTIVO,
+            CODIGO ID_EJECUTIVO
+        FROM
+            PE
+        WHERE
+            CDGEM = 'EMPFIN' 
+            AND CDGCO IN( '$sucursal')
+            AND ACTIVO = 'S'
+            AND BLOQUEO = 'N'
+        ORDER BY 1
+        sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -122,8 +117,6 @@ sql;
             return array();
         }
     }
-
-
 
     public static function GetSaldoMinimoInversion()
     {

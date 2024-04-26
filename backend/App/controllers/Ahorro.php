@@ -18,8 +18,8 @@ class Ahorro extends Controller
     private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
     private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
-    private $confirmarMovimiento = 'const confirmarMovimiento = async (movimiento, monto, letra) => {
-        return await swal({ title: "Confirmación movimiento ahorro", text: "¿Está segur(a) de continuar con el registro de un " + movimiento + ", por la cantidad de " + parseFloat(monto).toLocaleString("es-MX", { style: "currency", currency: "MXN" }) + " (" + letra + ")?", icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
+    private $confirmarMovimiento = 'const confirmarMovimiento = async (titulo, mensaje) => {
+        return await swal({ title: titulo, text: mensaje, icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
     }';
     private $validarYbuscar = 'const validarYbuscar = (e, t) => {
         if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
@@ -476,58 +476,56 @@ class Ahorro extends Controller
                 $("#modal_agregar_pago").modal("show")
             }
                         
-            const pagoApertura = async (e) => {
+            const pagoApertura = (e) => {
                 e.preventDefault()
                 if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura.toLocalString("es-MX", {style:"currency", currency:"MXN"}) + ".")
                  
-                // const c = await confirmarMovimiento("depósito de apertura", parseaNumero(document.querySelector("#deposito").value), document.querySelector("#monto_letra").value)
-                // if (!c) return
-                 
-                swal({
-                        title:
-                            "Cuenta de ahorro corriente",
-                        text: "¿Está segura de continuar con la apertura de la cuenta de ahorro del cliente: " +
+                confirmarMovimiento(
+                    "Cuenta de ahorro corriente",
+                    "¿Está segura de continuar con la apertura de la cuenta de ahorro del cliente: " +
                         document.querySelector("#nombre").value +
-                        "?",
-                        icon: "warning",
-                        buttons: ["No", "Si, continuar"],
-                        dangerMode: true
-                    }).then((continuar) => {
-                        if (!continuar) return false
-                 
-                        const noCredito = document.querySelector("#noCliente").value
-                        const datosContrato = $("#registroInicialAhorro").serializeArray()
-                        addParametro(datosContrato, "credito", noCredito)
+                        "?"
+                ).then((continuar) => {
+                    if (!continuar) return
+                
+                    const noCredito = document.querySelector("#noCliente").value
+                    const datosContrato = $("#registroInicialAhorro").serializeArray()
+                    addParametro(datosContrato, "credito", noCredito)
+                    addParametro(datosContrato, "sucursal", "{$_SESSION['cdgco']}")
+                    
+                    consultaServidor("/Ahorro/AgregaContratoAhorro/", $.param(datosContrato), (respuesta) => {
+                        if (!respuesta.success) {
+                            console.error(respuesta.error)
+                            return showError(respuesta.mensaje)
+                        }
                         
-                        consultaServidor("/Ahorro/AgregaContratoAhorro/", $.param(datosContrato), async (respuesta) => {
-                            if (!respuesta.success) {
-                                console.error(respuesta.error)
-                                return showError(respuesta.mensaje)
-                            }
+                        const contrato = respuesta.datos
+                                        
+                        const datos = $("#AddPagoApertura").serializeArray()
+                        limpiaMontos(datos, ["deposito", "inscripcion", "saldo_inicial"])
+                        addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                        addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
+                        addParametro(datos, "contrato", contrato.contrato)
+                        
+                        consultaServidor("/Ahorro/PagoApertura/", $.param(datos), (respuesta) => {
+                                if (!respuesta.success) return showError(respuesta.mensaje)
                             
-                            const contrato = respuesta.datos
-                                            
-                            const datos = $("#AddPagoApertura").serializeArray()
-                            limpiaMontos(datos, ["deposito", "inscripcion", "saldo_inicial"])
-                            addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
-                            addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
-                            addParametro(datos, "contrato", contrato.contrato)
-                            
-                            consultaServidor("/Ahorro/PagoApertura/", $.param(datos), async (respuesta) => {
-                                    if (!respuesta.success) return showError(respuesta.mensaje)
-                                
-                                    await showSuccess(respuesta.mensaje)
+                                showSuccess(respuesta.mensaje)
+                                .then(() => {
                                     document.querySelector("#registroInicialAhorro").reset()
                                     document.querySelector("#AddPagoApertura").reset()
                                     $("#modal_agregar_pago").modal("hide")
                                     limpiaDatosCliente()
                                     imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
                                 
-                                    await showSuccess("Se ha generado el contrato: " + contrato.contrato + ".")
-                                    imprimeContrato(contrato.contrato, 1)
+                                    showSuccess("Se ha generado el contrato: " + contrato.contrato + ".")
+                                    .then(() => {
+                                        imprimeContrato(contrato.contrato, 1)
+                                    })
                                 })
-                        })
+                            })
                     })
+                })
             }
              
             const validaDeposito = (e) => {
@@ -924,7 +922,7 @@ class Ahorro extends Controller
                 
             }
              
-            const registraOperacion = async (e) => {
+            const registraOperacion = (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
                 
@@ -938,18 +936,26 @@ class Ahorro extends Controller
                     if (dato.name === "esDeposito") dato.value = document.querySelector("#deposito").checked
                 })
                  
-                const c = await confirmarMovimiento((document.querySelector("#deposito").checked ? "depósito" : "retiro"), parseaNumero(document.querySelector("#montoOperacion").value), document.querySelector("#monto_letra").value)
-                if (!c) return
-                 
-                consultaServidor("/Ahorro/RegistraOperacion/", $.param(datos), async (respuesta) => {
-                        if (!respuesta.success){
-                            console.log(respuesta.error)
-                            return showError(respuesta.mensaje)
-                        }
-                        await showSuccess(respuesta.mensaje)
-                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
-                        limpiaDatosCliente()
-                    })
+                confirmarMovimiento(
+                    "Confirmación de movimiento de ahorro corriente",
+                    "¿Está segur(a) de continuar con el registro de un "
+                    + (document.querySelector("#deposito").checked ? "depósito" : "retiro")
+                    + " de cuanta ahorro corriente por la cantidad de "
+                    + parseaNumero(document.querySelector("#montoOperacion").value).toLocaleString("es-MX", { style: "currency", currency: "MXN" })
+                    + " (" + document.querySelector("#monto_letra").value + ")?"
+                ).then((continuar) => {
+                    if (!continuar) return
+                    consultaServidor("/Ahorro/RegistraOperacion/", $.param(datos), (respuesta) => {
+                            if (!respuesta.success){
+                                console.log(respuesta.error)
+                                return showError(respuesta.mensaje)
+                            }
+                            showSuccess(respuesta.mensaje).then(() => {
+                                imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
+                                limpiaDatosCliente()
+                            })
+                        })
+                })
             }
         </script>
         html;
@@ -1011,6 +1017,7 @@ class Ahorro extends Controller
             {$this->parseaNumero}
             {$this->formatoMoneda}
             {$this->limpiaMontos}
+            {$this->consultaServidor}
              
             const llenaDatosCliente = (datosCliente) => {
                 if (parseaNumero(datosCliente.SALDO) < montoMinimo) {
@@ -1048,7 +1055,7 @@ class Ahorro extends Controller
                 document.querySelector("#fecha_retiro_hide").setAttribute("style", "display: none;")
                 document.querySelector("#fecha_retiro").removeAttribute("style")
             }
-                          
+             
             const validaMonto = () => {
                 document.querySelector("#express").disabled = false
                 const montoIngresado = document.querySelector("#monto")
@@ -1112,7 +1119,8 @@ class Ahorro extends Controller
                 document.querySelector("#fecha_retiro").setAttribute("style", "display: none;")
             }
              
-            const compruebaSaldoFinal = saldoFinal => {
+            const compruebaSaldoFinal = () => {
+                const saldoFinal = parseaNumero(document.querySelector("#saldoFinal").value)
                 if (saldoFinal < 0) {
                     document.querySelector("#saldoFinal").setAttribute("style", "color: red")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
@@ -1122,7 +1130,7 @@ class Ahorro extends Controller
                     document.querySelector("#saldoFinal").removeAttribute("style")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
                 }
-                document.querySelector("#btnRegistraOperacion").disabled = !(document.querySelector("#saldoFinal").value >= 0 && document.querySelector("#montoOperacion").value >= montoMinimo && document.querySelector("#montoOperacion").value < montoMaximoRetiro)
+                document.querySelector("#btnRegistraOperacion").disabled = !(saldoFinal >= 0 && parseaNumero(document.querySelector("#montoOperacion").value) >= montoMinimo && parseaNumero(document.querySelector("#montoOperacion").value) < montoMaximoRetiro)
             }
              
             const pasaFecha = (e) => {
@@ -1137,7 +1145,7 @@ class Ahorro extends Controller
                 document.querySelector("#fecha_retiro").value = f[2] + "/" + f[1] + "/" + f[0]
             }
              
-            const registraSolicitud = async (e) => {
+            const registraSolicitud = (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
                 
@@ -1146,27 +1154,26 @@ class Ahorro extends Controller
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                 addParametro(datos, "retiroExpress", document.querySelector("#express").checked)
                  
-                const c = await confirmarMovimiento("retiro " + (document.querySelector("#express").checked ? "express" : "programado"), document.querySelector("#montoOperacion").value, document.querySelector("#monto_letra").value)
-                if (!c) return
-                 
-                $.ajax({
-                    type: "POST",
-                    url: "/Ahorro/RegistraSolicitud/",
-                    data: $.param(datos),
-                    success: (respuesta) => {
-                        respuesta = JSON.parse(respuesta)
-                        if (!respuesta.success) {
-                            console.log(respuesta.error)
-                            return showError(respuesta.mensaje)
-                        }
-                        showSuccess(respuesta.mensaje)
-                        document.querySelector("#registroOperacion").reset()
-                        limpiaDatosCliente()
-                    },
-                    error: (error) => {
-                        console.error(error)
-                        showError("Ocurrió un error al registrar la operación.")
-                    }
+                confirmarMovimiento(
+                    "Confirmación de movimiento ahorro corriente",
+                    "¿Está segur(a) de continuar con el registro de un retiro "
+                    + (document.querySelector("#express").checked ? "express" : "programado")
+                    + ", por la cantidad de "
+                    + parseaNumero(document.querySelector("#montoOperacion").value).toLocaleString("es-MX", { style: "currency", currency: "MXN" })
+                    + " (" + document.querySelector("#monto_letra").value + ")?"
+                ).then((continuar) => {
+                    if (!continuar) return
+                    
+                    consultaServidor("/Ahorro/RegistraSolicitud/", $.param(datos), (respuesta) => {
+                            if (!respuesta.success) {
+                                console.log(respuesta.error)
+                                return showError(respuesta.mensaje)
+                            }
+                            showSuccess(respuesta.mensaje).then(() => {
+                                document.querySelector("#registroOperacion").reset()
+                                limpiaDatosCliente()
+                            })
+                        })
                 })
             }
         </script>
@@ -1414,7 +1421,7 @@ class Ahorro extends Controller
                 }
             }
             
-            const registraOperacion = async (e) => {
+            const registraOperacion = (e) => {
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
                  
@@ -1425,28 +1432,27 @@ class Ahorro extends Controller
                 datos.push({ name: "tasa", value: document.querySelector("#plazo").value })
                  
                 const plazo = document.querySelector("#plazo")
-                const c = await swal({
-                    title: "Apertura cuenta de inversión",
-                    text: "¿Está segur(a) de continuar con la apertura de la cuenta de inversión por la cantidad de "
-                        + parseaNumero(document.querySelector("#montoOperacion").value).toLocaleString("es-MX", { style: "currency", currency: "MXN" })
-                        + " (" + document.querySelector("#monto_letra").value + ")" 
-                        + " a un plazo de " + plazo.options[plazo.selectedIndex].text + "?",
-                    icon: "warning",
-                    buttons: ["No", "Si, continuar"],
-                    dangerMode: true
-                })
-                if (!c) return
+                confirmarMovimiento(
+                    "Apertura de cuenta de inversión",
+                    "¿Está segur(a) de continuar con la apertura de la cuenta de inversión por la cantidad de "
+                    + parseaNumero(document.querySelector("#montoOperacion").value).toLocaleString("es-MX", { style: "currency", currency: "MXN" })
+                    + " (" + document.querySelector("#monto_letra").value + ")" 
+                    + " a un plazo de " + plazo.options[plazo.selectedIndex].text + "?"
+                ).then((continuar) => {
+                    if (!continuar) return
                  
-                consultaServidor("/Ahorro/RegistraInversion/", $.param(datos), async (respuesta) => {
-                        if (!respuesta.success){
-                            console.log(respuesta.error)
-                            return showError(respuesta.mensaje)
-                        }
-                        await showSuccess(respuesta.mensaje)
-                        imprimeContrato(document.querySelector("#contrato").value, 2)
-                        imprimeTicket(respuesta.datos.ticket, {$_SESSION['cdgco']})
-                        limpiaDatosCliente()
-                    })
+                    consultaServidor("/Ahorro/RegistraInversion/", $.param(datos), (respuesta) => {
+                            if (!respuesta.success){
+                                console.log(respuesta.error)
+                                return showError(respuesta.mensaje)
+                            }
+                            showSuccess(respuesta.mensaje).then(() => {
+                                imprimeContrato(document.querySelector("#contrato").value, 2)
+                                imprimeTicket(respuesta.datos.ticket, {$_SESSION['cdgco']})
+                                limpiaDatosCliente()
+                            })
+                        })
+                })
             }
              
             const validaBlur = (e) => {
@@ -1592,6 +1598,7 @@ class Ahorro extends Controller
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
+            {$this->confirmarMovimiento}
             {$this->validarYbuscar}
             {$this->getHoy}
             {$this->soloNumeros}
@@ -1688,12 +1695,12 @@ class Ahorro extends Controller
                  
                 if (document.querySelector("#curp").value.length !== 18) {
                     showError("La CURP debe tener 18 caracteres.")
-                    return false
+                    return
                 }
                  
                 if (document.querySelector("#edad").value > 17) {
                     showError("El peque a registrar debe tener menos de 18 años.")
-                    return false
+                    return 
                 }
                  
                 if (document.querySelector("#apellido2").value === "") {
@@ -1703,49 +1710,41 @@ class Ahorro extends Controller
                         icon: "info",
                         buttons: ["No", "Sí"]
                     })
-                    if (!respuesta) return false
+                    if (!respuesta) return
                 }
                  
                 const cliente = document.querySelector("#nombre").value
-                try {
-                    const continuar = await swal({
-                        title: "Cuenta de ahorro Peques™",
-                        text: "¿Está segura de continuar con la apertura de la cuenta Peque™ asociada al cliente " +
-                            cliente +
-                            "?",
-                        icon: "warning",
-                        buttons: ["No", "Si, continuar"],
-                        dangerMode: true
+                
+                confirmarMovimento("Cuenta de ahorro Peques",
+                    "¿Está segura de continuar con la apertura de la cuenta Peque asociada al cliente "
+                    + cliente
+                    + "?"
+                ).then((continuar) => {
+                    if (!continuar) return
+                    const noCredito = document.querySelector("#noCliente").value
+                    const datos = $("#registroInicialAhorro").serializeArray()
+                    addParametro(datos, "credito", noCredito)
+                    
+                    datos.forEach((dato) => {
+                        if (dato.name === "sexo") {
+                            dato.value = document.querySelector("#sexoH").checked
+                        }
                     })
-            
-                    if (continuar) {
-                        const noCredito = document.querySelector("#noCliente").value
-                        const datos = $("#registroInicialAhorro").serializeArray()
-                        datos.push({ name: "credito", value: noCredito })
-                         
-                        datos.forEach((dato) => {
-                            if (dato.name === "sexo") {
-                                dato.value = document.querySelector("#sexoH").checked
-                            }
-                        })
-                         
-                        consultaServidor("/Ahorro/AgregaContratoAhorroPQ/", $.param(datos), async (respuesta) => {
-                            if (!respuesta.success) {
-                                console.error(respuesta.error)
-                                limpiaDatosCliente()
-                                return showError(respuesta.mensaje)
-                            }
-                        
-                            const contrato = respuesta.datos
+                    
+                    consultaServidor("/Ahorro/AgregaContratoAhorroPQ/", $.param(datos), (respuesta) => {
+                        if (!respuesta.success) {
+                            console.error(respuesta.error)
                             limpiaDatosCliente()
-                            await showSuccess("Se ha generado el contrato: " + contrato.contrato)
+                            return showError(respuesta.mensaje)
+                        }
+                    
+                        const contrato = respuesta.datos
+                        limpiaDatosCliente()
+                        showSuccess("Se ha generado el contrato: " + contrato.contrato).then(() => {
                             imprimeContrato(contrato.contrato, 3)
                         })
-                    }
-                } catch (error) {
-                    console.error(error)
-                }
-                return false
+                    })
+                })
             }
              
             const validaDeposito = (e) => {
@@ -1948,6 +1947,7 @@ class Ahorro extends Controller
                         const contratos = document.createDocumentFragment()
                         const seleccionar = document.createElement("option")
                         seleccionar.value = ""
+                        seleccionar.disabled = true
                         seleccionar.innerText = "Seleccionar"
                         contratos.appendChild(seleccionar)
                          
@@ -1959,6 +1959,7 @@ class Ahorro extends Controller
                         })
                          
                         document.querySelector("#contrato").appendChild(contratos)
+                        document.querySelector("#contrato").selectedIndex = 0
                         document.querySelector("#contrato").disabled = false
                         document.querySelector("#contrato").addEventListener("change", (e) => {
                             datosCliente.forEach(contrato => {
@@ -1967,7 +1968,8 @@ class Ahorro extends Controller
                                     document.querySelector("#curp").value = contrato.CURP
                                     document.querySelector("#cliente").value = contrato.CDGCL
                                     document.querySelector("#saldoActual").value = formatoMoneda(contrato.SALDO)
-                                    if (document.querySelector("#deposito").checked || document.querySelector("#retiro").checked) calculaSaldoFinal()
+                                    document.querySelector("#deposito").disabled = false
+                                    document.querySelector("#retiro").disabled = false
                                 }
                             })
                         })
@@ -1980,6 +1982,8 @@ class Ahorro extends Controller
                 document.querySelector("#registroOperacion").reset()
                 document.querySelector("#fecha_pago").value = getHoy()
                 document.querySelector("#monto").disabled = true
+                document.querySelector("#deposito").disabled = true
+                document.querySelector("#retiro").disabled = true
                 document.querySelector("#contrato").innerHTML = ""
                 document.querySelector("#contrato").disabled = true
             }
@@ -2080,19 +2084,28 @@ class Ahorro extends Controller
                     }
                 })
                  
-                const c = await confirmarMovimiento((document.querySelector("#deposito").checked ? "depósito" : "retiro") + " de cuenta peque", parseaNumero(document.querySelector("#montoOperacion").value), document.querySelector("#monto_letra").value)
-                if (!c) return
-                 
-                consultaServidor("/Ahorro/registraOperacion/", $.param(datos), async (respuesta) => {
-                        if (!respuesta.success){
-                            console.log(respuesta.error)
-                            return showError(respuesta.mensaje)
-                        }
-                         
-                        await showSuccess(respuesta.mensaje)
-                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
-                        limpiaDatosCliente()
-                    })
+                confirmarMovimiento(
+                    "Confirmación de movimiento de cuenta ahorro Peque",
+                    "¿Está segur(a) de continuar con el registro de un "
+                    + (document.querySelector("#deposito").checked ? "depósito" : "retiro")
+                    + " de cuenta ahorro peque, por la cantidad de "
+                    + parseaNumero(document.querySelector("#montoOperacion").value).toLocaleString("es-MX", { style: "currency", currency: "MXN" })
+                    + " (" + document.querySelector("#monto_letra").value + ")?"
+                ).then((continuar) => {
+                    if (!continuar) return
+                    
+                    consultaServidor("/Ahorro/registraOperacion/", $.param(datos), (respuesta) => {
+                            if (!respuesta.success){
+                                console.log(respuesta.error)
+                                return showError(respuesta.mensaje)
+                            }
+                            
+                            showSuccess(respuesta.mensaje).then(() => {
+                                imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
+                                limpiaDatosCliente()
+                            })
+                        })
+                })
             }
         </script>
         html;
