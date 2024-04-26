@@ -147,9 +147,9 @@
                                         <input type="number" class="form-control" id="cliente" name="cliente" readonly>
                                     </div>
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-5" style="display: none;">
                                     <div class="form-group">
-                                        <label for="nombre_ejecutivo">Nombre del ejecutivo</label>
+                                        <label for="nombre_ejecutivo">Nombre de la cajera que captura el deposito/retiro *</label>
                                         <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="<?= $_SESSION['nombre'] ?>" readonly>
                                     </div>
                                 </div>

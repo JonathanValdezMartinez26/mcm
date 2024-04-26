@@ -191,7 +191,7 @@
 
                                             <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <label for="nombre_ejecutivo">Comisión Ejecutivo *</label>
+                                                    <label for="nombre_ejecutivo">Comisión ejecutivo *</label>
                                                     <select class="form-control mr-sm-3" id="nombre_ejecutivo" name="nombre_ejecutivo" readonly>
                                                         <?php echo $ejecutivos; ?>
                                                     </select>

@@ -97,39 +97,40 @@
                                                 <div class="row">
                                                     <div class="col-md-5">
                                                         <div class="form-group">
-                                                            <label for="contrato">Nombre del peque</label>
+                                                            <label for="contrato">Nombre del cliente peque *</label>
                                                             <select class="form-control" id="contrato" name="contrato" disabled>
                                                             </select>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="form-group">
-                                                            <label for="cliente">Código de cliente SICAFIN</label>
-                                                            <input type="number" class="form-control" id="cliente" name="cliente" readonly>
+                                                            <label for="curp">CURP</label>
+                                                            <input type="text" class="form-control" id="curp" name="curp" readonly>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-4" style="display: none;">
                                                         <div class="form-group">
-                                                            <label for="nombre_ejecutivo">Nombre del ejecutivo</label>
+                                                            <label for="nombre_ejecutivo">Nombre de la cajera que captura el pago</label>
                                                             <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="<?= $_SESSION['nombre'] ?>" readonly>
                                                             <input type="hidden" class="form-control" id="ejecutivo" name="ejecutivo" value="SOOA">
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-5">
+                                                    <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label for="nombre">Contrato del peque</label>
                                                             <input type="text" class="form-control" id="nombre" name="nombre" readonly>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4">
+
+                                                    <div class="col-md-3">
                                                         <div class="form-group">
-                                                            <label for="curp">CURP</label>
-                                                            <input type="text" class="form-control" id="curp" name="curp" readonly>
+                                                            <label for="cliente">Código de cliente Tutor - SICAFIN</label>
+                                                            <input type="number" class="form-control" id="cliente" name="cliente" readonly>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="form-group">
-                                                            <label for="fecha_pago">Fecha del depósito</label>
+                                                            <label for="fecha_pago">Fecha del movimiento</label>
                                                             <input type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?= $fecha; ?>" readonly>
                                                         </div>
                                                     </div>
