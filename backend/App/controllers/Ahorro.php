@@ -19,7 +19,7 @@ class Ahorro extends Controller
     private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
     private $confirmarMovimiento = 'const confirmarMovimiento = async (movimiento, monto, letra) => {
-        return await swal({ title: "Confirmación movimiento ahorro", text: "¿Esta segura de continuar con el registro de un " + movimiento + ", por la cantidad de " + parseFloat(monto).toLocaleString("es-MX", { style: "currency", currency: "MXN" }) + " (" + letra + ")?", icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
+        return await swal({ title: "Confirmación movimiento ahorro", text: "¿Está segur(a) de continuar con el registro de un " + movimiento + ", por la cantidad de " + parseFloat(monto).toLocaleString("es-MX", { style: "currency", currency: "MXN" }) + " (" + letra + ")?", icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
     }';
     private $validarYbuscar = 'const validarYbuscar = (e, t) => {
         if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
