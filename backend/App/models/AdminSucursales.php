@@ -55,7 +55,7 @@ class AdminSucursales
                 SEA.ESTATUS = 'A'
             ORDER BY
                SEA.CDG_SUCURSAL
-sql;
+        sql;
 
         try {
             $mysqli = Database::getInstance();
