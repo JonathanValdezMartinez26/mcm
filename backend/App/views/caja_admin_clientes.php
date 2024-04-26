@@ -72,24 +72,24 @@
                         </div>
                     </div>
                     <div class="row">
-                        <ul class="nav navbar-nav">
-                            <li id="ResumenCuenta" onclick=actualizaVista(event)>
-                                <span style="font-size: 15px; margin: 0 15px;font-weight: bold;">Resumen de cuenta</span>
+                        <ul class="nav navbar-nav" id="opcionesCat">
+                            <li>
+                                <span style="font-size: 15px; margin: 0 15px;font-weight: bold;" id="ResumenCuenta" onclick=actualizaVista(event)>Resumen de cuenta</span>
                             </li>
                             <li class="linea">
                                 <span style="font-size: 15px; margin: 0 15px;" id="HistorialTrns" onclick=actualizaVista(event)>Historial de transacciones</span>
                             </li>
-                            <li class="linea" id="opc3" onclick=actualizaVista(event)>
-                                <span style="font-size: 15px; margin: 0 15px;">Rendimiento</span>
+                            <li class="linea">
+                                <span style="font-size: 15px; margin: 0 15px;" id="rendimiento" onclick=actualizaVista(event)>Rendimiento</span>
                             </li>
-                            <li class="linea" id="opc4" onclick=actualizaVista(event)>
-                                <span style="font-size: 15px; margin: 0 15px;">Tendencias de ahorro</span>
+                            <li class="linea">
+                                <span style="font-size: 15px; margin: 0 15px;" id="tendenciasAhorro" onclick=actualizaVista(event)>Tendencias de ahorro</span>
                             </li>
-                            <li class="linea" id="opc5" onclick=actualizaVista(event)>
-                                <span style="font-size: 15px; margin: 0 15px;">Tendencias de inversión</span>
+                            <li class="linea">
+                                <span style="font-size: 15px; margin: 0 15px;" id="tendenciasInversion" onclick=actualizaVista(event)>Tendencias de inversión</span>
                             </li>
-                            <li class="linea" id="opc6" onclick=actualizaVista(event)>
-                                <span style="font-size: 15px; margin: 0 15px;">Incidencias</span>
+                            <li class="linea">
+                                <span style="font-size: 15px; margin: 0 15px;" id="incidencias" onclick=actualizaVista(event)>Incidencias</span>
                             </li>
                         </ul>
                     </div>

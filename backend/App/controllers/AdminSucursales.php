@@ -132,22 +132,25 @@ class AdminSucursales extends Controller
         return primeraMayuscula(convertir(parteEntera)) + (numero == 1 ? " peso " : " pesos ") + parteDecimal + "/100 M.N."
     }';
     private $primeraMayuscula = 'const primeraMayuscula = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1)';
-    private $consultaServidor = 'const consultaServidor = (url, datos, fncOK, metodo = "POST") => {
+    private $consultaServidor = 'const consultaServidor = (url, datos, fncOK, metodo = "POST", tipo = "json") => {
         swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
         $.ajax({
             type: metodo,
             url: url,
             data: datos,
             success: (res) => {
-                try {
-                    res = JSON.parse(res)
-                } catch (error) {
-                    console.error(error)
-                    res =  {
-                        success: false,
-                        mensaje: "Ocurrió un error al procesar la respuesta del servidor."
+                if (tipo === "json") {
+                    try {
+                        res = JSON.parse(res)
+                    } catch (error) {
+                        console.error(error)
+                        res =  {
+                            success: false,
+                            mensaje: "Ocurrió un error al procesar la respuesta del servidor."
+                        }
                     }
-                }
+                } else if (tipo === "html") res = res
+
                 swal.close()
                 fncOK(res)
             },
@@ -855,18 +858,27 @@ class AdminSucursales extends Controller
             {$this->soloNumeros}
             {$this->consultaServidor}
             {$this->numeroLetras}
+            {$this->validarYbuscar}
             {$this->primeraMayuscula}
             {$this->addParametro}
             {$this->buscaCliente}
          
             const getVista = (vista) => {
-                consultaServidor("AdminSucursales/" + vista + "/", { cliente: infoCliente.CDGCL, nombre: infoCliente.NOMBRE }, (res) => {
-                    if (!res.success) return showError(res.mensaje)
-                    document.querySelector("#cuerpoModal").innerHTML = res.datos
-                })
+                if (vista === "") return
+                consultaServidor("/AdminSucursales/" + vista + "/", { cliente: infoCliente.CDGCL, nombre: infoCliente.NOMBRE }, (res) => {
+                    document.querySelector("#cuerpoModal").innerHTML = res || ""
+                }, "POST", "html")
             }
              
-            const llenaDatosCliente = (datos) => infoCliente = datos
+            const llenaDatosCliente = (datos) => {
+                infoCliente = datos
+                if (vistaActiva) return document.querySelector("#cuerpoModal").innerText = getVista(vistaActiva)
+                const opciones = document.querySelector("#opcionesCat").querySelectorAll("li")
+                opciones.forEach((opcion) => {
+                    if (!opcion.classList.contains("linea")) vistaActiva = opcion.children[0].id
+                })
+                document.querySelector("#cuerpoModal").innerText = getVista(vistaActiva)
+            }
              
             const limpiaDatosCliente = () => {
                 infoCliente = {}
@@ -878,8 +890,19 @@ class AdminSucursales extends Controller
                 if (vistaActiva === e.target.id) return
                  
                 vistaActiva = e.target.id
+                reiniciaOpciones()
+                e.target.parentElement.classList.remove("linea")
+                e.target.style.fontWeight = "bold"
                 document.querySelector("#cuerpoModal").innerHTML = ""
                 document.querySelector("#cuerpoModal").innerText = getVista(vistaActiva)
+            }
+             
+            const reiniciaOpciones = () => {
+                const opciones = document.querySelector("#opcionesCat").querySelectorAll("li")
+                opciones.forEach((opcion) => {
+                    opcion.classList.add("linea")
+                    opcion.children[0].style.fontWeight = "normal"
+                })
             }
         </script>
         script;
@@ -891,36 +914,19 @@ class AdminSucursales extends Controller
 
     public function ResumenCuenta()
     {
+        $filas = AdminSucursalesDao::ResumenCuenta($_POST);
+
+        View::set('filas', $filas);
         View::set('cliente', $_POST['cliente']);
         View::set('nombre', $_POST['nombre']);
-        $html = View::fetch("caja_admin_resumenCta");
-        echo $html;
+        echo View::fetch("caja_admin_clientes_resumenCta");
     }
 
     public function HistorialTrns()
     {
-        // Establece las variables de la vista
-        foreach ($_POST as $key => $value) {
-            $$key = $value;
-        }
-
-        // Construye la ruta completa del archivo de vista
-        $viewFile = View::getPath('caja_admin_historialTrns');
-
-        // Verifica si el archivo de vista existe
-        if (!file_exists($viewFile)) throw new Exception('El archivo de vista especificado no existe.');
-
-        // Inicia el almacenamiento en búfer de salida
-        ob_start();
-
-        // Incluye el archivo de vista
-        include $viewFile;
-
-        // Obtiene el contenido del búfer y lo limpia
-        $html = ob_get_clean();
-
-        // Devuelve solo el fragmento deseado
-        return $html;
+        View::set('cliente', $_POST['cliente']);
+        View::set('nombre', $_POST['nombre']);
+        echo View::fetch("caja_admin_clientes_historialTrns");
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

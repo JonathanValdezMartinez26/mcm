@@ -57,7 +57,7 @@ class View
         }
 
         ob_start();
-        // extract(self::$data);
+        extract(self::$data);
         include(self::VIEWS_PATH . $template . "." . self::EXTENSION_TEMPLATES);
         // $str = ob_get_contents();
         $str = ob_get_clean();
