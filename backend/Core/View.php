@@ -1,6 +1,8 @@
 <?php
+
 namespace Core;
-defined("APPPATH") OR die("Access denied");
+
+defined("APPPATH") or die("Access denied");
 
 class View
 {
@@ -26,8 +28,7 @@ class View
      */
     public static function render($template)
     {
-        if(!file_exists(self::VIEWS_PATH . $template . "." . self::EXTENSION_TEMPLATES))
-        {
+        if (!file_exists(self::VIEWS_PATH . $template . "." . self::EXTENSION_TEMPLATES)) {
             throw new \Exception("Error: El archivo " . self::VIEWS_PATH . $template . "." . self::EXTENSION_TEMPLATES . " no existe", 1);
         }
 
@@ -47,5 +48,24 @@ class View
     public static function set($name, $value)
     {
         self::$data[$name] = $value;
+    }
+
+    public static function fetch($template)
+    {
+        if (!file_exists(self::VIEWS_PATH . $template . "." . self::EXTENSION_TEMPLATES)) {
+            throw new \Exception("Error: El archivo " . self::VIEWS_PATH . $template . "." . self::EXTENSION_TEMPLATES . " no existe", 1);
+        }
+
+        ob_start();
+        // extract(self::$data);
+        include(self::VIEWS_PATH . $template . "." . self::EXTENSION_TEMPLATES);
+        // $str = ob_get_contents();
+        $str = ob_get_clean();
+        return $str;
+    }
+
+    public static function getPath($template)
+    {
+        return self::VIEWS_PATH . $template . "." . self::EXTENSION_TEMPLATES;
     }
 }

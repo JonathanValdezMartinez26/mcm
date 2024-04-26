@@ -81,7 +81,7 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="col-md-6">
-                                                        <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/Apertura/" target="_blank">presione aquí</a>.</p>
+                                                        <p>Para poder depositar a una cuenta de Ahorro, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/ContratoCuentaCorriente/" target="_blank">presione aquí</a>.</p>
                                                         <hr>
                                                     </div>
                                                     <div class="col-md-4">

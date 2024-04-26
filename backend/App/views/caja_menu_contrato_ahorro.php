@@ -83,7 +83,6 @@
                                 <div class="col-md-12">
                                     <div class="col-md-6">
                                         <p>Para la apertura de una cuenta ahorro corriente, el cliente debe estar registrado en SICAFIN, en caso contrario, es necesario solicitar el alta en SICAFIN con la ADMINISTRADORA.</p>
-                                        <!-- <p>Para poder dar de alta un nuevo contrato de una cuenta de Ahorro, el cliente debe estar registrado en SICAFIN, si el cliente no tiene una cuenta abierta solicite el alta a su ADMINISTRADORA.</a>.</p> -->
                                         <hr>
                                     </div>
                                     <div class="col-md-4">

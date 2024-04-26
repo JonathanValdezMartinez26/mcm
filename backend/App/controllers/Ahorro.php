@@ -729,12 +729,14 @@ class Ahorro extends Controller
 
 
         $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro($this->__usuario);
+        $opcSucursales = "";
         foreach ($sucursales as $sucursales) {
             $opcSucursales .= "<option value='{$sucursales['CODIGO']}'>{$sucursales['NOMBRE']}</option>";
             $suc_eje = $sucursales['CODIGO'];
         }
 
         $ejecutivos = CajaAhorroDao::GetEjecutivosSucursal($suc_eje);
+        $opcEjecutivos = "";
         foreach ($ejecutivos as $ejecutivos) {
             $opcEjecutivos .= "<option value='{$ejecutivos['ID_EJECUTIVO']}'>{$ejecutivos['EJECUTIVO']}</option>";
         }
@@ -1422,7 +1424,17 @@ class Ahorro extends Controller
                  
                 datos.push({ name: "tasa", value: document.querySelector("#plazo").value })
                  
-                const c = await confirmarMovimiento("fondeo de inversión", parseaNumero(document.querySelector("#montoOperacion").value), document.querySelector("#monto_letra").value)
+                const plazo = document.querySelector("#plazo")
+                const c = await swal({
+                    title: "Apertura cuenta de inversión",
+                    text: "¿Está segur(a) de continuar con la apertura de la cuenta de inversión por la cantidad de "
+                        + parseaNumero(document.querySelector("#montoOperacion").value).toLocaleString("es-MX", { style: "currency", currency: "MXN" })
+                        + " (" + document.querySelector("#monto_letra").value + ")" 
+                        + " a un plazo de " + plazo.options[plazo.selectedIndex].text + "?",
+                    icon: "warning",
+                    buttons: ["No", "Si, continuar"],
+                    dangerMode: true
+                })
                 if (!c) return
                  
                 consultaServidor("/Ahorro/RegistraInversion/", $.param(datos), async (respuesta) => {
@@ -1599,36 +1611,32 @@ class Ahorro extends Controller
                     return showError("Ingrese un número de cliente a buscar.")
                 }
                 
-                consultaServidor("/Ahorro/BuscaClientePQ/", { cliente: noCliente.value }, async (respuesta) => {
+                consultaServidor("/Ahorro/BuscaClientePQ/", { cliente: noCliente.value }, (respuesta) => {
                         if (!respuesta.success) {
                             if (respuesta.datos) {
                                 const datosCliente = respuesta.datos
                                 if (datosCliente["NO_CONTRATOS"] == 0) {
-                                    const abreCta = await swal({
+                                    swal({
                                         title: "Cuenta de ahorro Peques™",
                                         text: "El cliente " + noCliente.value + " no tiene una cuenta de ahorro.\\nDesea aperturar una cuenta de ahorro en este momento?",
                                         icon: "info",
                                         buttons: ["No", "Sí"],
                                         dangerMode: true
+                                    }).then((abreCta) => {
+                                        if (abreCta) return window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente.value
                                     })
-                                    if (abreCta) {
-                                        window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente.value
-                                        return
-                                    }
                                     return
                                 }
                                 if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
-                                    const abreCta = await swal({
+                                    swal({
                                         title: "Cuenta de ahorro Peques™",
                                         text: "El cliente " + noCliente.value + " no ha completado el proceso de apertura de la cuenta de ahorro.\\nDesea completar el proceso en este momento?",
                                         icon: "info",
                                         buttons: ["No", "Sí"],
                                         dangerMode: true
+                                    }).then((abreCta) => {
+                                        if (abreCta) return window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente.value
                                     })
-                                    if (abreCta) {
-                                        window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente.value
-                                        return
-                                    }
                                     return
                                 }
                             }
@@ -1823,15 +1831,16 @@ class Ahorro extends Controller
                 document.querySelector("#edad").value = edad
             }
         </script>
-html;
+        html;
 
 
         $ComboEntidades = CajaAhorroDao::GetEFed();
 
+        $opciones_ent = "";
         foreach ($ComboEntidades as $key => $val2) {
             $opciones_ent .= <<<html
                 <option  value="{$val2['NOMBRE']}"> {$val2['NOMBRE']}</option>
-html;
+            html;
         }
 
         if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
@@ -1840,7 +1849,6 @@ html;
         View::set('fecha', date('Y-m-d'));
         View::set('opciones_ent', $opciones_ent);
         View::render("caja_menu_contrato_peque");
-        // procesar solicitudes de retiro
     }
 
     public function BuscaClientePQ()
@@ -1893,51 +1901,45 @@ html;
                     return showError("Ingrese un número de cliente a buscar.")
                 }
                  
-                consultaServidor("/Ahorro/BuscaContratoPQ/", { cliente: noCliente }, async (respuesta) => {
+                consultaServidor("/Ahorro/BuscaContratoPQ/", { cliente: noCliente }, (respuesta) => {
                         limpiaDatosCliente()
                         if (!respuesta.success) {
                             if (!respuesta.datos) return showError(respuesta.mensaje)
                             const datosCliente = respuesta.datos
                              
                             if (datosCliente["NO_CONTRATOS"] == 0) {
-                                const realizarDeposito = swal({
+                                swal({
                                     title: "Cuenta de ahorro Peques™",
                                     text: "La cuenta " + noCliente + " no tiene una cuenta de ahorro.\\nDesea realizar la apertura en este momento?",
                                     icon: "info",
                                     buttons: ["No", "Sí"],
                                     dangerMode: true
+                                }).then((realizarDeposito) => {
+                                    if (realizarDeposito) return window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
                                 })
-                                if (realizarDeposito) {
-                                    window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
-                                    return
-                                }
                                 return
                             }
                             if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
-                                const realizarDeposito = swal({
+                                swal({
                                     title: "Cuenta de ahorro Peques™",
-                                    text: "La cuenta " + noCliente + " no ha concluido con el proceso de apertua de la cuenta de ahorro.\\nDesea completar el contrato en este momento?",
+                                    text: "La cuenta " + noCliente + " no ha concluido con el proceso de apertura de la cuenta de ahorro.\\nDesea completar el contrato en este momento?",
                                     icon: "info",
                                     buttons: ["No", "Sí"],
                                     dangerMode: true
+                                }).then((realizarDeposito) => {
+                                    if (realizarDeposito) return window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
                                 })
-                                if (realizarDeposito) {
-                                    window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
-                                    return
-                                }
                             }
                             if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 1) {
-                                const realizarDeposito = swal({
+                                swal({
                                     title: "Cuenta de ahorro Peques™",
                                     text: "La cuenta " + noCliente + " no tiene asignadas cuentas Peque™.\\nDesea aperturar una cuenta Peque™ en este momento?",
                                     icon: "info",
                                     buttons: ["No", "Sí"],
                                     dangerMode: true
+                                }).then((realizarDeposito) => {
+                                    if (realizarDeposito) return window.location.href = "/Ahorro/ContratoCuentaPeque/?cliente=" + noCliente
                                 })
-                                if (realizarDeposito) {
-                                    window.location.href = "/Ahorro/ContratoCuentaPeque/?cliente=" + noCliente
-                                    return
-                                }
                                 return
                             }
                         }
@@ -2508,9 +2510,9 @@ html;
         $tktSaldoN = number_format($datos['SALDO_NUEVO'], 2, '.', ',');
         $tktComision =  $datos['COMISION'] > 0 ?  '<tr><td style="text-align: left; width: 60%;">COMISION:</td><td style="text-align: right; width: 40%;">$ ' . number_format($datos['COMISION'], 2, '.', ',') . '</td></tr>' : "";
 
-        $detalleMovimietnos = "";
+        $detalleMovimientos = "";
         if ($datos['COMPROBANTE'] == 'DEPÓSITO') {
-            $detalleMovimietnos = <<<html
+            $detalleMovimientos = <<<html
             <tr>
                 <td style="text-align: left; width: 60%;">
                     {$datos['ES_DEPOSITO']}:
@@ -2521,7 +2523,11 @@ html;
             </tr>
             html;
         } else {
-            $detalleMovimietnos = <<<html
+            $detalleMovimientos = <<<html
+            <tr>
+                <td style="text-align: center; font-weight: bold; font-size: 12px;" colspan="2">
+                    SALDOS EN CUENTA DE AHORRO
+                </td>
             <tr>
                 <td style="text-align: left; width: 60%;">
                     SALDO ANTERIOR:
@@ -2553,8 +2559,8 @@ html;
         $ticketHTML = <<<html
         <body style="font-family:Helvetica; padding: 0; margin: 0">
             <div>
-                <div style="text-align:center; font-size: 20px;">
-                    <label><b>Más con Menos</b></label>
+                <div style="text-align:center; font-size: 20px; font-weight: bold;">
+                    <label>Más con Menos</label>
                 </div>
                 <div style="text-align:center; font-size: 15px;">
                     <label>COMPROBANTE DE {$datos['COMPROBANTE']}</label>
@@ -2570,8 +2576,8 @@ html;
                     $tktEjecutivo
                     $tktSucursal
                 </div>
-                <div style="text-align:center; font-size: 10px;margin-top:5px; margin-bottom: 5px">
-                    <b>__________________________________________________________</b>
+                <div style="text-align:center; font-size: 10px;margin-top:5px; margin-bottom: 5px; font-weight: bold;">
+                    __________________________________________________________
                 </div>
                 <div style="font-size: 11px;">
                     <label>Nombre del cliente: {$datos['NOMBRE_CLIENTE']}</label>
@@ -2580,17 +2586,17 @@ html;
                     <br>
                     <label>Código de contrato: {$datos['CONTRATO']}</label>
                 </div>
-                <div style="text-align:center; font-size: 10px;margin-top:5px; margin-bottom: 5px">
-                    <b>__________________________________________________________</b>
+                <div style="text-align:center; font-size: 10px;margin-top:5px; margin-bottom: 5px; font-weight: bold;">
+                    __________________________________________________________
                 </div>
-                <div style="text-align:center; font-size: 13px;">
-                    <label><b>{$datos['PRODUCTO']}</b></label>
+                <div style="text-align:center; font-size: 13px; font-weight: bold;">
+                    <label>{$datos['PRODUCTO']}</label>
                 </div>
                 <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
                     *****************************************
                 </div>
-                <div style="text-align:center; font-size: 15px;">
-                    <label><b>{$datos['ENTREGA']} $ {$tktMontoOP}</b></label>
+                <div style="text-align:center; font-size: 15px; font-weight: bold;">
+                    <label>{$datos['ENTREGA']} $ {$tktMontoOP}</label>
                 </div>
                 <div style="text-align:center; font-size: 11px;">
                     <label>($tktMontoLetra)</label>
@@ -2600,20 +2606,20 @@ html;
                 </div>
                 <div style="text-align:center; font-size: 13px;">
                     <table style="width: 100%; font-size: 11spx">
-                        $detalleMovimietnos
+                        $detalleMovimientos
                     </table>
                 </div>
                 <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
                     *****************************************
                 </div>
-                <div style="text-align:center; font-size: 15px; margin-top:25px">
-                    <label><b>Firma de conformidad del cliente</b></label>
+                <div style="text-align:center; font-size: 15px; margin-top:25px; font-weight: bold;">
+                    <label>Firma de conformidad del cliente</label>
                     <div style="text-align:center; font-size: 15px; margin-top:25px; margin-bottom: 5px">
                         ______________________
                     </div>
                 </div>
-                <div style="text-align:center; font-size: 12px;">
-                    <label><b>FOLIO DE LA OPERACIÓN</b></label>
+                <div style="text-align:center; font-size: 12px; font-weight: bold;">
+                    <label>FOLIO DE LA OPERACIÓN</label>
                     <barcode code="$ticket-{$datos['CODIGO']}-{$datos['MONTO']}-{$datos['COD_EJECUTIVO']}" type="C128A" size=".60" height="1" />
                 </div>
             </div>

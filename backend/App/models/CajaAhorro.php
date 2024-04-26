@@ -9,14 +9,14 @@ use Exception;
 use DateTime;
 
 /**
-* Tablas de registros:
+ * Tablas de registros:
  * - ASIGNA_PROD_AHORRO
-* - BENEFICIARIOS_AHORRO
-* - MOVIMIENTOS_AHORRO
-* - TICKETS_AHORRO
-* - CUENTA_INVERSION
-* - CL_PQS
-*
+ * - BENEFICIARIOS_AHORRO
+ * - MOVIMIENTOS_AHORRO
+ * - TICKETS_AHORRO
+ * - CUENTA_INVERSION
+ * - CL_PQS
+ *
  * Limpieza de tablas:
  * DELETE FROM ASIGNA_PROD_AHORRO;
  * DELETE FROM BENEFICIARIOS_AHORRO;
@@ -36,7 +36,6 @@ sql;
 
         $mysqli = Database::getInstance();
         return $mysqli->queryAll($query);
-
     }
 
     public static function Responde($respuesta, $mensaje, $datos = null, $error = null)
@@ -786,7 +785,7 @@ sql;
             (
                 SELECT
                     CASE CDG_TIPO_PAGO
-                        WHEN '5' THEN 'TRANSFERIMOS'
+                        WHEN '5' THEN 'APERTURADO POR'
                         ELSE CASE MOVIMIENTO
                             WHEN '0' THEN 'ENTREGAMOS'
                             ELSE 'RECIBIMOS'
@@ -839,7 +838,7 @@ sql;
             (
                 SELECT
                     CASE CDG_TIPO_PAGO
-                        WHEN '5' THEN 'CUENTA DE AHORRO CORRIENTE'
+                        WHEN '5' THEN 'APERTURA CUENTA DE INVERSIÓN'
                         ELSE CASE APA.CDGPR_PRIORITARIO
                             WHEN '1' THEN 'CUENTA DE AHORRO CORRIENTE'
                             WHEN '2' THEN 'CUENTA DE AHORRO PEQUE'
@@ -1729,6 +1728,4 @@ class LogTransaccionesAhorro
         }
         return $tmp;
     }
-
-
 }

@@ -8,6 +8,7 @@ use \Core\View;
 use \Core\Controller;
 use \App\models\AdminSucursales as AdminSucursalesDao;
 use \App\models\CajaAhorro as CajaAhorroDao;
+use Exception;
 
 class AdminSucursales extends Controller
 {
@@ -844,6 +845,9 @@ class AdminSucursales extends Controller
     {
         $extraFooter = <<<script
         <script>
+            let infoCliente = {}
+            let vistaActiva = ""
+         
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
@@ -854,13 +858,69 @@ class AdminSucursales extends Controller
             {$this->primeraMayuscula}
             {$this->addParametro}
             {$this->buscaCliente}
+         
+            const getVista = (vista) => {
+                consultaServidor("AdminSucursales/" + vista + "/", { cliente: infoCliente.CDGCL, nombre: infoCliente.NOMBRE }, (res) => {
+                    if (!res.success) return showError(res.mensaje)
+                    document.querySelector("#cuerpoModal").innerHTML = res.datos
+                })
+            }
+             
+            const llenaDatosCliente = (datos) => infoCliente = datos
+             
+            const limpiaDatosCliente = () => {
+                infoCliente = {}
+                document.querySelector("#cuerpoModal").innerHTML = ""
+            }
+             
+            const actualizaVista = (e) => {
+                if (infoCliente.CDGCL === undefined) return showError("No se ha realizado la búsqueda de un cliente.")
+                if (vistaActiva === e.target.id) return
+                 
+                vistaActiva = e.target.id
+                document.querySelector("#cuerpoModal").innerHTML = ""
+                document.querySelector("#cuerpoModal").innerText = getVista(vistaActiva)
+            }
         </script>
         script;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Catalogo de Clientes")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha', date('Y-m-d'));
         View::render("caja_admin_clientes");
+    }
+
+    public function ResumenCuenta()
+    {
+        View::set('cliente', $_POST['cliente']);
+        View::set('nombre', $_POST['nombre']);
+        $html = View::fetch("caja_admin_resumenCta");
+        echo $html;
+    }
+
+    public function HistorialTrns()
+    {
+        // Establece las variables de la vista
+        foreach ($_POST as $key => $value) {
+            $$key = $value;
+        }
+
+        // Construye la ruta completa del archivo de vista
+        $viewFile = View::getPath('caja_admin_historialTrns');
+
+        // Verifica si el archivo de vista existe
+        if (!file_exists($viewFile)) throw new Exception('El archivo de vista especificado no existe.');
+
+        // Inicia el almacenamiento en búfer de salida
+        ob_start();
+
+        // Incluye el archivo de vista
+        include $viewFile;
+
+        // Obtiene el contenido del búfer y lo limpia
+        $html = ob_get_clean();
+
+        // Devuelve solo el fragmento deseado
+        return $html;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
