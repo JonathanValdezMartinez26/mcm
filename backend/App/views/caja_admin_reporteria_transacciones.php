@@ -59,21 +59,20 @@
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
-
                                 <li><a href="">
                                         <p style="font-size: 16px;"><b>Historial de transacciones</b></p>
                                     </a></li>
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Comparativa de rendimiento</b></p>
+                                <li class="linea"><a href="">
+                                        <p style="font-size: 16px;">Comparativa de rendimiento</p>
                                     </a></li>
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Tendencias de ahorro</b></p>
+                                <li class="linea"><a href="">
+                                        <p style="font-size: 16px;">Tendencias de ahorro</p>
                                     </a></li>
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Tendencias de inversión</b></p>
+                                <li class="linea"><a href="">
+                                        <p style="font-size: 16px;">Tendencias de inversión</p>
                                     </a></li>
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Reporte de saldos promedio</b></p>
+                                <li class="linea"><a href="">
+                                        <p style="font-size: 16px;">Reporte de saldos promedio</p>
                                     </a></li>
 
                             </ul>
@@ -84,9 +83,64 @@
                             <div class="col-md-12">
                                 <div class="row">
                                     <div class="card col-md-12">
-                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_horario">
-                                            <i class="fa fa-plus"></i> Nueva Activación
-                                        </button>
+                                        <form class="" id="consulta" action="/Operaciones/PerfilTransaccional/" method="GET" onsubmit="return Validar()">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <label for="fInicio">Desde *</label>
+                                                        <input type="date" class="form-control" id="fInicio" name="fInicio" value="2024-04-26">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <label for="fFin">Hasta *</label>
+                                                        <input type="date" class="form-control" id="fFin" name="fFin" value="2024-04-26">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="operacion">Operación *</label>
+                                                        <select class="form-control" id="operacion" name="operacion">
+                                                            <option value="0">TODAS LAS OPERACIONES</option>
+                                                            <option value="1">DEPOSITO</option>
+                                                            <option value="1">RETIRO</option>
+                                                            <option value="1">TRASPASO (INVERSIONES)</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="operacion">Producto *</label>
+                                                        <select class="form-control" id="operacion" name="operacion">
+                                                            <option value="0">TODOS LOS PRODUCTOS</option>
+                                                            <option value="1">AHORRO CUENTA - CORRIENTE</option>
+                                                            <option value="1">AHORRO CUENTA - PEQUES</option>
+                                                            <option value="1">MOVIMIENTOS DE INVERSIÓN</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="sucrusal">Sucursal *</label>
+                                                        <select class="form-control" id="sucrusal" name="sucrusal">
+                                                            <option value="0">TODAS LAS SUCURSALES</option>
+
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4" style="padding-top: 25px">
+                                                    <button class="btn btn-primary" onclick="getLog()">
+                                                        <i class="fa fa-search"></i> Buscar
+                                                    </button>
+                                                </div>
+                                                <br>
+                                            </div>
+                                            <br>
+
+                                        </form>
+
+
                                         <hr style="border-top: 1px solid #787878; margin-top: 5px;">
                                         <div class="dataTable_wrapper">
                                             <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
@@ -115,6 +169,8 @@
         </div>
     </div>
 </div>
+
+
 <style>
     .imagen {
         transform: scale(var(--escala, 1));
@@ -146,6 +202,5 @@
         right: 0;
     }
 </style>
-
 
 <?php echo $footer; ?>

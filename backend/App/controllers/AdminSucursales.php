@@ -951,6 +951,33 @@ script;
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporteria")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
+
+        View::render("caja_admin_reporteria_transacciones");
+    }
+
+    public function ReporteriaTransacciones()
+    {
+        $extraFooter = <<<script
+        <script>
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->noSubmit}
+            {$this->soloNumeros}
+            {$this->consultaServidor}
+            {$this->numeroLetras}
+            {$this->primeraMayuscula}
+            {$this->addParametro}
+            {$this->buscaCliente}
+        </script>
+script;
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporteria")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha', date('Y-m-d'));
+        View::render("caja_admin_reporteria_transacciones");
         View::render("caja_admin_reporteria");
     }
+
+
 }
