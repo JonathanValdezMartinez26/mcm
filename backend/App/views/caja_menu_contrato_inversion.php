@@ -105,7 +105,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_pago">Fecha de apertura</label>
+                                        <label for="fecha_pago">Fecha de apertura inversión</label>
                                         <input type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?= $fecha; ?>" readonly>
                                     </div>
                                 </div>

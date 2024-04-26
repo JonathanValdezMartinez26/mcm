@@ -738,7 +738,7 @@ class Ahorro extends Controller
         foreach ($ejecutivos as $ejecutivos) {
             $opcEjecutivos .= "<option value='{$ejecutivos['ID_EJECUTIVO']}'>{$ejecutivos['EJECUTIVO']}</option>";
         }
-        $opcEjecutivos .= "<option value='{$this->__usuario}'>{$this->__nombre}</option>";
+        $opcEjecutivos .= "<option value='{$this->__usuario}'>{$this->__nombre} - CAJER(A)</option>";
 
         $parentescos = CajaAhorroDao::GetCatalogoParentescos();
         $opcParentescos = "<option value='' disabled selected>Seleccionar</option>";
@@ -1478,7 +1478,7 @@ html;
         foreach ($ejecutivos as $ejecutivos) {
             $opcEjecutivos .= "<option value='{$ejecutivos['ID_EJECUTIVO']}'>{$ejecutivos['EJECUTIVO']}</option>";
         }
-        $opcEjecutivos .= "<option value='{$this->__usuario}'>{$this->__nombre}</option>";
+        $opcEjecutivos .= "<option value='{$this->__usuario}'>{$this->__nombre} - CAJER(A)</option>";
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Contrato Inversión")));
         View::set('footer', $this->_contenedor->footer($extraFooter));

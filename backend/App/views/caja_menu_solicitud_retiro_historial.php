@@ -83,11 +83,14 @@
                                 <div class="col-md-12" style="text-align: center">
                                     <label style="font-size: 18px; margin: 0; padding: 0;">Solicitudes de Retiro</label>
                                 </div>
+                                <br>
                                 <div class="col-md-12">
+
                                     <button id="btnExportaExcel" type="button" class="btn btn-success btn-circle" onclick=imprimeExcel()><i class="fa fa-file-excel-o"></i><b> Exportar a Excel</b></button>
                                 </div>
                             </div>
                             <div class="row">
+                                <hr>
                                 <form name="all" id="all" method="POST">
                                     <div class="dataTable_wrapper">
                                         <table class="table table-striped table-bordered table-hover" id="muestra-cupones">

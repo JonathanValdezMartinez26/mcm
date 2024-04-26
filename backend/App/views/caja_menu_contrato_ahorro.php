@@ -158,7 +158,7 @@
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-group">
-                                                    <label for="tipo">Tasa Anual</label>
+                                                    <label for="tipo">Tasa anual</label>
                                                     <select class="form-control mr-sm-3" autofocus="" type="select" id="tasa" name="tasa" disabled>
                                                         <option value="5">5 %</option>
                                                     </select>
@@ -202,7 +202,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <label for="tipo">Nombre Beneficiario *</label>
+                                                <label for="tipo">Nombre beneficiario *</label>
                                             </div>
                                             <div class="col-md-4">
                                                 <label for="tipo">Parentesco *</label>
