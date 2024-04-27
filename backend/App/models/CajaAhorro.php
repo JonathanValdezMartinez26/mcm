@@ -72,13 +72,10 @@ class CajaAhorro
 
     public static function GetSucursalAsignadaCajeraAhorro($usuario)
     {
-        if($usuario == '')
-        {
+        if ($usuario == '') {
             $var =  '';
-        }
-        else
-        {
-            $var = "WHERE SUC_CAJERA_AHORRO.CDG_USUARIO = '".$usuario."'";
+        } else {
+            $var = "WHERE SUC_CAJERA_AHORRO.CDG_USUARIO = '" . $usuario . "'";
         }
         $query = <<<sql
         SELECT

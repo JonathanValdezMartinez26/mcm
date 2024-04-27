@@ -418,4 +418,177 @@ class AdminSucursales
             return self::Responde(false, "Error al guardar montos de apertura.", null, $e->getMessage());
         }
     }
+
+    public static function GetLogTransacciones($parametros)
+    {
+        $qry = <<<sql
+        SELECT
+            TO_CHAR(LTA.FECHA_TRANSACCION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
+            LTA.SUCURSAL,
+            LTA.USUARIO,
+            (SELECT CDGCL FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = LTA.CONTRATO) AS CLIENTE,
+            LTA.CONTRATO,
+            LTA.TIPO
+        FROM
+            LOG_TRANSACCIONES_AHORRO LTA
+        WHERE
+            TRUNC(LTA.FECHA_TRANSACCION) BETWEEN TO_DATE(:fecha_inicio, 'YYYY-MM-DD') AND TO_DATE(:fecha_fin, 'YYYY-MM-DD')
+        sql;
+
+        $qry .= $parametros["operacion"] ? " AND LTA.TIPO = :operacion" : "";
+        $qry .= $parametros["usuario"] ? " AND LTA.USUARIO = :usuario" : "";
+        $qry .= $parametros["sucursal"] ? " AND LTA.SUCURSAL = :sucursal" : "";
+
+        try {
+            $mysqli = Database::getInstance();
+            $resultado = $mysqli->queryAll($qry, $parametros);
+            if (count($resultado) === 0) return self::Responde(false, "No se encontraron registros para la consulta.", $qry);
+            return self::Responde(true, "Consulta realizada correctamente.", $resultado);
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al consultar los registros.", null, $e->getMessage());
+        }
+    }
+
+    public static function GetOperacionesLog()
+    {
+        $qry = <<<sql
+        SELECT
+            TIPO
+        FROM
+            LOG_TRANSACCIONES_AHORRO
+        GROUP BY
+            TIPO
+        ORDER BY
+            TIPO
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qry);
+            if ($res) return $res;
+            return array();
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
+    public static function GetUsuariosLog()
+    {
+        $qry = <<<sql
+        SELECT
+            USUARIO
+        FROM
+            LOG_TRANSACCIONES_AHORRO
+        GROUP BY
+            USUARIO
+        ORDER BY
+            USUARIO
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qry);
+            if ($res) return $res;
+            return array();
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
+    public static function GetSucursalesLog()
+    {
+        $qry = <<<sql
+        SELECT
+            SUCURSAL
+        FROM
+            LOG_TRANSACCIONES_AHORRO
+        GROUP BY
+            SUCURSAL
+        ORDER BY
+            SUCURSAL
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qry);
+            if ($res) return $res;
+            return array();
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
+    public static function ResumenCuenta($datos)
+    {
+        return "Resumen de cuenta";
+
+        $contrato = $datos['contrato'] || '003011';
+        $a = self::rangoFechas($datos['mes'] || date('m'), $datos['anio'] || date('Y'));
+        $fI = $a['primerDia'];
+        $fF = $a['ultimoDia'];
+
+        $qry = <<<sql
+        SELECT
+            *
+        FROM (
+            SELECT
+                TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY') AS FECHA,
+                CONCAT(
+                        (SELECT DESCRIPCION
+                        FROM TIPO_PAGO_AHORRO
+                        WHERE CODIGO = MA.CDG_TIPO_PAGO),  CASE 
+                    WHEN SRA.FECHA_SOLICITUD IS NULL THEN ''
+                    ELSE TO_CHAR(SRA.FECHA_SOLICITUD, ' - DD/MM/YYYY')
+                    END 
+                    )
+                AS DESCRIPCION,
+                CASE MA.MOVIMIENTO
+                    WHEN '0' THEN MA.MONTO
+                    ELSE 0
+                END AS CARGO,
+                CASE MA.MOVIMIENTO
+                    WHEN '1' THEN MA.MONTO
+                    ELSE 0
+                END AS ABONO,
+                SUM(
+                    CASE MA.MOVIMIENTO
+                        WHEN '0' THEN -MA.MONTO
+                        WHEN '1' THEN MA.MONTO
+                    END
+                ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO
+            FROM
+                MOVIMIENTOS_AHORRO MA
+                INNER JOIN TIPO_PAGO_AHORRO TPA ON TPA.CODIGO = MA.CDG_TIPO_PAGO
+                LEFT JOIN SOLICITUD_RETIRO_AHORRO SRA ON SRA.ID_SOL_RETIRO_AHORRO = MA.CDG_RETIRO 
+            WHERE
+                MA.CDG_CONTRATO = '$contrato'
+            ORDER BY
+                MA.FECHA_MOV, MA.MOVIMIENTO DESC
+        ) WHERE TO_DATE(FECHA, 'DD/MM/YYYY') BETWEEN TO_DATE('$fI', 'DD/MM/YYYY') AND TO_DATE('$fF', 'DD/MM/YYYY')
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qry);
+            if (count($res) === 0) return array();
+            return $res;
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
+    public static function rangoFechas($mes, $anio = date("Y"))
+    {
+        $numeroDiasMes = cal_days_in_month(CAL_GREGORIAN, $mes, $anio);
+
+        $primerDia = date("Y-m-01", strtotime("$anio-$mes-01"));
+        $ultimoDia = date("Y-m-$numeroDiasMes", strtotime("$anio-$mes-$numeroDiasMes"));
+
+        return ["primerDia" => $primerDia, "ultimoDia" => $ultimoDia];
+    }
+
+    public static function tst()
+    {
+        return "Hola";
+    }
 }
