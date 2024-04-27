@@ -7,13 +7,13 @@
                     <input class="form-control" id="cliente" name="cliente" value="<?= $cliente ?>" disabled>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-5">
                 <div class="form-group">
                     <label for="nombre">Nombre del cliente</label>
-                    <input class="form-control" id="nombre" name="nombre" value="<?= $cliente ?>" disabled>
+                    <input class="form-control" id="nombre" name="nombre" value="<?= $nombre ?>" disabled>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <div class="form-group">
                     <label for="anio">Año</label>
                     <select class="form-control" id="anio" name="anio">
@@ -25,7 +25,7 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <div class="form-group">
                     <label for="mes">Mes</label>
                     <select class="form-control" id="mes" name="mes">

@@ -914,9 +914,7 @@ class AdminSucursales extends Controller
 
     public function ResumenCuenta()
     {
-        $filas = AdminSucursalesDao::ResumenCuenta($_POST);
-
-        View::set('filas', $filas);
+        // View::set('filas', $filas);
         View::set('cliente', $_POST['cliente']);
         View::set('nombre', $_POST['nombre']);
         echo View::fetch("caja_admin_clientes_resumenCta");
@@ -1059,6 +1057,4 @@ script;
         View::render("caja_admin_reporteria_transacciones");
         View::render("caja_admin_reporteria");
     }
-
-
 }
