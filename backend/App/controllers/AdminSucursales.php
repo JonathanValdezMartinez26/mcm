@@ -1007,8 +1007,24 @@ script;
         $Producto = $_GET['Producto'];
         $Sucursal = $_GET['Sucursal'];
 
-        if ($Inicial != '' || $Final != '' || $Operacion != '' || $Producto != '' || $Sucursal != '') {
-            echo "";
+
+        $Transacciones = CajaAhorroDao::GetAllTransacciones('');
+
+        foreach ($Transacciones as $key => $value) {
+
+            $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;">{$value['CDG_CONTRATO']}</td>
+                    <td style="padding: 0px !important;">{$value['CDGCL']}</td>
+                    <td style="padding: 0px !important;">{$value['TITULAR_CUENTA_EJE']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_MOV']}</td>
+                    <td style="padding: 0px !important;">{$value['CDG_TICKET']}</td>
+                    <td style="padding: 0px !important;">{$value['MONTO']}</td>
+                    <td style="padding: 0px !important;">{$value['CONCEPTO']}</td>
+                    <td style="padding: 0px !important;">{$value['PRODUCTO']}</td>
+                    <td style="padding: 0px !important;">-</td>
+                </tr>
+html;
         }
 
 
@@ -1016,6 +1032,7 @@ script;
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
         view::set('sucursales', $opcSucursales);
+        View::set('tabla', $tabla);
         View::render("caja_admin_reporteria_transacciones");
     }
 

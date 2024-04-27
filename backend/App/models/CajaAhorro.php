@@ -1657,6 +1657,41 @@ sql;
             return ['MONTO_MINIMO' => 300, 'MONTO_MAXIMO' => 10000];
         }
     }
+    public static function GetAllTransacciones($usuario)
+    {
+        if($usuario == '')
+        {
+            $var =  '';
+        }
+        else
+        {
+            $var = "WHERE 
+            SUC_CAJERA_AHORRO.CDG_USUARIO = '".$usuario."' 
+            AND OPERAC
+            
+            
+            ";
+        }
+
+        $query = <<<sql
+        SELECT ma.CDG_CONTRATO, c.CODIGO AS CDGCL, (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
+        ma.FECHA_MOV, ma.CDG_TICKET, ma.MONTO, tpa.DESCRIPCION AS CONCEPTO, pp.DESCRIPCION AS PRODUCTO, '' AS INCIDENCIA FROM MOVIMIENTOS_AHORRO ma
+        INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
+        INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
+        INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
+        INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
+        ORDER BY ma.FECHA_MOV ASC
+sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($query);
+            if ($res) return $res;
+            return array();
+        } catch (Exception $e) {
+            return array();
+        }
+    }
 }
 
 class LogTransaccionesAhorro
@@ -1730,4 +1765,6 @@ class LogTransaccionesAhorro
         }
         return $tmp;
     }
+
+
 }

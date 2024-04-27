@@ -103,7 +103,7 @@
                                                         <select class="form-control" id="Operacion" name="Operacion">
                                                             <option value="0">TODAS LAS OPERACIONES</option>
                                                             <option value="1">DEPOSITO</option>
-                                                            <option value="1">RETIRO</option>
+                                                            <option value="0">RETIRO</option>
                                                             <option value="1">TRASPASO (INVERSIONES)</option>
                                                         </select>
                                                     </div>
@@ -146,6 +146,9 @@
                                             <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                                 <thead>
                                                     <tr>
+                                                        <th>Contrato</th>
+                                                        <th>Código SICAFIN</th>
+                                                        <th>Hora Cierre</th>
                                                         <th>Cod Sucursal</th>
                                                         <th>Nombre Sucursal</th>
                                                         <th>Hora Cierre</th>
