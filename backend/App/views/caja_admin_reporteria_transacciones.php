@@ -87,20 +87,20 @@
                                             <div class="row">
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <label for="fInicio">Desde *</label>
-                                                        <input type="date" class="form-control" id="fInicio" name="fInicio" value="2024-04-26">
+                                                        <label for="Inicial">Desde *</label>
+                                                        <input type="date" class="form-control" id="Inicial" name="Inicial" value="2024-04-26">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <label for="fFin">Hasta *</label>
-                                                        <input type="date" class="form-control" id="fFin" name="fFin" value="2024-04-26">
+                                                        <label for="Final">Hasta *</label>
+                                                        <input type="date" class="form-control" id="Final" name="Final" value="2024-04-26">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <label for="operacion">Operación *</label>
-                                                        <select class="form-control" id="operacion" name="operacion">
+                                                        <label for="Operacion">Operación *</label>
+                                                        <select class="form-control" id="Operacion" name="Operacion">
                                                             <option value="0">TODAS LAS OPERACIONES</option>
                                                             <option value="1">DEPOSITO</option>
                                                             <option value="1">RETIRO</option>
@@ -110,8 +110,8 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <label for="operacion">Producto *</label>
-                                                        <select class="form-control" id="operacion" name="operacion">
+                                                        <label for="Producto">Producto *</label>
+                                                        <select class="form-control" id="Producto" name="Producto">
                                                             <option value="0">TODOS LOS PRODUCTOS</option>
                                                             <option value="1">AHORRO CUENTA - CORRIENTE</option>
                                                             <option value="1">AHORRO CUENTA - PEQUES</option>
@@ -121,10 +121,10 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <label for="sucrusal">Sucursal *</label>
-                                                        <select class="form-control" id="sucrusal" name="sucrusal">
+                                                        <label for="Sucursal">Sucursal *</label>
+                                                        <select class="form-control" id="Sucursal" name="Sucursal">
                                                             <option value="0">TODAS LAS SUCURSALES</option>
-
+                                                            <?php echo $sucursales; ?>
                                                         </select>
                                                     </div>
                                                 </div>

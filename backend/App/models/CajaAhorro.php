@@ -72,6 +72,14 @@ class CajaAhorro
 
     public static function GetSucursalAsignadaCajeraAhorro($usuario)
     {
+        if($usuario == '')
+        {
+            $var =  '';
+        }
+        else
+        {
+            $var = "WHERE SUC_CAJERA_AHORRO.CDG_USUARIO = '".$usuario."'";
+        }
         $query = <<<sql
         SELECT
             CO.CODIGO, CO.NOMBRE  
@@ -79,8 +87,9 @@ class CajaAhorro
             SUC_ESTADO_AHORRO 
         INNER JOIN SUC_CAJERA_AHORRO ON SUC_ESTADO_AHORRO.CODIGO = SUC_CAJERA_AHORRO.CDG_ESTADO_AHORRO
         INNER JOIN CO ON CO.CODIGO = SUC_ESTADO_AHORRO.CDG_SUCURSAL 
-        WHERE SUC_CAJERA_AHORRO.CDG_USUARIO = '$usuario'
-        sql;
+        $var
+        ORDER BY CO.CODIGO
+sql;
 
         try {
             $mysqli = Database::getInstance();
