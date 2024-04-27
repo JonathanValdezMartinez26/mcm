@@ -148,12 +148,12 @@
                                                     <tr>
                                                         <th>Contrato</th>
                                                         <th>Código SICAFIN</th>
-                                                        <th>Hora Cierre</th>
-                                                        <th>Cod Sucursal</th>
-                                                        <th>Nombre Sucursal</th>
-                                                        <th>Hora Cierre</th>
-                                                        <th>Prorroga</th>
-                                                        <th>Fecha de Registro</th>
+                                                        <th>Titular Cuenta Eje</th>
+                                                        <th>Fecha</th>
+                                                        <th>ID Ticket</th>
+                                                        <th>Monto</th>
+                                                        <th>Concepto</th>
+                                                        <th>Producto</th>
                                                         <th>Acciones</th>
                                                     </tr>
                                                 </thead>
