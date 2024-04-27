@@ -146,9 +146,7 @@
                                             <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                                 <thead>
                                                     <tr>
-                                                        <th>Contrato</th>
-                                                        <th>Código SICAFIN</th>
-                                                        <th>Titular Cuenta Eje</th>
+                                                        <th>Datos del Cliente</th>
                                                         <th>Fecha</th>
                                                         <th>ID Ticket</th>
                                                         <th>Monto</th>

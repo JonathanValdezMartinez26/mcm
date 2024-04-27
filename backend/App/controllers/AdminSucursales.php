@@ -1012,9 +1012,14 @@ script;
 
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;">{$value['CDG_CONTRATO']}</td>
-                    <td style="padding: 0px !important;">{$value['CDGCL']}</td>
-                    <td style="padding: 0px !important;">{$value['TITULAR_CUENTA_EJE']}</td>
+                    <td style="padding: 0px !important;">
+                    <div style="margin-bottom: 5px;">CONTRATO: <b>{$value['CDG_CONTRATO']}</b></div>
+                     <div>CODIGO CLIENTE SICAFIN: <b>{$value['CDGCL']}</b></div>
+                     <div><b>{$value['TITULAR_CUENTA_EJE']}</b></div>
+                      <div>SUCURSAL: <b>FALTA CORREGIR</b></div>
+                    
+                    
+                    </td>
                     <td style="padding: 0px !important;">{$value['FECHA_MOV']}</td>
                     <td style="padding: 0px !important;">{$value['CDG_TICKET']}</td>
                     <td style="padding: 0px !important;">{$value['MONTO']}</td>
