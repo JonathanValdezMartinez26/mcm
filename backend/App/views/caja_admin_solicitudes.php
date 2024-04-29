@@ -107,6 +107,10 @@
                                             <div class="row">
 
                                                 <div class="col-md-12">
+                                                    <br>
+                                                    <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
+                                                    <hr>
+
                                                     <div class="container-fluid">
                                                         <div class="col-md-12">
                                                             <div class="row">
@@ -141,9 +145,31 @@
                                         <div class="row">
 
                                             <div class="col-md-12">
-                                                <h2>This is the content of tab two.</h2>
-                                                <p>This field is a rich HTML field with a content editor like others used in Sitefinity. It accepts images, video, tables, text, etc. Street art polaroid microdosing la croix taxidermy. Jean shorts kinfolk distillery lumbersexual pinterest XOXO semiotics. Tilde meggings asymmetrical literally pork belly, heirloom food truck YOLO. Meh echo park lyft typewriter. </p>
+                                                <div class="container-fluid">
+                                                    <div class="col-md-12">
+                                                        <div class="row">
+                                                            <div class="card col-md-12">
+                                                                <div class="dataTable_wrapper">
+                                                                    <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
+                                                                        <thead>
+                                                                        <tr>
+                                                                            <th>Cod Sucursal</th>
+                                                                            <th>Nombre Sucursal</th>
+                                                                            <th>Hora Cierre</th>
+                                                                            <th>Prorroga</th>
+                                                                            <th>Acciones</th>
+                                                                        </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                        <?= $tabla; ?>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
 
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
