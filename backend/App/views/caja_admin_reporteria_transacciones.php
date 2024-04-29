@@ -147,11 +147,8 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Datos del Cliente</th>
-                                                        <th>Fecha</th>
-                                                        <th>ID Ticket</th>
-                                                        <th>Monto</th>
-                                                        <th>Concepto</th>
-                                                        <th>Producto</th>
+                                                        <th>Detalle Transacción</th>
+                                                        <th>Fecha Transacción</th>
                                                         <th>Acciones</th>
                                                     </tr>
                                                 </thead>
