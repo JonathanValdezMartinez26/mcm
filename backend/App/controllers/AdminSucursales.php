@@ -863,10 +863,23 @@ class AdminSucursales extends Controller
             {$this->addParametro}
             {$this->buscaCliente}
          
+            const buscar = () => buscaCliente()
+         
             const getVista = (vista) => {
                 if (vista === "") return
-                consultaServidor("/AdminSucursales/" + vista + "/", { cliente: infoCliente.CDGCL, nombre: infoCliente.NOMBRE }, (res) => {
-                    document.querySelector("#cuerpoModal").innerHTML = res || ""
+                consultaServidor("/AdminSucursales/" + vista + "/", infoCliente, (res) => {
+                    const fragmento = document.createElement("template");
+                    fragmento.innerHTML = res || ""
+                     
+                    const contenido = fragmento.content.querySelector(".modal-body")
+                    const script = fragmento.content.querySelector("script")
+                    
+                    document.querySelector("#cuerpoModal").innerHTML = contenido.innerHTML
+                    if (script) {
+                        const nuevoScript = document.createElement("script")
+                        nuevoScript.innerHTML = script.innerHTML
+                        document.querySelector("#cuerpoModal").appendChild(nuevoScript)
+                    }
                 }, "POST", "html")
             }
              
@@ -914,16 +927,67 @@ class AdminSucursales extends Controller
 
     public function ResumenCuenta()
     {
-        // View::set('filas', $filas);
-        View::set('cliente', $_POST['cliente']);
-        View::set('nombre', $_POST['nombre']);
+        $script = <<<script
+        <script>
+            const configuraTabla = () => {
+                $("#tablaResumenCta").tablesorter()
+                $("#tablaResumenCta").DataTable({
+                    lengthMenu: [
+                        [10, 50, -1],
+                        [10, 50, "Todos"]
+                    ],
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 0
+                        }
+                    ],
+                    order: false
+                })
+            
+                $("#tablaResumenCta input[type=search]").keyup(() => {
+                    $("#example")
+                        .DataTable()
+                        .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
+                        .draw()
+                })
+            }
+             
+            configuraTabla()
+             
+            const cambiaAnio = () => {
+                alert("Cambio de año")
+            }
+        </script>
+        script;
+
+        $registros = AdminSucursalesDao::ResumenCuenta($_POST);
+        $filas = "";
+        foreach ($registros as $key => $registro) {
+            $filas .= "<tr>";
+            foreach ($registro as $key2 => $celda) {
+                if ($key2 === "ABONO" || $key2 === "CARGO" || $key2 === "SALDO") {
+                    $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " .  number_format($celda, 2, '.', ',') . "</td>";
+                } elseif ($key2 === "DESCRIPCION") {
+                    $filas .= "<td style='vertical-align: middle; text-align: left;'>{$celda}</td>";
+                } else {
+                    $filas .= "<td style='vertical-align: middle;'>{$celda}</td>";
+                }
+            }
+            $filas .= "</tr>";
+        }
+
+        View::set('script', $script);
+        View::set('cliente', $_POST['CDGCL']);
+        View::set('nombre', $_POST['NOMBRE']);
+        View::set('filas', $filas);
         echo View::fetch("caja_admin_clientes_resumenCta");
     }
 
     public function HistorialTrns()
     {
-        View::set('cliente', $_POST['cliente']);
-        View::set('nombre', $_POST['nombre']);
+        View::set('cliente', $_POST['CDGCL']);
+        View::set('nombre', $_POST['NOMBRE']);
         echo View::fetch("caja_admin_clientes_historialTrns");
     }
 
@@ -945,8 +1009,8 @@ class AdminSucursales extends Controller
             $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
                   "lengthMenu": [
-                    [4, 50, -1],
-                    [4, 50, 'Todos'],
+                    [13, 50, -1],
+                    [132, 50, 'Todos'],
                 ],
                 "columnDefs": [{
                     "orderable": false,
@@ -985,10 +1049,8 @@ class AdminSucursales extends Controller
             {$this->primeraMayuscula}
             {$this->addParametro}
             {$this->buscaCliente}
-            
-            
         </script>
-script;
+        script;
 
 
         $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro('');
@@ -1007,39 +1069,24 @@ script;
 
 
         $Transacciones = CajaAhorroDao::GetAllTransacciones('');
-
+        $tabla = "";
         foreach ($Transacciones as $key => $value) {
-
-            $monto = number_format($value['MONTO'], 2);
-            if($value['CONCEPTO'] == 'TRANSFERENCIA INVERSION')
-            {
-                $concepto = '<i class="fa fa-minus" style="color: #0000ac;"></i>';
-            }
-            else if($value['CONCEPTO'] == 'RETIRO')
-            {
-                $concepto = '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
-            }else
-            {
-                $concepto = '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
-            }
 
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                
                     <td style="padding: 0px !important;">
-                         <div style="margin-bottom: 5px;">CONTRATO: <b>{$value['CDG_CONTRATO']}</b></div>
-                         <div>CODIGO CLIENTE SICAFIN: <b>{$value['CDGCL']}</b></div>
-                         <div><b>{$value['TITULAR_CUENTA_EJE']}</b></div>
-                         <div>SUCURSAL: <b>FALTA CORREGIR</b></div>
-                    </td>
+                    <div style="margin-bottom: 5px;">CONTRATO: <b>{$value['CDG_CONTRATO']}</b></div>
+                     <div>CODIGO CLIENTE SICAFIN: <b>{$value['CDGCL']}</b></div>
+                     <div><b>{$value['TITULAR_CUENTA_EJE']}</b></div>
+                      <div>SUCURSAL: <b>FALTA CORREGIR</b></div>
                     
-                    <td style="padding: 0px !important;">
-                         <div style="margin-bottom: 5px;">Producto: {$value['PRODUCTO']}</div>
-                         <div style="margin-bottom: 5px; font-size: 15px;">{$concepto} $ {$monto}</div>
-                         <div style="margin-bottom: 5px;"> <b>{$value['CONCEPTO']}</b></div>
-                          <div style="margin-bottom: 5px;"><span class="fa fa-barcode"></span> <b>{$value['CDG_TICKET']}</b></div>
+                    
                     </td>
-                    <td style="padding: 0px !important;">{$value['FECHA_MOV']} </td>
+                    <td style="padding: 0px !important;">{$value['FECHA_MOV']}</td>
+                    <td style="padding: 0px !important;">{$value['CDG_TICKET']}</td>
+                    <td style="padding: 0px !important;">{$value['MONTO']}</td>
+                    <td style="padding: 0px !important;">{$value['CONCEPTO']}</td>
+                    <td style="padding: 0px !important;">{$value['PRODUCTO']}</td>
                     <td style="padding: 0px !important;">-</td>
                 </tr>
 html;
@@ -1076,107 +1123,5 @@ script;
         View::set('fecha', date('Y-m-d'));
         View::render("caja_admin_reporteria_transacciones");
         View::render("caja_admin_reporteria");
-    }
-
-
-    public function SolicitudesReimpresionTicket()
-    {
-        $extraFooter = <<<script
-        <script>
-        
-        function getParameterByName(name) {
-            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(location.search);
-            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-        }
-             
-         $(document).ready(function(){
-            $("#muestra-cupones").tablesorter();
-          var oTable = $('#muestra-cupones').DataTable({
-                  "lengthMenu": [
-                    [4, 50, -1],
-                    [4, 50, 'Todos'],
-                ],
-                "columnDefs": [{
-                    "orderable": false,
-                    "targets": 0,
-                }],
-                 "order": false
-            });
-            // Remove accented character from search input as well
-            $('#muestra-cupones input[type=search]').keyup( function () {
-                var table = $('#example').DataTable();
-                table.search(
-                    jQuery.fn.DataTable.ext.type.search.html(this.value)
-                ).draw();
-            });
-            var checkAll = 0;
-            
-            fecha1 = getParameterByName('Inicial');
-            fecha2 = getParameterByName('Final');
-            
-             $("#export_excel_consulta").click(function(){
-              $('#all').attr('action', '/Operaciones/generarExcelPagos/?Inicial='+fecha1+'&Final='+fecha2);
-              $('#all').attr('target', '_blank');
-              $("#all").submit();
-            });
-             
-             
-        });
-        
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
-            {$this->noSubmit}
-            {$this->soloNumeros}
-            {$this->consultaServidor}
-            {$this->numeroLetras}
-            {$this->primeraMayuscula}
-            {$this->addParametro}
-            {$this->buscaCliente}
-            
-            
-        </script>
-script;
-
-
-        $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro('');
-        $opcSucursales = "";
-        foreach ($sucursales as $sucursales) {
-            $opcSucursales .= "<option value='{$sucursales['CODIGO']}'>{$sucursales['NOMBRE']} ({$sucursales['CODIGO']})</option>";
-        }
-
-
-        $fechaActual = date('Y-m-d');
-        $Inicial = $_GET['Inicial'];
-        $Final = $_GET['Final'];
-        $Operacion = $_GET['Operacion'];
-        $Producto = $_GET['Producto'];
-        $Sucursal = $_GET['Sucursal'];
-
-
-        $Transacciones = CajaAhorroDao::GetAllTransacciones('');
-
-        foreach ($Transacciones as $key => $value) {
-
-            $tabla .= <<<html
-                <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;"> </td>
-                    <td style="padding: 0px !important;"> </td>
-                    <td style="padding: 0px !important;"> </td>
-                    <td style="padding: 0px !important;"> </td>
-                    <td style="padding: 0px !important;"> </td>
-                </tr>
-html;
-        }
-
-
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporteria")));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha', date('Y-m-d'));
-        view::set('sucursales', $opcSucursales);
-        View::set('tabla', $tabla);
-        View::render("caja_admin_solicitudes");
     }
 }

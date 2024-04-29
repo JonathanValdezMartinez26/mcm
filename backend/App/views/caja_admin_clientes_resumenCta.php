@@ -16,7 +16,7 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="anio">Año</label>
-                    <select class="form-control" id="anio" name="anio">
+                    <select class="form-control" id="anio" name="anio" onchange=cambiaAnio()>
                         <?php
                         for ($i = date('Y'); $i >= 2020; $i--) {
                             echo "<option value='$i'>$i</option>";
@@ -45,20 +45,24 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <table class="table table-striped table-bordered table-hover" id="tablaResumenCta">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Concepto</th>
-                            <th>Abono</th>
-                            <th>Cargo</th>
-                            <th>Saldo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?= $filas; ?>
-                    </tbody>
-                </table>
+                <form name="all" id="all" method="POST">
+                    <div class="dataTable_wrapper">
+                        <table class="table table-striped table-bordered table-hover" id="tablaResumenCta">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Concepto</th>
+                                    <th>Abono</th>
+                                    <th>Cargo</th>
+                                    <th>Saldo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?= $filas; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -66,3 +70,5 @@
 <div class="modal-footer">
 
 </div>
+
+<?php echo $script; ?>

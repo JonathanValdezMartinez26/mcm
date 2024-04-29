@@ -1464,7 +1464,7 @@ class Ahorro extends Controller
                 }
             }
         </script>
-html;
+        html;
 
         $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro($this->__usuario);
         $opcSucursales = "";
@@ -1730,8 +1730,8 @@ html;
                  
                 const cliente = document.querySelector("#nombre").value
                 
-                confirmarMovimento("Cuenta de ahorro Peques",
-                    "¿Está segura de continuar con la apertura de la cuenta Peque asociada al cliente "
+                confirmarMovimento("Cuenta de ahorro Peques™",
+                    "¿Está segura de continuar con la apertura de la cuenta Peques™ asociada al cliente "
                     + cliente
                     + "?"
                 ).then((continuar) => {
@@ -1947,7 +1947,7 @@ html;
                             if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 1) {
                                 swal({
                                     title: "Cuenta de ahorro Peques™",
-                                    text: "La cuenta " + noCliente + " no tiene asignadas cuentas Peque™.\\nDesea aperturar una cuenta Peque™ en este momento?",
+                                    text: "La cuenta " + noCliente + " no tiene asignadas cuentas Peques™.\\nDesea aperturar una cuenta Peques™ en este momento?",
                                     icon: "info",
                                     buttons: ["No", "Sí"],
                                     dangerMode: true
@@ -2100,7 +2100,7 @@ html;
                 })
                  
                 confirmarMovimiento(
-                    "Confirmación de movimiento de cuenta ahorro Peque",
+                    "Confirmación de movimiento de cuenta ahorro Peques™",
                     "¿Está segur(a) de continuar con el registro de un "
                     + (document.querySelector("#deposito").checked ? "depósito" : "retiro")
                     + " de cuenta ahorro peque, por la cantidad de "

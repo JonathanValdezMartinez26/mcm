@@ -419,111 +419,13 @@ class AdminSucursales
         }
     }
 
-    public static function GetLogTransacciones($parametros)
-    {
-        $qry = <<<sql
-        SELECT
-            TO_CHAR(LTA.FECHA_TRANSACCION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
-            LTA.SUCURSAL,
-            LTA.USUARIO,
-            (SELECT CDGCL FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = LTA.CONTRATO) AS CLIENTE,
-            LTA.CONTRATO,
-            LTA.TIPO
-        FROM
-            LOG_TRANSACCIONES_AHORRO LTA
-        WHERE
-            TRUNC(LTA.FECHA_TRANSACCION) BETWEEN TO_DATE(:fecha_inicio, 'YYYY-MM-DD') AND TO_DATE(:fecha_fin, 'YYYY-MM-DD')
-        sql;
-
-        $qry .= $parametros["operacion"] ? " AND LTA.TIPO = :operacion" : "";
-        $qry .= $parametros["usuario"] ? " AND LTA.USUARIO = :usuario" : "";
-        $qry .= $parametros["sucursal"] ? " AND LTA.SUCURSAL = :sucursal" : "";
-
-        try {
-            $mysqli = Database::getInstance();
-            $resultado = $mysqli->queryAll($qry, $parametros);
-            if (count($resultado) === 0) return self::Responde(false, "No se encontraron registros para la consulta.", $qry);
-            return self::Responde(true, "Consulta realizada correctamente.", $resultado);
-        } catch (Exception $e) {
-            return self::Responde(false, "Ocurrió un error al consultar los registros.", null, $e->getMessage());
-        }
-    }
-
-    public static function GetOperacionesLog()
-    {
-        $qry = <<<sql
-        SELECT
-            TIPO
-        FROM
-            LOG_TRANSACCIONES_AHORRO
-        GROUP BY
-            TIPO
-        ORDER BY
-            TIPO
-        sql;
-
-        try {
-            $mysqli = Database::getInstance();
-            $res = $mysqli->queryAll($qry);
-            if ($res) return $res;
-            return array();
-        } catch (Exception $e) {
-            return array();
-        }
-    }
-
-    public static function GetUsuariosLog()
-    {
-        $qry = <<<sql
-        SELECT
-            USUARIO
-        FROM
-            LOG_TRANSACCIONES_AHORRO
-        GROUP BY
-            USUARIO
-        ORDER BY
-            USUARIO
-        sql;
-
-        try {
-            $mysqli = Database::getInstance();
-            $res = $mysqli->queryAll($qry);
-            if ($res) return $res;
-            return array();
-        } catch (Exception $e) {
-            return array();
-        }
-    }
-
-    public static function GetSucursalesLog()
-    {
-        $qry = <<<sql
-        SELECT
-            SUCURSAL
-        FROM
-            LOG_TRANSACCIONES_AHORRO
-        GROUP BY
-            SUCURSAL
-        ORDER BY
-            SUCURSAL
-        sql;
-
-        try {
-            $mysqli = Database::getInstance();
-            $res = $mysqli->queryAll($qry);
-            if ($res) return $res;
-            return array();
-        } catch (Exception $e) {
-            return array();
-        }
-    }
-
     public static function ResumenCuenta($datos)
     {
-        return "Resumen de cuenta";
-
-        $contrato = $datos['contrato'] || '003011';
-        $a = self::rangoFechas($datos['mes'] || date('m'), $datos['anio'] || date('Y'));
+        $contrato = $datos['CONTRATO'];
+        $a = self::RangoFechas(
+            ($datos['mes'] ? $datos['mes'] : date('m')),
+            ($datos['anio'] ? $datos['anio'] : date('Y'))
+        );
         $fI = $a['primerDia'];
         $fF = $a['ultimoDia'];
 
@@ -570,25 +472,25 @@ class AdminSucursales
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryAll($qry);
-            if (count($res) === 0) return array();
+            if (count($res) === 0) return [];
             return $res;
         } catch (Exception $e) {
-            return array();
+            return [];
         }
     }
 
-    public static function rangoFechas($mes, $anio = date("Y"))
+    public static function RangoFechas($mes, $anio = null)
     {
+        if ($anio == null) $anio = date('Y');
+
         $numeroDiasMes = cal_days_in_month(CAL_GREGORIAN, $mes, $anio);
 
-        $primerDia = date("Y-m-01", strtotime("$anio-$mes-01"));
-        $ultimoDia = date("Y-m-$numeroDiasMes", strtotime("$anio-$mes-$numeroDiasMes"));
+        $primerDia = date("d/m/Y", strtotime("$anio-$mes-01"));
+        $ultimoDia = date("d/m/Y", strtotime("$anio-$mes-$numeroDiasMes"));
 
-        return ["primerDia" => $primerDia, "ultimoDia" => $ultimoDia];
-    }
-
-    public static function tst()
-    {
-        return "Hola";
+        return [
+            "primerDia" => $primerDia,
+            "ultimoDia" => $ultimoDia
+        ];
     }
 }
