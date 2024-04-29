@@ -15,7 +15,7 @@
                     <! -- -->
                 </div>
             </a>
-            <a id="link" href="/AdminSucursales/Solicitudes/">
+            <a id="link" href="/AdminSucursales/SolicitudesReimpresionTicket/">
                 <div class="col-md-5 imagen" style="margin-top: 5px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/2972/2972449.png" style="border-radius: 3px; padding-top: 5px" width="110" height="110" />
                     <span class="button__badge">4</span>

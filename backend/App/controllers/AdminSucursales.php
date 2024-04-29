@@ -1079,7 +1079,7 @@ script;
     }
 
 
-    public function Solicitudes()
+    public function SolicitudesReimpresionTicket()
     {
         $extraFooter = <<<script
         <script>
@@ -1160,37 +1160,13 @@ script;
 
         foreach ($Transacciones as $key => $value) {
 
-            $monto = number_format($value['MONTO'], 2);
-            if($value['CONCEPTO'] == 'TRANSFERENCIA INVERSION')
-            {
-                $concepto = '<i class="fa fa-minus" style="color: #0000ac;"></i>';
-            }
-            else if($value['CONCEPTO'] == 'RETIRO')
-            {
-                $concepto = '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
-            }else
-            {
-                $concepto = '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
-            }
-
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                
-                    <td style="padding: 0px !important;">
-                         <div style="margin-bottom: 5px;">CONTRATO: <b>{$value['CDG_CONTRATO']}</b></div>
-                         <div>CODIGO CLIENTE SICAFIN: <b>{$value['CDGCL']}</b></div>
-                         <div><b>{$value['TITULAR_CUENTA_EJE']}</b></div>
-                         <div>SUCURSAL: <b>FALTA CORREGIR</b></div>
-                    </td>
-                    
-                    <td style="padding: 0px !important;">
-                         <div style="margin-bottom: 5px;">Producto: {$value['PRODUCTO']}</div>
-                         <div style="margin-bottom: 5px; font-size: 15px;">{$concepto} $ {$monto}</div>
-                         <div style="margin-bottom: 5px;"> <b>{$value['CONCEPTO']}</b></div>
-                          <div style="margin-bottom: 5px;"><span class="fa fa-barcode"></span> <b>{$value['CDG_TICKET']}</b></div>
-                    </td>
-                    <td style="padding: 0px !important;">{$value['FECHA_MOV']} </td>
-                    <td style="padding: 0px !important;">-</td>
+                    <td style="padding: 0px !important;"> </td>
+                    <td style="padding: 0px !important;"> </td>
+                    <td style="padding: 0px !important;"> </td>
+                    <td style="padding: 0px !important;"> </td>
+                    <td style="padding: 0px !important;"> </td>
                 </tr>
 html;
         }
