@@ -134,14 +134,12 @@
                                                         <i class="fa fa-search"></i> Buscar
                                                     </button>
                                                 </div>
-                                                <br>
                                             </div>
                                         </form>
 
-                                        <hr>
+                                        <br>
                                         <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
-                                        <hr style="border-top: 1px solid #787878; margin-top: 5px;">
-
+                                        <hr>
                                         <div class="dataTable_wrapper">
                                             <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                                 <thead>
