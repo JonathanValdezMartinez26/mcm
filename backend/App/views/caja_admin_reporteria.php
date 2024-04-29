@@ -17,7 +17,7 @@
                 <div class="col-md-5 imagen" style="margin-top: 5px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/2972/2972449.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                     <span class="button__badge">4</span>
-                    <p style="font-size: 12px; padding-top: 5px; color: #000000"><b>Solicitudes de Sucursales</b></p>
+                    <p style="font-size: 12px; padding-top: 5px; color: #000000"><b>Solicitudes</b></p>
                     <! -- https://cdn-icons-png.flaticon.com/512/2972/2972528.png IAMGEN EN COLOR -->
                 </div>
             </a>

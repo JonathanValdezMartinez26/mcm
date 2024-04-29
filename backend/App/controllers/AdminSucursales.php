@@ -1077,4 +1077,130 @@ script;
         View::render("caja_admin_reporteria_transacciones");
         View::render("caja_admin_reporteria");
     }
+
+
+    public function Solicitudes()
+    {
+        $extraFooter = <<<script
+        <script>
+        
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+             
+         $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+                  "lengthMenu": [
+                    [4, 50, -1],
+                    [4, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
+             $("#export_excel_consulta").click(function(){
+              $('#all').attr('action', '/Operaciones/generarExcelPagos/?Inicial='+fecha1+'&Final='+fecha2);
+              $('#all').attr('target', '_blank');
+              $("#all").submit();
+            });
+             
+             
+        });
+        
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->noSubmit}
+            {$this->soloNumeros}
+            {$this->consultaServidor}
+            {$this->numeroLetras}
+            {$this->primeraMayuscula}
+            {$this->addParametro}
+            {$this->buscaCliente}
+            
+            
+        </script>
+script;
+
+
+        $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro('');
+        $opcSucursales = "";
+        foreach ($sucursales as $sucursales) {
+            $opcSucursales .= "<option value='{$sucursales['CODIGO']}'>{$sucursales['NOMBRE']} ({$sucursales['CODIGO']})</option>";
+        }
+
+
+        $fechaActual = date('Y-m-d');
+        $Inicial = $_GET['Inicial'];
+        $Final = $_GET['Final'];
+        $Operacion = $_GET['Operacion'];
+        $Producto = $_GET['Producto'];
+        $Sucursal = $_GET['Sucursal'];
+
+
+        $Transacciones = CajaAhorroDao::GetAllTransacciones('');
+
+        foreach ($Transacciones as $key => $value) {
+
+            $monto = number_format($value['MONTO'], 2);
+            if($value['CONCEPTO'] == 'TRANSFERENCIA INVERSION')
+            {
+                $concepto = '<i class="fa fa-minus" style="color: #0000ac;"></i>';
+            }
+            else if($value['CONCEPTO'] == 'RETIRO')
+            {
+                $concepto = '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
+            }else
+            {
+                $concepto = '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
+            }
+
+            $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                
+                    <td style="padding: 0px !important;">
+                         <div style="margin-bottom: 5px;">CONTRATO: <b>{$value['CDG_CONTRATO']}</b></div>
+                         <div>CODIGO CLIENTE SICAFIN: <b>{$value['CDGCL']}</b></div>
+                         <div><b>{$value['TITULAR_CUENTA_EJE']}</b></div>
+                         <div>SUCURSAL: <b>FALTA CORREGIR</b></div>
+                    </td>
+                    
+                    <td style="padding: 0px !important;">
+                         <div style="margin-bottom: 5px;">Producto: {$value['PRODUCTO']}</div>
+                         <div style="margin-bottom: 5px; font-size: 15px;">{$concepto} $ {$monto}</div>
+                         <div style="margin-bottom: 5px;"> <b>{$value['CONCEPTO']}</b></div>
+                          <div style="margin-bottom: 5px;"><span class="fa fa-barcode"></span> <b>{$value['CDG_TICKET']}</b></div>
+                    </td>
+                    <td style="padding: 0px !important;">{$value['FECHA_MOV']} </td>
+                    <td style="padding: 0px !important;">-</td>
+                </tr>
+html;
+        }
+
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporteria")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha', date('Y-m-d'));
+        view::set('sucursales', $opcSucursales);
+        View::set('tabla', $tabla);
+        View::render("caja_admin_solicitudes");
+    }
 }

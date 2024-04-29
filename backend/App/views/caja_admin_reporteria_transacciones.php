@@ -17,7 +17,7 @@
                 <div class="col-md-5 imagen" style="margin-top: 5px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/2972/2972449.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                     <span class="button__badge">4</span>
-                    <p style="font-size: 12px; padding-top: 5px; color: #000000"><b>Solicitudes de Sucursales</b></p>
+                    <p style="font-size: 12px; padding-top: 5px; color: #000000"><b>Solicitudes</b></p>
                     <! -- https://cdn-icons-png.flaticon.com/512/2972/2972528.png IAMGEN EN COLOR -->
                 </div>
             </a>
@@ -136,12 +136,12 @@
                                                 </div>
                                                 <br>
                                             </div>
-                                            <br>
-
                                         </form>
 
-
+                                        <hr>
+                                        <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
                                         <hr style="border-top: 1px solid #787878; margin-top: 5px;">
+
                                         <div class="dataTable_wrapper">
                                             <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                                 <thead>
