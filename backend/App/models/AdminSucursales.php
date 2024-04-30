@@ -422,61 +422,51 @@ class AdminSucursales
     public static function ResumenCuenta($datos)
     {
         $contrato = $datos['CONTRATO'];
-        $a = self::RangoFechas(
-            ($datos['mes'] ? $datos['mes'] : date('m')),
-            ($datos['anio'] ? $datos['anio'] : date('Y'))
-        );
-        $fI = $a['primerDia'];
-        $fF = $a['ultimoDia'];
 
         $qry = <<<sql
         SELECT
-            *
-        FROM (
-            SELECT
-                TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
-                -- MA.CDG_TIPO_PAGO AS TIPO,
-                CONCAT(
-                    (SELECT DESCRIPCION
-                    FROM TIPO_PAGO_AHORRO
-                    WHERE CODIGO = MA.CDG_TIPO_PAGO),
-                    CASE 
-                        WHEN SRA.FECHA_SOLICITUD IS NULL THEN ''
-                        ELSE TO_CHAR(SRA.FECHA_SOLICITUD, ' - DD/MM/YYYY')
-                    END 
-                    )
-                AS DESCRIPCION,
+            TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
+            MA.CDG_TIPO_PAGO AS TIPO,
+            CONCAT(
+                (SELECT DESCRIPCION
+                FROM TIPO_PAGO_AHORRO
+                WHERE CODIGO = MA.CDG_TIPO_PAGO),
+                CASE 
+                    WHEN SRA.FECHA_SOLICITUD IS NULL THEN ''
+                    ELSE TO_CHAR(SRA.FECHA_SOLICITUD, ' - DD/MM/YYYY')
+                END 
+                )
+            AS DESCRIPCION,
+            CASE MA.MOVIMIENTO
+                WHEN '1' THEN MA.MONTO
+                ELSE 0
+            END AS ABONO,
+            CASE MA.MOVIMIENTO
+                WHEN '0' THEN MA.MONTO
+                ELSE 0
+            END AS CARGO,
+            SUM(
                 CASE MA.MOVIMIENTO
+                    WHEN '0' THEN -MA.MONTO
                     WHEN '1' THEN MA.MONTO
-                    ELSE 0
-                END AS ABONO,
-                CASE MA.MOVIMIENTO
-                    WHEN '0' THEN MA.MONTO
-                    ELSE 0
-                END AS CARGO,
-                SUM(
-                    CASE MA.MOVIMIENTO
-                        WHEN '0' THEN -MA.MONTO
-                        WHEN '1' THEN MA.MONTO
-                    END
-                ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO,
-                (
-                SELECT
-                    T.CDGPE
-                FROM
-                    TICKETS_AHORRO T
-                WHERE
-                    T.CODIGO = MA.CDG_TICKET
-                ) AS USUARIO
+                END
+            ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO,
+            (
+            SELECT
+                T.CDGPE
             FROM
-                MOVIMIENTOS_AHORRO MA
-                INNER JOIN TIPO_PAGO_AHORRO TPA ON TPA.CODIGO = MA.CDG_TIPO_PAGO
-                LEFT JOIN SOLICITUD_RETIRO_AHORRO SRA ON SRA.ID_SOL_RETIRO_AHORRO = MA.CDG_RETIRO 
+                TICKETS_AHORRO T
             WHERE
-                MA.CDG_CONTRATO = '$contrato'
-            ORDER BY
-                MA.FECHA_MOV, MA.MOVIMIENTO DESC
-        ) WHERE TO_DATE(FECHA, 'DD/MM/YYYY HH24:MI:SS') BETWEEN TO_DATE('$fI', 'DD/MM/YYYY') AND TO_DATE('$fF', 'DD/MM/YYYY')
+                T.CODIGO = MA.CDG_TICKET
+            ) AS USUARIO
+        FROM
+            MOVIMIENTOS_AHORRO MA
+            INNER JOIN TIPO_PAGO_AHORRO TPA ON TPA.CODIGO = MA.CDG_TIPO_PAGO
+            LEFT JOIN SOLICITUD_RETIRO_AHORRO SRA ON SRA.ID_SOL_RETIRO_AHORRO = MA.CDG_RETIRO 
+        WHERE
+            MA.CDG_CONTRATO = '$contrato'
+        ORDER BY
+            MA.FECHA_MOV, MA.MOVIMIENTO DESC
         sql;
 
         try {
@@ -487,17 +477,5 @@ class AdminSucursales
         } catch (Exception $e) {
             return [];
         }
-    }
-
-    public static function RangoFechas($mes, $anio)
-    {
-        $numeroDiasMes = cal_days_in_month(CAL_GREGORIAN, $mes, $anio);
-        $primerDia = date("d/m/Y", strtotime("$anio-$mes-01"));
-        $ultimoDia = date("d/m/Y", strtotime("$anio-$mes-$numeroDiasMes"));
-
-        return [
-            "primerDia" => $primerDia,
-            "ultimoDia" => $ultimoDia
-        ];
     }
 }
