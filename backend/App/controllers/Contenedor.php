@@ -94,13 +94,14 @@ html;
               <span><b>PERFIL:</b> <span class="fa fa-key"></span> {$perfil}</span>
               
 html;
-
-    $menu .= <<<html
+      if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR'|| $this->__usuario == 'PAES' || $this->__usuario == 'PMAB'  || $this->__usuario == 'GASC') {
+          $menu .= <<<html
             </div>
           </div>
           <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
             <div class="menu_section">
 html;
+      }
 
     if ($permiso_ahorro == '1') {
       $menu .= <<<html
@@ -112,7 +113,7 @@ html;
 html;
     }
 
-      if ( $this->__usuario == 'AMGM') {
+      if ( $this->__usuario == 'AMGM' || $this->__usuario == 'LGFR'|| $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'GASC') {
           $menu .= <<<html
                 <li><a href="/AdminSucursales/SaldosDiarios/"><i class="glyphicon glyphicon-paste"> </i>&nbsp; Admin Sucursales </a> </li>
              </ul>
