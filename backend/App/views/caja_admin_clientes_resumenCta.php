@@ -51,7 +51,7 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="montoAbn">Monto depositado</label>
-                    <input class="form-control" id="montoAbn" name="montoAbn" value="<?= $totTrns ?>" disabled>
+                    <input class="form-control" id="montoAbn" name="montoAbn" value="$<?= number_format($montoAbonos, 2, '.', ','); ?>" disabled>
                 </div>
             </div>
             <div class="col-md-3">
@@ -63,19 +63,25 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="montoCrg">Monto retirado</label>
-                    <input class="form-control" id="montoCrg" name="montoCrg" value="<?= $totTrns ?>" disabled>
+                    <input class="form-control" id="montoCrg" name="montoCrg" value="$<?= number_format($montoCargos, 2, '.', ','); ?>" disabled>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="totCrg">Total de movimientos</label>
-                    <input class="form-control" id="totCrg" name="totCrg" value="<?= $conteoTotal ?>" disabled>
+                    <label for="totMov">Total de movimientos</label>
+                    <input class="form-control" id="totMov" name="totMov" value="<?= $conteoTotal ?>" disabled>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="montoCrg">Saldo actual</label>
-                    <input class="form-control" id="montoCrg" name="montoCrg" value="<?= $totTrns ?>" disabled>
+                    <label for="saldoIni">Saldo inicial</label>
+                    <input class="form-control" id="saldoIni" name="saldoIni" value="$<?= number_format($saldoInicial, 2, '.', ','); ?>" disabled>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="saldoFin">Saldo final</label>
+                    <input class="form-control" id="saldoFin" name="saldoFin" value="$<?= number_format($saldoFinal, 2, '.', ','); ?>" disabled>
                 </div>
             </div>
         </div>

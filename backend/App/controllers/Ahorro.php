@@ -279,7 +279,7 @@ class Ahorro extends Controller
             }
         })
     }';
-    private $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/-[^0-9.]/g, "")) || 0';
+    private $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/[^0-9.-]/g, "")) || 0';
     private $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { minimumFractionDigits: 2 })';
     private $limpiaMontos = 'const limpiaMontos = (datos, campos = []) => {
         datos.forEach(dato => {
@@ -478,7 +478,7 @@ class Ahorro extends Controller
                         
             const pagoApertura = (e) => {
                 e.preventDefault()
-                if (parseaNumero(document.querySelector("#deposito").value) < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura.toLocalString("es-MX", {style:"currency", currency:"MXN"}) + ".")
+                if (parseaNumero(document.querySelector("#deposito").value) < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a " + saldoMinimoApertura.toLocaleString("es-MX", {style:"currency", currency:"MXN"}) + ".")
                  
                 confirmarMovimiento(
                     "Cuenta de ahorro corriente",

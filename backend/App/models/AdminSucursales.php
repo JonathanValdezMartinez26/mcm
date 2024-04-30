@@ -434,13 +434,15 @@ class AdminSucursales
             *
         FROM (
             SELECT
-                TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY') AS FECHA,
+                TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
+                MA.CDG_TIPO_PAGO AS TIPO,
                 CONCAT(
-                        (SELECT DESCRIPCION
-                        FROM TIPO_PAGO_AHORRO
-                        WHERE CODIGO = MA.CDG_TIPO_PAGO),  CASE 
-                    WHEN SRA.FECHA_SOLICITUD IS NULL THEN ''
-                    ELSE TO_CHAR(SRA.FECHA_SOLICITUD, ' - DD/MM/YYYY')
+                    (SELECT DESCRIPCION
+                    FROM TIPO_PAGO_AHORRO
+                    WHERE CODIGO = MA.CDG_TIPO_PAGO),
+                    CASE 
+                        WHEN SRA.FECHA_SOLICITUD IS NULL THEN ''
+                        ELSE TO_CHAR(SRA.FECHA_SOLICITUD, ' - DD/MM/YYYY')
                     END 
                     )
                 AS DESCRIPCION,
@@ -474,7 +476,7 @@ class AdminSucursales
                 MA.CDG_CONTRATO = '$contrato'
             ORDER BY
                 MA.FECHA_MOV, MA.MOVIMIENTO DESC
-        ) WHERE TO_DATE(FECHA, 'DD/MM/YYYY') BETWEEN TO_DATE('$fI', 'DD/MM/YYYY') AND TO_DATE('$fF', 'DD/MM/YYYY')
+        ) WHERE TO_DATE(FECHA, 'DD/MM/YYYY HH24:MI:SS') BETWEEN TO_DATE('$fI', 'DD/MM/YYYY') AND TO_DATE('$fF', 'DD/MM/YYYY')
         sql;
 
         try {

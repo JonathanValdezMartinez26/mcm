@@ -188,6 +188,8 @@ class AdminSucursales extends Controller
         
         document.querySelector("#btnBskClnt").disabled = false
     }';
+    private $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/-[^0-9.]/g, "")) || 0';
+    private $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { style: "currency", currency: "MXN" })';
 
     function __construct()
     {
@@ -862,6 +864,8 @@ class AdminSucursales extends Controller
             {$this->primeraMayuscula}
             {$this->addParametro}
             {$this->buscaCliente}
+            {$this->parseaNumero}
+            {$this->formatoMoneda}
          
             const buscar = () => buscaCliente()
          
@@ -966,10 +970,18 @@ class AdminSucursales extends Controller
                     (res) => {
                         const tTMP = $("#tablaResumenCta").DataTable()
                         if (tTMP) tTMP.destroy()
-                        document.querySelector("#tablaResumenCta tbody").innerHTML = res
+                         
+                        document.querySelector("#totAbn").value = res.conteoAbonos
+                        document.querySelector("#montoAbn").value = formatoMoneda(res.montoAbonos)
+                        document.querySelector("#totCrg").value = res.conteoCargos
+                        document.querySelector("#montoCrg").value = formatoMoneda(res.montoCargos)
+                        document.querySelector("#totMov").value = res.conteoTotal
+                        document.querySelector("#saldoIni").value = formatoMoneda(res.saldoInicial)
+                        document.querySelector("#saldoFin").value = formatoMoneda(res.saldoFinal)
+                         
+                        document.querySelector("#tablaResumenCta tbody").innerHTML = res.filas
                         configuraTabla()
-                    },
-                    "POST", "html")
+                    })
             }
              
             $(document).ready(() => configuraTabla())
@@ -987,6 +999,8 @@ class AdminSucursales extends Controller
         View::set('montoAbonos', $movimientos['montoAbonos']);
         View::set('montoCargos', $movimientos['montoCargos']);
         View::set('conteoTotal', $movimientos['conteoTotal']);
+        View::set('saldoInicial', $movimientos['saldoInicial']);
+        View::set('saldoFinal', $movimientos['saldoFinal']);
         View::set('filas', $movimientos['filas']);
         echo View::fetch("caja_admin_clientes_resumenCta");
     }
@@ -1000,15 +1014,27 @@ class AdminSucursales extends Controller
         $montoCargos = 0;
         $montoAbonos = 0;
         $conteoTotal = 0;
-        $montoTotal = 0;
+        $conteoTransferencias = 0;
+        $montoTransferencias = 0;
+        $saldoInicial = null;
+        $saldoFinal = null;
 
         $filas = "";
         foreach ($registros as $key => $registro) {
             $filas .= "<tr>";
+            $conteoTotal++;
+            if ($registro['ABONO'] > 0) {
+                $conteoAbonos++;
+                $montoAbonos += $registro['ABONO'];
+                $saldoInicial = (is_null($saldoInicial) ? $registro['SALDO'] - $registro['ABONO'] : $saldoInicial);
+                $saldoFinal = ($saldoFinal ? $registro['SALDO'] : $saldoInicial + $registro['ABONO']);
+            } else {
+                $conteoCargos++;
+                $montoCargos += $registro['CARGO'];
+                $saldoInicial = (is_null($saldoInicial) ? $registro['SALDO'] + $registro['CARGO'] : $saldoInicial);
+                $saldoFinal = ($saldoFinal ? $registro['SALDO'] : $saldoInicial - $registro['CARGO']);
+            }
             foreach ($registro as $key2 => $celda) {
-                $conteoCargos += $key2 === "CARGO" ? 1 : 0;
-                $conteoAbonos += $key2 === "ABONO" ? 1 : 0;
-                $conteoTotal++;
                 if ($key2 === "ABONO" || $key2 === "CARGO" || $key2 === "SALDO") {
                     $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " .  number_format($celda, 2, '.', ',') . "</td>";
                 } elseif ($key2 === "DESCRIPCION") {
@@ -1021,15 +1047,16 @@ class AdminSucursales extends Controller
         }
 
         $respuesta = [
-            "conteoCargos" => $conteoCargos,
             "conteoAbonos" => $conteoAbonos,
+            "conteoCargos" => $conteoCargos,
             "montoCargos" => $montoCargos,
             "montoAbonos" => $montoAbonos,
             "conteoTotal" => $conteoTotal,
-            "montoTotal" => $montoTotal,
+            "saldoInicial" => $saldoInicial,
+            "saldoFinal" => $saldoFinal,
             "filas" => $filas
         ];
-        if ($d !== null) return [$respuesta];
+        if ($d !== null) return $respuesta;
         echo json_encode($respuesta);
     }
 
