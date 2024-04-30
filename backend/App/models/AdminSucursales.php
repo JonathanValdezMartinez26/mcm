@@ -445,13 +445,13 @@ class AdminSucursales
                     )
                 AS DESCRIPCION,
                 CASE MA.MOVIMIENTO
-                    WHEN '0' THEN MA.MONTO
-                    ELSE 0
-                END AS CARGO,
-                CASE MA.MOVIMIENTO
                     WHEN '1' THEN MA.MONTO
                     ELSE 0
                 END AS ABONO,
+                CASE MA.MOVIMIENTO
+                    WHEN '0' THEN MA.MONTO
+                    ELSE 0
+                END AS CARGO,
                 SUM(
                     CASE MA.MOVIMIENTO
                         WHEN '0' THEN -MA.MONTO
@@ -479,12 +479,9 @@ class AdminSucursales
         }
     }
 
-    public static function RangoFechas($mes, $anio = null)
+    public static function RangoFechas($mes, $anio)
     {
-        if ($anio == null) $anio = date('Y');
-
         $numeroDiasMes = cal_days_in_month(CAL_GREGORIAN, $mes, $anio);
-
         $primerDia = date("d/m/Y", strtotime("$anio-$mes-01"));
         $ultimoDia = date("d/m/Y", strtotime("$anio-$mes-$numeroDiasMes"));
 

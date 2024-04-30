@@ -868,6 +868,11 @@ class AdminSucursales extends Controller
             const getVista = (vista) => {
                 if (vista === "") return
                 consultaServidor("/AdminSucursales/" + vista + "/", infoCliente, (res) => {
+                    const cuerpo = document.querySelector("#cuerpoModal")
+                    while(cuerpo.firstChild) {
+                        cuerpo.firstChild.remove()
+                    }
+                     
                     const fragmento = document.createElement("template");
                     fragmento.innerHTML = res || ""
                      
@@ -929,7 +934,7 @@ class AdminSucursales extends Controller
     {
         $script = <<<script
         <script>
-            const configuraTabla = () => {
+            configuraTabla = () => {
                 $("#tablaResumenCta").tablesorter()
                 $("#tablaResumenCta").DataTable({
                     lengthMenu: [
@@ -944,7 +949,6 @@ class AdminSucursales extends Controller
                     ],
                     order: false
                 })
-            
                 $("#tablaResumenCta input[type=search]").keyup(() => {
                     $("#example")
                         .DataTable()
@@ -953,15 +957,38 @@ class AdminSucursales extends Controller
                 })
             }
              
-            configuraTabla()
-             
-            const cambiaAnio = () => {
-                alert("Cambio de año")
+            actualizaTabla = () => {
+                const anio = document.querySelector("#anio").value
+                const mes = document.querySelector("#mes").value
+                const CONTRATO = infoCliente.CONTRATO
+                 
+                consultaServidor("/AdminSucursales/ListaMovimientos/", { anio, mes, CONTRATO },
+                    (res) => {
+                        const tTMP = $("#tablaResumenCta").DataTable()
+                        if (tTMP) tTMP.destroy()
+                        document.querySelector("#tablaResumenCta tbody").innerHTML = res
+                        configuraTabla()
+                    },
+                    "POST", "html")
             }
+             
+            $(document).ready(() => configuraTabla())
         </script>
         script;
 
-        $registros = AdminSucursalesDao::ResumenCuenta($_POST);
+        $filas = self::ListaMovimientos($_POST);
+
+        View::set('script', $script);
+        View::set('cliente', $_POST['CDGCL']);
+        View::set('nombre', $_POST['NOMBRE']);
+        View::set('filas', $filas);
+        echo View::fetch("caja_admin_clientes_resumenCta");
+    }
+
+    public function ListaMovimientos($d = null)
+    {
+        $datos = $d ? $d : $_POST;
+        $registros = AdminSucursalesDao::ResumenCuenta($datos);
         $filas = "";
         foreach ($registros as $key => $registro) {
             $filas .= "<tr>";
@@ -976,12 +1003,8 @@ class AdminSucursales extends Controller
             }
             $filas .= "</tr>";
         }
-
-        View::set('script', $script);
-        View::set('cliente', $_POST['CDGCL']);
-        View::set('nombre', $_POST['NOMBRE']);
-        View::set('filas', $filas);
-        echo View::fetch("caja_admin_clientes_resumenCta");
+        if ($d !== null) return $filas;
+        echo $filas;
     }
 
     public function HistorialTrns()
@@ -1072,15 +1095,11 @@ class AdminSucursales extends Controller
         $tabla = "";
         foreach ($Transacciones as $key => $value) {
             $monto = number_format($value['MONTO'], 2);
-            if($value['CONCEPTO'] == 'TRANSFERENCIA INVERSION')
-            {
+            if ($value['CONCEPTO'] == 'TRANSFERENCIA INVERSION') {
                 $concepto = '<i class="fa fa-minus" style="color: #0000ac;"></i>';
-            }
-            else if($value['CONCEPTO'] == 'RETIRO')
-            {
+            } else if ($value['CONCEPTO'] == 'RETIRO') {
                 $concepto = '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
-            }else
-            {
+            } else {
                 $concepto = '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
             }
             $tabla .= <<<html
@@ -1239,5 +1258,4 @@ html;
         View::set('tabla', $tabla);
         View::render("caja_admin_solicitudes");
     }
-
 }

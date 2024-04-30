@@ -16,7 +16,7 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="anio">Año</label>
-                    <select class="form-control" id="anio" name="anio" onchange=cambiaAnio()>
+                    <select class="form-control" id="anio" name="anio" onchange=actualizaTabla()>
                         <?php
                         for ($i = date('Y'); $i >= 2020; $i--) {
                             echo "<option value='$i'>$i</option>";
@@ -28,7 +28,7 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="mes">Mes</label>
-                    <select class="form-control" id="mes" name="mes">
+                    <select class="form-control" id="mes" name="mes" onchange=actualizaTabla()>
                         <?php
                         $meses = [
                             "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
