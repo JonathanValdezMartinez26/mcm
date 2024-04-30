@@ -1209,8 +1209,8 @@ script;
             $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
                   "lengthMenu": [
-                    [6, 50, -1],
-                    [6, 50, 'Todos'],
+                    [2, 50, -1],
+                    [2, 50, 'Todos'],
                 ],
                 "columnDefs": [{
                     "orderable": false,
@@ -1239,8 +1239,8 @@ script;
                $("#muestra-cupones1").tablesorter();
           var oTable = $('#muestra-cupones1').DataTable({
                   "lengthMenu": [
-                    [6, 50, -1],
-                    [6, 50, 'Todos'],
+                    [10, 50, -1],
+                    [10, 50, 'Todos'],
                 ],
                 "columnDefs": [{
                     "orderable": false,
@@ -1295,21 +1295,70 @@ script;
 
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;"><span class="fa fa-barcode"></span> {$value['CDGTICKET_AHORRO']} </td>
                     <td style="padding: 0px !important;">
-                        <div>
+                        <div style="margin-top: 5px;">
                             <b>CONTRATO:</b> {$value['CONTRATO']}
                         </div>
                         <div>
                             <b>CLIENTE: </b>{$value['NOMBRE_CLIENTE']}
                         </div>
+                        
+                        <hr>
+                        
+                         <div>
+                            <b>MOTIVO: </b>{$value['MOTIVO']}
+                        </div>
+                         <div >
+                            <b><span class="fa fa-female"></span> DESCRIPCION CAJERA: </b>{$value['DESCRIPCION_MOTIVO']}
+                        </div>
+                        <div style="margin-bottom: 5px;">
+                            <b><span class="fa fa-calendar-check-o"></span> FECHA DE SOLICITUD: </b>{$value['FREGISTRO']}
+                        </div>
+                        
+                        
                     </td>
-                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">
+                        {$value['CDGTICKET_AHORRO']}
+                         <div>
+                            {$value['MOTIVO']}
+                        </div>
+                    </td>
                     <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
                     <td style="padding: 0px !important;">  
-                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-check-circle"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-close"></i></button>
                     </td>
+                </tr>
+html;
+        }
+
+        $TransaccionesHistorial = CajaAhorroDao::GetSolicitudesHistorialAdminAll();
+        foreach ($TransaccionesHistorial as $key_ => $valueh) {
+            if($valueh['AUTORIZA'] == '1')
+            {
+                $estatus = 'ACEPTADO';
+                $color = '#31BD16';
+            }
+            else
+            {
+                $estatus ='RECHAZADO';
+                $color = '#9C1508';
+            }
+            $tabla_his .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;"><span class="fa fa-barcode"></span> {$valueh['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">
+                        <div>
+                            <b>CONTRATOooooooooooo:</b> {$valueh['CONTRATO']}
+                        </div>
+                        <div>
+                            <b>CLIENTE: </b>{$valueh['NOMBRE_CLIENTE']}
+                        </div>
+                    </td>
+                    <td style="padding: 0px !important; color: {$color} ;"> <b>{$estatus}</b> </td>
+                    <td style="padding: 0px !important;">{$valueh['CDGTICKET_AHORRO']} </td>
+                    
                 </tr>
 html;
         }
@@ -1318,8 +1367,8 @@ html;
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporteria")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
-        view::set('sucursales', $opcSucursales);
         View::set('tabla', $tabla);
+        View::set('tabla_his', $tabla_his);
         View::render("caja_admin_solicitudes");
     }
 

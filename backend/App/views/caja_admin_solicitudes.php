@@ -164,7 +164,7 @@
                                                                         </tr>
                                                                         </thead>
                                                                         <tbody>
-                                                                        <?= $tabla; ?>
+                                                                        <?= $tabla_his; ?>
                                                                         </tbody>
                                                                     </table>
                                                                 </div>
