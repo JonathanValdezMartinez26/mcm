@@ -3309,6 +3309,29 @@ html;
             var checkAll = 0;
         });
            
+            $(document).ready(function(){
+            $("#muestra-cupones1").tablesorter();
+          var oTable = $('#muestra-cupones1').DataTable({
+           "lengthMenu": [
+                    [10, 50, -1],
+                    [10, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones1 input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+        });
+           
         function Reimprime_ticket(folio)
         {
               

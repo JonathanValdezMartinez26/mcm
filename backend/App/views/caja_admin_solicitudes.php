@@ -150,7 +150,7 @@
                                                         <div class="row">
                                                             <div class="card col-md-12">
                                                                 <div class="dataTable_wrapper">
-                                                                    <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
+                                                                    <table class="table table-striped table-bordered table-hover" id="muestra-cupones1">
                                                                         <thead>
                                                                         <tr>
                                                                             <th>Cod Sucursal</th>
