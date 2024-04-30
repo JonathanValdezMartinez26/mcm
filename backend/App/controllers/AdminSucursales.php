@@ -1319,9 +1319,8 @@ script;
                             <b><span class="fa fa-calendar-check-o"></span> FECHA DE SOLICITUD: </b>{$value['FREGISTRO']}
                         </div>
                         
-                        
                     </td>
-                    <td style="padding: 0px !important;">  
+                    <td style="padding: 0px!important; margin-top: 5px;">  
                         <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-check-circle"></i></button>
                         <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-close"></i></button>
                     </td>
