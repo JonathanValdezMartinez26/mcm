@@ -1201,8 +1201,34 @@ script;
               $("#all").submit();
             });
              
-             
+               $("#muestra-cupones1").tablesorter();
+          var oTable = $('#muestra-cupones1').DataTable({
+                  "lengthMenu": [
+                    [4, 50, -1],
+                    [4, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones1 input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
+        
         });
+        
+        
         
             {$this->showError}
             {$this->showSuccess}
@@ -1220,13 +1246,6 @@ script;
 script;
 
 
-        $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro('');
-        $opcSucursales = "";
-        foreach ($sucursales as $sucursales) {
-            $opcSucursales .= "<option value='{$sucursales['CODIGO']}'>{$sucursales['NOMBRE']} ({$sucursales['CODIGO']})</option>";
-        }
-
-
         $fechaActual = date('Y-m-d');
         $Inicial = $_GET['Inicial'];
         $Final = $_GET['Final'];
@@ -1235,13 +1254,13 @@ script;
         $Sucursal = $_GET['Sucursal'];
 
 
-        $Transacciones = CajaAhorroDao::GetAllTransacciones('');
+        $Transacciones = CajaAhorroDao::GetSolicitudesAdminAll();
 
         foreach ($Transacciones as $key => $value) {
 
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;"> </td>
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
                     <td style="padding: 0px !important;"> </td>
                     <td style="padding: 0px !important;"> </td>
                     <td style="padding: 0px !important;"> </td>

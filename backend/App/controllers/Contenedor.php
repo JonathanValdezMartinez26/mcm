@@ -94,14 +94,14 @@ html;
               <span><b>PERFIL:</b> <span class="fa fa-key"></span> {$perfil}</span>
               
 html;
-      if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR'|| $this->__usuario == 'PAES' || $this->__usuario == 'PMAB'  || $this->__usuario == 'GASC') {
+    
           $menu .= <<<html
             </div>
           </div>
           <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
             <div class="menu_section">
 html;
-      }
+
 
     if ($permiso_ahorro == '1') {
       $menu .= <<<html

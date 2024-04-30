@@ -1689,6 +1689,29 @@ sql;
             return array();
         }
     }
+
+    public static function GetSolicitudesAdminAll()
+    {
+        $query = <<<sql
+        SELECT tar.CDGTICKET_AHORRO, apa.CONTRATO, (c.NOMBRE1 || c.NOMBRE2 || c.PRIMAPE || c.SEGAPE) AS NOMBRE_CLIENTE,
+        tar.MOTIVO, ta.MONTO, tar.DESCRIPCION_MOTIVO, tar.FREGISTRO  FROM TICKETS_AHORRO_REIMPRIME tar 
+        INNER JOIN TICKETS_AHORRO ta ON ta.CODIGO = tar.CDGTICKET_AHORRO 
+        INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ta.CDG_CONTRATO 
+        INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
+        INNER JOIN PE p ON p.CODIGO = tar.CDGPE_SOLICITA 
+        WHERE p.CDGEM = 'EMPFIN'
+           
+sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($query);
+            if ($res) return $res;
+            return array();
+        } catch (Exception $e) {
+            return array();
+        }
+    }
 }
 
 class LogTransaccionesAhorro
