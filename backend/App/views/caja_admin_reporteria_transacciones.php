@@ -63,18 +63,14 @@
                                         <p style="font-size: 16px;"><b>Historial de transacciones</b></p>
                                     </a></li>
                                 <li class="linea"><a href="">
-                                        <p style="font-size: 16px;">Comparativa de rendimiento</p>
+                                        <p style="font-size: 16px;">Historial fondeo sucursal</p>
                                     </a></li>
                                 <li class="linea"><a href="">
-                                        <p style="font-size: 16px;">Tendencias de ahorro</p>
+                                        <p style="font-size: 16px;">Historial retiro sucursal</p>
                                     </a></li>
                                 <li class="linea"><a href="">
-                                        <p style="font-size: 16px;">Tendencias de inversión</p>
+                                        <p style="font-size: 16px;">Historial corte de caja</p>
                                     </a></li>
-                                <li class="linea"><a href="">
-                                        <p style="font-size: 16px;">Reporte de saldos promedio</p>
-                                    </a></li>
-
                             </ul>
                         </div>
                     </div>

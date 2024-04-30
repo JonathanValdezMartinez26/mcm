@@ -279,7 +279,7 @@ class Ahorro extends Controller
             }
         })
     }';
-    private $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/[^0-9.]/g, "")) || 0';
+    private $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/-[^0-9.]/g, "")) || 0';
     private $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { minimumFractionDigits: 2 })';
     private $limpiaMontos = 'const limpiaMontos = (datos, campos = []) => {
         datos.forEach(dato => {
@@ -1730,7 +1730,7 @@ class Ahorro extends Controller
                  
                 const cliente = document.querySelector("#nombre").value
                 
-                confirmarMovimento("Cuenta de ahorro Peques™",
+                confirmarMovimiento("Cuenta de ahorro Peques™",
                     "¿Está segura de continuar con la apertura de la cuenta Peques™ asociada al cliente "
                     + cliente
                     + "?"
@@ -2030,7 +2030,7 @@ class Ahorro extends Controller
             const validaDeposito = (e) => {
                 if (!valKD) return
                  
-                const monto = parseaNumero(e.target.value) || 0
+                let monto = parseaNumero(e.target.value) || 0
                 if (monto <= 0) {
                     e.preventDefault()
                     e.target.value = ""
@@ -2038,6 +2038,7 @@ class Ahorro extends Controller
                 }
                  
                 if (monto > 1000000) {
+                    monto = 1000000
                     e.preventDefault()
                     e.target.value = 1000000.00
                 }

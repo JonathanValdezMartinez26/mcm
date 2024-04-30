@@ -64,11 +64,13 @@
                                         <p style="font-size: 16px;"><b>Historial de transacciones</b></p>
                                     </a></li>
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Comparativa de rendimiento</b></p>
+                                        <p style="font-size: 16px;"><b>Historial fondeo</b></p>
                                     </a></li>
+
                                 <li><a href="">
                                         <p style="font-size: 16px;"><b>Tendencias de ahorro</b></p>
                                     </a></li>
+
                                 <li><a href="">
                                         <p style="font-size: 16px;"><b>Tendencias de inversión</b></p>
                                     </a></li>
