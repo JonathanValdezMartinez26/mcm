@@ -77,12 +77,12 @@
                                 <span style="font-size: 15px; margin: 0 15px;font-weight: bold;" id="ResumenCuenta" onclick=actualizaVista(event)>Resumen de cuenta</span>
                             </li>
                             <li class="linea">
-                                <span style="font-size: 15px; margin: 0 15px;" id="HistorialTrns" onclick=actualizaVista(event)>Historial de transacciones</span>
-                            </li>
-                            <li class="linea">
                                 <span style="font-size: 15px; margin: 0 15px;" id="rendimiento" onclick=actualizaVista(event)>Rendimiento</span>
                             </li>
                             <!-- <li class="linea">
+                                <span style="font-size: 15px; margin: 0 15px;" id="HistorialTrns" onclick=actualizaVista(event)>Historial de transacciones</span>
+                            </li>
+                            <li class="linea">
                                 <span style="font-size: 15px; margin: 0 15px;" id="tendenciasAhorro" onclick=actualizaVista(event)>Tendencias de ahorro</span>
                             </li>
                             <li class="linea">
