@@ -976,12 +976,18 @@ class AdminSucursales extends Controller
         </script>
         script;
 
-        $filas = self::ListaMovimientos($_POST);
+        $movimientos = self::ListaMovimientos($_POST);
 
         View::set('script', $script);
         View::set('cliente', $_POST['CDGCL']);
         View::set('nombre', $_POST['NOMBRE']);
-        View::set('filas', $filas);
+        View::set('filas', $movimientos['filas']);
+        View::set('conteoAbonos', $movimientos['conteoAbonos']);
+        View::set('conteoCargos', $movimientos['conteoCargos']);
+        View::set('montoAbonos', $movimientos['montoAbonos']);
+        View::set('montoCargos', $movimientos['montoCargos']);
+        View::set('conteoTotal', $movimientos['conteoTotal']);
+        View::set('filas', $movimientos['filas']);
         echo View::fetch("caja_admin_clientes_resumenCta");
     }
 
@@ -989,10 +995,20 @@ class AdminSucursales extends Controller
     {
         $datos = $d ? $d : $_POST;
         $registros = AdminSucursalesDao::ResumenCuenta($datos);
+        $conteoCargos = 0;
+        $conteoAbonos = 0;
+        $montoCargos = 0;
+        $montoAbonos = 0;
+        $conteoTotal = 0;
+        $montoTotal = 0;
+
         $filas = "";
         foreach ($registros as $key => $registro) {
             $filas .= "<tr>";
             foreach ($registro as $key2 => $celda) {
+                $conteoCargos += $key2 === "CARGO" ? 1 : 0;
+                $conteoAbonos += $key2 === "ABONO" ? 1 : 0;
+                $conteoTotal++;
                 if ($key2 === "ABONO" || $key2 === "CARGO" || $key2 === "SALDO") {
                     $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " .  number_format($celda, 2, '.', ',') . "</td>";
                 } elseif ($key2 === "DESCRIPCION") {
@@ -1003,8 +1019,18 @@ class AdminSucursales extends Controller
             }
             $filas .= "</tr>";
         }
-        if ($d !== null) return $filas;
-        echo $filas;
+
+        $respuesta = [
+            "conteoCargos" => $conteoCargos,
+            "conteoAbonos" => $conteoAbonos,
+            "montoCargos" => $montoCargos,
+            "montoAbonos" => $montoAbonos,
+            "conteoTotal" => $conteoTotal,
+            "montoTotal" => $montoTotal,
+            "filas" => $filas
+        ];
+        if ($d !== null) return [$respuesta];
+        echo json_encode($respuesta);
     }
 
     public function HistorialTrns()

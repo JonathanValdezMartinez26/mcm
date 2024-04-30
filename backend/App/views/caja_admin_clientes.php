@@ -56,7 +56,8 @@
                     <div class="navbar-header card col-md-12" style="background: #2b2b2b">
                         <a class="navbar-brand">Admin Sucursales / Catálogo de Clientes</a>
                     </div>
-                    <div class="row" style="padding-top: 10px">
+                    <div class="col-md-12">
+                        <br><br>
                         <div class="col-md-6">
                             <p>Para realizar un movimiento es necesario que el cliente tenga una cuenta ahorro corriente activa, de lo contrario, es necesaria la creación de una a través de la opción: <a href="/Ahorro/ContratoCuentaCorriente/" target="_blank">Nuevo Contrato</a>.</p>
                             <hr>
@@ -71,13 +72,17 @@
                             </button>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="col-md-12">
+                        <br>
                         <ul class="nav navbar-nav" id="opcionesCat">
                             <li>
                                 <span style="font-size: 15px; margin: 0 15px;font-weight: bold;" id="ResumenCuenta" onclick=actualizaVista(event)>Resumen de cuenta</span>
                             </li>
                             <li class="linea">
                                 <span style="font-size: 15px; margin: 0 15px;" id="rendimiento" onclick=actualizaVista(event)>Rendimiento</span>
+                            </li>
+                            <li class="linea">
+                                <span style="font-size: 15px; margin: 0 15px;" id="incidencias" onclick=actualizaVista(event)>Incidencias</span>
                             </li>
                             <!-- <li class="linea">
                                 <span style="font-size: 15px; margin: 0 15px;" id="HistorialTrns" onclick=actualizaVista(event)>Historial de transacciones</span>
@@ -88,9 +93,6 @@
                             <li class="linea">
                                 <span style="font-size: 15px; margin: 0 15px;" id="tendenciasInversion" onclick=actualizaVista(event)>Tendencias de inversión</span>
                             </li> -->
-                            <li class="linea">
-                                <span style="font-size: 15px; margin: 0 15px;" id="incidencias" onclick=actualizaVista(event)>Incidencias</span>
-                            </li>
                         </ul>
                     </div>
                 </div>

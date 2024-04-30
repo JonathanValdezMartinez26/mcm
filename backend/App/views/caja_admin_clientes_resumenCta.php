@@ -42,7 +42,44 @@
                     </select>
                 </div>
             </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="totAbn">Total de depósitos</label>
+                    <input class="form-control" id="totAbn" name="totAbn" value="<?= $conteoAbonos ?>" disabled>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="montoAbn">Monto depositado</label>
+                    <input class="form-control" id="montoAbn" name="montoAbn" value="<?= $totTrns ?>" disabled>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="totCrg">Total de retiros</label>
+                    <input class="form-control" id="totCrg" name="totCrg" value="<?= $conteoCargos ?>" disabled>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="montoCrg">Monto retirado</label>
+                    <input class="form-control" id="montoCrg" name="montoCrg" value="<?= $totTrns ?>" disabled>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="totCrg">Total de movimientos</label>
+                    <input class="form-control" id="totCrg" name="totCrg" value="<?= $conteoTotal ?>" disabled>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="montoCrg">Saldo actual</label>
+                    <input class="form-control" id="montoCrg" name="montoCrg" value="<?= $totTrns ?>" disabled>
+                </div>
+            </div>
         </div>
+        <hr>
         <div class="row">
             <div class="col-md-12">
                 <form name="all" id="all" method="POST">
@@ -55,6 +92,7 @@
                                     <th>Abono</th>
                                     <th>Cargo</th>
                                     <th>Saldo</th>
+                                    <th>Usuario</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -67,6 +105,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal-footer">
 
 </div>

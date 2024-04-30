@@ -478,7 +478,7 @@ class Ahorro extends Controller
                         
             const pagoApertura = (e) => {
                 e.preventDefault()
-                if (document.querySelector("#deposito").value < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura.toLocalString("es-MX", {style:"currency", currency:"MXN"}) + ".")
+                if (parseaNumero(document.querySelector("#deposito").value) < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a $" + saldoMinimoApertura.toLocalString("es-MX", {style:"currency", currency:"MXN"}) + ".")
                  
                 confirmarMovimiento(
                     "Cuenta de ahorro corriente",
@@ -492,38 +492,42 @@ class Ahorro extends Controller
                     const datosContrato = $("#registroInicialAhorro").serializeArray()
                     addParametro(datosContrato, "credito", noCredito)
                     addParametro(datosContrato, "sucursal", "{$_SESSION['cdgco']}")
+                     
+                    if (document.querySelector("#contrato").value !== "") return regPago(document.querySelector("#contrato").value)
                     
                     consultaServidor("/Ahorro/AgregaContratoAhorro/", $.param(datosContrato), (respuesta) => {
                         if (!respuesta.success) {
                             console.error(respuesta.error)
                             return showError(respuesta.mensaje)
                         }
-                        
-                        const contrato = respuesta.datos
-                                        
-                        const datos = $("#AddPagoApertura").serializeArray()
-                        limpiaMontos(datos, ["deposito", "inscripcion", "saldo_inicial"])
-                        addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
-                        addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
-                        addParametro(datos, "contrato", contrato.contrato)
-                        
-                        consultaServidor("/Ahorro/PagoApertura/", $.param(datos), (respuesta) => {
-                                if (!respuesta.success) return showError(respuesta.mensaje)
-                            
-                                showSuccess(respuesta.mensaje)
-                                .then(() => {
-                                    document.querySelector("#registroInicialAhorro").reset()
-                                    document.querySelector("#AddPagoApertura").reset()
-                                    $("#modal_agregar_pago").modal("hide")
-                                    limpiaDatosCliente()
-                                    imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
-                                
-                                    showSuccess("Se ha generado el contrato: " + contrato.contrato + ".")
-                                    .then(() => {
-                                        imprimeContrato(contrato.contrato, 1)
-                                    })
-                                })
-                            })
+                         
+                        regPago(respuesta.datos.contrato)
+                    })
+                })
+            }
+             
+            const regPago = (contrato) => {
+                const datos = $("#AddPagoApertura").serializeArray()
+                limpiaMontos(datos, ["deposito", "inscripcion", "saldo_inicial"])
+                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
+                addParametro(datos, "contrato", contrato)
+                 
+                consultaServidor("/Ahorro/PagoApertura/", $.param(datos), (respuesta) => {
+                    if (!respuesta.success) return showError(respuesta.mensaje)
+                
+                    showSuccess(respuesta.mensaje)
+                    .then(() => {
+                        document.querySelector("#registroInicialAhorro").reset()
+                        document.querySelector("#AddPagoApertura").reset()
+                        $("#modal_agregar_pago").modal("hide")
+                        limpiaDatosCliente()
+                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
+                    
+                        showSuccess("Se ha generado el contrato: " + contrato + ".")
+                        .then(() => {
+                            imprimeContrato(contrato, 1)
+                        })
                     })
                 })
             }

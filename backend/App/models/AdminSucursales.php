@@ -457,7 +457,15 @@ class AdminSucursales
                         WHEN '0' THEN -MA.MONTO
                         WHEN '1' THEN MA.MONTO
                     END
-                ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO
+                ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO,
+                (
+                SELECT
+                    T.CDGPE
+                FROM
+                    TICKETS_AHORRO T
+                WHERE
+                    T.CODIGO = MA.CDG_TICKET
+                ) AS USUARIO
             FROM
                 MOVIMIENTOS_AHORRO MA
                 INNER JOIN TIPO_PAGO_AHORRO TPA ON TPA.CODIGO = MA.CDG_TIPO_PAGO

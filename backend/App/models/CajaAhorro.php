@@ -417,9 +417,18 @@ sql;
         SELECT
             *
         FROM
-            ASIGNA_PROD_AHORRO
+            ASIGNA_PROD_AHORRO APA
         WHERE
             CDGCL = :cliente
+            AND (
+                SELECT
+                    COUNT(MA.CDG_CONTRATO)
+                FROM
+                    MOVIMIENTOS_AHORRO MA
+                WHERE
+                    MA.CDG_TIPO_PAGO = 2
+                    AND MA.CDG_CONTRATO = APA.CONTRATO
+            ) > 0
         sql;
 
         try {
@@ -508,7 +517,7 @@ sql;
     public static function AddPagoApertura($datos)
     {
         if ($datos['monto'] == 0) return self::Responde(false, "El monto de apertura no puede ser de 0.");
-        if ($datos['saldo_inicial'] < $datos['sma']) return self::Responde(false, "El saldo inicial no puede ser menor a " . $datos['sma'] . ".");
+        if ($datos['monto'] < $datos['sma']) return self::Responde(false, "El monto mínimo de apertura no puede ser menor a " . $datos['sma'] . ".");
 
         $query = [
             self::GetQueryTicket(),
@@ -1656,14 +1665,11 @@ sql;
     }
     public static function GetAllTransacciones($usuario)
     {
-        if($usuario == '')
-        {
+        if ($usuario == '') {
             $var =  '';
-        }
-        else
-        {
+        } else {
             $var = "WHERE 
-            SUC_CAJERA_AHORRO.CDG_USUARIO = '".$usuario."' 
+            SUC_CAJERA_AHORRO.CDG_USUARIO = '" . $usuario . "' 
             AND OPERAC
             
             
@@ -1785,6 +1791,4 @@ class LogTransaccionesAhorro
         }
         return $tmp;
     }
-
-
 }
