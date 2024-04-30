@@ -82,12 +82,12 @@
                             <li class="linea">
                                 <span style="font-size: 15px; margin: 0 15px;" id="rendimiento" onclick=actualizaVista(event)>Rendimiento</span>
                             </li>
-                            <li class="linea">
+                            <!-- <li class="linea">
                                 <span style="font-size: 15px; margin: 0 15px;" id="tendenciasAhorro" onclick=actualizaVista(event)>Tendencias de ahorro</span>
                             </li>
                             <li class="linea">
                                 <span style="font-size: 15px; margin: 0 15px;" id="tendenciasInversion" onclick=actualizaVista(event)>Tendencias de inversión</span>
-                            </li>
+                            </li> -->
                             <li class="linea">
                                 <span style="font-size: 15px; margin: 0 15px;" id="incidencias" onclick=actualizaVista(event)>Incidencias</span>
                             </li>
