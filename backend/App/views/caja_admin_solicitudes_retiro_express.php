@@ -64,18 +64,21 @@
                         <div>
                             <ul class="nav navbar-nav">
 
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Reimpresión de tickets</b></p>
+                                <li class="linea"><a href="/AdminSucursales/SolicitudesReimpresionTicket/">
+                                        <p style="font-size: 16px;">Reimpresión de tickets</p>
                                     </a></li>
+
                                 <li class="linea"><a href="/AdminSucursales/SolicitudResumenMovimientos/">
                                         <p style="font-size: 16px;">Resumen de movimientos</p>
                                     </a></li>
                                 <li class="linea"><a href="/AdminSucursales/SolicitudRetiroOrdinario/">
                                         <p style="font-size: 16px;">Retiros ordinarios</p>
                                     </a></li>
-                                <li class="linea"><a href="/AdminSucursales/SolicitudRetiroExpress/">
-                                        <p style="font-size: 16px;">Retiros express</p>
+
+                                <li><a href="">
+                                        <p style="font-size: 16px;"><b>Retiros express</b></p>
                                     </a></li>
+
                                 <li class="linea"><a href="/AdminSucursales/SolicitudRetiroEfectivoCaja/">
                                         <p style="font-size: 16px;">Retirar efectivo de caja</p>
                                     </a></li>

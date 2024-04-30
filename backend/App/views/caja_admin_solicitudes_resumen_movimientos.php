@@ -64,12 +64,13 @@
                         <div>
                             <ul class="nav navbar-nav">
 
+                                <li class="linea"><a href="/AdminSucursales/SolicitudesReimpresionTicket/">
+                                        <p style="font-size: 16px;">Reimpresión de tickets</p>
+                                    </a></li>
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Reimpresión de tickets</b></p>
+                                        <p style="font-size: 16px;"><b>Resumen de movimientos</b></p>
                                     </a></li>
-                                <li class="linea"><a href="/AdminSucursales/SolicitudResumenMovimientos/">
-                                        <p style="font-size: 16px;">Resumen de movimientos</p>
-                                    </a></li>
+
                                 <li class="linea"><a href="/AdminSucursales/SolicitudRetiroOrdinario/">
                                         <p style="font-size: 16px;">Retiros ordinarios</p>
                                     </a></li>

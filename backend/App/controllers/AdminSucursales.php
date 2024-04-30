@@ -1200,8 +1200,8 @@ script;
             $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
                   "lengthMenu": [
-                    [4, 50, -1],
-                    [4, 50, 'Todos'],
+                    [6, 50, -1],
+                    [6, 50, 'Todos'],
                 ],
                 "columnDefs": [{
                     "orderable": false,
@@ -1230,8 +1230,8 @@ script;
                $("#muestra-cupones1").tablesorter();
           var oTable = $('#muestra-cupones1').DataTable({
                   "lengthMenu": [
-                    [4, 50, -1],
-                    [4, 50, 'Todos'],
+                    [6, 50, -1],
+                    [6, 50, 'Todos'],
                 ],
                 "columnDefs": [{
                     "orderable": false,
@@ -1280,17 +1280,27 @@ script;
         $Sucursal = $_GET['Sucursal'];
 
 
-        $Transacciones = CajaAhorroDao::GetSolicitudesAdminAll();
+        $Transacciones = CajaAhorroDao::GetSolicitudesPendientesAdminAll();
 
         foreach ($Transacciones as $key => $value) {
 
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
-                    <td style="padding: 0px !important;"> </td>
-                    <td style="padding: 0px !important;"> </td>
-                    <td style="padding: 0px !important;"> </td>
-                    <td style="padding: 0px !important;"> </td>
+                    <td style="padding: 0px !important;">
+                        <div>
+                            <b>CONTRATO:</b> {$value['CONTRATO']}
+                        </div>
+                        <div>
+                            <b>CLIENTE: </b>{$value['NOMBRE_CLIENTE']}
+                        </div>
+                    </td>
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">  
+                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                    </td>
                 </tr>
 html;
         }
@@ -1302,5 +1312,525 @@ html;
         view::set('sucursales', $opcSucursales);
         View::set('tabla', $tabla);
         View::render("caja_admin_solicitudes");
+    }
+
+    public function SolicitudResumenMovimientos()
+    {
+        $extraFooter = <<<script
+        <script>
+        
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+             
+         $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+                  "lengthMenu": [
+                    [6, 50, -1],
+                    [6, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
+             $("#export_excel_consulta").click(function(){
+              $('#all').attr('action', '/Operaciones/generarExcelPagos/?Inicial='+fecha1+'&Final='+fecha2);
+              $('#all').attr('target', '_blank');
+              $("#all").submit();
+            });
+             
+               $("#muestra-cupones1").tablesorter();
+          var oTable = $('#muestra-cupones1').DataTable({
+                  "lengthMenu": [
+                    [6, 50, -1],
+                    [6, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones1 input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
+        
+        });
+        
+        
+        
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->noSubmit}
+            {$this->soloNumeros}
+            {$this->consultaServidor}
+            {$this->numeroLetras}
+            {$this->primeraMayuscula}
+            {$this->addParametro}
+            {$this->buscaCliente}
+            
+            
+        </script>
+script;
+
+
+        $fechaActual = date('Y-m-d');
+        $Inicial = $_GET['Inicial'];
+        $Final = $_GET['Final'];
+        $Operacion = $_GET['Operacion'];
+        $Producto = $_GET['Producto'];
+        $Sucursal = $_GET['Sucursal'];
+
+
+        $Transacciones = CajaAhorroDao::GetSolicitudesPendientesAdminAll();
+
+        foreach ($Transacciones as $key => $value) {
+
+            $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">
+                        <div>
+                            <b>CONTRATO:</b> {$value['CONTRATO']}
+                        </div>
+                        <div>
+                            <b>CLIENTE: </b>{$value['NOMBRE_CLIENTE']}
+                        </div>
+                    </td>
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">  
+                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                    </td>
+                </tr>
+html;
+        }
+
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporteria")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha', date('Y-m-d'));
+        view::set('sucursales', $opcSucursales);
+        View::set('tabla', $tabla);
+        View::render("caja_admin_solicitudes_resumen_movimientos");
+    }
+
+    public function SolicitudRetiroOrdinario()
+    {
+        $extraFooter = <<<script
+        <script>
+        
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+             
+         $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+                  "lengthMenu": [
+                    [6, 50, -1],
+                    [6, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
+             $("#export_excel_consulta").click(function(){
+              $('#all').attr('action', '/Operaciones/generarExcelPagos/?Inicial='+fecha1+'&Final='+fecha2);
+              $('#all').attr('target', '_blank');
+              $("#all").submit();
+            });
+             
+               $("#muestra-cupones1").tablesorter();
+          var oTable = $('#muestra-cupones1').DataTable({
+                  "lengthMenu": [
+                    [6, 50, -1],
+                    [6, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones1 input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
+        
+        });
+        
+        
+        
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->noSubmit}
+            {$this->soloNumeros}
+            {$this->consultaServidor}
+            {$this->numeroLetras}
+            {$this->primeraMayuscula}
+            {$this->addParametro}
+            {$this->buscaCliente}
+            
+            
+        </script>
+script;
+
+
+        $fechaActual = date('Y-m-d');
+        $Inicial = $_GET['Inicial'];
+        $Final = $_GET['Final'];
+        $Operacion = $_GET['Operacion'];
+        $Producto = $_GET['Producto'];
+        $Sucursal = $_GET['Sucursal'];
+
+
+        $Transacciones = CajaAhorroDao::GetSolicitudesPendientesAdminAll();
+
+        foreach ($Transacciones as $key => $value) {
+
+            $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">
+                        <div>
+                            <b>CONTRATO:</b> {$value['CONTRATO']}
+                        </div>
+                        <div>
+                            <b>CLIENTE: </b>{$value['NOMBRE_CLIENTE']}
+                        </div>
+                    </td>
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">  
+                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                    </td>
+                </tr>
+html;
+        }
+
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporteria")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha', date('Y-m-d'));
+        view::set('sucursales', $opcSucursales);
+        View::set('tabla', $tabla);
+        View::render("caja_admin_solicitudes_retiro_ordinario");
+    }
+
+    public function SolicitudRetiroExpress()
+    {
+        $extraFooter = <<<script
+        <script>
+        
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+             
+         $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+                  "lengthMenu": [
+                    [6, 50, -1],
+                    [6, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
+             $("#export_excel_consulta").click(function(){
+              $('#all').attr('action', '/Operaciones/generarExcelPagos/?Inicial='+fecha1+'&Final='+fecha2);
+              $('#all').attr('target', '_blank');
+              $("#all").submit();
+            });
+             
+               $("#muestra-cupones1").tablesorter();
+          var oTable = $('#muestra-cupones1').DataTable({
+                  "lengthMenu": [
+                    [6, 50, -1],
+                    [6, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones1 input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
+        
+        });
+        
+        
+        
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->noSubmit}
+            {$this->soloNumeros}
+            {$this->consultaServidor}
+            {$this->numeroLetras}
+            {$this->primeraMayuscula}
+            {$this->addParametro}
+            {$this->buscaCliente}
+            
+            
+        </script>
+script;
+
+
+        $fechaActual = date('Y-m-d');
+        $Inicial = $_GET['Inicial'];
+        $Final = $_GET['Final'];
+        $Operacion = $_GET['Operacion'];
+        $Producto = $_GET['Producto'];
+        $Sucursal = $_GET['Sucursal'];
+
+
+        $Transacciones = CajaAhorroDao::GetSolicitudesPendientesAdminAll();
+
+        foreach ($Transacciones as $key => $value) {
+
+            $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">
+                        <div>
+                            <b>CONTRATO:</b> {$value['CONTRATO']}
+                        </div>
+                        <div>
+                            <b>CLIENTE: </b>{$value['NOMBRE_CLIENTE']}
+                        </div>
+                    </td>
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">  
+                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                    </td>
+                </tr>
+html;
+        }
+
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporteria")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha', date('Y-m-d'));
+        view::set('sucursales', $opcSucursales);
+        View::set('tabla', $tabla);
+        View::render("caja_admin_solicitudes_retiro_express");
+    }
+
+    public function SolicitudRetiroEfectivoCaja()
+    {
+        $extraFooter = <<<script
+        <script>
+        
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+             
+         $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+                  "lengthMenu": [
+                    [6, 50, -1],
+                    [6, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
+             $("#export_excel_consulta").click(function(){
+              $('#all').attr('action', '/Operaciones/generarExcelPagos/?Inicial='+fecha1+'&Final='+fecha2);
+              $('#all').attr('target', '_blank');
+              $("#all").submit();
+            });
+             
+               $("#muestra-cupones1").tablesorter();
+          var oTable = $('#muestra-cupones1').DataTable({
+                  "lengthMenu": [
+                    [6, 50, -1],
+                    [6, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones1 input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
+        
+        });
+        
+        
+        
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->noSubmit}
+            {$this->soloNumeros}
+            {$this->consultaServidor}
+            {$this->numeroLetras}
+            {$this->primeraMayuscula}
+            {$this->addParametro}
+            {$this->buscaCliente}
+            
+            
+        </script>
+script;
+
+
+        $fechaActual = date('Y-m-d');
+        $Inicial = $_GET['Inicial'];
+        $Final = $_GET['Final'];
+        $Operacion = $_GET['Operacion'];
+        $Producto = $_GET['Producto'];
+        $Sucursal = $_GET['Sucursal'];
+
+
+        $Transacciones = CajaAhorroDao::GetSolicitudesPendientesAdminAll();
+
+        foreach ($Transacciones as $key => $value) {
+
+            $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">
+                        <div>
+                            <b>CONTRATO:</b> {$value['CONTRATO']}
+                        </div>
+                        <div>
+                            <b>CLIENTE: </b>{$value['NOMBRE_CLIENTE']}
+                        </div>
+                    </td>
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 0px !important;">  
+                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                    </td>
+                </tr>
+html;
+        }
+
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporteria")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha', date('Y-m-d'));
+        view::set('sucursales', $opcSucursales);
+        View::set('tabla', $tabla);
+        View::render("caja_admin_solicitudes_retirar_efectivo_sucursal");
     }
 }
