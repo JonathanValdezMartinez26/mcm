@@ -1035,13 +1035,14 @@ class AdminSucursales extends Controller
                 $saldoFinal = ($saldoFinal ? $registro['SALDO'] : $saldoInicial - $registro['CARGO']);
             }
             foreach ($registro as $key2 => $celda) {
-                if ($key2 === "ABONO" || $key2 === "CARGO" || $key2 === "SALDO") {
-                    $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " .  number_format($celda, 2, '.', ',') . "</td>";
-                } elseif ($key2 === "DESCRIPCION") {
-                    $filas .= "<td style='vertical-align: middle; text-align: left;'>{$celda}</td>";
-                } else {
-                    $filas .= "<td style='vertical-align: middle;'>{$celda}</td>";
-                }
+                if ($key2 === "TIPO")
+                    if ($key2 === "ABONO" || $key2 === "CARGO" || $key2 === "SALDO") {
+                        $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " .  number_format($celda, 2, '.', ',') . "</td>";
+                    } elseif ($key2 === "DESCRIPCION") {
+                        $filas .= "<td style='vertical-align: middle; text-align: left;'>{$celda}</td>";
+                    } else {
+                        $filas .= "<td style='vertical-align: middle;'>{$celda}</td>";
+                    }
             }
             $filas .= "</tr>";
         }

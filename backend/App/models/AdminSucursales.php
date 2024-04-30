@@ -435,7 +435,7 @@ class AdminSucursales
         FROM (
             SELECT
                 TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
-                MA.CDG_TIPO_PAGO AS TIPO,
+                -- MA.CDG_TIPO_PAGO AS TIPO,
                 CONCAT(
                     (SELECT DESCRIPCION
                     FROM TIPO_PAGO_AHORRO

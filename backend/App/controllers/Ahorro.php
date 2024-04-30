@@ -2277,6 +2277,7 @@ class Ahorro extends Controller
             {$this->sinContrato}
             {$this->getHoy}
             {$this->soloNumeros}
+            {$this->consultaServidor}
          
             const limpiaDatosCliente = () => {
                 datosCliente = {}
