@@ -1297,34 +1297,30 @@ script;
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;"><span class="fa fa-barcode"></span> {$value['CDGTICKET_AHORRO']} </td>
                     <td style="padding: 0px !important;">
-                        <div style="margin-top: 5px;">
+                        <div style="text-align: left; margin-left: 10px; margin-top: 5px;">
                             <b>CONTRATO:</b> {$value['CONTRATO']}
                         </div>
-                        <div>
+                        <div style="text-align: left; margin-left: 10px;">
                             <b>CLIENTE: </b>{$value['NOMBRE_CLIENTE']}
                         </div>
                         
-                        <hr>
+                        <hr style="margin-bottom: 8px; margin-top: 8px;">
                         
-                         <div>
+                         <div style="text-align: left; margin-left: 10px;">
                             <b>MOTIVO: </b>{$value['MOTIVO']}
                         </div>
-                         <div >
+                         <div style="text-align: left; margin-left: 10px;">
+                            <b><span class="fa fa-female"></span> CAJERA QUE REALIZA SOLICITUD: </b>{$value['NOMBRE_CAJERA']}
+                        </div>
+                         <div style="text-align: left; margin-left: 10px;">
                             <b><span class="fa fa-female"></span> DESCRIPCION CAJERA: </b>{$value['DESCRIPCION_MOTIVO']}
                         </div>
-                        <div style="margin-bottom: 5px;">
+                        <div style="text-align: left; margin-left: 10px;">
                             <b><span class="fa fa-calendar-check-o"></span> FECHA DE SOLICITUD: </b>{$value['FREGISTRO']}
                         </div>
                         
                         
                     </td>
-                    <td style="padding: 0px !important;">
-                        {$value['CDGTICKET_AHORRO']}
-                         <div>
-                            {$value['MOTIVO']}
-                        </div>
-                    </td>
-                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
                     <td style="padding: 0px !important;">  
                         <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-check-circle"></i></button>
                         <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-close"></i></button>

@@ -122,8 +122,6 @@
                                                                                 <th>Cod Sucursal</th>
                                                                                 <th>Nombre Sucursal</th>
                                                                                 <th>Hora Cierre</th>
-                                                                                <th>Prorroga</th>
-                                                                                <th>Acciones</th>
                                                                             </tr>
                                                                             </thead>
                                                                             <tbody>
