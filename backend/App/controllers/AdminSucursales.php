@@ -188,6 +188,8 @@ class AdminSucursales extends Controller
         
         document.querySelector("#btnBskClnt").disabled = false
     }';
+    private $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/-[^0-9.]/g, "")) || 0';
+    private $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { style: "currency", currency: "MXN" })';
 
     function __construct()
     {
@@ -862,6 +864,8 @@ class AdminSucursales extends Controller
             {$this->primeraMayuscula}
             {$this->addParametro}
             {$this->buscaCliente}
+            {$this->parseaNumero}
+            {$this->formatoMoneda}
          
             const buscar = () => buscaCliente()
          
@@ -957,21 +961,6 @@ class AdminSucursales extends Controller
                 })
             }
              
-            actualizaTabla = () => {
-                const anio = document.querySelector("#anio").value
-                const mes = document.querySelector("#mes").value
-                const CONTRATO = infoCliente.CONTRATO
-                 
-                consultaServidor("/AdminSucursales/ListaMovimientos/", { anio, mes, CONTRATO },
-                    (res) => {
-                        const tTMP = $("#tablaResumenCta").DataTable()
-                        if (tTMP) tTMP.destroy()
-                        document.querySelector("#tablaResumenCta tbody").innerHTML = res
-                        configuraTabla()
-                    },
-                    "POST", "html")
-            }
-             
             $(document).ready(() => configuraTabla())
         </script>
         script;
@@ -984,9 +973,12 @@ class AdminSucursales extends Controller
         View::set('filas', $movimientos['filas']);
         View::set('conteoAbonos', $movimientos['conteoAbonos']);
         View::set('conteoCargos', $movimientos['conteoCargos']);
+        View::set('conteoTotal', $movimientos['conteoTotal']);
+        View::set('conteoTransferencias', $movimientos['conteoTransferencias']);
         View::set('montoAbonos', $movimientos['montoAbonos']);
         View::set('montoCargos', $movimientos['montoCargos']);
-        View::set('conteoTotal', $movimientos['conteoTotal']);
+        View::set('montoTransferencias', $movimientos['montoTransferencias']);
+        View::set('saldoFinal', $movimientos['saldoFinal']);
         View::set('filas', $movimientos['filas']);
         echo View::fetch("caja_admin_clientes_resumenCta");
     }
@@ -1000,15 +992,29 @@ class AdminSucursales extends Controller
         $montoCargos = 0;
         $montoAbonos = 0;
         $conteoTotal = 0;
-        $montoTotal = 0;
+        $conteoTransferencias = 0;
+        $montoTransferencias = 0;
+        $saldoFinal = null;
 
         $filas = "";
         foreach ($registros as $key => $registro) {
             $filas .= "<tr>";
+            $conteoTotal++;
+            $saldoFinal = $registro['SALDO'];
+            if ($registro['ABONO'] > 0) {
+                $conteoAbonos++;
+                $montoAbonos += $registro['ABONO'];
+            } else {
+                if ($registro['TIPO'] == 5) {
+                    $conteoTransferencias++;
+                    $montoTransferencias += $registro['CARGO'];
+                } else {
+                    $conteoCargos++;
+                    $montoCargos += $registro['CARGO'];
+                }
+            }
             foreach ($registro as $key2 => $celda) {
-                $conteoCargos += $key2 === "CARGO" ? 1 : 0;
-                $conteoAbonos += $key2 === "ABONO" ? 1 : 0;
-                $conteoTotal++;
+                if ($key2 === "TIPO") continue;
                 if ($key2 === "ABONO" || $key2 === "CARGO" || $key2 === "SALDO") {
                     $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " .  number_format($celda, 2, '.', ',') . "</td>";
                 } elseif ($key2 === "DESCRIPCION") {
@@ -1021,15 +1027,18 @@ class AdminSucursales extends Controller
         }
 
         $respuesta = [
-            "conteoCargos" => $conteoCargos,
             "conteoAbonos" => $conteoAbonos,
-            "montoCargos" => $montoCargos,
-            "montoAbonos" => $montoAbonos,
+            "conteoCargos" => $conteoCargos,
+            "conteoTransferencias" => $conteoTransferencias,
             "conteoTotal" => $conteoTotal,
-            "montoTotal" => $montoTotal,
+            "montoAbonos" => $montoAbonos,
+            "montoCargos" => $montoCargos,
+            "montoTransferencias" => $montoTransferencias,
+            "saldoFinal" => $saldoFinal,
             "filas" => $filas
         ];
-        if ($d !== null) return [$respuesta];
+
+        if ($d !== null) return $respuesta;
         echo json_encode($respuesta);
     }
 
