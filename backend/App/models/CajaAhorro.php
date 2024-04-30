@@ -561,6 +561,7 @@ class CajaAhorro
             $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
 
             if ($res) {
+                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco'], $_SESSION['usuario'], $datos['contrato'], "Depósito de apertura de cuenta de ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "Pago de apertura registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
@@ -1748,8 +1749,6 @@ sql;
             return array();
         }
     }
-
-
 }
 
 class LogTransaccionesAhorro

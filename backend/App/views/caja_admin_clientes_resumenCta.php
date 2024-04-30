@@ -45,13 +45,13 @@
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="totTrn">Total de retiros</label>
+                    <label for="totTrn">Total de inversiones</label>
                     <input class="form-control" id="totTrn" name="totTrn" value="<?= $conteoTransferencias ?>" disabled>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="montoTrn">Monto retirado</label>
+                    <label for="montoTrn">Monto invertido</label>
                     <input class="form-control" id="montoTrn" name="montoTrn" value="$<?= number_format($montoTransferencias, 2, '.', ','); ?>" disabled>
                 </div>
             </div>
