@@ -491,7 +491,7 @@ class Ahorro extends Controller
                     const noCredito = document.querySelector("#noCliente").value
                     const datosContrato = $("#registroInicialAhorro").serializeArray()
                     addParametro(datosContrato, "credito", noCredito)
-                    addParametro(datosContrato, "sucursal", "{$_SESSION['cdgco']}")
+                    addParametro(datosContrato, "ejecutivo", "{$_SESSION['usuario']}")
                      
                     if (document.querySelector("#contrato").value !== "") return regPago(document.querySelector("#contrato").value)
                     
