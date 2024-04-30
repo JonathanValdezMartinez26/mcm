@@ -94,7 +94,7 @@ html;
               <span><b>PERFIL:</b> <span class="fa fa-key"></span> {$perfil}</span>
               
 html;
-    
+
           $menu .= <<<html
             </div>
           </div>
@@ -103,14 +103,20 @@ html;
 html;
 
 
-    if ($permiso_ahorro == '1') {
+    if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR'|| $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'GASC') {
       $menu .= <<<html
            <hr>
            <h3>General WEB AHORRO </h3>
             <ul class="nav side-menu">     
+html;
+
+        if ($permiso_ahorro == '1') {
+            $menu .= <<<html
                 <li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
         
 html;
+
+
     }
 
       if ( $this->__usuario == 'AMGM' || $this->__usuario == 'LGFR'|| $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'GASC') {
