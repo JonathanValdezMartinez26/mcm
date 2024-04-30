@@ -184,18 +184,17 @@
                                                 <div class="form-group">
                                                     <label for="Fecha">Sucursal *</label>
                                                     <select class="form-control mr-sm-3" id="sucursal" name="sucursal" disabled>
-                                                        <?php echo $sucursales; ?>
+                                                        <?= $sucursales; ?>
                                                     </select>
                                                 </div>
                                             </div>
 
                                             <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <label for="nombre_ejecutivo">Comisión ejecutivo *</label>
-                                                    <select class="form-control mr-sm-3" id="nombre_ejecutivo" name="nombre_ejecutivo" readonly>
-                                                        <?php echo $ejecutivos; ?>
+                                                    <label for="ejecutivo_comision">Comisión ejecutivo *</label>
+                                                    <select class="form-control mr-sm-3" id="ejecutivo_comision" name="ejecutivo_comision" readonly>
+                                                        <?= $ejecutivos; ?>
                                                     </select>
-
                                                 </div>
                                             </div>
 

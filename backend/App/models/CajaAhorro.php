@@ -86,7 +86,7 @@ class CajaAhorro
         INNER JOIN CO ON CO.CODIGO = SUC_ESTADO_AHORRO.CDG_SUCURSAL 
         $var
         ORDER BY CO.CODIGO
-sql;
+        sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -440,9 +440,9 @@ sql;
 
             $query = <<<sql
             INSERT INTO ASIGNA_PROD_AHORRO
-                (CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, SALDO)
+                (CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, SALDO, TASA, CDGCO, CDGPE_COMISIONA, CDGPE_REGISTRO)
             VALUES
-                (:contrato, :cliente, :fecha_apertura, '1', 'A', 0)
+                (:contrato, :cliente, :fecha_apertura, '1', 'A', 0, :tasa, :sucursal, :ejecutivo_comisiona, :ejecutivo_registro)
             sql;
 
             $queryBen = <<<sql
@@ -459,7 +459,11 @@ sql;
                 [
                     'contrato' => $noContrato,
                     'cliente' => $datos['credito'],
-                    'fecha_apertura' => $fecha
+                    'fecha_apertura' => $fecha,
+                    'tasa' => $datos['tasa'],
+                    'sucursal' => $datos['sucursal'],
+                    'ejecutivo_comisiona' => $datos['ejecutivo_comision'],
+                    'ejecutivo_registro' => $datos['ejecutivo'],
                 ]
             ];
 
