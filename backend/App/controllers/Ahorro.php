@@ -933,6 +933,7 @@ class Ahorro extends Controller
                 limpiaMontos(datos, ["saldoActual", "montoOperacion", "saldoFinal"])
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
+                addParametro(datos, "producto", "cuenta de ahorro corriente")
                  
                 if (!document.querySelector("#deposito").checked && !document.querySelector("#retiro").checked) return showError("Seleccione el tipo de operación a realizar.")
                 
@@ -950,15 +951,15 @@ class Ahorro extends Controller
                 ).then((continuar) => {
                     if (!continuar) return
                     consultaServidor("/Ahorro/RegistraOperacion/", $.param(datos), (respuesta) => {
-                            if (!respuesta.success){
-                                console.log(respuesta.error)
-                                return showError(respuesta.mensaje)
-                            }
-                            showSuccess(respuesta.mensaje).then(() => {
-                                imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
-                                limpiaDatosCliente()
-                            })
+                        if (!respuesta.success){
+                            console.log(respuesta.error)
+                            return showError(respuesta.mensaje)
+                        }
+                        showSuccess(respuesta.mensaje).then(() => {
+                            imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
+                            limpiaDatosCliente()
                         })
+                    })
                 })
             }
         </script>
@@ -2093,6 +2094,7 @@ class Ahorro extends Controller
                 limpiaMontos(datos, ["saldoActual", "montoOperacion", "saldoFinal"])
                 addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
+                addParametro(datos, "producto", "cuenta de ahorro Peques")
                  
                 if (!document.querySelector("#deposito").checked && !document.querySelector("#retiro").checked) {
                     return showError("Seleccione el tipo de operación a realizar.")

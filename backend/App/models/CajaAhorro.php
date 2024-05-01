@@ -5,6 +5,7 @@ namespace App\models;
 defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
+use \App\models\LogTransaccionesAhorro;
 use Exception;
 use DateTime;
 
@@ -506,7 +507,7 @@ class CajaAhorro
                 $mysqli = Database::getInstance();
                 $res = $mysqli->insertaMultiple($inserts, $datosInsert);
                 if ($res) {
-                    LogTransaccionesAhorro::LogTransacciones($inserts, $datosInsert, $_SESSION['cdgco'], $_SESSION['usuario'], $noContrato, "Nuevo contrato ahorro corriente");
+                    LogTransaccionesAhorro::LogTransacciones($inserts, $datosInsert, $_SESSION['cdgco'], $_SESSION['usuario'], $noContrato, "Registro de nuevo contrato ahorro corriente");
                     return self::Responde(true, "Contrato de ahorro registrado correctamente.", ['contrato' => $noContrato]);
                 }
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.");
@@ -601,6 +602,7 @@ class CajaAhorro
             $mysqli = Database::getInstance();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
+                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco'], $_SESSION['usuario'], $datos['contrato'], "Registro de " . $tipoMov . " en " . $datos['producto']);
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "El " . $tipoMov . " fue registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
@@ -1028,6 +1030,7 @@ class CajaAhorro
             try {
                 $mysqli = Database::getInstance();
                 $res = $mysqli->insertaMultiple($inserts, $parametros);
+                LogTransaccionesAhorro::LogTransacciones($inserts, $parametros, $_SESSION['cdgco'], $_SESSION['usuario'], $noContrato, "Registro de nueva cuenta de ahorro Peque");
                 if ($res) return self::Responde(true, "Contrato de ahorro registrado correctamente.", ['contrato' => $noContrato]);
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.");
             } catch (Exception $e) {
@@ -1143,6 +1146,7 @@ class CajaAhorro
             $mysqli = Database::getInstance();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
+                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco'], $_SESSION['usuario'], $datos['contrato'], "Registro de inversión de cuenta ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "Inversión registrada correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
@@ -1312,6 +1316,7 @@ class CajaAhorro
             $mysqli = Database::getInstance();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
+                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco'], $_SESSION['usuario'], $datos['contrato'], "Registro de solicitud de retiro " . $tipoMov . " de cuenta de ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "El retiro " . $tipoMov . " fue registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
@@ -1668,6 +1673,7 @@ class CajaAhorro
             return ['MONTO_MINIMO' => 300, 'MONTO_MAXIMO' => 10000];
         }
     }
+
     public static function GetAllTransacciones($usuario)
     {
         if ($usuario == '') {
@@ -1748,78 +1754,5 @@ sql;
         } catch (Exception $e) {
             return array();
         }
-    }
-}
-
-class LogTransaccionesAhorro
-{
-    public function BindingQuery($qry, $parametros = null)
-    {
-        if ($parametros) {
-            foreach ($parametros as $parametro => $valor)
-                $qry = str_replace(":" . $parametro, "'" . $valor . "'", $qry);
-        }
-
-        return $qry;
-    }
-
-    public static function LogTransaccion($datos)
-    {
-        $qry = <<<sql
-        INSERT INTO LOG_TRANSACCIONES_AHORRO (
-            ID_TRANSACCION,
-            FECHA_TRANSACCION,
-            QUERY_TRANSACCION,
-            SUCURSAL,
-            USUARIO,
-            CONTRATO,
-            MODULO,
-            TIPO
-        )
-        VALUES (
-            (SELECT NVL(MAX(TO_NUMBER(ID_TRANSACCION)),0) FROM LOG_TRANSACCIONES_AHORRO) + 1,
-            SYSDATE,
-            :query,
-            :sucursal,
-            :usuario,
-            :contrato,
-            :modulo,
-            :tipo_transaccion
-        )
-        sql;
-
-        $parametros = [
-            'query' => self::BindingQuery($datos['query'], $datos['parametros']),
-            'sucursal' => $datos['sucursal'],
-            'usuario' => $datos['usuario'],
-            'contrato' => $datos['contrato'],
-            'modulo' => $datos['modulo'],
-            'tipo_transaccion' => $datos['tipo']
-        ];
-
-        try {
-            $db = Database::getInstance();
-            $db->insertar($qry, $parametros);
-            return [$qry, $parametros];
-        } catch (Exception $e) {
-            return $e->getMessage();
-        }
-    }
-
-
-    public static function LogTransacciones($qyrs, $parametros, $sucursal, $usuario, $contrato, $tipo)
-    {
-        $tmp = [];
-        foreach ($qyrs as $qry => $q) {
-            $log['query'] = $q;
-            $log['parametros'] = $parametros[$qry];
-            $log['sucursal'] = $sucursal;
-            $log['usuario'] = $usuario;
-            $log['contrato'] = $contrato;
-            $log['modulo'] = debug_backtrace()[1]['function'];
-            $log['tipo'] = $tipo;
-            $tmp[] = self::LogTransaccion($log);
-        }
-        return $tmp;
     }
 }
