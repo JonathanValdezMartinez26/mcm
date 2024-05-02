@@ -120,7 +120,7 @@ html;
 
     }
 
-      if ( $this->__usuario == 'AMGM' || $this->__usuario == 'LGFR'|| $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'GASC' || $this->__usuario == 'PHEE' ) {
+      if ( $this->__usuario == 'AMGM' || $this->__usuario == 'LGFR'|| $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'PHEE' ) {
           $menu .= <<<html
                 <li><a href="/AdminSucursales/SaldosDiarios/"><i class="glyphicon glyphicon-paste"> </i>&nbsp; Admin Sucursales </a> </li>
              </ul>

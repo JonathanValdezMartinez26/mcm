@@ -1368,8 +1368,8 @@ script;
                         
                     </td>
                     <td style="padding: 10px!important;">  
-                        <button type="button" class="btn btn-success btn-circle" onclick="ReimpresionEstatus('1','{{$value['CODIGO_REIMPRIME']}}')"><i class="fa fa-check-circle"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="ReimpresionEstatus('2','{{$value['CODIGO_REIMPRIME']}}');"><i class="fa fa-close"></i></button>
+                        <button type="button" class="btn btn-success btn-circle" onclick="ReimpresionEstatus('1','{$value['CODIGO_REIMPRIME']}')"><i class="fa fa-check-circle"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="ReimpresionEstatus('2','{$value['CODIGO_REIMPRIME']}');"><i class="fa fa-close"></i></button>
                     </td>
                 </tr>
 html;
