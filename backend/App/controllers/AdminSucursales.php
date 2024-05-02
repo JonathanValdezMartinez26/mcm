@@ -1209,8 +1209,8 @@ script;
             $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
                   "lengthMenu": [
-                    [2, 50, -1],
-                    [2, 50, 'Todos'],
+                    [3, 50, -1],
+                    [3, 50, 'Todos'],
                 ],
                 "columnDefs": [{
                     "orderable": false,
@@ -1263,7 +1263,54 @@ script;
         
         });
         
-        
+         
+         function ReimpresionEstatus(valor, ticket)
+         {
+             if(valor == 1)
+                 {
+                      accion = 'AUTORIZAR';
+                 }
+             else if(valor == 2)
+                 {
+                      accion = 'RECHAZAR';
+                 }
+                 
+                 swal({
+                         title: "¿Está segur(a) de " + accion +" la solicitud de reimpresión del ticket?",
+                         text: 'No podrá deshacer está acción. ',
+                         icon: "warning",
+                         buttons: ["Cancelar", "Continuar"],
+                         dangerMode: false
+                         })
+                         .then((willDelete) => {
+                         if (willDelete) {
+                                     
+                          $.ajax({
+                                type: 'POST',
+                                url: '/AdminSucursal/TicketSolicitudUpdate/',
+                                data: 'valor='+valor+'&ticket='+ticket,
+                                success: function(respuesta) {
+                                     if(respuesta=='1'){
+                                     swal("Registro guardado exitosamente", {
+                                                  icon: "success",
+                                                });
+                                     location.reload();
+                                    }
+                                    else {
+                                    $('#modal_encuesta_cliente').modal('hide')
+                                     swal(respuesta, {
+                                                  icon: "error",
+                                                });
+                                                  
+                                                }
+                                            }
+                                            });
+                                  }
+                                });
+                         
+             
+             
+         }
         
             {$this->showError}
             {$this->showSuccess}
@@ -1295,7 +1342,7 @@ script;
 
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;"><span class="fa fa-barcode"></span> {$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 15px !important;"><span class="fa fa-barcode"></span> {$value['CDGTICKET_AHORRO']} </td>
                     <td style="padding: 0px !important;">
                         <div style="text-align: left; margin-left: 10px; margin-top: 5px;">
                             <b>CONTRATO:</b> {$value['CONTRATO']}
@@ -1317,12 +1364,12 @@ script;
                         </div>
                         <div style="text-align: left; margin-left: 10px;">
                             <b><span class="fa fa-calendar-check-o"></span> FECHA DE SOLICITUD: </b>{$value['FREGISTRO']}
-                        </div>
+                        </div> 
                         
                     </td>
-                    <td style="padding: 0px!important; margin-top: 5px;">  
-                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-check-circle"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-close"></i></button>
+                    <td style="padding: 10px!important;">  
+                        <button type="button" class="btn btn-success btn-circle" onclick="ReimpresionEstatus('1','{{$value['CODIGO_REIMPRIME']}}')"><i class="fa fa-check-circle"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="ReimpresionEstatus('2','{{$value['CODIGO_REIMPRIME']}}');"><i class="fa fa-close"></i></button>
                     </td>
                 </tr>
 html;
@@ -1885,5 +1932,16 @@ html;
         view::set('sucursales', $opcSucursales);
         View::set('tabla', $tabla);
         View::render("caja_admin_solicitudes_retirar_efectivo_sucursal");
+    }
+
+    public function TicketSolicitudUpdate()
+    {
+        $pagos = new \stdClass();
+
+        $pagos->_valor = MasterDom::getDataAll('secuencia_e');
+        $pagos->_ejecutivo = MasterDom::getData('ejecutivo_e');
+
+        $id = PagosDao::EditProcedure($pagos);
+        return $id;
     }
 }

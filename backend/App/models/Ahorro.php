@@ -81,9 +81,11 @@ sql;
             AND AUTORIZA = '0'
 sql;
 
+        //var_dump($query_consulta_existe_sol);
 
         $mysqli = Database::getInstance(1);
         $res = $mysqli->queryOne($query_consulta_existe_sol);
+
 
 
         if($res['EXISTE'] == 0)
@@ -92,19 +94,15 @@ sql;
             $query=<<<sql
         INSERT INTO ESIACOM.TICKETS_AHORRO_REIMPRIME
         (CODIGO, CDGTICKET_AHORRO, FREGISTRO, FREIMPRESION, MOTIVO, ESTATUS, CDGPE_SOLICITA, CDGPE_AUTORIZA, AUTORIZA, DESCRIPCION_MOTIVO, FAUTORIZA, AUTORIZA_CLIENTE)
-        VALUES('1', '$solicitud->_folio', TIMESTAMP '2024-03-15 15:21:09.000000', TIMESTAMP '2024-03-15 15:21:09.000000', '$solicitud->_motivo', '1', '$solicitud->_cdgpe', '', '0', '$solicitud->_descripcion', TIMESTAMP '2024-03-15 15:21:09.000000', '0')
+        VALUES(SEC_TICKET_REIMPRIME.NEXTVAL, '$solicitud->_folio', CURRENT_TIMESTAMP, '', '$solicitud->_motivo', '0', '$solicitud->_cdgpe', '', '0', '$solicitud->_descripcion', NULL , '0')
 sql;
 
             return $mysqli->insert($query);
         }
         else
         {
-            echo "Ya solicitaste la reimpresión de este ticket, espere a su validacion o contacta a tesorería.";
+            echo "Ya solicito la reimpresión de este ticket, espere a su validacion o contacte a tesorería.";
         }
-
-
-
-
 
     }
 
