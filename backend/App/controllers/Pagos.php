@@ -314,8 +314,8 @@ html;
 html;
                         } else {
                             $editar = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
+                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
 html;
                         }
                     }
@@ -2014,17 +2014,17 @@ html;
 
         if ($horaActual <= $hora_cierre) {
             if ($dia == 1) {
-                $date_past = strtotime('-4 days', strtotime($fechaActual));
+                $date_past = strtotime('-3 days', strtotime($fechaActual));
                 $date_past = date('Y-m-d', $date_past);
             } else {
                 if ($fue_dia_festivo == 1 && $dia == 2) {
                     $date_past = strtotime('-4 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 } else if ($fue_dia_festivo == 1 && $dia != 2) {
-                    $date_past = strtotime('-3 days', strtotime($fechaActual));
+                    $date_past = strtotime('-2 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 } else {
-                    $date_past = strtotime('-2 days', strtotime($fechaActual));
+                    $date_past = strtotime('-1 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 }
             }
