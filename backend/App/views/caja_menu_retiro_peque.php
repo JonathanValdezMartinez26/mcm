@@ -106,10 +106,11 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-5">
                                     <div class="form-group">
-                                        <label for="nombre">Nombre del cliente</label>
-                                        <input type="text" class="form-control" id="nombre" name="nombre" readonly>
+                                        <label for="contrato">Nombre del cliente peque *</label>
+                                        <select class="form-control" id="contrato" name="contrato" disabled>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -118,32 +119,32 @@
                                         <input type="text" class="form-control" id="curp" name="curp" readonly>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4" style="display: none;">
                                     <div class="form-group">
-                                        <label for="fecha_retiro">Fecha del retiro</label>
-                                        <input type="text" class="form-control" id="fecha_retiro" name="fecha_retiro" value="<?= $fecha; ?>" readonly>
-                                        <input type="date" class="form-control" id="fecha_retiro_hide" name="fecha_retiro_sel" style="display: none" min="<?= $fechaInput; ?>" max="<?= $fechaInputMax; ?>" value="<?= $fechaInput; ?>" oninput=pasaFecha(event) />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="contrato">Número de contrato</label>
-                                        <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
+                                        <label for="nombre_ejecutivo">Nombre de la cajera que captura el pago</label>
+                                        <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="<?= $_SESSION['nombre'] ?>" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="cliente">Código de cliente SICAFIN</label>
+                                        <label for="nombre">Contrato del peque</label>
+                                        <input type="text" class="form-control" id="nombre" name="nombre" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="cliente">Código de cliente SICAFIN (Tutor)</label>
                                         <input type="number" class="form-control" id="cliente" name="cliente" readonly>
                                     </div>
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="nombre_ejecutivo">Nombre del ejecutivo</label>
-                                        <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="<?= $_SESSION['nombre'] ?>" readonly>
+                                        <label for="fecha_pago">Fecha del movimiento</label>
+                                        <input type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?= $fecha; ?>" readonly>
                                     </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <hr>
                                 </div>
                             </div>
                             <div class="row">
