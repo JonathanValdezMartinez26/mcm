@@ -124,7 +124,6 @@
                                                         <div class="form-group">
                                                             <label for="nombre_ejecutivo">Nombre de la cajera que captura el pago</label>
                                                             <input type="text" class="form-control" id="nombre_ejecutivo" name="nombre_ejecutivo" value="<?= $_SESSION['nombre'] ?>" readonly>
-                                                            <input type="hidden" class="form-control" id="ejecutivo" name="ejecutivo" value="SOOA">
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
@@ -133,10 +132,9 @@
                                                             <input type="text" class="form-control" id="nombre" name="nombre" readonly>
                                                         </div>
                                                     </div>
-
                                                     <div class="col-md-3">
                                                         <div class="form-group">
-                                                            <label for="cliente">Código de cliente Tutor - SICAFIN</label>
+                                                            <label for="cliente">Código de cliente SICAFIN (Tutor)</label>
                                                             <input type="number" class="form-control" id="cliente" name="cliente" readonly>
                                                         </div>
                                                     </div>
