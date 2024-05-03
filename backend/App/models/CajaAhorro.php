@@ -1740,7 +1740,8 @@ class CajaAhorro
         INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
         INNER JOIN PE p ON p.CODIGO = tar.CDGPE_SOLICITA 
         INNER JOIN PE pp ON pp.CODIGO = tar.CDGPE_AUTORIZA 
-        WHERE p.CDGEM = 'EMPFIN' 
+        WHERE p.CDGEM = 'EMPFIN'
+        AND  pp.CDGEM = 'EMPFIN'
         AND tar.AUTORIZA != '0'
         ORDER BY tar.FREGISTRO
 
@@ -1865,6 +1866,19 @@ sql;
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar el arqueo.", null, $e->getMessage());
         }
+
+    }
+
+    public static function GetModuloAhorroPermisos($update, $user)
+    {
+        $query = <<<sql
+        UPDATE ESIACOM.TICKETS_AHORRO_REIMPRIME
+        SET CDGPE_AUTORIZA='$user', AUTORIZA= '$update->_valor', FAUTORIZA=CURRENT_TIMESTAMP
+        WHERE CODIGO = $update->_ticket
+sql;
+
+        $mysqli = Database::getInstance();
+        return $mysqli->insert($query);
 
     }
 }

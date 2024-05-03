@@ -67,10 +67,11 @@ sql;
         );
 
         $query_ahorro = <<<sql
-        SELECT  '1' as PERMISO
+        SELECT  '1' as PERMISO, SUC_ESTADO_AHORRO.CDG_SUCURSAL  AS CDGCO_AHORRO
         FROM
             SUC_CAJERA_AHORRO
-        WHERE CDG_USUARIO = :usuario
+        INNER JOIN SUC_ESTADO_AHORRO ON CDG_ESTADO_AHORRO = CODIGO
+        WHERE SUC_CAJERA_AHORRO.CDG_USUARIO = :usuario
 
 sql;
 

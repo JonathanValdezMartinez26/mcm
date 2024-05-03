@@ -62,10 +62,10 @@
                                 <li><a href="">
                                         <p style="font-size: 16px;"><b>Activar Modulo en Sucursal</b></p>
                                     </a></li>
-                                <li class="linea"><a href="/AdminSucursales/ArqueoSucursal/">
+                                <li class="linea"><a href="/AdminSucursales/ConfiguracionUsuarios/">
                                         <p style="font-size: 15px;">Permisos a Usuarios</p>
                                     </a></li>
-                                <li class="linea"><a href="/AdminSucursales/Parametros/">
+                                <li class="linea"><a href="/AdminSucursales/ConfiguracionParametros/">
                                         <p style="font-size: 15px;">Parámetros de Operación</p>
                                     </a></li>
                             </ul>

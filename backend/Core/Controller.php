@@ -13,6 +13,7 @@ class Controller
     public $__nombre = '';
     public $__puesto = '';
     public $__cdgco = '';
+    public $__cdgco_ahorro = '';
     public $__perfil = '';
 
     public function __construct()
@@ -31,6 +32,7 @@ class Controller
             $this->__cdgco = $_SESSION['cdgco'];
             $this->__perfil = $_SESSION['perfil'];
             $this->__ahorro = $_SESSION['ahorro'];
+            $this->__cdgco_ahorro = $_SESSION['cdgco_ahorro'];
         }
     }
 
@@ -40,7 +42,7 @@ class Controller
             return <<<html
             <title>$titulo</title>
             <link rel="shortcut icon" href="/img/logo.png">
-            html;
+html;
         } else {
             $html = '<title>' . $titulo . '</title>';
             $html .= '<link rel="shortcut icon" href="/img/logo.png">';
