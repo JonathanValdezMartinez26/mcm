@@ -59,14 +59,15 @@
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
+                                <li class="linea"><a href="/AdminSucursales/Configuracion/">
+                                        <p style="font-size: 15px;">Activar Modulo en Sucursal</p>
+                                    </a></li>
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Activar modulo en sucursal</b></p>
+                                        <p style="font-size: 16px;"><b>Permisos a Usuarios</b></p>
                                     </a></li>
-                                <li class="linea"><a href="/AdminSucursales/ConfiguracionUsuarios/">
-                                        <p style="font-size: 15px;">Permisos a usuarios</p>
-                                    </a></li>
+
                                 <li class="linea"><a href="/AdminSucursales/ConfiguracionParametros/">
-                                        <p style="font-size: 15px;">Parámetros de operación</p>
+                                        <p style="font-size: 15px;">Parámetros de Operación</p>
                                     </a></li>
                             </ul>
                         </div>
@@ -112,37 +113,27 @@
 
 <!-- <div class="modal fade in" id="modal_agregar_horario" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block; padding-right: 15px;"> -->
 <div class="modal fade" id="modal_agregar_horario" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <center>
-                    <h4 class="modal-title" id="myModalLabel">Activar Modulo de Ahorro para Sucursal</h4>
+                    <h4 class="modal-title" id="myModalLabel">Permisos Modulo Administración Ahorro</h4>
                 </center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
                     <form id="datos" onsubmit=noSUBMIT(event)>
                         <div class="row">
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label for="fecha_registro">Fecha de Registro</label>
-                                    <input class="form-control" id="fecha_registro" name="fecha_registro" readonly value="<?= $fecha; ?>">
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="form-group">
-                                    <label for="sucursal">Sucursal *</label>
-                                    <select class="form-control" id="sucursal" name="sucursal" onchange=cambioSucursal()>
-                                        <?= $opcSucursales; ?>
-                                    </select>
-                                </div>
+                            <div class="col-md-12">
+                                <p>Selecciona las opciones a las que te gustaria dar acceso a sus colaboradores</p>
+                                <hr>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="sucursal">Cajera *</label>
+                                    <label for="sucursal">Colaborador Administrativo MCM *</label>
                                     <select class="form-control" id="cajera" name="cajera" onchange=cambioCajera() disabled>
                                     </select>
                                 </div>
@@ -151,51 +142,105 @@
                         <hr>
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Horario de Apertura *</label>
-                                    <select class="form-control" id="horaA" name="horaA" disabled>
-                                        <option value="09:00:00">09:00 a.m</option>
-                                        <option value="10:00:00">10:00 a.m</option>
-                                        <option value="11:00:00">11:00 a.m</option>
-                                    </select>
+                                <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 19px;">
+                                    <label for="sucursal">SALDOS DE SUCURSALES</label>
+                                    <hr>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Saldos del día por sucursal</label>
+
+                                    <br>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Cierre de día</label>
+
+                                    <br>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Fondear sucursal</label>
+
+                                    <br>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Retiro efectivo</label>
+
+                                    <br>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Historail saldos por sucursal</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="horaC">Horario de Cierre *</label>
-                                    <select class="form-control" id="horaC" name="horaC" disabled>
-                                        <option value="15:00:00">03:00 p.m</option>
-                                        <option value="16:00:00">04:00 p.m</option>
-                                        <option value="17:00:00">05:00 p.m</option>
-                                    </select>
+                                <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 19px;">
+                                    <label for="sucursal">SOLICITUDES</label>
+                                    <hr>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Reimpresión de tickets</label>
+
+                                    <br>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Resumen de movimientos</label>
+
+                                    <br>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Retiros ordinarios</label>
+
+                                    <br>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Retiros express</label>
+
+                                    <br>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Retirar efectivo de caja</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 128px!important;">
+                                    <label for="sucursal">CATÁLOGO DE CLIENTES</label>
+                                    <hr>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Catálogo de clientes</label>
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <small id="emailHelp" class="form-text text-muted"><b>ATENCIÓN:</b> La cajera no tendrá acceso antes del horario de apertura y después del horario de cierre solo podrá acceder al arqueo y cierre de día.</small>
+                                <hr>
                             </div>
                         </div>
-                        <div class="row" style="margin-top:20px">
+                        <div class="row">
                             <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="montoMin">Monto mínimo en caja *</label>
-                                    <input type="number" class="form-control" id="montoMin" name="montoMin" placeholder="0.00" min="0" max="100000" onkeydown=soloNumeros(event) onblur=validaMaxMin() oninput=cambioMonto() disabled />
+                                <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 128px;">
+                                    <label for="sucursal">LOG TRANSACCIONAL</label>
+                                    <hr>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Log transaccional</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="hora">Monto máximo en caja *</label>
-                                    <input type="number" class="form-control" id="montoMax" name="montoMax" placeholder="0.00" min="0" max="100000" onkeydown=soloNumeros(event) onblur=validaMaxMin() oninput=cambioMonto() onchange=cambioMonto() disabled />
+                                <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 73px;">
+                                    <label for="sucursal">CONFIGURAR MÓDULO</label>
+                                    <hr>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Activar módulo en sucursal</label>
+
+                                    <br>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Permisos a usuarios</label>
+
+                                    <br>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Parámetros de operación</label>
+
                                 </div>
                             </div>
-                            <div class="col-md-12">
-                                <small id="emailHelp" class="form-text text-muted"><b>ATENCIÓN:</b> La cajera no podrá realizar retiros una vez que el monto este en el mínimo, solo podrá realizar retiros express, que deben ser aprobados por tesorería.</small>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top:20px">
                             <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="saldo">Saldo inicial *</label>
-                                    <input type="number" class="form-control" id="saldo" name="saldo" placeholder="0.00" min="0" max="500000" onkeydown=soloNumeros(event) onblur=validaMaxMin() oninput=cambioMonto() disabled />
+                                <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 73px;">
+                                    <label for="sucursal">CONSULTAR REPORTES</label>
+                                    <hr>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Hostorial de transacciones</label>
+
+                                    <br>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Historial fondeo sucursal</label>
+
+                                    <br>
+                                    <input name="hobby" type="checkbox" value="MoBa"  />
+                                    <label for="hobby">Historial retiro sucursal</label>
                                 </div>
                             </div>
                         </div>
@@ -227,8 +272,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="codSucMontos">Código Sucursal</label>
-                                    <input name="codSucMontos" id="codSucMontos" class="form-control" readonly />
-                                    <input name="codigo" id="codigo" class="form-control" type="hidden" />
+                                    <input name="codSucMontos" id="codSucMontos" class="form-control" readonly>
                                 </div>
                             </div>
                             <div class="col-md-8">
