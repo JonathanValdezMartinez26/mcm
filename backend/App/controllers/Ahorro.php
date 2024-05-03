@@ -66,6 +66,8 @@ class Ahorro extends Controller
             e.key !== "Delete" &&
             e.key !== "ArrowLeft" &&
             e.key !== "ArrowRight" &&
+            e.key !== "ArrowUp" &&
+            e.key !== "ArrowDown" &&
             e.key !== "Tab"
         ) e.preventDefault()
         if (e.key === "." && e.target.value.includes(".")) e.preventDefault()
@@ -286,6 +288,30 @@ class Ahorro extends Controller
             if (campos.includes(dato.name)) {
                 dato.value = parseaNumero(dato.value)
             }
+        })
+    }';
+    private $noSubmit = 'const noSUBMIT = (e) => e.preventDefault()';
+    private $configuraTabla = 'const configuraTabla = (id) => {
+        $("#" + id).tablesorter()
+        $("#" + id).DataTable({
+            lengthMenu: [
+                [10, 40, -1],
+                [10, 40, "Todos"]
+            ],
+            columnDefs: [
+                {
+                    orderable: false,
+                    targets: 0
+                }
+            ],
+            order: false
+        })
+
+        $("#"  + id + " input[type=search]").keyup(() => {
+            $("#example")
+                .DataTable()
+                .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
+                .draw()
         })
     }';
 
@@ -2414,76 +2440,190 @@ class Ahorro extends Controller
     // Muestra un reporte para el segimiento de los saldos en caja
     public function SaldosDia()
     {
-        $saldoInicial = 65493.52;
         $entradas = 0;
         $salidas = 0;
 
         $extraFooter = <<<html
         <script>
-            $(document).ready(() => {
-                $("#muestra-cupones").tablesorter()
-                $("#muestra-cupones").DataTable({
-                    lengthMenu: [
-                        [10, 40, -1],
-                        [10, 40, "Todos"]
-                    ],
-                    columnDefs: [
-                        {
-                            orderable: false,
-                            targets: 0
-                        }
-                    ],
-                    order: false
-                })
-            
-                $("#muestra-cupones input[type=search]").keyup(() => {
-                    $("#example")
-                        .DataTable()
-                        .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
-                        .draw()
-                })
-            })
+            {$this->noSubmit}
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->confirmarMovimiento}
+            {$this->getHoy}
+            {$this->soloNumeros}
+            {$this->numeroLetras}
+            {$this->primeraMayuscula}
+            {$this->addParametro}
+            {$this->parseaNumero}
+            {$this->formatoMoneda}
+            {$this->limpiaMontos}
+            {$this->consultaServidor}
+            {$this->configuraTabla}
+         
+            $(document).ready(() => configuraTabla("tblArqueos"))
              
-            const imprimeExcel = () => {
-                window.location.href = "/Ahorro/ExportaExcel/"
+            const imprimeExcel = () => window.location.href = "/Ahorro/ExportaExcel/"
+             
+            const mostrarModal = () => {
+                document.querySelector("#frmModal").reset()
+                $("#modalArqueo").modal("show")
+                $("#fechaArqueo").val(getHoy())
+            }
+         
+            const calculaTotal = (e) => {
+                const id = e.target.id.replace("cant", "")
+                if (!id) return
+                 
+                const maximo = e.target.max
+                let cantidad = parseaNumero(e.target.value)
+                if (cantidad > maximo) {
+                    e.preventDefault()
+                    e.target.value = maximo
+                    cantidad = maximo
+                }
+                 
+                const valor = parseaNumero(id.substring(0, 1) === "0" ? id.replace("0", ".", 1) : id)
+                document.querySelector("#total" + id).value = formatoMoneda(cantidad * valor)
+                
+                const totalEfectivo = Array.from(document.querySelectorAll(".efectivo")).reduce((total, input) => total + parseaNumero(input.value), 0)
+                
+                document.querySelector("#totalEfectivo").value = formatoMoneda(totalEfectivo)
+                document.querySelector("#btnRegistrarArqueo").disabled = !(totalEfectivo >= 1000)
+            }
+             
+            const registraArqueo = () => {
+                const totalEfectivo = parseaNumero(document.querySelector("#totalEfectivo").value)
+                if (totalEfectivo < 1000) return showError("El total de efectivo debe ser mayor o igual a $1,000.00")
+                
+                confirmarMovimiento(
+                    "Confirmación de arqueo de caja",
+                    "¿Está segur(a) de continuar con el registro del arqueo de caja?"
+                ).then((continuar) => {
+                    if (!continuar) return
+                     
+                    const datos = []
+                    addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                    addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
+                    addParametro(datos, "monto", totalEfectivo)
+                     
+                    addCantidades(datos, "billete")
+                    addCantidades(datos, "moneda")
+                     
+                    consultaServidor("/Ahorro/RegistraArqueo/", $.param(datos), (respuesta) => {
+                            if (!respuesta.success) {
+                                console.log(respuesta.error)
+                                return showError(respuesta.mensaje)
+                            }
+                             
+                            showSuccess(respuesta.mensaje).then(() => {
+                                $("#modalArqueo").modal("hide")
+                                document.querySelector("#frmModal").reset()
+                            })
+                        })
+                })
+                 
+                const addCantidades = (datos, tipo) => {
+                    const t = tipo === "billete" ? "b" : "m"
+                     
+                    Array.from(document.querySelectorAll("." + tipo)).forEach((input) => {
+                        const id = input.id.replace("cant", "")
+                        if (!id) return
+                        const cantidad = parseaNumero(input.value)
+                        addParametro(datos, t + "_" + id, cantidad)
+                    })
+                }
             }
         </script>
         html;
 
-        $detalles = CajaAhorroDao::DetalleMovimientosXdia();
+        $d = CajaAhorroDao::HistoricoArqueo(["fecha_inicio" => date('Y-m-d', strtotime('-7 day')), "fecha_fin" => date('Y-m-d')], "sucursal", $_SESSION['cdgco'], "ejecutivo", $_SESSION['usuario']);
+
+        $d = json_decode($d, true);
+        $detalles = $d['datos'];
 
         $tabla = "";
 
         foreach ($detalles as $key => $detalle) {
             $tabla .= "<tr>";
             foreach ($detalle as $key => $valor) {
-                if ($key === 'CODOP') continue;
-
-                $v = $valor;
-                if ($key === 'MOVIMIENTO') {
-                    $v = self::IconoOperacion($valor, $detalle['CODOP']);
-                    [$e, $s] = self::SeparaMontos($valor, $detalle['CODOP'], $detalle['MONTO']);
-                    $entradas += $e;
-                    $salidas += $s;
-                }
-
-                if ($key == 'MONTO') $v = "$ " . number_format($valor, 2);
-
-                $tabla .= "<td style='vertical-align: middle;'>$v</td>";
+                $valor = str_replace('\\/', '/', $valor);
+                if ($key == 'MONTO') $valor = "$ " . number_format($valor, 2);
+                $tabla .= "<td style='vertical-align: middle;'>$valor</td>";
             }
 
             $tabla .= "</tr>";
         }
 
+        $billetes = [
+            ["simbolo" => "$", "valor" => "1,000.00", "id" => "1000"],
+            ["simbolo" => "$", "valor" => "500.00", "id" => "500"],
+            ["simbolo" => "$", "valor" => "200.00", "id" => "200"],
+            ["simbolo" => "$", "valor" => "100.00", "id" => "100"],
+            ["simbolo" => "$", "valor" => "50.00", "id" => "50"],
+            ["simbolo" => "$", "valor" => "20.00", "id" => "20"],
+        ];
+
+        $monedas = [
+            ["simbolo" => "$", "valor" => "10.00", "id" => "10"],
+            ["simbolo" => "$", "valor" => "5.00", "id" => "5"],
+            ["simbolo" => "$", "valor" => "2.00", "id" => "2"],
+            ["simbolo" => "$", "valor" => "1.00", "id" => "1"],
+            ["simbolo" => "¢", "valor" => "0.50", "id" => "050"],
+            ["simbolo" => "¢", "valor" => "0.20", "id" => "020"],
+            ["simbolo" => "¢", "valor" => "0.10", "id" => "010"]
+        ];
+
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldos del día")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('tabla', $tabla);
         View::set('fecha', date('d/m/Y'));
-        View::set('saldoInicial', number_format($saldoInicial, 2));
-        View::set('entradas', number_format($entradas, 2));
-        View::set('salidas', number_format($salidas, 2));
-        View::set('saldoFinal', number_format($saldoInicial + $entradas - $salidas, 2));
+        View::set('fechaInicio', date('Y-m-d', strtotime('-7 day')));
+        View::set('fechaFin', date('Y-m-d'));
+        View::set('tablaBilletes', self::generaTabla($billetes, "billete"));
+        View::set('tablaMonedas', self::generaTabla($monedas, "moneda"));
         View::render("caja_menu_saldos_dia");
+    }
+
+    public function generaTabla($denominaciones, $tipo)
+    {
+        $max = $tipo === "billete" ? 500 : 1000;
+        $filas = <<<html
+        <table style="width: 100%;">
+        <thead>
+            <tr>
+                <th style="text-align: center;">Denominación</th>
+                <th style="text-align: center; width: 28%;">Cantidad</th>
+                <th style="text-align: center; width: 37%;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+        html;
+
+        foreach ($denominaciones as $denominacion) {
+            $simbolo = $denominacion["simbolo"];
+            $valor = $denominacion["valor"];
+            $id = $denominacion["id"];
+
+            $filas .= "<tr>";
+            $filas .= "<td style='text-align: center;'>" . $simbolo . " " . $valor . "</td>";
+            $filas .= "<td><input class='form-control " . $tipo . "' id='cant" . $id . "' name='cant" . $id . "' type='number' min='0' max='" . $max . "' value='0' oninput=calculaTotal(event) onkeydown=soloNumeros(event) /></td>";
+            $filas .= "<td><input style='text-align: right;' class='form-control efectivo' id='total" . $id . "' name='total" . $id . "' value='0.00' disabled /></td>";
+            $filas .= "</tr>";
+        }
+
+        $filas .= "</tbody></table>";
+        return $filas;
+    }
+
+    public function HistoricoArqueos()
+    {
+        echo CajaAhorroDao::HistoricoArqueo($_POST);
+    }
+
+    public function RegistraArqueo()
+    {
+        echo CajaAhorroDao::RegistraArqueo($_POST);
     }
 
     public function IconoOperacion($movimiento, $operacion)
