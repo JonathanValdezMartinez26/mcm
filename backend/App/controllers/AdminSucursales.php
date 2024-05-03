@@ -2047,25 +2047,11 @@ html;
 script;
 
 
-        $sucActivas = AdminSucursalesDao::GetModuloAhorroPermisos();
-        $tabla = "";
-        foreach ($sucActivas as $key => $val) {
-            $tabla .= "<tr>";
-            foreach ($val as $key2 => $val2) {
-                if ($key2 === "ACCIONES") {
-                    $tabla .= "<td style='vertical-align: middle; text-align: center;'><i class='fa fa-usd' title='Configurar montos' data-toggle='modal' data-target='#modal_configurar_montos' style='cursor: pointer;' onclick=llenarModal(event)></i></td>";
-                } else {
-                    $tabla .= "<td style='vertical-align: middle;'>{$val2}</td>";
-                }
-            }
-            $tabla .= "</tr>";
-        }
-
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Configuración de Caja")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('opcSucursales', $opcSucursales);
         View::set('tabla', $tabla);
         View::set('fecha', date('d/m/Y H:i:s'));
-        View::render("caja_admin_configurar_usuarios");
+        View::render("caja_admin_configurar_parametros");
     }
 }
