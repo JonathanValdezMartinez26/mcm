@@ -191,6 +191,29 @@ class AdminSucursales extends Controller
     }';
     private $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/-[^0-9.]/g, "")) || 0';
     private $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { style: "currency", currency: "MXN" })';
+    private $configuraTabla = 'const configuraTabla = (id) => {
+        $("#" + id).tablesorter()
+        $("#" + id).DataTable({
+            lengthMenu: [
+                [10, 40, -1],
+                [10, 40, "Todos"]
+            ],
+            columnDefs: [
+                {
+                    orderable: false,
+                    targets: 0
+                }
+            ],
+            order: false
+        })
+
+        $("#"  + id + " input[type=search]").keyup(() => {
+            $("#example")
+                .DataTable()
+                .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
+                .draw()
+        })
+    }';
 
     function __construct()
     {
@@ -198,14 +221,6 @@ class AdminSucursales extends Controller
         $this->_contenedor = new Contenedor;
         View::set('header', $this->_contenedor->header());
         View::set('footer', $this->_contenedor->footer());
-    }
-
-    private function GetExtraHeader($titulo)
-    {
-        return <<<html
-        <title>$titulo</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-        html;
     }
 
     //********************Saldos y movimientos de efectivo en sucursal********************//
@@ -630,30 +645,10 @@ class AdminSucursales extends Controller
             {$this->noSubmit}
             {$this->soloNumeros}
             {$this->consultaServidor}
+            {$this->configuraTabla}
+            {$this->parseaNumero}
          
-            $(document).ready(() => {
-                $("#sucursalesActivas").tablesorter()
-                $("#sucursalesActivas").DataTable({
-                    lengthMenu: [
-                        [10, 40, -1],
-                        [10, 40, "Todos"]
-                    ],
-                    columnDefs: [
-                        {
-                            orderable: false,
-                            targets: 0
-                        }
-                    ],
-                    order: false
-                })
-            
-                $("#sucursalesActivas input[type=search]").keyup(() => {
-                    $("#example")
-                        .DataTable()
-                        .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
-                        .draw()
-                })
-            })
+            $(document).ready(configuraTabla("sucursalesActivas"))
          
             const cambioSucursal = () => {
                 consultaServidor(
@@ -714,12 +709,14 @@ class AdminSucursales extends Controller
                 $("#horaC").prop("disabled", false)
                 $("#montoMin").prop("disabled", false)
                 $("#montoMax").prop("disabled", false)
+                $("#saldoInicial").prop("disabled", false)
             }
              
             const cambioMonto = () => {
                 const min = parseFloat(document.querySelector("#montoMin").value) || 0
                 const max = parseFloat(document.querySelector("#montoMax").value) || 0
-                document.querySelector("#guardar").disabled = !(min > 0 && max > 0 && max >= min)
+                const inicial = parseFloat(document.querySelector("#saldoInicial").value) || 0
+                document.querySelector("#guardar").disabled = !(min > 0 && max > 0 && max >= min && inicial >= min && inicial <= max)
             }
              
             const validaMaxMin = () => {
@@ -735,6 +732,7 @@ class AdminSucursales extends Controller
                         (res) => {
                             if (!res.success) return showError(res.mensaje)                            
                             showSuccess(res.mensaje).then(() => {
+                                swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
                                 window.location.reload()
                             })
                         }
@@ -768,7 +766,7 @@ class AdminSucursales extends Controller
              
             const guardarMontos = () => {
                 consultaServidor(
-                    "/AdminSucursales/GuardarMontosApertura/",
+                    "/AdminSucursales/GuardarMontosInauguracion/",
                     $("#configMontos").serialize(),
                     (res) => {
                         if (!res.success) return showError(res.mensaje)
@@ -829,8 +827,7 @@ class AdminSucursales extends Controller
 
     public function ActivarSucursal()
     {
-        $res = AdminSucursalesDao::ActivarSucursal($_POST);
-        echo $res;
+        echo AdminSucursalesDao::ActivarSucursal($_POST);
     }
 
     public function GetMontosApertura()
@@ -839,10 +836,9 @@ class AdminSucursales extends Controller
         echo $montos;
     }
 
-    public function GuardarMontosApertura()
+    public function GuardarMontosInauguracion()
     {
-        $res = AdminSucursalesDao::GuardarMontosApertura($_POST);
-        echo $res;
+        echo AdminSucursalesDao::GuardarMontosInauguracion($_POST);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1379,14 +1375,11 @@ html;
         $TransaccionesHistorial = CajaAhorroDao::GetSolicitudesHistorialAdminAll();
 
         foreach ($TransaccionesHistorial as $key_ => $valueh) {
-            if($valueh['AUTORIZA'] == '1')
-            {
+            if ($valueh['AUTORIZA'] == '1') {
                 $estatus = 'ACEPTADO';
                 $color = '#31BD16';
-            }
-            else
-            {
-                $estatus ='RECHAZADO';
+            } else {
+                $estatus = 'RECHAZADO';
                 $color = '#9C1508';
             }
 
@@ -1428,7 +1421,6 @@ html;
                   
                 </tr>
 html;
-
         }
 
 
