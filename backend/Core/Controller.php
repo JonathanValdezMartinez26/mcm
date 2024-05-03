@@ -42,10 +42,12 @@ class Controller
             <link rel="shortcut icon" href="/img/logo.png">
             html;
         } else {
-            $html = '<title>' . $titulo . '</title>';
-            $html .= '<link rel="shortcut icon" href="/img/logo.png">';
+            $html = <<<html
+            <title>$titulo</title>
+            <link rel="shortcut icon" href="/img/logo.png">
+            html;
             foreach ($elementos as $elemento) {
-                $html .= $elemento;
+                $html .= "\n" . $elemento;
             }
             return $html;
         }

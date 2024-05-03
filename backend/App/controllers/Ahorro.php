@@ -15,7 +15,7 @@ class Ahorro extends Controller
 {
     private $_contenedor;
     private $operacionesNulas = [2, 5]; // [Comisión, Transferencia]
-    private $XLSX = '<script scr:"https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>';
+    private $XLSX = '<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
     private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
     private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
@@ -2454,12 +2454,22 @@ class Ahorro extends Controller
             $(document).ready(() => configuraTabla("tblArqueos"))
              
             const imprimeExcel = () => {
+                const nombreArchivo = "Reporte de arqueos de caja al " + getHoy(false)
                 const tabla = document.querySelector("#tblArqueos")
                 const filas = Array.from(tabla.querySelectorAll("tr"))
-                const datos = filas.map((fila) => Array.from(fila.querySelectorAll("td")).map((celda) => celda.innerText))
+                const datos = filas.map((fila) => {
+                    const f = {}
+                    Array.from(fila.querySelectorAll("td")).forEach((celda, i) => {
+                        const titulo = tabla.querySelector("thead tr").querySelectorAll("th")[i].innerText
+                        f[titulo] = celda.innerText
+                    })
+                    return f
+                })
                  
-                XLSX.utils.book_append_sheet(XLSX.utils.book_new(), XLSX.utils.aoa_to_sheet(datos), "Arqueo de caja")
-                XLSX.writeFile(XLSX.utils.book_new(), "Arqueo de caja.xlsx")
+                const wb = XLSX.utils.book_new()
+                const ws = XLSX.utils.json_to_sheet(datos)
+                XLSX.utils.book_append_sheet(wb, ws, "Reporte")
+                XLSX.writeFile(wb, nombreArchivo + ".xlsx")
             }
              
             const mostrarModal = () => {

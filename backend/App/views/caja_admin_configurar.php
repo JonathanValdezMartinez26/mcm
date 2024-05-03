@@ -148,6 +148,7 @@
                                 </div>
                             </div>
                         </div>
+                        <hr>
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -170,7 +171,7 @@
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <small id="emailHelp" class="form-text text-muted">ATENCIÓN: La cajera no tendrá acceso antes del horario de apertura y después del horario de cierre solo podrá acceder al arqueo y cierre de día.</small>
+                                <small id="emailHelp" class="form-text text-muted"><b>ATENCIÓN:</b> La cajera no tendrá acceso antes del horario de apertura y después del horario de cierre solo podrá acceder al arqueo y cierre de día.</small>
                             </div>
                         </div>
                         <div class="row" style="margin-top:20px">
@@ -187,15 +188,23 @@
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <small id="emailHelp" class="form-text text-muted">ATENCIÓN: La cajera no podrá realizar retiros una vez que el monto este en el mínimo, solo podrá realizar retiros express, que deben ser aprobados por tesorería .</small>
+                                <small id="emailHelp" class="form-text text-muted"><b>ATENCIÓN:</b> La cajera no podrá realizar retiros una vez que el monto este en el mínimo, solo podrá realizar retiros express, que deben ser aprobados por tesorería.</small>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                            <button class="btn btn-primary" id="guardar" onclick=activarSucursal() disabled><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
+                        <div class="row" style="margin-top:20px">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="saldoInicial">Saldo inicial *</label>
+                                    <input type="number" class="form-control" id="saldoInicial" name="saldoInicial" placeholder="0.00" min="0" max="500000" onkeydown=soloNumeros(event) onblur=validaMaxMin() oninput=cambioMonto() disabled />
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button class="btn btn-primary" id="guardar" onclick=activarSucursal() disabled><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
             </div>
         </div>
     </div>
@@ -256,12 +265,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                            <button class="btn btn-primary" onclick=guardarMontos()><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios</button>
-                        </div>
                     </form>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button class="btn btn-primary" onclick=guardarMontos()><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios</button>
             </div>
         </div>
     </div>

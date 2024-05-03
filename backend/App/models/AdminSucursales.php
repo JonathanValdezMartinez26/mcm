@@ -388,20 +388,17 @@ class AdminSucursales
         }
     }
 
-    public static function GuardarMontosApertura($datos)
+    public static function GuardarMontosInauguracion($datos)
     {
         $qry = <<<sql
-        INSERT INTO PARAMETROS_AHORRO
-            (CODIGO, MONTO_MINIMO, MONTO_MAXIMO, CDG_SUCURSAL, FECHA_ALTA, MODIFICACION)
-        VALUES
-            (
-                (SELECT NVL(MAX(TO_NUMBER(CODIGO)), 0) + 1 FROM PARAMETROS_AHORRO),
-                :minimo,
-                :maximo,
-                :sucursal,
-                SYSDATE,
-                SYSDATE
-            )
+        UPDATE
+            SUC_ESTADO_AHORRO
+        SET
+            MONTO_MINIMO = :minimo,
+            MONTO_MAXIMO = :maximo,
+            MODIFICACION = SYSDATE
+        WHERE
+            CODIGO = :codigo
         sql;
 
         $params = [
