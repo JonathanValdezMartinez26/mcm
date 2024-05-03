@@ -76,24 +76,19 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_horario">
-                                    <i class="fa fa-plus"></i> Nueva Activación
+                                    <i class="fa fa-plus"></i> Nuevo Usuario
                                 </button>
                                 <hr style="border-top: 1px solid #787878; margin-top: 5px;">
                             </div>
                             <div class="row">
                                 <div class="dataTable_wrapper">
-                                    <table class="table table-striped table-bordered table-hover" id="sucursalesActivas">
+                                    <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                         <thead>
                                             <tr>
-                                                <th>Fecha de Registro</th>
-                                                <th>Cod Sucursal</th>
-                                                <th>Nombre Sucursal</th>
-                                                <th>Cod Cajera</th>
-                                                <th>Nombre Cajera</th>
-                                                <th>Hora Apertura</th>
-                                                <th>Hora Cierre</th>
-                                                <th>Monto Mínimo</th>
-                                                <th>Monto Máximo</th>
+                                                <th>Nombre del colaborador</th>
+                                                <th>Fecha de Alta</th>
+                                                <th>Usuario que dio de alta</th>
+                                                <th>Detalle Permisos</th>
                                                 <th>Acciones</th>
                                             </tr>
                                         </thead>
@@ -131,7 +126,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="sucursal">Colaborador Administrativo MCM *</label>
                                     <select class="form-control" id="cajera" name="cajera" onchange=cambioCajera() >
@@ -146,56 +141,56 @@
                                 <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 19px;">
                                     <label for="sucursal">SALDOS DE SUCURSALES</label>
                                     <hr>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Saldos del día por sucursal (A)</label>
+                                    <input name="A" type="checkbox" value="1"  />
+                                    <label for="A">Saldos del día por sucursal (A)</label>
 
                                     <br>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Cierre de día (B)</label>
+                                    <input name="B" type="checkbox" value="1"  />
+                                    <label for="B">Cierre de día (B)</label>
 
                                     <br>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Fondear sucursal (C)</label>
+                                    <input name="C" type="checkbox" value="1"  />
+                                    <label for="C">Fondear sucursal (C)</label>
 
                                     <br>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Retiro efectivo (D)</label>
+                                    <input name="D" type="checkbox" value=""  />
+                                    <label for="D">Retiro efectivo (D)</label>
 
                                     <br>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Historail saldos por sucursal (E)</label>
+                                    <input name="E" type="checkbox" value="1"  />
+                                    <label for="E">Historail saldos por sucursal (E)</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 19px;">
                                     <label for="sucursal">SOLICITUDES</label>
                                     <hr>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Reimpresión de tickets (F)</label>
+                                    <input name="F" type="checkbox" value="1"  />
+                                    <label for="F">Reimpresión de tickets (F)</label>
 
                                     <br>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Resumen de movimientos (G)</label>
+                                    <input name="G" type="checkbox" value="1"  />
+                                    <label for="G">Resumen de movimientos (G)</label>
 
                                     <br>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Retiros ordinarios (H)</label>
+                                    <input name="H" type="checkbox" value="1"  />
+                                    <label for="H">Retiros ordinarios (H)</label>
 
                                     <br>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Retiros express (I)</label>
+                                    <input name="I" type="checkbox" value="1"  />
+                                    <label for="I">Retiros express (I)</label>
 
                                     <br>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Retirar efectivo de caja (J)</label>
+                                    <input name="J" type="checkbox" value="1"  />
+                                    <label for="J">Retirar efectivo de caja (J)</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 128px!important;">
                                     <label for="sucursal">CATÁLOGO DE CLIENTES</label>
                                     <hr>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Catálogo de clientes (K)</label>
+                                    <input name="K" type="checkbox" value="1"  />
+                                    <label for="K">Catálogo de clientes (K)</label>
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -207,24 +202,24 @@
                                 <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 128px;">
                                     <label for="sucursal">LOG TRANSACCIONAL</label>
                                     <hr>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Log transaccional (L)</label>
+                                    <input name="L" type="checkbox" value="1"  />
+                                    <label for="L">Log transaccional (L)</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 73px;">
                                     <label for="sucursal">CONFIGURAR MÓDULO</label>
                                     <hr>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Activar módulo en sucursal (M)</label>
+                                    <input name="M" type="checkbox" value="1"  />
+                                    <label for="M">Activar módulo en sucursal (M)</label>
 
                                     <br>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Permisos a usuarios (N)</label>
+                                    <input name="N" type="checkbox" value="1"  />
+                                    <label for="N">Permisos a usuarios (N)</label>
 
                                     <br>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Parámetros de operación (O)</label>
+                                    <input name="O" type="checkbox" value="1"  />
+                                    <label for="O">Parámetros de operación (O)</label>
 
                                 </div>
                             </div>
@@ -232,16 +227,16 @@
                                 <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 73px;">
                                     <label for="sucursal">CONSULTAR REPORTES</label>
                                     <hr>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Hostorial de transacciones (P)</label>
+                                    <input name="P" type="checkbox" value="1"  />
+                                    <label for="P">Hostorial de transacciones (P)</label>
 
                                     <br>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Historial fondeo sucursal (Q)</label>
+                                    <input name="Q" type="checkbox" value="1"  />
+                                    <label for="Q">Historial fondeo sucursal (Q)</label>
 
                                     <br>
-                                    <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Historial retiro sucursal (R)</label>
+                                    <input name="R" type="checkbox" value="1"  />
+                                    <label for="R">Historial retiro sucursal (R)</label>
                                 </div>
                             </div>
                         </div>

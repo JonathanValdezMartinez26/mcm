@@ -1973,7 +1973,37 @@ html;
     {
         $extraFooter = <<<script
         <script>
-           
+           $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+                  "lengthMenu": [
+                    [6, 50, -1],
+                    [6, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            
+             $("#export_excel_consulta").click(function(){
+              $('#all').attr('action', '/Operaciones/generarExcelPagos/?Inicial='+fecha1+'&Final='+fecha2);
+              $('#all').attr('target', '_blank');
+              $("#all").submit();
+            });        
+        });
         </script>
 script;
 
@@ -1986,15 +2016,19 @@ script;
         $sucActivas = AdminSucursalesDao::GetSucursalesActivas();
         $tabla = "";
         foreach ($sucActivas as $key => $val) {
-            $tabla .= "<tr>";
-            foreach ($val as $key2 => $val2) {
-                if ($key2 === "ACCIONES") {
-                    $tabla .= "<td style='vertical-align: middle; text-align: center;'><i class='fa fa-usd' title='Configurar montos' data-toggle='modal' data-target='#modal_configurar_montos' style='cursor: pointer;' onclick=llenarModal(event)></i></td>";
-                } else {
-                    $tabla .= "<td style='vertical-align: middle;'>{$val2}</td>";
-                }
-            }
-            $tabla .= "</tr>";
+            $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;"></td>
+                    <td style="padding: 0px !important;"></td>
+                    <td style="padding: 0px !important;"></td>
+                    <td style="padding: 0px !important;"></td>
+                    
+                    <td style="padding: 0px !important;">  
+                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                    </td>
+                </tr>
+html;
         }
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Configuración de Caja Usuarios")));
