@@ -134,7 +134,8 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="sucursal">Colaborador Administrativo MCM *</label>
-                                    <select class="form-control" id="cajera" name="cajera" onchange=cambioCajera() disabled>
+                                    <select class="form-control" id="cajera" name="cajera" onchange=cambioCajera() >
+                                        <?= $opcEmpleados; ?>
                                     </select>
                                 </div>
                             </div>
@@ -250,72 +251,6 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
                 <button class="btn btn-primary" id="guardar" onclick=activarSucursal() disabled><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- <div class="modal fade in" id="modal_configurar_montos" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block; padding-right: 15px;"> -->
-<div class="modal fade" id="modal_configurar_montos" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center>
-                    <h4 class="modal-title" id="myModalLabel">Configurar montos de sucursal</h4>
-                </center>
-            </div>
-            <div class="modal-body">
-                <div class="container-fluid">
-                    <form id="configMontos" onsubmit=noSUBMIT(event)>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="codSucMontos">Código Sucursal</label>
-                                    <input name="codSucMontos" id="codSucMontos" class="form-control" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label for="nomSucMontos">Nombre Sucursal</label>
-                                    <input name="nomSucMontos" id="nomSucMontos" class="form-control" readonly>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label for="minimoApertura">Monto mínimo apertura</label>
-                                    <div class="row">
-                                        <div class="col-md-1">
-                                            <span style="font-size: x-large;">$</span>
-                                        </div>
-                                        <div class="col-md-10">
-                                            <input class="form-control" id="minimoApertura" name="minimoApertura" placeholder="0.00" style="font-size: 25px;" onkeydown=soloNumeros(event) oninput=validaMontoMinMax(event) />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label for="maximoApertura">Monto máximo apertura</label>
-                                    <div class="row">
-                                        <div class="col-md-1">
-                                            <span style="font-size: x-large;">$</span>
-                                        </div>
-                                        <div class="col-md-10">
-                                            <input class="form-control" id="maximoApertura" name="maximoApertura" placeholder="0.00" style="font-size: 25px;" onkeydown=soloNumeros(event) oninput=validaMontoMinMax(event) />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button class="btn btn-primary" onclick=guardarMontos()><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Cambios</button>
             </div>
         </div>
     </div>

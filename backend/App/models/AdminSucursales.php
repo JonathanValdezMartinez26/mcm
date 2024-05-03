@@ -505,7 +505,7 @@ class AdminSucursales
             SELECT
                 CODIGO, (NOMBRE1 || ' ' || NOMBRE2 || ' ' || PRIMAPE || ' ' || SEGAPE) AS EMPLEADO
             FROM
-                PE WHERE PUESTO = 'A' AND BAJA IS NULL
+                PE WHERE PUESTO = 'D' AND BAJA IS NULL
             AND CDGEM = 'EMPFIN'
             ORDER BY NOMBRE1 ASC
 sql;

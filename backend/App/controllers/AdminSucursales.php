@@ -1980,7 +1980,7 @@ script;
         $empleados = AdminSucursalesDao::GetUsuariosActivos();
         $opcEmpleados = "<option value='0' disabled selected>Seleccione una opción</option>";
         foreach ($empleados as $key => $val2) {
-            $opcEmpleados .= "<option  value='" . $val2['CODIGO'] . "'>(" . $val2['CODIGO'] . ") " . $val2['NOMBRE'] . "</option>";
+            $opcEmpleados .= "<option  value='" . $val2['CODIGO'] . "'>". $val2['EMPLEADO'] . "</option>";
         }
 
         $sucActivas = AdminSucursalesDao::GetSucursalesActivas();
@@ -1999,7 +1999,7 @@ script;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Configuración de Caja Usuarios")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('opcSucursales', $opcSucursales);
+        View::set('opcEmpleados', $opcEmpleados);
         View::set('tabla', $tabla);
         View::render("caja_admin_configurar_usuarios");
     }
