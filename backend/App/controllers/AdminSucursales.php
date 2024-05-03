@@ -709,13 +709,13 @@ class AdminSucursales extends Controller
                 $("#horaC").prop("disabled", false)
                 $("#montoMin").prop("disabled", false)
                 $("#montoMax").prop("disabled", false)
-                $("#saldoInicial").prop("disabled", false)
+                $("#saldo").prop("disabled", false)
             }
              
             const cambioMonto = () => {
                 const min = parseFloat(document.querySelector("#montoMin").value) || 0
                 const max = parseFloat(document.querySelector("#montoMax").value) || 0
-                const inicial = parseFloat(document.querySelector("#saldoInicial").value) || 0
+                const inicial = parseFloat(document.querySelector("#saldo").value) || 0
                 document.querySelector("#guardar").disabled = !(min > 0 && max > 0 && max >= min && inicial >= min && inicial <= max)
             }
              
@@ -723,6 +723,7 @@ class AdminSucursales extends Controller
                 const min = parseFloat(document.querySelector("#montoMin").value) || 0
                 const max = parseFloat(document.querySelector("#montoMax").value) || 0
                 if (min > max) document.querySelector("#montoMax").value = min
+                document.querySelector("#saldo").value = min
             }
              
             const activarSucursal = () => {
@@ -749,8 +750,9 @@ class AdminSucursales extends Controller
                     { sucursal: fila.children[1].innerText },
                     (datos) => {
                         if (!datos.success) return
-                        document.querySelector("#minimoApertura").value = datos.datos.MONTO_MINIMO
-                        document.querySelector("#maximoApertura").value = datos.datos.MONTO_MAXIMO
+                        document.querySelector("#codigo").value = datos.datos.CODIGO
+                        document.querySelector("#minimoApertura").value = datos.datos.SALDO_MINIMO
+                        document.querySelector("#maximoApertura").value = datos.datos.SALDO_MAXIMO
                     }
                 )
             }
@@ -771,6 +773,7 @@ class AdminSucursales extends Controller
                     (res) => {
                         if (!res.success) return showError(res.mensaje)
                         showSuccess(res.mensaje).then(() => {
+                            swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
                             window.location.reload()
                         })
                     }
@@ -832,8 +835,7 @@ class AdminSucursales extends Controller
 
     public function GetMontosApertura()
     {
-        $montos = AdminSucursalesDao::GetMontosApertura($_POST['sucursal']);
-        echo $montos;
+        echo AdminSucursalesDao::GetMontosApertura($_POST['sucursal']);
     }
 
     public function GuardarMontosInauguracion()

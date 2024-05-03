@@ -194,8 +194,8 @@
                         <div class="row" style="margin-top:20px">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="saldoInicial">Saldo inicial *</label>
-                                    <input type="number" class="form-control" id="saldoInicial" name="saldoInicial" placeholder="0.00" min="0" max="500000" onkeydown=soloNumeros(event) onblur=validaMaxMin() oninput=cambioMonto() disabled />
+                                    <label for="saldo">Saldo inicial *</label>
+                                    <input type="number" class="form-control" id="saldo" name="saldo" placeholder="0.00" min="0" max="500000" onkeydown=soloNumeros(event) onblur=validaMaxMin() oninput=cambioMonto() disabled />
                                 </div>
                             </div>
                         </div>
@@ -227,7 +227,8 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="codSucMontos">Código Sucursal</label>
-                                    <input name="codSucMontos" id="codSucMontos" class="form-control" readonly>
+                                    <input name="codSucMontos" id="codSucMontos" class="form-control" readonly />
+                                    <input name="codigo" id="codigo" class="form-control" type="hidden" />
                                 </div>
                             </div>
                             <div class="col-md-8">
