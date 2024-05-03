@@ -146,23 +146,23 @@
                                     <label for="sucursal">SALDOS DE SUCURSALES</label>
                                     <hr>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Saldos del día por sucursal</label>
+                                    <label for="hobby">Saldos del día por sucursal (A)</label>
 
                                     <br>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Cierre de día</label>
+                                    <label for="hobby">Cierre de día (B)</label>
 
                                     <br>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Fondear sucursal</label>
+                                    <label for="hobby">Fondear sucursal (C)</label>
 
                                     <br>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Retiro efectivo</label>
+                                    <label for="hobby">Retiro efectivo (D)</label>
 
                                     <br>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Historail saldos por sucursal</label>
+                                    <label for="hobby">Historail saldos por sucursal (E)</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -170,23 +170,23 @@
                                     <label for="sucursal">SOLICITUDES</label>
                                     <hr>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Reimpresión de tickets</label>
+                                    <label for="hobby">Reimpresión de tickets (F)</label>
 
                                     <br>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Resumen de movimientos</label>
+                                    <label for="hobby">Resumen de movimientos (G)</label>
 
                                     <br>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Retiros ordinarios</label>
+                                    <label for="hobby">Retiros ordinarios (H)</label>
 
                                     <br>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Retiros express</label>
+                                    <label for="hobby">Retiros express (I)</label>
 
                                     <br>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Retirar efectivo de caja</label>
+                                    <label for="hobby">Retirar efectivo de caja (J)</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -194,7 +194,7 @@
                                     <label for="sucursal">CATÁLOGO DE CLIENTES</label>
                                     <hr>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Catálogo de clientes</label>
+                                    <label for="hobby">Catálogo de clientes (K)</label>
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -207,7 +207,7 @@
                                     <label for="sucursal">LOG TRANSACCIONAL</label>
                                     <hr>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Log transaccional</label>
+                                    <label for="hobby">Log transaccional (L)</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -215,15 +215,15 @@
                                     <label for="sucursal">CONFIGURAR MÓDULO</label>
                                     <hr>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Activar módulo en sucursal</label>
+                                    <label for="hobby">Activar módulo en sucursal (M)</label>
 
                                     <br>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Permisos a usuarios</label>
+                                    <label for="hobby">Permisos a usuarios (N)</label>
 
                                     <br>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Parámetros de operación</label>
+                                    <label for="hobby">Parámetros de operación (O)</label>
 
                                 </div>
                             </div>
@@ -232,15 +232,15 @@
                                     <label for="sucursal">CONSULTAR REPORTES</label>
                                     <hr>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Hostorial de transacciones</label>
+                                    <label for="hobby">Hostorial de transacciones (P)</label>
 
                                     <br>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Historial fondeo sucursal</label>
+                                    <label for="hobby">Historial fondeo sucursal (Q)</label>
 
                                     <br>
                                     <input name="hobby" type="checkbox" value="MoBa"  />
-                                    <label for="hobby">Historial retiro sucursal</label>
+                                    <label for="hobby">Historial retiro sucursal (R)</label>
                                 </div>
                             </div>
                         </div>

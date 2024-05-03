@@ -1973,167 +1973,14 @@ html;
     {
         $extraFooter = <<<script
         <script>
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
-            {$this->noSubmit}
-            {$this->soloNumeros}
-            {$this->consultaServidor}
-         
-            $(document).ready(() => {
-                $("#sucursalesActivas").tablesorter()
-                $("#sucursalesActivas").DataTable({
-                    lengthMenu: [
-                        [10, 40, -1],
-                        [10, 40, "Todos"]
-                    ],
-                    columnDefs: [
-                        {
-                            orderable: false,
-                            targets: 0
-                        }
-                    ],
-                    order: false
-                })
-            
-                $("#sucursalesActivas input[type=search]").keyup(() => {
-                    $("#example")
-                        .DataTable()
-                        .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
-                        .draw()
-                })
-            })
-         
-            const cambioSucursal = () => {
-                consultaServidor(
-                    "/AdminSucursales/GetCajeras/",
-                    { sucursal: $("#sucursal").val() },
-                    (datos) => {
-                        if (!datos.success) return showError(datos.mensaje)
-                        if (datos.datos.length === 0) {
-                            $("#cajera").html("<option value='0' disabled selected>No hay cajeras en esta sucursal</option>")
-                            $("#cajera").prop("disabled", true)
-                        } else {
-                            let opciones = "<option value='0' disabled selected>Seleccione una cajera</option>"
-                            datos.datos.forEach((cajera) => {
-                                opciones += "<option value='" + cajera.CODIGO + "'>" + cajera.NOMBRE + "</option>"
-                            })
-                            $("#cajera").html(opciones)
-                            $("#cajera").prop("disabled", false)
-                        }
-                    }
-                )
-                     
-                consultaServidor(
-                    "/AdminSucursales/GetMontoSucursal/",
-                    { sucursal: $("#sucursal").val() },
-                    (datos) => {
-                        if (!datos.success) return
-                        if (datos.datos.length === 0) {
-                            $("#montoMin").val("")
-                            $("#montoMax").val("")
-                        } else {
-                            $("#montoMin").val(datos.datos[0].MONTO_MIN)
-                            $("#montoMax").val(datos.datos[0].MONTO_MAX)
-                        }
-                    }
-                )
-            }
-             
-            const cambioCajera = () => {
-                consultaServidor(
-                    "/AdminSucursales/GetHorarioCajera/",
-                    { cajera: $("#cajera").val() },
-                    (datos) => {
-                        if (datos.datos && datos.datos.length === 0) {
-                            $("#horaA").val(datos.datos[0].HORA_APERTURA)
-                            $("#horaC").val(datos.datos[0].HORA_CIERRE)
-                            $("#montoMin").val(datos.datos[0].MONTO_MIN)
-                            $("#montoMax").val(datos.datos[0].MONTO_MAX)
-                        } else {
-                            $("#horaA").select(0)
-                            $("#horaC").select(0)
-                            $("#montoMin").val("")
-                            $("#montoMax").val("")
-                        }
-                    }
-                )
-                
-                $("#horaA").prop("disabled", false)
-                $("#horaC").prop("disabled", false)
-                $("#montoMin").prop("disabled", false)
-                $("#montoMax").prop("disabled", false)
-            }
-             
-            const cambioMonto = () => {
-                const min = parseFloat(document.querySelector("#montoMin").value) || 0
-                const max = parseFloat(document.querySelector("#montoMax").value) || 0
-                document.querySelector("#guardar").disabled = !(min > 0 && max > 0 && max >= min)
-            }
-             
-            const validaMaxMin = () => {
-                const min = parseFloat(document.querySelector("#montoMin").value) || 0
-                const max = parseFloat(document.querySelector("#montoMax").value) || 0
-                if (min > max) document.querySelector("#montoMax").value = min
-            }
-             
-            const activarSucursal = () => {
-                consultaServidor(
-                        "/AdminSucursales/ActivarSucursal/",
-                        $("#datos").serialize(),
-                        (res) => {
-                            if (!res.success) return showError(res.mensaje)                            
-                            showSuccess(res.mensaje).then(() => {
-                                window.location.reload()
-                            })
-                        }
-                    )
-            }
-             
-            const llenarModal = () => {
-                document.querySelector("#configMontos").reset()
-                const fila = event.target.parentElement.parentElement
-                document.querySelector("#codSucMontos").value = fila.children[1].innerText
-                document.querySelector("#nomSucMontos").value = fila.children[2].innerText
-                consultaServidor(
-                    "/AdminSucursales/GetMontosApertura/",
-                    { sucursal: fila.children[1].innerText },
-                    (datos) => {
-                        if (!datos.success) return
-                        document.querySelector("#minimoApertura").value = datos.datos.MONTO_MINIMO
-                        document.querySelector("#maximoApertura").value = datos.datos.MONTO_MAXIMO
-                    }
-                )
-            }
-             
-            const validaMontoMinMax = (e) => {
-                const m = parseFloat(e.target.value)
-                if (m < 0) e.target.value = ""
-                if (m > 1000000) e.target.value = "1000000.00"
-                const valor = e.target.value.split(".")
-                valor[1] = valor[1] || "00"
-                if (valor[1] && valor[1].length > 2) e.target.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
-            }
-             
-            const guardarMontos = () => {
-                consultaServidor(
-                    "/AdminSucursales/GuardarMontosApertura/",
-                    $("#configMontos").serialize(),
-                    (res) => {
-                        if (!res.success) return showError(res.mensaje)
-                        showSuccess(res.mensaje).then(() => {
-                            window.location.reload()
-                        })
-                    }
-                )
-            }
+           
         </script>
-        script;
+script;
 
-        $sucursales = AdminSucursalesDao::GetSucursales();
-        $opcSucursales = "<option value='0' disabled selected>Seleccione una sucursal</option>";
-        foreach ($sucursales as $key => $val2) {
-            $opcSucursales .= "<option  value='" . $val2['CODIGO'] . "'>(" . $val2['CODIGO'] . ") " . $val2['NOMBRE'] . "</option>";
+        $empleados = AdminSucursalesDao::GetUsuariosActivos();
+        $opcEmpleados = "<option value='0' disabled selected>Seleccione una opción</option>";
+        foreach ($empleados as $key => $val2) {
+            $opcEmpleados .= "<option  value='" . $val2['CODIGO'] . "'>(" . $val2['CODIGO'] . ") " . $val2['NOMBRE'] . "</option>";
         }
 
         $sucActivas = AdminSucursalesDao::GetSucursalesActivas();
@@ -2150,11 +1997,10 @@ html;
             $tabla .= "</tr>";
         }
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Configuración de Caja")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Configuración de Caja Usuarios")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('opcSucursales', $opcSucursales);
         View::set('tabla', $tabla);
-        View::set('fecha', date('d/m/Y H:i:s'));
         View::render("caja_admin_configurar_usuarios");
     }
 

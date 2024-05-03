@@ -498,4 +498,23 @@ class AdminSucursales
             return [];
         }
     }
+
+    public static function GetUsuariosActivos()
+    {
+        $query = <<<sql
+            SELECT
+                CODIGO, (NOMBRE1 || ' ' || NOMBRE2 || ' ' || PRIMAPE || ' ' || SEGAPE) AS EMPLEADO
+            FROM
+                PE WHERE PUESTO = 'A' AND BAJA IS NULL
+            AND CDGEM = 'EMPFIN'
+            ORDER BY NOMBRE1 ASC
+sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryAll($query);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
 }
