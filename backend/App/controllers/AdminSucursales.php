@@ -2154,7 +2154,7 @@ html;
         View::set('opcSucursales', $opcSucursales);
         View::set('tabla', $tabla);
         View::set('fecha', date('d/m/Y H:i:s'));
-        View::render("caja_admin_configurar");
+        View::render("caja_admin_configurar_usuarios");
     }
 
     public function ConfiguracionParametros()
@@ -2185,6 +2185,6 @@ script;
         View::set('opcSucursales', $opcSucursales);
         View::set('tabla', $tabla);
         View::set('fecha', date('d/m/Y H:i:s'));
-        View::render("caja_admin_configurar");
+        View::render("caja_admin_configurar_usuarios");
     }
 }
