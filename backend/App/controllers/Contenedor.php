@@ -44,7 +44,7 @@ class Contenedor extends Controller
     $header = <<<html
 
         <!DOCTYPE html>
-        <html lang="en">
+        <html lang="es">
           <head>
             <meta http-equiv="Expires" content="0">
             <meta http-equiv="Last-Modified" content="0">
@@ -95,7 +95,7 @@ html;
               
 html;
 
-          $menu .= <<<html
+    $menu .= <<<html
             </div>
           </div>
           <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
@@ -103,30 +103,28 @@ html;
 html;
 
 
-    if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR'|| $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'GASC') {
-        $menu .= <<<html
+    if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'GASC') {
+      $menu .= <<<html
            <hr>
            <h3>General WEB AHORRO </h3>
             <ul class="nav side-menu">     
 html;
     }
 
-        if ($permiso_ahorro == '1') {
-            $menu .= <<<html
+    if ($permiso_ahorro == '1') {
+      $menu .= <<<html
                 <li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
         
 html;
-
-
     }
 
-      if ( $this->__usuario == 'AMGM' || $this->__usuario == 'LGFR'|| $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'PHEE' ) {
-          $menu .= <<<html
+    if ($this->__usuario == 'AMGM' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'PHEE') {
+      $menu .= <<<html
                 <li><a href="/AdminSucursales/SaldosDiarios/"><i class="glyphicon glyphicon-paste"> </i>&nbsp; Admin Sucursales </a> </li>
              </ul>
           
 html;
-      }
+    }
 
     $menu .= <<<html
               <hr>

@@ -15,6 +15,7 @@ class Ahorro extends Controller
 {
     private $_contenedor;
     private $operacionesNulas = [2, 5]; // [Comisión, Transferencia]
+    private $XLSX = '<script scr:"https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>';
     private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
     private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
@@ -321,14 +322,6 @@ class Ahorro extends Controller
         $this->_contenedor = new Contenedor;
         View::set('header', $this->_contenedor->header());
         View::set('footer', $this->_contenedor->footer());
-    }
-
-    private function GetExtraHeader($titulo)
-    {
-        return <<<html
-        <title>$titulo</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-        html;
     }
 
     //********************AHORRO CORRIENTE********************//
@@ -2440,9 +2433,6 @@ class Ahorro extends Controller
     // Muestra un reporte para el segimiento de los saldos en caja
     public function SaldosDia()
     {
-        $entradas = 0;
-        $salidas = 0;
-
         $extraFooter = <<<html
         <script>
             {$this->noSubmit}
@@ -2463,7 +2453,14 @@ class Ahorro extends Controller
          
             $(document).ready(() => configuraTabla("tblArqueos"))
              
-            const imprimeExcel = () => window.location.href = "/Ahorro/ExportaExcel/"
+            const imprimeExcel = () => {
+                const tabla = document.querySelector("#tblArqueos")
+                const filas = Array.from(tabla.querySelectorAll("tr"))
+                const datos = filas.map((fila) => Array.from(fila.querySelectorAll("td")).map((celda) => celda.innerText))
+                 
+                XLSX.utils.book_append_sheet(XLSX.utils.book_new(), XLSX.utils.aoa_to_sheet(datos), "Arqueo de caja")
+                XLSX.writeFile(XLSX.utils.book_new(), "Arqueo de caja.xlsx")
+            }
              
             const mostrarModal = () => {
                 document.querySelector("#frmModal").reset()
@@ -2511,16 +2508,16 @@ class Ahorro extends Controller
                     addCantidades(datos, "moneda")
                      
                     consultaServidor("/Ahorro/RegistraArqueo/", $.param(datos), (respuesta) => {
-                            if (!respuesta.success) {
-                                console.log(respuesta.error)
-                                return showError(respuesta.mensaje)
-                            }
-                             
-                            showSuccess(respuesta.mensaje).then(() => {
-                                $("#modalArqueo").modal("hide")
-                                document.querySelector("#frmModal").reset()
-                            })
+                        if (!respuesta.success) {
+                            console.log(respuesta.error)
+                            return showError(respuesta.mensaje)
+                        }
+                            
+                        showSuccess(respuesta.mensaje).then(() => {
+                            swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+                            window.location.reload()
                         })
+                    })
                 })
                  
                 const addCantidades = (datos, tipo) => {
@@ -2574,7 +2571,7 @@ class Ahorro extends Controller
             ["simbolo" => "¢", "valor" => "0.10", "id" => "010"]
         ];
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldos del día")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldos del día", [$this->XLSX])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('tabla', $tabla);
         View::set('fecha', date('d/m/Y'));
@@ -2642,27 +2639,7 @@ class Ahorro extends Controller
 
     public function ExportaExcel()
     {
-        $detalles = CajaAhorroDao::DetalleMovimientosXdia();
-
-        $tabla = "<table border='1'>";
-        $tabla .= "<tr>";
-        foreach ($detalles[0] as $key => $valor) {
-            if ($key === 'CODOP') continue;
-            $tabla .= "<th>$key</th>";
-        }
-        $tabla .= "</tr>";
-
-        foreach ($detalles as $key => $detalle) {
-            $tabla .= "<tr>";
-            foreach ($detalle as $key => $valor) {
-                if ($key === 'CODOP') continue;
-                $tabla .= "<td>$valor</td>";
-            }
-            $tabla .= "</tr>";
-        }
-
-        $tabla .= "</table>";
-
+        $tabla = $_POST['tabla'];
         header("Content-type: application/vnd.ms-excel");
         header("Content-Disposition: attachment; filename=DetallesMovimientos.xlsx");
         echo $tabla;
