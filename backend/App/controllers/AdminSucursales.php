@@ -1377,6 +1377,7 @@ html;
         }
 
         $TransaccionesHistorial = CajaAhorroDao::GetSolicitudesHistorialAdminAll();
+
         foreach ($TransaccionesHistorial as $key_ => $valueh) {
             if($valueh['AUTORIZA'] == '1')
             {
@@ -1391,35 +1392,37 @@ html;
 
             $tabla_his .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 15px !important;"><span class="fa fa-barcode"></span> {$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 15px !important;"><span class="fa fa-barcode"></span> {$valueh['CDGTICKET_AHORRO']} </td>
                     <td style="padding: 0px !important;">
                         <div style="text-align: left; margin-left: 10px; margin-top: 5px;">
-                            <b>CONTRATO:</b> {$value['CONTRATO']}
+                            <b>CONTRATO:</b> {$valueh['CONTRATO']}
                         </div>
                         <div style="text-align: left; margin-left: 10px;">
-                            <b>CLIENTE: </b>{$value['NOMBRE_CLIENTE']}
+                            <b>CLIENTE: </b>{$valueh['NOMBRE_CLIENTE']}
                         </div>
                         
                         <hr style="margin-bottom: 8px; margin-top: 8px;">
                         
                          <div style="text-align: left; margin-left: 10px;">
-                            <b>MOTIVO: </b>{$value['MOTIVO']}
+                            <b>MOTIVO: </b>{$valueh['MOTIVO']}
                         </div>
                          <div style="text-align: left; margin-left: 10px;">
-                            <b><span class="fa fa-female"></span> CAJERA QUE REALIZA SOLICITUD: </b>{$value['NOMBRE_CAJERA']}
+                            <b><span class="fa fa-female"></span> CAJERA QUE REALIZA SOLICITUD: </b>{$valueh['NOMBRE_CAJERA']}
                         </div>
                          <div style="text-align: left; margin-left: 10px;">
-                            <b><span class="fa fa-female"></span> DESCRIPCION CAJERA: </b>{$value['DESCRIPCION_MOTIVO']}
+                            <b><span class="fa fa-female"></span> DESCRIPCION CAJERA: </b>{$valueh['DESCRIPCION_MOTIVO']}
                         </div>
                         <div style="text-align: left; margin-left: 10px;">
-                            <b><span class="fa fa-calendar-check-o"></span> FECHA DE SOLICITUD: </b>{$value['FREGISTRO']}
+                            <b><span class="fa fa-calendar-check-o"></span> FECHA DE SOLICITUD: </b>{$valueh['FREGISTRO']}
                         </div> 
                         
                     </td>
                     <td style="padding: 15px !important;"> 
                     
-                        <div> ESTATUS: <b style="color: {$color};">{$estatus}</b> </div>
-                        <div> AUTORIZA: {$value['CDGPE_AUTORIZA']} </div>
+                        <div> <b>ESTATUS:</b> <b style="color: {$color};">{$estatus}</b> </div>
+                        <div> <b>AUTORIZA:</b> ({$valueh['CDGPE_AUTORIZA']}) {$valueh['TESORERIA']}</div>
+                        <br>
+                        <div><b><span class="fa fa-calendar-check-o"></span> FECHA DE AUTORIZACIÓN:</b> ({$valueh['FAUTORIZA']})</div>
                         
                     </td>
                   

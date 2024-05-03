@@ -149,6 +149,7 @@
                                                             <br>
                                                             <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
                                                             <hr>
+                                                            <hr>
                                                             <div class="card col-md-12">
                                                                 <div class="dataTable_wrapper">
                                                                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones1">
