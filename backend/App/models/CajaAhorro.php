@@ -1735,15 +1735,14 @@ sql;
     {
         $query = <<<sql
         SELECT tar.CDGTICKET_AHORRO, apa.CONTRATO, (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS NOMBRE_CLIENTE,
-        tar.MOTIVO, ta.MONTO, tar.DESCRIPCION_MOTIVO, tar.FREGISTRO, tar.AUTORIZA  FROM TICKETS_AHORRO_REIMPRIME tar 
+        tar.MOTIVO, ta.MONTO, tar.DESCRIPCION_MOTIVO, tar.FREGISTRO, tar.AUTORIZA, tar.CDGPE_AUTORIZA  FROM TICKETS_AHORRO_REIMPRIME tar 
         INNER JOIN TICKETS_AHORRO ta ON ta.CODIGO = tar.CDGTICKET_AHORRO 
         INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ta.CDG_CONTRATO 
         INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
         INNER JOIN PE p ON p.CODIGO = tar.CDGPE_SOLICITA 
-        WHERE p.CDGEM = 'EMPFIN'
+        WHERE p.CDGEM = 'EMPFIN' 
         AND tar.AUTORIZA != '0'
         ORDER BY tar.FREGISTRO
-           
 sql;
 
         try {
@@ -1754,5 +1753,18 @@ sql;
         } catch (Exception $e) {
             return array();
         }
+    }
+
+    public static function AutorizaSolicitudtICKET($update, $user)
+    {
+        $query = <<<sql
+        UPDATE ESIACOM.TICKETS_AHORRO_REIMPRIME
+        SET CDGPE_AUTORIZA='$user', AUTORIZA= '$update->_valor', FAUTORIZA=CURRENT_TIMESTAMP
+        WHERE CODIGO = $update->_ticket
+sql;
+
+        $mysqli = Database::getInstance();
+        return $mysqli->insert($query);
+
     }
 }

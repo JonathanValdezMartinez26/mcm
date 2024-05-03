@@ -6,6 +6,7 @@ defined("APPPATH") or die("Access denied");
 
 use \Core\View;
 use \Core\Controller;
+use \Core\MasterDom;
 use \App\models\AdminSucursales as AdminSucursalesDao;
 use \App\models\CajaAhorro as CajaAhorroDao;
 use Exception;
@@ -1287,8 +1288,8 @@ script;
                                      
                           $.ajax({
                                 type: 'POST',
-                                url: '/AdminSucursal/TicketSolicitudUpdate/',
-                                data: 'valor='+valor+'&ticket='+ticket,
+                                url: '/AdminSucursales/TicketSolicitudUpdate/',
+                                data: {"valor" : valor, "ticket" : ticket},
                                 success: function(respuesta) {
                                      if(respuesta=='1'){
                                      swal("Registro guardado exitosamente", {
@@ -1387,22 +1388,44 @@ html;
                 $estatus ='RECHAZADO';
                 $color = '#9C1508';
             }
+
             $tabla_his .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;"><span class="fa fa-barcode"></span> {$valueh['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 15px !important;"><span class="fa fa-barcode"></span> {$value['CDGTICKET_AHORRO']} </td>
                     <td style="padding: 0px !important;">
-                        <div>
-                            <b>CONTRATOooooooooooo:</b> {$valueh['CONTRATO']}
+                        <div style="text-align: left; margin-left: 10px; margin-top: 5px;">
+                            <b>CONTRATO:</b> {$value['CONTRATO']}
                         </div>
-                        <div>
-                            <b>CLIENTE: </b>{$valueh['NOMBRE_CLIENTE']}
+                        <div style="text-align: left; margin-left: 10px;">
+                            <b>CLIENTE: </b>{$value['NOMBRE_CLIENTE']}
                         </div>
+                        
+                        <hr style="margin-bottom: 8px; margin-top: 8px;">
+                        
+                         <div style="text-align: left; margin-left: 10px;">
+                            <b>MOTIVO: </b>{$value['MOTIVO']}
+                        </div>
+                         <div style="text-align: left; margin-left: 10px;">
+                            <b><span class="fa fa-female"></span> CAJERA QUE REALIZA SOLICITUD: </b>{$value['NOMBRE_CAJERA']}
+                        </div>
+                         <div style="text-align: left; margin-left: 10px;">
+                            <b><span class="fa fa-female"></span> DESCRIPCION CAJERA: </b>{$value['DESCRIPCION_MOTIVO']}
+                        </div>
+                        <div style="text-align: left; margin-left: 10px;">
+                            <b><span class="fa fa-calendar-check-o"></span> FECHA DE SOLICITUD: </b>{$value['FREGISTRO']}
+                        </div> 
+                        
                     </td>
-                    <td style="padding: 0px !important; color: {$color} ;"> <b>{$estatus}</b> </td>
-                    <td style="padding: 0px !important;">{$valueh['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 15px !important;"> 
                     
+                        <div> ESTATUS: <b style="color: {$color};">{$estatus}</b> </div>
+                        <div> AUTORIZA: {$value['CDGPE_AUTORIZA']} </div>
+                        
+                    </td>
+                  
                 </tr>
 html;
+
         }
 
 
@@ -1914,6 +1937,10 @@ script;
                         <div>
                             <b>CLIENTE: </b>{$value['NOMBRE_CLIENTE']}
                         </div>
+                        
+                        <div>
+                            <b>SUCURSAL: </b> FALTA CORREGIR
+                        </div>
                     </td>
                     <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
                     <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
@@ -1936,12 +1963,13 @@ html;
 
     public function TicketSolicitudUpdate()
     {
-        $pagos = new \stdClass();
+        $solicitud = new \stdClass();
 
-        $pagos->_valor = MasterDom::getDataAll('secuencia_e');
-        $pagos->_ejecutivo = MasterDom::getData('ejecutivo_e');
+        $solicitud->_valor = MasterDom::getDataAll('valor');
+        $solicitud->_ticket = MasterDom::getData('ticket');
 
-        $id = PagosDao::EditProcedure($pagos);
-        return $id;
+        $id = CajaAhorroDao::AutorizaSolicitudtICKET($solicitud, $this->__usuario);
+
+        echo $id;
     }
 }

@@ -156,9 +156,7 @@
                                                                         <tr>
                                                                             <th>Cod Sucursal</th>
                                                                             <th>Nombre Sucursal</th>
-                                                                            <th>Hora Cierre</th>
-                                                                            <th>Prorroga</th>
-                                                                            <th>Acciones</th>
+                                                                            <th>Estatus</th>
                                                                         </tr>
                                                                         </thead>
                                                                         <tbody>
