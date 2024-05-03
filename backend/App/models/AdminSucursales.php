@@ -101,10 +101,9 @@ class AdminSucursales
                 SALDO_MINIMO,
                 SALDO_MAXIMO
             FROM
-                SUC_ESTADO_AHORRO
+                PARAMETROS_AHORRO
             WHERE
-                CDG_SUCURSAL = '$sucursal'
-                AND ESTATUS = 'A'
+                CODIGO = '$sucursal'
         sql;
 
         try {
@@ -170,16 +169,18 @@ class AdminSucursales
     {
         $qrySuc = <<<sql
         INSERT INTO SUC_ESTADO_AHORRO
-            (CODIGO, CDG_SUCURSAL, FECHA_REGISTRO, ESTATUS, SALDO, SALDO_MINIMO, SALDO_MAXIMO)
+            (CODIGO, CDG_SUCURSAL, FECHA_REGISTRO, MODIFICACION, ESTATUS, SALDO, SALDO_MINIMO, SALDO_MAXIMO, SALDO_INICIAL)
         VALUES
             (
                 (SELECT NVL(MAX(TO_NUMBER(CODIGO)), 0) FROM SUC_ESTADO_AHORRO) + 1,
                 :sucursal,
                 SYSDATE,
+                SYSDATE,
                 'A',
                 :saldo,
                 :minimo,
-                :maximo
+                :maximo,
+                :saldo
             )
         sql;
 
@@ -246,6 +247,7 @@ class AdminSucursales
                     PE
                 WHERE
                     CODIGO = SCA.CDG_USUARIO
+                    AND PE.CDGEM = 'EMPFIN'
             ) AS NOMBRE_CAJERA,
             NULL AS FECHA_CIERRE,
             SEA.SALDO_MINIMO AS MONTO_MIN,
@@ -264,7 +266,7 @@ class AdminSucursales
             $mysqli = Database::getInstance();
             $res = $mysqli->queryOne($qry);
             if ($res) return self::Responde(true, "Datos encontrados.", $res);
-            else return self::Responde(false, "No se encontraron datos para la sucursal " . $datos["sucursal"] . ".");
+            else return self::Responde(false, "La sucursal " . $datos["sucursal"] . " no se encuentra habilitada para operar cuentas de ahorro.");
         } catch (Exception $e) {
             return self::Responde(false, "Error al buscar información de la sucursal.", null, $e->getMessage());
         }
@@ -373,10 +375,10 @@ class AdminSucursales
         $qry = <<<sql
         SELECT
             CODIGO,
-            SALDO_MINIMO,
-            SALDO_MAXIMO
+            MONTO_MINIMO,
+            MONTO_MAXIMO
         FROM
-            SUC_ESTADO_AHORRO
+            PARAMETROS_AHORRO
         WHERE
             CDG_SUCURSAL = '$sucursal'
         sql;
@@ -391,24 +393,42 @@ class AdminSucursales
         }
     }
 
-    public static function GuardarMontosInauguracion($datos)
+    public static function GuardarParametrosSucursal($datos)
     {
-        $qry = <<<sql
+        $qryInsert = <<<sql
+        INSERT INTO PARAMETROS_AHORRO
+            (CODIGO, CDG_SUCURSAL, MONTO_MINIMO, MONTO_MAXIMO)
+        VALUES
+            (
+                (SELECT NVL(MAX(TO_NUMBER(CODIGO)), 0) FROM PARAMETROS_AHORRO) + 1,
+                :sucursal,
+                :minimo,
+                :maximo
+            )
+        sql;
+
+        $qryUpdate = <<<sql
         UPDATE
-            SUC_ESTADO_AHORRO
+            PARAMETROS_AHORRO
         SET
-            SALDO_MINIMO = :minimo,
-            SALDO_MAXIMO = :maximo,
-            MODIFICACION = SYSDATE
+            MONTO_MINIMO = :minimo,
+            MONTO_MAXIMO = :maximo
         WHERE
             CODIGO = :codigo
         sql;
 
         $params = [
-            "codigo" => $datos["codigo"],
             "minimo" => $datos["minimoApertura"],
             "maximo" => $datos["maximoApertura"]
         ];
+
+        if ($datos["codigo"] === "") {
+            $qry = $qryInsert;
+            $params["sucursal"] = $datos["codSucMontos"];
+        } else {
+            $qry = $qryUpdate;
+            $params["codigo"] = $datos["codigo"];
+        }
 
         try {
             $mysqli = Database::getInstance();

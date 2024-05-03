@@ -147,13 +147,13 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="sucursalArqueo">Código sucursal</label>
-                                    <input class="form-control" id="sucursalArqueo" name="sucursalArqueo" value="<?= $_SESSION['cdgco']; ?>" readonly>
+                                    <input class="form-control" id="sucursalArqueo" name="sucursalArqueo" value="<?= $_SESSION['cdgco_ahorro']; ?>" readonly>
                                 </div>
                             </div>
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="nombreSucursal">Nombre sucursal</label>
-                                    <input class="form-control" id="nombreSucursal" name="nombreSucursal" value="<?= $_SESSION['cdgco']; ?>" readonly>
+                                    <input class="form-control" id="nombreSucursal" name="nombreSucursal" value="<?= $nomSucursal; ?>" readonly>
                                 </div>
                             </div>
                         </div>

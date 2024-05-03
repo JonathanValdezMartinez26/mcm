@@ -716,14 +716,13 @@ class AdminSucursales extends Controller
                 const min = parseFloat(document.querySelector("#montoMin").value) || 0
                 const max = parseFloat(document.querySelector("#montoMax").value) || 0
                 const inicial = parseFloat(document.querySelector("#saldo").value) || 0
-                document.querySelector("#guardar").disabled = !(min > 0 && max > 0 && max >= min && inicial >= min && inicial <= max)
+                document.querySelector("#guardar").disabled = !(min > 0 && max > 0 && max >= min && inicial <= max)
             }
              
             const validaMaxMin = () => {
                 const min = parseFloat(document.querySelector("#montoMin").value) || 0
                 const max = parseFloat(document.querySelector("#montoMax").value) || 0
                 if (min > max) document.querySelector("#montoMax").value = min
-                document.querySelector("#saldo").value = min
             }
              
             const activarSucursal = () => {
@@ -751,8 +750,8 @@ class AdminSucursales extends Controller
                     (datos) => {
                         if (!datos.success) return
                         document.querySelector("#codigo").value = datos.datos.CODIGO
-                        document.querySelector("#minimoApertura").value = datos.datos.SALDO_MINIMO
-                        document.querySelector("#maximoApertura").value = datos.datos.SALDO_MAXIMO
+                        document.querySelector("#minimoApertura").value = datos.datos.MONTO_MINIMO
+                        document.querySelector("#maximoApertura").value = datos.datos.MONTO_MAXIMO
                     }
                 )
             }
@@ -768,7 +767,7 @@ class AdminSucursales extends Controller
              
             const guardarMontos = () => {
                 consultaServidor(
-                    "/AdminSucursales/GuardarMontosInauguracion/",
+                    "/AdminSucursales/GuardarParametrosSucursal/",
                     $("#configMontos").serialize(),
                     (res) => {
                         if (!res.success) return showError(res.mensaje)
@@ -838,9 +837,9 @@ class AdminSucursales extends Controller
         echo AdminSucursalesDao::GetMontosApertura($_POST['sucursal']);
     }
 
-    public function GuardarMontosInauguracion()
+    public function GuardarParametrosSucursal()
     {
-        echo AdminSucursalesDao::GuardarMontosInauguracion($_POST);
+        echo AdminSucursalesDao::GuardarParametrosSucursal($_POST);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

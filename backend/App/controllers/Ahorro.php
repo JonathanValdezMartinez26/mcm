@@ -329,7 +329,7 @@ class Ahorro extends Controller
     public function ContratoCuentaCorriente()
     {
 
-        $saldosMM = CajaAhorroDao::GetSaldoMinimoApertura($_SESSION['cdgco']);
+        $saldosMM = CajaAhorroDao::GetSaldoMinimoApertura($_SESSION['cdgco_ahorro']);
         $saldoMinimoApertura = $saldosMM['MONTO_MINIMO'];
         $costoInscripcion = 100;
 
@@ -528,7 +528,7 @@ class Ahorro extends Controller
             const regPago = (contrato) => {
                 const datos = $("#AddPagoApertura").serializeArray()
                 limpiaMontos(datos, ["deposito", "inscripcion", "saldo_inicial"])
-                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                addParametro(datos, "sucursal", "{$_SESSION['cdgco_ahorro']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                 addParametro(datos, "contrato", contrato)
                  
@@ -541,7 +541,7 @@ class Ahorro extends Controller
                         document.querySelector("#AddPagoApertura").reset()
                         $("#modal_agregar_pago").modal("hide")
                         limpiaDatosCliente()
-                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
+                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}")
                     
                         showSuccess("Se ha generado el contrato: " + contrato + ".")
                         .then(() => {
@@ -950,7 +950,7 @@ class Ahorro extends Controller
                 const datos = $("#registroOperacion").serializeArray()
                 
                 limpiaMontos(datos, ["saldoActual", "montoOperacion", "saldoFinal"])
-                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                addParametro(datos, "sucursal", "{$_SESSION['cdgco_ahorro']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                 addParametro(datos, "producto", "cuenta de ahorro corriente")
                  
@@ -975,7 +975,7 @@ class Ahorro extends Controller
                             return showError(respuesta.mensaje)
                         }
                         showSuccess(respuesta.mensaje).then(() => {
-                            imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
+                            imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}")
                             limpiaDatosCliente()
                         })
                     })
@@ -1174,7 +1174,7 @@ class Ahorro extends Controller
                 const datos = $("#registroOperacion").serializeArray()
                 
                 limpiaMontos(datos, ["saldoActual", "montoOperacion", "saldoFinal"])
-                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                addParametro(datos, "sucursal", "{$_SESSION['cdgco_ahorro']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                 addParametro(datos, "retiroExpress", document.querySelector("#express").checked)
                  
@@ -1450,7 +1450,7 @@ class Ahorro extends Controller
                 const datos = $("#registroOperacion").serializeArray()
                  
                 limpiaMontos(datos, ["saldoActual", "montoOperacion", "saldoFinal"])
-                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                addParametro(datos, "sucursal", "{$_SESSION['cdgco_ahorro']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                  
                 datos.push({ name: "tasa", value: document.querySelector("#plazo").value })
@@ -1472,7 +1472,7 @@ class Ahorro extends Controller
                             }
                             showSuccess(respuesta.mensaje).then(() => {
                                 imprimeContrato(document.querySelector("#contrato").value, 2)
-                                imprimeTicket(respuesta.datos.ticket, {$_SESSION['cdgco']})
+                                imprimeTicket(respuesta.datos.ticket, {$_SESSION['cdgco_ahorro']})
                                 limpiaDatosCliente()
                             })
                         })
@@ -2111,7 +2111,7 @@ class Ahorro extends Controller
                 const datos = $("#registroOperacion").serializeArray()
                  
                 limpiaMontos(datos, ["saldoActual", "montoOperacion", "saldoFinal"])
-                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                addParametro(datos, "sucursal", "{$_SESSION['cdgco_ahorro']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                 addParametro(datos, "producto", "cuenta de ahorro Peques")
                  
@@ -2142,7 +2142,7 @@ class Ahorro extends Controller
                             }
                             
                             showSuccess(respuesta.mensaje).then(() => {
-                                imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco']}")
+                                imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}")
                                 limpiaDatosCliente()
                             })
                         })
@@ -2324,7 +2324,7 @@ class Ahorro extends Controller
                 const datos = $("#registroOperacion").serializeArray()
                 
                 limpiaMontos(datos, ["saldoActual", "montoOperacion", "saldoFinal"])
-                addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                addParametro(datos, "sucursal", "{$_SESSION['cdgco_ahorro']}")
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                 addParametro(datos, "retiroExpress", document.querySelector("#express").checked)
                  
@@ -2510,7 +2510,7 @@ class Ahorro extends Controller
                     if (!continuar) return
                      
                     const datos = []
-                    addParametro(datos, "sucursal", "{$_SESSION['cdgco']}")
+                    addParametro(datos, "sucursal", "{$_SESSION['cdgco_ahorro']}")
                     addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                     addParametro(datos, "monto", totalEfectivo)
                      
@@ -2544,7 +2544,7 @@ class Ahorro extends Controller
         </script>
         html;
 
-        $d = CajaAhorroDao::HistoricoArqueo(["fecha_inicio" => date('Y-m-d', strtotime('-7 day')), "fecha_fin" => date('Y-m-d')], "sucursal", $_SESSION['cdgco'], "ejecutivo", $_SESSION['usuario']);
+        $d = CajaAhorroDao::HistoricoArqueo(["fecha_inicio" => date('Y-m-d', strtotime('-7 day')), "fecha_fin" => date('Y-m-d')], "sucursal", $_SESSION['cdgco_ahorro'], "ejecutivo", $_SESSION['usuario']);
 
         $d = json_decode($d, true);
         $detalles = $d['datos'];
@@ -2589,6 +2589,7 @@ class Ahorro extends Controller
         View::set('fechaFin', date('Y-m-d'));
         View::set('tablaBilletes', self::generaTabla($billetes, "billete"));
         View::set('tablaMonedas', self::generaTabla($monedas, "moneda"));
+        View::set('nomSucursal', CajaAhorroDao::getSucursal($_SESSION['cdgco_ahorro'])['NOMBRE']);
         View::render("caja_menu_saldos_dia");
     }
 

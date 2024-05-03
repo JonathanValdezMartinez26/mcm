@@ -507,7 +507,7 @@ class CajaAhorro
                 $mysqli = Database::getInstance();
                 $res = $mysqli->insertaMultiple($inserts, $datosInsert);
                 if ($res) {
-                    LogTransaccionesAhorro::LogTransacciones($inserts, $datosInsert, $_SESSION['cdgco'], $_SESSION['usuario'], $noContrato, "Registro de nuevo contrato ahorro corriente");
+                    LogTransaccionesAhorro::LogTransacciones($inserts, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $noContrato, "Registro de nuevo contrato ahorro corriente");
                     return self::Responde(true, "Contrato de ahorro registrado correctamente.", ['contrato' => $noContrato]);
                 }
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.");
@@ -562,7 +562,7 @@ class CajaAhorro
             $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
 
             if ($res) {
-                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco'], $_SESSION['usuario'], $datos['contrato'], "Depósito de apertura de cuenta de ahorro corriente");
+                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Depósito de apertura de cuenta de ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "Pago de apertura registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
@@ -602,7 +602,7 @@ class CajaAhorro
             $mysqli = Database::getInstance();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
-                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco'], $_SESSION['usuario'], $datos['contrato'], "Registro de " . $tipoMov . " en " . $datos['producto']);
+                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de " . $tipoMov . " en " . $datos['producto']);
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "El " . $tipoMov . " fue registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
@@ -1030,7 +1030,7 @@ class CajaAhorro
             try {
                 $mysqli = Database::getInstance();
                 $res = $mysqli->insertaMultiple($inserts, $parametros);
-                LogTransaccionesAhorro::LogTransacciones($inserts, $parametros, $_SESSION['cdgco'], $_SESSION['usuario'], $noContrato, "Registro de nueva cuenta de ahorro Peque");
+                LogTransaccionesAhorro::LogTransacciones($inserts, $parametros, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $noContrato, "Registro de nueva cuenta de ahorro Peque");
                 if ($res) return self::Responde(true, "Contrato de ahorro registrado correctamente.", ['contrato' => $noContrato]);
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.");
             } catch (Exception $e) {
@@ -1146,7 +1146,7 @@ class CajaAhorro
             $mysqli = Database::getInstance();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
-                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco'], $_SESSION['usuario'], $datos['contrato'], "Registro de inversión de cuenta ahorro corriente");
+                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de inversión de cuenta ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "Inversión registrada correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
@@ -1316,7 +1316,7 @@ class CajaAhorro
             $mysqli = Database::getInstance();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
-                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco'], $_SESSION['usuario'], $datos['contrato'], "Registro de solicitud de retiro " . $tipoMov . " de cuenta de ahorro corriente");
+                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de solicitud de retiro " . $tipoMov . " de cuenta de ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "El retiro " . $tipoMov . " fue registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
@@ -1768,7 +1768,6 @@ sql;
 
         $mysqli = Database::getInstance();
         return $mysqli->insert($query);
-
     }
 
 
@@ -1866,7 +1865,6 @@ sql;
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar el arqueo.", null, $e->getMessage());
         }
-
     }
 
     public static function GetModuloAhorroPermisos($update, $user)
@@ -1879,6 +1877,5 @@ sql;
 
         $mysqli = Database::getInstance();
         return $mysqli->insert($query);
-
     }
 }
