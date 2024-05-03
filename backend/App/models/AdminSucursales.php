@@ -170,13 +170,14 @@ class AdminSucursales
     {
         $qrySuc = <<<sql
         INSERT INTO SUC_ESTADO_AHORRO
-            (CODIGO, CDG_SUCURSAL, FECHA_REGISTRO, ESTATUS, SALDO_MINIMO, SALDO_MAXIMO)
+            (CODIGO, CDG_SUCURSAL, FECHA_REGISTRO, ESTATUS, SALDO, SALDO_MINIMO, SALDO_MAXIMO)
         VALUES
             (
                 (SELECT NVL(MAX(TO_NUMBER(CODIGO)), 0) FROM SUC_ESTADO_AHORRO) + 1,
                 :sucursal,
                 SYSDATE,
                 'A',
+                :saldo,
                 :minimo,
                 :maximo
             )
@@ -202,6 +203,7 @@ class AdminSucursales
         $params = [
             [
                 "sucursal" => $datos['sucursal'],
+                "saldo" => $datos['saldo'],
                 "minimo" => $datos['montoMin'],
                 "maximo" => $datos['montoMax']
             ],
@@ -370,10 +372,11 @@ class AdminSucursales
     {
         $qry = <<<sql
         SELECT
-            MONTO_MINIMO,
-            MONTO_MAXIMO
+            CODIGO,
+            SALDO_MINIMO,
+            SALDO_MAXIMO
         FROM
-            PARAMETROS_AHORRO
+            SUC_ESTADO_AHORRO
         WHERE
             CDG_SUCURSAL = '$sucursal'
         sql;
@@ -394,15 +397,15 @@ class AdminSucursales
         UPDATE
             SUC_ESTADO_AHORRO
         SET
-            MONTO_MINIMO = :minimo,
-            MONTO_MAXIMO = :maximo,
+            SALDO_MINIMO = :minimo,
+            SALDO_MAXIMO = :maximo,
             MODIFICACION = SYSDATE
         WHERE
             CODIGO = :codigo
         sql;
 
         $params = [
-            "sucursal" => $datos["codSucMontos"],
+            "codigo" => $datos["codigo"],
             "minimo" => $datos["minimoApertura"],
             "maximo" => $datos["maximoApertura"]
         ];
