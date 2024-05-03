@@ -154,10 +154,12 @@ html;
         if($user[1]['PERMISO'] == '')
         {
             $permiso = 0;
+            $cdgco_ahorro = 'NULL';
         }
         else
         {
             $permiso = $user[1]['PERMISO'];
+            $cdgco_ahorro = $user[1]['CDGCO_AHORRO'];
         }
 
         session_start();
@@ -167,6 +169,7 @@ html;
         $_SESSION['cdgco'] = $user[0]['CDGCO'];
         $_SESSION['perfil'] = $user[0]['PERFIL'];
         $_SESSION['ahorro'] = $permiso;
+        $_SESSION['cdgco_ahorro'] = $cdgco_ahorro;
 
         header("location: /Principal/");
     }
