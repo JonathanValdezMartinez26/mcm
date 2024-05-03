@@ -1695,7 +1695,7 @@ class CajaAhorro
         INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
         INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
         ORDER BY ma.FECHA_MOV ASC
-sql;
+        sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -1718,8 +1718,7 @@ sql;
         INNER JOIN PE p ON p.CODIGO = tar.CDGPE_SOLICITA 
         WHERE p.CDGEM = 'EMPFIN'
         AND tar.AUTORIZA = '0'
-           
-sql;
+        sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -1743,6 +1742,7 @@ sql;
         WHERE p.CDGEM = 'EMPFIN' 
         AND tar.AUTORIZA != '0'
         ORDER BY tar.FREGISTRO
+
 sql;
 
         try {
@@ -1755,6 +1755,7 @@ sql;
         }
     }
 
+
     public static function AutorizaSolicitudtICKET($update, $user)
     {
         $query = <<<sql
@@ -1765,6 +1766,104 @@ sql;
 
         $mysqli = Database::getInstance();
         return $mysqli->insert($query);
+
+    }
+
+
+    public static function HistoricoArqueo($datos)
+    {
+        $qry = <<<sql
+        SELECT
+            TO_CHAR(AR.FECHA, 'DD\/MM\/YYYY HH24:MI:SS') AS FECHA,
+            AR.CDG_USUARIO AS EJECUTIVO,
+            (
+                SELECT
+                    CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE)
+                FROM
+                    PE
+                WHERE
+                    PE.CODIGO = AR.CDG_USUARIO
+                    AND PE.CDGEM = 'EMPFIN'
+            ) AS NOMBRE_EJECUTIVO,
+            AR.CDG_SUCURSAL AS CDG_SUCURSAL,
+            (
+                SELECT
+                    CO.NOMBRE
+                FROM
+                    CO
+                WHERE
+                    CO.CODIGO = AR.CDG_SUCURSAL
+            
+            ) AS SUCURSAL,
+            AR.MONTO
+        FROM
+            ARQUEO AR
+        sql;
+
+        $parametros = [];
+        if ($datos && $datos['fecha_inicio'] && $datos['fecha_fin']) {
+            $parametros[] = "TRUNC(AR.FECHA) BETWEEN TO_DATE('" . $datos['fecha_inicio'] . "', 'YYYY-MM-DD') AND TO_DATE('" . $datos['fecha_fin'] . "', 'YYYY-MM-DD')";
+        }
+
+        if ($datos && $datos['sucursal']) {
+            $parametros[] = "AR.CDG_SUCURSAL = '" . $datos['sucursal'] . "'";
+        }
+
+        if ($datos && $datos['ejecutivo']) {
+            $parametros[] = "AR.CDG_USUARIO = '" . $datos['ejecutivo'] . "'";
+        }
+
+        if (count($parametros) > 0) {
+            $qry .= " WHERE " . implode(" AND ", $parametros);
+        }
+
+        $qry .= " ORDER BY AR.FECHA DESC";
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qry);
+            if ($res) return self::Responde(true, "Consulta realizada correctamente.", $res);
+            return self::Responde(false, "No se encontraron registros para la consulta.", $qry);
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al consultar los registros.", null, $e->getMessage());
+        }
+    }
+
+    public static function RegistraArqueo($datos)
+    {
+        $qry = <<<sql
+        INSERT INTO ARQUEO
+            (CDG_ARQUEO, CDG_USUARIO, CDG_SUCURSAL, FECHA, MONTO, B_1000, B_500, B_200, B_100, B_50, B_20, M_10, M_5, M_2, M_1, M_050, M_020, M_010)
+        VALUES
+            ((SELECT NVL(MAX(CDG_ARQUEO),0) FROM ARQUEO) + 1, :ejecutivo, :sucursal, SYSDATE, :monto, :b_1000, :b_500, :b_200, :b_100, :b_50, :b_20, :m_10, :m_5, :m_2, :m_1, :m_050, :m_020, :m_010)
+sql;
+
+        $parametros = [
+            'ejecutivo' => $datos['ejecutivo'],
+            'sucursal' => $datos['sucursal'],
+            'monto' => $datos['monto'],
+            'b_1000' => $datos['b_1000'],
+            'b_500' => $datos['b_500'],
+            'b_200' => $datos['b_200'],
+            'b_100' => $datos['b_100'],
+            'b_50' => $datos['b_50'],
+            'b_20' => $datos['b_20'],
+            'm_10' => $datos['m_10'],
+            'm_5' => $datos['m_5'],
+            'm_2' => $datos['m_2'],
+            'm_1' => $datos['m_1'],
+            'm_050' => $datos['m_050'],
+            'm_020' => $datos['m_020'],
+            'm_010' => $datos['m_010']
+        ];
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->insertar($qry, $parametros);
+            return self::Responde(true, "Arqueo registrado correctamente.");
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al registrar el arqueo.", null, $e->getMessage());
+        }
 
     }
 }

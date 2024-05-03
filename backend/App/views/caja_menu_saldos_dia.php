@@ -1,4 +1,4 @@
-<?php echo $header; ?>
+<?= $header; ?>
 
 <div class="right_col">
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
@@ -54,95 +54,169 @@
             </a>
         </div>
         <div class="col-md-9">
-            <form id="registroInicialAhorro" name="registroInicialAhorro">
-                <div class="modal-content">
-                    <div class="modal-header" style="padding-bottom: 0px">
-                        <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                            <a class="navbar-brand">Mi espacio / Saldos del día</a>
-                            &nbsp;&nbsp;
-                        </div>
-                        <div class="col-md-12" style="display: flex; align-items: center; justify-content: center; height: 40px;">
-                            <label style="font-size: 16px; font-weight: bold; margin: 0; padding: 0;">Saldos generales del día <?= $fecha; ?>
-                            </label>
-                        </div>
+            <div class="modal-content">
+                <div class="modal-header" style="padding-bottom: 0px">
+                    <div class="navbar-header card col-md-12" style="background: #2b2b2b">
+                        <a class="navbar-brand">Mi espacio / Saldos del día</a>
+                        &nbsp;&nbsp;
                     </div>
-                    <div class="modal-body">
-                        <div class="container-fluid">
-                            <div class="col-md-12">
-                                <div class="row">
-                                    <div class="card col-md-12">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="col-md-3" style="border: 1px solid #dfdfdf; border-radius: 30px;display:flex; flex-direction: column;justify-content: center; align-items: center;" data-toggle="modal" data-target="#modal_agregar_pago">
-                                                    <br>
-                                                    <p style="font-size: 16px"><b><i class="fa fa-sun-o" style="color: #ffdc3a"></i> Apertura:</b></p>
-                                                    <br>
-                                                    <p style="font-size: 19px"><b> $ <?= $saldoInicial; ?></b></p>
-                                                    <br>
-                                                </div>
-                                                <div class="col-md-3" style="border: 1px solid #dfdfdf; border-radius: 30px;display:flex; flex-direction: column;justify-content: center; align-items: center;" data-toggle="modal" data-target="#modal_agregar_pago">
-                                                    <br>
-                                                    <p style="font-size: 16px"><b><i class="fa fa-arrow-down" style="color: #00ac00"></i> Entradas:</b></p>
-                                                    <br>
-                                                    <p style="font-size: 19px"><b> $ <?= $entradas; ?></b></p>
-                                                    <br>
-                                                </div>
-                                                <div class="col-md-3" style="border: 1px solid #dfdfdf; border-radius: 30px;display:flex; flex-direction: column;justify-content: center; align-items: center;" data-toggle="modal" data-target="#modal_agregar_pago">
-                                                    <br>
-                                                    <p style="font-size: 16px"><b> <i class="fa fa-arrow-up" style="color: #ac0000"></i> Salidas:</b></p>
-                                                    <br>
-                                                    <p style="font-size: 19px"><b> $ <?= $salidas; ?></b></p>
-                                                    <br>
-                                                </div>
-                                                <div class="col-md-3" style="border: 1px solid #dfdfdf; border-radius: 30px;display:flex; flex-direction: column;justify-content: center; align-items: center;" data-toggle="modal" data-target="#modal_agregar_pago">
-                                                    <br>
-                                                    <p style="font-size: 16px"><b><i class="fa fa-moon-o" style="color: #094471"></i> Cierre:</b></p>
-                                                    <br>
-                                                    <p style="font-size: 19px"><b> $ <?= $saldoFinal; ?></b></p>
-                                                    <br>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <hr>
-                                        <div class="row">
-                                            <div class="col-md-12" style="text-align: center">
-                                                <label style="font-size: 18px; margin: 0; padding: 0;">Resumen de movimientos (entradas y salidas de efectivo)</label>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <button id="btnExportaExcel" type="button" class="btn btn-success btn-circle" onclick=imprimeExcel()><i class="fa fa-file-excel-o"></i><b> Exportar a Excel</b></button>
-                                            </div>
-                                        </div>
-                                        <div class="card col-md-12">
-                                            <form name="all" id="all" method="POST">
-                                                <div class="dataTable_wrapper">
-                                                    <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
-                                                        <thead>
-                                                            <tr>
-                                                                <th></th>
-                                                                <th>Operación</th>
-                                                                <th>Nombre del cliente</th>
-                                                                <th>Código cliente</th>
-                                                                <th>Fecha de movimiento</th>
-                                                                <th>Monto del movimiento</th>
-                                                                <th>Autorización</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <?= $tabla; ?>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </form>
-                                        </div>
+                    <div class="col-md-12" style="display: flex; align-items: center; justify-content: center; height: 40px;">
+                        <label style="font-size: 16px; font-weight: bold; margin: 0; padding: 0;">Saldos generales del día <?= $fecha; ?>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="row">
+                                <div class="col-md-9" style="text-align: center">
+                                    <label style="font-size: 18px; margin: 0; padding: 0;">Resumen de movimientos (entradas y salidas de efectivo)</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <button id="btnArqueo" class="btn btn-primary" onclick=mostrarModal()><i class="glyphicon glyphicon-floppy-disk"></i><b> Generar arqueo</b></button>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="fechaInicio">Fecha inicio</label>
+                                        <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" max="<?= $fechaFin; ?>" value="<?= $fechaInicio; ?>">
                                     </div>
                                 </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="fechaFin">Fecha fin</label>
+                                        <input type="date" class="form-control" id="fechaFin" name="fechaFin" max="<?= $fechaFin; ?>" value="<?= $fechaFin; ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-3" style="padding-top: 23px;">
+                                    <button id="btnBsk" class="btn btn-primary" onclick=buscarArqueos()><i class="fa fa-search"></i><b> Buscar</b></button>
+                                </div>
+                                <div class="col-md-3" style="padding-top: 23px; display: flex; justify-content: flex-end;">
+                                    <button id="btnExportaExcel" class="btn btn-success btn-circle" onclick=imprimeExcel()><i class="fa fa-file-excel-o"></i><b> Exportar a Excel</b></button>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="card col-md-12">
+                                <form name="all" id="all" method="POST">
+                                    <div class="dataTable_wrapper">
+                                        <table class="table table-striped table-bordered table-hover" id="tblArqueos">
+                                            <thead>
+                                                <tr>
+                                                    <th>Fecha</th>
+                                                    <th>Código ejecutivo</th>
+                                                    <th>Nombre ejecutivo</th>
+                                                    <th>Código sucursal</th>
+                                                    <th>Nombre sucursal</th>
+                                                    <th>Monto</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?= $tabla; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <div class="modal fade in" id="modalArqueo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block; padding-right: 15px;"> -->
+<div class="modal fade" id="modalArqueo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="text-align: center;">
+                <h4 class="modal-title" id="myModalLabel">Arqueo de caja</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form onsubmit=noSubmit() id="frmModal">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="fechaArqueo">Fecha</label>
+                                    <input class="form-control" id="fechaArqueo" name="fechaArqueo" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="sucursalArqueo">Código sucursal</label>
+                                    <input class="form-control" id="sucursalArqueo" name="sucursalArqueo" value="<?= $_SESSION['cdgco']; ?>" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="nombreSucursal">Nombre sucursal</label>
+                                    <input class="form-control" id="nombreSucursal" name="nombreSucursal" value="<?= $_SESSION['cdgco']; ?>" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="cajeraArqueo">Código Cajera</label>
+                                    <input class="form-control" id="cajeraArqueo" name="cajeraArqueo" value="<?= $_SESSION['usuario']; ?>" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label for="nombreCajera">Nombre Cajera</label>
+                                    <input class="form-control" id="nombreCajera" name="nombreCajera" value="<?= $_SESSION['nombre']; ?>" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <table style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: center; font-size:20px;">Billetes</th>
+                                        <th style="text-align: center; font-size:20px;">Monedas</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="padding: 10px; border: #000000 1px solid;">
+                                            <?= $tablaBilletes; ?>
+                                        </td>
+                                        <td style="padding: 10px; border: #000000 1px solid;">
+                                            <?= $tablaMonedas; ?>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2">
+                                            <div class="col-md-12" style="text-align: center;">
+                                                <p>En caso de tener monedas de denominación mayor a $10.00, ingresarlas como billetes.</p>
+                                            </div>
+                                            <hr>
+                                            <div class="row" style="display: flex; justify-content: flex-end; align-items: center;">
+                                                <div class="col-md-4" style="text-align: right;">
+                                                    <label for="totalEfectivo">Total efectivo:</label>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input style="text-align: right;" class="form-control" id="totalEfectivo" name="totalEfectivo" value="0.00" readonly />
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button class="btn btn-primary" id="btnRegistrarArqueo" value="enviar" onclick=registraArqueo() disabled><span class="glyphicon glyphicon-floppy-disk"></span> Registrar arqueo</button>
+            </div>
         </div>
     </div>
 </div>
@@ -166,4 +240,4 @@
 </style>
 
 
-<?php echo $footer; ?>
+<?= $footer; ?>
