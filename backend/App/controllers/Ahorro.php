@@ -2505,7 +2505,7 @@ class Ahorro extends Controller
                 
                 confirmarMovimiento(
                     "Confirmación de arqueo de caja",
-                    "¿Está segur(a) de continuar con el registro del arqueo de caja?",
+                    null,
                     tablaResumenArqueo(),
                 ).then((continuar) => {
                     if (!continuar) return
@@ -2547,8 +2547,18 @@ class Ahorro extends Controller
                 const tabla = document.createElement("table")
                 tabla.setAttribute("style", "width: 100%;")
                 const thead = document.createElement("thead")
-                const tr = document.createElement("tr")
+                const tr0 = document.createElement("tr")
+                tr0.style.height = "40px"
                  
+                const th0 = document.createElement("th")
+                th0.setAttribute("colspan", "3")
+                th0.style.textAlign = "center"
+                th0.style.fontSize = "25px"
+                th0.innerText = "Resumen"
+                tr0.appendChild(th0)
+                thead.appendChild(tr0)
+                 
+                const tr1 = document.createElement("tr")
                 const th1 = document.createElement("th")
                 const th2 = document.createElement("th")
                 const th3 = document.createElement("th")
@@ -2561,11 +2571,11 @@ class Ahorro extends Controller
                 th2.innerText = "Cantidad"
                 th3.innerText = "Total"
                  
-                tr.appendChild(th1)
-                tr.appendChild(th2)
-                tr.appendChild(th3)
+                tr1.appendChild(th1)
+                tr1.appendChild(th2)
+                tr1.appendChild(th3)
                  
-                thead.appendChild(tr)
+                thead.appendChild(tr1)
                 tabla.appendChild(thead)
                 const tbody = document.createElement("tbody")
                  
@@ -2581,13 +2591,28 @@ class Ahorro extends Controller
                 const tdf = document.createElement("td")
                 tdf.setAttribute("colspan", "2")
                 tdf.style.textAlign = "right"
+                tdf.style.fontSize = "20px"
+                tdf.style.fontWeight = "bold"
                 tdf.innerText = "Total efectivo:"
                 trf.appendChild(tdf)
                 const tdf2 = document.createElement("td")
                 tdf2.style.textAlign = "center"
+                tdf2.style.fontSize = "20px"
+                tdf2.style.fontWeight = "bold"
                 tdf2.innerText = parseaNumero(document.querySelector("#totalEfectivo").value).toLocaleString("es-MX", { style: "currency", currency: "MXN" })
                 trf.appendChild(tdf2)
+                trf.style.borderTop = "2px solid black"
+                trf.style.height = "40px"
                 tf.appendChild(trf)
+                 
+                const trf2 = document.createElement("tr")
+                const tdf3 = document.createElement("td")
+                tdf3.style.color = "black"
+                tdf3.setAttribute("colspan", "3")
+                tdf3.style.textAlign = "center"
+                tdf3.innerText = "¿Está segur(a) de continuar con el registro del arqueo de caja?"
+                trf2.appendChild(tdf3)
+                tf.appendChild(trf2)
                 tabla.appendChild(tf)
                  
                 return tabla

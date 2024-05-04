@@ -1823,34 +1823,47 @@ sql;
 
     public static function RegistraArqueo($datos)
     {
-        $qry = <<<sql
-        INSERT INTO ARQUEO
-            (CDG_ARQUEO, CDG_USUARIO, CDG_SUCURSAL, FECHA, MONTO, B_1000, B_500, B_200, B_100, B_50, B_20, M_10, M_5, M_2, M_1, M_050, M_020, M_010)
-        VALUES
-            ((SELECT NVL(MAX(CDG_ARQUEO),0) FROM ARQUEO) + 1, :ejecutivo, :sucursal, SYSDATE, :monto, :b_1000, :b_500, :b_200, :b_100, :b_50, :b_20, :m_10, :m_5, :m_2, :m_1, :m_050, :m_020, :m_010)
-sql;
-
-        $parametros = [
-            'ejecutivo' => $datos['ejecutivo'],
-            'sucursal' => $datos['sucursal'],
-            'monto' => $datos['monto'],
-            'b_1000' => $datos['b_1000'],
-            'b_500' => $datos['b_500'],
-            'b_200' => $datos['b_200'],
-            'b_100' => $datos['b_100'],
-            'b_50' => $datos['b_50'],
-            'b_20' => $datos['b_20'],
-            'm_10' => $datos['m_10'],
-            'm_5' => $datos['m_5'],
-            'm_2' => $datos['m_2'],
-            'm_1' => $datos['m_1'],
-            'm_050' => $datos['m_050'],
-            'm_020' => $datos['m_020'],
-            'm_010' => $datos['m_010']
-        ];
+        $qryValidacion = <<<sql
+        SELECT
+            SALDO
+        FROM
+            SUC_ESTADO_AHORRO
+        WHERE
+            CDG_SUCURSAL = '{$datos['sucursal']}'
+        sql;
 
         try {
             $mysqli = Database::getInstance();
+            $res = $mysqli->queryOne($qryValidacion);
+            if (!$res) return self::Responde(false, "No se encontró el saldo de la sucursal {$datos['sucursal']}.");
+            if ($res['SALDO'] > $datos['monto']) return self::Responde(false, "No es posible realizar el arqueo ya que hay un saldo negativo.");
+
+            $qry = <<<sql
+            INSERT INTO ARQUEO
+                (CDG_ARQUEO, CDG_USUARIO, CDG_SUCURSAL, FECHA, MONTO, B_1000, B_500, B_200, B_100, B_50, B_20, M_10, M_5, M_2, M_1, M_050, M_020, M_010)
+            VALUES
+                ((SELECT NVL(MAX(CDG_ARQUEO),0) FROM ARQUEO) + 1, :ejecutivo, :sucursal, SYSDATE, :monto, :b_1000, :b_500, :b_200, :b_100, :b_50, :b_20, :m_10, :m_5, :m_2, :m_1, :m_050, :m_020, :m_010)
+            sql;
+
+            $parametros = [
+                'ejecutivo' => $datos['ejecutivo'],
+                'sucursal' => $datos['sucursal'],
+                'monto' => $datos['monto'],
+                'b_1000' => $datos['b_1000'],
+                'b_500' => $datos['b_500'],
+                'b_200' => $datos['b_200'],
+                'b_100' => $datos['b_100'],
+                'b_50' => $datos['b_50'],
+                'b_20' => $datos['b_20'],
+                'm_10' => $datos['m_10'],
+                'm_5' => $datos['m_5'],
+                'm_2' => $datos['m_2'],
+                'm_1' => $datos['m_1'],
+                'm_050' => $datos['m_050'],
+                'm_020' => $datos['m_020'],
+                'm_010' => $datos['m_010']
+            ];
+
             $res = $mysqli->insertar($qry, $parametros);
             return self::Responde(true, "Arqueo registrado correctamente.");
         } catch (Exception $e) {
