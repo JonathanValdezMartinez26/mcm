@@ -1095,18 +1095,9 @@ class AdminSucursales extends Controller
              
         });
         
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
-            {$this->noSubmit}
-            {$this->soloNumeros}
-            {$this->consultaServidor}
-            {$this->numeroLetras}
-            {$this->primeraMayuscula}
-            {$this->addParametro}
-            {$this->buscaCliente}
+          
         </script>
-        script;
+script;
 
 
         $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro('');
@@ -1158,7 +1149,7 @@ html;
         }
 
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporteria")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial de Transacciones")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
         view::set('sucursales', $opcSucursales);
@@ -2053,5 +2044,56 @@ script;
         View::set('tabla', $tabla);
         View::set('fecha', date('d/m/Y H:i:s'));
         View::render("caja_admin_configurar_parametros");
+    }
+
+    public function HistorialFondeoSucursal()
+    {
+        $extraFooter = <<<script
+        <script>
+         
+        </script>
+script;
+
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial Fondeo Sucursal")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('opcSucursales', $opcSucursales);
+        View::set('tabla', $tabla);
+        View::set('fecha', date('d/m/Y H:i:s'));
+        View::render("caja_admin_historial_fondeo");
+    }
+
+    public function HistorialRetiroSucursal()
+    {
+        $extraFooter = <<<script
+        <script>
+         
+        </script>
+script;
+
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial Retiro Sucursal")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('opcSucursales', $opcSucursales);
+        View::set('tabla', $tabla);
+        View::set('fecha', date('d/m/Y H:i:s'));
+        View::render("caja_admin_historial_retiro_sucursal");
+    }
+
+    public function HistorialCierreDia()
+    {
+        $extraFooter = <<<script
+        <script>
+         
+        </script>
+script;
+
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial Cierre Día")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('opcSucursales', $opcSucursales);
+        View::set('tabla', $tabla);
+        View::set('fecha', date('d/m/Y H:i:s'));
+        View::render("caja_admin_historial_cierre_dia");
     }
 }

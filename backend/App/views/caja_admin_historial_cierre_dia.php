@@ -59,18 +59,22 @@
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Historial de transacciones</b></p>
+                                <li class="linea"><a href="/AdminSucursales/Reporteria/">
+                                        <p style="font-size: 16px;">Historial de transacciones</p>
                                     </a></li>
+
                                 <li class="linea"><a href="/AdminSucursales/HistorialFondeoSucursal/">
                                         <p style="font-size: 16px;">Historial fondeo sucursal</p>
                                     </a></li>
+
                                 <li class="linea"><a href="/AdminSucursales/HistorialRetiroSucursal/">
                                         <p style="font-size: 16px;">Historial retiro sucursal</p>
                                     </a></li>
-                                <li class="linea"><a href="/AdminSucursales/HistorialCierreDia/">
-                                        <p style="font-size: 16px;">Historial cierre día</p>
+
+                                <li><a href="/AdminSucursales/HistorialCierreDia/">
+                                        <p style="font-size: 16px;"><b>Historial cierre día</b></p>
                                     </a></li>
+
                             </ul>
                         </div>
                     </div>

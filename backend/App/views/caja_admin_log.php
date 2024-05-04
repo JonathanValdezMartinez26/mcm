@@ -58,14 +58,21 @@
             <div class="modal-content">
                 <div class="modal-header" style="padding-bottom: 0px">
                     <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                        <a class="navbar-brand">Admin sucursales / Saldos del día</a>
-                        &nbsp;&nbsp;
+                        <a class="navbar-brand">Admin sucursales / Log Transaccional </a>
                     </div>
-                    <div class="col-md-12" style="display: flex; align-items: center; height: 40px; color: #000">
-                        <label style="font-size: 16px; font-weight: bold; margin: 0; padding: 0;">Log diario global
-                        </label>
+                    <div>
+                        <ul class="nav navbar-nav">
+                            <li><a href="/AdminSucursales/Log/">
+                                    <p style="font-size: 16px;"><b>Historial Transacciones</b></p>
+                                </a></li>
+
+                            <li class="linea"><a href="/AdminSucursales/LogConfiguracion/">
+                                    <p style="font-size: 16px;">Historial Movimientos Configuración</p>
+                                </a></li>
+                        </ul>
                     </div>
                 </div>
+
                 <div class="modal-body">
                     <div class="container-fluid">
                         <div class="col-md-12">

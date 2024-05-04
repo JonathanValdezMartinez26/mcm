@@ -236,7 +236,11 @@
 
                                     <br>
                                     <input name="R" type="checkbox" value="1"  />
-                                    <label for="R">Historial retiro sucursal (R)</label>
+                                    <label for="R">Historial retiro sucursal(R)</label>
+                                    <br>
+
+                                    <input name="S" type="checkbox" value="1"  />
+                                    <label for="S">Historial cierre día(S)</label>
                                 </div>
                             </div>
                         </div>
