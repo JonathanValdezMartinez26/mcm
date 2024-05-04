@@ -194,7 +194,7 @@
                                     <tr>
                                         <td colspan="2">
                                             <div class="col-md-12" style="text-align: center;">
-                                                <p>En caso de tener monedas de denominación mayor a $10.00, ingresarlas como billetes.</p>
+                                                <p>En caso de tener monedas de denominación mayor a $10.00, ingresar como billetes.</p>
                                             </div>
                                             <hr>
                                             <div class="row" style="display: flex; justify-content: flex-end; align-items: center;">

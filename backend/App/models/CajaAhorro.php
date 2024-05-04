@@ -1775,7 +1775,7 @@ sql;
     {
         $qry = <<<sql
         SELECT
-            TO_CHAR(AR.FECHA, 'DD\/MM\/YYYY HH24:MI:SS') AS FECHA,
+            TO_CHAR(AR.FECHA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
             AR.CDG_USUARIO AS EJECUTIVO,
             (
                 SELECT
@@ -1801,21 +1801,12 @@ sql;
             ARQUEO AR
         sql;
 
-        $parametros = [];
-        if ($datos && $datos['fecha_inicio'] && $datos['fecha_fin']) {
-            $parametros[] = "TRUNC(AR.FECHA) BETWEEN TO_DATE('" . $datos['fecha_inicio'] . "', 'YYYY-MM-DD') AND TO_DATE('" . $datos['fecha_fin'] . "', 'YYYY-MM-DD')";
-        }
-
-        if ($datos && $datos['sucursal']) {
-            $parametros[] = "AR.CDG_SUCURSAL = '" . $datos['sucursal'] . "'";
-        }
-
-        if ($datos && $datos['ejecutivo']) {
-            $parametros[] = "AR.CDG_USUARIO = '" . $datos['ejecutivo'] . "'";
-        }
-
-        if (count($parametros) > 0) {
-            $qry .= " WHERE " . implode(" AND ", $parametros);
+        if ($datos) {
+            $parametros = [];
+            if ($datos['fecha_inicio'] && $datos['fecha_fin']) array_push($parametros, "TRUNC(AR.FECHA) BETWEEN TO_DATE('" . $datos['fecha_inicio'] . "', 'YYYY-MM-DD') AND TO_DATE('" . $datos['fecha_fin'] . "', 'YYYY-MM-DD')");
+            if ($datos['sucursal']) array_push($parametros, "AR.CDG_SUCURSAL = '" . $datos['sucursal'] . "'");
+            if ($datos['ejecutivo']) array_push($parametros, "AR.CDG_USUARIO = '" . $datos['ejecutivo'] . "'");
+            if (count($parametros) > 0) $qry .= " WHERE " . implode(" AND ", $parametros);
         }
 
         $qry .= " ORDER BY AR.FECHA DESC";

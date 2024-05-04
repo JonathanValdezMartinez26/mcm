@@ -19,8 +19,8 @@ class Ahorro extends Controller
     private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
     private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
-    private $confirmarMovimiento = 'const confirmarMovimiento = async (titulo, mensaje) => {
-        return await swal({ title: titulo, text: mensaje, icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
+    private $confirmarMovimiento = 'const confirmarMovimiento = async (titulo, mensaje, html = null) => {
+        return await swal({ title: titulo, content: html, text: mensaje, icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
     }';
     private $validarYbuscar = 'const validarYbuscar = (e, t) => {
         if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
@@ -2505,7 +2505,8 @@ class Ahorro extends Controller
                 
                 confirmarMovimiento(
                     "Confirmación de arqueo de caja",
-                    "¿Está segur(a) de continuar con el registro del arqueo de caja?"
+                    "¿Está segur(a) de continuar con el registro del arqueo de caja?",
+                    tablaResumenArqueo(),
                 ).then((continuar) => {
                     if (!continuar) return
                      
@@ -2529,22 +2530,93 @@ class Ahorro extends Controller
                         })
                     })
                 })
+            }
                  
-                const addCantidades = (datos, tipo) => {
-                    const t = tipo === "billete" ? "b" : "m"
+            const addCantidades = (datos, tipo) => {
+                const t = tipo === "billete" ? "b" : "m"
+                 
+                Array.from(document.querySelectorAll("." + tipo)).forEach((input) => {
+                    const id = input.id.replace("cant", "")
+                    if (!id) return
+                    const cantidad = parseaNumero(input.value)
+                    addParametro(datos, t + "_" + id, cantidad)
+                })
+            }
+             
+            const tablaResumenArqueo = () => {
+                const tabla = document.createElement("table")
+                tabla.setAttribute("style", "width: 100%;")
+                const thead = document.createElement("thead")
+                const tr = document.createElement("tr")
+                 
+                const th1 = document.createElement("th")
+                const th2 = document.createElement("th")
+                const th3 = document.createElement("th")
+                 
+                th1.style.textAlign = "center"
+                th2.style.textAlign = "center"
+                th3.style.textAlign = "center"
+                 
+                th1.innerText = "Denominación"
+                th2.innerText = "Cantidad"
+                th3.innerText = "Total"
+                 
+                tr.appendChild(th1)
+                tr.appendChild(th2)
+                tr.appendChild(th3)
+                 
+                thead.appendChild(tr)
+                tabla.appendChild(thead)
+                const tbody = document.createElement("tbody")
+                 
+                const filasB = Array.from(document.querySelector("#tbl_billete").querySelectorAll("tr"))
+                filasResumenArqueo(filasB, tbody)
+                 
+                const filasM = Array.from(document.querySelector("#tbl_moneda").querySelectorAll("tr"))
+                filasResumenArqueo(filasM, tbody)
+                tabla.appendChild(tbody)
+                 
+                const tf = document.createElement("tfoot")
+                const trf = document.createElement("tr")
+                const tdf = document.createElement("td")
+                tdf.setAttribute("colspan", "2")
+                tdf.style.textAlign = "right"
+                tdf.innerText = "Total efectivo:"
+                trf.appendChild(tdf)
+                const tdf2 = document.createElement("td")
+                tdf2.style.textAlign = "center"
+                tdf2.innerText = parseaNumero(document.querySelector("#totalEfectivo").value).toLocaleString("es-MX", { style: "currency", currency: "MXN" })
+                trf.appendChild(tdf2)
+                tf.appendChild(trf)
+                tabla.appendChild(tf)
+                 
+                return tabla
+            }
+             
+            const filasResumenArqueo = (filas, tbody) => {
+                filas.forEach((fila) => {
+                    const entradas = fila.querySelectorAll("input")
+                    if (entradas[1].value === "0.00") return
+                    const tr = document.createElement("tr")
                      
-                    Array.from(document.querySelectorAll("." + tipo)).forEach((input) => {
-                        const id = input.id.replace("cant", "")
-                        if (!id) return
-                        const cantidad = parseaNumero(input.value)
-                        addParametro(datos, t + "_" + id, cantidad)
+                    const d = document.createElement("td")
+                    d.style.textAlign = "center"
+                    d.innerText = fila.querySelectorAll("td")[0].innerText
+                    tr.appendChild(d)
+                     
+                    Array.from(entradas).forEach((celda, i) => {
+                        const td = document.createElement("td")
+                        td.style.textAlign = "center"
+                        td.innerText = i === 0 ? celda.value : parseaNumero(celda.value).toLocaleString("es-MX", { style: "currency", currency: "MXN" })
+                        tr.appendChild(td)
                     })
-                }
+                    tbody.appendChild(tr)
+                })
             }
         </script>
         html;
 
-        $d = CajaAhorroDao::HistoricoArqueo(["fecha_inicio" => date('Y-m-d', strtotime('-7 day')), "fecha_fin" => date('Y-m-d')], "sucursal", $_SESSION['cdgco_ahorro'], "ejecutivo", $_SESSION['usuario']);
+        $d = CajaAhorroDao::HistoricoArqueo(["fecha_inicio" => date('Y-m-d', strtotime('-7 day')), "fecha_fin" => date('Y-m-d'), "sucursal" => $_SESSION['cdgco_ahorro'], "ejecutivo" => $_SESSION['usuario']]);
 
         $d = json_decode($d, true);
         $detalles = $d['datos'];
@@ -2554,11 +2626,9 @@ class Ahorro extends Controller
         foreach ($detalles as $key => $detalle) {
             $tabla .= "<tr>";
             foreach ($detalle as $key => $valor) {
-                $valor = str_replace('\\/', '/', $valor);
                 if ($key == 'MONTO') $valor = "$ " . number_format($valor, 2);
                 $tabla .= "<td style='vertical-align: middle;'>$valor</td>";
             }
-
             $tabla .= "</tr>";
         }
 
@@ -2605,7 +2675,7 @@ class Ahorro extends Controller
                 <th style="text-align: center; width: 37%;">Total</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="tbl_$tipo">
         html;
 
         foreach ($denominaciones as $denominacion) {
@@ -2614,7 +2684,7 @@ class Ahorro extends Controller
             $id = $denominacion["id"];
 
             $filas .= "<tr>";
-            $filas .= "<td style='text-align: center;'>" . $simbolo . " " . $valor . "</td>";
+            $filas .= "<td style='text-align: center;'>" . $simbolo . $valor . "</td>";
             $filas .= "<td><input class='form-control " . $tipo . "' id='cant" . $id . "' name='cant" . $id . "' type='number' min='0' max='" . $max . "' value='0' oninput=calculaTotal(event) onkeydown=soloNumeros(event) /></td>";
             $filas .= "<td><input style='text-align: right;' class='form-control efectivo' id='total" . $id . "' name='total" . $id . "' value='0.00' disabled /></td>";
             $filas .= "</tr>";
