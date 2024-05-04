@@ -20,7 +20,7 @@
                     <img src="https://cdn-icons-png.flaticon.com/512/2972/2972449.png" style="border-radius: 3px; padding-top: 5px" width="110" height="110" />
                     <span class="button__badge">4</span>
                     <p style="font-size: 12px; padding-top: 5px; color: #000000">
-                        <b>Solicitudes de Sucursales</b>
+                        <b>Solicitudes</b>
                     </p>
                     <! -- https://cdn-icons-png.flaticon.com/512/2972/2972528.png IAMGEN EN COLOR -->
                 </div>
@@ -75,7 +75,7 @@
                                 <li class="linea"><a href="/AdminSucursales/SaldosDiarios/">
                                         <p style="font-size: 16px;">Saldos del día por sucursal</p>
                                     </a></li>
-                                <li class="linea"><a href="/AdminSucursales/ArqueoSucursal/">
+                                <li class="linea"><a href="/AdminSucursales/CierreDia/">
                                         <p style="font-size: 15px;">Cierre de día</p>
                                     </a></li>
                                 <li class="linea"><a href="/AdminSucursales/FondearSucursal">
@@ -83,9 +83,6 @@
                                     </a></li>
                                 <li><a href="">
                                         <p style="font-size: 15px;"><b>Retiro efectivo</b></p>
-                                    </a></li>
-                                <li class="linea"><a href="/AdminSucursales/Historial/">
-                                        <p style="font-size: 15px;">Historial saldos por sucursal</p>
                                     </a></li>
                             </ul>
                         </div>

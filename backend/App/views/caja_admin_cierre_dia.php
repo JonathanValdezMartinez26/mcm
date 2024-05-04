@@ -2,10 +2,8 @@
 
 <div class="right_col">
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
-
         <div class="col-md-3 panel panel-body" style="margin-bottom: 0px;">
-
-            <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"/>
+            <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" />
             <a id="link" href="/AdminSucursales/SaldosDiarios/">
                 <div class="col-md-5" style="margin-top: 5px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <span class="button__badge">4</span>
@@ -25,12 +23,11 @@
             </a>
             <a id="link" href="/AdminSucursales/EstadoCuentaCliente/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1605/1605401.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
-                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Clientes</b></p>
+                    <img src="https://cdn-icons-png.flaticon.com/512/5864/5864275.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
+                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Catalogo de Clientes </b></p>
                     <! --https://cdn-icons-png.flaticon.com/512/1605/1605350.png IMAGEN EN COLOR -->
                 </div>
             </a>
-
             <a id="link" href="/AdminSucursales/Log/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/10491/10491361.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
@@ -39,25 +36,43 @@
                 </div>
             </a>
 
-
-
+            <a id="link" href="/AdminSucursales/Configuracion/">
+                <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/10491/10491249.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
+                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Configurar Módulo </b></p>
+                    <! --https://cdn-icons-png.flaticon.com/512/900/900834.png IMAGEN EN COLOR -->
+                </div>
+            </a>
+            <a id="link" href="/AdminSucursales/Reporteria/">
+                <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3201/3201495.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
+                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Consultar Reportes </b></p>
+                    <! -- https://cdn-icons-png.flaticon.com/512/3201/3201558.png IMAGEN EN COLOR -->
+                </div>
+            </a>
         </div>
-
         <div class="col-md-9">
             <form id="registroOperacion" name="registroOperacion">
                 <div class="modal-content">
                     <div class="modal-header" style="padding-bottom: 0px">
                         <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                            <a class="navbar-brand">Admin sucursales  / Saldos del día</a>
-                            &nbsp;&nbsp;
+                            <a class="navbar-brand">Admin sucursales / Saldos del día</a>
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
-                                <li><a onclick=mostrarAhorro() href=""><p style="font-size: 16px;"><b>Saldos del día por Sucursal</b></p> </a></li>
-                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Cierres de Día por Sucursal</p> </a></li>
-                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Fondear Sucursal</p> </a></li>
-                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Retiro Efectivo</p> </a></li>
-                                <li class="linea"><a href="/Ahorro/ContratoCuentaCorriente/"><p style="font-size: 15px;">Historial Saldos por Sucursal</p> </a></li>
+                                <li class="linea"><a href="/AdminSucursales/SaldosDiarios/">
+                                        <p style="font-size: 15px;">Saldos del día por sucursal</p>
+                                    </a></li>
+                                <li><a href="/AdminSucursales/CierreDia/">
+                                        <p style="font-size: 16px;"><b>Cierre de día</b></p>
+                                    </a></li>
+                                <li class="linea"><a href="/AdminSucursales/FondearSucursal/">
+                                        <p style="font-size: 15px;">Fondear sucursal</p>
+                                    </a></li>
+                                <li class="linea"><a href="/AdminSucursales/RetiroSucursal/">
+                                        <p style="font-size: 15px;">Retiro efectivo</p>
+                                    </a></li>
+
                             </ul>
                         </div>
                     </div>
@@ -234,7 +249,8 @@
         color: white;
         padding: 2px 10px;
         font-size: 19px;
-        position: absolute; /* Position the badge within the relatively positioned button */
+        position: absolute;
+        /* Position the badge within the relatively positioned button */
         top: 0;
         right: 0;
     }

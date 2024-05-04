@@ -237,17 +237,18 @@ class AdminSucursales extends Controller
         View::render("caja_admin_saldos_dia");
     }
 
-    // Reporte de saldos diarios por sucursal
-    public function ArqueoSucursal()
+    // Validar Transacciones Día
+    public function CierreDia()
     {
         $extraFooter = <<<script
        
-        script;
+script;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Arqueo de Caja")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
-        View::render("caja_admin_saldos_dia");
+        View::render("caja_admin_cierre_dia");
+
     }
 
     // Ingreso de efectivo a sucursal
@@ -508,11 +509,6 @@ class AdminSucursales extends Controller
     {
         $datos = AdminSucursalesDao::GetDatosFondeoRetiro($_POST);
         echo $datos;
-    }
-
-    // Historial de movimientos de efectivo de sucursal
-    public function Historial()
-    {
     }
 
     //********************Log de transacciones de ahorro********************//
