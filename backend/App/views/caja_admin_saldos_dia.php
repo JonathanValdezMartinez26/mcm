@@ -63,7 +63,8 @@
                                 <li><a href="">
                                         <p style="font-size: 16px;"><b>Saldos del día por sucursal</b></p>
                                     </a></li>
-                                <li class="linea"><a href="/AdminSucursales/ArqueoSucursal/">
+
+                                <li class="linea"><a href="/AdminSucursales/CierreDia/">
                                         <p style="font-size: 15px;">Cierre de día</p>
                                     </a></li>
                                 <li class="linea"><a href="/AdminSucursales/FondearSucursal/">
@@ -72,9 +73,7 @@
                                 <li class="linea"><a href="/AdminSucursales/RetiroSucursal/">
                                         <p style="font-size: 15px;">Retiro efectivo</p>
                                     </a></li>
-                                <li class="linea"><a href="/AdminSucursales/Historial/">
-                                        <p style="font-size: 15px;">Historial saldos por sucursal</p>
-                                    </a></li>
+
                             </ul>
                         </div>
                     </div>
