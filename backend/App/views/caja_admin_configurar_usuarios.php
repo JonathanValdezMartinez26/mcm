@@ -199,48 +199,53 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 128px;">
+                                <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 108px;">
                                     <label for="sucursal">LOG TRANSACCIONAL</label>
                                     <hr>
                                     <input name="L" type="checkbox" value="1"  />
                                     <label for="L">Log transaccional (L)</label>
+
+
+                                    <br>
+                                    <input name="M" type="checkbox" value="1"  />
+                                    <label for="M">Log de Configuración (M)</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 73px;">
+                                <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 80px;">
                                     <label for="sucursal">CONFIGURAR MÓDULO</label>
                                     <hr>
-                                    <input name="M" type="checkbox" value="1"  />
-                                    <label for="M">Activar módulo en sucursal (M)</label>
-
-                                    <br>
                                     <input name="N" type="checkbox" value="1"  />
-                                    <label for="N">Permisos a usuarios (N)</label>
+                                    <label for="N">Activar módulo en sucursal (N)</label>
 
                                     <br>
                                     <input name="O" type="checkbox" value="1"  />
-                                    <label for="O">Parámetros de operación (O)</label>
+                                    <label for="O">Permisos a usuarios (O)</label>
+
+                                    <br>
+                                    <input name="P" type="checkbox" value="1"  />
+                                    <label for="P">Parámetros de operación (P)</label>
 
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 73px;">
+                                <div class="form-group" style="border: #9baab8;!important; border-style: solid; padding:10px; padding-bottom: 53px;">
                                     <label for="sucursal">CONSULTAR REPORTES</label>
                                     <hr>
-                                    <input name="P" type="checkbox" value="1"  />
-                                    <label for="P">Hostorial de transacciones (P)</label>
-
-                                    <br>
                                     <input name="Q" type="checkbox" value="1"  />
-                                    <label for="Q">Historial fondeo sucursal (Q)</label>
+                                    <label for="Q">Hostorial de transacciones (Q)</label>
 
                                     <br>
                                     <input name="R" type="checkbox" value="1"  />
-                                    <label for="R">Historial retiro sucursal(R)</label>
+                                    <label for="R">Historial fondeo sucursal (R)</label>
+
+                                    <br>
+                                    <input name="S" type="checkbox" value="1"  />
+                                    <label for="S">Historial retiro sucursal(S)</label>
                                     <br>
 
-                                    <input name="S" type="checkbox" value="1"  />
-                                    <label for="S">Historial cierre día(S)</label>
+                                    <input name="T" type="checkbox" value="1"  />
+                                    <label for="T">Historial cierre día(T)</label>
                                 </div>
                             </div>
                         </div>

@@ -2096,4 +2096,114 @@ script;
         View::set('fecha', date('d/m/Y H:i:s'));
         View::render("caja_admin_historial_cierre_dia");
     }
+
+    public function LogConfiguracion()
+    {
+        $extraFooter = <<<script
+        <script>
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+         
+            const getLog = () => {
+                const datos = {
+                    fecha_inicio: $("#fInicio").val(),
+                    fecha_fin: $("#fFin").val()
+                }
+                 
+                const op = document.querySelector("#operacion")
+                const us = document.querySelector("#usuario")
+                
+                if (op.value !== "0") datos.operacion = op.options[op.selectedIndex].text
+                if (us.value !== "0") datos.usuario = us.options[us.selectedIndex].text
+                 
+                $.ajax({
+                    type: "POST",
+                    url: "/Ahorro/GetLogTransacciones/",
+                    data: datos,
+                    success: (log) => {
+                        $("#log").DataTable().destroy()
+                         
+                        log = JSON.parse(log)
+                        let datos = log.datos
+                         
+                        if (!log.success) {
+                            showError(log.mensaje)
+                            datos = []
+                        }
+                        
+                        $("#log tbody").html(creaFilas(datos))
+                        $("#log").DataTable({
+                            lengthMenu: [
+                                [10, 40, -1],
+                                [10, 40, "Todos"]
+                            ],
+                            columnDefs: [
+                                {
+                                    orderable: false,
+                                    targets: 0
+                                }
+                            ],
+                            order: false
+                        })
+                    },
+                    error: (error) => {
+                        console.error(error)
+                        showError("Ocurrió un error al buscar el log de transacciones.")
+                    }
+                })
+                 
+                return false
+            }
+             
+            const creaFilas = (datos) => {
+                const filas = document.createDocumentFragment()
+                datos.forEach((dato) => {
+                    const fila = document.createElement("tr")
+                    Object.keys(dato).forEach((key) => {
+                        const celda = document.createElement("td")
+                        celda.innerText = dato[key]
+                        fila.appendChild(celda)
+                    })
+                    filas.appendChild(fila)
+                })
+                return filas
+            }
+             
+            $(document).ready(() => {
+                getLog()
+            })
+        </script>
+        script;
+
+        $operaciones = CajaAhorroDao::GetOperacionesLog();
+        $usuarios = CajaAhorroDao::GetUsuariosLog();
+        $sucursales = CajaAhorroDao::GetSucursalesLog();
+
+        $opcOperaciones = "<option value='0'>Todas</option>";
+        foreach ($operaciones as $key => $operacion) {
+            $i = $key + 1;
+            $opcOperaciones .= "<option value='{$i}'>{$operacion['TIPO']}</option>";
+        }
+
+        $opcUsuarios = "<option value='0'>Todos</option>";
+        foreach ($usuarios as $key => $usuario) {
+            $i = $key + 1;
+            $opcUsuarios .= "<option value='{$i}'>{$usuario['USUARIO']}</option>";
+        }
+
+        $opcSucursales = "<option value='0'>Todas</option>";
+        foreach ($sucursales as $key => $sucursal) {
+            $i = $key + 1;
+            $opcSucursales .= "<option value='{$i}'>{$sucursal['NOMBRE']}</option>";
+        }
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Log Transacciones Configuración")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('opcOperaciones', $opcOperaciones);
+        View::set('opcUsuarios', $opcUsuarios);
+        View::set('opcSucursales', $opcSucursales);
+        View::set(('fecha'), date('Y-m-d'));
+        View::render("caja_admin_log_configuracion");
+    }
 }
