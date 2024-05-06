@@ -1871,6 +1871,57 @@ sql;
         }
     }
 
+    public static function DatosTicketArqueo($datos)
+    {
+        $qry = <<<sql
+        SELECT
+            *
+        FROM
+            (
+                SELECT
+                CDG_ARQUEO,
+                CDG_USUARIO,
+                (SELECT CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) FROM PE WHERE PE.CODIGO = ARQUEO.CDG_USUARIO AND PE.CDGEM = 'EMPFIN') AS USUARIO,
+                CDG_SUCURSAL,
+                (SELECT NOMBRE FROM CO WHERE CODIGO = ARQUEO.CDG_SUCURSAL) AS SUCURSAL,
+                TO_CHAR(FECHA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
+                MONTO,
+                B_1000,
+                B_500,
+                B_200,
+                B_100,
+                B_50,
+                B_20,
+                M_10,
+                M_5,
+                M_2,
+                M_1,
+                M_050,
+                M_020,
+                M_010
+                FROM
+                    ARQUEO
+                WHERE
+                    TO_NUMBER(CDG_SUCURSAL) = '{$datos['sucursal']}'
+                ORDER BY
+                    FECHA DESC
+            )
+        sql;
+
+        if (isset($datos['arqueo'])) {
+            $qry .= " WHERE CDG_ARQUEO = '{$datos['arqueo']}'";
+        } else {
+            $qry .= " WHERE ROWNUM <= 1";
+        }
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryOne($qry);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
     public static function GetModuloAhorroPermisos($update, $user)
     {
         $query = <<<sql

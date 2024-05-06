@@ -2450,6 +2450,7 @@ class Ahorro extends Controller
             {$this->limpiaMontos}
             {$this->consultaServidor}
             {$this->configuraTabla}
+            {$this->muestraPDF}
          
             $(document).ready(() => configuraTabla("tblArqueos"))
              
@@ -2525,6 +2526,13 @@ class Ahorro extends Controller
                         }
                             
                         showSuccess(respuesta.mensaje).then(() => {
+                            const host = window.location.origin
+                            const titulo = 'Comprobante arqueo de caja'
+                            const ruta = host + '/Ahorro/TicketArqueo/?'
+                            + 'sucursal=' + {$_SESSION['cdgco_ahorro']}
+                            
+                            muestraPDF(titulo, ruta)
+                             
                             swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
                             window.location.reload()
                         })
@@ -3167,6 +3175,117 @@ class Ahorro extends Controller
             $mpdf->WriteHTML('<div style="text-align:center; font-size: 15px;"><label><b>COPIA CLIENTE</b></label></div>');
         }
 
+        $mpdf->Output($nombreArchivo . '.pdf', 'I');
+        exit;
+    }
+
+    public function TicketArqueo()
+    {
+        $datos = CajaAhorroDao::DatosTicketArqueo($_GET);
+        if (!$datos) {
+            echo "No se encontró el número de arqueo: " . $_GET['arqueo'] . " para la sucursal: " . $_GET['sucursal'];
+            return;
+        }
+
+        $nombreArchivo = "Ticket Arqueo " . $datos['CDG_ARQUEO'];
+
+        $mpdf = new \mPDF('UTF-8', array(90, 190), 10, 'Arial', 10, 10, 0, 0, 0, 5);
+
+        // PIE DE PAGINA
+        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:Arial;">Fecha de impresión:<br>' . date('d/m/Y H:i:s') . '</div>');
+        $mpdf->SetTitle($nombreArchivo);
+        $mpdf->SetMargins(0, 0, 5);
+
+        $filasDetalle = "";
+        $totalEfectivo = number_format($datos['MONTO'], 2, '.', ',');
+
+        foreach ($datos as $key => $detalle) {
+            if (strpos($key, "B_") === 0 || strpos($key, "M_") === 0) {
+                $denominacion = str_replace("M_", "", str_replace("B_", "", $key));
+                $denominacion = strpos($denominacion, "0") === 0 ? $denominacion / 100 : $denominacion;
+                $monto = number_format($denominacion * $datos[$key], 2, '.', ',');
+                $filasDetalle .= "<tr>";
+                $filasDetalle .= "<td style='text-align: center;'>" . ($denominacion < 1 ? "¢" : "$") . number_format($denominacion, 2, '.', ',') . "</td>";
+                $filasDetalle .= "<td style='text-align: center;'>" . $datos[$key] . "</td>";
+                $filasDetalle .= "<td style='text-align: right;'>" . ($monto < 1 && $monto > 0 ? "¢" : "$") . $monto . "</td>";
+                $filasDetalle .= "</tr>";
+            }
+        }
+
+        $ticketHTML = <<<html
+        <body style="font-family:Helvetica; padding: 0; margin: 0">
+            <div>
+                <div style="text-align:center; font-size: 20px; font-weight: bold;">
+                    <label>Más con Menos</label>
+                </div>
+                <div style="text-align:center; font-size: 15px;">
+                    <label>COMPROBANTE DE ARQUEO</label>
+                </div>
+                <div style="text-align:center; font-size: 14px; margin-top:5px; margin-bottom: 5px">
+                    *****************************************
+                </div>
+                <div style="font-size: 11px;">
+                    <label>Fecha de creación: {$datos['FECHA']}</label>
+                    <br>
+                    <label>Sucursal: {$datos['SUCURSAL']} ({$datos['CDG_SUCURSAL']})</label>
+                    <br>
+                    <label>Cajera: {$datos['USUARIO']} ({$datos['CDG_USUARIO']})</label>
+                </div>
+                <div style="text-align:center; font-size: 14px; margin-top:5px; margin-bottom: 5px">
+                    *****************************************
+                </div>
+                <div style="text-align:center; font-size: 15px; font-weight: bold;">
+                    <label>ARQUEO DE CAJA</label>
+                </div>
+                <div style="text-align:center; font-size: 10px; margin-top:5px; margin-bottom: 5px">
+                    __________________________________________________________
+                </div>
+                <div style="text-align:center; font-size: 15px; font-weight: bold; margin-top:5px; margin-bottom: 5px">
+                    <label>DETALLE</label>
+                </div>
+                <div style="text-align:center;">
+                    <table style="width: 100%; font-size: 15px;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 60%;">Denominación</th>
+                                <th style="text-align: center; width: 40%;">Cantidad</th>
+                                <th style="text-align: center; width: 40%;">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            $filasDetalle
+                        </tbody>
+                    </table>
+                </div>
+                <div style="text-align:center; font-size: 10px; margin-top:5px; margin-bottom: 5px; font-weight: bold;">
+                    __________________________________________________________
+                </div>
+                <div style="text-align:center; font-size: 15px; margin-top:15px; font-weight: bold;">
+                    <label>Total de efectivo: $ {$totalEfectivo}</label>
+                </div>
+                <div style="text-align:center; font-size: 14px; margin-top:5px; margin-bottom: 5px">
+                    *****************************************
+                </div>
+                <div style="text-align:center; font-size: 15px; margin-top:25px; font-weight: bold;">
+                    <label>Firma de conformidad</label>
+                    <div style="text-align:center; font-size: 15px; margin-top:25px; margin-bottom: 5px">
+                        ______________________
+                    </div>
+                </div>
+            </div>
+        </body>
+        html;
+
+        // Configurar copira
+        if ($_GET['copia']) {
+            $mpdf->WriteHTML('<div style="text-align:center; font-size: 15px;"><label><b>COPIA SUCURSAL</b></label></div>');
+            $mpdf->AddPage();
+            $mpdf->WriteHTML($ticketHTML);
+            $mpdf->WriteHTML('<div style="text-align:center; font-size: 15px;"><label><b>COPIA CAJERA</b></label></div>');
+        }
+
+        // Agregar contenido al PDF
+        $mpdf->WriteHTML($ticketHTML);
         $mpdf->Output($nombreArchivo . '.pdf', 'I');
         exit;
     }
