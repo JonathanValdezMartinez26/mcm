@@ -38,6 +38,9 @@ class Contenedor extends Controller
     $perfil = $this->__perfil;
     $permiso_ahorro = $this->__ahorro;
 
+
+    $notificaciones_solicitudes = 1;
+
     //var_dump($this->__perfil);
 
 
