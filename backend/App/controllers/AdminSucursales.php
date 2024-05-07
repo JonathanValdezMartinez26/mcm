@@ -1566,8 +1566,8 @@ html;
             $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
                   "lengthMenu": [
-                    [6, 50, -1],
-                    [6, 50, 'Todos'],
+                    [2, 50, -1],
+                    [2, 50, 'Todos'],
                 ],
                 "columnDefs": [{
                     "orderable": false,
@@ -1596,8 +1596,8 @@ html;
                $("#muestra-cupones1").tablesorter();
           var oTable = $('#muestra-cupones1').DataTable({
                   "lengthMenu": [
-                    [6, 50, -1],
-                    [6, 50, 'Todos'],
+                    [2, 50, -1],
+                    [2, 50, 'Todos'],
                 ],
                 "columnDefs": [{
                     "orderable": false,
@@ -1629,6 +1629,14 @@ script;
         foreach ($SolicitudesOrdinarias as $key => $value) {
 
             $cantidad_formateada = number_format($value['CANTIDAD_SOLICITADA'], 2, '.', ',');
+            if($value['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE')
+            {
+                $img =  '<img src="https://cdn-icons-png.flaticon.com/512/5575/5575939.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
+            }
+            else
+            {
+                $img =  '<img src="https://cdn-icons-png.flaticon.com/512/2995/2995467.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
+            }
 
             $tabla .= <<<html
                 <tr style="padding: 15px!important;">
@@ -1651,7 +1659,7 @@ script;
                             <b>CANTA SOLICITADA: </b>$ {$cantidad_formateada}
                         </div>
                         <div>
-                            <b>TIPO DE PRODUCTO: </b>{$value['TIPO_PRODUCTO']}
+                            <b>TIPO DE PRODUCTO: </b>{$value['TIPO_PRODUCTO']} {$img}
                         </div>
                         <hr>
                          <div>

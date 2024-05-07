@@ -1,4 +1,4 @@
-<?php echo $header; ?>
+<?= $header; ?>
 
 <div class="right_col">
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
@@ -95,7 +95,7 @@
                                         <hr>
                                     </div>
                                     <div class="col-md-4">
-                                        <label for="movil">Código de cliente SICAFIN *</label>
+                                        <label for="clienteBuscado">Código de cliente SICAFIN *</label>
                                         <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" value="<?= $cliente ?>" required>
                                     </div>
                                     <div class="col-md-2" style="padding-top: 25px">
@@ -111,6 +111,7 @@
                                         <label for="contrato">Nombre del cliente peque *</label>
                                         <select class="form-control" id="contrato" name="contrato" disabled>
                                         </select>
+                                        <input type="text" id="contratoSel" value="<?= $contratoSel; ?>" hidden>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -139,8 +140,9 @@
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="fecha_pago">Fecha del movimiento</label>
-                                        <input type="text" class="form-control" id="fecha_pago" name="fecha_pago" value="<?= $fecha; ?>" readonly>
+                                        <label for="fecha_retiro">Fecha del retiro</label>
+                                        <input type="text" class="form-control" id="fecha_retiro" name="fecha_retiro" value="<?= $fecha; ?>" readonly>
+                                        <input type="date" class="form-control" id="fecha_retiro_hide" name="fecha_retiro_sel" style="display: none" min="<?= $fechaInput; ?>" max="<?= $fechaInputMax; ?>" value="<?= $fechaInput; ?>" oninput=pasaFecha(event) />
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -250,4 +252,4 @@
 </style>
 
 
-<?php echo $footer; ?>
+<?= $footer; ?>
