@@ -80,7 +80,7 @@
                                     </a></li>
 
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Retirar efectivo de caja</b></p>
+                                        <p style="font-size: 16px;"><b>Fondeo/Retiro</b></p>
                                     </a></li>
 
                             </ul>

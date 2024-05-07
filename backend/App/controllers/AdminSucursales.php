@@ -1297,18 +1297,7 @@ script;
              
          }
         
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
-            {$this->noSubmit}
-            {$this->soloNumeros}
-            {$this->consultaServidor}
-            {$this->numeroLetras}
-            {$this->primeraMayuscula}
-            {$this->addParametro}
-            {$this->buscaCliente}
-            
-            
+
         </script>
 script;
 
