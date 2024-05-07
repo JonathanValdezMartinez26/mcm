@@ -1944,7 +1944,7 @@ sql;
         sra.ID_SOL_RETIRO_AHORRO, 
         sra.CONTRATO, 
         c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE AS CLIENTE, 
-        TO_CHAR(sra.FECHA_SOLICITUD, 'Day DD Month YYYY - (DD/MM/YYYY)') AS FECHA_SOLICITUD,
+        TO_CHAR(sra.FECHA_SOLICITUD, 'Day DD Month YYYY (DD/MM/YYYY)') AS FECHA_SOLICITUD,
         CASE
             WHEN TRUNC(SYSDATE) = TRUNC(sra.FECHA_SOLICITUD) THEN 'Hoy'
             ELSE TO_CHAR(TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD))
@@ -1956,6 +1956,7 @@ sql;
         END AS solicitud_vencida,
         sra.CANTIDAD_SOLICITADA, 
         sra.CDGPE,
+        p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE AS CDGPE_NOMBRE, 
         sra.TIPO_RETIRO, 
         sra.FECHA_ENTREGA,
         UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO
@@ -1967,11 +1968,12 @@ sql;
         PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
     INNER JOIN 
         CL c ON c.CODIGO = apa.CDGCL 
+    INNER JOIN 
+        PE p ON p.CODIGO = sra.CDGPE 
     WHERE 
         sra.ESTATUS = 0 
         AND sra.CDGPE_ASIGNA_ESTATUS IS NULL
         AND sra.TIPO_RETIRO = 1
-        ORDER BY FECHA_SOLICITUD
             
 sql;
 
@@ -1993,7 +1995,7 @@ sql;
         sra.ID_SOL_RETIRO_AHORRO, 
         sra.CONTRATO, 
         c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE AS CLIENTE, 
-        TO_CHAR(sra.FECHA_SOLICITUD, 'Day DD Month YYYY - (DD/MM/YYYY)') AS FECHA_SOLICITUD,
+        TO_CHAR(sra.FECHA_SOLICITUD, 'Day DD Month YYYY (DD/MM/YYYY)') AS FECHA_SOLICITUD,
         CASE
             WHEN TRUNC(SYSDATE) = TRUNC(sra.FECHA_SOLICITUD) THEN 'Hoy'
             ELSE TO_CHAR(TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD))
@@ -2005,6 +2007,7 @@ sql;
         END AS solicitud_vencida,
         sra.CANTIDAD_SOLICITADA, 
         sra.CDGPE,
+        p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE AS CDGPE_NOMBRE, 
         sra.TIPO_RETIRO, 
         sra.FECHA_ENTREGA,
         UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO
@@ -2016,11 +2019,12 @@ sql;
         PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
     INNER JOIN 
         CL c ON c.CODIGO = apa.CDGCL 
+    INNER JOIN 
+        PE p ON p.CODIGO = sra.CDGPE 
     WHERE 
         sra.ESTATUS = 0 
         AND sra.CDGPE_ASIGNA_ESTATUS IS NULL
         AND sra.TIPO_RETIRO = 2
-        ORDER BY FECHA_SOLICITUD
             
 sql;
 

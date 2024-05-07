@@ -1655,12 +1655,13 @@ script;
                             <b>ESTATUS DE LA SOLICITUD: </b>{$value['SOLICITUD_VENCIDA']}
                         </div>
                          <div>
-                            <b>CAJERA SOLICITA: </b>{NOS FALTA}
+                            <b>CAJERA SOLICITA: </b>{$value['CDGPE_NOMBREE']}
                         </div>
                      </td>
-                    <td style="padding: 0px !important;">  
-                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                     <td style="padding: 10px!important;">  
+                        <button type="button" class="btn btn-success btn-circle" onclick="ReimpresionEstatus('1','{$value['ID_SOL_RETIRO_AHORRO']}')"><i class="fa fa-check-circle"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="ReimpresionEstatus('2','{$value['ID_SOL_RETIRO_AHORRO']}');"><i class="fa fa-close"></i></button>
+                        <button type="button" class="btn btn-info btn-circle" onclick="ReimpresionEstatus('2','{$value['ID_SOL_RETIRO_AHORRO']}');"><i class="fa fa-edit"></i></button>
                     </td>
                 </tr>
 html;
