@@ -1268,9 +1268,9 @@ class CajaAhorro
     {
         $qrySolicitud = <<<sql
         INSERT INTO SOLICITUD_RETIRO_AHORRO
-            (ID_SOL_RETIRO_AHORRO, CONTRATO, FECHA_SOLICITUD, CANTIDAD_SOLICITADA, AUTORIZACION_CLIENTE, CDGPE, ESTATUS, FECHA_ESTATUS, PRORROGA, TIPO_RETIRO)
+            (ID_SOL_RETIRO_AHORRO, CONTRATO, FECHA_SOLICITUD, CANTIDAD_SOLICITADA, AUTORIZACION_CLIENTE, CDGPE, ESTATUS, FECHA_ESTATUS, PRORROGA, TIPO_RETIRO, FECHA_REGISTRO, CDG_SUCURSAL)
         VALUES
-            ((SELECT NVL(MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)),0) FROM SOLICITUD_RETIRO_AHORRO) + 1, :contrato, :fecha_solicitud, :monto, NULL, :ejecutivo, 0, SYSDATE, 0, :tipo_retiro)
+            ((SELECT NVL(MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)),0) FROM SOLICITUD_RETIRO_AHORRO) + 1, :contrato, :fecha_solicitud, :monto, NULL, :ejecutivo, 0, SYSDATE, 0, :tipo_retiro, SYSDATE, :sucursal)
         sql;
         $qryTicket = self::GetQueryTicket();
         $qryMovimiento = self::GetQueryMovimientoAhorro();
@@ -1282,7 +1282,8 @@ class CajaAhorro
             'fecha_solicitud' => $datos['fecha_retiro'],
             'monto' => $datos['monto'],
             'ejecutivo' => $datos['ejecutivo'],
-            'tipo_retiro' => $tipoRetiro
+            'tipo_retiro' => $tipoRetiro,
+            'sucursal' => $datos['sucursal']
         ];
 
         $datosTicket = [
@@ -1939,11 +1940,10 @@ sql;
     public static function GetSolicitudesRetiroAhorroOrdinario()
     {
         $query = <<<sql
-       
-         SELECT 
+        SELECT 
         sra.ID_SOL_RETIRO_AHORRO, 
         sra.CONTRATO, 
-        c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE AS CLIENTE, 
+        CONCATENA_NOMBRE(c.NOMBRE1, c.NOMBRE2, c.PRIMAPE, c.SEGAPE) AS CLIENTE, 
         TO_CHAR(sra.FECHA_SOLICITUD, 'Day DD Month YYYY (DD/MM/YYYY)') AS FECHA_SOLICITUD,
         CASE
             WHEN TRUNC(SYSDATE) = TRUNC(sra.FECHA_SOLICITUD) THEN 'Hoy'
@@ -1956,10 +1956,11 @@ sql;
         END AS solicitud_vencida,
         sra.CANTIDAD_SOLICITADA, 
         sra.CDGPE,
-        p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE AS CDGPE_NOMBRE, 
+        CONCATENA_NOMBRE(p.NOMBRE1, p.NOMBRE2, p.PRIMAPE, p.SEGAPE) AS CDGPE_NOMBRE, 
         sra.TIPO_RETIRO, 
         sra.FECHA_ENTREGA,
-        UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO
+        UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO,
+        (SELECT NOMBRE FROM CO WHERE CODIGO = sra.CDG_SUCURSAL AND CDGEM = 'EMPFIN') AS SUCURSAL
     FROM 
         SOLICITUD_RETIRO_AHORRO sra 
     INNER JOIN 
@@ -2010,7 +2011,8 @@ sql;
         p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE AS CDGPE_NOMBRE, 
         sra.TIPO_RETIRO, 
         sra.FECHA_ENTREGA,
-        UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO
+        UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO,
+        (SELECT NOMBRE FROM CO WHERE CODIGO = sra.CDG_SUCURSAL AND CDGEM = 'EMPFIN') AS SUCURSAL
     FROM 
         SOLICITUD_RETIRO_AHORRO sra 
     INNER JOIN 
@@ -2037,5 +2039,4 @@ sql;
             return array();
         }
     }
-
 }

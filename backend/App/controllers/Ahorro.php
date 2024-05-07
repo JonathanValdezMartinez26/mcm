@@ -3146,7 +3146,7 @@ class Ahorro extends Controller
         }
 
 
-        $mpdf = new \mPDF('UTF-8', array(90, 190), 10, 'Arial', 10, 10, 0, 0, 0, 5);
+        $mpdf = new \mPDF('UTF-8', array(80, 190), 10, 'Arial', 0, 0, 0, 0, 0, 5);
         // PIE DE PAGINA
         $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:Arial;">' . $mensajeImpresion . '</div>');
         $mpdf->SetTitle($nombreArchivo);
@@ -3216,7 +3216,7 @@ class Ahorro extends Controller
                     <label>COMPROBANTE DE {$datos['COMPROBANTE']}</label>
                 </div>
                 <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
-                    *****************************************
+                    ***********************************************
                 </div>
                 <div style="font-size: 11px;">
                     <label>Fecha de la operación: {$datos['FECHA']}</label>
@@ -3227,7 +3227,7 @@ class Ahorro extends Controller
                     $tktSucursal
                 </div>
                 <div style="text-align:center; font-size: 10px;margin-top:5px; margin-bottom: 5px; font-weight: bold;">
-                    __________________________________________________________
+                    ___________________________________________________________________
                 </div>
                 <div style="font-size: 11px;">
                     <label>Nombre del cliente: {$datos['NOMBRE_CLIENTE']}</label>
@@ -3237,13 +3237,13 @@ class Ahorro extends Controller
                     <label>Código de contrato: {$datos['CONTRATO']}</label>
                 </div>
                 <div style="text-align:center; font-size: 10px;margin-top:5px; margin-bottom: 5px; font-weight: bold;">
-                    __________________________________________________________
+                ___________________________________________________________________
                 </div>
                 <div style="text-align:center; font-size: 13px; font-weight: bold;">
                     <label>{$datos['PRODUCTO']}</label>
                 </div>
                 <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
-                    *****************************************
+                ***********************************************
                 </div>
                 <div style="text-align:center; font-size: 15px; font-weight: bold;">
                     <label>{$datos['ENTREGA']} $ {$tktMontoOP}</label>
@@ -3252,7 +3252,7 @@ class Ahorro extends Controller
                     <label>($tktMontoLetra)</label>
                 </div>
                 <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
-                    *****************************************
+                ***********************************************
                 </div>
                 <div style="text-align:center; font-size: 13px;">
                     <table style="width: 100%; font-size: 11spx">
@@ -3260,7 +3260,7 @@ class Ahorro extends Controller
                     </table>
                 </div>
                 <div style="text-align:center; font-size: 14px;margin-top:5px; margin-bottom: 5px">
-                    *****************************************
+                ***********************************************
                 </div>
                 <div style="text-align:center; font-size: 15px; margin-top:25px; font-weight: bold;">
                     <label>Firma de conformidad del cliente</label>
