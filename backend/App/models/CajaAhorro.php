@@ -1933,4 +1933,53 @@ sql;
         $mysqli = Database::getInstance();
         return $mysqli->insert($query);
     }
+
+    public static function GetSolicitudesRetiroAhorroOrdinario()
+    {
+        $query = <<<sql
+       
+         SELECT 
+        sra.ID_SOL_RETIRO_AHORRO, 
+        sra.CONTRATO, 
+        c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE AS CLIENTE, 
+        TO_CHAR(sra.FECHA_SOLICITUD, 'Day DD Month YYYY - (DD/MM/YYYY)') AS FECHA_SOLICITUD,
+        CASE
+            WHEN TRUNC(SYSDATE) = TRUNC(sra.FECHA_SOLICITUD) THEN 'Hoy'
+            ELSE TO_CHAR(TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD))
+        END AS days_since_order,
+        CASE
+            WHEN (TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD)) > 7 THEN 
+                'VENCIDA (' || TO_CHAR((TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD)) - 7) || ' días vencida)'
+            ELSE 'EN TIEMPO (' || TO_CHAR(7 - (TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD))) || ' días restantes)'
+        END AS solicitud_vencida,
+        sra.CANTIDAD_SOLICITADA, 
+        sra.CDGPE,
+        sra.TIPO_RETIRO, 
+        sra.FECHA_ENTREGA,
+        UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO
+    FROM 
+        SOLICITUD_RETIRO_AHORRO sra 
+    INNER JOIN 
+        ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = sra.CONTRATO 
+    INNER JOIN 
+        PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
+    INNER JOIN 
+        CL c ON c.CODIGO = apa.CDGCL 
+    WHERE 
+        sra.ESTATUS = 0 
+        AND sra.CDGPE_ASIGNA_ESTATUS IS NULL
+        AND sra.TIPO_RETIRO = 1
+            
+sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($query);
+            if ($res) return $res;
+            return array();
+        } catch (Exception $e) {
+            return array();
+        }
+    }
+
 }

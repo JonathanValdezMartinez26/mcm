@@ -1619,50 +1619,48 @@ html;
             
         
         });
-        
-        
-        
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
-            {$this->noSubmit}
-            {$this->soloNumeros}
-            {$this->consultaServidor}
-            {$this->numeroLetras}
-            {$this->primeraMayuscula}
-            {$this->addParametro}
-            {$this->buscaCliente}
-            
             
         </script>
 script;
 
+        $tabla =  "";
+        $SolicitudesOrdinarias = CajaAhorroDao::GetSolicitudesRetiroAhorroOrdinario();
 
-        $fechaActual = date('Y-m-d');
-        $Inicial = $_GET['Inicial'];
-        $Final = $_GET['Final'];
-        $Operacion = $_GET['Operacion'];
-        $Producto = $_GET['Producto'];
-        $Sucursal = $_GET['Sucursal'];
+        foreach ($SolicitudesOrdinarias as $key => $value) {
 
-
-        $Transacciones = CajaAhorroDao::GetSolicitudesPendientesAdminAll();
-
-        foreach ($Transacciones as $key => $value) {
+            $cantidad_formateada = number_format($value['CANTIDAD_SOLICITADA'], 2, '.', ',');
 
             $tabla .= <<<html
-                <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
-                    <td style="padding: 0px !important;">
+                <tr style="padding: 15px!important;">
+                    <td style="padding: 15px!important;">
                         <div>
                             <b>CONTRATO:</b> {$value['CONTRATO']}
                         </div>
                         <div>
-                            <b>CLIENTE: </b>{$value['NOMBRE_CLIENTE']}
+                            <b>CLIENTE: </b>{$value['CLIENTE']}
+                        </div>
+                         <div>
+                            <b>SUCURSAL: </b>{NOS FALTA}
                         </div>
                     </td>
-                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
-                    <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                    <td style="padding: 15px!important;">
+                     <div>
+                            <b>FECHA PREVISTA ENTREGA:</b> {$value['FECHA_SOLICITUD']}
+                        </div>
+                        <div>
+                            <b>CANTA SOLICITADA: </b>$ {$cantidad_formateada}
+                        </div>
+                        <div>
+                            <b>TIPO DE PRODUCTO: </b>{$value['TIPO_PRODUCTO']}
+                        </div>
+                        <hr>
+                         <div>
+                            <b>ESTATUS DE LA SOLICITUD: </b>{$value['SOLICITUD_VENCIDA']}
+                        </div>
+                         <div>
+                            <b>CAJERA SOLICITA: </b>{NOS FALTA}
+                        </div>
+                     </td>
                     <td style="padding: 0px !important;">  
                         <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
                         <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>

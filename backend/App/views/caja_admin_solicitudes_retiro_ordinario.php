@@ -124,10 +124,8 @@
                                                                         <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                                                             <thead>
                                                                             <tr>
-                                                                                <th>Cod Sucursal</th>
-                                                                                <th>Nombre Sucursal</th>
-                                                                                <th>Hora Cierre</th>
-                                                                                <th>Prorroga</th>
+                                                                                <th>Detalles Cliente</th>
+                                                                                <th>Detalles Solicitud</th>
                                                                                 <th>Acciones</th>
                                                                             </tr>
                                                                             </thead>
