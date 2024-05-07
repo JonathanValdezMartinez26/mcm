@@ -331,7 +331,7 @@ class Ahorro extends Controller
 
         $saldosMM = CajaAhorroDao::GetSaldoMinimoApertura($_SESSION['cdgco_ahorro']);
         $saldoMinimoApertura = $saldosMM['MONTO_MINIMO'];
-        $costoInscripcion = 100;
+        $costoInscripcion = 200;
 
         $extraFooter = <<<html
         <script>
@@ -1264,7 +1264,7 @@ class Ahorro extends Controller
         </script>
         html;
 
-        $detalles = CajaAhorroDao::HistoricoSolicitudRetiro();
+        $detalles = CajaAhorroDao::HistoricoSolicitudRetiro(["producto" => 1]);
 
         $tabla = "";
 
@@ -1912,6 +1912,11 @@ class Ahorro extends Controller
     {
         $extraFooter = <<<html
         <script>
+            window.onload = () => {
+                if (document.querySelector("#clienteBuscado").value !== "") buscaCliente()
+            }
+        
+            const montoMaximoRetiro = 10000
             let valKD = false
          
             {$this->showError}
@@ -1940,81 +1945,88 @@ class Ahorro extends Controller
                 }
                  
                 consultaServidor("/Ahorro/BuscaContratoPQ/", { cliente: noCliente }, (respuesta) => {
-                        limpiaDatosCliente()
-                        if (!respuesta.success) {
-                            if (!respuesta.datos) return showError(respuesta.mensaje)
-                            const datosCliente = respuesta.datos
-                             
-                            if (datosCliente["NO_CONTRATOS"] == 0) {
-                                swal({
-                                    title: "Cuenta de ahorro Peques™",
-                                    text: "La cuenta " + noCliente + " no tiene una cuenta de ahorro.\\nDesea realizar la apertura en este momento?",
-                                    icon: "info",
-                                    buttons: ["No", "Sí"],
-                                    dangerMode: true
-                                }).then((realizarDeposito) => {
-                                    if (realizarDeposito) return window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
-                                })
-                                return
-                            }
-                            if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
-                                swal({
-                                    title: "Cuenta de ahorro Peques™",
-                                    text: "La cuenta " + noCliente + " no ha concluido con el proceso de apertura de la cuenta de ahorro.\\nDesea completar el contrato en este momento?",
-                                    icon: "info",
-                                    buttons: ["No", "Sí"],
-                                    dangerMode: true
-                                }).then((realizarDeposito) => {
-                                    if (realizarDeposito) return window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
-                                })
-                            }
-                            if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 1) {
-                                swal({
-                                    title: "Cuenta de ahorro Peques™",
-                                    text: "La cuenta " + noCliente + " no tiene asignadas cuentas Peques™.\\nDesea aperturar una cuenta Peques™ en este momento?",
-                                    icon: "info",
-                                    buttons: ["No", "Sí"],
-                                    dangerMode: true
-                                }).then((realizarDeposito) => {
-                                    if (realizarDeposito) return window.location.href = "/Ahorro/ContratoCuentaPeque/?cliente=" + noCliente
-                                })
-                                return
-                            }
-                        }
+                    limpiaDatosCliente()
+                    if (!respuesta.success) {
+                        if (!respuesta.datos) return showError(respuesta.mensaje)
                         const datosCliente = respuesta.datos
-                         
-                        const contratos = document.createDocumentFragment()
-                        const seleccionar = document.createElement("option")
-                        seleccionar.value = ""
-                        seleccionar.disabled = true
-                        seleccionar.innerText = "Seleccionar"
-                        contratos.appendChild(seleccionar)
-                         
-                        datosCliente.forEach(cliente => {
-                            const opcion = document.createElement("option")
-                            opcion.value = cliente.CDG_CONTRATO
-                            opcion.innerText = cliente.NOMBRE
-                            contratos.appendChild(opcion)
-                        })
-                         
-                        document.querySelector("#contrato").appendChild(contratos)
-                        document.querySelector("#contrato").selectedIndex = 0
-                        document.querySelector("#contrato").disabled = false
-                        document.querySelector("#contrato").addEventListener("change", (e) => {
-                            datosCliente.forEach(contrato => {
-                                if (contrato.CDG_CONTRATO == e.target.value) {
-                                    document.querySelector("#nombre").value = contrato.CDG_CONTRATO
-                                    document.querySelector("#curp").value = contrato.CURP
-                                    document.querySelector("#cliente").value = contrato.CDGCL
-                                    document.querySelector("#saldoActual").value = formatoMoneda(contrato.SALDO)
-                                    document.querySelector("#deposito").disabled = false
-                                    document.querySelector("#retiro").disabled = false
-                                }
+                            
+                        if (datosCliente["NO_CONTRATOS"] == 0) {
+                            swal({
+                                title: "Cuenta de ahorro Peques™",
+                                text: "La cuenta " + noCliente + " no tiene una cuenta de ahorro.\\nDesea realizar la apertura en este momento?",
+                                icon: "info",
+                                buttons: ["No", "Sí"],
+                                dangerMode: true
+                            }).then((realizarDeposito) => {
+                                if (realizarDeposito) return window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
                             })
-                        })
+                            return
+                        }
+                        if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
+                            swal({
+                                title: "Cuenta de ahorro Peques™",
+                                text: "La cuenta " + noCliente + " no ha concluido con el proceso de apertura de la cuenta de ahorro.\\nDesea completar el contrato en este momento?",
+                                icon: "info",
+                                buttons: ["No", "Sí"],
+                                dangerMode: true
+                            }).then((realizarDeposito) => {
+                                if (realizarDeposito) return window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
+                            })
+                        }
+                        if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 1) {
+                            swal({
+                                title: "Cuenta de ahorro Peques™",
+                                text: "La cuenta " + noCliente + " no tiene asignadas cuentas Peques™.\\nDesea aperturar una cuenta Peques™ en este momento?",
+                                icon: "info",
+                                buttons: ["No", "Sí"],
+                                dangerMode: true
+                            }).then((realizarDeposito) => {
+                                if (realizarDeposito) return window.location.href = "/Ahorro/ContratoCuentaPeque/?cliente=" + noCliente
+                            })
+                            return
+                        }
+                    }
+                    const datosCliente = respuesta.datos
                         
-                        document.querySelector("#clienteBuscado").value = ""
+                    const contratos = document.createDocumentFragment()
+                    const seleccionar = document.createElement("option")
+                    seleccionar.value = ""
+                    seleccionar.disabled = true
+                    seleccionar.innerText = "Seleccionar"
+                    contratos.appendChild(seleccionar)
+                        
+                    datosCliente.forEach(cliente => {
+                        const opcion = document.createElement("option")
+                        opcion.value = cliente.CDG_CONTRATO
+                        opcion.innerText = cliente.NOMBRE
+                        contratos.appendChild(opcion)
                     })
+                        
+                    document.querySelector("#contrato").appendChild(contratos)
+                    document.querySelector("#contrato").selectedIndex = 0
+                    document.querySelector("#contrato").disabled = false
+                    document.querySelector("#contrato").addEventListener("change", (e) => {
+                        datosCliente.forEach(contrato => {
+                            if (contrato.CDG_CONTRATO == e.target.value) {
+                                document.querySelector("#nombre").value = contrato.CDG_CONTRATO
+                                document.querySelector("#curp").value = contrato.CURP
+                                document.querySelector("#cliente").value = contrato.CDGCL
+                                document.querySelector("#saldoActual").value = formatoMoneda(contrato.SALDO)
+                                document.querySelector("#deposito").disabled = false
+                                document.querySelector("#retiro").disabled = false
+                            }
+                        })
+                    })
+                    
+                    if (document.querySelector("#contratoSel").value !== "") {
+                        document.querySelector("#contrato").selectedIndex = document.querySelector("#contratoSel").value
+                        document.querySelector("#contrato").dispatchEvent(new Event("change"))
+                        document.querySelector("#retiro").checked = true
+                        document.querySelector("#retiro").dispatchEvent(new Event("change"))
+                    }
+                     
+                    document.querySelector("#clienteBuscado").value = ""
+                })
             }
              
             const limpiaDatosCliente = () => {
@@ -2059,6 +2071,23 @@ class Ahorro extends Controller
                     e.preventDefault()
                     e.target.value = ""
                     showError("El monto a depositar debe ser mayor a 0")
+                }
+                 
+                if (!document.querySelector("#deposito").checked && monto > montoMaximoRetiro) {
+                    monto = montoMaximoRetiro
+                    swal({
+                        title: "Cuenta de ahorro Peques™",
+                        text: "Para retiros mayores a " + montoMaximoRetiro.toLocaleString("es-MX", { style: "currency", currency: "MXN" }) + " es necesario realizar una solicitud de retiro.\\nDesea generar una solicitud de retiro ahora?.",
+                        icon: "info",
+                        buttons: ["No", "Sí"],
+                        dangerMode: true
+                    }).then((regRetiro) => {
+                        if (regRetiro) {
+                            window.location.href = "/Ahorro/SolicitudRetiroCuentaPeque/?cliente=" + document.querySelector("#cliente").value + "&contrato=" + document.querySelector("#contrato").selectedIndex
+                            return
+                        }
+                    })
+                    e.target.value = monto
                 }
                  
                 if (monto > 1000000) {
@@ -2151,6 +2180,9 @@ class Ahorro extends Controller
         </script>
         html;
 
+        if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
+        if ($_GET['contrato']) View::set('contratoSel', $_GET['contrato']);
+
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Cuenta Peque")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('d/m/Y H:i:s'));
@@ -2169,7 +2201,7 @@ class Ahorro extends Controller
                 if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
             }
          
-            const montoMinimo = $montoMinimoRetiro
+            const montoMinimoRetiro = $montoMinimoRetiro
             const montoMaximoExpress = $montoMaximoExpress
             const montoMaximoRetiro = $montoMaximoRetiro
             let valKD = false
@@ -2179,7 +2211,6 @@ class Ahorro extends Controller
             {$this->showInfo}
             {$this->confirmarMovimiento}
             {$this->validarYbuscar}
-            {$this->buscaCliente}
             {$this->soloNumeros}
             {$this->primeraMayuscula}
             {$this->numeroLetras}
@@ -2193,41 +2224,120 @@ class Ahorro extends Controller
             {$this->limpiaMontos}
             {$this->consultaServidor}
              
-            const llenaDatosCliente = (datosCliente) => {
-                if (parseaNumero(datosCliente.SALDO) < montoMinimo) {
-                    swal({
-                        title: "Retiro de cuenta corriente",
-                        text: "El saldo de la cuenta es menor al monto mínimo para retiros express (" + montoMinimo.toLocaleString("es-MX", {style:"currency", currency:"MXN"}) + ").\\n¿Desea realizar un retiro simple?",
-                        icon: "info",
-                        buttons: ["No", "Sí"]
-                    }).then((retSimple) => {
-                        if (retSimple) {
-                            window.location.href = "/Ahorro/CuentaCorriente/?cliente=" + datosCliente.CDGCL
-                            return
-                        }
-                    })
-                    return
+            const buscaCliente = () => {
+                const noCliente = document.querySelector("#clienteBuscado").value
+                
+                if (!noCliente) {
+                    limpiaDatosCliente()
+                    return showError("Ingrese un número de cliente a buscar.")
                 }
                  
-                document.querySelector("#nombre").value = datosCliente.NOMBRE
-                document.querySelector("#curp").value = datosCliente.CURP
-                document.querySelector("#contrato").value = datosCliente.CONTRATO
-                document.querySelector("#cliente").value = datosCliente.CDGCL
-                document.querySelector("#saldoActual").value = formatoMoneda(datosCliente.SALDO)
-                document.querySelector("#monto").disabled = false
-                document.querySelector("#saldoFinal").value = formatoMoneda(datosCliente.SALDO)
-                document.querySelector("#express").disabled = false
-                document.querySelector("#programado").disabled = false
+                consultaServidor("/Ahorro/BuscaContratoPQ/", { cliente: noCliente }, (respuesta) => {
+                    limpiaDatosCliente()
+                    if (!respuesta.success) {
+                        if (!respuesta.datos) return showError(respuesta.mensaje)
+                        const datosCliente = respuesta.datos
+                            
+                        if (datosCliente["NO_CONTRATOS"] == 0) {
+                            swal({
+                                title: "Cuenta de ahorro Peques™",
+                                text: "La cuenta " + noCliente + " no tiene una cuenta de ahorro.\\nDesea realizar la apertura en este momento?",
+                                icon: "info",
+                                buttons: ["No", "Sí"],
+                                dangerMode: true
+                            }).then((realizarDeposito) => {
+                                if (realizarDeposito) return window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
+                            })
+                            return
+                        }
+                        if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
+                            swal({
+                                title: "Cuenta de ahorro Peques™",
+                                text: "La cuenta " + noCliente + " no ha concluido con el proceso de apertura de la cuenta de ahorro.\\nDesea completar el contrato en este momento?",
+                                icon: "info",
+                                buttons: ["No", "Sí"],
+                                dangerMode: true
+                            }).then((realizarDeposito) => {
+                                if (realizarDeposito) return window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente
+                            })
+                        }
+                        if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 1) {
+                            swal({
+                                title: "Cuenta de ahorro Peques™",
+                                text: "La cuenta " + noCliente + " no tiene asignadas cuentas Peques™.\\nDesea aperturar una cuenta Peques™ en este momento?",
+                                icon: "info",
+                                buttons: ["No", "Sí"],
+                                dangerMode: true
+                            }).then((realizarDeposito) => {
+                                if (realizarDeposito) return window.location.href = "/Ahorro/ContratoCuentaPeque/?cliente=" + noCliente
+                            })
+                            return
+                        }
+                    }
+                    const datosCliente = respuesta.datos
+                        
+                    const contratos = document.createDocumentFragment()
+                    const seleccionar = document.createElement("option")
+                    seleccionar.value = ""
+                    seleccionar.disabled = true
+                    seleccionar.innerText = "Seleccionar"
+                    contratos.appendChild(seleccionar)
+                        
+                    datosCliente.forEach(cliente => {
+                        const opcion = document.createElement("option")
+                        opcion.value = cliente.CDG_CONTRATO
+                        opcion.innerText = cliente.NOMBRE
+                        contratos.appendChild(opcion)
+                    })
+                        
+                    document.querySelector("#contrato").appendChild(contratos)
+                    document.querySelector("#contrato").selectedIndex = 0
+                    document.querySelector("#contrato").disabled = false
+                    document.querySelector("#contrato").addEventListener("change", (e) => {
+                        datosCliente.forEach(contrato => {
+                            if (contrato.CDG_CONTRATO == e.target.value) {
+                                document.querySelector("#nombre").value = contrato.CDG_CONTRATO
+                                document.querySelector("#curp").value = contrato.CURP
+                                document.querySelector("#cliente").value = contrato.CDGCL
+                                document.querySelector("#saldoActual").value = formatoMoneda(contrato.SALDO)
+                                document.querySelector("#express").disabled = false
+                                document.querySelector("#programado").disabled = false
+                                document.querySelector("#monto").disabled = !(contrato.SALDO > montoMinimoRetiro)
+                                if (contrato.SALDO < montoMinimoRetiro) {
+                                    swal({
+                                        title: "Retiro de cuenta corriente peques™",
+                                        text: "El saldo actual de la cuenta del Peque es menor al monto mínimo para retiros express.\\n¿Desea realizar un retiro simple?",
+                                        icon: "info",
+                                        buttons: ["No", "Sí"]
+                                    }).then((retSimple) => {
+                                        if (retSimple) {
+                                            window.location.href = "/Ahorro/CuentaPeque/?cliente=" + document.querySelector("#cliente").value + "&contrato=" + e.target.selectedIndex
+                                            return
+                                        }
+                                    })
+                                }
+                                
+                            }
+                        })
+                    })
+                    
+                    if (document.querySelector("#contratoSel").value !== "") {
+                        document.querySelector("#contrato").selectedIndex = document.querySelector("#contratoSel").value
+                        document.querySelector("#contrato").dispatchEvent(new Event("change"))
+                    }
+                    document.querySelector("#clienteBuscado").value = ""
+                })
             }
              
             const limpiaDatosCliente = () => {
                 document.querySelector("#registroOperacion").reset()
+                document.querySelector("#fecha_retiro").value = getHoy()
                 document.querySelector("#monto").disabled = true
-                document.querySelector("#btnRegistraOperacion").disabled = true
                 document.querySelector("#express").disabled = true
                 document.querySelector("#programado").disabled = true
-                document.querySelector("#fecha_retiro_hide").setAttribute("style", "display: none;")
-                document.querySelector("#fecha_retiro").removeAttribute("style")
+                document.querySelector("#contrato").innerHTML = ""
+                document.querySelector("#contrato").disabled = true
+                document.querySelector("#monto").disabled = true
             }
              
             const validaMonto = () => {
@@ -2260,11 +2370,11 @@ class Ahorro extends Controller
                  
                 let monto = parseFloat(montoIngresado.value) || 0
                  
-                if (monto < montoMinimo) {
-                    monto = montoMinimo
+                if (monto < montoMinimoRetiro) {
+                    monto = montoMinimoRetiro
                     swal({
                         title: "Retiro de cuenta corriente",
-                        text: "El monto mínimo para retiros express es de " + montoMinimo.toLocaleString("es-MX", {
+                        text: "El monto mínimo para retiros express es de " + montoMinimoRetiro.toLocaleString("es-MX", {
                             style: "currency",
                             currency: "MXN"
                         }) + ", para un monto menor debe realizar el retiro de manera simple.\\n¿Desea realizar el retiro de manera simple?",
@@ -2304,7 +2414,7 @@ class Ahorro extends Controller
                     document.querySelector("#saldoFinal").removeAttribute("style")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
                 }
-                document.querySelector("#btnRegistraOperacion").disabled = !(saldoFinal >= 0 && parseaNumero(document.querySelector("#montoOperacion").value) >= montoMinimo && parseaNumero(document.querySelector("#montoOperacion").value) < montoMaximoRetiro)
+                document.querySelector("#btnRegistraOperacion").disabled = !(saldoFinal >= 0 && parseaNumero(document.querySelector("#montoOperacion").value) >= montoMinimoRetiro && parseaNumero(document.querySelector("#montoOperacion").value) < montoMaximoRetiro)
             }
              
             const pasaFecha = (e) => {
@@ -2360,8 +2470,9 @@ class Ahorro extends Controller
         }
 
         if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
+        if ($_GET['contrato']) View::set('contratoSel', $_GET['contrato']);
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitud de Retiro")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitud de Retiro Peque")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('montoMinimoRetiro', $montoMinimoRetiro);
         View::set('montoMaximoExpress', $montoMaximoExpress);
@@ -2407,7 +2518,7 @@ class Ahorro extends Controller
         </script>
         html;
 
-        $detalles = CajaAhorroDao::HistoricoSolicitudRetiro();
+        $detalles = CajaAhorroDao::HistoricoSolicitudRetiro(["producto" => 2]);
 
         $tabla = "";
 
@@ -3976,7 +4087,6 @@ html;
                    })
                    .then((willDelete) => {
                    if (willDelete) {
-                      
                         $.ajax({
                         type: 'POST',
                         url: '/Ahorro/AddSolicitudReimpresion/',

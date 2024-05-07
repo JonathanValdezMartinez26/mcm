@@ -98,7 +98,7 @@
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label for="movil">Código de cliente SICAFIN *</label>
-                                                        <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
+                                                        <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" value="<?= $cliente ?>" required>
                                                     </div>
                                                     <div class="col-md-2" style="padding-top: 25px">
                                                         <button type="button" class="btn btn-primary" id="btnBskClnt" onclick="buscaCliente()">
@@ -112,6 +112,7 @@
                                                             <label for="contrato">Nombre del cliente peque *</label>
                                                             <select class="form-control" id="contrato" name="contrato" disabled>
                                                             </select>
+                                                            <input type="text" id="contratoSel" value="<?= $contratoSel; ?>" hidden>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">

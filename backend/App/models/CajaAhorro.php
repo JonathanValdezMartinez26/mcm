@@ -1267,7 +1267,7 @@ class CajaAhorro
     public static function RegistraSolicitud($datos)
     {
         $qrySolicitud = <<<sql
-        INSERT INTO ESIACOM.SOLICITUD_RETIRO_AHORRO
+        INSERT INTO SOLICITUD_RETIRO_AHORRO
             (ID_SOL_RETIRO_AHORRO, CONTRATO, FECHA_SOLICITUD, CANTIDAD_SOLICITADA, AUTORIZACION_CLIENTE, CDGPE, ESTATUS, FECHA_ESTATUS, PRORROGA, TIPO_RETIRO)
         VALUES
             ((SELECT NVL(MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)),0) FROM SOLICITUD_RETIRO_AHORRO) + 1, :contrato, :fecha_solicitud, :monto, NULL, :ejecutivo, 0, SYSDATE, 0, :tipo_retiro)
@@ -1356,7 +1356,7 @@ class CajaAhorro
         }
     }
 
-    public static function HistoricoSolicitudRetiro()
+    public static function HistoricoSolicitudRetiro($datos)
     {
         $qry = <<<sql
         SELECT
@@ -1379,6 +1379,8 @@ class CajaAhorro
         FROM
             SOLICITUD_RETIRO_AHORRO SR
             INNER JOIN CL ON CL.CODIGO = (SELECT CDGCL FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = SR.CONTRATO)
+        WHERE
+            CONTRATO IN (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGPR_PRIORITARIO = '{$datos['producto']}' GROUP BY CONTRATO)
         ORDER BY
             SR.FECHA_ESTATUS DESC
         sql;
