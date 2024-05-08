@@ -1578,7 +1578,7 @@ html;
             })
              
             const actualizaSolicitud = (valor, idSolicitud) => {
-                const accion = valor == 1 ?  'AUTORIZAR' : 'RECHAZAR'
+                const accion = valor == 1 ?  "AUTORIZAR" : "RECHAZAR"
                 const mensaje = document.createElement("div")
                 mensaje.style.color = "black"
                 mensaje.style.fontSize = "15px"
@@ -1589,14 +1589,14 @@ html;
                         if (!confirmacion) return
                          
                         consultaServidor(
-                            "/AdminSucursales/TicketSolicitudUpdate/",
-                            { valor, idSolicitud },
+                            "/AdminSucursales/ActualizaSolicitudRetiro/",
+                            { idSolicitud, estatus: valor, ejecutivo: "{$_SESSION['usuario']}" },
                             (respuesta) => {
-                                if (respuesta != '1') return showError(respuesta)
-                                 
-                                showSuccess("Registro guardado exitosamente")
-                                swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
-                                window.location.reload()
+                                if (!respuesta.success) return showError(respuesta.mensaje)
+                                showSuccess(respuesta.mensaje).then(() => {
+                                    swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+                                    window.location.reload()
+                                })
                             })
                     })
             }
@@ -1650,12 +1650,16 @@ html;
             html;
         }
 
-
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Admin retiros ordinarios")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
         View::set('tabla', $tabla);
         View::render("caja_admin_solicitudes_retiro_ordinario");
+    }
+
+    public function ActualizaSolicitudRetiro()
+    {
+        echo CajaAhorroDao::ActualizaSolicitudRetiro($_POST);
     }
 
     public function SolicitudRetiroExpress()
@@ -1706,14 +1710,14 @@ html;
                         if (!confirmacion) return
                          
                         consultaServidor(
-                            "/AdminSucursales/TicketSolicitudUpdate/",
-                            { valor, idSolicitud },
+                            "/AdminSucursales/ActualizaSolicitudRetiro/",
+                            { idSolicitud, estatus: valor, ejecutivo: "{$_SESSION['usuario']}" },
                             (respuesta) => {
-                                if (respuesta != '1') return showError(respuesta)
-                                 
-                                showSuccess("Registro guardado exitosamente")
-                                swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
-                                window.location.reload()
+                                if (!respuesta.success) return showError(respuesta.mensaje)
+                                showSuccess(respuesta.mensaje).then(() => {
+                                    swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+                                    window.location.reload()
+                                })
                             })
                     })
             }
@@ -1763,9 +1767,8 @@ html;
                         <button type="button" class="btn btn-danger btn-circle" onclick="actualizaSolicitud('2','{$value['ID_SOL_RETIRO_AHORRO']}');"><i class="fa fa-trash"></i></button>
                     </td>
                 </tr>
-html;
+            html;
         }
-
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Admin retiros express")));
         View::set('footer', $this->_contenedor->footer($extraFooter));

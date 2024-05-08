@@ -1368,13 +1368,14 @@ class CajaAhorro
             END AS TIPO_RETIRO,
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
             CL.CODIGO AS CLIENTE,
-            TO_CHAR(SR.FECHA_SOLICITUD, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_SOLICITUD,
+            TO_CHAR(SR.FECHA_ESTATUS, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_ESTATUS,
             SR.CANTIDAD_SOLICITADA AS MONTO,
             CASE SR.ESTATUS
-                WHEN 0 THEN 'SOLICITADO'
+                WHEN 0 THEN 'REGISTRADO'
                 WHEN 1 THEN 'APROBADO'
-                WHEN 2 THEN 'APROBADO CON CAMBIOS'
-                WHEN 3 THEN 'RECHAZADO'
+                WHEN 2 THEN 'RECHAZADO'
+                WHEN 3 THEN 'ENTREGADO'
+                WHEN 4 THEN 'DEVUELTO'
                 ELSE 'NO DEFINIDO'
             END AS ESTATUS
         FROM
@@ -2037,6 +2038,32 @@ sql;
             return array();
         } catch (Exception $e) {
             return array();
+        }
+    }
+
+    public static function ActualizaSolicitudRetiro($datos)
+    {
+        $qry = <<<sql
+        UPDATE
+            SOLICITUD_RETIRO_AHORRO
+        SET
+            FECHA_ESTATUS = SYSDATE,
+            ESTATUS = '{$datos['estatus']}',
+            CDGPE_ASIGNA_ESTATUS = '{$datos['ejecutivo']}'
+        WHERE
+            ID_SOL_RETIRO_AHORRO = '{$datos['idSolicitud']}'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryOne($qry);
+            if (!$res) {
+                $accion = $datos['estatus'] === '1' ? 'aprobada' : 'rechazada';
+                return self::Responde(true, "Solicitud " . $accion . " correctamente.", ["qry" => $qry, "res" => $res]);
+            }
+            return self::Responde(false, "Ocurrió un error al actualizar la solicitud.", ["qry" => $qry, "res" => $res]);
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al actualizar la solicitud.", null, $e->getMessage());
         }
     }
 }

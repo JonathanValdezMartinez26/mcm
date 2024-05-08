@@ -99,7 +99,7 @@
                                                     <th>Tipo</th>
                                                     <th>Nombre cliente</th>
                                                     <th>Código cliente</th>
-                                                    <th>Fecha registro</th>
+                                                    <th>Fecha actualización</th>
                                                     <th>Monto solicitado</th>
                                                     <th>Estatus</th>
                                                 </tr>
