@@ -132,7 +132,9 @@
                                         </form>
 
                                         <br>
-                                        <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
+                                        <form name="all" id="all" method="POST">
+                                            <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
+
                                         <hr>
                                         <div class="dataTable_wrapper">
                                             <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
@@ -149,6 +151,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

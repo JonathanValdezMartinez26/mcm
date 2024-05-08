@@ -1674,7 +1674,7 @@ class CajaAhorro
             PARAMETROS_AHORRO
         WHERE
             CDG_SUCURSAL = '$sucursal'
-        sql;
+sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -1686,28 +1686,66 @@ class CajaAhorro
         }
     }
 
-    public static function GetAllTransacciones($usuario)
+    public static function GetAllTransacciones($Inicial, $Final, $Operacion, $Producto, $Sucursal)
     {
-        if ($usuario == '') {
-            $var =  '';
-        } else {
-            $var = "WHERE 
-            SUC_CAJERA_AHORRO.CDG_USUARIO = '" . $usuario . "' 
-            AND OPERAC
-            
-            
-            ";
+        if($Operacion != '')
+        {
+            $op = " AND ma.FECHA_MOV"+ $Inicial;
+        }
+        if($Producto != '')
+        {
+            $pr = "AND ma."
+        }
+        if($Producto != '')
+        {
+
+        }
+        if($Sucursal != '')
+        {
+
         }
 
         $query = <<<sql
-        SELECT ma.CDG_CONTRATO, c.CODIGO AS CDGCL, (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
-        ma.FECHA_MOV, ma.CDG_TICKET, ma.MONTO, tpa.DESCRIPCION AS CONCEPTO, pp.DESCRIPCION AS PRODUCTO, '' AS INCIDENCIA FROM MOVIMIENTOS_AHORRO ma
+        SELECT 
+            ma.CDG_CONTRATO, 
+            c.CODIGO AS CDGCL, 
+            (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
+            ma.FECHA_MOV, 
+            ma.CDG_TICKET, 
+            ma.MONTO, 
+            tpa.DESCRIPCION AS CONCEPTO, 
+            pp.DESCRIPCION AS PRODUCTO, 
+            CASE 
+                WHEN tpa.DESCRIPCION IN ('CAPITAL INICIAL - CUENTA CORRIENTE', 'APERTURA DE CUENTA - INSCRIPCIÓN', 'DEPOSITO') THEN ma.MONTO 
+                ELSE 0 
+            END AS INGRESO,
+            CASE 
+                WHEN tpa.DESCRIPCION IN ('TRANSFERENCIA INVERSION', 'RETIRO') THEN ma.MONTO 
+                ELSE 0 
+            END AS EGRESO,
+            (
+                SELECT COALESCE(SUM(
+                    CASE 
+                        WHEN tpa2.DESCRIPCION IN ('CAPITAL INICIAL - CUENTA CORRIENTE', 'APERTURA DE CUENTA - INSCRIPCIÓN', 'DEPOSITO') THEN ma2.MONTO 
+                        ELSE 0 
+                    END) - SUM(
+                    CASE 
+                        WHEN tpa2.DESCRIPCION IN ('TRANSFERENCIA INVERSION', 'RETIRO') THEN ma2.MONTO 
+                        ELSE 0 
+                    END)
+                , 0)
+                FROM MOVIMIENTOS_AHORRO ma2
+                INNER JOIN TIPO_PAGO_AHORRO tpa2 ON tpa2.CODIGO = ma2.CDG_TIPO_PAGO
+                WHERE ma2.FECHA_MOV <= ma.FECHA_MOV
+            ) AS SALDO
+        FROM MOVIMIENTOS_AHORRO ma
         INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
         INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
         INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
         INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
+        WHERE BETWEEN ma.FECHA_MOV AND ma.FECHA
         ORDER BY ma.FECHA_MOV ASC
-        sql;
+sql;
 
         try {
             $mysqli = Database::getInstance();
