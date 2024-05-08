@@ -1377,7 +1377,12 @@ class CajaAhorro
                 WHEN 3 THEN 'ENTREGADO'
                 WHEN 4 THEN 'DEVUELTO'
                 ELSE 'NO DEFINIDO'
-            END AS ESTATUS
+            END AS ESTATUS,
+            CASE
+            WHEN (TRUNC(SYSDATE) - TRUNC(SR.FECHA_REGISTRO)) > 7 THEN 
+                'VENCIDA (' || TO_CHAR((TRUNC(SYSDATE) - TRUNC(SR.FECHA_REGISTRO)) - 7) || ' días vencida)'
+            ELSE 'EN TIEMPO (' || TO_CHAR(7 - (TRUNC(SYSDATE) - TRUNC(SR.FECHA_REGISTRO))) || ' días restantes)'
+            END AS VENCIMIENTO
         FROM
             SOLICITUD_RETIRO_AHORRO SR
             INNER JOIN CL ON CL.CODIGO = (SELECT CDGCL FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = SR.CONTRATO)
@@ -1386,6 +1391,9 @@ class CajaAhorro
         ORDER BY
             SR.FECHA_ESTATUS DESC
         sql;
+
+
+
 
         try {
             $mysqli = Database::getInstance();
@@ -1947,14 +1955,15 @@ sql;
         CONCATENA_NOMBRE(c.NOMBRE1, c.NOMBRE2, c.PRIMAPE, c.SEGAPE) AS CLIENTE, 
         TO_CHAR(sra.FECHA_SOLICITUD, 'Day DD Month YYYY (DD/MM/YYYY)') AS FECHA_SOLICITUD,
         TO_CHAR(sra.FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD_EXCEL,
+        TO_CHAR(sra.FECHA_REGISTRO, 'Day DD Month YYYY (DD/MM/YYYY)') AS FECHA_REGISTRO,
         CASE
-            WHEN TRUNC(SYSDATE) = TRUNC(sra.FECHA_SOLICITUD) THEN 'Hoy'
-            ELSE TO_CHAR(TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD))
+            WHEN TRUNC(SYSDATE) = TRUNC(sra.FECHA_REGISTRO) THEN 'Hoy'
+            ELSE TO_CHAR(TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO))
         END AS days_since_order,
         CASE
-            WHEN (TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD)) > 7 THEN 
-                'VENCIDA (' || TO_CHAR((TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD)) - 7) || ' días vencida)'
-            ELSE 'EN TIEMPO (' || TO_CHAR(7 - (TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD))) || ' días restantes)'
+            WHEN (TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO)) > 7 THEN 
+                'VENCIDA (' || TO_CHAR((TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO)) - 7) || ' días vencida)'
+            ELSE 'EN TIEMPO (' || TO_CHAR(7 - (TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO))) || ' días restantes)'
         END AS solicitud_vencida,
         sra.CANTIDAD_SOLICITADA, 
         sra.CDGPE,
@@ -1977,6 +1986,8 @@ sql;
         sra.ESTATUS = 0 
         AND sra.CDGPE_ASIGNA_ESTATUS IS NULL
         AND sra.TIPO_RETIRO = 1
+    ORDER BY 
+        sra.FECHA_ESTATUS
             
 sql;
 
@@ -2049,14 +2060,16 @@ sql;
         c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE AS CLIENTE, 
         TO_CHAR(sra.FECHA_SOLICITUD, 'Day DD Month YYYY (DD/MM/YYYY)') AS FECHA_SOLICITUD,
         TO_CHAR(sra.FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD_EXCEL,
+
+        TO_CHAR(sra.FECHA_REGISTRO, 'Day DD Month YYYY (DD/MM/YYYY)') AS FECHA_REGISTRO,
         CASE
-            WHEN TRUNC(SYSDATE) = TRUNC(sra.FECHA_SOLICITUD) THEN 'Hoy'
-            ELSE TO_CHAR(TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD))
+            WHEN TRUNC(SYSDATE) = TRUNC(sra.FECHA_REGISTRO) THEN 'Hoy'
+            ELSE TO_CHAR(TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO))
         END AS days_since_order,
         CASE
-            WHEN (TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD)) > 7 THEN 
-                'VENCIDA (' || TO_CHAR((TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD)) - 7) || ' días vencida)'
-            ELSE 'EN TIEMPO (' || TO_CHAR(7 - (TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD))) || ' días restantes)'
+            WHEN (TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO)) > 7 THEN 
+                'VENCIDA (' || TO_CHAR((TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO)) - 7) || ' días vencida)'
+            ELSE 'EN TIEMPO (' || TO_CHAR(7 - (TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO))) || ' días restantes)'
         END AS solicitud_vencida,
         sra.CANTIDAD_SOLICITADA, 
         sra.CDGPE,
@@ -2079,6 +2092,8 @@ sql;
         sra.ESTATUS = 0 
         AND sra.CDGPE_ASIGNA_ESTATUS IS NULL
         AND sra.TIPO_RETIRO = 2
+    ORDER BY 
+        sra.FECHA_ESTATUS
             
 sql;
 
@@ -2092,7 +2107,6 @@ sql;
         }
     }
 
-<<<<<<< HEAD
     public static function GetSolicitudesRetiroAhorroExpressHistorial()
     {
         $query = <<<sql
@@ -2148,7 +2162,6 @@ sql;
         }
     }
 
-=======
     public static function ActualizaSolicitudRetiro($datos)
     {
         $qry = <<<sql
@@ -2174,5 +2187,4 @@ sql;
             return self::Responde(false, "Ocurrió un error al actualizar la solicitud.", null, $e->getMessage());
         }
     }
->>>>>>> 0b38d6417f477666af318b2d45bf74851a7ae357
 }

@@ -102,6 +102,8 @@
                                                     <th>Fecha actualización</th>
                                                     <th>Monto solicitado</th>
                                                     <th>Estatus</th>
+                                                    <th>Observaciones</th>
+                                                    <th>Acciones</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
