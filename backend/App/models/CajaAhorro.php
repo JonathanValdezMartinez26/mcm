@@ -1694,7 +1694,7 @@ sql;
         }
         if($Producto != '')
         {
-            $pr = "AND ma."
+            $pr = "AND ma.";
         }
         if($Producto != '')
         {
@@ -1707,44 +1707,55 @@ sql;
 
         $query = <<<sql
         SELECT 
-            ma.CDG_CONTRATO, 
-            c.CODIGO AS CDGCL, 
-            (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
-            ma.FECHA_MOV, 
-            ma.CDG_TICKET, 
-            ma.MONTO, 
-            tpa.DESCRIPCION AS CONCEPTO, 
-            pp.DESCRIPCION AS PRODUCTO, 
-            CASE 
-                WHEN tpa.DESCRIPCION IN ('CAPITAL INICIAL - CUENTA CORRIENTE', 'APERTURA DE CUENTA - INSCRIPCIÓN', 'DEPOSITO') THEN ma.MONTO 
-                ELSE 0 
-            END AS INGRESO,
-            CASE 
-                WHEN tpa.DESCRIPCION IN ('TRANSFERENCIA INVERSION', 'RETIRO') THEN ma.MONTO 
-                ELSE 0 
-            END AS EGRESO,
-            (
-                SELECT COALESCE(SUM(
-                    CASE 
-                        WHEN tpa2.DESCRIPCION IN ('CAPITAL INICIAL - CUENTA CORRIENTE', 'APERTURA DE CUENTA - INSCRIPCIÓN', 'DEPOSITO') THEN ma2.MONTO 
-                        ELSE 0 
-                    END) - SUM(
-                    CASE 
-                        WHEN tpa2.DESCRIPCION IN ('TRANSFERENCIA INVERSION', 'RETIRO') THEN ma2.MONTO 
-                        ELSE 0 
-                    END)
-                , 0)
-                FROM MOVIMIENTOS_AHORRO ma2
-                INNER JOIN TIPO_PAGO_AHORRO tpa2 ON tpa2.CODIGO = ma2.CDG_TIPO_PAGO
-                WHERE ma2.FECHA_MOV <= ma.FECHA_MOV
-            ) AS SALDO
-        FROM MOVIMIENTOS_AHORRO ma
-        INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
-        INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
-        INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
-        INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
-        WHERE BETWEEN ma.FECHA_MOV AND ma.FECHA
-        ORDER BY ma.FECHA_MOV ASC
+        ma.CDG_CONTRATO, 
+        c.CODIGO AS CDGCL, 
+        (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
+        TO_CHAR(ma.FECHA_MOV, 'DD-MM-YYYY HH24:MI:SS') AS FECHA_MOV,
+        ma.CDG_TICKET, 
+        ma.MONTO, 
+        tpa.DESCRIPCION AS CONCEPTO, 
+        pp.DESCRIPCION AS PRODUCTO, 
+        CASE 
+            WHEN tpa.DESCRIPCION IN ('CAPITAL INICIAL - CUENTA CORRIENTE', 'APERTURA DE CUENTA - INSCRIPCIÓN', 'DEPOSITO') THEN 
+                CASE 
+                    WHEN ma.MONTO <> 0 THEN TO_CHAR(ma.MONTO, 'FM999,999,999,999.00') 
+                    ELSE '0' 
+                END
+            ELSE 
+                '0' 
+        END AS INGRESO,
+        CASE 
+            WHEN tpa.DESCRIPCION IN ('TRANSFERENCIA INVERSION', 'RETIRO') THEN 
+                CASE 
+                    WHEN ma.MONTO <> 0 THEN TO_CHAR(ma.MONTO, 'FM999,999,999,999.00') 
+                    ELSE '0' 
+                END
+            ELSE 
+                '0' 
+        END AS EGRESO,
+        TO_CHAR((
+            SELECT COALESCE(SUM(
+                CASE 
+                    WHEN tpa2.DESCRIPCION IN ('CAPITAL INICIAL - CUENTA CORRIENTE', 'APERTURA DE CUENTA - INSCRIPCIÓN', 'DEPOSITO') AND ma2.FECHA_MOV <= ma.FECHA_MOV THEN ma2.MONTO 
+                    ELSE 0 
+                END) - SUM(
+                CASE 
+                    WHEN tpa2.DESCRIPCION IN ('TRANSFERENCIA INVERSION', 'RETIRO') AND ma2.FECHA_MOV <= ma.FECHA_MOV THEN ma2.MONTO 
+                    ELSE 0 
+                END)
+            , 0)
+            FROM MOVIMIENTOS_AHORRO ma2
+            INNER JOIN TIPO_PAGO_AHORRO tpa2 ON tpa2.CODIGO = ma2.CDG_TIPO_PAGO
+            WHERE ma2.FECHA_MOV BETWEEN TO_TIMESTAMP('2024-05-08 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('2024-05-08 23:59:59', 'YYYY-MM-DD HH24:MI:SS') 
+            AND ma2.FECHA_MOV <= ma.FECHA_MOV
+        ), 'FM999,999,999,999.00') AS SALDO
+    FROM MOVIMIENTOS_AHORRO ma
+    INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
+    INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
+    INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
+    INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
+    WHERE ma.FECHA_MOV BETWEEN TO_TIMESTAMP('2024-05-08 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('2024-05-08 23:59:59', 'YYYY-MM-DD HH24:MI:SS') 
+    ORDER BY ma.FECHA_MOV ASC
 sql;
 
         try {

@@ -143,7 +143,6 @@
                                                         <th>Datos del Cliente</th>
                                                         <th>Detalle Transacción</th>
                                                         <th>Fecha Transacción</th>
-                                                        <th>Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>

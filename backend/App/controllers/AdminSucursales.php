@@ -1147,7 +1147,6 @@ script;
                           <div style="margin-bottom: 5px;"><span class="fa fa-barcode"></span> <b>{$value['CDG_TICKET']}</b></div>
                     </td>
                     <td style="padding: 0px !important;">{$value['FECHA_MOV']} </td>
-                    <td style="padding: 0px !important;">-</td>
                 </tr>
 html;
         }
