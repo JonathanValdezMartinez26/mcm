@@ -81,9 +81,7 @@
                                 <li class="linea"><a href="/AdminSucursales/SolicitudRetiroExpress/">
                                         <p style="font-size: 16px;">Retiros express</p>
                                     </a></li>
-                                <li class="linea"><a href="/AdminSucursales/SolicitudRetiroEfectivoCaja/">
-                                        <p style="font-size: 16px;">Fondeo/Retiro</p>
-                                    </a></li>
+
                             </ul>
                         </div>
                     </div>
@@ -115,29 +113,31 @@
 
                                                     <div class="container-fluid">
                                                         <br>
-                                                        <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
+                                                        <form name="all" id="all" method="POST">
+                                                        <button id="export_excel_sol_ordinarias" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
                                                         <hr>
-                                                        <div class="col-md-12">
-                                                            <div class="row">
-                                                                <div class="card col-md-12">
-                                                                    <div class="dataTable_wrapper">
-                                                                        <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
-                                                                            <thead>
-                                                                            <tr>
-                                                                                <th>Detalles Cliente</th>
-                                                                                <th>Detalles Solicitud</th>
-                                                                                <th>Acciones</th>
-                                                                            </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                            <?= $tabla; ?>
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </div>
+                                                            <div class="col-md-12">
+                                                                <div class="row">
+                                                                    <div class="card col-md-12">
+                                                                        <div class="dataTable_wrapper">
+                                                                            <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
+                                                                                <thead>
+                                                                                <tr>
+                                                                                    <th>Detalles Cliente</th>
+                                                                                    <th>Detalles Solicitud</th>
+                                                                                    <th>Acciones</th>
+                                                                                </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                <?= $tabla; ?>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
 
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </form>
                                                     </div>
                                                 </div>
 
@@ -152,27 +152,30 @@
                                                     <div class="col-md-12">
                                                         <div class="row">
                                                             <br>
-                                                            <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
-                                                            <hr>
-                                                            <div class="card col-md-12">
-                                                                <div class="dataTable_wrapper">
-                                                                    <table class="table table-striped table-bordered table-hover" id="muestra-cupones1">
-                                                                        <thead>
-                                                                        <tr>
-                                                                            <th>Cod Sucursal</th>
-                                                                            <th>Nombre Sucursal</th>
-                                                                            <th>Hora Cierre</th>
-                                                                            <th>Prorroga</th>
-                                                                            <th>Acciones</th>
-                                                                        </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                        <?= $tabla; ?>
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
+                                                            <form name="all_historial" id="all_historial" method="POST">
+                                                                <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
 
-                                                            </div>
+                                                                <hr>
+                                                                <div class="card col-md-12">
+                                                                    <div class="dataTable_wrapper">
+                                                                        <table class="table table-striped table-bordered table-hover" id="muestra-cupones1">
+                                                                            <thead>
+                                                                            <tr>
+                                                                                <th>Cod Sucursal</th>
+                                                                                <th>Nombre Sucursal</th>
+                                                                                <th>Hora Cierre</th>
+                                                                                <th>Prorroga</th>
+                                                                                <th>Acciones</th>
+                                                                            </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                            <?= $tabla_historial; ?>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+
+                                                                </div>
+                                                            </form>
                                                         </div>
                                                     </div>
                                                 </div>

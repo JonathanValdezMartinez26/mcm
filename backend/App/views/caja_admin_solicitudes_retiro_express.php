@@ -79,9 +79,6 @@
                                         <p style="font-size: 16px;"><b>Retiros express</b></p>
                                     </a></li>
 
-                                <li class="linea"><a href="/AdminSucursales/SolicitudRetiroEfectivoCaja/">
-                                        <p style="font-size: 16px;">Fondeo/Retiro</p>
-                                    </a></li>
                             </ul>
                         </div>
                     </div>

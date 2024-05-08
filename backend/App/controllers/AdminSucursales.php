@@ -1573,14 +1573,16 @@ html;
             });
             var checkAll = 0;
             
-            fecha1 = getParameterByName('Inicial');
-            fecha2 = getParameterByName('Final');
             
-             $("#export_excel_consulta").click(function(){
-              $('#all').attr('action', '/Operaciones/generarExcelPagos/?Inicial='+fecha1+'&Final='+fecha2);
+            $("#export_excel_sol_ordinarias").click(function(){
+                
+              $('#all').attr('action', '/AdminSucursales/genExcelSolsRetOrdPendiente/');
+              alert("Hola");
               $('#all').attr('target', '_blank');
               $("#all").submit();
             });
+             
+             
              
                $("#muestra-cupones1").tablesorter();
           var oTable = $('#muestra-cupones1').DataTable({
@@ -1658,20 +1660,80 @@ script;
                             <b>CAJERA SOLICITA: </b>{$value['CDGPE_NOMBREE']}
                         </div>
                      </td>
-                     <td style="padding: 10px!important;">  
-                        <button type="button" class="btn btn-success btn-circle" onclick="ReimpresionEstatus('1','{$value['ID_SOL_RETIRO_AHORRO']}')"><i class="fa fa-check-circle"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="ReimpresionEstatus('2','{$value['ID_SOL_RETIRO_AHORRO']}');"><i class="fa fa-close"></i></button>
-                        <button type="button" class="btn btn-info btn-circle" onclick="ReimpresionEstatus('2','{$value['ID_SOL_RETIRO_AHORRO']}');"><i class="fa fa-edit"></i></button>
+                     <td style="padding: 10px!important;"> 
+                        <div>
+                            <button type="button" class="btn btn-success btn-circle" onclick="AccionRetiroOrdinario('1','{$value['ID_SOL_RETIRO_AHORRO']}')"><i class="fa fa-check-circle"></i></button>
+                        </div> 
+                        <div>
+                            <button type="button" class="btn btn-danger btn-circle" onclick="ReimpresionEstatus('2','{$value['ID_SOL_RETIRO_AHORRO']}');"><i class="fa fa-close"></i></button>
+                        </div> 
+                        <div>
+                            <button type="button" class="btn btn-info btn-circle" onclick="ReimpresionEstatus('2','{$value['ID_SOL_RETIRO_AHORRO']}');"><i class="fa fa-edit"></i></button>
+                        </div> 
+                        
                     </td>
                 </tr>
 html;
         }
 
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporteria")));
+        ///// Aqui es en donde se van a parametrizar las fechas de busqueda, spolo para el historial
+        $tabla_historial =  "";
+        $SolicitudesOrdinarias_Historial = CajaAhorroDao::GetSolicitudesRetiroAhorroOrdinariaHistorial();
+
+        foreach ($SolicitudesOrdinarias_Historial as $key => $value_historial) {
+
+            $cantidad_formateada = number_format($value_historial['CANTIDAD_SOLICITADA'], 2, '.', ',');
+            if($value_historial['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE')
+            {
+                $img =  '<img src="https://cdn-icons-png.flaticon.com/512/5575/5575939.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
+            }
+            else
+            {
+                $img =  '<img src="https://cdn-icons-png.flaticon.com/512/2995/2995467.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
+            }
+
+            $tabla_historial .= <<<html
+                <tr style="padding: 15px!important;">
+                    <td style="padding: 15px!important;">
+                        <div>
+                            <b>CONTRATO:</b> {$value_historial['CONTRATO']}
+                        </div>
+                        <div>
+                            <b>CLIENTE: </b>{$value_historial['CLIENTE']}
+                        </div>
+                         <div>
+                            <b>SUCURSAL: </b>{NOS FALTA}
+                        </div>
+                    </td>
+                    <td style="padding: 15px!important;">
+                     <div>
+                            <b>FECHA ENTREGA:</b> {$value_historial['FECHA_SOLICITUD']}
+                        </div>
+                        <div>
+                            <b>CANTIDAD SOLICITADA: </b>$ {$cantidad_formateada}
+                        </div>
+                        <div>
+                            <b>TIPO DE PRODUCTO: </b>{$value_historial['TIPO_PRODUCTO']} {$img}
+                        </div>
+                        <hr>
+                         <div>
+                            <b>ESTATUS DE LA SOLICITUD: </b>{$value_historial['SOLICITUD_VENCIDA']}
+                        </div>
+                         <div>
+                            <b>CAJERA SOLICITA: </b>{$value_historial['CDGPE_NOMBREE']}
+                        </div>
+                     </td>
+                </tr>
+html;
+        }
+
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitudes Pendientes Retiros Ordinarios")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
         View::set('tabla', $tabla);
+        View::set('tabla_historial', $tabla_historial);
         View::render("caja_admin_solicitudes_retiro_ordinario");
     }
 
@@ -2207,5 +2269,103 @@ script;
         View::set('opcSucursales', $opcSucursales);
         View::set(('fecha'), date('Y-m-d'));
         View::render("caja_admin_log_configuracion");
+    }
+
+    public function genExcelSolsRetOrdPendiente(){
+
+
+        var_dump("Hola");
+        $objPHPExcel = new \PHPExcel();
+        $objPHPExcel->getProperties()->setCreator("jma");
+        $objPHPExcel->getProperties()->setLastModifiedBy("jma");
+        $objPHPExcel->getProperties()->setTitle("Reporte");
+        $objPHPExcel->getProperties()->setSubject("Reporte");
+        $objPHPExcel->getProperties()->setDescription("Descripcion");
+        $objPHPExcel->setActiveSheetIndex(0);
+
+
+
+        $estilo_titulo = array(
+            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+        );
+
+        $estilo_encabezado = array(
+            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+        );
+
+        $estilo_celda = array(
+            'font' => array('bold' => false,'name'=>'Calibri','size'=>11,'color' => array('rgb' => '060606')),
+            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
+            'type' => \PHPExcel_Style_Fill::FILL_SOLID
+
+        );
+
+
+        $fila = 1;
+        $adaptarTexto = true;
+
+        $controlador = "AdminSucursales";
+        $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L');
+        $nombreColumna = array( 'ID_SOL_RETIRO_AHORRO','CONTRATO','CLIENTE','FECHA_SOLICITUD','DAYS_SINCE_ORDER','SOLICITUD_VENCIDA','CANTIDAD_SOLICITADA','CDGPE','CDGPE_NOMBRE','TIPO_RETIRO','FECHA_ENTREGA','TIPO_PRODUCTO');
+        $nombreCampo = array('ID_SOL_RETIRO_AHORRO','CONTRATO','CLIENTE','FECHA_SOLICITUD','DAYS_SINCE_ORDER','SOLICITUD_VENCIDA','CANTIDAD_SOLICITADA','CDGPE','CDGPE_NOMBRE','TIPO_RETIRO','FECHA_ENTREGA','TIPO_PRODUCTO'
+        );
+
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'Consulta de Solicitudes Pendientes para Retiro de Efectivo en Sucursal Para Cuentas de Ahorro');
+        $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
+        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
+        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
+
+        $fila +=1;
+
+        /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
+        foreach ($nombreColumna as $key => $value) {
+            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, $value);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_encabezado);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
+        }
+        $fila +=1; //fila donde comenzaran a escribirse los datos
+
+        /* FILAS DEL ARCHIVO EXCEL */
+
+        $Layoutt = CajaAhorroDao::GetSolicitudesRetiroAhorroOrdinario();
+        var_dump($Layoutt);
+
+
+        foreach ($Layoutt as $key => $value) {
+            foreach ($nombreCampo as $key => $campo) {
+                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_celda);
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            }
+            $fila +=1;
+        }
+
+
+        $objPHPExcel->getActiveSheet()->getStyle('A1:'.$columna[count($columna)-1].$fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        for ($i=0; $i <$fila ; $i++) {
+            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(20);
+        }
+
+
+        $objPHPExcel->getActiveSheet()->setTitle('Reporte');
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Reporte Solicitudes Pendientes Ordinaria'.'.xlsx"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+        header ('Cache-Control: cache, must-revalidate');
+        header ('Pragma: public');
+
+        \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
     }
 }
