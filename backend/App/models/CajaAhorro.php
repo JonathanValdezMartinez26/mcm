@@ -642,7 +642,7 @@ class CajaAhorro
         INSERT INTO MOVIMIENTOS_AHORRO
             (CODIGO, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, MOVIMIENTO, DESCRIPCION, CDG_TICKET, FECHA_VALOR, CDG_RETIRO)
         VALUES
-            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(TO_NUMBER(CODIGO)) AS CODIGO FROM TICKETS_AHORRO WHERE CDG_CONTRATO = :contrato), SYSDATE, (SELECT CASE :tipo_pago WHEN '7' THEN MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)) ELSE NULL END FROM SOLICITUD_RETIRO_AHORRO WHERE CONTRATO = :contrato))
+            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(TO_NUMBER(CODIGO)) AS CODIGO FROM TICKETS_AHORRO WHERE CDG_CONTRATO = :contrato), SYSDATE, (SELECT CASE :tipo_pago WHEN '6' THEN MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)) WHEN '7' THEN MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)) ELSE NULL END FROM SOLICITUD_RETIRO_AHORRO WHERE CONTRATO = :contrato))
         sql;
     }
 
@@ -1361,6 +1361,7 @@ class CajaAhorro
     {
         $qry = <<<sql
         SELECT
+            SR.ID_SOL_RETIRO_AHORRO AS ID,
             CASE SR.TIPO_RETIRO
                 WHEN 1 THEN 'EXPRESS'
                 WHEN 2 THEN 'PROGRAMADO'
@@ -1392,14 +1393,136 @@ class CajaAhorro
             SR.FECHA_ESTATUS DESC
         sql;
 
-
-
-
         try {
             $mysqli = Database::getInstance();
             return $mysqli->queryAll($qry);
         } catch (Exception $e) {
             return array();
+        }
+    }
+
+    public static function ResumenEntregaRetiro($datos)
+    {
+        $qry = <<<sql
+        SELECT
+            SRA.ID_SOL_RETIRO_AHORRO AS ID,
+            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
+            CL.CODIGO AS CLIENTE,
+            SRA.CANTIDAD_SOLICITADA AS MONTO,
+            (
+                SELECT
+                    CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE)
+                FROM
+                    PE
+                WHERE
+                    PE.CODIGO = SRA.CDGPE_ASIGNA_ESTATUS
+                    AND CDGEM = 'EMPFIN'
+            ) AS APROBADO_POR,
+            TO_CHAR(SRA.FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_ESPERADA,
+            SRA.CONTRATO,
+            SRA.TIPO_RETIRO
+        FROM
+            SOLICITUD_RETIRO_AHORRO SRA
+            INNER JOIN CL ON CL.CODIGO = (SELECT CDGCL FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = SRA.CONTRATO)
+        WHERE
+            SRA.ID_SOL_RETIRO_AHORRO = '{$datos['id']}'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryOne($qry);
+            if (!$res) return self::Responde(false, "No se encontraron datos para el retiro solicitado.");
+            return self::Responde(true, "Consulta realizada correctamente.", $res);
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al consultar los datos de la solicitud.", null, $e->getMessage());
+        }
+    }
+
+    public static function EntregaRetiro($datos)
+    {
+        $qry = <<<sql
+        UPDATE
+            SOLICITUD_RETIRO_AHORRO
+        SET
+            ESTATUS = :estatus,
+            CDG_CIERRE_SOLICITUD = :ejecutivo,
+            FECHA_ESTATUS = SYSDATE,
+            FECHA_ENTREGA = SYSDATE
+        WHERE
+            ID_SOL_RETIRO_AHORRO = :id
+        sql;
+
+        $accion = $datos['estatus'] === '3' ? 'Entrega' : 'Devolución';
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->insertar($qry, $datos);
+            LogTransaccionesAhorro::LogTransacciones($qry, $datos, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], $accion . " de retiro express/programado de cuenta de ahorro corriente");
+            if (!$res) {
+                $qryT = <<<sql
+                SELECT
+                    MA.CDG_TICKET AS TICKET
+                FROM
+                    MOVIMIENTOS_AHORRO MA
+                WHERE
+                    MA.CDG_RETIRO = :id
+                sql;
+
+                if ($datos['estatus'] === '3') {
+                    $datosT = $mysqli->queryOne($qryT, ['id' => $datos['id']]);
+
+                    $qryT2 = <<<sql
+                    UPDATE
+                        TICKETS_AHORRO
+                    SET
+                        FECHA = SYSDATE
+                    WHERE
+                        CODIGO = :ticket
+                    sql;
+                    $mysqli->insertar($qryT2, ['ticket' => $datosT['TICKET']]);
+                }
+
+                if ($datosT) return self::Responde(true, $accion . " de retiro registrada correctamente.", $datosT);
+                return self::Responde(false, "La " . $accion . " del retiro se registró correctamente, pero no se encontró el ticket de la operación.");
+            }
+            return self::Responde(false, "Ocurrió un error al registrar la " . $accion . " del retiro.");
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al registrar la " . $accion . " del retiro.", null, $e->getMessage());
+        }
+    }
+
+    public static function DevolucionRetiro($datos)
+    {
+        $query = [
+            self::GetQueryTicket(),
+            self::GetQueryMovimientoAhorro()
+        ];
+
+        $datosInsert = [
+            [
+                'contrato' => $datos['contrato'],
+                'monto' => $datos['monto'],
+                'ejecutivo' => $datos['ejecutivo'],
+                'sucursal' => $datos['sucursal']
+            ],
+            [
+                'tipo_pago' => $datos['tipo'] == 1 ? '8' : '9',
+                'contrato' => $datos['contrato'],
+                'monto' => $datos['monto'],
+                'movimiento' => '1'
+            ]
+        ];
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->insertaMultiple($query, $datosInsert);
+            if ($res) {
+                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de devolución de retiro " . ($datos['tipo'] == 1 ? "express" : "programado") . " de cuenta de ahorro corriente");
+                $ticket = self::RecuperaTicket($datos['contrato']);
+                return self::Responde(true, "La devolución fue registrada correctamente.", ['ticket' => $ticket['CODIGO']]);
+            }
+            return self::Responde(false, "Ocurrió un error al registrar la devolución.");
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al registrar la devolución.", null, $e->getMessage());
         }
     }
 
@@ -2060,7 +2183,6 @@ sql;
         c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE AS CLIENTE, 
         TO_CHAR(sra.FECHA_SOLICITUD, 'Day DD Month YYYY (DD/MM/YYYY)') AS FECHA_SOLICITUD,
         TO_CHAR(sra.FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD_EXCEL,
-
         TO_CHAR(sra.FECHA_REGISTRO, 'Day DD Month YYYY (DD/MM/YYYY)') AS FECHA_REGISTRO,
         CASE
             WHEN TRUNC(SYSDATE) = TRUNC(sra.FECHA_REGISTRO) THEN 'Hoy'

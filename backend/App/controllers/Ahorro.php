@@ -192,13 +192,13 @@ class Ahorro extends Controller
     }
     script;
     private $imprimeTicket = <<<script
-    const imprimeTicket = (ticket, sucursal = '') => {
+    const imprimeTicket = (ticket, sucursal = '', copia = true) => {
         const host = window.location.origin
         const titulo = 'Ticket: ' + ticket
         const ruta = host + '/Ahorro/Ticket/?'
         + 'ticket=' + ticket
         + '&sucursal=' + sucursal
-        + '&copiaCliente=true'
+        + (copia ? '&copiaCliente=true' : '')
         
         muestraPDF(titulo, ruta)
     }
@@ -314,6 +314,13 @@ class Ahorro extends Controller
                 .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
                 .draw()
         })
+    }';
+    private $exportaExcel = 'const exportaExcel = (id, nombreArchivo, nombreHoja = "Reporte") => {
+        const tabla = document.querySelector("#" + id)
+        const wb = XLSX.utils.book_new()
+        const ws = XLSX.utils.table_to_sheet(tabla)
+        XLSX.utils.book_append_sheet(wb, ws, nombreHoja)
+        XLSX.writeFile(wb, nombreArchivo + ".xlsx")
     }';
 
     function __construct()
@@ -1233,33 +1240,122 @@ class Ahorro extends Controller
     {
         $extraFooter = <<<html
         <script>
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->confirmarMovimiento}
+            {$this->consultaServidor}
+            {$this->configuraTabla}
+            {$this->exportaExcel}
+            {$this->imprimeTicket}
+            {$this->muestraPDF}
+         
             $(document).ready(() => {
-                $("#muestra-cupones").tablesorter()
-                $("#muestra-cupones").DataTable({
-                    lengthMenu: [
-                        [10, 40, -1],
-                        [10, 40, "Todos"]
-                    ],
-                    columnDefs: [
-                        {
-                            orderable: false,
-                            targets: 0
-                        }
-                    ],
-                    order: false
-                })
-            
-                $("#muestra-cupones input[type=search]").keyup(() => {
-                    $("#example")
-                        .DataTable()
-                        .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
-                        .draw()
-                })
+                configuraTabla("hstSolicitudes")
             })
+            
+            const imprimeExcel = () => exportaExcel("hstSolicitudes", "Historial solicitudes de retiro")
              
-            const imprimeExcel = () => {
-                alert("Exportando a Excel")
-                // window.location.href = "/Ahorro/ExportaExcel/"
+            const actualizaEstatus = (estatus, id) => {
+                const accion = estatus === 3 ? "entrega" : "cancelación"
+                 
+                consultaServidor("/Ahorro/ResumenEntregaRetiro", $.param({id}), (respuesta) => {
+                    if (!respuesta.success) {
+                        console.log(respuesta.error)
+                        return showError(respuesta.mensaje)
+                    }
+                     
+                    const resumen = respuesta.datos
+                    confirmarMovimiento(
+                        "Seguimiento solicitudes de retiro",
+                        null,
+                        resumenRetiro(resumen, accion)
+                    ).then((continuar) => {
+                        if (!continuar) return
+                        consultaServidor("/Ahorro/EntregaRetiro/", $.param({estatus, id, ejecutivo: "{$_SESSION['usuario']}"}), (respuesta) => {
+                            if (!respuesta.success) {
+                                console.log(respuesta.error)
+                                return showError(respuesta.mensaje)
+                            }
+                             
+                            showSuccess(respuesta.mensaje).then(() => {
+                                if (estatus === 3) imprimeTicket(respuesta.datos.TICKET, "{$_SESSION['cdgco_ahorro']}")
+                                if (estatus === 4) devuelveRetiro(resumen)
+                                swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+                                window.location.reload()
+                            })
+                        })
+                    })
+                })
+            }
+             
+            const resumenRetiro = (datos, accion) => {
+                const resumen = document.createElement("div")
+                resumen.setAttribute("style", "color: rgba(0, 0, 0, .65); text-align: left;")
+                
+                const tabla = document.createElement("table")
+                tabla.setAttribute("style", "width: 100%;")
+                tabla.innerHTML = "<thead><tr><th colspan='2' style='font-size: 25px; text-align: center;'>Retiro " + (datos.TIPO_RETIRO == 1 ? "express" : "programado") + "</th></tr></thead>"
+                 
+                const tbody = document.createElement("tbody")
+                tbody.setAttribute("style", "width: 100%;")
+                tbody.innerHTML += "<tr><td><strong>Cliente:</strong></td><td style='text-align: center;'>" + datos.NOMBRE + "</td></tr>"
+                tbody.innerHTML += "<tr><td><strong>Contrato:</strong></td><td style='text-align: center;'>" + datos.CONTRATO + "</td></tr>"
+                tbody.innerHTML += "<tr><td><strong>Monto:</strong></td><td style='text-align: center;'>" + parseFloat(datos.MONTO).toLocaleString("es-MX", { style: "currency", currency: "MXN" }) + "</td></tr>"
+                
+                const tInterno = document.createElement("table")
+                tInterno.setAttribute("style", "width: 100%; margin-top: 20px;")
+                const tbodyI = document.createElement("tbody")
+                tbodyI.innerHTML += "<tr><td><strong>Autorizado por:</strong></td style='text-align: center;'><td>" + datos.APROBADO_POR + "</td></tr>"
+                tbodyI.innerHTML += "<tr><td><strong>A " + (accion === "entrega" ? "entregar" : "cancelar") + " por:</strong></td style='text-align: center;'><td>{$_SESSION['nombre']}</td></tr>"
+                tInterno.appendChild(tbodyI)
+                 
+                const tFechas = document.createElement("table")
+                tFechas.setAttribute("style", "width: 100%; margin-top: 20px;")
+                const tbodyF = document.createElement("tbody")
+                tbodyF.innerHTML += "<tr><td style='text-align: center; width: 50%;'><strong>Fecha entrega solicitada</strong></td><td style='text-align: center; width: 50%;'><strong>Fecha " + (accion === "entrega" ? accion + " real" : accion) + "</strong></td></tr>"
+                tbodyF.innerHTML += "<tr><td style='text-align: center; width: 50%;'>" + datos.FECHA_ESPERADA + "</td><td style='text-align: center; width: 50%;'>" + new Date().toLocaleString("es-MX", { day: "2-digit", month: "2-digit", year: "numeric"}) + "</td></tr>"
+                tFechas.appendChild(tbodyF)
+                 
+                tabla.appendChild(tbody)
+                resumen.appendChild(tabla)
+                resumen.appendChild(tInterno)
+                resumen.appendChild(tFechas)
+                 
+                const pregunta = document.createElement("label")
+                pregunta.setAttribute("style", "width: 100%; font-size: 20px; text-align: center; font-weight: bold; margin-top: 20px;")
+                pregunta.innerText = "¿Desea continuar con la " + accion + " del retiro?"
+                 
+                const advertencia = document.createElement("label")
+                advertencia.setAttribute("style", "width: 100%; color: red; font-size: 15px; text-align: center;")
+                advertencia.innerText = "Esta acción no se puede deshacer."
+                 
+                resumen.appendChild(pregunta)
+                resumen.appendChild(advertencia)
+                return resumen
+            }
+             
+            const devuelveRetiro = (datos) => {
+                const datosDev = {
+                    contrato: datos.CONTRATO,
+                    monto: datos.MONTO,
+                    ejecutivo: "{$_SESSION['usuario']}",
+                    sucursal: "{$_SESSION['cdgco_ahorro']}",
+                    tipo: datos.TIPO_RETIRO
+                }
+                 
+                consultaServidor("/Ahorro/DevolucionRetiro/", $.param(datosDev), (respuesta) => {
+                    if (!respuesta.success) {
+                        console.log(respuesta.error)
+                        return showError(respuesta.mensaje)
+                    }
+                     
+                    showSuccess(respuesta.mensaje).then(() => {
+                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}")
+                        swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+                        window.location.reload()
+                    })
+                })
             }
         </script>
         html;
@@ -1267,27 +1363,45 @@ class Ahorro extends Controller
         $detalles = CajaAhorroDao::HistoricoSolicitudRetiro(["producto" => 1]);
 
         $tabla = "";
-
         foreach ($detalles as $key1 => $detalle) {
             $tabla .= "<tr>";
+            $acciones = "";
             foreach ($detalle as $key2 => $valor) {
+                if ($key2 === "ID") continue;
                 $v = $valor;
                 if ($key2 === "MONTO") $v = "$ " . number_format($valor, 2);
 
                 $tabla .= "<td style='vertical-align: middle;'>$v</td>";
+
+                if ($key2 === "ESTATUS" && $valor === "APROBADO") {
+                    $acciones = "<button type='button' class='btn btn-success btn-circle' onclick='actualizaEstatus(3, {$detalle["ID"]})'><i class='glyphicon glyphicon-transfer'></i></button>
+                    <button type='button' class='btn btn-danger btn-circle' onclick='actualizaEstatus(4, {$detalle["ID"]})'><i class='fa fa-trash'></i></button>";
+                }
             }
 
-            $tabla .= "<td style='vertical-align: middle;'>
-                <button type='button' class='btn btn-success btn-circle'><i class='fa fa-edit'></i></button>
-                <button type='button' class='btn btn-danger btn-circle'><i class='fa fa-trash'></i></button>
-            </td>";
+            $tabla .= "<td style='vertical-align: middle;'>" . $acciones . "</td>";
             $tabla .= "</tr>";
         }
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial de solicitudes de retiro")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial de solicitudes de retiro", [$this->XLSX])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('tabla', $tabla);
         View::render("caja_menu_solicitud_retiro_historial");
+    }
+
+    public function ResumenEntregaRetiro()
+    {
+        echo CajaAhorroDao::ResumenEntregaRetiro($_POST);
+    }
+
+    public function EntregaRetiro()
+    {
+        echo CajaAhorroDao::EntregaRetiro($_POST);
+    }
+
+    public function DevolucionRetiro()
+    {
+        echo CajaAhorroDao::DevolucionRetiro($_POST);
     }
 
     //********************INVERSIONES********************//
@@ -2566,27 +2680,11 @@ class Ahorro extends Controller
             {$this->consultaServidor}
             {$this->configuraTabla}
             {$this->muestraPDF}
+            {$this->exportaExcel}
          
             $(document).ready(() => configuraTabla("tblArqueos"))
              
-            const imprimeExcel = () => {
-                const nombreArchivo = "Reporte de arqueos de caja al " + getHoy(false)
-                const tabla = document.querySelector("#tblArqueos")
-                const filas = Array.from(tabla.querySelectorAll("tr"))
-                const datos = filas.map((fila) => {
-                    const f = {}
-                    Array.from(fila.querySelectorAll("td")).forEach((celda, i) => {
-                        const titulo = tabla.querySelector("thead tr").querySelectorAll("th")[i].innerText
-                        f[titulo] = celda.innerText
-                    })
-                    return f
-                })
-                 
-                const wb = XLSX.utils.book_new()
-                const ws = XLSX.utils.json_to_sheet(datos)
-                XLSX.utils.book_append_sheet(wb, ws, "Reporte")
-                XLSX.writeFile(wb, nombreArchivo + ".xlsx")
-            }
+            const imprimeExcel = () => exportaExcel("tblArqueos", "Reporte de arqueos de caja al " + getHoy(false))
              
             const mostrarModal = () => {
                 document.querySelector("#frmModal").reset()
