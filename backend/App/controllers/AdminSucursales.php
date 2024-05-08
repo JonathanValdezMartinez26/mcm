@@ -1638,7 +1638,7 @@ html;
                             <b>ESTATUS DE LA SOLICITUD: </b>{$value['SOLICITUD_VENCIDA']}
                         </div>
                          <div>
-                            <b>CAJERA SOLICITA: </b>{$value['CDGPE_NOMBREE']}
+                            <b>CAJERA SOLICITA: </b>{$value['CDGPE_NOMBRE']}
                         </div>
                      </td>
                      <td style="padding: 10px!important;">  
@@ -1759,7 +1759,7 @@ html;
                             <b>ESTATUS DE LA SOLICITUD: </b>{$value['SOLICITUD_VENCIDA']}
                         </div>
                          <div>
-                            <b>CAJERA SOLICITA: </b>{$value['CDGPE_NOMBREE']}
+                            <b>CAJERA SOLICITA: </b>{$value['CDGPE_NOMBRE']}
                         </div>
                      </td>
                     <td style="padding: 0px !important;">  

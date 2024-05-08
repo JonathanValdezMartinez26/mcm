@@ -1277,6 +1277,10 @@ class Ahorro extends Controller
                 $tabla .= "<td style='vertical-align: middle;'>$v</td>";
             }
 
+            $tabla .= "<td style='vertical-align: middle;'>
+                <button type='button' class='btn btn-success btn-circle'><i class='fa fa-edit'></i></button>
+                <button type='button' class='btn btn-danger btn-circle'><i class='fa fa-trash'></i></button>
+            </td>";
             $tabla .= "</tr>";
         }
 
