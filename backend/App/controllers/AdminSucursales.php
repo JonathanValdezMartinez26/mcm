@@ -17,6 +17,9 @@ class AdminSucursales extends Controller
     private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
     private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
+    private $confirmarMovimiento = 'const confirmarMovimiento = async (titulo, mensaje, html = null) => {
+        return await swal({ title: titulo, content: html, text: mensaje, icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
+    }';
     private $noSubmit = 'const noSUBMIT = (e) => e.preventDefault()';
     private $validarYbuscar = 'const validarYbuscar = (e) => {
         if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
@@ -191,12 +194,12 @@ class AdminSucursales extends Controller
     }';
     private $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/-[^0-9.]/g, "")) || 0';
     private $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { style: "currency", currency: "MXN" })';
-    private $configuraTabla = 'const configuraTabla = (id) => {
+    private $configuraTabla = 'const configuraTabla = (id, filas = 10) => {
         $("#" + id).tablesorter()
         $("#" + id).DataTable({
             lengthMenu: [
-                [10, 40, -1],
-                [10, 40, "Todos"]
+                [filas, 40, -1],
+                [filas, 40, "Todos"]
             ],
             columnDefs: [
                 {
@@ -248,7 +251,6 @@ script;
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
         View::render("caja_admin_cierre_dia");
-
     }
 
     // Ingreso de efectivo a sucursal
@@ -1543,14 +1545,39 @@ html;
     {
         $extraFooter = <<<script
         <script>
-        
-        function getParameterByName(name) {
-            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(location.search);
-            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-        }
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->confirmarMovimiento}
+            {$this->consultaServidor}
+            {$this->configuraTabla}
+            
+            const getParameterByName = (name) => {
+                name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+                var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+                return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+            }
+                
+            $(document).ready(() => {
+                configuraTabla("muestra-cupones", 2)
+                var checkAll = 0
+                fecha1 = getParameterByName('Inicial')
+                fecha2 = getParameterByName('Final')
+                
+                $("#export_excel_consulta").click(() => {
+                    $('#all').attr('action', '/Operaciones/generarExcelPagos/?Inicial='+fecha1+'&Final='+fecha2)
+                    $('#all').attr('target', '_blank')
+                    $("#all").submit()
+                })
+                
+                configuraTabla("muestra-cupones1", 2)
+                var checkAll = 0
+                fecha1 = getParameterByName('Inicial')
+                fecha2 = getParameterByName('Final')
+            })
              
+<<<<<<< HEAD
          $(document).ready(function(){
             $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
@@ -1611,23 +1638,40 @@ html;
         
         });
             
+=======
+            const actualizaSolicitud = (valor, idSolicitud) => {
+                const accion = valor == 1 ?  "AUTORIZAR" : "RECHAZAR"
+                const mensaje = document.createElement("div")
+                mensaje.style.color = "black"
+                mensaje.style.fontSize = "15px"
+                mensaje.innerHTML = "<p>¿Está seguro de <b>" + accion + "</b> la solicitud de retiro Express?</p><p style='font-weight: bold'>Esta acción no se puede deshacer.</p>"
+                 
+                confirmarMovimiento("Solicitudes de retiro Express", null, mensaje)
+                    .then((confirmacion) => {
+                        if (!confirmacion) return
+                         
+                        consultaServidor(
+                            "/AdminSucursales/ActualizaSolicitudRetiro/",
+                            { idSolicitud, estatus: valor, ejecutivo: "{$_SESSION['usuario']}" },
+                            (respuesta) => {
+                                if (!respuesta.success) return showError(respuesta.mensaje)
+                                showSuccess(respuesta.mensaje).then(() => {
+                                    swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+                                    window.location.reload()
+                                })
+                            })
+                    })
+            }
+>>>>>>> 0b38d6417f477666af318b2d45bf74851a7ae357
         </script>
-script;
+        script;
 
         $tabla =  "";
         $SolicitudesOrdinarias = CajaAhorroDao::GetSolicitudesRetiroAhorroOrdinario();
 
         foreach ($SolicitudesOrdinarias as $key => $value) {
-
             $cantidad_formateada = number_format($value['CANTIDAD_SOLICITADA'], 2, '.', ',');
-            if($value['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE')
-            {
-                $img =  '<img src="https://cdn-icons-png.flaticon.com/512/5575/5575939.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
-            }
-            else
-            {
-                $img =  '<img src="https://cdn-icons-png.flaticon.com/512/2995/2995467.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
-            }
+            $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
 
             $tabla .= <<<html
                 <tr style="padding: 15px!important;">
@@ -1639,7 +1683,7 @@ script;
                             <b>CLIENTE: </b>{$value['CLIENTE']}
                         </div>
                          <div>
-                            <b>SUCURSAL: </b>{NOS FALTA}
+                            <b>SUCURSAL: </b>{$value['SUCURSAL']}
                         </div>
                     </td>
                     <td style="padding: 15px!important;">
@@ -1660,6 +1704,7 @@ script;
                             <b>CAJERA SOLICITA: </b>{$value['CDGPE_NOMBREE']}
                         </div>
                      </td>
+<<<<<<< HEAD
                      <td style="padding: 10px!important;"> 
                         <div>
                             <button type="button" class="btn btn-success btn-circle" onclick="AccionRetiroOrdinario('1','{$value['ID_SOL_RETIRO_AHORRO']}')"><i class="fa fa-check-circle"></i></button>
@@ -1671,11 +1716,18 @@ script;
                             <button type="button" class="btn btn-info btn-circle" onclick="ReimpresionEstatus('2','{$value['ID_SOL_RETIRO_AHORRO']}');"><i class="fa fa-edit"></i></button>
                         </div> 
                         
+=======
+                     <td style="padding: 10px!important;">  
+                        <button type="button" class="btn btn-success btn-circle" onclick="actualizaSolicitud('1','{$value['ID_SOL_RETIRO_AHORRO']}')"><i class="fa fa-check-circle"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="actualizaSolicitud('2','{$value['ID_SOL_RETIRO_AHORRO']}');"><i class="fa fa-close"></i></button>
+                        <button type="button" class="btn btn-info btn-circle" onclick="actualizaSolicitud('2','{$value['ID_SOL_RETIRO_AHORRO']}');"><i class="fa fa-edit"></i></button>
+>>>>>>> 0b38d6417f477666af318b2d45bf74851a7ae357
                     </td>
                 </tr>
-html;
+            html;
         }
 
+<<<<<<< HEAD
 
         ///// Aqui es en donde se van a parametrizar las fechas de busqueda, spolo para el historial
         $tabla_historial =  "";
@@ -1730,6 +1782,9 @@ html;
 
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitudes Pendientes Retiros Ordinarios")));
+=======
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Admin retiros ordinarios")));
+>>>>>>> 0b38d6417f477666af318b2d45bf74851a7ae357
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
         View::set('tabla', $tabla);
@@ -1737,98 +1792,79 @@ html;
         View::render("caja_admin_solicitudes_retiro_ordinario");
     }
 
+    public function ActualizaSolicitudRetiro()
+    {
+        echo CajaAhorroDao::ActualizaSolicitudRetiro($_POST);
+    }
+
     public function SolicitudRetiroExpress()
     {
         $extraFooter = <<<script
         <script>
-        
-        function getParameterByName(name) {
-            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(location.search);
-            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-        }
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->confirmarMovimiento}
+            {$this->consultaServidor}
+            {$this->configuraTabla}
+            
+            const getParameterByName = (name) => {
+                name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+                var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+                return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+            }
+                
+            $(document).ready(() => {
+                configuraTabla("muestra-cupones", 2)
+                var checkAll = 0
+                fecha1 = getParameterByName('Inicial')
+                fecha2 = getParameterByName('Final')
+                
+                $("#export_excel_consulta").click(() => {
+                    $('#all').attr('action', '/Operaciones/generarExcelPagos/?Inicial='+fecha1+'&Final='+fecha2)
+                    $('#all').attr('target', '_blank')
+                    $("#all").submit()
+                })
+                
+                configuraTabla("muestra-cupones1", 2)
+                var checkAll = 0
+                fecha1 = getParameterByName('Inicial')
+                fecha2 = getParameterByName('Final')
+            })
              
-         $(document).ready(function(){
-            $("#muestra-cupones").tablesorter();
-          var oTable = $('#muestra-cupones').DataTable({
-                  "lengthMenu": [
-                    [2, 50, -1],
-                    [2, 50, 'Todos'],
-                ],
-                "columnDefs": [{
-                    "orderable": false,
-                    "targets": 0,
-                }],
-                 "order": false
-            });
-            // Remove accented character from search input as well
-            $('#muestra-cupones input[type=search]').keyup( function () {
-                var table = $('#example').DataTable();
-                table.search(
-                    jQuery.fn.DataTable.ext.type.search.html(this.value)
-                ).draw();
-            });
-            var checkAll = 0;
-            
-            fecha1 = getParameterByName('Inicial');
-            fecha2 = getParameterByName('Final');
-            
-             $("#export_excel_consulta").click(function(){
-              $('#all').attr('action', '/Operaciones/generarExcelPagos/?Inicial='+fecha1+'&Final='+fecha2);
-              $('#all').attr('target', '_blank');
-              $("#all").submit();
-            });
-             
-               $("#muestra-cupones1").tablesorter();
-          var oTable = $('#muestra-cupones1').DataTable({
-                  "lengthMenu": [
-                    [2, 50, -1],
-                    [2, 50, 'Todos'],
-                ],
-                "columnDefs": [{
-                    "orderable": false,
-                    "targets": 0,
-                }],
-                 "order": false
-            });
-            // Remove accented character from search input as well
-            $('#muestra-cupones1 input[type=search]').keyup( function () {
-                var table = $('#example').DataTable();
-                table.search(
-                    jQuery.fn.DataTable.ext.type.search.html(this.value)
-                ).draw();
-            });
-            var checkAll = 0;
-            
-            fecha1 = getParameterByName('Inicial');
-            fecha2 = getParameterByName('Final');
-            
-        
-        });
-        
-       
-            
+            const actualizaSolicitud = (valor, idSolicitud) => {
+                const accion = valor == 1 ?  'AUTORIZAR' : 'RECHAZAR'
+                const mensaje = document.createElement("div")
+                mensaje.style.color = "black"
+                mensaje.style.fontSize = "15px"
+                mensaje.innerHTML = "<p>¿Está seguro de <b>" + accion + "</b> la solicitud de retiro Express?</p><p style='font-weight: bold'>Esta acción no se puede deshacer.</p>"
+                 
+                confirmarMovimiento("Solicitudes de retiro Express", null, mensaje)
+                    .then((confirmacion) => {
+                        if (!confirmacion) return
+                         
+                        consultaServidor(
+                            "/AdminSucursales/ActualizaSolicitudRetiro/",
+                            { idSolicitud, estatus: valor, ejecutivo: "{$_SESSION['usuario']}" },
+                            (respuesta) => {
+                                if (!respuesta.success) return showError(respuesta.mensaje)
+                                showSuccess(respuesta.mensaje).then(() => {
+                                    swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+                                    window.location.reload()
+                                })
+                            })
+                    })
+            }
         </script>
-script;
-
-
-
+        script;
 
         $tabla =  "";
         $SolicitudesOrdinarias = CajaAhorroDao::GetSolicitudesRetiroAhorroExpress();
 
         foreach ($SolicitudesOrdinarias as $key => $value) {
-
             $cantidad_formateada = number_format($value['CANTIDAD_SOLICITADA'], 2, '.', ',');
-            if($value['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE')
-            {
-                $img =  '<img src="https://cdn-icons-png.flaticon.com/512/5575/5575939.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
-            }
-            else
-            {
-                $img =  '<img src="https://cdn-icons-png.flaticon.com/512/2995/2995467.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
-            }
+            $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
 
             $tabla .= <<<html
                 <tr style="padding: 15px!important;">
@@ -1840,7 +1876,7 @@ script;
                             <b>CLIENTE: </b>{$value['CLIENTE']}
                         </div>
                          <div>
-                            <b>SUCURSAL: </b>{NOS FALTA}
+                            <b>SUCURSAL: </b>{$value['SUCURSAL']}
                         </div>
                     </td>
                     <td style="padding: 15px!important;">
@@ -1858,22 +1894,20 @@ script;
                             <b>ESTATUS DE LA SOLICITUD: </b>{$value['SOLICITUD_VENCIDA']}
                         </div>
                          <div>
-                            <b>CAJERA SOLICITA: </b>{NOS FALTA}
+                            <b>CAJERA SOLICITA: </b>{$value['CDGPE_NOMBREE']}
                         </div>
                      </td>
                     <td style="padding: 0px !important;">  
-                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                        <button type="button" class="btn btn-success btn-circle" onclick="actualizaSolicitud('1','{$value['ID_SOL_RETIRO_AHORRO']}')"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="actualizaSolicitud('2','{$value['ID_SOL_RETIRO_AHORRO']}');"><i class="fa fa-trash"></i></button>
                     </td>
                 </tr>
-html;
+            html;
         }
 
-
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporteria")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Admin retiros express")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
-        view::set('sucursales', $opcSucursales);
         View::set('tabla', $tabla);
         View::render("caja_admin_solicitudes_retiro_express");
     }
@@ -1947,8 +1981,6 @@ html;
             
         
         });
-        
-        
         
             {$this->showError}
             {$this->showSuccess}
@@ -2065,7 +2097,7 @@ script;
         $empleados = AdminSucursalesDao::GetUsuariosActivos();
         $opcEmpleados = "<option value='0' disabled selected>Seleccione una opción</option>";
         foreach ($empleados as $key => $val2) {
-            $opcEmpleados .= "<option  value='" . $val2['CODIGO'] . "'>". $val2['EMPLEADO'] . "</option>";
+            $opcEmpleados .= "<option  value='" . $val2['CODIGO'] . "'>" . $val2['EMPLEADO'] . "</option>";
         }
 
         $sucActivas = AdminSucursalesDao::GetSucursalesActivas();

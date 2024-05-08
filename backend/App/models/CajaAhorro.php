@@ -1268,9 +1268,9 @@ class CajaAhorro
     {
         $qrySolicitud = <<<sql
         INSERT INTO SOLICITUD_RETIRO_AHORRO
-            (ID_SOL_RETIRO_AHORRO, CONTRATO, FECHA_SOLICITUD, CANTIDAD_SOLICITADA, AUTORIZACION_CLIENTE, CDGPE, ESTATUS, FECHA_ESTATUS, PRORROGA, TIPO_RETIRO)
+            (ID_SOL_RETIRO_AHORRO, CONTRATO, FECHA_SOLICITUD, CANTIDAD_SOLICITADA, AUTORIZACION_CLIENTE, CDGPE, ESTATUS, FECHA_ESTATUS, PRORROGA, TIPO_RETIRO, FECHA_REGISTRO, CDG_SUCURSAL)
         VALUES
-            ((SELECT NVL(MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)),0) FROM SOLICITUD_RETIRO_AHORRO) + 1, :contrato, :fecha_solicitud, :monto, NULL, :ejecutivo, 0, SYSDATE, 0, :tipo_retiro)
+            ((SELECT NVL(MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)),0) FROM SOLICITUD_RETIRO_AHORRO) + 1, :contrato, :fecha_solicitud, :monto, NULL, :ejecutivo, 0, SYSDATE, 0, :tipo_retiro, SYSDATE, :sucursal)
         sql;
         $qryTicket = self::GetQueryTicket();
         $qryMovimiento = self::GetQueryMovimientoAhorro();
@@ -1282,7 +1282,8 @@ class CajaAhorro
             'fecha_solicitud' => $datos['fecha_retiro'],
             'monto' => $datos['monto'],
             'ejecutivo' => $datos['ejecutivo'],
-            'tipo_retiro' => $tipoRetiro
+            'tipo_retiro' => $tipoRetiro,
+            'sucursal' => $datos['sucursal']
         ];
 
         $datosTicket = [
@@ -1367,13 +1368,14 @@ class CajaAhorro
             END AS TIPO_RETIRO,
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
             CL.CODIGO AS CLIENTE,
-            TO_CHAR(SR.FECHA_SOLICITUD, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_SOLICITUD,
+            TO_CHAR(SR.FECHA_ESTATUS, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_ESTATUS,
             SR.CANTIDAD_SOLICITADA AS MONTO,
             CASE SR.ESTATUS
-                WHEN 0 THEN 'SOLICITADO'
+                WHEN 0 THEN 'REGISTRADO'
                 WHEN 1 THEN 'APROBADO'
-                WHEN 2 THEN 'APROBADO CON CAMBIOS'
-                WHEN 3 THEN 'RECHAZADO'
+                WHEN 2 THEN 'RECHAZADO'
+                WHEN 3 THEN 'ENTREGADO'
+                WHEN 4 THEN 'DEVUELTO'
                 ELSE 'NO DEFINIDO'
             END AS ESTATUS
         FROM
@@ -1939,11 +1941,10 @@ sql;
     public static function GetSolicitudesRetiroAhorroOrdinario()
     {
         $query = <<<sql
-       
-         SELECT 
+        SELECT 
         sra.ID_SOL_RETIRO_AHORRO, 
         sra.CONTRATO, 
-        c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE AS CLIENTE, 
+        CONCATENA_NOMBRE(c.NOMBRE1, c.NOMBRE2, c.PRIMAPE, c.SEGAPE) AS CLIENTE, 
         TO_CHAR(sra.FECHA_SOLICITUD, 'Day DD Month YYYY (DD/MM/YYYY)') AS FECHA_SOLICITUD,
         TO_CHAR(sra.FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD_EXCEL,
         CASE
@@ -1957,10 +1958,11 @@ sql;
         END AS solicitud_vencida,
         sra.CANTIDAD_SOLICITADA, 
         sra.CDGPE,
-        p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE AS CDGPE_NOMBRE, 
+        CONCATENA_NOMBRE(p.NOMBRE1, p.NOMBRE2, p.PRIMAPE, p.SEGAPE) AS CDGPE_NOMBRE, 
         sra.TIPO_RETIRO, 
         sra.FECHA_ENTREGA,
-        UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO
+        UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO,
+        (SELECT NOMBRE FROM CO WHERE CODIGO = sra.CDG_SUCURSAL AND CDGEM = 'EMPFIN') AS SUCURSAL
     FROM 
         SOLICITUD_RETIRO_AHORRO sra 
     INNER JOIN 
@@ -2061,7 +2063,8 @@ sql;
         p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE AS CDGPE_NOMBRE, 
         sra.TIPO_RETIRO, 
         sra.FECHA_ENTREGA,
-        UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO
+        UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO,
+        (SELECT NOMBRE FROM CO WHERE CODIGO = sra.CDG_SUCURSAL AND CDGEM = 'EMPFIN') AS SUCURSAL
     FROM 
         SOLICITUD_RETIRO_AHORRO sra 
     INNER JOIN 
@@ -2089,6 +2092,7 @@ sql;
         }
     }
 
+<<<<<<< HEAD
     public static function GetSolicitudesRetiroAhorroExpressHistorial()
     {
         $query = <<<sql
@@ -2144,4 +2148,31 @@ sql;
         }
     }
 
+=======
+    public static function ActualizaSolicitudRetiro($datos)
+    {
+        $qry = <<<sql
+        UPDATE
+            SOLICITUD_RETIRO_AHORRO
+        SET
+            FECHA_ESTATUS = SYSDATE,
+            ESTATUS = '{$datos['estatus']}',
+            CDGPE_ASIGNA_ESTATUS = '{$datos['ejecutivo']}'
+        WHERE
+            ID_SOL_RETIRO_AHORRO = '{$datos['idSolicitud']}'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryOne($qry);
+            if (!$res) {
+                $accion = $datos['estatus'] === '1' ? 'aprobada' : 'rechazada';
+                return self::Responde(true, "Solicitud " . $accion . " correctamente.", ["qry" => $qry, "res" => $res]);
+            }
+            return self::Responde(false, "Ocurrió un error al actualizar la solicitud.", ["qry" => $qry, "res" => $res]);
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al actualizar la solicitud.", null, $e->getMessage());
+        }
+    }
+>>>>>>> 0b38d6417f477666af318b2d45bf74851a7ae357
 }
