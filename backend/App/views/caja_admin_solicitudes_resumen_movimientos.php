@@ -73,7 +73,7 @@
                                     </a></li>
 
                                 <li class="linea"><a href="/AdminSucursales/SolicitudRetiroOrdinario/">
-                                        <p style="font-size: 16px;">Retiros ordinarios</p>
+                                        <p style="font-size: 16px;">Retiros programados</p>
                                     </a></li>
                                 <li class="linea"><a href="/AdminSucursales/SolicitudRetiroExpress/">
                                         <p style="font-size: 16px;">Retiros express</p>

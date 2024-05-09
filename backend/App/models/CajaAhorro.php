@@ -2321,6 +2321,7 @@ sql;
         sra.ESTATUS = 0 
         AND sra.CDGPE_ASIGNA_ESTATUS IS NULL
         AND sra.TIPO_RETIRO = 1
+        AND p.CDGEM = 'EMPFIN'
     ORDER BY 
         sra.FECHA_ESTATUS
             
@@ -2362,7 +2363,15 @@ sql;
         sra.TIPO_RETIRO, 
         sra.FECHA_ENTREGA,
         UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO,
-        (SELECT NOMBRE FROM CO WHERE CODIGO = sra.CDG_SUCURSAL AND CDGEM = 'EMPFIN') AS SUCURSAL
+        (SELECT NOMBRE FROM CO WHERE CODIGO = sra.CDG_SUCURSAL AND CDGEM = 'EMPFIN') AS SUCURSAL, 
+        CASE sra.ESTATUS
+        WHEN 0 THEN 'REGISTRADO'
+        WHEN 1 THEN 'APROBADO'
+        WHEN 2 THEN 'RECHAZADO'
+        WHEN 3 THEN 'ENTREGADO'
+        WHEN 4 THEN 'DEVUELTO'
+        ELSE 'No definido'
+    END AS ESTATUS_ASIGNA_ACEPTA
     FROM 
         SOLICITUD_RETIRO_AHORRO sra 
     INNER JOIN 
@@ -2374,9 +2383,10 @@ sql;
     INNER JOIN 
         PE p ON p.CODIGO = sra.CDGPE 
     WHERE 
-        sra.ESTATUS = 0 
-        AND sra.CDGPE_ASIGNA_ESTATUS IS NULL
+        sra.ESTATUS != 0 
+        AND sra.CDGPE_ASIGNA_ESTATUS IS NOT NULL
         AND sra.TIPO_RETIRO = 1
+        AND p.CDGEM = 'EMPFIN'
     ORDER BY 
         sra.FECHA_ESTATUS
             

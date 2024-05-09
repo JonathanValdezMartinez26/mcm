@@ -72,13 +72,12 @@
                                         <p style="font-size: 16px;">Resumen de movimientos</p>
                                     </a></li>
                                 <li class="linea"><a href="/AdminSucursales/SolicitudRetiroOrdinario/">
-                                        <p style="font-size: 16px;">Retiros ordinarios</p>
+                                        <p style="font-size: 16px;">Retiros programados</p>
                                     </a></li>
 
                                 <li><a href="">
                                         <p style="font-size: 16px;"><b>Retiros express</b></p>
                                     </a></li>
-
                             </ul>
                         </div>
                     </div>

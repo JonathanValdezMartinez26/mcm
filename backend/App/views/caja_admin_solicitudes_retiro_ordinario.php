@@ -74,7 +74,7 @@
                                     </a></li>
 
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Retiros ordinarios</b></p>
+                                        <p style="font-size: 16px;"><b>Retiros programados</b></p>
                                     </a></li>
 
 

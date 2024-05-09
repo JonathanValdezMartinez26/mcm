@@ -1970,7 +1970,6 @@ html;
         script;
 
         $tabla =  "";
-        $tabla_historial =  "";
         $SolicitudesOrdinarias = CajaAhorroDao::GetSolicitudesRetiroAhorroExpress();
 
         foreach ($SolicitudesOrdinarias as $key => $value) {
@@ -2016,44 +2015,56 @@ html;
 html;
         }
 
-        $SolicitudesExpreesHistorial = CajaAhorroDao::GetSolicitudesRetiroAhorroExpressHistorial();
+        $SolicitudesExpressHistorial = CajaAhorroDao::GetSolicitudesRetiroAhorroExpressHistorial();
+        $tabla_historial =  "";
 
-        foreach ($SolicitudesExpreesHistorial as $key => $value) {
-            $cantidad_formateada = number_format($value['CANTIDAD_SOLICITADA'], 2, '.', ',');
-            $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
+        foreach ($SolicitudesExpressHistorial as $key => $value_historial) {
+            $cantidad_formateada = number_format($value_historial['CANTIDAD_SOLICITADA'], 2, '.', ',');
+            $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value_historial['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
+
+            if ($value_historial['ESTATUS_ASIGNA_ACEPTA'] == 'APROBADO') {
+                $estatus = 'ACEPTADO';
+                $color = '#31BD16';
+            } else {
+                $estatus = 'RECHAZADO';
+                $color = '#9C1508';
+            }
+
 
             $tabla_historial .= <<<html
                 <tr style="padding: 15px!important;">
                     <td style="padding: 15px!important;">
                         <div>
-                            <b>CONTRATO:</b> {$value['CONTRATO']}
+                            <b>CONTRATO:</b> {$value_historial['CONTRATO']}
                         </div>
                         <div>
-                            <b>CLIENTE: </b>{$value['CLIENTE']}
+                            <b>CLIENTE: </b>{$value_historial['CLIENTE']}
                         </div>
                          <div>
-                            <b>SUCURSAL: </b>{$value['SUCURSAL']}
+                            <b>SUCURSAL: </b>{$value_historial['SUCURSAL']}
                         </div>
                     </td>
                     <td style="padding: 15px!important;">
                      <div>
-                            <b>FECHA PREVISTA ENTREGA:</b> {$value['FECHA_SOLICITUD']}
+                            <b>FECHA PREVISTA ENTREGA:</b> {$value_historial['FECHA_SOLICITUD']}
                         </div>
                         <div>
                             <b>CANTIDAD SOLICITADA: </b>$ {$cantidad_formateada}
                         </div>
                         <div>
-                            <b>TIPO DE PRODUCTO: </b>{$value['TIPO_PRODUCTO']} {$img}
+                            <b>TIPO DE PRODUCTO: </b>{$value_historial['TIPO_PRODUCTO']} {$img}
                         </div>
                         <hr>
                          <div>
-                            <b>ESTATUS DE LA SOLICITUD: </b>{$value['SOLICITUD_VENCIDA']}
+                            <b>ESTATUS FINAL: </b><b style="color: {$color};">{$value_historial['ESTATUS_ASIGNA_ACEPTA']}</b>
                         </div>
                          <div>
-                            <b>CAJERA SOLICITA: </b>{$value['CDGPE_NOMBRE']}
+                            <b>CAJERA SOLICITA: </b>{$value_historial['CDGPE_NOMBRE']}
+                        </div>
+                         <div>
+                            <b>ADMIN AUTORIZA: </b>{$value_historial['CDGPE_NOMBRE_AUTORIZA']}
                         </div>
                      </td>
-                 
                 </tr>
 html;
         }
