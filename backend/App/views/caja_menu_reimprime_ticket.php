@@ -174,10 +174,9 @@
                                 <div class="form-group">
                                     <label for="motivo">Motivo *</label>
                                     <select class="form-control mr-sm-3" autofocus type="select" id="motivo" name="motivo">
-                                        <option value="SE EXTRAVIO">MOTIVO 1</option>
-                                        <option value="SE EXTRAVIO">MOTIVO 2</option>
-                                        <option value="SE EXTRAVIO">MOTIVO 3</option>
-                                        <option value="SE EXTRAVIO">MOTIVO 4</option>
+                                        <option value="TICKET EXTRAVIADO">TICKET EXTRAVIADO</option>
+                                        <option value="TICKET DAÑADO">TICKET DAÑADO</option>
+                                        <option value="FALLA IMPRESION">FALLA IMPRESION</option>
                                     </select>
                                 </div>
                             </div>
