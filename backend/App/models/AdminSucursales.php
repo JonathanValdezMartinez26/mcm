@@ -517,4 +517,39 @@ sql;
             return [];
         }
     }
+
+    public static function GetSaldosSucursales()
+    {
+        $qry = <<<sql
+        SELECT
+            SEA.CDG_SUCURSAL SUCURSAL,
+            CO.NOMBRE,
+            TO_CHAR(TO_DATE(SCA.HORA_APERTURA, 'HH24:MI:SS'), 'HH:MI AM') HORA_APERTURA,
+            TO_CHAR(TO_DATE(SCA.HORA_CIERRE, 'HH24:MI:SS'), 'HH:MI AM') HORA_CIERRE,
+            TO_CHAR(TO_NUMBER(SEA.SALDO_MINIMO), 'FM$999,999,999.00') SALDO_MINIMO,
+            TO_CHAR(TO_NUMBER(SEA.SALDO_MAXIMO), 'FM$999,999,999.00') SALDO_MAXIMO,
+            TO_CHAR(TO_NUMBER(SEA.SALDO), 'FM$999,999,999.00') SALDO,
+            CASE
+                WHEN saldo_maximo = saldo_minimo THEN 0
+                ELSE ((SEA.SALDO - SEA.SALDO_MINIMO) / (SEA.SALDO_MAXIMO - SEA.SALDO_MINIMO)) * 100
+            END PORCENTAJE
+        FROM
+            SUC_ESTADO_AHORRO SEA
+        JOIN
+            CO ON CO.CODIGO = SEA.CDG_SUCURSAL
+        RIGHT JOIN
+            SUC_CAJERA_AHORRO SCA ON SCA.CDG_ESTADO_AHORRO = SEA.CODIGO
+        WHERE
+            SEA.ESTATUS = 'A'
+        ORDER BY
+            CO.NOMBRE
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryAll($qry);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
 }

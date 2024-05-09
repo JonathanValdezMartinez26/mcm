@@ -15,6 +15,7 @@ use Exception;
 class AdminSucursales extends Controller
 {
     private $_contenedor;
+    private $XLSX = '<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
     private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
     private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
@@ -250,6 +251,13 @@ class AdminSucursales extends Controller
         muestraPDF(titulo, ruta)
     }
     script;
+    private $exportaExcel = 'const exportaExcel = (id, nombreArchivo, nombreHoja = "Reporte") => {
+        const tabla = document.querySelector("#" + id)
+        const wb = XLSX.utils.book_new()
+        const ws = XLSX.utils.table_to_sheet(tabla)
+        XLSX.utils.book_append_sheet(wb, ws, nombreHoja)
+        XLSX.writeFile(wb, nombreArchivo + ".xlsx")
+    }';
 
     function __construct()
     {
@@ -263,13 +271,48 @@ class AdminSucursales extends Controller
     // Reporte de saldos diarios por sucursal
     public function SaldosDiarios()
     {
-        $extraFooter = <<<html
-       
-        html;
+        $extraFooter = <<<script
+        <script>
+            {$this->configuraTabla}
+            {$this->exportaExcel}
+         
+            $(document).ready(() => {
+                configuraTabla("saldos")
+            })
+             
+            const imprimeExcel = () => exportaExcel("saldos", "Saldos de sucursales")
+        </script>
+        script;
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldo Diario")));
+        $saldos = AdminSucursalesDao::GetSaldosSucursales();
+        $filas = "";
+        foreach ($saldos as $sucursal) {
+            $estilo = "font-weight: bold; ";
+            $rgb = "";
+            $p = max(0, min(100, $sucursal['PORCENTAJE']));
+            if ($p <= 50) {
+                $rgb = "rgb(255, " . (255 * $p / 50) . ", 0)";
+            } else {
+                $rgb = "rgb(" . (255 - 255 * ($p - 50) / 50) . ", 255, 0)";
+            }
+            $estilo .= "color: " . $rgb . ";";
+            $p = number_format($sucursal['PORCENTAJE'], 2);
+
+            $filas .= "<tr>";
+            $filas .= "<td>{$sucursal['SUCURSAL']}</td>";
+            $filas .= "<td>{$sucursal['NOMBRE']}</td>";
+            $filas .= "<td>{$sucursal['HORA_APERTURA']}</td>";
+            $filas .= "<td>{$sucursal['HORA_CIERRE']}</td>";
+            $filas .= "<td>{$sucursal['SALDO_MINIMO']}</td>";
+            $filas .= "<td>{$sucursal['SALDO_MAXIMO']}</td>";
+            $filas .= "<td>{$sucursal['SALDO']}</td>";
+            $filas .= "<th style='" . $estilo . "'>{$p}%</th>";
+            $filas .= "</tr>";
+        }
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldos de sucursales", [$this->XLSX])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha', date('Y-m-d'));
+        View::set('filas', $filas);
         View::render("caja_admin_saldos_dia");
     }
 
@@ -1124,8 +1167,7 @@ script;
         $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro('');
         $opcSucursales = "";
         foreach ($sucursales as $sucursales) {
-            if($sucursales['CODIGO'] == $Sucursal)
-            {
+            if ($sucursales['CODIGO'] == $Sucursal) {
                 $sel_suc = 'Selected';
             }
             $opcSucursales .= "<option value='{$sucursales['CODIGO']}' $sel_suc>{$sucursales['NOMBRE']} ({$sucursales['CODIGO']})</option>";
@@ -1134,39 +1176,27 @@ script;
 
 
         //////////////////////////////////////////////////////
-        if($Operacion == 0 || $Operacion == '')
-        {
+        if ($Operacion == 0 || $Operacion == '') {
             $sel_op0 = 'Selected';
-        }else if($Operacion == 1)
-        {
+        } else if ($Operacion == 1) {
             $sel_op1 = 'Selected';
-        }else if($Operacion == 2)
-        {
+        } else if ($Operacion == 2) {
             $sel_op2 = 'Selected';
-        }else if($Operacion == 3)
-        {
+        } else if ($Operacion == 3) {
             $sel_op3 = 'Selected';
-        }
-        else if($Operacion == 4)
-        {
+        } else if ($Operacion == 4) {
             $sel_op4 = 'Selected';
-        }else if($Operacion == 5)
-        {
+        } else if ($Operacion == 5) {
             $sel_op5 = 'Selected';
-        }else if($Operacion == 6)
-        {
+        } else if ($Operacion == 6) {
             $sel_op6 = 'Selected';
-        }else if($Operacion == 7)
-        {
+        } else if ($Operacion == 7) {
             $sel_op7 = 'Selected';
-        }else if($Operacion == 8)
-        {
+        } else if ($Operacion == 8) {
             $sel_op8 = 'Selected';
-        }else if($Operacion == 9)
-        {
+        } else if ($Operacion == 9) {
             $sel_op9 = 'Selected';
-        }else if($Operacion == 10)
-        {
+        } else if ($Operacion == 10) {
             $sel_op10 = 'Selected';
         }
 
@@ -1190,17 +1220,13 @@ html;
 
         //////////////////////////////////////////////////////
 
-        if($Producto == 0 || $Producto == '')
-        {
+        if ($Producto == 0 || $Producto == '') {
             $sel_pro0 = 'Selected';
-        }else if($Producto == 1)
-        {
+        } else if ($Producto == 1) {
             $sel_pro1 = 'Selected';
-        }else if($Producto == 2)
-        {
+        } else if ($Producto == 2) {
             $sel_pro2 = 'Selected';
-        }else if($Producto == 3)
-        {
+        } else if ($Producto == 3) {
             $sel_pro3 = 'Selected';
         }
 
@@ -2532,15 +2558,15 @@ script;
 
         $controlador = "AdminSucursales";
 
-        $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M');
-        $nombreColumna = array('CDG_CONTRATO','CDGCO', 'NOMBRE_SUCURSAL', 'CDGCL','TITULAR_CUENTA_EJE','FECHA_MOV','CDG_TICKET','MONTO','CONCEPTO','PRODUCTO','INGRESO','EGRESO','SALDO');
-        $nombreCampo = array('CDG_CONTRATO','CDGCO' , 'NOMBRE_SUCURSAL','CDGCL','TITULAR_CUENTA_EJE','FECHA_MOV','CDG_TICKET','MONTO','CONCEPTO','PRODUCTO','INGRESO','EGRESO','SALDO');
+        $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M');
+        $nombreColumna = array('CDG_CONTRATO', 'CDGCO', 'NOMBRE_SUCURSAL', 'CDGCL', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'CDG_TICKET', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
+        $nombreCampo = array('CDG_CONTRATO', 'CDGCO', 'NOMBRE_SUCURSAL', 'CDGCL', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'CDG_TICKET', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
 
 
-        $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'Consulta de Movimientos Ahorro');
-        $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
-        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
-        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
+        $objPHPExcel->getActiveSheet()->SetCellValue('A' . $fila, 'Consulta de Movimientos Ahorro');
+        $objPHPExcel->getActiveSheet()->mergeCells('A' . $fila . ':' . $columna[count($nombreColumna) - 1] . $fila);
+        $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->applyFromArray($estilo_titulo);
+        $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->getAlignment()->setWrapText($adaptarTexto);
 
         $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K');
         $nombreColumna = array('CDG_CONTRATO', 'CDGCL', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'CDG_TICKET', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
