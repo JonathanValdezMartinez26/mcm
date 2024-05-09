@@ -159,7 +159,7 @@
                                                                         </tr>
                                                                         </thead>
                                                                         <tbody>
-                                                                        <?= $tabla; ?>
+                                                                        <?= $tabla_historial; ?>
                                                                         </tbody>
                                                                     </table>
                                                                 </div>

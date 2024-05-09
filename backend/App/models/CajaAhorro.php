@@ -2340,28 +2340,29 @@ sql;
     {
         $query = <<<sql
        
-         SELECT 
+        SELECT 
         sra.ID_SOL_RETIRO_AHORRO, 
         sra.CONTRATO, 
         c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE AS CLIENTE, 
         TO_CHAR(sra.FECHA_SOLICITUD, 'Day DD Month YYYY (DD/MM/YYYY)') AS FECHA_SOLICITUD,
         TO_CHAR(sra.FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD_EXCEL,
-        TO_CHAR(sra.FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_SOLICITUD_EXCEL_ENTREGA,
+        TO_CHAR(sra.FECHA_REGISTRO, 'Day DD Month YYYY (DD/MM/YYYY)') AS FECHA_REGISTRO,
         CASE
-            WHEN TRUNC(SYSDATE) = TRUNC(sra.FECHA_SOLICITUD) THEN 'Hoy'
-            ELSE TO_CHAR(TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD))
+            WHEN TRUNC(SYSDATE) = TRUNC(sra.FECHA_REGISTRO) THEN 'Hoy'
+            ELSE TO_CHAR(TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO))
         END AS days_since_order,
         CASE
-            WHEN (TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD)) > 7 THEN 
-                'VENCIDA (' || TO_CHAR((TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD)) - 7) || ' días vencida)'
-            ELSE 'EN TIEMPO (' || TO_CHAR(7 - (TRUNC(SYSDATE) - TRUNC(sra.FECHA_SOLICITUD))) || ' días restantes)'
+            WHEN (TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO)) > 7 THEN 
+                'VENCIDA (' || TO_CHAR((TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO)) - 7) || ' días vencida)'
+            ELSE 'EN TIEMPO (' || TO_CHAR(7 - (TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO))) || ' días restantes)'
         END AS solicitud_vencida,
         sra.CANTIDAD_SOLICITADA, 
         sra.CDGPE,
         p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE AS CDGPE_NOMBRE, 
         sra.TIPO_RETIRO, 
         sra.FECHA_ENTREGA,
-        UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO
+        UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO,
+        (SELECT NOMBRE FROM CO WHERE CODIGO = sra.CDG_SUCURSAL AND CDGEM = 'EMPFIN') AS SUCURSAL
     FROM 
         SOLICITUD_RETIRO_AHORRO sra 
     INNER JOIN 
@@ -2372,12 +2373,12 @@ sql;
         CL c ON c.CODIGO = apa.CDGCL 
     INNER JOIN 
         PE p ON p.CODIGO = sra.CDGPE 
-    INNER JOIN 
-        PE pp ON pp.CODIGO = sra.CDGPE_ASIGNA_ESTATUS 
     WHERE 
         sra.ESTATUS = 0 
         AND sra.CDGPE_ASIGNA_ESTATUS IS NULL
         AND sra.TIPO_RETIRO = 1
+    ORDER BY 
+        sra.FECHA_ESTATUS
             
 sql;
 

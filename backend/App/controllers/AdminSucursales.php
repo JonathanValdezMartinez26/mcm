@@ -1970,6 +1970,7 @@ html;
         script;
 
         $tabla =  "";
+        $tabla_historial =  "";
         $SolicitudesOrdinarias = CajaAhorroDao::GetSolicitudesRetiroAhorroExpress();
 
         foreach ($SolicitudesOrdinarias as $key => $value) {
@@ -2007,7 +2008,7 @@ html;
                             <b>CAJERA SOLICITA: </b>{$value['CDGPE_NOMBRE']}
                         </div>
                      </td>
-                    <td style="padding: 0px !important;">  
+                    <td style="padding: 15px !important;">  
                         <button type="button" class="btn btn-success btn-circle" onclick="actualizaSolicitud(1, {$value['ID_SOL_RETIRO_AHORRO']})"><i class="fa fa-edit"></i></button>
                         <button type="button" class="btn btn-danger btn-circle" onclick="actualizaSolicitud(2, {$value['ID_SOL_RETIRO_AHORRO']});"><i class="fa fa-trash"></i></button>
                     </td>
@@ -2015,13 +2016,13 @@ html;
 html;
         }
 
-        $SolicitudesOrdinarias = CajaAhorroDao::GetSolicitudesRetiroAhorroExpress();
+        $SolicitudesExpreesHistorial = CajaAhorroDao::GetSolicitudesRetiroAhorroExpressHistorial();
 
-        foreach ($SolicitudesOrdinarias as $key => $value) {
+        foreach ($SolicitudesExpreesHistorial as $key => $value) {
             $cantidad_formateada = number_format($value['CANTIDAD_SOLICITADA'], 2, '.', ',');
             $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
 
-            $tabla .= <<<html
+            $tabla_historial .= <<<html
                 <tr style="padding: 15px!important;">
                     <td style="padding: 15px!important;">
                         <div>
@@ -2052,10 +2053,7 @@ html;
                             <b>CAJERA SOLICITA: </b>{$value['CDGPE_NOMBRE']}
                         </div>
                      </td>
-                    <td style="padding: 0px !important;">  
-                        <button type="button" class="btn btn-success btn-circle" onclick="actualizaSolicitud(1, {$value['ID_SOL_RETIRO_AHORRO']})"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="actualizaSolicitud(2, {$value['ID_SOL_RETIRO_AHORRO']});"><i class="fa fa-trash"></i></button>
-                    </td>
+                 
                 </tr>
 html;
         }
@@ -2064,6 +2062,7 @@ html;
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
         View::set('tabla', $tabla);
+        View::set('tabla_historial', $tabla_historial);
         View::render("caja_admin_solicitudes_retiro_express");
     }
 
