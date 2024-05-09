@@ -1120,7 +1120,6 @@ script;
         $Producto = $_GET['Producto'];
         $Sucursal = $_GET['Sucursal'];
 
-<<<<<<< HEAD
 
         $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro('');
         $opcSucursales = "";
@@ -1214,17 +1213,13 @@ html;
 html;
 
 
-
-        if($Inicial == '' || $Final == '')
-        {
-=======
-        if ($Inicial != '' || $Final != '') {
->>>>>>> f5abdfd52529e4d2cb1e0d88fc111fb42d3301d8
+        if ($Inicial == '' || $Final == '') {
             $Inicial = $fechaActual;
             $Final = $fechaActual;
         }
 
         $Transacciones = CajaAhorroDao::GetAllTransacciones($Inicial, $Final, $Operacion, $Producto, $Sucursal);
+
         $tabla = "";
         foreach ($Transacciones as $key => $value) {
             $monto = number_format($value['MONTO'], 2);
@@ -2536,7 +2531,7 @@ script;
         $adaptarTexto = true;
 
         $controlador = "AdminSucursales";
-<<<<<<< HEAD
+
         $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M');
         $nombreColumna = array('CDG_CONTRATO','CDGCO', 'NOMBRE_SUCURSAL', 'CDGCL','TITULAR_CUENTA_EJE','FECHA_MOV','CDG_TICKET','MONTO','CONCEPTO','PRODUCTO','INGRESO','EGRESO','SALDO');
         $nombreCampo = array('CDG_CONTRATO','CDGCO' , 'NOMBRE_SUCURSAL','CDGCL','TITULAR_CUENTA_EJE','FECHA_MOV','CDG_TICKET','MONTO','CONCEPTO','PRODUCTO','INGRESO','EGRESO','SALDO');
@@ -2546,7 +2541,7 @@ script;
         $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
         $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
         $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
-=======
+
         $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K');
         $nombreColumna = array('CDG_CONTRATO', 'CDGCL', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'CDG_TICKET', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
         $nombreCampo = array('CDG_CONTRATO', 'CDGCL', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'CDG_TICKET', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
@@ -2556,7 +2551,7 @@ script;
         $objPHPExcel->getActiveSheet()->mergeCells('A' . $fila . ':' . $columna[count($nombreColumna) - 1] . $fila);
         $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->applyFromArray($estilo_titulo);
         $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->getAlignment()->setWrapText($adaptarTexto);
->>>>>>> f5abdfd52529e4d2cb1e0d88fc111fb42d3301d8
+
 
         $fila += 1;
 

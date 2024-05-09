@@ -1819,7 +1819,6 @@ sql;
 
     public static function GetAllTransacciones($Inicial, $Final, $Operacion, $Producto, $Sucursal)
     {
-<<<<<<< HEAD
 
         if($Operacion == '' || $Operacion == '0')
         {
@@ -1885,21 +1884,12 @@ sql;
         {
             $suc = "";
         }
-        else
-        {
-            $suc = " AND c2.CODIGO = '".$Sucursal."'";
-=======
-        if ($Operacion != '') {
-            $op = " AND ma.FECHA_MOV" + $Inicial;
+        else {
+            $suc = " AND c2.CODIGO = '" . $Sucursal . "'";
         }
-        if ($Producto != '') {
-            $pr = "AND ma.";
-        }
-        if ($Producto != '') {
-        }
-        if ($Sucursal != '') {
->>>>>>> f5abdfd52529e4d2cb1e0d88fc111fb42d3301d8
-        }
+
+
+
 
         $query = <<<sql
              SELECT 
