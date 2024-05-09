@@ -1272,7 +1272,7 @@ class Ahorro extends Controller
                         resumenRetiro(resumen, accion)
                     ).then((continuar) => {
                         if (!continuar) return
-                        consultaServidor("/Ahorro/EntregaRetiro/", $.param({estatus, id, ejecutivo: "{$_SESSION['usuario']}"}), (respuesta) => {
+                        consultaServidor("/Ahorro/EntregaRetiro/", $.param({estatus, id, ejecutivo: "{$_SESSION['usuario']}", sucursal: "{$_SESSION['cdgco_ahorro']}", monto: resumen.MONTO}), (respuesta) => {
                             if (!respuesta.success) {
                                 console.log(respuesta.error)
                                 return showError(respuesta.mensaje)

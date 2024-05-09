@@ -527,7 +527,8 @@ class CajaAhorro
         $query = [
             self::GetQueryTicket(),
             self::GetQueryMovimientoAhorro(),
-            self::GetQueryMovimientoAhorro()
+            self::GetQueryMovimientoAhorro(),
+            self::GetQueryActualizaSaldoSucursal()
         ];
 
         $validacion = [
@@ -554,6 +555,10 @@ class CajaAhorro
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['inscripcion'],
                 'movimiento' => '0'
+            ],
+            [
+                'monto' => $datos['monto'],
+                'sucursal' => $datos['sucursal']
             ]
         ];
 
@@ -574,12 +579,14 @@ class CajaAhorro
 
     public static function RegistraOperacion($datos)
     {
+        $esDeposito = $datos['esDeposito'] === true || $datos['esDeposito'] === 'true';
+
         $query = [
             self::GetQueryTicket(),
-            self::GetQueryMovimientoAhorro()
+            self::GetQueryMovimientoAhorro(),
+            self::GetQueryActualizaSaldoSucursal(!$esDeposito)
         ];
 
-        $esDeposito = $datos['esDeposito'] === true || $datos['esDeposito'] === 'true';
 
         $datosInsert = [
             [
@@ -593,6 +600,10 @@ class CajaAhorro
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['montoOperacion'],
                 'movimiento' => $esDeposito ? '1' : '0'
+            ],
+            [
+                'monto' => $datos['montoOperacion'],
+                'sucursal' => $datos['sucursal']
             ]
         ];
 
@@ -680,6 +691,19 @@ class CajaAhorro
             )
         WHERE
             DIFERENCIA != 0
+        sql;
+    }
+
+    public static function GetQueryActualizaSaldoSucursal($cargo = false)
+    {
+        $tipo = $cargo ? '-' : '+';
+        return <<<sql
+        UPDATE
+            SUC_ESTADO_AHORRO
+        SET
+            SALDO = SALDO $tipo :monto
+        WHERE
+            CDG_SUCURSAL = :sucursal
         sql;
     }
 
@@ -1461,11 +1485,16 @@ class CajaAhorro
         sql;
 
         $accion = $datos['estatus'] === '3' ? 'Entrega' : 'Devolución';
+        $d1 = $datos;
+        unset($d1['sucursal']);
+        unset($d1['monto']);
+
         try {
             $mysqli = Database::getInstance();
-            $res = $mysqli->insertar($qry, $datos);
-            LogTransaccionesAhorro::LogTransacciones($qry, $datos, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], $accion . " de retiro express/programado de cuenta de ahorro corriente");
+            $res = $mysqli->insertar($qry, $d1);
+            LogTransaccionesAhorro::LogTransacciones($qry, $d1, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], $accion . " de retiro express/programado de cuenta de ahorro corriente");
             if (!$res) {
+                $mysqli->insertar(self::GetQueryActualizaSaldoSucursal(true), ['sucursal' => $datos['sucursal'], 'monto' => $datos['monto']]);
                 $qryT = <<<sql
                 SELECT
                     MA.CDG_TICKET AS TICKET
