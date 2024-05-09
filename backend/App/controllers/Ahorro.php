@@ -3,7 +3,7 @@
 namespace App\controllers;
 
 defined("APPPATH") or die("Access denied");
-
+// prueba
 use \Core\View;
 use \Core\Controller;
 use \Core\MasterDom;
