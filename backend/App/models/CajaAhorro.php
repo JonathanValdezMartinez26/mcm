@@ -789,6 +789,8 @@ class CajaAhorro
                 SELECT
                     CASE CDG_TIPO_PAGO
                         WHEN '5' THEN 'TRANSFERENCIA'
+                        WHEN '8' THEN 'TRANSFERENCIA'
+                        WHEN '9' THEN 'TRANSFERENCIA'
                         ELSE 'EFECTIVO'
                     END
                 FROM
@@ -801,6 +803,8 @@ class CajaAhorro
                 SELECT
                     CASE CDG_TIPO_PAGO
                         WHEN '5' THEN 'APERTURADO POR'
+                        WHEN '8' THEN 'REEMBOLSAMOS'
+                        WHEN '9' THEN 'REEMBOLSAMOS'
                         ELSE CASE MOVIMIENTO
                             WHEN '0' THEN 'ENTREGAMOS'
                             ELSE 'RECIBIMOS'
@@ -816,6 +820,8 @@ class CajaAhorro
                 SELECT
                     CASE CDG_TIPO_PAGO
                         WHEN '5' THEN 'Atendió'
+                        WHEN '8' THEN 'Atendió'
+                        WHEN '9' THEN 'Atendió'
                         ELSE CASE MOVIMIENTO
                             WHEN '0' THEN 'Entrego'
                             ELSE 'Recibió'
@@ -1467,9 +1473,9 @@ class CajaAhorro
                     MA.CDG_RETIRO = :id
                 sql;
 
-                if ($datos['estatus'] === '3') {
-                    $datosT = $mysqli->queryOne($qryT, ['id' => $datos['id']]);
+                $datosT = $mysqli->queryOne($qryT, ['id' => $datos['id']]);
 
+                if ($datos['estatus'] === '3') {
                     $qryT2 = <<<sql
                     UPDATE
                         TICKETS_AHORRO
@@ -1518,7 +1524,7 @@ class CajaAhorro
             if ($res) {
                 LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de devolución de retiro " . ($datos['tipo'] == 1 ? "express" : "programado") . " de cuenta de ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
-                return self::Responde(true, "La devolución fue registrada correctamente.", ['ticket' => $ticket['CODIGO']]);
+                return self::Responde(true, "El monto del retiro ($ " . number_format($datos['monto'], 2) . ") ha sido devuelto al cliente.", ['ticket' => $ticket['CODIGO']]);
             }
             return self::Responde(false, "Ocurrió un error al registrar la devolución.");
         } catch (Exception $e) {
@@ -1811,21 +1817,15 @@ sql;
 
     public static function GetAllTransacciones($Inicial, $Final, $Operacion, $Producto, $Sucursal)
     {
-        if($Operacion != '')
-        {
-            $op = " AND ma.FECHA_MOV"+ $Inicial;
+        if ($Operacion != '') {
+            $op = " AND ma.FECHA_MOV" + $Inicial;
         }
-        if($Producto != '')
-        {
+        if ($Producto != '') {
             $pr = "AND ma.";
         }
-        if($Producto != '')
-        {
-
+        if ($Producto != '') {
         }
-        if($Sucursal != '')
-        {
-
+        if ($Sucursal != '') {
         }
 
         $query = <<<sql
