@@ -1112,7 +1112,7 @@ class Ahorro extends Controller
                 document.querySelector("#montoOperacion").value = formatoMoneda(monto)
                 const saldoFinal = (saldoActual - monto)
                 document.querySelector("#saldoFinal").value = formatoMoneda(saldoFinal)
-                compruebaSaldoFinal(saldoFinal)
+                compruebaSaldoFinal()
             }
              
             const valSalMin = () => {
