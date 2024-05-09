@@ -2291,7 +2291,7 @@ sql;
         sra.ESTATUS = 0 
         AND sra.CDGPE_ASIGNA_ESTATUS IS NULL
         AND sra.TIPO_RETIRO = 2
-        AND pe.CDGEM = 'EMPFIN'
+        AND p.CDGEM = 'EMPFIN'
     ORDER BY 
         sra.FECHA_ESTATUS
             
