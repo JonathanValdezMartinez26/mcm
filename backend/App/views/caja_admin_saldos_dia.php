@@ -88,6 +88,7 @@
                                                 <th>Cod sucursal</th>
                                                 <th>Nombre sucursal</th>
                                                 <th>Saldo</th>
+                                                <th>Diferencia al cierre</th>
                                                 <th>Capacidad operativa</th>
                                             </tr>
                                         </thead>

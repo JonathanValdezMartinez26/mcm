@@ -1810,7 +1810,7 @@ html;
                      <td style="padding: 10px!important;">  
                         <button type="button" class="btn btn-success btn-circle" onclick="actualizaSolicitud(1,{$value['ID_SOL_RETIRO_AHORRO']})"><i class="fa fa-check-circle"></i></button>
                         <button type="button" class="btn btn-danger btn-circle" onclick="actualizaSolicitud(2,{$value['ID_SOL_RETIRO_AHORRO']});"><i class="fa fa-close"></i></button>
-                        <button type="button" class="btn btn-info btn-circle" onclick="actualizaSolicitud(3,{$value['ID_SOL_RETIRO_AHORRO']});"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-info btn-circle" ><i class="fa fa-edit"></i></button>
                     </td>
                 </tr>
             html;

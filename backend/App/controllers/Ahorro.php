@@ -821,7 +821,7 @@ class Ahorro extends Controller
     public function CuentaCorriente()
     {
         $saldoMinimoApertura = 100;
-        $montoMaximoRetiro = 9999.99;
+        $montoMaximoRetiro = 50000;
 
         $extraFooter = <<<html
         <script>
@@ -3211,9 +3211,11 @@ class Ahorro extends Controller
         foreach ($registros as $key => $value) {
             $tabla .= "<tr>";
             foreach ($value as $key2 => $valor) {
-                if ($key2 == 'MONTO') $valor = "$ " . number_format($valor, 2);
+                $estilo = "";
+                if ($key2 === 'MONTO') $valor = "$ " . number_format($valor, 2);
+                if ($key2 === 'CONCEPTO' || $key2 === 'CLIENTE') $estilo .= " text-align: left;";
 
-                $tabla .= "<td style='vertical-align: middle;'>$valor</td>";
+                $tabla .= "<td style='vertical-align: middle;" . $estilo . "'>$valor</td>";
             }
 
             $tabla .= "<td style='vertical-align: middle;'><button type='button' class='btn btn-success btn-circle' onclick='Reimprime_ticket(\"{$value['CODIGO']}\");'><i class='fa fa-print'></i></button></td>";

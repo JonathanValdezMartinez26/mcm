@@ -528,7 +528,8 @@ sql;
                 TO_CHAR(SYSDATE, 'DD/MM/YYYY') FECHA,
                 SEA.CDG_SUCURSAL SUCURSAL,
                 CO.NOMBRE,
-                TO_CHAR(TO_NUMBER(SEA.SALDO), 'FM$999,999,999.00') SALDO,
+                TO_CHAR(SEA.SALDO, 'FM$999,999,999.00') SALDO,
+                'En operación' DIFERENCIA,
                 CASE
                     WHEN saldo_maximo = saldo_minimo THEN 0
                     ELSE ((SEA.SALDO - SEA.SALDO_MINIMO) / (SEA.SALDO_MAXIMO - SEA.SALDO_MINIMO)) * 100
@@ -544,10 +545,11 @@ sql;
                 TO_CHAR(A.FECHA, 'DD/MM/YYYY') FECHA,
                 SEA.CDG_SUCURSAL SUCURSAL,
                 CO.NOMBRE,
-                TO_CHAR(TO_NUMBER(A.SALDO_SUCURSAL), 'FM$999,999,999.00') SALDO,
+                TO_CHAR(A.SALDO_SUCURSAL, 'FM$999,999,999.00') SALDO,
+                TO_CHAR(A.MONTO - A.SALDO_SUCURSAL, 'FM$999,999,999.00') DIFERENCIA,
                 CASE
-                WHEN saldo_maximo = saldo_minimo THEN 0
-                ELSE ((A.SALDO_SUCURSAL - SEA.SALDO_MINIMO) / (SEA.SALDO_MAXIMO - SEA.SALDO_MINIMO)) * 100
+                    WHEN saldo_maximo = saldo_minimo THEN 0
+                    ELSE ((A.SALDO_SUCURSAL - SEA.SALDO_MINIMO) / (SEA.SALDO_MAXIMO - SEA.SALDO_MINIMO)) * 100
                 END PORCENTAJE
             FROM
                 (

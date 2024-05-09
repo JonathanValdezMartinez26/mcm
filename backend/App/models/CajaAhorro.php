@@ -1606,7 +1606,7 @@ class CajaAhorro
                     TIPO_PAGO_AHORRO
                 WHERE
                     CODIGO = MA.CDG_TIPO_PAGO
-            ),
+            ) CONCEPTO,
             MA.MONTO,
             CASE MA.MOVIMIENTO
                 WHEN '0' THEN 'CARGO'
