@@ -101,15 +101,17 @@
                                 <hr>
                                 <form name="all" id="all" method="POST">
                                     <div class="dataTable_wrapper">
-                                        <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
+                                        <table class="table table-striped table-bordered table-hover" id="hstSolicitudes">
                                             <thead>
                                                 <tr>
                                                     <th>Tipo</th>
                                                     <th>Nombre cliente</th>
                                                     <th>Código cliente</th>
-                                                    <th>Fecha registro</th>
+                                                    <th>Fecha actualización</th>
                                                     <th>Monto solicitado</th>
                                                     <th>Estatus</th>
+                                                    <th>Observaciones</th>
+                                                    <th>Acciones</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

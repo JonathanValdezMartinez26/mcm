@@ -9,7 +9,7 @@ use \Core\Controller;
 use \Core\MasterDom;
 use \App\models\AdminSucursales as AdminSucursalesDao;
 use \App\models\CajaAhorro as CajaAhorroDao;
-use \App\models\Operaciones AS OperacionesDao;
+use \App\models\Operaciones as OperacionesDao;
 use Exception;
 
 class AdminSucursales extends Controller
@@ -218,6 +218,38 @@ class AdminSucursales extends Controller
                 .draw()
         })
     }';
+    private $muestraPDF = <<<script
+    const muestraPDF = (titulo, ruta) => {
+        let plantilla = '<!DOCTYPE html>'
+            plantilla += '<html lang="es">'
+            plantilla += '<head>'
+            plantilla += '<meta charset="UTF-8">'
+            plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+            plantilla += '<link rel="shortcut icon" href="" + host + "/img/logo.png">'
+            plantilla += '<title>' + titulo + '</title>'
+            plantilla += '</head>'
+            plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
+            plantilla += '<iframe src="' + ruta + '" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
+            plantilla += '</body>'
+            plantilla += '</html>'
+        
+            const blob = new Blob([plantilla], { type: 'text/html' })
+            const url = URL.createObjectURL(blob)
+            window.open(url, '_blank')
+    }
+    script;
+    private $imprimeTicket = <<<script
+    const imprimeTicket = (ticket, sucursal = '', copia = true) => {
+        const host = window.location.origin
+        const titulo = 'Ticket: ' + ticket
+        const ruta = host + '/Ahorro/Ticket/?'
+        + 'ticket=' + ticket
+        + '&sucursal=' + sucursal
+        + (copia ? '&copiaCliente=true' : '')
+        
+        muestraPDF(titulo, ruta)
+    }
+    script;
 
     function __construct()
     {
@@ -246,7 +278,7 @@ class AdminSucursales extends Controller
     {
         $extraFooter = <<<script
        
-script;
+        script;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Arqueo de Caja")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -935,28 +967,7 @@ script;
     {
         $script = <<<script
         <script>
-            configuraTabla = () => {
-                $("#tablaResumenCta").tablesorter()
-                $("#tablaResumenCta").DataTable({
-                    lengthMenu: [
-                        [10, 50, -1],
-                        [10, 50, "Todos"]
-                    ],
-                    columnDefs: [
-                        {
-                            orderable: false,
-                            targets: 0
-                        }
-                    ],
-                    order: false
-                })
-                $("#tablaResumenCta input[type=search]").keyup(() => {
-                    $("#example")
-                        .DataTable()
-                        .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
-                        .draw()
-                })
-            }
+            {$this->configuraTabla}
              
             $(document).ready(() => configuraTabla())
         </script>
@@ -1109,6 +1120,7 @@ script;
         $Producto = $_GET['Producto'];
         $Sucursal = $_GET['Sucursal'];
 
+<<<<<<< HEAD
 
         $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro('');
         $opcSucursales = "";
@@ -1205,6 +1217,9 @@ html;
 
         if($Inicial == '' || $Final == '')
         {
+=======
+        if ($Inicial != '' || $Final != '') {
+>>>>>>> f5abdfd52529e4d2cb1e0d88fc111fb42d3301d8
             $Inicial = $fechaActual;
             $Final = $fechaActual;
         }
@@ -1649,6 +1664,8 @@ html;
             {$this->confirmarMovimiento}
             {$this->consultaServidor}
             {$this->configuraTabla}
+            {$this->muestraPDF}
+            {$this->imprimeTicket}
             
             const getParameterByName = (name) => {
                 name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -1676,7 +1693,7 @@ html;
             })
              
             const actualizaSolicitud = (valor, idSolicitud) => {
-                const accion = valor == 1 ?  "AUTORIZAR" : "RECHAZAR"
+                const accion = valor === 1 ?  "AUTORIZAR" : "RECHAZAR"
                 const mensaje = document.createElement("div")
                 mensaje.style.color = "black"
                 mensaje.style.fontSize = "15px"
@@ -1692,11 +1709,42 @@ html;
                             (respuesta) => {
                                 if (!respuesta.success) return showError(respuesta.mensaje)
                                 showSuccess(respuesta.mensaje).then(() => {
+                                    if (valor === 2) {
+                                        return consultaServidor("/Ahorro/ResumenEntregaRetiro", $.param({id: idSolicitud}), (respuesta) => {
+                                            if (respuesta.success) return devuelveRetiro(respuesta.datos)
+                                             
+                                            console.log(respuesta.error)
+                                            showError(respuesta.mensaje)
+                                        })
+                                    }
                                     swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
                                     window.location.reload()
                                 })
                             })
                     })
+            }
+             
+            const devuelveRetiro = (datos) => {
+                const datosDev = {
+                    contrato: datos.CONTRATO,
+                    monto: datos.MONTO,
+                    ejecutivo: "{$_SESSION['usuario']}",
+                    sucursal: "{$_SESSION['cdgco_ahorro']}",
+                    tipo: datos.TIPO_RETIRO
+                }
+                 
+                consultaServidor("/Ahorro/DevolucionRetiro/", $.param(datosDev), (respuesta) => {
+                    if (!respuesta.success) {
+                        console.log(respuesta.error)
+                        return showError(respuesta.mensaje)
+                    }
+                     
+                    showSuccess(respuesta.mensaje).then(() => {
+                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}", false)
+                        swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+                        window.location.reload()
+                    })
+                })
             }
         </script>
         script;
@@ -1740,9 +1788,9 @@ html;
                         </div>
                      </td>
                      <td style="padding: 10px!important;">  
-                        <button type="button" class="btn btn-success btn-circle" onclick="actualizaSolicitud('1','{$value['ID_SOL_RETIRO_AHORRO']}')"><i class="fa fa-check-circle"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="actualizaSolicitud('2','{$value['ID_SOL_RETIRO_AHORRO']}');"><i class="fa fa-close"></i></button>
-                        <button type="button" class="btn btn-info btn-circle" onclick="actualizaSolicitud('2','{$value['ID_SOL_RETIRO_AHORRO']}');"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-success btn-circle" onclick="actualizaSolicitud(1,{$value['ID_SOL_RETIRO_AHORRO']})"><i class="fa fa-check-circle"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="actualizaSolicitud(2,{$value['ID_SOL_RETIRO_AHORRO']});"><i class="fa fa-close"></i></button>
+                        <button type="button" class="btn btn-info btn-circle" onclick="actualizaSolicitud(3,{$value['ID_SOL_RETIRO_AHORRO']});"><i class="fa fa-edit"></i></button>
                     </td>
                 </tr>
             html;
@@ -1754,13 +1802,8 @@ html;
         $SolicitudesOrdinarias_Historial = CajaAhorroDao::GetSolicitudesRetiroAhorroOrdinariaHistorial();
 
         foreach ($SolicitudesOrdinarias_Historial as $key => $value_historial) {
-
             $cantidad_formateada = number_format($value_historial['CANTIDAD_SOLICITADA'], 2, '.', ',');
-            if ($value_historial['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE') {
-                $img =  '<img src="https://cdn-icons-png.flaticon.com/512/5575/5575939.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
-            } else {
-                $img =  '<img src="https://cdn-icons-png.flaticon.com/512/2995/2995467.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
-            }
+            $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
 
             $tabla_historial .= <<<html
                 <tr style="padding: 15px!important;">
@@ -1794,7 +1837,7 @@ html;
                         </div>
                      </td>
                 </tr>
-html;
+            html;
         }
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitudes Pendientes Retiros Ordinarios")));
@@ -1820,6 +1863,8 @@ html;
             {$this->confirmarMovimiento}
             {$this->consultaServidor}
             {$this->configuraTabla}
+            {$this->muestraPDF}
+            {$this->imprimeTicket}
             
             const getParameterByName = (name) => {
                 name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -1847,7 +1892,7 @@ html;
             })
              
             const actualizaSolicitud = (valor, idSolicitud) => {
-                const accion = valor == 1 ?  'AUTORIZAR' : 'RECHAZAR'
+                const accion = valor === 1 ?  'AUTORIZAR' : 'RECHAZAR'
                 const mensaje = document.createElement("div")
                 mensaje.style.color = "black"
                 mensaje.style.fontSize = "15px"
@@ -1863,11 +1908,43 @@ html;
                             (respuesta) => {
                                 if (!respuesta.success) return showError(respuesta.mensaje)
                                 showSuccess(respuesta.mensaje).then(() => {
+                                    if (valor === 2) {
+                                        return consultaServidor("/Ahorro/ResumenEntregaRetiro", $.param({id: idSolicitud}), (respuesta) => {
+                                            if (respuesta.success) return devuelveRetiro(respuesta.datos)
+                                             
+                                            console.log(respuesta.error)
+                                            return showError(respuesta.mensaje)
+                                        })
+                                    }
+                                     
                                     swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
                                     window.location.reload()
                                 })
                             })
                     })
+            }
+             
+            const devuelveRetiro = (datos) => {
+                const datosDev = {
+                    contrato: datos.CONTRATO,
+                    monto: datos.MONTO,
+                    ejecutivo: "{$_SESSION['usuario']}",
+                    sucursal: "{$_SESSION['cdgco_ahorro']}",
+                    tipo: datos.TIPO_RETIRO
+                }
+                 
+                consultaServidor("/Ahorro/DevolucionRetiro/", $.param(datosDev), (respuesta) => {
+                    if (!respuesta.success) {
+                        console.log(respuesta.error)
+                        return showError(respuesta.mensaje)
+                    }
+                     
+                    showSuccess(respuesta.mensaje).then(() => {
+                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}", false)
+                        swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+                        window.location.reload()
+                    })
+                })
             }
         </script>
         script;
@@ -1911,8 +1988,8 @@ html;
                         </div>
                      </td>
                     <td style="padding: 0px !important;">  
-                        <button type="button" class="btn btn-success btn-circle" onclick="actualizaSolicitud('1','{$value['ID_SOL_RETIRO_AHORRO']}')"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="actualizaSolicitud('2','{$value['ID_SOL_RETIRO_AHORRO']}');"><i class="fa fa-trash"></i></button>
+                        <button type="button" class="btn btn-success btn-circle" onclick="actualizaSolicitud(1, {$value['ID_SOL_RETIRO_AHORRO']})"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="actualizaSolicitud(2, {$value['ID_SOL_RETIRO_AHORRO']});"><i class="fa fa-trash"></i></button>
                     </td>
                 </tr>
             html;
@@ -2416,7 +2493,8 @@ script;
         $objWriter->save('php://output');
     }
 
-    public function generarExcelPagosTransaccionesAll(){
+    public function generarExcelPagosTransaccionesAll()
+    {
 
         $fecha_inicio = $_GET['Inicial'];
         $fecha_fin = $_GET['Final'];
@@ -2435,19 +2513,19 @@ script;
 
 
         $estilo_titulo = array(
-            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true, 'name' => 'Calibri', 'size' => 11, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_encabezado = array(
-            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true, 'name' => 'Calibri', 'size' => 11, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_celda = array(
-            'font' => array('bold' => false,'name'=>'Calibri','size'=>11,'color' => array('rgb' => '060606')),
+            'font' => array('bold' => false, 'name' => 'Calibri', 'size' => 11, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
 
@@ -2458,6 +2536,7 @@ script;
         $adaptarTexto = true;
 
         $controlador = "AdminSucursales";
+<<<<<<< HEAD
         $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M');
         $nombreColumna = array('CDG_CONTRATO','CDGCO', 'NOMBRE_SUCURSAL', 'CDGCL','TITULAR_CUENTA_EJE','FECHA_MOV','CDG_TICKET','MONTO','CONCEPTO','PRODUCTO','INGRESO','EGRESO','SALDO');
         $nombreCampo = array('CDG_CONTRATO','CDGCO' , 'NOMBRE_SUCURSAL','CDGCL','TITULAR_CUENTA_EJE','FECHA_MOV','CDG_TICKET','MONTO','CONCEPTO','PRODUCTO','INGRESO','EGRESO','SALDO');
@@ -2467,17 +2546,28 @@ script;
         $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
         $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
         $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
+=======
+        $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K');
+        $nombreColumna = array('CDG_CONTRATO', 'CDGCL', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'CDG_TICKET', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
+        $nombreCampo = array('CDG_CONTRATO', 'CDGCL', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'CDG_TICKET', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
 
-        $fila +=1;
+
+        $objPHPExcel->getActiveSheet()->SetCellValue('A' . $fila, 'Consulta de Pagos Cultiva');
+        $objPHPExcel->getActiveSheet()->mergeCells('A' . $fila . ':' . $columna[count($nombreColumna) - 1] . $fila);
+        $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->applyFromArray($estilo_titulo);
+        $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->getAlignment()->setWrapText($adaptarTexto);
+>>>>>>> f5abdfd52529e4d2cb1e0d88fc111fb42d3301d8
+
+        $fila += 1;
 
         /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
         foreach ($nombreColumna as $key => $value) {
-            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, $value);
-            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_encabezado);
-            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, $value);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_encabezado);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
         }
-        $fila +=1; //fila donde comenzaran a escribirse los datos
+        $fila += 1; //fila donde comenzaran a escribirse los datos
 
         /* FILAS DEL ARCHIVO EXCEL */
 
@@ -2485,16 +2575,16 @@ script;
 
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
-                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_celda);
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_celda);
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
             }
-            $fila +=1;
+            $fila += 1;
         }
 
 
-        $objPHPExcel->getActiveSheet()->getStyle('A1:'.$columna[count($columna)-1].$fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        for ($i=0; $i <$fila ; $i++) {
+        $objPHPExcel->getActiveSheet()->getStyle('A1:' . $columna[count($columna) - 1] . $fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        for ($i = 0; $i < $fila; $i++) {
             $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(20);
         }
 
@@ -2502,13 +2592,13 @@ script;
         $objPHPExcel->getActiveSheet()->setTitle('Reporte');
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Reporte Movimientos Caja '.$controlador.'.xlsx"');
+        header('Content-Disposition: attachment;filename="Reporte Movimientos Caja ' . $controlador . '.xlsx"');
         header('Cache-Control: max-age=0');
         header('Cache-Control: max-age=1');
-        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-        header ('Cache-Control: cache, must-revalidate');
-        header ('Pragma: public');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
 
         \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
