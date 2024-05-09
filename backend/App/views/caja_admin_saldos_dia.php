@@ -88,7 +88,7 @@
                                                 <th>Cod sucursal</th>
                                                 <th>Nombre sucursal</th>
                                                 <th>Saldo</th>
-                                                <th>Nivel operativo</th>
+                                                <th>Capacidad operativa</th>
                                             </tr>
                                         </thead>
                                         <tbody>
