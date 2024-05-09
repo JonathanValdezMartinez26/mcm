@@ -2240,7 +2240,7 @@ sql;
     WHERE 
         sra.ESTATUS = 0 
         AND sra.CDGPE_ASIGNA_ESTATUS IS NULL
-        AND sra.TIPO_RETIRO = 1
+        AND sra.TIPO_RETIRO = 2
     ORDER BY 
         sra.FECHA_ESTATUS
             
@@ -2291,7 +2291,7 @@ sql;
     WHERE 
         sra.ESTATUS = 0 
         AND sra.CDGPE_ASIGNA_ESTATUS IS NOT NULL
-        AND sra.TIPO_RETIRO = 1
+        AND sra.TIPO_RETIRO = 2
             
 sql;
 
@@ -2345,7 +2345,7 @@ sql;
     WHERE 
         sra.ESTATUS = 0 
         AND sra.CDGPE_ASIGNA_ESTATUS IS NULL
-        AND sra.TIPO_RETIRO = 2
+        AND sra.TIPO_RETIRO = 1
     ORDER BY 
         sra.FECHA_ESTATUS
             
@@ -2402,7 +2402,7 @@ sql;
     WHERE 
         sra.ESTATUS = 0 
         AND sra.CDGPE_ASIGNA_ESTATUS IS NULL
-        AND sra.TIPO_RETIRO = 2
+        AND sra.TIPO_RETIRO = 1
             
 sql;
 
