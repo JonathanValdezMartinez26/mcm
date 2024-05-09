@@ -1819,6 +1819,12 @@ sql;
 
     public static function GetAllTransacciones($Inicial, $Final, $Operacion, $Producto, $Sucursal)
     {
+        if($Inicial == '' || $Final == '')
+        {
+            $fechaActual = date('Y-m-d');
+            $Inicial = $fechaActual;
+            $Final = $fechaActual;
+        }
 
         if($Operacion == '' || $Operacion == '0')
         {
