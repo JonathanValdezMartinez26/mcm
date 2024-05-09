@@ -2260,39 +2260,38 @@ sql;
     {
         $query = <<<sql
        
-      
-    SELECT 
-        sra.ID_SOL_RETIRO_AHORRO, 
-        sra.CONTRATO, 
-        c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE AS CLIENTE, 
-        TO_CHAR(sra.FECHA_SOLICITUD, 'Day DD Month YYYY (DD/MM/YYYY)') AS FECHA_SOLICITUD,
-        TO_CHAR(sra.FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD_EXCEL,
-        TO_CHAR(sra.FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_SOLICITUD_EXCEL_ENTREGA,
-        sra.CANTIDAD_SOLICITADA, 
-        sra.CDGPE,
-        p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE AS CDGPE_NOMBRE, 
-        sra.CDGPE_ASIGNA_ESTATUS,
-        p2.NOMBRE1 || ' ' || p2.NOMBRE2 || ' ' || p2.PRIMAPE || ' ' || p2.SEGAPE AS CDGPE_NOMBRE_AUTORIZA, 
-        sra.TIPO_RETIRO, 
-        sra.FECHA_ENTREGA,
-        UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO
-    FROM 
-        SOLICITUD_RETIRO_AHORRO sra 
-    INNER JOIN 
-        ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = sra.CONTRATO 
-    INNER JOIN 
-        PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
-    INNER JOIN 
-        CL c ON c.CODIGO = apa.CDGCL 
-    INNER JOIN 
-        PE p ON p.CODIGO = sra.CDGPE 
-    INNER JOIN 
-        PE p2 ON p2.CODIGO = sra.CDGPE_ASIGNA_ESTATUS 
-    WHERE 
-        sra.ESTATUS = 0 
-        AND sra.CDGPE_ASIGNA_ESTATUS IS NOT NULL
-        AND sra.TIPO_RETIRO = 2
-            
+        SELECT 
+            sra.ID_SOL_RETIRO_AHORRO, 
+            sra.CONTRATO, 
+            c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE AS CLIENTE, 
+            TO_CHAR(sra.FECHA_SOLICITUD, 'Day DD Month YYYY (DD/MM/YYYY)') AS FECHA_SOLICITUD,
+            TO_CHAR(sra.FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD_EXCEL,
+            TO_CHAR(sra.FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_SOLICITUD_EXCEL_ENTREGA,
+            sra.CANTIDAD_SOLICITADA, 
+            sra.CDGPE,
+            p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE AS CDGPE_NOMBRE, 
+            sra.CDGPE_ASIGNA_ESTATUS,
+            p2.NOMBRE1 || ' ' || p2.NOMBRE2 || ' ' || p2.PRIMAPE || ' ' || p2.SEGAPE AS CDGPE_NOMBRE_AUTORIZA, 
+            sra.TIPO_RETIRO, 
+            sra.FECHA_ENTREGA,
+            UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO
+        FROM 
+            SOLICITUD_RETIRO_AHORRO sra 
+        INNER JOIN 
+            ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = sra.CONTRATO 
+        INNER JOIN 
+            PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
+        INNER JOIN 
+            CL c ON c.CODIGO = apa.CDGCL 
+        INNER JOIN 
+            PE p ON p.CODIGO = sra.CDGPE 
+        INNER JOIN 
+            PE p2 ON p2.CODIGO = sra.CDGPE_ASIGNA_ESTATUS 
+        WHERE 
+            sra.ESTATUS != 0 
+            AND sra.CDGPE_ASIGNA_ESTATUS IS NOT NULL
+            AND sra.TIPO_RETIRO = 2
+                
 sql;
 
         try {

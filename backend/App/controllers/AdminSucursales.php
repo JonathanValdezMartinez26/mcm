@@ -1794,7 +1794,7 @@ html;
                             <b>FECHA PREVISTA ENTREGA:</b> {$value['FECHA_SOLICITUD']}
                         </div>
                         <div>
-                            <b>CANTA SOLICITADA: </b>$ {$cantidad_formateada}
+                            <b>CANTIDAD SOLICITADA: </b>$ {$cantidad_formateada}
                         </div>
                         <div>
                             <b>TIPO DE PRODUCTO: </b>{$value['TIPO_PRODUCTO']} {$img}
@@ -1835,7 +1835,7 @@ html;
                             <b>CLIENTE: </b>{$value_historial['CLIENTE']}
                         </div>
                          <div>
-                            <b>SUCURSAL: </b>{NOS FALTA}
+                            <b>SUCURSAL: </b>{$value['SUCURSAL']}
                         </div>
                     </td>
                     <td style="padding: 15px!important;">
@@ -1994,7 +1994,7 @@ html;
                             <b>FECHA PREVISTA ENTREGA:</b> {$value['FECHA_SOLICITUD']}
                         </div>
                         <div>
-                            <b>CANTA SOLICITADA: </b>$ {$cantidad_formateada}
+                            <b>CANTIDAD SOLICITADA: </b>$ {$cantidad_formateada}
                         </div>
                         <div>
                             <b>TIPO DE PRODUCTO: </b>{$value['TIPO_PRODUCTO']} {$img}
@@ -2012,7 +2012,52 @@ html;
                         <button type="button" class="btn btn-danger btn-circle" onclick="actualizaSolicitud(2, {$value['ID_SOL_RETIRO_AHORRO']});"><i class="fa fa-trash"></i></button>
                     </td>
                 </tr>
-            html;
+html;
+        }
+
+        $SolicitudesOrdinarias = CajaAhorroDao::GetSolicitudesRetiroAhorroExpress();
+
+        foreach ($SolicitudesOrdinarias as $key => $value) {
+            $cantidad_formateada = number_format($value['CANTIDAD_SOLICITADA'], 2, '.', ',');
+            $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
+
+            $tabla .= <<<html
+                <tr style="padding: 15px!important;">
+                    <td style="padding: 15px!important;">
+                        <div>
+                            <b>CONTRATO:</b> {$value['CONTRATO']}
+                        </div>
+                        <div>
+                            <b>CLIENTE: </b>{$value['CLIENTE']}
+                        </div>
+                         <div>
+                            <b>SUCURSAL: </b>{$value['SUCURSAL']}
+                        </div>
+                    </td>
+                    <td style="padding: 15px!important;">
+                     <div>
+                            <b>FECHA PREVISTA ENTREGA:</b> {$value['FECHA_SOLICITUD']}
+                        </div>
+                        <div>
+                            <b>CANTIDAD SOLICITADA: </b>$ {$cantidad_formateada}
+                        </div>
+                        <div>
+                            <b>TIPO DE PRODUCTO: </b>{$value['TIPO_PRODUCTO']} {$img}
+                        </div>
+                        <hr>
+                         <div>
+                            <b>ESTATUS DE LA SOLICITUD: </b>{$value['SOLICITUD_VENCIDA']}
+                        </div>
+                         <div>
+                            <b>CAJERA SOLICITA: </b>{$value['CDGPE_NOMBRE']}
+                        </div>
+                     </td>
+                    <td style="padding: 0px !important;">  
+                        <button type="button" class="btn btn-success btn-circle" onclick="actualizaSolicitud(1, {$value['ID_SOL_RETIRO_AHORRO']})"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="actualizaSolicitud(2, {$value['ID_SOL_RETIRO_AHORRO']});"><i class="fa fa-trash"></i></button>
+                    </td>
+                </tr>
+html;
         }
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Admin retiros express")));
