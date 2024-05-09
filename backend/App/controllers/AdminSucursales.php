@@ -2061,6 +2061,7 @@ html;
                          <div>
                             <b>CAJERA SOLICITA: </b>{$value_historial['CDGPE_NOMBRE']}
                         </div>
+                        <hr>
                          <div>
                             <b>ADMIN AUTORIZA: </b>{$value_historial['CDGPE_NOMBRE_AUTORIZA']}
                         </div>

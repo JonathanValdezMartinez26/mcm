@@ -2389,6 +2389,7 @@ sql;
         sra.CANTIDAD_SOLICITADA, 
         sra.CDGPE,
         p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE AS CDGPE_NOMBRE, 
+         p2.NOMBRE1 || ' ' || p2.NOMBRE2 || ' ' || p2.PRIMAPE || ' ' || p2.SEGAPE AS CDGPE_NOMBRE_AUTORIZA, 
         sra.TIPO_RETIRO, 
         sra.FECHA_ENTREGA,
         UPPER(pp.DESCRIPCION) AS TIPO_PRODUCTO,
@@ -2411,6 +2412,8 @@ sql;
         CL c ON c.CODIGO = apa.CDGCL 
     INNER JOIN 
         PE p ON p.CODIGO = sra.CDGPE 
+    INNER JOIN 
+        PE p2 ON p2.CODIGO = sra.CDGPE_ASIGNA_ESTATUS 
     WHERE 
         sra.ESTATUS != 0 
         AND sra.CDGPE_ASIGNA_ESTATUS IS NOT NULL
