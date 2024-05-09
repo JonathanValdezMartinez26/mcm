@@ -84,12 +84,9 @@
                                     <table class="table table-striped table-bordered table-hover" id="saldos">
                                         <thead>
                                             <tr>
+                                                <th>Fecha</th>
                                                 <th>Cod sucursal</th>
                                                 <th>Nombre sucursal</th>
-                                                <th>Hora apertura</th>
-                                                <th>Hora cierre</th>
-                                                <th>Saldo mínimo</th>
-                                                <th>Saldo máximo</th>
                                                 <th>Saldo</th>
                                                 <th>Nivel operativo</th>
                                             </tr>

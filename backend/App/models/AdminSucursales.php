@@ -520,34 +520,60 @@ sql;
 
     public static function GetSaldosSucursales()
     {
-        $qry = <<<sql
+        $qryHoy = <<<sql
         SELECT
-            SEA.CDG_SUCURSAL SUCURSAL,
-            CO.NOMBRE,
-            TO_CHAR(TO_DATE(SCA.HORA_APERTURA, 'HH24:MI:SS'), 'HH:MI AM') HORA_APERTURA,
-            TO_CHAR(TO_DATE(SCA.HORA_CIERRE, 'HH24:MI:SS'), 'HH:MI AM') HORA_CIERRE,
-            TO_CHAR(TO_NUMBER(SEA.SALDO_MINIMO), 'FM$999,999,999.00') SALDO_MINIMO,
-            TO_CHAR(TO_NUMBER(SEA.SALDO_MAXIMO), 'FM$999,999,999.00') SALDO_MAXIMO,
-            TO_CHAR(TO_NUMBER(SEA.SALDO), 'FM$999,999,999.00') SALDO,
-            CASE
+            *
+        FROM (
+            SELECT
+                TO_CHAR(SYSDATE, 'DD/MM/YYYY') FECHA,
+                SEA.CDG_SUCURSAL SUCURSAL,
+                CO.NOMBRE,
+                TO_CHAR(TO_NUMBER(SEA.SALDO), 'FM$999,999,999.00') SALDO,
+                CASE
+                    WHEN saldo_maximo = saldo_minimo THEN 0
+                    ELSE ((SEA.SALDO - SEA.SALDO_MINIMO) / (SEA.SALDO_MAXIMO - SEA.SALDO_MINIMO)) * 100
+                END PORCENTAJE
+            FROM
+                SUC_ESTADO_AHORRO SEA
+            JOIN
+                CO ON CO.CODIGO = SEA.CDG_SUCURSAL
+            WHERE
+                SEA.ESTATUS = 'A'
+            UNION ALL
+            SELECT
+                TO_CHAR(A.FECHA, 'DD/MM/YYYY') FECHA,
+                SEA.CDG_SUCURSAL SUCURSAL,
+                CO.NOMBRE,
+                TO_CHAR(TO_NUMBER(A.SALDO_SUCURSAL), 'FM$999,999,999.00') SALDO,
+                CASE
                 WHEN saldo_maximo = saldo_minimo THEN 0
-                ELSE ((SEA.SALDO - SEA.SALDO_MINIMO) / (SEA.SALDO_MAXIMO - SEA.SALDO_MINIMO)) * 100
-            END PORCENTAJE
-        FROM
-            SUC_ESTADO_AHORRO SEA
-        JOIN
-            CO ON CO.CODIGO = SEA.CDG_SUCURSAL
-        RIGHT JOIN
-            SUC_CAJERA_AHORRO SCA ON SCA.CDG_ESTADO_AHORRO = SEA.CODIGO
-        WHERE
-            SEA.ESTATUS = 'A'
-        ORDER BY
-            CO.NOMBRE
+                ELSE ((A.SALDO_SUCURSAL - SEA.SALDO_MINIMO) / (SEA.SALDO_MAXIMO - SEA.SALDO_MINIMO)) * 100
+                END PORCENTAJE
+            FROM
+                (
+                SELECT
+                    MAX(FECHA) AS MAX_FECHA,
+                    CDG_SUCURSAL
+                FROM
+                    ARQUEO
+                WHERE
+                    TRUNC(FECHA) < TRUNC(SYSDATE)
+                GROUP BY
+                    TRUNC(FECHA),
+                    CDG_SUCURSAL
+                ) MAX_ARQUEO
+            JOIN
+                ARQUEO A ON A.FECHA = MAX_ARQUEO.MAX_FECHA AND A.CDG_SUCURSAL = MAX_ARQUEO.CDG_SUCURSAL
+            JOIN
+                SUC_ESTADO_AHORRO SEA ON SEA.CDG_SUCURSAL = A.CDG_SUCURSAL
+            JOIN
+                CO ON CO.CODIGO = SEA.CDG_SUCURSAL
+        ) ORDER BY FECHA DESC, NOMBRE
         sql;
 
         try {
             $mysqli = Database::getInstance();
-            return $mysqli->queryAll($qry);
+            return $mysqli->queryAll($qryHoy);
         } catch (Exception $e) {
             return [];
         }

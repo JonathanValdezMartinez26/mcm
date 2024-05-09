@@ -296,17 +296,16 @@ class AdminSucursales extends Controller
                 $rgb = "rgb(" . (255 - 255 * ($p - 50) / 50) . ", 255, 0)";
             }
             $estilo .= "color: " . $rgb . ";";
-            $p = number_format($sucursal['PORCENTAJE'], 2);
 
             $filas .= "<tr>";
-            $filas .= "<td>{$sucursal['SUCURSAL']}</td>";
-            $filas .= "<td>{$sucursal['NOMBRE']}</td>";
-            $filas .= "<td>{$sucursal['HORA_APERTURA']}</td>";
-            $filas .= "<td>{$sucursal['HORA_CIERRE']}</td>";
-            $filas .= "<td>{$sucursal['SALDO_MINIMO']}</td>";
-            $filas .= "<td>{$sucursal['SALDO_MAXIMO']}</td>";
-            $filas .= "<td>{$sucursal['SALDO']}</td>";
-            $filas .= "<th style='" . $estilo . "'>{$p}%</th>";
+            foreach ($sucursal as $key => $valor) {
+                if ($key === "PORCENTAJE") {
+                    $p = number_format($valor, 2);
+                    $filas .= "<th style='" . $estilo . "'>{$p}%</th>";
+                } else $filas .= "<th>{$valor}</th>";
+            }
+
+
             $filas .= "</tr>";
         }
 
