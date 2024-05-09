@@ -256,22 +256,25 @@ class Ahorro extends Controller
     private $addParametro = 'const addParametro = (parametros, newParametro, newValor) => {
         parametros.push({ name: newParametro, value: newValor })
     }';
-    private $consultaServidor = 'const consultaServidor = (url, datos, fncOK, metodo = "POST") => {
+    private $consultaServidor = 'const consultaServidor = (url, datos, fncOK, metodo = "POST", tipo = "JSON") => {
         const espera = swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
         $.ajax({
             type: metodo,
             url: url,
             data: datos,
             success: (res) => {
-                try {
-                    res = JSON.parse(res)
-                } catch (error) {
-                    console.error(error)
-                    res =  {
-                        success: false,
-                        mensaje: "Ocurrió un error al procesar la respuesta del servidor."
+                if (tipo === "JSON") {
+                    try {
+                        res = JSON.parse(res)
+                    } catch (error) {
+                        console.error(error)
+                        res =  {
+                            success: false,
+                            mensaje: "Ocurrió un error al procesar la respuesta del servidor."
+                        }
                     }
                 }
+
                 swal.close()
                 fncOK(res)
             },
@@ -3083,7 +3086,7 @@ class Ahorro extends Controller
         $fecha = date('Y-m-d');
         $fechaInicio =  date('Y-m-d', strtotime('-1 month'));
 
-        $extraFooter = <<<script
+        $extraFooterAnterior = <<<script
         <script>
             const mEdoCta = true
             let datosCliente = {}
@@ -3165,11 +3168,66 @@ class Ahorro extends Controller
         </script>
         script;
 
+        $extraFooter = <<<html
+        <script>
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->confirmarMovimiento}
+            {$this->configuraTabla}
+            {$this->consultaServidor}
+             
+            $(document).ready(function(){
+                configuraTabla("muestra-cupones")
+                configuraTabla("muestra-cupones1")
+            })
+           
+            Reimprime_ticket = (folio) => {
+                $('#modal_ticket').modal('show');
+                document.getElementById("folio").value = folio;
+            }
+        
+            enviar_add_sol = () =>  {             
+                $('#modal_ticket').modal('hide');
+                confirmarMovimiento("Resumen de movimientos", null, "¿Está segura de continuar?").then((continuar) => {
+                    if (!continuar) return $('#modal_ticket').modal('show')
+                    
+                    consultaServidor("/Ahorro/AddSolicitudReimpresion/", $.param($('#Add').serializeArray()), (respuesta) => {
+                        if (respuesta == '1') return showSuccess("Solicitud enviada a tesorería.");
+                        
+                        $('#modal_encuesta_cliente').modal('hide')
+                        swal(respuesta, { icon: "error" })
+                    },
+                    "POST",
+                    "Text")
+                })
+            }
+        </script>
+        html;
+
+        $registros = CajaAhorroDao::GetMovimientosSucursal(["sucursal" => $_SESSION['cdgco_ahorro']]);
+        $tabla = "";
+
+        foreach ($registros as $key => $value) {
+            $tabla .= "<tr>";
+            foreach ($value as $key2 => $valor) {
+                if ($key2 == 'MONTO') $valor = "$ " . number_format($valor, 2);
+
+                $tabla .= "<td style='vertical-align: middle;'>$valor</td>";
+            }
+
+            $tabla .= "<td style='vertical-align: middle;'><button type='button' class='btn btn-success btn-circle' onclick='Reimprime_ticket(\"{$value['CODIGO']}\");'><i class='fa fa-print'></i></button></td>";
+            $tabla .= "</tr>";
+        }
+
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Estado de Cuenta")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha', $fecha);
-        View::set('fechaInicio', date('Y-m-d', strtotime('-1 month')));
-        View::render("caja_menu_estado_cuenta");
+        View::set('tabla', $tabla);
+        View::set('fecha_actual', date("Y-m-d H:i:s"));
+        View::render("caja_menu_resumen_movimientos");
+        // View::set('fecha', $fecha);
+        // View::set('fechaInicio', date('Y-m-d', strtotime('-1 month')));
+        // View::render("caja_menu_estado_cuenta");
     }
 
     //********************UTILS********************//

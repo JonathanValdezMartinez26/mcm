@@ -1563,7 +1563,7 @@ class CajaAhorro
         }
     }
 
-    public static function GetLogTransacciones($parametros)
+    public static function GetLogTransacciones($datos)
     {
         $qry = <<<sql
         SELECT
@@ -1579,17 +1579,62 @@ class CajaAhorro
             TRUNC(LTA.FECHA_TRANSACCION) BETWEEN TO_DATE(:fecha_inicio, 'YYYY-MM-DD') AND TO_DATE(:fecha_fin, 'YYYY-MM-DD')
         sql;
 
-        $qry .= $parametros["operacion"] ? " AND LTA.TIPO = :operacion" : "";
-        $qry .= $parametros["usuario"] ? " AND LTA.USUARIO = :usuario" : "";
-        $qry .= $parametros["sucursal"] ? " AND LTA.SUCURSAL = :sucursal" : "";
+        $qry .= $datos["operacion"] ? " AND LTA.TIPO = :operacion" : "";
+        $qry .= $datos["usuario"] ? " AND LTA.USUARIO = :usuario" : "";
+        $qry .= $datos["sucursal"] ? " AND LTA.SUCURSAL = :sucursal" : "";
 
         try {
             $mysqli = Database::getInstance();
-            $resultado = $mysqli->queryAll($qry, $parametros);
+            $resultado = $mysqli->queryAll($qry, $datos);
             if (count($resultado) === 0) return self::Responde(false, "No se encontraron registros para la consulta.", $qry);
             return self::Responde(true, "Consulta realizada correctamente.", $resultado);
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los registros.", null, $e->getMessage());
+        }
+    }
+
+    public static function GetMovimientosSucursal($datos)
+    {
+        $qry = <<<sql
+        SELECT
+            TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
+            MA.CDG_CONTRATO AS CONTRATO,
+            (
+                SELECT
+                    DESCRIPCION
+                FROM
+                    TIPO_PAGO_AHORRO
+                WHERE
+                    CODIGO = MA.CDG_TIPO_PAGO
+            ),
+            MA.MONTO,
+            CASE MA.MOVIMIENTO
+                WHEN '0' THEN 'CARGO'
+                WHEN '1' THEN 'ABONO'
+                ELSE 'NO DEFINIDO'
+            END AS MOVIMIENTO,
+            (
+                SELECT
+                    CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE)
+                FROM
+                    CL
+                WHERE
+                    CL.CODIGO = (SELECT CDGCL FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = MA.CDG_CONTRATO)
+            ) AS CLIENTE
+        FROM
+            MOVIMIENTOS_AHORRO MA
+            INNER JOIN TICKETS_AHORRO TA ON TA.CODIGO = MA.CDG_TICKET
+        WHERE
+            TA.CDG_SUCURSAL = '{$datos['sucursal']}'
+        ORDER BY
+            MA.FECHA_MOV DESC
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryAll($qry);
+        } catch (Exception $e) {
+            return array();
         }
     }
 
