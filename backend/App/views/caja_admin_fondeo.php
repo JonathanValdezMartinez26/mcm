@@ -73,9 +73,6 @@
                                 <li class="linea"><a href="/AdminSucursales/SaldosDiarios/">
                                         <p style="font-size: 16px;">Saldos del día por sucursal</p>
                                     </a></li>
-                                <li class="linea"><a href="/AdminSucursales/CierreDia/">
-                                        <p style="font-size: 15px;">Cierre de día</p>
-                                    </a></li>
                                 <li><a href="">
                                         <p style="font-size: 15px;"><b>Fondear sucursal</b></p>
                                     </a></li>
