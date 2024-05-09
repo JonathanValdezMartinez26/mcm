@@ -10,7 +10,7 @@
                     <img src="https://cdn-icons-png.flaticon.com/512/2910/2910156.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
 
                     <p style="font-size: 12px; padding-top: 5px; color: #000000"><b>Saldos de Sucursales </b></p>
-                    <! --  -->
+                    <! -- -->
                 </div>
             </a>
             <a id="link" href="/AdminSucursales/SolicitudesReimpresionTicket/">
@@ -19,7 +19,7 @@
 
                     <p style="font-size: 12px; padding-top: 5px; color: #000000"><b>Solicitudes</b></p>
                     <! -- https://cdn-icons-png.flaticon.com/512/2972/2972528.png IAMGEN EN COLOR -->
-                    <span class="button__badge">4</span>
+                        <span class="button__badge">4</span>
                 </div>
             </a>
             <a id="link" href="/AdminSucursales/EstadoCuentaCliente/">
@@ -90,16 +90,19 @@
                         <div class="container">
                             <section id="fancyTabWidget" class="tabs t-tabs">
                                 <ul class="nav nav-tabs fancyTabs" role="tablist">
-
                                     <li class="tab fancyTab active">
-                                        <div class="arrow-down"><div class="arrow-down-inner"></div></div>
-                                        <a id="tab0" href="#tabBody0" role="tab" aria-controls="tabBody0" aria-selected="true" data-toggle="tab" tabindex="0"><span class="fa fa-clock-o"></span><span class="hidden-xs">  Solicitudes pendientes</span></a>
+                                        <div class="arrow-down">
+                                            <div class="arrow-down-inner"></div>
+                                        </div>
+                                        <a id="tab0" href="#tabBody0" role="tab" aria-controls="tabBody0" aria-selected="true" data-toggle="tab" tabindex="0"><span class="fa fa-clock-o"></span><span class="hidden-xs"> Solicitudes pendientes</span></a>
                                         <div class="whiteBlock"></div>
                                     </li>
 
                                     <li class="tab fancyTab">
-                                        <div class="arrow-down"><div class="arrow-down-inner"></div></div>
-                                        <a id="tab1" href="#tabBody1" role="tab" aria-controls="tabBody1" aria-selected="true" data-toggle="tab" tabindex="0"><span class="fa fa-history"></span><span class="hidden-xs">  Historial de Solicitudes</span></a>
+                                        <div class="arrow-down">
+                                            <div class="arrow-down-inner"></div>
+                                        </div>
+                                        <a id="tab1" href="#tabBody1" role="tab" aria-controls="tabBody1" aria-selected="true" data-toggle="tab" tabindex="0"><span class="fa fa-history"></span><span class="hidden-xs"> Historial de Solicitudes</span></a>
                                         <div class="whiteBlock"></div>
                                     </li>
                                 </ul>
@@ -107,29 +110,26 @@
                                     <div class="tab-pane  fade active in" id="tabBody0" role="tabpanel" aria-labelledby="tab0" aria-hidden="false" tabindex="0">
                                         <div>
                                             <div class="row">
-
                                                 <div class="col-md-12">
-
-
                                                     <div class="container-fluid">
                                                         <br>
                                                         <form name="all" id="all" method="POST">
-                                                        <button id="export_excel_sol_ordinarias" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
-                                                        <hr>
+                                                            <button id="export_excel_sol_ordinarias" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
+                                                            <hr>
                                                             <div class="col-md-12">
                                                                 <div class="row">
                                                                     <div class="card col-md-12">
                                                                         <div class="dataTable_wrapper">
                                                                             <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                                                                 <thead>
-                                                                                <tr>
-                                                                                    <th>Detalles Cliente</th>
-                                                                                    <th>Detalles Solicitud</th>
-                                                                                    <th>Acciones</th>
-                                                                                </tr>
+                                                                                    <tr>
+                                                                                        <th>Detalles Cliente</th>
+                                                                                        <th>Detalles Solicitud</th>
+                                                                                        <th>Acciones</th>
+                                                                                    </tr>
                                                                                 </thead>
                                                                                 <tbody>
-                                                                                <?= $tabla; ?>
+                                                                                    <?= $tabla; ?>
                                                                                 </tbody>
                                                                             </table>
                                                                         </div>
@@ -146,7 +146,6 @@
                                     </div>
                                     <div class="tab-pane  fade" id="tabBody1" role="tabpanel" aria-labelledby="tab1" aria-hidden="true" tabindex="0">
                                         <div class="row">
-
                                             <div class="col-md-12">
                                                 <div class="container-fluid">
                                                     <div class="col-md-12">
@@ -154,26 +153,24 @@
                                                             <br>
                                                             <form name="all_historial" id="all_historial" method="POST">
                                                                 <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
-
                                                                 <hr>
                                                                 <div class="card col-md-12">
                                                                     <div class="dataTable_wrapper">
                                                                         <table class="table table-striped table-bordered table-hover" id="muestra-cupones1">
                                                                             <thead>
-                                                                            <tr>
-                                                                                <th>Cod Sucursal</th>
-                                                                                <th>Nombre Sucursal</th>
-                                                                                <th>Hora Cierre</th>
-                                                                                <th>Prorroga</th>
-                                                                                <th>Acciones</th>
-                                                                            </tr>
+                                                                                <tr>
+                                                                                    <th>Cod Sucursal</th>
+                                                                                    <th>Nombre Sucursal</th>
+                                                                                    <th>Hora Cierre</th>
+                                                                                    <th>Prorroga</th>
+                                                                                    <th>Acciones</th>
+                                                                                </tr>
                                                                             </thead>
                                                                             <tbody>
-                                                                            <?= $tabla_historial; ?>
+                                                                                <?= $tabla_historial; ?>
                                                                             </tbody>
                                                                         </table>
                                                                     </div>
-
                                                                 </div>
                                                             </form>
                                                         </div>
@@ -182,12 +179,9 @@
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
-
                             </section>
                         </div>
-
                     </div>
                 </div>
             </form>
@@ -195,21 +189,18 @@
     </div>
 </div>
 
-
 <script>
-        function EditarHorario(sucursal, nombre_suc, hora_actual) {
+    function EditarHorario(sucursal, nombre_suc, hora_actual) {
+        var o = new Option(nombre_suc, sucursal);
+        $(o).html(nombre_suc);
+        $("#sucursal_e").append(o);
 
+        document.getElementById("hora_ae").value = hora_actual;
 
-            var o = new Option(nombre_suc, sucursal);
-            $(o).html(nombre_suc);
-            $("#sucursal_e").append(o);
+        $('#modal_update_horario').modal('show');
 
-            document.getElementById("hora_ae").value = hora_actual;
-
-            $('#modal_update_horario').modal('show');
-
-        }
-    </script>
+    }
+</script>
 
 <style>
     .imagen {
@@ -251,15 +242,8 @@
     }
 
     .fancyTab a:focus {
-        outline:none;
+        outline: none;
     }
-
-
-
-
-
-
-
 </style>
 
 

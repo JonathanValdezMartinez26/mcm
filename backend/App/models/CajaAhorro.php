@@ -837,6 +837,8 @@ class CajaAhorro
                 SELECT
                     CASE CDG_TIPO_PAGO
                         WHEN '5' THEN 'INVERSIÓN'
+                        WHEN '8' THEN 'REEMBOLSO'
+                        WHEN '9' THEN 'REEMBOLSO'
                         ELSE CASE MOVIMIENTO
                             WHEN '0' THEN 'RETIRO'
                             ELSE 'DEPÓSITO'
