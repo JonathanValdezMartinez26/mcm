@@ -1084,9 +1084,12 @@ script;
             
             fecha1 = getParameterByName('Inicial');
             fecha2 = getParameterByName('Final');
+            operacion = getParameterByName('Operacion');
+            producto = getParameterByName('Producto');
+            sucursal = getParameterByName('Sucursal');
             
              $("#export_excel_consulta").click(function(){
-              $('#all').attr('action', '/AdminSucursales/generarExcelPagosTransaccionesAll/?Inicial='+fecha1+'&Final='+fecha2);
+              $('#all').attr('action', '/AdminSucursales/generarExcelPagosTransaccionesAll/?Inicial='+fecha1+'&Final='+fecha2+'&Operacion='+operacion+'&Producto='+producto+'&Sucursal='+sucursal);
               $('#all').attr('target', '_blank');
               $("#all").submit();
             });
@@ -1098,22 +1101,109 @@ script;
         </script>
 script;
 
-
-        $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro('');
-        $opcSucursales = "";
-        foreach ($sucursales as $sucursales) {
-            $opcSucursales .= "<option value='{$sucursales['CODIGO']}'>{$sucursales['NOMBRE']} ({$sucursales['CODIGO']})</option>";
-        }
-
-
         $fechaActual = date('Y-m-d');
+
         $Inicial = $_GET['Inicial'];
         $Final = $_GET['Final'];
         $Operacion = $_GET['Operacion'];
         $Producto = $_GET['Producto'];
         $Sucursal = $_GET['Sucursal'];
 
-        if($Inicial != '' || $Final != '')
+
+        $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro('');
+        $opcSucursales = "";
+        foreach ($sucursales as $sucursales) {
+            if($sucursales['CODIGO'] == $Sucursal)
+            {
+                $sel_suc = 'Selected';
+            }
+            $opcSucursales .= "<option value='{$sucursales['CODIGO']}' $sel_suc>{$sucursales['NOMBRE']} ({$sucursales['CODIGO']})</option>";
+        }
+
+
+
+        //////////////////////////////////////////////////////
+        if($Operacion == 0 || $Operacion == '')
+        {
+            $sel_op0 = 'Selected';
+        }else if($Operacion == 1)
+        {
+            $sel_op1 = 'Selected';
+        }else if($Operacion == 2)
+        {
+            $sel_op2 = 'Selected';
+        }else if($Operacion == 3)
+        {
+            $sel_op3 = 'Selected';
+        }
+        else if($Operacion == 4)
+        {
+            $sel_op4 = 'Selected';
+        }else if($Operacion == 5)
+        {
+            $sel_op5 = 'Selected';
+        }else if($Operacion == 6)
+        {
+            $sel_op6 = 'Selected';
+        }else if($Operacion == 7)
+        {
+            $sel_op7 = 'Selected';
+        }else if($Operacion == 8)
+        {
+            $sel_op8 = 'Selected';
+        }else if($Operacion == 9)
+        {
+            $sel_op9 = 'Selected';
+        }else if($Operacion == 10)
+        {
+            $sel_op10 = 'Selected';
+        }
+
+
+        $opcOperaciones .= <<<html
+            <option value="0" $sel_op0>TODAS LAS OPERACIONES</option>
+            
+            
+            <option value="1" $sel_op1>APERTURA DE CUENTA - INSCRIPCIÓN</option>
+            <option value="2" $sel_op2>CAPITAL INICIAL - CUENTA CORRIENTE</option>
+            <option value="3" $sel_op3>DEPOSITO</option>
+            <option value="4" $sel_op4>RETIRO</option>
+            <option value="5" $sel_op5>DEVOLUCIÓN RETIRO EXPRESS</option>
+            <option value="6" $sel_op6>DEVOLUCIÓN RETIRO PROGRAMADO</option>
+            <option value="7" $sel_op7>RETIRO EXPRESS</option>
+            <option value="8" $sel_op8>RETIRO PROGRAMADO</option>
+            <option value="9" $sel_op9>TRANSFERENCIA INVERSIÓN</option>
+            <option value="10" $sel_op10>TRANSFERENCIA INVERSIÓN A AHORRO</option>
+html;
+
+
+        //////////////////////////////////////////////////////
+
+        if($Producto == 0 || $Producto == '')
+        {
+            $sel_pro0 = 'Selected';
+        }else if($Producto == 1)
+        {
+            $sel_pro1 = 'Selected';
+        }else if($Producto == 2)
+        {
+            $sel_pro2 = 'Selected';
+        }else if($Producto == 3)
+        {
+            $sel_pro3 = 'Selected';
+        }
+
+
+        $opcProductos .= <<<html
+            <option value="0" $sel_pro0>TODOS LOS PRODUCTOS</option>
+            <option value="1" $sel_pro1>AHORRO CUENTA - CORRIENTE</option>
+            <option value="2" $sel_pro2>AHORRO CUENTA - PEQUES</option>
+            <option value="3" $sel_pro3>MOVIMIENTOS DE INVERSIÓN</option>
+html;
+
+
+
+        if($Inicial == '' || $Final == '')
         {
             $Inicial = $fechaActual;
             $Final = $fechaActual;
@@ -1133,20 +1223,20 @@ script;
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                 
-                    <td style="padding: 0px !important;">
+                    <td style="padding: 10px !important;">
                          <div style="margin-bottom: 5px;">CONTRATO: <b>{$value['CDG_CONTRATO']}</b></div>
                          <div>CODIGO CLIENTE SICAFIN: <b>{$value['CDGCL']}</b></div>
                          <div><b>{$value['TITULAR_CUENTA_EJE']}</b></div>
-                         <div>SUCURSAL: <b>FALTA CORREGIR</b></div>
+                         <div>SUCURSAL: <b>{$value['CDGCO']} - {$value['NOMBRE_SUCURSAL']}</b></div>
                     </td>
                     
-                    <td style="padding: 0px !important;">
+                    <td style="padding: 10px !important;">
                          <div style="margin-bottom: 5px;">Producto: {$value['PRODUCTO']}</div>
                          <div style="margin-bottom: 5px; font-size: 15px;">{$concepto} $ {$monto}</div>
                          <div style="margin-bottom: 5px;"> <b>{$value['CONCEPTO']}</b></div>
-                          <div style="margin-bottom: 5px;"><span class="fa fa-barcode"></span> <b>{$value['CDG_TICKET']}</b></div>
+                          <div style=""><span class="fa fa-barcode"></span> <b>{$value['CDG_TICKET']}</b></div>
                     </td>
-                    <td style="padding: 0px !important;">{$value['FECHA_MOV']} </td>
+                    <td style="padding: 10px !important;">{$value['FECHA_MOV']} </td>
                 </tr>
 html;
         }
@@ -1154,8 +1244,11 @@ html;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial de Transacciones")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fecha', date('Y-m-d'));
+        View::set('fecha_inicial', $Inicial);
+        View::set('fecha_final', $Final);
         view::set('sucursales', $opcSucursales);
+        view::set('productos', $opcProductos);
+        view::set('operacion', $opcOperaciones);
         View::set('tabla', $tabla);
         View::render("caja_admin_reporteria_transacciones");
     }
@@ -2327,9 +2420,9 @@ script;
 
         $fecha_inicio = $_GET['Inicial'];
         $fecha_fin = $_GET['Final'];
-        $operacion = $_GET['Final'];
-        $producto = $_GET['Final'];
-        $sucursal = $_GET['Final'];
+        $operacion = $_GET['Operacion'];
+        $producto = $_GET['Producto'];
+        $sucursal = $_GET['Sucursal'];
 
         $objPHPExcel = new \PHPExcel();
         $objPHPExcel->getProperties()->setCreator("jma");
@@ -2365,12 +2458,12 @@ script;
         $adaptarTexto = true;
 
         $controlador = "AdminSucursales";
-        $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K');
-        $nombreColumna = array('CDG_CONTRATO','CDGCL','TITULAR_CUENTA_EJE','FECHA_MOV','CDG_TICKET','MONTO','CONCEPTO','PRODUCTO','INGRESO','EGRESO','SALDO');
-        $nombreCampo = array('CDG_CONTRATO','CDGCL','TITULAR_CUENTA_EJE','FECHA_MOV','CDG_TICKET','MONTO','CONCEPTO','PRODUCTO','INGRESO','EGRESO','SALDO');
+        $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M');
+        $nombreColumna = array('CDG_CONTRATO','CDGCO', 'NOMBRE_SUCURSAL', 'CDGCL','TITULAR_CUENTA_EJE','FECHA_MOV','CDG_TICKET','MONTO','CONCEPTO','PRODUCTO','INGRESO','EGRESO','SALDO');
+        $nombreCampo = array('CDG_CONTRATO','CDGCO' , 'NOMBRE_SUCURSAL','CDGCL','TITULAR_CUENTA_EJE','FECHA_MOV','CDG_TICKET','MONTO','CONCEPTO','PRODUCTO','INGRESO','EGRESO','SALDO');
 
 
-        $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'Consulta de Pagos Cultiva');
+        $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'Consulta de Movimientos Ahorro');
         $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
         $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
         $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);

@@ -82,23 +82,20 @@
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="Inicial">Desde *</label>
-                                                        <input type="date" class="form-control" id="Inicial" name="Inicial" value="2024-04-26">
+                                                        <input type="date" class="form-control" id="Inicial" name="Inicial" value="<?php echo $fecha_inicial;?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="Final">Hasta *</label>
-                                                        <input type="date" class="form-control" id="Final" name="Final" value="2024-04-26">
+                                                        <input type="date" class="form-control" id="Final" name="Final" value="<?php echo $fecha_final;?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="Operacion">Operación *</label>
                                                         <select class="form-control" id="Operacion" name="Operacion">
-                                                            <option value="0">TODAS LAS OPERACIONES</option>
-                                                            <option value="1">DEPOSITO</option>
-                                                            <option value="0">RETIRO</option>
-                                                            <option value="1">TRASPASO (INVERSIONES)</option>
+                                                            <?php echo $operacion; ?>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -106,16 +103,13 @@
                                                     <div class="form-group">
                                                         <label for="Producto">Producto *</label>
                                                         <select class="form-control" id="Producto" name="Producto">
-                                                            <option value="0">TODOS LOS PRODUCTOS</option>
-                                                            <option value="1">AHORRO CUENTA - CORRIENTE</option>
-                                                            <option value="1">AHORRO CUENTA - PEQUES</option>
-                                                            <option value="1">MOVIMIENTOS DE INVERSIÓN</option>
+                                                            <?php echo $productos; ?>
                                                         </select>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <label for="Sucursal">Sucursal *</label>
+                                                        <label for="Sucursal">Sucursal activa*</label>
                                                         <select class="form-control" id="Sucursal" name="Sucursal">
                                                             <option value="0">TODAS LAS SUCURSALES</option>
                                                             <?php echo $sucursales; ?>

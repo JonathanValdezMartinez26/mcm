@@ -525,15 +525,7 @@ html;        $extraFooter = <<<html
                         }    
                     }
                 }
-             
-            
-            
-            
-            
-            
-            
-             
-           
+ 
     }
     
         function check_2610()

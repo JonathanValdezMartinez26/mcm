@@ -41,7 +41,7 @@ class Contenedor extends Controller
 
     $notificaciones_solicitudes = 1;
 
-    //var_dump($this->__perfil);
+
 
 
     $header = <<<html

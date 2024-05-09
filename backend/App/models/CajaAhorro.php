@@ -1811,74 +1811,141 @@ sql;
 
     public static function GetAllTransacciones($Inicial, $Final, $Operacion, $Producto, $Sucursal)
     {
-        if($Operacion != '')
+
+        if($Operacion == '' || $Operacion == '0')
         {
-            $op = " AND ma.FECHA_MOV"+ $Inicial;
+            $ope = "";
         }
-        if($Producto != '')
+        else
         {
-            $pr = "AND ma.";
-        }
-        if($Producto != '')
-        {
+            if($Operacion == 1)
+            {
+                $operac = 'APERTURA DE CUENTA - INSCRIPCIÓN';
+            }
+            else if($Operacion == 2){
+                $operac = 'CAPITAL INICIAL - CUENTA CORRIENTE';
+            }
+            else if($Operacion == 3)
+            {
+                $operac = 'DEPOSITO';
+            }
+            else if($Operacion == 4)
+            {
+                $operac = 'RETIRO';
+            }
+            else if($Operacion == 5)
+            {
+                $operac = 'DEVOLUCIÓN RETIRO EXPRESS';
+            }else if($Operacion == 6)
+            {
+                $operac = 'DEVOLUCIÓN RETIRO PROGRAMADO';
+            }else if($Operacion == 7)
+            {
+                $operac = 'RETIRO EXPRESS';
+            }else if($Operacion == 8)
+            {
+                $operac = 'RETIRO PROGRAMADO';
+            }else if($Operacion == 9)
+            {
+                $operac = 'TRANSFERENCIA INVERSION';
+            }else if($Operacion == 10)
+            {
+                $operac = 'TRANSFERENCIA INVERSION A AHORRO';
+            }
+            $ope = " AND tpa.DESCRIPCION = '". $operac ."'";
 
         }
-        if($Sucursal != '')
-        {
 
+        if($Producto == '' || $Producto == 0)
+        {
+            $pro = '';
+        }
+        else
+        {
+            if($Producto == '3')
+            {
+                $pro = "AND tpa.DESCRIPCION = 'TRANSFERENCIA INVERSION'";
+            }
+            else{
+                $pro = "AND pp.CODIGO = '".$Producto."'";
+            }
+        }
+
+
+        if($Sucursal == '' || $Sucursal == 0)
+        {
+            $suc = "";
+        }
+        else
+        {
+            $suc = " AND c2.CODIGO = '".$Sucursal."'";
         }
 
         $query = <<<sql
-        SELECT 
-        ma.CDG_CONTRATO, 
-        c.CODIGO AS CDGCL, 
-        (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
-        TO_CHAR(ma.FECHA_MOV, 'DD-MM-YYYY HH24:MI:SS') AS FECHA_MOV,
-        ma.CDG_TICKET, 
-        ma.MONTO, 
-        tpa.DESCRIPCION AS CONCEPTO, 
-        pp.DESCRIPCION AS PRODUCTO, 
-        CASE 
-            WHEN tpa.DESCRIPCION IN ('CAPITAL INICIAL - CUENTA CORRIENTE', 'APERTURA DE CUENTA - INSCRIPCIÓN', 'DEPOSITO') THEN 
-                CASE 
-                    WHEN ma.MONTO <> 0 THEN TO_CHAR(ma.MONTO, 'FM999,999,999,999.00') 
-                    ELSE '0' 
-                END
-            ELSE 
-                '0' 
-        END AS INGRESO,
-        CASE 
-            WHEN tpa.DESCRIPCION IN ('TRANSFERENCIA INVERSION', 'RETIRO') THEN 
-                CASE 
-                    WHEN ma.MONTO <> 0 THEN TO_CHAR(ma.MONTO, 'FM999,999,999,999.00') 
-                    ELSE '0' 
-                END
-            ELSE 
-                '0' 
-        END AS EGRESO,
-        TO_CHAR((
-            SELECT COALESCE(SUM(
-                CASE 
-                    WHEN tpa2.DESCRIPCION IN ('CAPITAL INICIAL - CUENTA CORRIENTE', 'APERTURA DE CUENTA - INSCRIPCIÓN', 'DEPOSITO') AND ma2.FECHA_MOV <= ma.FECHA_MOV THEN ma2.MONTO 
-                    ELSE 0 
-                END) - SUM(
-                CASE 
-                    WHEN tpa2.DESCRIPCION IN ('TRANSFERENCIA INVERSION', 'RETIRO') AND ma2.FECHA_MOV <= ma.FECHA_MOV THEN ma2.MONTO 
-                    ELSE 0 
-                END)
-            , 0)
-            FROM MOVIMIENTOS_AHORRO ma2
-            INNER JOIN TIPO_PAGO_AHORRO tpa2 ON tpa2.CODIGO = ma2.CDG_TIPO_PAGO
-            WHERE ma2.FECHA_MOV BETWEEN TO_TIMESTAMP('2024-05-08 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('2024-05-08 23:59:59', 'YYYY-MM-DD HH24:MI:SS') 
-            AND ma2.FECHA_MOV <= ma.FECHA_MOV
-        ), 'FM999,999,999,999.00') AS SALDO
-    FROM MOVIMIENTOS_AHORRO ma
-    INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
-    INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
-    INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
-    INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
-    WHERE ma.FECHA_MOV BETWEEN TO_TIMESTAMP('2024-05-08 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('2024-05-08 23:59:59', 'YYYY-MM-DD HH24:MI:SS') 
-    ORDER BY ma.FECHA_MOV ASC
+             SELECT 
+            TO_CHAR(ma.CDG_CONTRATO) AS CDG_CONTRATO, 
+            c2.CODIGO AS CDGCO,
+            c2.NOMBRE AS NOMBRE_SUCURSAL,  
+            (p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE) AS CAJERA_MOVIMIENTO, 
+            c.CODIGO AS CDGCL, 
+            (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
+            TO_CHAR(ma.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
+            ma.CDG_TICKET, 
+            ma.MONTO, 
+            tpa.DESCRIPCION AS CONCEPTO, 
+            CASE 
+                WHEN tpa.DESCRIPCION = 'TRANSFERENCIA INVERSION' AND pp.DESCRIPCION = 'Ahorro Corriente' THEN 'Inversión'
+                ELSE pp.DESCRIPCION 
+            END AS PRODUCTO,
+            CASE 
+                WHEN tpa.DESCRIPCION IN ('CAPITAL INICIAL - CUENTA CORRIENTE', 'APERTURA DE CUENTA - INSCRIPCIÓN', 'DEPOSITO') THEN 
+                    CASE 
+                        WHEN ma.MONTO <> 0 THEN TO_CHAR(ma.MONTO, 'FM999,999,999,999.00') 
+                        ELSE '0' 
+                    END
+                ELSE 
+                    '0' 
+            END AS INGRESO,
+            CASE 
+                WHEN tpa.DESCRIPCION IN ('TRANSFERENCIA INVERSION', 'RETIRO') THEN 
+                    CASE 
+                        WHEN ma.MONTO <> 0 THEN TO_CHAR(ma.MONTO, 'FM999,999,999,999.00') 
+                        ELSE '0' 
+                    END
+                ELSE 
+                    '0' 
+            END AS EGRESO,
+            TO_CHAR((
+                SELECT COALESCE(SUM(
+                    CASE 
+                        WHEN tpa2.DESCRIPCION IN ('CAPITAL INICIAL - CUENTA CORRIENTE', 'APERTURA DE CUENTA - INSCRIPCIÓN', 'DEPOSITO') AND ma2.FECHA_MOV <= ma.FECHA_MOV THEN ma2.MONTO 
+                        ELSE 0 
+                    END) - SUM(
+                    CASE 
+                        WHEN tpa2.DESCRIPCION IN ('TRANSFERENCIA INVERSION', 'RETIRO') AND ma2.FECHA_MOV <= ma.FECHA_MOV THEN ma2.MONTO 
+                        ELSE 0 
+                    END)
+                , 0)
+                FROM MOVIMIENTOS_AHORRO ma2
+                INNER JOIN TIPO_PAGO_AHORRO tpa2 ON tpa2.CODIGO = ma2.CDG_TIPO_PAGO
+                WHERE ma2.FECHA_MOV BETWEEN TO_TIMESTAMP('$Inicial 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('$Final 23:59:59', 'YYYY-MM-DD HH24:MI:SS') 
+                AND ma2.FECHA_MOV <= ma.FECHA_MOV 
+            ), 'FM999,999,999,999.00') AS SALDO
+        FROM MOVIMIENTOS_AHORRO ma
+        INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
+        INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
+        INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
+        INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
+        INNER JOIN CO c2 ON c2.CODIGO = apa.CDGCO 
+        INNER JOIN TICKETS_AHORRO ta ON ta.CODIGO  = ma.CDG_TICKET 
+        INNER JOIN PE p ON p.CODIGO = ta.CDGPE 
+        WHERE ma.FECHA_MOV BETWEEN TO_TIMESTAMP('$Inicial 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('$Final 23:59:59', 'YYYY-MM-DD HH24:MI:SS') 
+        AND p.CDGEM = 'EMPFIN'
+        $suc
+        $pro
+        $ope
+        
+        ORDER BY ma.FECHA_MOV ASC
 sql;
 
         try {
