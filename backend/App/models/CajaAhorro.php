@@ -1819,78 +1819,53 @@ sql;
 
     public static function GetAllTransacciones($Inicial, $Final, $Operacion, $Producto, $Sucursal)
     {
-        if($Inicial == '' || $Final == '')
-        {
+        if ($Inicial == '' || $Final == '') {
             $fechaActual = date('Y-m-d');
             $Inicial = $fechaActual;
             $Final = $fechaActual;
         }
 
-        if($Operacion == '' || $Operacion == '0')
-        {
+        if ($Operacion == '' || $Operacion == '0') {
             $ope = "";
-        }
-        else
-        {
-            if($Operacion == 1)
-            {
+        } else {
+            if ($Operacion == 1) {
                 $operac = 'APERTURA DE CUENTA - INSCRIPCIÓN';
-            }
-            else if($Operacion == 2){
+            } else if ($Operacion == 2) {
                 $operac = 'CAPITAL INICIAL - CUENTA CORRIENTE';
-            }
-            else if($Operacion == 3)
-            {
+            } else if ($Operacion == 3) {
                 $operac = 'DEPOSITO';
-            }
-            else if($Operacion == 4)
-            {
+            } else if ($Operacion == 4) {
                 $operac = 'RETIRO';
-            }
-            else if($Operacion == 5)
-            {
+            } else if ($Operacion == 5) {
                 $operac = 'DEVOLUCIÓN RETIRO EXPRESS';
-            }else if($Operacion == 6)
-            {
+            } else if ($Operacion == 6) {
                 $operac = 'DEVOLUCIÓN RETIRO PROGRAMADO';
-            }else if($Operacion == 7)
-            {
+            } else if ($Operacion == 7) {
                 $operac = 'RETIRO EXPRESS';
-            }else if($Operacion == 8)
-            {
+            } else if ($Operacion == 8) {
                 $operac = 'RETIRO PROGRAMADO';
-            }else if($Operacion == 9)
-            {
+            } else if ($Operacion == 9) {
                 $operac = 'TRANSFERENCIA INVERSION';
-            }else if($Operacion == 10)
-            {
+            } else if ($Operacion == 10) {
                 $operac = 'TRANSFERENCIA INVERSION A AHORRO';
             }
-            $ope = " AND tpa.DESCRIPCION = '". $operac ."'";
-
+            $ope = " AND tpa.DESCRIPCION = '" . $operac . "'";
         }
 
-        if($Producto == '' || $Producto == 0)
-        {
+        if ($Producto == '' || $Producto == 0) {
             $pro = '';
-        }
-        else
-        {
-            if($Producto == '3')
-            {
+        } else {
+            if ($Producto == '3') {
                 $pro = "AND tpa.DESCRIPCION = 'TRANSFERENCIA INVERSION'";
-            }
-            else{
-                $pro = "AND pp.CODIGO = '".$Producto."'";
+            } else {
+                $pro = "AND pp.CODIGO = '" . $Producto . "'";
             }
         }
 
 
-        if($Sucursal == '' || $Sucursal == 0)
-        {
+        if ($Sucursal == '' || $Sucursal == 0) {
             $suc = "";
-        }
-        else {
+        } else {
             $suc = " AND c2.CODIGO = '" . $Sucursal . "'";
         }
 
@@ -2107,9 +2082,9 @@ sql;
 
             $qry = <<<sql
             INSERT INTO ARQUEO
-                (CDG_ARQUEO, CDG_USUARIO, CDG_SUCURSAL, FECHA, MONTO, B_1000, B_500, B_200, B_100, B_50, B_20, M_10, M_5, M_2, M_1, M_050, M_020, M_010)
+                (CDG_ARQUEO, CDG_USUARIO, CDG_SUCURSAL, FECHA, MONTO, B_1000, B_500, B_200, B_100, B_50, B_20, M_10, M_5, M_2, M_1, M_050, M_020, M_010, SALDO_SUCURSAL)
             VALUES
-                ((SELECT NVL(MAX(CDG_ARQUEO),0) FROM ARQUEO) + 1, :ejecutivo, :sucursal, SYSDATE, :monto, :b_1000, :b_500, :b_200, :b_100, :b_50, :b_20, :m_10, :m_5, :m_2, :m_1, :m_050, :m_020, :m_010)
+                ((SELECT NVL(MAX(CDG_ARQUEO),0) FROM ARQUEO) + 1, :ejecutivo, :sucursal, SYSDATE, :monto, :b_1000, :b_500, :b_200, :b_100, :b_50, :b_20, :m_10, :m_5, :m_2, :m_1, :m_050, :m_020, :m_010, :saldo)
             sql;
 
             $parametros = [
@@ -2128,7 +2103,8 @@ sql;
                 'm_1' => $datos['m_1'],
                 'm_050' => $datos['m_050'],
                 'm_020' => $datos['m_020'],
-                'm_010' => $datos['m_010']
+                'm_010' => $datos['m_010'],
+                'saldo' => $res['SALDO']
             ];
 
             $res = $mysqli->insertar($qry, $parametros);
