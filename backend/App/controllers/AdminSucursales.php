@@ -287,24 +287,23 @@ class AdminSucursales extends Controller
         $saldos = AdminSucursalesDao::GetSaldosSucursales();
         $filas = "";
         foreach ($saldos as $sucursal) {
-            $estilo = "font-weight: bold; ";
-            $rgb = "";
-            $p = max(0, min(100, $sucursal['PORCENTAJE']));
-            if ($p <= 50) {
-                $rgb = "rgb(255, " . (255 * $p / 50) . ", 0)";
-            } else {
-                $rgb = "rgb(" . (255 - 255 * ($p - 50) / 50) . ", 255, 0)";
-            }
-            $estilo .= "color: " . $rgb . ";";
-
             $filas .= "<tr>";
             foreach ($sucursal as $key => $valor) {
                 if ($key === "PORCENTAJE") {
-                    $p = number_format($valor, 2);
-                    $filas .= "<th style='" . $estilo . "'>{$p}%</th>";
+                    $rgb = "";
+
+                    if ($valor > 100) $valor = "Requiere un retiro por saldo excedente.";
+                    else if ($valor < 0) $valor = "Requiere un fondeo por saldo insuficiente.";
+                    else {
+                        $p = max(0, min(100, $sucursal['PORCENTAJE']));
+                        if ($p <= 50) $rgb = "color: rgb(255, " . (255 * $p / 50) . ", 0)";
+                        else $rgb = "color: rgb(" . (255 - 255 * ($p - 50) / 50) . ", 255, 0)";
+                        $valor = number_format($valor, 2) . "%";
+                    }
+
+                    $filas .= "<th style='font-weight: bold; " . $rgb . "'>" . $valor . "</th>";
                 } else $filas .= "<th>{$valor}</th>";
             }
-
 
             $filas .= "</tr>";
         }
