@@ -95,28 +95,7 @@
                                                         <input type="date" class="form-control" id="Final" name="Final" value="2024-04-26">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="Operacion">Operación *</label>
-                                                        <select class="form-control" id="Operacion" name="Operacion">
-                                                            <option value="0">TODAS LAS OPERACIONES</option>
-                                                            <option value="1">DEPOSITO</option>
-                                                            <option value="0">RETIRO</option>
-                                                            <option value="1">TRASPASO (INVERSIONES)</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="Producto">Producto *</label>
-                                                        <select class="form-control" id="Producto" name="Producto">
-                                                            <option value="0">TODOS LOS PRODUCTOS</option>
-                                                            <option value="1">AHORRO CUENTA - CORRIENTE</option>
-                                                            <option value="1">AHORRO CUENTA - PEQUES</option>
-                                                            <option value="1">MOVIMIENTOS DE INVERSIÓN</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
+
                                                 <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="Sucursal">Sucursal *</label>
