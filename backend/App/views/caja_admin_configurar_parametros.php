@@ -131,6 +131,19 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-md-6">
+                                            <div class="col-md-8">
+                                                <div class="form-group">
+                                                    <label for="monto_minimo_apertura">MONTO MAXIMO A DEPOSITAR POR TRANSACCIÓN</label>
+                                                    <input type="number" class="form-control" id="monto_minimo_apertura" name="monto_minimo_apertura" placeholder="0.00" min="0" max="100000" onkeydown="soloNumeros(event)" onblur="validaMaxMin()" oninput="cambioMonto()" disabled="">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <button type="button" class="btn btn-success btn-circle" onclick="EditarTasa();"><i class="fa fa-edit"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="col-md-12">
                                             <small id="emailHelp" class="form-text text-muted"><b>ATENCIÓN:</b> Al momento de modificar la tasa anual o el monto mínimo, estos cambios seran inmediatos en la creación de un nuevo contrato.</small>
                                         </div>

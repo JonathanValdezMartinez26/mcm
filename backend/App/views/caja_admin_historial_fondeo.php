@@ -94,7 +94,7 @@
                                                         <input type="date" class="form-control" id="Final" name="Final" value="2024-04-26">
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="Sucursal">Sucursal *</label>
