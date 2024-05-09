@@ -177,6 +177,7 @@
                                         <option value="TICKET EXTRAVIADO">TICKET EXTRAVIADO</option>
                                         <option value="TICKET DAÑADO">TICKET DAÑADO</option>
                                         <option value="FALLA IMPRESION">FALLA IMPRESION</option>
+                                        <option value="AUDITORIA">AUDITORIA</option>
                                     </select>
                                 </div>
                             </div>
