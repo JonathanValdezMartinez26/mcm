@@ -408,7 +408,9 @@
                                 <input class="form-control" id="saldo_inicial" name="saldo_inicial" value="0.00" readonly>
                                 <input type="hidden" class="form-control" id="sma" name="sma" value="<?= $saldoMinimoApertura ?>" readonly>
                             </div>
-                            <div class="col-md-12" style="display: flex; justify-content: center; color: red;">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" style="display: flex; justify-content: center; color: red; height: 20px;">
                                 <label id="tipSaldo" style="opacity:0; font-size: 18px;">El saldo inicial debe ser mínimo de $<?= $saldoMinimoApertura - $costoInscripcion ?>.00</label>
                             </div>
                         </div>

@@ -1746,6 +1746,7 @@ html;
              
             const devuelveRetiro = (datos) => {
                 const datosDev = {
+                    cliente: datos.CLIENTE,
                     contrato: datos.CONTRATO,
                     monto: datos.MONTO,
                     ejecutivo: "{$_SESSION['usuario']}",
@@ -1946,6 +1947,7 @@ html;
              
             const devuelveRetiro = (datos) => {
                 const datosDev = {
+                    cliente: datos.CLIENTE,
                     contrato: datos.CONTRATO,
                     monto: datos.MONTO,
                     ejecutivo: "{$_SESSION['usuario']}",
@@ -2312,16 +2314,27 @@ script;
     {
         $extraFooter = <<<script
         <script>
-         
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->confirmarMovimiento}
+            {$this->consultaServidor}
+            {$this->configuraTabla}
+            {$this->noSubmit}
         </script>
-script;
+        script;
 
+        $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro();
+        $opcSucursales = "";
+        foreach ($sucursales as $sucursales) {
+            $opcSucursales .= "<option value='{$sucursales['CODIGO']}'" . ($sucursales['CODIGO'] === $_SESSION['cdgco_ahorro'] ? 'Selected' : '') . ">{$sucursales['NOMBRE']} ({$sucursales['CODIGO']})</option>";
+        }
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial Fondeo Sucursal")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fechaI', date('Y-m-d', strtotime('-1 month')));
+        View::set('fechaF', date('Y-m-d'));
         View::set('opcSucursales', $opcSucursales);
-        View::set('tabla', $tabla);
-        View::set('fecha', date('d/m/Y H:i:s'));
         View::render("caja_admin_historial_fondeo");
     }
 

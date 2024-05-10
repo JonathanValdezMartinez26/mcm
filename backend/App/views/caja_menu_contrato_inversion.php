@@ -225,7 +225,9 @@
                                 <div class="col-md-3">
                                     <input class="form-control" id="saldoFinal" name="saldoFinal" value="0.00" readonly>
                                 </div>
-                                <div class="col-md-12" style="display: flex; justify-content: center; color: red;">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" style="display: flex; justify-content: center; color: red; height: 30px;">
                                     <label id="tipSaldo" style="opacity:0; font-size: 18px;">El monto a invertir no puede ser mayor al saldo de la cuenta.</label>
                                 </div>
                             </div>

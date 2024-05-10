@@ -71,7 +71,7 @@ class CajaAhorro
         }
     }
 
-    public static function GetSucursalAsignadaCajeraAhorro($usuario)
+    public static function GetSucursalAsignadaCajeraAhorro($usuario = '')
     {
         if ($usuario == '') {
             $var =  '';
@@ -548,13 +548,19 @@ class CajaAhorro
                 'tipo_pago' => '1',
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['monto'],
-                'movimiento' => '1'
+                'movimiento' => '1',
+                'cliente' => $datos['codigo_cl'],
+                'ejecutivo' => $datos['ejecutivo'],
+                'sucursal' => $datos['sucursal']
             ],
             [
                 'tipo_pago' => '2',
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['inscripcion'],
-                'movimiento' => '0'
+                'movimiento' => '0',
+                'cliente' => $datos['codigo_cl'],
+                'ejecutivo' => $datos['ejecutivo'],
+                'sucursal' => $datos['sucursal']
             ],
             [
                 'monto' => $datos['monto'],
@@ -599,7 +605,10 @@ class CajaAhorro
                 'tipo_pago' => $esDeposito ? '3' : '4',
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['montoOperacion'],
-                'movimiento' => $esDeposito ? '1' : '0'
+                'movimiento' => $esDeposito ? '1' : '0',
+                'cliente' => $datos['cliente'],
+                'ejecutivo' => $datos['ejecutivo'],
+                'sucursal' => $datos['sucursal']
             ],
             [
                 'monto' => $datos['montoOperacion'],
@@ -651,9 +660,9 @@ class CajaAhorro
     {
         return <<<sql
         INSERT INTO MOVIMIENTOS_AHORRO
-            (CODIGO, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, MOVIMIENTO, DESCRIPCION, CDG_TICKET, FECHA_VALOR, CDG_RETIRO)
+            (CODIGO, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, MOVIMIENTO, DESCRIPCION, CDG_TICKET, FECHA_VALOR, CDG_RETIRO, CDGCO, CDGCL, CDGPE)
         VALUES
-            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(TO_NUMBER(CODIGO)) AS CODIGO FROM TICKETS_AHORRO WHERE CDG_CONTRATO = :contrato), SYSDATE, (SELECT CASE :tipo_pago WHEN '6' THEN MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)) WHEN '7' THEN MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)) ELSE NULL END FROM SOLICITUD_RETIRO_AHORRO WHERE CONTRATO = :contrato))
+            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(TO_NUMBER(CODIGO)) AS CODIGO FROM TICKETS_AHORRO WHERE CDG_CONTRATO = :contrato), SYSDATE, (SELECT CASE :tipo_pago WHEN '6' THEN MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)) WHEN '7' THEN MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)) ELSE NULL END FROM SOLICITUD_RETIRO_AHORRO WHERE CONTRATO = :contrato), :sucursal, :cliente, :ejecutivo)
         sql;
     }
 
@@ -1181,7 +1190,10 @@ class CajaAhorro
                 'tipo_pago' => '5',
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['montoOperacion'],
-                'movimiento' => '0'
+                'movimiento' => '0',
+                'cliente' => $datos['cliente'],
+                'ejecutivo' => $datos['ejecutivo'],
+                'sucursal' => $datos['sucursal']
             ]
         ];
 
@@ -1340,7 +1352,10 @@ class CajaAhorro
             'tipo_pago' => $tipoRetiro === 1 ? '6' : '7',
             'contrato' => $datos['contrato'],
             'monto' => $datos['monto'],
-            'movimiento' => '0'
+            'movimiento' => '0',
+            'cliente' => $datos['cliente'],
+            'ejecutivo' => $datos['ejecutivo'],
+            'sucursal' => $datos['sucursal']
         ];
 
         $query = [
@@ -1556,7 +1571,10 @@ class CajaAhorro
                 'tipo_pago' => $datos['tipo'] == 1 ? '8' : '9',
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['monto'],
-                'movimiento' => '1'
+                'movimiento' => '1',
+                'cliente' => $datos['cliente'],
+                'ejecutivo' => $datos['ejecutivo'],
+                'sucursal' => $datos['sucursal']
             ]
         ];
 

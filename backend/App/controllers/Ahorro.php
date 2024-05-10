@@ -523,7 +523,7 @@ class Ahorro extends Controller
                     addParametro(datosContrato, "ejecutivo", "{$_SESSION['usuario']}")
                      
                     if (document.querySelector("#contrato").value !== "") return regPago(document.querySelector("#contrato").value)
-                    
+                     
                     consultaServidor("/Ahorro/AgregaContratoAhorro/", $.param(datosContrato), (respuesta) => {
                         if (!respuesta.success) {
                             console.error(respuesta.error)
