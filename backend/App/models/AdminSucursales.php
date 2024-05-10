@@ -522,6 +522,11 @@ class AdminSucursales
             FROM
                 PE WHERE PUESTO = 'D' AND BAJA IS NULL
             AND CDGEM = 'EMPFIN'
+            AND CDGPE = 'AMGM'
+            AND CDGPE = 'PHEE'
+            AND CDGPE = 'PAES'
+            AND CDGPE = 'PAES'
+            AND CDGPE = 'GASC'
             ORDER BY NOMBRE1 ASC
 sql;
 
