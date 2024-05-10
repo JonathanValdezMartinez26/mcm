@@ -131,10 +131,6 @@
                                         </select>
                                     </div>
                                 </div>
-
-
-
-
                             </div>
                             <div class="row">
                                 <hr>
@@ -177,7 +173,6 @@
                                     <div class="form-group">
                                         <label for="renovacion">Acción al vencimiento *</label>
                                         <select class="form-control" id="renovacion" name="renovacion" disabled>
-                                            <!-- <option value="R">Renovar</option> -->
                                             <option value="D">Depositar a cuenta</option>
                                         </select>
                                     </div>
@@ -220,7 +215,7 @@
                                     <input class="form-control" id="montoOperacion" name="montoOperacion" value="0.00" readonly>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row" style="display: none;">
                                 <div class="col-md-8" style="display: flex; justify-content: flex-start;">
                                     <h2>Saldo final ahorro cuenta corriente</h2>
                                 </div>

@@ -211,7 +211,7 @@
                                     <input class="form-control" id="montoOperacion" name="montoOperacion" value="0.00" readonly>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row" style="display: none;">
                                 <div class="col-md-8" style="display: flex; justify-content: flex-start;">
                                     <h2>Saldo final cuenta ahorro corriente</h2>
                                 </div>
