@@ -69,11 +69,8 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="row">
-                                <div class="col-md-9" style="text-align: center">
+                                <div class="col-md-12" style="text-align: center">
                                     <label style="font-size: 18px; margin: 0; padding: 0;">Resumen de movimientos (entradas y salidas de efectivo)</label>
-                                </div>
-                                <div class="col-md-3">
-                                    <button id="btnArqueo" class="btn btn-primary" onclick=mostrarModal()><i class="glyphicon glyphicon-floppy-disk"></i><b> Generar arqueo</b></button>
                                 </div>
                             </div>
                             <hr>
@@ -93,7 +90,12 @@
                                 <div class="col-md-3" style="padding-top: 23px;">
                                     <button id="btnBsk" class="btn btn-primary" onclick=buscarArqueos()><i class="fa fa-search"></i><b> Buscar</b></button>
                                 </div>
-                                <div class="col-md-3" style="padding-top: 23px; display: flex; justify-content: flex-end;">
+                            </div>
+                            <div class="row" style="padding-top: 20px;">
+                                <div class="col-md-2">
+                                    <button id="btnArqueo" class="btn btn-primary" onclick=mostrarModal()><i class="glyphicon glyphicon-floppy-disk"></i><b> Generar arqueo</b></button>
+                                </div>
+                                <div class="col-md-2">
                                     <button id="btnExportaExcel" class="btn btn-success btn-circle" onclick=imprimeExcel()><i class="fa fa-file-excel-o"></i><b> Exportar a Excel</b></button>
                                 </div>
                             </div>
