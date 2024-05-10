@@ -3434,6 +3434,17 @@ class Ahorro extends Controller
                 </td>
             </tr>
             html;
+        } else if ($datos['TIPO_PAGO'] == '6' || $datos['TIPO_PAGO'] == '7') {
+            $detalleMovimientos = <<<html
+            <tr>
+                <td style="text-align: left; width: 60%;">
+                    {$datos['ES_DEPOSITO']}:
+                </td>
+                <td style="text-align: right; width: 40%;">
+                    $ {$tktMontoOP}
+                </td>
+            </tr>
+            html;
         } else {
             $detalleMovimientos = <<<html
             <tr>
