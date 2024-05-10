@@ -49,96 +49,98 @@
             </a>
         </div>
         <div class="col-md-9">
-            <form id="registroOperacion" name="registroOperacion">
-                <div class="modal-content">
-                    <div class="modal-header" style="padding-bottom: 0px">
-                        <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                            <a class="navbar-brand">Admin sucursales / Catálogo de Clientes</a>
-                        </div>
-                        <div>
-                            <ul class="nav navbar-nav">
-                                <li class="linea"><a href="/AdminSucursales/Reporteria/">
-                                        <p style="font-size: 16px;">Historial de transacciones</p>
-                                    </a></li>
-
-                                <li class="linea"><a href="/AdminSucursales/HistorialFondeoSucursal/">
-                                        <p style="font-size: 16px;">Historial fondeo sucursal</p>
-                                    </a></li>
-
-                                <li><a href="/AdminSucursales/HistorialRetiroSucursal/">
-                                        <p style="font-size: 16px;"><b>Historial retiro sucursal</b></p>
-                                    </a></li>
-
-                                <li class="linea"><a href="/AdminSucursales/HistorialCierreDia/">
-                                        <p style="font-size: 16px;">Historial cierre día</p>
-                                    </a></li>
-
-                            </ul>
-                        </div>
+            <div class="modal-content">
+                <div class="modal-header" style="padding-bottom: 0px">
+                    <div class="navbar-header card col-md-12" style="background: #2b2b2b">
+                        <a class="navbar-brand">Admin sucursales / Catálogo de Clientes</a>
                     </div>
-                    <div class="modal-body">
-                        <div class="container-fluid">
-                            <div class="col-md-12">
-                                <div class="row">
-                                    <div class="card col-md-12">
-                                        <form class="" id="consulta" action="/Operaciones/PerfilTransaccional/" method="GET" onsubmit="return Validar()">
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label for="Inicial">Desde *</label>
-                                                        <input type="date" class="form-control" id="Inicial" name="Inicial" value="2024-04-26">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label for="Final">Hasta *</label>
-                                                        <input type="date" class="form-control" id="Final" name="Final" value="2024-04-26">
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="Sucursal">Sucursal *</label>
-                                                        <select class="form-control" id="Sucursal" name="Sucursal">
-                                                            <option value="0">TODAS LAS SUCURSALES</option>
-                                                            <?php echo $sucursales; ?>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-4" style="padding-top: 25px">
-                                                    <button class="btn btn-primary" onclick="getLog()">
-                                                        <i class="fa fa-search"></i> Buscar
-                                                    </button>
-                                                </div>
+                    <div>
+                        <ul class="nav navbar-nav">
+                            <li class="linea">
+                                <a href="/AdminSucursales/Reporteria/">
+                                    <p style="font-size: 16px;">Historial de transacciones</p>
+                                </a>
+                            </li>
+                            <li class="linea">
+                                <a href="/AdminSucursales/HistorialFondeoSucursal/">
+                                    <p style="font-size: 16px;">Historial fondeo sucursal</p>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/AdminSucursales/HistorialRetiroSucursal/">
+                                    <p style="font-size: 16px;"><b>Historial retiro sucursal</b></p>
+                                </a>
+                            </li>
+                            <li class="linea">
+                                <a href="/AdminSucursales/HistorialCierreDia/">
+                                    <p style="font-size: 16px;">Historial cierre día</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="card col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="fechaI">Desde *</label>
+                                                <input type="date" class="form-control" id="fechaI" name="fechaI" value="<?= $fechaI; ?>" min="2024-01-01" max="<?= $fechaF; ?>" onchange=validaFechas()>
                                             </div>
-                                        </form>
-
-                                        <br>
-                                        <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
-                                        <hr>
-                                        <div class="dataTable_wrapper">
-                                            <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Datos del Cliente</th>
-                                                        <th>Detalle Transacción</th>
-                                                        <th>Fecha Transacción</th>
-                                                        <th>Acciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?= $tabla; ?>
-                                                </tbody>
-                                            </table>
                                         </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="fechaF">Hasta *</label>
+                                                <input type="date" class="form-control" id="fechaF" name="fechaF" value="<?= $fechaF; ?>" min="2024-01-01" max="<?= $fechaF; ?>" onchange=validaFechas()>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="sucursal">Sucursal *</label>
+                                                <select class="form-control" id="sucursal" name="sucursal">
+                                                    <option value="0">TODAS LAS SUCURSALES</option>
+                                                    <?= $opcSucursales; ?>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4" style="padding-top: 25px">
+                                            <button class="btn btn-primary" onclick=buscarRetirosSucursal()>
+                                                <i class="fa fa-search"></i> Buscar
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <button id="export_excel_consulta" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
+                                    <hr>
+                                    <div class="dataTable_wrapper">
+                                        <table class="table table-striped table-bordered table-hover" id="retiros">
+                                            <thead>
+                                                <tr>
+                                                    <th>Fecha</th>
+                                                    <th>Código sucursal</th>
+                                                    <th>Nombre Sucursal</th>
+                                                    <th>Código usuario</th>
+                                                    <th>Nombre usuario</th>
+                                                    <th>Movimiento</th>
+                                                    <th>Monto</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?= $filas; ?>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

@@ -209,7 +209,14 @@ class AdminSucursales extends Controller
                     targets: 0
                 }
             ],
-            order: false
+            order: false,
+            language: {
+                emptyTable: "No hay datos disponibles",
+                paginate: {
+                    previous: "Anterior",
+                    next: "Siguiente",
+                }
+            }
         })
 
         $("#"  + id + " input[type=search]").keyup(() => {
@@ -257,6 +264,20 @@ class AdminSucursales extends Controller
         const ws = XLSX.utils.table_to_sheet(tabla)
         XLSX.utils.book_append_sheet(wb, ws, nombreHoja)
         XLSX.writeFile(wb, nombreArchivo + ".xlsx")
+    }';
+    private $crearFilas = 'const creaFilas = (datos) => {
+        const filas = document.createDocumentFragment()
+        datos.forEach((dato) => {
+            const fila = document.createElement("tr")
+            Object.keys(dato).forEach((key) => {
+                const celda = document.createElement("td")
+                celda.style.verticalAlign = "middle"
+                celda.innerText = dato[key]
+                fila.appendChild(celda)
+            })
+            filas.appendChild(fila)
+        })
+        return filas
     }';
 
     function __construct()
@@ -596,6 +617,7 @@ class AdminSucursales extends Controller
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
+            {$this->crearFilas}
          
             const getLog = () => {
                 const datos = {
@@ -646,20 +668,6 @@ class AdminSucursales extends Controller
                 })
                  
                 return false
-            }
-             
-            const creaFilas = (datos) => {
-                const filas = document.createDocumentFragment()
-                datos.forEach((dato) => {
-                    const fila = document.createElement("tr")
-                    Object.keys(dato).forEach((key) => {
-                        const celda = document.createElement("td")
-                        celda.innerText = dato[key]
-                        fila.appendChild(celda)
-                    })
-                    filas.appendChild(fila)
-                })
-                return filas
             }
              
             $(document).ready(() => {
@@ -2321,20 +2329,62 @@ script;
             {$this->consultaServidor}
             {$this->configuraTabla}
             {$this->noSubmit}
+            {$this->exportaExcel}
+            {$this->crearFilas}
+         
+            $(document).ready(() => {
+                configuraTabla("fondeos")
+                $("#export_excel_consulta").click(() => imprimeExcel("fondeos"))
+            })
+             
+            const imprimeExcel = (id) => exportaExcel(id, 'Historial Fondeo Sucursal')
+             
+            const buscarFondeos = () => {
+                const datos = {
+                    fechaI: $("#fechaI").val(),
+                    fechaF: $("#fechaF").val()
+                }
+                 
+                if ($("#sucursal").val() !== "0") datos.sucursal = $("#sucursal").val()
+                 
+                consultaServidor(
+                    "/AdminSucursales/GetHistorialFondeosSucursal/",
+                    $.param(datos),
+                    (resultado) => {
+                        $("#fondeos").DataTable().destroy()
+                        $("#fondeos tbody").html("")
+                         
+                        if (!resultado.success) showError(resultado.mensaje)
+                        else $("#fondeos tbody").html(creaFilas(resultado.datos))
+                        
+                        configuraTabla("fondeos")
+                    })
+            }
         </script>
         script;
 
-        $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro();
-        $opcSucursales = "";
-        foreach ($sucursales as $sucursales) {
-            $opcSucursales .= "<option value='{$sucursales['CODIGO']}'" . ($sucursales['CODIGO'] === $_SESSION['cdgco_ahorro'] ? 'Selected' : '') . ">{$sucursales['NOMBRE']} ({$sucursales['CODIGO']})</option>";
+        $fechaI = date('Y-m-d', strtotime('-1 month'));
+        $fechaF = date('Y-m-d');
+        $datos = AdminSucursalesDao::GetHistorialFondeosSucursal(['fechaI' => $fechaI, 'fechaF' => $fechaF, 'sucursal' => $_SESSION['cdgco_ahorro']]);
+        $datos = json_decode($datos, true);
+
+        $filas = "";
+        if ($datos['success']) {
+            foreach ($datos['datos'] as $key => $value) {
+                $filas .= "<tr>";
+                foreach ($value as $key2 => $value2) {
+                    $filas .= "<td>{$value2}</td>";
+                }
+                $filas .= "</tr>";
+            }
         }
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial Fondeo Sucursal")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial Fondeo Sucursal", [$this->XLSX])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('fechaI', date('Y-m-d', strtotime('-1 month')));
-        View::set('fechaF', date('Y-m-d'));
-        View::set('opcSucursales', $opcSucursales);
+        View::set('fechaI', $fechaI);
+        View::set('fechaF', $fechaF);
+        View::set('filas', $filas);
+        View::set('opcSucursales', self::GetSucursalesReporteria());
         View::render("caja_admin_historial_fondeo");
     }
 
@@ -2342,17 +2392,91 @@ script;
     {
         $extraFooter = <<<script
         <script>
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->showInfo}
+            {$this->confirmarMovimiento}
+            {$this->consultaServidor}
+            {$this->configuraTabla}
+            {$this->noSubmit}
+            {$this->exportaExcel}
+            {$this->crearFilas}
          
+            $(document).ready(() => {
+                configuraTabla("retiros")
+                $("#export_excel_consulta").click(() => imprimeExcel("retiros"))
+            })
+             
+            const imprimeExcel = (id) => exportaExcel(id, 'Historial Retiros Sucursal')
+             
+            const validaFechas = () => {
+                const fechaI = $("#fechaI").val()
+                const fechaF = $("#fechaF").val()
+                 
+                if (fechaI === "" || fechaF === "") return showError("Debe seleccionar ambas fechas.")
+                if (fechaI > fechaF) {
+                    $("#fechaI").val(fechaF)
+                    return showError("La fecha inicial no puede ser mayor a la fecha final.")
+                }
+            }
+             
+            const buscarRetirosSucursal  = () => {
+                const datos = {
+                    fechaI: $("#fechaI").val(),
+                    fechaF: $("#fechaF").val()
+                }
+                 
+                if ($("#sucursal").val() !== "0") datos.sucursal = $("#sucursal").val()
+                
+                consultaServidor(
+                    "/AdminSucursales/GetHistorialRetirosSucursal/",
+                    $.param(datos),
+                    (resultado) => {
+                        $("#retiros").DataTable().destroy()
+                        $("#retiros tbody").html("")
+                        
+                        if (!resultado.success) showError(resultado.mensaje)
+                        else $("#retiros tbody").html(creaFilas(resultado.datos))
+                        
+                        configuraTabla("retiros")
+                    })
+            }
         </script>
-script;
+        script;
 
+        $fechaI = date('Y-m-d', strtotime('-1 month'));
+        $fechaF = date('Y-m-d');
+        $datos = AdminSucursalesDao::GetHistorialRetirosSucursal(['fechaI' => $fechaI, 'fechaF' => $fechaF, 'sucursal' => $_SESSION['cdgco_ahorro']]);
+        $datos = json_decode($datos, true);
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial Retiro Sucursal")));
+        $filas = "";
+        if ($datos['success']) {
+            foreach ($datos['datos'] as $key => $value) {
+                $filas .= "<tr>";
+                foreach ($value as $key2 => $value2) {
+                    $filas .= "<td>{$value2}</td>";
+                }
+                $filas .= "</tr>";
+            }
+        }
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial Retiro Sucursal", [$this->XLSX])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('opcSucursales', $opcSucursales);
-        View::set('tabla', $tabla);
-        View::set('fecha', date('d/m/Y H:i:s'));
+        View::set('fechaI', $fechaI);
+        View::set('fechaF', $fechaF);
+        View::set('filas', $filas);
+        View::set('opcSucursales', self::GetSucursalesReporteria());
         View::render("caja_admin_historial_retiro_sucursal");
+    }
+
+    public function GetSucursalesReporteria()
+    {
+        $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro();
+        $opcSucursales = "";
+        foreach ($sucursales as $sucursales) {
+            $opcSucursales .= "<option value='{$sucursales['CODIGO']}'" . ($sucursales['CODIGO'] === $_SESSION['cdgco_ahorro'] ? 'Selected' : '') . ">{$sucursales['NOMBRE']} ({$sucursales['CODIGO']})</option>";
+        }
+        return $opcSucursales;
     }
 
     public function HistorialCierreDia()
@@ -2361,7 +2485,7 @@ script;
         <script>
          
         </script>
-script;
+        script;
 
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial Cierre Día")));
@@ -2379,6 +2503,7 @@ script;
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
+            {$this->crearFilas}
          
             const getLog = () => {
                 const datos = {
@@ -2429,20 +2554,6 @@ script;
                 })
                  
                 return false
-            }
-             
-            const creaFilas = (datos) => {
-                const filas = document.createDocumentFragment()
-                datos.forEach((dato) => {
-                    const fila = document.createElement("tr")
-                    Object.keys(dato).forEach((key) => {
-                        const celda = document.createElement("td")
-                        celda.innerText = dato[key]
-                        fila.appendChild(celda)
-                    })
-                    filas.appendChild(fila)
-                })
-                return filas
             }
              
             $(document).ready(() => {
@@ -2692,5 +2803,15 @@ script;
         \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
+    }
+
+    public function GetHistorialFondeosSucursal()
+    {
+        echo AdminSucursalesDao::GetHistorialFondeosSucursal($_POST);
+    }
+
+    public function GetHistorialRetirosSucursal()
+    {
+        echo AdminSucursalesDao::GetHistorialRetirosSucursal($_POST);
     }
 }

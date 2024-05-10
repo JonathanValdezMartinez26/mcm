@@ -615,4 +615,87 @@ sql;
             return [];
         }
     }
+
+    public static function GetHistorialFondeosSucursal($datos)
+    {
+        $qry = <<<sql
+        SELECT
+            TO_CHAR(SMA.FECHA, 'DD/MM/YYYY') AS FECHA,
+            SEA.CDG_SUCURSAL AS SUCURSAL,
+            CO.NOMBRE AS NOMBRE_SUCURSAL,
+            SMA.CDG_USUARIO AS USUARIO,
+            (
+                SELECT
+                    CONCATENA_NOMBRE(NOMBRE1, NOMBRE2, PRIMAPE, SEGAPE)
+                FROM
+                    PE
+                WHERE
+                    CODIGO = SMA.CDG_USUARIO
+            ) AS NOMBRE_USUARIO,
+            'FONDEO' AS MOVIMIENTO,
+            TO_CHAR(SMA.MONTO, 'FM$999,999,999.00') AS MONTO
+        FROM
+            SUC_MOVIMIENTOS_AHORRO SMA
+        JOIN
+            SUC_ESTADO_AHORRO SEA ON SEA.CODIGO = SMA.CDG_ESTADO_AHORRO
+        JOIN
+            CO ON CO.CODIGO = SEA.CDG_SUCURSAL
+        WHERE
+            SMA.MOVIMIENTO = '1'
+        sql;
+
+
+        if (isset($datos['sucursal'])) $qry .= " AND SEA.CDG_SUCURSAL = '{$datos['sucursal']}'";
+        if (isset($datos['fechaI']) && isset($datos['fechaF'])) $qry .= " AND TRUNC(SMA.FECHA) BETWEEN TO_DATE('{$datos['fechaI']}', 'YYYY-MM-DD') AND TO_DATE('{$datos['fechaF']}', 'YYYY-MM-DD')";
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qry);
+            if (count($res) === 0) return self::Responde(false, "No se encontraron registros de fondeos para los parámetros proporcionados.");
+            return self::Responde(true, "Fondeo encontrados.", $res);
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al buscar registros de fondeos.", null, $e->getMessage());
+        }
+    }
+
+    public static function GetHistorialRetirosSucursal($datos)
+    {
+        $qry = <<<sql
+        SELECT
+            TO_CHAR(SMA.FECHA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
+            SEA.CDG_SUCURSAL AS SUCURSAL,
+            CO.NOMBRE AS NOMBRE_SUCURSAL,
+            SMA.CDG_USUARIO AS USUARIO,
+            (
+                SELECT
+                    CONCATENA_NOMBRE(NOMBRE1, NOMBRE2, PRIMAPE, SEGAPE)
+                FROM
+                    PE
+                WHERE
+                    CODIGO = SMA.CDG_USUARIO
+            ) AS NOMBRE_USUARIO,
+            'RETIRO' AS MOVIMIENTO,
+            TO_CHAR(SMA.MONTO, 'FM$999,999,999.00') AS MONTO
+        FROM
+            SUC_MOVIMIENTOS_AHORRO SMA
+        JOIN
+            SUC_ESTADO_AHORRO SEA ON SEA.CODIGO = SMA.CDG_ESTADO_AHORRO
+        JOIN
+            CO ON CO.CODIGO = SEA.CDG_SUCURSAL
+        WHERE
+            SMA.MOVIMIENTO = '0'
+        sql;
+
+        if (isset($datos['sucursal'])) $qry .= " AND SEA.CDG_SUCURSAL = '{$datos['sucursal']}'";
+        if (isset($datos['fechaI']) && isset($datos['fechaF'])) $qry .= " AND TRUNC(SMA.FECHA) BETWEEN TO_DATE('{$datos['fechaI']}', 'YYYY-MM-DD') AND TO_DATE('{$datos['fechaF']}', 'YYYY-MM-DD')";
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qry);
+            if (count($res) === 0) return self::Responde(false, "No se encontraron registros de retiros para los parámetros proporcionados.");
+            return self::Responde(true, "Retiros encontrados.", $res);
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al buscar registros de retiros.", null, $e->getMessage());
+        }
+    }
 }
