@@ -65,6 +65,21 @@ class AdminSucursales
         }
     }
 
+    public static function GetUserAdmin()
+    {
+        $query = <<<sql
+            SELECT
+                * FROM
+sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryAll($query);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
     public static function GetSucursales()
     {
         $query = <<<sql
