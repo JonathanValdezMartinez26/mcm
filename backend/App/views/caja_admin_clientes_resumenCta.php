@@ -65,6 +65,7 @@
                             <thead>
                                 <tr>
                                     <th>Fecha</th>
+                                    <th>Tipo cuenta</th>
                                     <th>Concepto</th>
                                     <th>Abono</th>
                                     <th>Cargo</th>

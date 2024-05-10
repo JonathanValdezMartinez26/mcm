@@ -82,15 +82,6 @@
                             <li class="linea">
                                 <span style="font-size: 15px; margin: 0 15px;" id="incidencias" onclick=actualizaVista(event)>Incidencias</span>
                             </li>
-                            <!-- <li class="linea">
-                                <span style="font-size: 15px; margin: 0 15px;" id="HistorialTrns" onclick=actualizaVista(event)>Historial de transacciones</span>
-                            </li>
-                            <li class="linea">
-                                <span style="font-size: 15px; margin: 0 15px;" id="tendenciasAhorro" onclick=actualizaVista(event)>Tendencias de ahorro</span>
-                            </li>
-                            <li class="linea">
-                                <span style="font-size: 15px; margin: 0 15px;" id="tendenciasInversion" onclick=actualizaVista(event)>Tendencias de inversión</span>
-                            </li> -->
                         </ul>
                     </div>
                 </div>

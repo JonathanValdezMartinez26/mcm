@@ -936,6 +936,7 @@ class AdminSucursales extends Controller
             {$this->buscaCliente}
             {$this->parseaNumero}
             {$this->formatoMoneda}
+            {$this->configuraTabla}
          
             const buscar = () => buscaCliente()
          
@@ -1008,9 +1009,7 @@ class AdminSucursales extends Controller
     {
         $script = <<<script
         <script>
-            {$this->configuraTabla}
-             
-            $(document).ready(() => configuraTabla())
+            $(document).ready(() => configuraTabla("tablaResumenCta"))
         </script>
         script;
 
@@ -1048,18 +1047,20 @@ class AdminSucursales extends Controller
         $filas = "";
         foreach ($registros as $key => $registro) {
             $filas .= "<tr>";
-            $conteoTotal++;
-            $saldoFinal = $registro['SALDO'];
-            if ($registro['ABONO'] > 0) {
-                $conteoAbonos++;
-                $montoAbonos += $registro['ABONO'];
-            } else {
-                if ($registro['TIPO'] == 5) {
-                    $conteoTransferencias++;
-                    $montoTransferencias += $registro['CARGO'];
+            if ($registro['CUENTA'] === "AHORRO") {
+                $conteoTotal++;
+                $saldoFinal = $registro['SALDO'];
+                if ($registro['ABONO'] > 0) {
+                    $conteoAbonos++;
+                    $montoAbonos += $registro['ABONO'];
                 } else {
-                    $conteoCargos++;
-                    $montoCargos += $registro['CARGO'];
+                    if ($registro['TIPO'] == 5) {
+                        $conteoTransferencias++;
+                        $montoTransferencias += $registro['CARGO'];
+                    } else if ($registro['TIPO'] != 2) {
+                        $conteoCargos++;
+                        $montoCargos += $registro['CARGO'];
+                    }
                 }
             }
             foreach ($registro as $key2 => $celda) {
