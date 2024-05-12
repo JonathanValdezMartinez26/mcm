@@ -1163,7 +1163,6 @@ class AdminSucursales extends Controller
 script;
 
         $fechaActual = date('Y-m-d');
-
         $Inicial = $_GET['Inicial'];
         $Final = $_GET['Final'];
         $Operacion = $_GET['Operacion'];
@@ -2442,7 +2441,7 @@ script;
                     })
             }
         </script>
-        script;
+script;
 
         $fechaI = date('Y-m-d', strtotime('-1 month'));
         $fechaF = date('Y-m-d');
@@ -2485,7 +2484,7 @@ script;
         <script>
          
         </script>
-        script;
+script;
 
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial Cierre Día")));

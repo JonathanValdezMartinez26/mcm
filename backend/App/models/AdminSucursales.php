@@ -69,7 +69,7 @@ class AdminSucursales
     {
         $query = <<<sql
             SELECT
-                * FROM
+                * FROM PE
 sql;
 
         try {

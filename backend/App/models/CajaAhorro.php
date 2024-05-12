@@ -1952,14 +1952,14 @@ sql;
             } else if ($Operacion == 10) {
                 $operac = 'TRANSFERENCIA INVERSION A AHORRO';
             }
-            $ope = " AND tpa.DESCRIPCION = '" . $operac . "'";
+            $ope = " AND CONCEPTO = '" . $operac . "'";
         }
 
         if ($Producto == '' || $Producto == 0) {
             $pro = '';
         } else {
             if ($Producto == '3') {
-                $pro = "AND tpa.DESCRIPCION = 'TRANSFERENCIA INVERSION'";
+                $pro = "AND CONCEPTO = 'TRANSFERENCIA INVERSION'";
             } else {
                 $pro = "AND pp.CODIGO = '" . $Producto . "'";
             }
@@ -1969,78 +1969,145 @@ sql;
         if ($Sucursal == '' || $Sucursal == 0) {
             $suc = "";
         } else {
-            $suc = " AND c2.CODIGO = '" . $Sucursal . "'";
+            $suc = " AND CDGCO = '" . $Sucursal . "'";
         }
 
 
 
 
         $query = <<<sql
-             SELECT 
-            TO_CHAR(ma.CDG_CONTRATO) AS CDG_CONTRATO, 
-            c2.CODIGO AS CDGCO,
-            c2.NOMBRE AS NOMBRE_SUCURSAL,  
-            (p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE) AS CAJERA_MOVIMIENTO, 
-            c.CODIGO AS CDGCL, 
-            (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
-            TO_CHAR(ma.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
-            ma.CDG_TICKET, 
-            ma.MONTO, 
-            tpa.DESCRIPCION AS CONCEPTO, 
-            CASE 
-                WHEN tpa.DESCRIPCION = 'TRANSFERENCIA INVERSION' AND pp.DESCRIPCION = 'Ahorro Corriente' THEN 'Inversión'
-                ELSE pp.DESCRIPCION 
-            END AS PRODUCTO,
-            CASE 
-                WHEN tpa.DESCRIPCION IN ('CAPITAL INICIAL - CUENTA CORRIENTE', 'APERTURA DE CUENTA - INSCRIPCIÓN', 'DEPOSITO') THEN 
+        SELECT 
+            CONSECUTIVO,
+            MOVIMIENTO,
+            CDGCO,
+            SUCURSAL,
+            USUARIO_CAJA,
+            NOMBRE_CAJERA,
+            CLIENTE,
+            TITULAR_CUENTA_EJE,
+            FECHA_MOV,
+            FECHA_MOV_FILTRO,
+            CDG_TICKET,
+            MONTO,
+            CONCEPTO,
+            TIPO_MOVIMIENTO,
+            PRODUCTO,
+            CASE WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO ELSE 0 END AS INGRESO,
+            CASE WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN MONTO ELSE 0 END AS EGRESO,
+            SUM(CASE WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO ELSE -MONTO END) OVER (ORDER BY CONSECUTIVO ASC) AS SALDO
+        FROM (
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY FECHA_MOV_FILTRO ASC) AS CONSECUTIVO,
+                MOVIMIENTO,
+                CDGCO,
+                USUARIO_CAJA,
+                NOMBRE_CAJERA,
+                SUCURSAL,
+                CLIENTE,
+                TITULAR_CUENTA_EJE,
+                FECHA_MOV,
+                FECHA_MOV_FILTRO,
+                CDG_TICKET,
+                MONTO,
+                CONCEPTO,
+                TIPO_MOVIMIENTO,
+                PRODUCTO
+            FROM (
+                (
+                    SELECT 
+                        '1' AS MOVIMIENTO,
+                        CDG_SUCURSAL AS CDGCO,
+                        CO.NOMBRE AS SUCURSAL,
+                       'AMGM' AS USUARIO_CAJA,
+                       'ANGEL MOISES GUERRERO MEJIA' AS NOMBRE_CAJERA,
+                        'NO APLICA' AS CLIENTE, 
+                        'NO APLICA' AS TITULAR_CUENTA_EJE, 
+                        TO_CHAR(FECHA_REGISTRO, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
+                        FECHA_REGISTRO AS FECHA_MOV_FILTRO,
+                        'NO APLICA' AS CDG_TICKET, 
+                        SALDO_INICIAL AS MONTO, 
+                        'SALDO FINAL / INICIAL' AS CONCEPTO, 
+                        'INGRESO' AS TIPO_MOVIMIENTO,
+                        'AHORRO CUENTA CORRIENTE' AS PRODUCTO
+                    FROM SUC_ESTADO_AHORRO
+                    INNER JOIN CO ON CO.CODIGO = SUC_ESTADO_AHORRO.CDG_SUCURSAL 
+                )
+                UNION
+                (
+                   SELECT 
+                      MOVIMIENTO,
+                      CDG_SUCURSAL AS CDGCO,
+                      c.NOMBRE AS SUCURSAL,
+                      p.CODIGO AS USUARIO_CAJA,
+                      p.NOMBRE1 || ' '|| p.NOMBRE2 || ' ' || p.PRIMAPE || ' '|| p.SEGAPE AS NOMBRE_CAJERA,
+                      'NO APLICA' AS CLIENTE, 
+                      'NO APLICA' AS TITULAR_CUENTA_EJE, 
+                      TO_CHAR(FECHA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
+                      FECHA AS FECHA_MOV_FILTRO,
+                      'NO APLICA' AS CDG_TICKET, 
+                      MONTO, 
+                      CASE 
+                        WHEN MOVIMIENTO = 0 THEN 'RETIRO DE EFECTIVO'
+                        ELSE 'FONDEO SUCURSAL'
+                    END AS CONCEPTO, 
                     CASE 
-                        WHEN ma.MONTO <> 0 THEN TO_CHAR(ma.MONTO, 'FM999,999,999,999.00') 
-                        ELSE '0' 
-                    END
-                ELSE 
-                    '0' 
-            END AS INGRESO,
-            CASE 
-                WHEN tpa.DESCRIPCION IN ('TRANSFERENCIA INVERSION', 'RETIRO') THEN 
-                    CASE 
-                        WHEN ma.MONTO <> 0 THEN TO_CHAR(ma.MONTO, 'FM999,999,999,999.00') 
-                        ELSE '0' 
-                    END
-                ELSE 
-                    '0' 
-            END AS EGRESO,
-            TO_CHAR((
-                SELECT COALESCE(SUM(
-                    CASE 
-                        WHEN tpa2.DESCRIPCION IN ('CAPITAL INICIAL - CUENTA CORRIENTE', 'APERTURA DE CUENTA - INSCRIPCIÓN', 'DEPOSITO') AND ma2.FECHA_MOV <= ma.FECHA_MOV THEN ma2.MONTO 
-                        ELSE 0 
-                    END) - SUM(
-                    CASE 
-                        WHEN tpa2.DESCRIPCION IN ('TRANSFERENCIA INVERSION', 'RETIRO') AND ma2.FECHA_MOV <= ma.FECHA_MOV THEN ma2.MONTO 
-                        ELSE 0 
-                    END)
-                , 0)
-                FROM MOVIMIENTOS_AHORRO ma2
-                INNER JOIN TIPO_PAGO_AHORRO tpa2 ON tpa2.CODIGO = ma2.CDG_TIPO_PAGO
-                WHERE ma2.FECHA_MOV BETWEEN TO_TIMESTAMP('$Inicial 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('$Final 23:59:59', 'YYYY-MM-DD HH24:MI:SS') 
-                AND ma2.FECHA_MOV <= ma.FECHA_MOV 
-            ), 'FM999,999,999,999.00') AS SALDO
-        FROM MOVIMIENTOS_AHORRO ma
-        INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
-        INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
-        INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
-        INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
-        INNER JOIN CO c2 ON c2.CODIGO = apa.CDGCO 
-        INNER JOIN TICKETS_AHORRO ta ON ta.CODIGO  = ma.CDG_TICKET 
-        INNER JOIN PE p ON p.CODIGO = ta.CDGPE 
-        WHERE ma.FECHA_MOV BETWEEN TO_TIMESTAMP('$Inicial 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('$Final 23:59:59', 'YYYY-MM-DD HH24:MI:SS') 
-        AND p.CDGEM = 'EMPFIN'
+                        WHEN MOVIMIENTO = 0 THEN 'EGRESO'
+                        ELSE 'INGRESO'
+                    END AS TIPO_MOVIMIENTO,
+                      'AHORRO CUENTA CORRIENTE' AS PRODUCTO 
+                      FROM SUC_MOVIMIENTOS_AHORRO sma 
+                    INNER JOIN SUC_ESTADO_AHORRO sea ON sea.CODIGO = sma.CDG_ESTADO_AHORRO 
+                    INNER JOIN CO c ON c.CODIGO = sea.CDG_SUCURSAL
+                    INNER JOIN PE p ON p.CODIGO = sma.CDG_USUARIO
+                    WHERE p.CDGEM = 'EMPFIN' 
+                    )	
+                UNION 
+                (
+                    SELECT 
+                        ma.MOVIMIENTO,
+                        c2.CODIGO AS CDGCO,
+                        c2.NOMBRE AS SUCURSAL,
+                        p.CODIGO AS USUARIO_CAJA,
+                        p.NOMBRE1 || ' '|| p.NOMBRE2 || ' ' || p.PRIMAPE || ' '|| p.SEGAPE AS NOMBRE_CAJERA,
+                        c.CODIGO AS CLIENTE, 
+                        (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
+                        TO_CHAR(ma.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
+                        ma.FECHA_MOV AS FECHA_MOV_FILTRO,
+                        ma.CDG_TICKET, 
+                        ma.MONTO, 
+                        tpa.DESCRIPCION AS CONCEPTO, 
+                        CASE 
+                            WHEN tpa.DESCRIPCION IN ('APERTURA DE CUENTA - INSCRIPCIÓN', 'CAPITAL INICIAL - CUENTA CORRIENTE', 'DEPOSITO', 'DEPOSITO DEVOLUCIÓN FIN INVERSIÓN CAPITAL', 'DEPOSITO INTRESES FIN INVERSIÓN') THEN 'INGRESO'
+                            WHEN tpa.DESCRIPCION IN ('RETIRO') THEN 'EGRESO'
+                            WHEN tpa.DESCRIPCION IN ('TRANSFERENCIA INVERSIÓN (ENVIO)') THEN 'EGRESO SISTEMA'
+                            ELSE 'MOVIMIENTO VIRTUAL'
+                        END AS TIPO_MOVIMIENTO,
+                        CASE 
+                            WHEN tpa.DESCRIPCION = 'TRANSFERENCIA INVERSIÓN (ENVIO)' AND pp.DESCRIPCION = 'Ahorro Corriente' THEN 'INVERSION'
+                            ELSE pp.DESCRIPCION 
+                        END AS PRODUCTO
+                    FROM MOVIMIENTOS_AHORRO ma
+                    INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
+                    INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
+                    INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
+                    INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
+                    INNER JOIN CO c2 ON c2.CODIGO = apa.CDGCO 
+                    INNER JOIN TICKETS_AHORRO ta ON ta.CODIGO = ma.CDG_TICKET 
+                    INNER JOIN PE p ON p.CODIGO = ta.CDGPE 
+                    WHERE p.CDGEM = 'EMPFIN' 
+                )
+            )
+        ) 
+        WHERE TIPO_MOVIMIENTO != 'MOVIMIENTO VIRTUAL' AND TIPO_MOVIMIENTO != 'EGRESO SISTEMA'
+        AND FECHA_MOV_FILTRO BETWEEN TO_TIMESTAMP('$Inicial 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('$Final 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+        ORDER BY CONSECUTIVO ASC
         $suc
         $pro
         $ope
         
-        ORDER BY ma.FECHA_MOV ASC
 sql;
+
+
 
         try {
             $mysqli = Database::getInstance();
