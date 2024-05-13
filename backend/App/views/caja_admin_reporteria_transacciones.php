@@ -60,10 +60,9 @@
                                 <li><a href="">
                                         <p style="font-size: 16px;"><b>Flujo Efectivo</b></p>
                                     </a></li>
-                                <li class="linea"><a href="/AdminSucursales/HistorialFondeoSucursal/">
-                                        <p style="font-size: 16px;">Historial movimientos</p>
+                                <li class="linea"><a href="/AdminSucursales/Transacciones/">
+                                        <p style="font-size: 16px;">Transacciones</p>
                                     </a></li>
-
                                 <li class="linea"><a href="/AdminSucursales/HistorialFondeoSucursal/">
                                         <p style="font-size: 16px;">Historial fondeo sucursal</p>
                                     </a></li>

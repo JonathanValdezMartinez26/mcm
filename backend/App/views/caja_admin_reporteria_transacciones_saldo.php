@@ -57,22 +57,18 @@
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
-                                <li class="linea"><a href="/AdminSucursales/Reporteria/">
-                                        <p style="font-size: 16px;">Historial de transacciones</p>
+                                <li><a href="">
+                                        <p style="font-size: 16px;"><b>Flujo Efectivo</b></p>
                                     </a></li>
-
+                                <li class="linea"><a href="/AdminSucursales/Transacciones/">
+                                        <p style="font-size: 16px;">Transacciones</p>
+                                    </a></li>
                                 <li class="linea"><a href="/AdminSucursales/HistorialFondeoSucursal/">
                                         <p style="font-size: 16px;">Historial fondeo sucursal</p>
                                     </a></li>
-
                                 <li class="linea"><a href="/AdminSucursales/HistorialRetiroSucursal/">
                                         <p style="font-size: 16px;">Historial retiro sucursal</p>
                                     </a></li>
-
-                                <li><a href="/AdminSucursales/HistorialCierreDia/">
-                                        <p style="font-size: 16px;"><b>Historial cierre día</b></p>
-                                    </a></li>
-
                             </ul>
                         </div>
                     </div>
@@ -86,19 +82,34 @@
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="Inicial">Desde *</label>
-                                                        <input type="date" class="form-control" id="Inicial" name="Inicial" value="2024-04-26">
+                                                        <input type="date" class="form-control" id="Inicial" name="Inicial" value="<?php echo $fecha_inicial;?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="Final">Hasta *</label>
-                                                        <input type="date" class="form-control" id="Final" name="Final" value="2024-04-26">
+                                                        <input type="date" class="form-control" id="Final" name="Final" value="<?php echo $fecha_final;?>">
                                                     </div>
                                                 </div>
-
                                                 <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <label for="Sucursal">Sucursal *</label>
+                                                        <label for="Operacion">Operación *</label>
+                                                        <select class="form-control" id="Operacion" name="Operacion">
+                                                            <?php echo $operacion; ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="Producto">Producto *</label>
+                                                        <select class="form-control" id="Producto" name="Producto">
+                                                            <?php echo $productos; ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="Sucursal">Sucursal activa*</label>
                                                         <select class="form-control" id="Sucursal" name="Sucursal">
                                                             <option value="0">TODAS LAS SUCURSALES</option>
                                                             <?php echo $sucursales; ?>
@@ -115,16 +126,21 @@
                                         </form>
 
                                         <br>
-                                        <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
+                                        <form name="all" id="all" method="POST">
+                                            <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
+
                                         <hr>
                                         <div class="dataTable_wrapper">
                                             <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                                 <thead>
                                                     <tr>
-                                                        <th>Datos del Cliente</th>
-                                                        <th>Detalle Transacción</th>
+                                                        <th>Cliente</th>
+                                                        <th></th>
                                                         <th>Fecha Transacción</th>
-                                                        <th>Acciones</th>
+                                                        <th>Detalle Producto</th>
+                                                        <th>Ingreso</th>
+                                                        <th>Egreso</th>
+                                                        <th>Saldo</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -132,6 +148,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

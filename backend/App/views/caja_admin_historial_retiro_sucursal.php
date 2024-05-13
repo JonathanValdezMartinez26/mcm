@@ -58,7 +58,12 @@
                         <ul class="nav navbar-nav">
                             <li class="linea">
                                 <a href="/AdminSucursales/Reporteria/">
-                                    <p style="font-size: 16px;">Historial de transacciones</p>
+                                    <p style="font-size: 16px;">Flujo Efectivo</p>
+                                </a>
+                            </li>
+                            <li class="linea">
+                                <a href="/AdminSucursales/Transacciones/">
+                                    <p style="font-size: 16px;">Transacciones</p>
                                 </a>
                             </li>
                             <li class="linea">
@@ -69,11 +74,6 @@
                             <li>
                                 <a href="/AdminSucursales/HistorialRetiroSucursal/">
                                     <p style="font-size: 16px;"><b>Historial retiro sucursal</b></p>
-                                </a>
-                            </li>
-                            <li class="linea">
-                                <a href="/AdminSucursales/HistorialCierreDia/">
-                                    <p style="font-size: 16px;">Historial cierre día</p>
                                 </a>
                             </li>
                         </ul>

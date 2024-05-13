@@ -1304,6 +1304,202 @@ html;
         View::render("caja_admin_reporteria_transacciones");
     }
 
+    public function Transacciones()
+    {
+        $extraFooter = <<<script
+        <script>
+        
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+             
+         $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+                  "lengthMenu": [
+                    [4, 50, -1],
+                    [4, 50, 'Todos'],
+                ],
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0,
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+            fecha1 = getParameterByName('Inicial');
+            fecha2 = getParameterByName('Final');
+            operacion = getParameterByName('Operacion');
+            producto = getParameterByName('Producto');
+            sucursal = getParameterByName('Sucursal');
+            
+             $("#export_excel_consulta").click(function(){
+              $('#all').attr('action', '/AdminSucursales/generarExcelPagosTransaccionesAll/?Inicial='+fecha1+'&Final='+fecha2+'&Operacion='+operacion+'&Producto='+producto+'&Sucursal='+sucursal);
+              $('#all').attr('target', '_blank');
+              $("#all").submit();
+            });
+             
+             
+        });
+        
+          
+        </script>
+script;
+
+        $fechaActual = date('Y-m-d');
+        $Inicial = $_GET['Inicial'];
+        $Final = $_GET['Final'];
+        $Operacion = $_GET['Operacion'];
+        $Producto = $_GET['Producto'];
+        $Sucursal = $_GET['Sucursal'];
+
+
+        $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro('');
+        $opcSucursales = "";
+        foreach ($sucursales as $sucursales) {
+            if ($sucursales['CODIGO'] == $Sucursal) {
+                $sel_suc = 'Selected';
+            }
+            $opcSucursales .= "<option value='{$sucursales['CODIGO']}' $sel_suc>{$sucursales['NOMBRE']} ({$sucursales['CODIGO']})</option>";
+        }
+
+
+
+        //////////////////////////////////////////////////////
+        if ($Operacion == 0 || $Operacion == '') {
+            $sel_op0 = 'Selected';
+        } else if ($Operacion == 1) {
+            $sel_op1 = 'Selected';
+        } else if ($Operacion == 2) {
+            $sel_op2 = 'Selected';
+        } else if ($Operacion == 3) {
+            $sel_op3 = 'Selected';
+        } else if ($Operacion == 4) {
+            $sel_op4 = 'Selected';
+        } else if ($Operacion == 5) {
+            $sel_op5 = 'Selected';
+        } else if ($Operacion == 6) {
+            $sel_op6 = 'Selected';
+        } else if ($Operacion == 7) {
+            $sel_op7 = 'Selected';
+        } else if ($Operacion == 8) {
+            $sel_op8 = 'Selected';
+        } else if ($Operacion == 9) {
+            $sel_op9 = 'Selected';
+        } else if ($Operacion == 10) {
+            $sel_op10 = 'Selected';
+        }
+
+
+        $opcOperaciones .= <<<html
+            <option value="0" $sel_op0>TODAS LAS OPERACIONES</option>
+            
+            
+            <option value="1" $sel_op1>APERTURA DE CUENTA - INSCRIPCIÓN</option>
+            <option value="2" $sel_op2>CAPITAL INICIAL - CUENTA CORRIENTE</option>
+            <option value="3" $sel_op3>DEPOSITO</option>
+            <option value="4" $sel_op4>RETIRO</option>
+            <option value="9" $sel_op9>TRANSFERENCIA INVERSIÓN</option>
+            <option value="10" $sel_op10>TRANSFERENCIA INVERSIÓN A AHORRO</option>
+html;
+
+
+        //////////////////////////////////////////////////////
+
+        if ($Producto == 0 || $Producto == '') {
+            $sel_pro0 = 'Selected';
+        } else if ($Producto == 1) {
+            $sel_pro1 = 'Selected';
+        } else if ($Producto == 2) {
+            $sel_pro2 = 'Selected';
+        } else if ($Producto == 3) {
+            $sel_pro3 = 'Selected';
+        }
+
+
+        $opcProductos .= <<<html
+            <option value="0" $sel_pro0>TODOS LOS PRODUCTOS</option>
+            <option value="1" $sel_pro1>AHORRO CUENTA - CORRIENTE</option>
+            <option value="2" $sel_pro2>AHORRO CUENTA - PEQUES</option>
+            <option value="3" $sel_pro3>MOVIMIENTOS DE INVERSIÓN</option>
+html;
+
+
+        if ($Inicial == '' || $Final == '') {
+            $Inicial = $fechaActual;
+            $Final = $fechaActual;
+        }
+
+        $Transacciones = CajaAhorroDao::GetAllTransacciones($Inicial, $Final, $Operacion, $Producto, $Sucursal);
+
+        $tabla = "";
+        foreach ($Transacciones as $key => $value) {
+            $monto = number_format($value['MONTO'], 2);
+            $ingreso = number_format($value['INGRESO'], 2);
+            $egreso = number_format($value['EGRESO'], 2);
+            $saldo = number_format($value['SALDO'], 2);
+
+            if ($value['CONCEPTO'] == 'TRANSFERENCIA INVERSION') {
+                $concepto = '<i class="fa fa-minus" style="color: #0000ac;"></i>';
+            } else if ($value['CONCEPTO'] == 'RETIRO') {
+                $concepto = '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
+            } else {
+                $concepto = '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
+            }
+            $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                
+                    <td style="padding: 10px !important;">
+                        
+                         <div>CODIGO CLIENTE SICAFIN: <b>{$value['CLIENTE']}</b></div>
+                         <br>
+                          <div>NOMBRE CLIENTE: <b>{$value['TITULAR_CUENTA_EJE']}</b></div>
+                    </td>
+                    
+                    <td style="padding: 10px !important;">
+                         <div style="margin-bottom: 5px;"><b>FECHA:</b> {$value['FECHA_MOV']}</div>
+                    </td>
+                    
+                    <td style="padding: 10px !important;">
+                         <div style="margin-bottom: 5px;"><b>SUCURSAL:</b> {$value['CDGCO']} - {$value['SUCURSAL']}</div>
+                         <div style="margin-bottom: 5px;"><b>USUARIO:</b> {$value['USUARIO_CAJA']}</div>
+                    </td>
+                    <td style="padding: 10px !important;">
+                        <div style="margin-bottom: 5px; font-size: 15px;">{$concepto} $ {$monto}</div>
+                        <div style="margin-bottom: 5px;"><b>CONCEPTO:</b> {$value['CONCEPTO']}</div>
+                        <div style="margin-bottom: 5px;"><b>PRODUCTO:</b> {$value['PRODUCTO']}</div>
+                    </td>
+                    <td style="padding: 10px !important;">$ {$ingreso} </td>
+                    <td style="padding: 10px !important;">$ {$egreso} </td>
+                    <td style="padding: 10px !important;">$ {$saldo} </td>
+                </tr>
+html;
+        }
+
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial de Transacciones")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha_inicial', $Inicial);
+        View::set('fecha_final', $Final);
+        view::set('sucursales', $opcSucursales);
+        view::set('productos', $opcProductos);
+        view::set('operacion', $opcOperaciones);
+        View::set('tabla', $tabla);
+        View::render("caja_admin_reporteria_transacciones_saldo");
+    }
+
+
     public function ReporteriaTransacciones()
     {
         $extraFooter = <<<script
@@ -2485,23 +2681,6 @@ script;
             $opcSucursales .= "<option value='{$sucursales['CODIGO']}'" . ($sucursales['CODIGO'] === $_SESSION['cdgco_ahorro'] ? 'Selected' : '') . ">{$sucursales['NOMBRE']} ({$sucursales['CODIGO']})</option>";
         }
         return $opcSucursales;
-    }
-
-    public function HistorialCierreDia()
-    {
-        $extraFooter = <<<script
-        <script>
-         
-        </script>
-script;
-
-
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial Cierre Día")));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('opcSucursales', $opcSucursales);
-        View::set('tabla', $tabla);
-        View::set('fecha', date('d/m/Y H:i:s'));
-        View::render("caja_admin_historial_cierre_dia");
     }
 
     public function LogConfiguracion()
