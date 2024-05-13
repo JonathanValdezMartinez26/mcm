@@ -93,13 +93,14 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <label for="Operacion">Operación *</label>
-                                                        <select class="form-control" id="Operacion" name="Operacion">
-                                                            <?php echo $operacion; ?>
+                                                        <label for="Sucursal">Sucursal activa*</label>
+                                                        <select class="form-control" id="Sucursal" name="Sucursal">
+                                                            <option value="0">TODAS LAS SUCURSALES</option>
+                                                            <?php echo $sucursales; ?>
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-5">
                                                     <div class="form-group">
                                                         <label for="Producto">Producto *</label>
                                                         <select class="form-control" id="Producto" name="Producto">
@@ -107,15 +108,16 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <label for="Sucursal">Sucursal activa*</label>
-                                                        <select class="form-control" id="Sucursal" name="Sucursal">
-                                                            <option value="0" disabled>SELECCIONA UNA SUCURSAL</option>
-                                                            <?php echo $sucursales; ?>
+                                                        <label for="Operacion">Operación *</label>
+                                                        <select class="form-control" id="Operacion" name="Operacion">
+                                                            <?php echo $operacion; ?>
                                                         </select>
                                                     </div>
                                                 </div>
+
+
 
                                                 <div class="col-md-4" style="padding-top: 25px">
                                                     <button class="btn btn-primary" onclick="getLog()">
