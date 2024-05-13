@@ -1215,10 +1215,6 @@ script;
             <option value="2" $sel_op2>CAPITAL INICIAL - CUENTA CORRIENTE</option>
             <option value="3" $sel_op3>DEPOSITO</option>
             <option value="4" $sel_op4>RETIRO</option>
-            <option value="5" $sel_op5>DEVOLUCIÓN RETIRO EXPRESS</option>
-            <option value="6" $sel_op6>DEVOLUCIÓN RETIRO PROGRAMADO</option>
-            <option value="7" $sel_op7>RETIRO EXPRESS</option>
-            <option value="8" $sel_op8>RETIRO PROGRAMADO</option>
             <option value="9" $sel_op9>TRANSFERENCIA INVERSIÓN</option>
             <option value="10" $sel_op10>TRANSFERENCIA INVERSIÓN A AHORRO</option>
 html;
@@ -1255,6 +1251,10 @@ html;
         $tabla = "";
         foreach ($Transacciones as $key => $value) {
             $monto = number_format($value['MONTO'], 2);
+            $ingreso = number_format($value['INGRESO'], 2);
+            $egreso = number_format($value['EGRESO'], 2);
+            $saldo = number_format($value['SALDO'], 2);
+
             if ($value['CONCEPTO'] == 'TRANSFERENCIA INVERSION') {
                 $concepto = '<i class="fa fa-minus" style="color: #0000ac;"></i>';
             } else if ($value['CONCEPTO'] == 'RETIRO') {
@@ -1266,19 +1266,28 @@ html;
                 <tr style="padding: 0px !important;">
                 
                     <td style="padding: 10px !important;">
-                         <div style="margin-bottom: 5px;">CONTRATO: <b>{$value['CDG_CONTRATO']}</b></div>
-                         <div>CODIGO CLIENTE SICAFIN: <b>{$value['CDGCL']}</b></div>
-                         <div><b>{$value['TITULAR_CUENTA_EJE']}</b></div>
-                         <div>SUCURSAL: <b>{$value['CDGCO']} - {$value['NOMBRE_SUCURSAL']}</b></div>
+                        
+                         <div>CODIGO CLIENTE SICAFIN: <b>{$value['CLIENTE']}</b></div>
+                         <br>
+                          <div>NOMBRE CLIENTE: <b>{$value['TITULAR_CUENTA_EJE']}</b></div>
                     </td>
                     
                     <td style="padding: 10px !important;">
-                         <div style="margin-bottom: 5px;">Producto: {$value['PRODUCTO']}</div>
-                         <div style="margin-bottom: 5px; font-size: 15px;">{$concepto} $ {$monto}</div>
-                         <div style="margin-bottom: 5px;"> <b>{$value['CONCEPTO']}</b></div>
-                          <div style=""><span class="fa fa-barcode"></span> <b>{$value['CDG_TICKET']}</b></div>
+                         <div style="margin-bottom: 5px;"><b>FECHA:</b> {$value['FECHA_MOV']}</div>
                     </td>
-                    <td style="padding: 10px !important;">{$value['FECHA_MOV']} </td>
+                    
+                    <td style="padding: 10px !important;">
+                         <div style="margin-bottom: 5px;"><b>SUCURSAL:</b> {$value['CDGCO']} - {$value['SUCURSAL']}</div>
+                         <div style="margin-bottom: 5px;"><b>USUARIO:</b> {$value['USUARIO_CAJA']}</div>
+                    </td>
+                    <td style="padding: 10px !important;">
+                        <div style="margin-bottom: 5px; font-size: 15px;">{$concepto} $ {$monto}</div>
+                        <div style="margin-bottom: 5px;"><b>CONCEPTO:</b> {$value['CONCEPTO']}</div>
+                        <div style="margin-bottom: 5px;"><b>PRODUCTO:</b> {$value['PRODUCTO']}</div>
+                    </td>
+                    <td style="padding: 10px !important;">$ {$ingreso} </td>
+                    <td style="padding: 10px !important;">$ {$egreso} </td>
+                    <td style="padding: 10px !important;">$ {$saldo} </td>
                 </tr>
 html;
         }
@@ -2735,27 +2744,15 @@ script;
         $adaptarTexto = true;
 
         $controlador = "AdminSucursales";
-
-        $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M');
-        $nombreColumna = array('CDG_CONTRATO', 'CDGCO', 'NOMBRE_SUCURSAL', 'CDGCL', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'CDG_TICKET', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
-        $nombreCampo = array('CDG_CONTRATO', 'CDGCO', 'NOMBRE_SUCURSAL', 'CDGCL', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'CDG_TICKET', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
+        $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K');
+        $nombreColumna = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
+        $nombreCampo = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
 
 
         $objPHPExcel->getActiveSheet()->SetCellValue('A' . $fila, 'Consulta de Movimientos Ahorro');
         $objPHPExcel->getActiveSheet()->mergeCells('A' . $fila . ':' . $columna[count($nombreColumna) - 1] . $fila);
         $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->applyFromArray($estilo_titulo);
         $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->getAlignment()->setWrapText($adaptarTexto);
-
-        $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K');
-        $nombreColumna = array('CDG_CONTRATO', 'CDGCL', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'CDG_TICKET', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
-        $nombreCampo = array('CDG_CONTRATO', 'CDGCL', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'CDG_TICKET', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
-
-
-        $objPHPExcel->getActiveSheet()->SetCellValue('A' . $fila, 'Consulta de Pagos Cultiva');
-        $objPHPExcel->getActiveSheet()->mergeCells('A' . $fila . ':' . $columna[count($nombreColumna) - 1] . $fila);
-        $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->applyFromArray($estilo_titulo);
-        $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->getAlignment()->setWrapText($adaptarTexto);
-
 
         $fila += 1;
 

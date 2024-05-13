@@ -58,7 +58,7 @@
                         <ul class="nav navbar-nav">
                             <li class="linea">
                                 <a href="/AdminSucursales/Reporteria/">
-                                    <p style="font-size: 16px;">Historial de transacciones</p>
+                                    <p style="font-size: 16px;">Flujo Efectivo</p>
                                 </a>
                             </li>
                             <li>

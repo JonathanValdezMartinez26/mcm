@@ -58,16 +58,17 @@
                         <div>
                             <ul class="nav navbar-nav">
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Historial de transacciones</b></p>
+                                        <p style="font-size: 16px;"><b>Flujo Efectivo</b></p>
                                     </a></li>
+                                <li class="linea"><a href="/AdminSucursales/HistorialFondeoSucursal/">
+                                        <p style="font-size: 16px;">Historial movimientos</p>
+                                    </a></li>
+
                                 <li class="linea"><a href="/AdminSucursales/HistorialFondeoSucursal/">
                                         <p style="font-size: 16px;">Historial fondeo sucursal</p>
                                     </a></li>
                                 <li class="linea"><a href="/AdminSucursales/HistorialRetiroSucursal/">
                                         <p style="font-size: 16px;">Historial retiro sucursal</p>
-                                    </a></li>
-                                <li class="linea"><a href="/AdminSucursales/HistorialCierreDia/">
-                                        <p style="font-size: 16px;">Historial cierre día</p>
                                     </a></li>
                             </ul>
                         </div>
@@ -134,9 +135,13 @@
                                             <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                                 <thead>
                                                     <tr>
-                                                        <th>Datos del Cliente</th>
-                                                        <th>Detalle Transacción</th>
+                                                        <th>Cliente</th>
+                                                        <th></th>
                                                         <th>Fecha Transacción</th>
+                                                        <th>Detalle Producto</th>
+                                                        <th>Ingreso</th>
+                                                        <th>Egreso</th>
+                                                        <th>Saldo</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
