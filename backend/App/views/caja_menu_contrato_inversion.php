@@ -190,7 +190,7 @@
                                     <h3 style="color: #000000">Resumen de movimientos</h3>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row" style="display: none!important;">
                                 <div class="col-md-8" style="display: flex; justify-content: flex-start;">
                                     <h4>Saldo actual ahorro cuenta corriente</h4>
                                 </div>

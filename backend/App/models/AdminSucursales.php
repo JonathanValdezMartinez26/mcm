@@ -517,7 +517,7 @@ sql;
             WHERE
                 CDG_CONTRATO = '$contrato'
         ) ORDER BY TO_DATE(FECHA, 'DD/MM/YYYY HH24:MI:SS') DESC, CUENTA DESC
-        sql;
+sql;
 
         try {
             $mysqli = Database::getInstance();
@@ -535,13 +535,12 @@ sql;
             SELECT
                 CODIGO, (NOMBRE1 || ' ' || NOMBRE2 || ' ' || PRIMAPE || ' ' || SEGAPE) AS EMPLEADO
             FROM
-                PE WHERE PUESTO = 'D' AND BAJA IS NULL
-            AND CDGEM = 'EMPFIN'
-            AND CDGPE = 'AMGM'
-            AND CDGPE = 'PHEE'
-            AND CDGPE = 'PAES'
-            AND CDGPE = 'PAES'
-            AND CDGPE = 'GASC'
+                PE WHERE 
+                CODIGO = 'AMGM' AND CDGEM = 'EMPFIN'
+            OR CODIGO = 'PHEE'
+            OR CODIGO = 'PAES'
+            OR CODIGO = 'PAES'
+            OR CODIGO = 'GASC'
             ORDER BY NOMBRE1 ASC
 sql;
 
@@ -606,7 +605,7 @@ sql;
             JOIN
                 CO ON CO.CODIGO = SEA.CDG_SUCURSAL
         ) ORDER BY FECHA DESC, NOMBRE
-        sql;
+sql;
 
         try {
             $mysqli = Database::getInstance();

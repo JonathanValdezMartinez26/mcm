@@ -322,7 +322,7 @@
                                     <input type="text" class="form-control" id="fecha_pago" name="fecha_pago" readonly>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-4" style="display: none!important;">
                                 <div class="form-group">
                                     <label for="contrato">Número de contrato</label>
                                     <input type="text" class="form-control" id="contrato" name="contrato" aria-describedby="contrato" readonly>
