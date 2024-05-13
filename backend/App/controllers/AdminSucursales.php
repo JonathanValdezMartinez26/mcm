@@ -1497,7 +1497,8 @@ html;
         view::set('productos', $opcProductos);
         view::set('operacion', $opcOperaciones);
         View::set('tabla', $tabla);
-        View::render("caja_admin_reporteria_transacciones_saldo");
+        View::render("trabajando");
+        //View::render("caja_admin_reporteria_transacciones_saldo");
     }
 
 
