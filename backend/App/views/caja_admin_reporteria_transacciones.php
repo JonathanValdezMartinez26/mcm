@@ -111,7 +111,7 @@
                                                     <div class="form-group">
                                                         <label for="Sucursal">Sucursal activa*</label>
                                                         <select class="form-control" id="Sucursal" name="Sucursal">
-                                                            <option value="0">TODAS LAS SUCURSALES</option>
+                                                            <option value="0" disabled>SELECCIONA UNA SUCURSAL</option>
                                                             <?php echo $sucursales; ?>
                                                         </select>
                                                     </div>

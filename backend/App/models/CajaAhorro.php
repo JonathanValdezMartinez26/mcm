@@ -1959,9 +1959,11 @@ sql;
             $pro = '';
         } else {
             if ($Producto == '3') {
-                $pro = "AND CONCEPTO = 'TRANSFERENCIA INVERSION'";
-            } else {
-                $pro = "AND pp.CODIGO = '" . $Producto . "'";
+                $pro = "AND PRODUCTO = 'TRANSFERENCIA INVERSION'";
+            } else if($Producto == '1') {
+                $pro = "AND PRODUCTO = 'AHORRO CUENTA CORRIENTE'";
+            }else if($Producto == '2') {
+                $pro = "AND PRODUCTO = 'AHORRO CUENTA PEQUE'";
             }
         }
 
@@ -2100,13 +2102,13 @@ sql;
         ) 
         WHERE TIPO_MOVIMIENTO != 'MOVIMIENTO VIRTUAL' AND TIPO_MOVIMIENTO != 'EGRESO SISTEMA'
         AND FECHA_MOV_FILTRO BETWEEN TO_TIMESTAMP('$Inicial 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('$Final 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-        ORDER BY CONSECUTIVO ASC
         $suc
         $pro
         $ope
+        ORDER BY CONSECUTIVO ASC
+        
         
 sql;
-
 
 
         try {
