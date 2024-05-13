@@ -53,15 +53,15 @@
                 <div class="modal-content">
                     <div class="modal-header" style="padding-bottom: 0px">
                         <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                            <a class="navbar-brand">Admin sucursales / Catálogo de Clientes</a>
+                            <a class="navbar-brand">Admin sucursales / Consultar reportes / Transacciones</a>
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
-                                <li><a href="">
-                                        <p style="font-size: 16px;"><b>Flujo Efectivo</b></p>
+                                <li class="linea"><a href="/AdminSucursales/Reporteria/">
+                                        <p style="font-size: 16px;">Flujo efectivo</p>
                                     </a></li>
-                                <li class="linea"><a href="/AdminSucursales/Transacciones/">
-                                        <p style="font-size: 16px;">Transacciones</p>
+                                <li><a href="">
+                                        <p style="font-size: 16px;"><b>Transacciones</b></p>
                                     </a></li>
                                 <li class="linea"><a href="/AdminSucursales/HistorialFondeoSucursal/">
                                         <p style="font-size: 16px;">Historial fondeo sucursal</p>

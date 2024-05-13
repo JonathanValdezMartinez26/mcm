@@ -53,12 +53,12 @@
                 <div class="modal-content">
                     <div class="modal-header" style="padding-bottom: 0px">
                         <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                            <a class="navbar-brand">Admin sucursales / Catálogo de Clientes</a>
+                            <a class="navbar-brand">Admin sucursales / Consultar reportes / Flujo efectivo</a>
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Flujo Efectivo</b></p>
+                                        <p style="font-size: 16px;"><b>Flujo efectivo</b></p>
                                     </a></li>
                                 <li class="linea"><a href="/AdminSucursales/Transacciones/">
                                         <p style="font-size: 16px;">Transacciones</p>
