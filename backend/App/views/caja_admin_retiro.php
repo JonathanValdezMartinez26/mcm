@@ -32,15 +32,17 @@
                     <! -- IMAGEN EN COLOR -->
                 </div>
             </a>
-            <a id="link" href="/AdminSucursales/Log/">
+
+            <a id="link" href="/AdminSucursales/Reporteria/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/10491/10491361.png" style="border-radius: 3px; padding-top: 5px" width="110" height="110" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/3201/3201495.png" style="border-radius: 3px; padding-top: 5px" width="110" height="110" />
                     <p style="font-size: 12px; padding-top: 6px; color: #000000">
-                        <b>Log Transaccional </b>
+                        <b>Consultar Reportes </b>
                     </p>
                     <! -- https://cdn-icons-png.flaticon.com/512/2761/2761118.png IMAGEN EN COLOR -->
                 </div>
             </a>
+
             <a id="link" href="/AdminSucursales/Configuracion/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf;
                         border-radius: 10px;">
@@ -51,15 +53,17 @@
                     <! -- IMAGEN EN COLOR -->
                 </div>
             </a>
-            <a id="link" href="/AdminSucursales/Reporteria/">
+
+            <a id="link" href="/AdminSucursales/Log/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/3201/3201495.png" style="border-radius: 3px; padding-top: 5px" width="110" height="110" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/10491/10491361.png" style="border-radius: 3px; padding-top: 5px" width="110" height="110" />
                     <p style="font-size: 12px; padding-top: 6px; color: #000000">
-                        <b>Consultar Reportes </b>
+                        <b>Log Transaccional </b>
                     </p>
                     <! -- https://cdn-icons-png.flaticon.com/512/2761/2761118.png IMAGEN EN COLOR -->
                 </div>
             </a>
+
         </div>
         <div class="col-md-9">
             <form id="datos" onsubmit=noSUBMIT()>
