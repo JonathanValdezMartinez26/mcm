@@ -390,28 +390,31 @@ class Ahorro extends Controller
                         const datosCliente = respuesta.datos
                         document.querySelector("#btnGeneraContrato").style.display = "none"
                         document.querySelector("#contratoOK").value = datosCliente.CONTRATO
-                        document.querySelector("#ejecutivo_comision").value = datosCliente.EJECUTIVO_COMISIONA
-                        // if (document.querySelector("#ejecutivo_comision").value === "") document.querySelector("#ejecutivo_comision").
+                        if (Array.from(document.querySelector("#ejecutivo_comision").options).some(option => option.value === datosCliente.EJECUTIVO_COMISIONA)) {
+                            document.querySelector("#ejecutivo_comision").value = datosCliente.EJECUTIVO_COMISIONA
+                        } else {
+                            document.querySelector("#ejecutivo_comision").appendChild(new Option(datosCliente.NOMBRE_EJECUTIVO_COMISIONA, "tmp", true, true))
+                        }
                          
                         if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 0) {
-                                await showInfo("La apertura del contrato no ha concluido, realice el depósito de apertura.")
-                                document.querySelector("#fecha_pago").value = getHoy()
-                                document.querySelector("#contrato").value = datosCliente.CONTRATO
-                                document.querySelector("#codigo_cl").value = datosCliente.CDGCL
-                                document.querySelector("#nombre_cliente").value = datosCliente.NOMBRE
-                                document.querySelector("#mdlCurp").value = datosCliente.CURP
-                                $("#modal_agregar_pago").modal("show")
-                                document.querySelector("#chkCreacionContrato").classList.add("green")
-                                document.querySelector("#chkCreacionContrato").classList.add("fa-check")
-                                document.querySelector("#chkCreacionContrato").classList.remove("red")
-                                document.querySelector("#chkCreacionContrato").classList.remove("fa-times")
-                                document.querySelector("#lnkContrato").style.cursor = "pointer"
-                                document.querySelector("#chkPagoApertura").classList.remove("green")
-                                document.querySelector("#chkPagoApertura").classList.remove("fa-check")
-                                document.querySelector("#chkPagoApertura").classList.add("fa-times")
-                                document.querySelector("#chkPagoApertura").classList.add("red")
-                                document.querySelector("#btnGuardar").innerText = txtGuardaPago
-                                document.querySelector("#btnGeneraContrato").style.display = "block"
+                            await showInfo("La apertura del contrato no ha concluido, realice el depósito de apertura.")
+                            document.querySelector("#fecha_pago").value = getHoy()
+                            document.querySelector("#contrato").value = datosCliente.CONTRATO
+                            document.querySelector("#codigo_cl").value = datosCliente.CDGCL
+                            document.querySelector("#nombre_cliente").value = datosCliente.NOMBRE
+                            document.querySelector("#mdlCurp").value = datosCliente.CURP
+                            $("#modal_agregar_pago").modal("show")
+                            document.querySelector("#chkCreacionContrato").classList.add("green")
+                            document.querySelector("#chkCreacionContrato").classList.add("fa-check")
+                            document.querySelector("#chkCreacionContrato").classList.remove("red")
+                            document.querySelector("#chkCreacionContrato").classList.remove("fa-times")
+                            document.querySelector("#lnkContrato").style.cursor = "pointer"
+                            document.querySelector("#chkPagoApertura").classList.remove("green")
+                            document.querySelector("#chkPagoApertura").classList.remove("fa-check")
+                            document.querySelector("#chkPagoApertura").classList.add("fa-times")
+                            document.querySelector("#chkPagoApertura").classList.add("red")
+                            document.querySelector("#btnGuardar").innerText = txtGuardaPago
+                            document.querySelector("#btnGeneraContrato").style.display = "block"
                         }
                          
                         if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 1) {
@@ -490,6 +493,9 @@ class Ahorro extends Controller
                 document.querySelector("#tasa").disabled = true
                 document.querySelector("#sucursal").disabled = true
                 document.querySelector("#contratoOK").value = ""
+                document.querySelector("#ejecutivo_comision").childNodes.forEach((option) => {
+                    if (option.value === "tmp") option.remove()
+                })
             }
             
             const generaContrato = async (e) => {
@@ -774,7 +780,7 @@ class Ahorro extends Controller
         foreach ($ejecutivos as $ejecutivos) {
             $opcEjecutivos .= "<option value='{$ejecutivos['ID_EJECUTIVO']}'>{$ejecutivos['EJECUTIVO']}</option>";
         }
-        $opcEjecutivos .= "<option value='{$this->__usuario}'>{$this->__nombre} - CAJER(A)</option>";
+        $opcEjecutivos .= "<option value='{$this->__usuario}' selected>{$this->__nombre} - CAJER(A)</option>";
 
         $parentescos = CajaAhorroDao::GetCatalogoParentescos();
         $opcParentescos = "<option value='' disabled selected>Seleccionar</option>";
