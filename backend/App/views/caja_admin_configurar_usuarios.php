@@ -89,6 +89,7 @@
                                                 <th>Nombre</th>
                                                 <th>Puesto</th>
                                                 <th>Sucursal</th>
+                                                <th>Estatus</th>
                                             </tr>
                                         </thead>
                                         <tbody>

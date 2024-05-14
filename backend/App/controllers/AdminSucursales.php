@@ -2481,12 +2481,23 @@ script;
         $userAdmin = AdminSucursalesDao::GetUsuariosAdminAhorro();
         $tabla = "";
         foreach ($userAdmin as $key => $value) {
+            if($value['ESTADO'] == 0)
+            {
+                $estatus = 'DADO DE BAJA';
+            }else if($value['ESTADO'] == 1)
+            {
+                $estatus = 'ACTIVO';
+            }else if($value['ESTADO'] == 2)
+            {
+                $estatus = 'EN ESPERA';
+            }
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 10px !important;">{$value['CODIGO']}</td>
                     <td style="padding: 10px !important;">{$value['EMPLEADO']}</td>
                     <td style="padding: 10px !important;">{$value['NOMBRE_PUESTO']}</td>
                     <td style="padding: 10px !important;">{$value['NOMBRE_SUCURSAL']} - ({$value['SUCURSAL']})</td>
+                     <td style="padding: 10px !important;">{$estatus}</td>
                    
                 </tr>
 html;
