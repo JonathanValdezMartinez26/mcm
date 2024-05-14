@@ -1793,55 +1793,55 @@ class Ahorro extends Controller
                 }
                 
                 consultaServidor("/Ahorro/BuscaClientePQ/", { cliente: noCliente.value }, (respuesta) => {
-                        if (!respuesta.success) {
-                            if (respuesta.datos) {
-                                const datosCliente = respuesta.datos
-                                if (datosCliente["NO_CONTRATOS"] == 0) {
-                                    swal({
-                                        title: "Cuenta de ahorro Peques™",
-                                        text: "El cliente " + noCliente.value + " no tiene una cuenta de ahorro.\\nDesea aperturar una cuenta de ahorro en este momento?",
-                                        icon: "info",
-                                        buttons: ["No", "Sí"],
-                                        dangerMode: true
-                                    }).then((abreCta) => {
-                                        if (abreCta) return window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente.value
-                                    })
-                                    return
-                                }
-                                if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
-                                    swal({
-                                        title: "Cuenta de ahorro Peques™",
-                                        text: "El cliente " + noCliente.value + " no ha completado el proceso de apertura de la cuenta de ahorro.\\nDesea completar el proceso en este momento?",
-                                        icon: "info",
-                                        buttons: ["No", "Sí"],
-                                        dangerMode: true
-                                    }).then((abreCta) => {
-                                        if (abreCta) return window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente.value
-                                    })
-                                    return
-                                }
+                    if (!respuesta.success) {
+                        if (respuesta.datos) {
+                            const datosCliente = respuesta.datos
+                            if (datosCliente["NO_CONTRATOS"] == 0) {
+                                swal({
+                                    title: "Cuenta de ahorro Peques™",
+                                    text: "El cliente " + noCliente.value + " no tiene una cuenta de ahorro.\\nDesea aperturar una cuenta de ahorro en este momento?",
+                                    icon: "info",
+                                    buttons: ["No", "Sí"],
+                                    dangerMode: true
+                                }).then((abreCta) => {
+                                    if (abreCta) return window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente.value
+                                })
+                                return
                             }
-                             
-                            limpiaDatosCliente()
-                            return showError(respuesta.mensaje)
+                            if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
+                                swal({
+                                    title: "Cuenta de ahorro Peques™",
+                                    text: "El cliente " + noCliente.value + " no ha completado el proceso de apertura de la cuenta de ahorro.\\nDesea completar el proceso en este momento?",
+                                    icon: "info",
+                                    buttons: ["No", "Sí"],
+                                    dangerMode: true
+                                }).then((abreCta) => {
+                                    if (abreCta) return window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + noCliente.value
+                                })
+                                return
+                            }
                         }
-                         
-                        const datosCliente = respuesta.datos
-                         
-                        document.querySelector("#nombre1").disabled = false
-                        document.querySelector("#nombre2").disabled = false
-                        document.querySelector("#apellido1").disabled = false
-                        document.querySelector("#apellido2").disabled = false
-                        document.querySelector("#fecha_nac").disabled = false
-                        document.querySelector("#ciudad").disabled = false
-                        document.querySelector("#curp").disabled = false
-                         
-                        document.querySelector("#fechaRegistro").value = datosCliente.FECHA_REGISTRO
-                        document.querySelector("#noCliente").value = noCliente.value
-                        document.querySelector("#nombre").value = datosCliente.NOMBRE
-                        document.querySelector("#direccion").value = datosCliente.DIRECCION
-                        noCliente.value = ""
-                    })
+                            
+                        limpiaDatosCliente()
+                        return showError(respuesta.mensaje)
+                    }
+                        
+                    const datosCliente = respuesta.datos
+                        
+                    document.querySelector("#nombre1").disabled = false
+                    document.querySelector("#nombre2").disabled = false
+                    document.querySelector("#apellido1").disabled = false
+                    document.querySelector("#apellido2").disabled = false
+                    document.querySelector("#fecha_nac").disabled = false
+                    document.querySelector("#ciudad").disabled = false
+                    document.querySelector("#curp").disabled = false
+                        
+                    document.querySelector("#fechaRegistro").value = datosCliente.FECHA_REGISTRO
+                    document.querySelector("#noCliente").value = noCliente.value
+                    document.querySelector("#nombre").value = datosCliente.NOMBRE
+                    document.querySelector("#direccion").value = datosCliente.DIRECCION
+                    noCliente.value = ""
+                })
             }
              
             const limpiaDatosCliente = () => {
@@ -1981,7 +1981,8 @@ class Ahorro extends Controller
                         document.querySelector("#curp").value,
                         document.querySelector("#edad").value,
                         document.querySelector("#direccion").value,
-                        document.querySelector("#confirmaDir").checked
+                        document.querySelector("#confirmaDir").checked,
+                        document.querySelector("#edad").value <= 17
                     ]
                     
                     return campos.every((campo) => campo)
@@ -2002,6 +2003,10 @@ class Ahorro extends Controller
                 if (mesActual < mesNacimiento || (mesActual === mesNacimiento && diaActual < diaNacimiento)) edad--
                  
                 document.querySelector("#edad").value = edad
+                if (edad > 17) {
+                    document.querySelector("#edad").setAttribute("style", "color: red")
+                    showError("El peque a registrar debe tener menos de 18 años.")
+                } else document.querySelector("#edad").removeAttribute("style")
             }
         </script>
         html;
@@ -2138,20 +2143,16 @@ class Ahorro extends Controller
                     })
                         
                     document.querySelector("#contrato").appendChild(contratos)
-                    document.querySelector("#contrato").selectedIndex = 0
-                    document.querySelector("#contrato").disabled = false
-                    document.querySelector("#contrato").addEventListener("change", (e) => {
-                        datosCliente.forEach(contrato => {
-                            if (contrato.CDG_CONTRATO == e.target.value) {
-                                document.querySelector("#nombre").value = contrato.CDG_CONTRATO
-                                document.querySelector("#curp").value = contrato.CURP
-                                document.querySelector("#cliente").value = contrato.CDGCL
-                                document.querySelector("#saldoActual").value = formatoMoneda(contrato.SALDO)
-                                document.querySelector("#deposito").disabled = false
-                                document.querySelector("#retiro").disabled = false
-                            }
+                    if (document.querySelector("#contrato").options.length == 2) {
+                        document.querySelector("#contrato").selectedIndex = 1
+                        pqSeleccionado(datosCliente, document.querySelector("#contrato").value)
+                    } else {
+                        document.querySelector("#contrato").selectedIndex = 0
+                        document.querySelector("#contrato").disabled = false
+                        document.querySelector("#contrato").addEventListener("change", (e) => {
+                            pqSeleccionado(datosCliente, e.target.value)
                         })
-                    })
+                    }
                     
                     if (document.querySelector("#contratoSel").value !== "") {
                         document.querySelector("#contrato").selectedIndex = document.querySelector("#contratoSel").value
@@ -2161,6 +2162,19 @@ class Ahorro extends Controller
                     }
                      
                     document.querySelector("#clienteBuscado").value = ""
+                })
+            }
+             
+            const pqSeleccionado = (datosCliente, pq) => {
+                datosCliente.forEach(contrato => {
+                    if (contrato.CDG_CONTRATO == pq) {
+                        document.querySelector("#nombre").value = contrato.CDG_CONTRATO
+                        document.querySelector("#curp").value = contrato.CURP
+                        document.querySelector("#cliente").value = contrato.CDGCL
+                        document.querySelector("#saldoActual").value = formatoMoneda(contrato.SALDO)
+                        document.querySelector("#deposito").disabled = false
+                        document.querySelector("#retiro").disabled = false
+                    }
                 })
             }
              
@@ -3688,17 +3702,8 @@ class Ahorro extends Controller
 
     public function EdoCta()
     {
-        $msjError = "";
-        $msjError .= !isset($_GET['cliente']) ? "No se proporcionó un número de cliente.<br>" : "";
-        $msjError .= !isset($_GET['fInicio']) ? "No se proporcionó una fecha de inicio.<br>" : "";
-        $msjError .= !isset($_GET['fFin']) ? "No se proporcionó una fecha de fin.<br>" : "";
-        $fi = DateTime::createFromFormat('d/m/Y', $_GET['fInicio']);
-        $ff = DateTime::createFromFormat('d/m/Y', $_GET['fFin']);
-        $msjError .= !$fi ? "La fecha de inicio no es válida.<br>" : "";
-        $msjError .= !$ff ? "La fecha de final no es válida.<br>" : "";
-        $msjError .= ($fi > $ff) ? "La fecha de inicio no puede ser mayor a la fecha de final.<br>" : "";
-        if ($msjError) {
-            echo $msjError;
+        if (!isset($_GET['cliente'])) {
+            echo "No se especificó el cliente para generar el estado de cuenta.";
             return;
         }
 
@@ -3708,8 +3713,20 @@ class Ahorro extends Controller
             return;
         }
 
-        $fInicio = $_GET['fInicio'] ?? date('d/m/Y', strtotime('-1 month'));
+        $fInicio = $_GET['fInicio'] ?? $dtsGrls['FECHA_APERTURA'];
         $fFin = $_GET['fFin'] ?? date('d/m/Y');
+        $segmento = $_GET['segmento'] ?? 0;
+
+        $fi = DateTime::createFromFormat('d/m/Y', $fInicio);
+        $ff = DateTime::createFromFormat('d/m/Y', $fFin);
+        $msjError = !($fi && $fi->format('d/m/Y') === $fInicio) ? "La fecha de inicio no es válida.<br>" : "";
+        $msjError .= !($ff && $ff->format('d/m/Y') === $fFin) ? "La fecha de final no es válida.<br>" : "";
+        $msjError .= ($fi > $ff) ? "La fecha de inicio no puede ser mayor a la fecha de final.<br>" : "";
+        if ($msjError) {
+            echo $msjError;
+            return;
+        }
+
 
         $estilo = <<<css
         <style>
@@ -3790,9 +3807,9 @@ class Ahorro extends Controller
             </div>
         html;
 
-        $cuerpo .= self::TablaMovimientosAhorro($dtsGrls['CONTRATO'], $_GET['fInicio'], $_GET['fFin']);
-        $cuerpo .= self::TablaMovimientosInversion($dtsGrls['CONTRATO']);
-        $cuerpo .= self::TablaMovimientosPeque($_GET['cliente'], $_GET['fInicio'], $_GET['fFin']);
+        if ($segmento == 0 || $segmento == 1) $cuerpo .= self::TablaMovimientosAhorro($dtsGrls['CONTRATO'], $fInicio, $fFin);
+        if ($segmento == 0 || $segmento == 2) $cuerpo .= self::TablaMovimientosInversion($dtsGrls['CONTRATO']);
+        if ($segmento == 0 || $segmento == 3) $cuerpo .= self::TablaMovimientosPeque($_GET['cliente'], $fInicio, $fFin);
 
         $cuerpo .= <<<html
             <div class="notices">

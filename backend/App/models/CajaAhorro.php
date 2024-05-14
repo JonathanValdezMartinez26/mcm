@@ -1684,6 +1684,7 @@ class CajaAhorro
             SELECT
                 CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
                 CL.CODIGO AS CLIENTE,
+                TO_CHAR(APA.FECHA_APERTURA, 'DD/MM/YYYY') AS FECHA_APERTURA,
                 APA.CONTRATO,
                 APA.SALDO
             FROM

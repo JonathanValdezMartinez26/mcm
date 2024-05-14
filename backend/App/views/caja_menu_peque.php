@@ -219,7 +219,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12" style="display: flex; justify-content: center; color: red; height: 30px;">
-                                                    <label id="tipSaldo" style="opacity:0; font-size: 18px;">No se puede realizar un retirar mayor al saldo disponible.</label>
+                                                    <label id="tipSaldo" style="opacity:0; font-size: 18px;">No se puede realizar un retiro mayor al saldo disponible.</label>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">

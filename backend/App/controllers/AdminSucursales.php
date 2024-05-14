@@ -170,6 +170,43 @@ class AdminSucursales extends Controller
     private $addParametro = 'const addParametro = (parametros, newParametro, newValor) => {
         parametros.push({ name: newParametro, value: newValor })
     }';
+    private $sinContrato = <<<script
+    const sinContrato = (datosCliente) => {
+        if (datosCliente["NO_CONTRATOS"] == 0) {
+            swal({
+                title: "Cuenta de ahorro corriente",
+                text: "El cliente " + datosCliente['CDGCL'] + " no tiene una cuenta de ahorro.\\n¿Desea aperturar una cuenta de ahorro en este momento?",
+                icon: "info",
+                buttons: ["No", "Sí"],
+                dangerMode: true
+            }).then((abreCta) => {
+                if (abreCta) {
+                    window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + datosCliente['CDGCL']
+                    return
+                }
+            })
+            return false
+        }
+        const msj2 = (typeof mEdoCta !== 'undefined') ? "No podemos generar un estado de cuenta para el cliente  " + datosCliente['CDGCL'] + ", porque este no ha concluido con su proceso de apertura de la cuenta de ahorro corriente.\\n¿Desea completar el proceso en este momento?" 
+        : "El cliente " + datosCliente['CDGCL'] + " no ha completado el proceso de apertura de la cuenta de ahorro.\\n¿Desea completar el proceso en este momento?"
+        if (datosCliente["NO_CONTRATOS"] == 1 && datosCliente["CONTRATO_COMPLETO"] == 0) {
+            swal({
+                title: "Cuenta de ahorro corriente",
+                text: msj2,
+                icon: "info",
+                buttons: ["No", "Sí"],
+                dangerMode: true
+            }).then((abreCta) => {
+                if (abreCta) {
+                    window.location.href = "/Ahorro/ContratoCuentaCorriente/?cliente=" + datosCliente['CDGCL']
+                    return
+                }
+            })
+            return false
+        }
+        return true
+    }
+    script;
     private $buscaCliente = 'const buscaCliente = (t) => {
         document.querySelector("#btnBskClnt").disabled = true
         const noCliente = document.querySelector("#clienteBuscado").value
@@ -945,6 +982,7 @@ class AdminSucursales extends Controller
             {$this->validarYbuscar}
             {$this->primeraMayuscula}
             {$this->addParametro}
+            {$this->sinContrato}
             {$this->buscaCliente}
             {$this->parseaNumero}
             {$this->formatoMoneda}
@@ -1033,10 +1071,11 @@ class AdminSucursales extends Controller
                 const host = window.location.origin
                 const fInicio = "01/01/2024" // getFecha(document.querySelector("#fechaInicio").value)
                 const fFin = new Date().toLocaleDateString("es-MX", { year: "numeric", month:"2-digit", day:"2-digit" }) // getFecha(document.querySelector("#fechaFin").value)
+                const segmmeto = document.querySelector("#segmento").value
+                
                 const url = host + '/Ahorro/EdoCta/?'
                 + 'cliente=' + infoCliente.CDGCL
-                + '&fInicio=' + fInicio
-                + '&fFin=' + fFin
+                + '&segmento=' + segmmeto
                  
                 muestraPDF("Resumen de Cuenta", url)
             }
