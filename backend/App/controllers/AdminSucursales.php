@@ -1372,6 +1372,10 @@ script;
             if ($sucursales['CODIGO'] == $Sucursal) {
                 $sel_suc = 'Selected';
             }
+            else
+            {
+                $sel_suc = '';
+            }
             $opcSucursales .= "<option value='{$sucursales['CODIGO']}' $sel_suc>{$sucursales['NOMBRE']} ({$sucursales['CODIGO']})</option>";
         }
 
@@ -1404,15 +1408,13 @@ script;
 
 
         $opcOperaciones .= <<<html
-            <option value="0" $sel_op0>TODAS LAS OPERACIONES</option>
+            <option value="0" $sel_op0>TODAS LAS OPERACIONES CON EFECTIVO</option>
             
             
             <option value="1" $sel_op1>APERTURA DE CUENTA - INSCRIPCIÓN</option>
             <option value="2" $sel_op2>CAPITAL INICIAL - CUENTA CORRIENTE</option>
             <option value="3" $sel_op3>DEPOSITO</option>
             <option value="4" $sel_op4>RETIRO</option>
-            <option value="9" $sel_op9>TRANSFERENCIA INVERSIÓN</option>
-            <option value="10" $sel_op10>TRANSFERENCIA INVERSIÓN A AHORRO</option>
 html;
 
 
@@ -1430,10 +1432,9 @@ html;
 
 
         $opcProductos .= <<<html
-            <option value="0" $sel_pro0>TODOS LOS PRODUCTOS</option>
+            <option value="0" $sel_pro0>TODOS LOS PRODUCTOS QUE MANEJAN EFECTIVO</option>
             <option value="1" $sel_pro1>AHORRO CUENTA - CORRIENTE</option>
             <option value="2" $sel_pro2>AHORRO CUENTA - PEQUES</option>
-            <option value="3" $sel_pro3>MOVIMIENTOS DE INVERSIÓN</option>
 html;
 
 
@@ -1442,7 +1443,7 @@ html;
             $Final = $fechaActual;
         }
 
-        $Transacciones = CajaAhorroDao::GetAllTransacciones($Inicial, $Final, $Operacion, $Producto, $Sucursal);
+        $Transacciones = CajaAhorroDao::GetAllTransaccionesDetalle($Inicial, $Final, $Operacion, $Producto, $Sucursal);
 
         $tabla = "";
         foreach ($Transacciones as $key => $value) {
@@ -1461,6 +1462,17 @@ html;
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                 
+                   <td style="padding: 10px !important;">
+                         <div style="margin-bottom: 5px;"><b>FECHA:</b> {$value['FECHA_MOV']}</div>
+                         <div style="margin-bottom: 5px;"><b>TRANSACCION:</b> {$value['FECHA_MOV']}</div>
+                    </td>
+                    
+                    <td style="padding: 10px !important;">
+                         <div style="margin-bottom: 5px;"><b>SUCURSAL:</b> {$value['CDGCO']} - {$value['SUCURSAL']}</div>
+                         <div style="margin-bottom: 5px;"><b>USUARIO:</b> {$value['USUARIO_CAJA']}</div>
+                          <div style="margin-bottom: 5px;"><b>FECHA LARGA:</b> {$value['FECHA_MOV']}</div>
+                    </td>
+                    
                     <td style="padding: 10px !important;">
                         
                          <div>CODIGO CLIENTE SICAFIN: <b>{$value['CLIENTE']}</b></div>
@@ -1468,14 +1480,9 @@ html;
                           <div>NOMBRE CLIENTE: <b>{$value['TITULAR_CUENTA_EJE']}</b></div>
                     </td>
                     
-                    <td style="padding: 10px !important;">
-                         <div style="margin-bottom: 5px;"><b>FECHA:</b> {$value['FECHA_MOV']}</div>
-                    </td>
+                   
                     
-                    <td style="padding: 10px !important;">
-                         <div style="margin-bottom: 5px;"><b>SUCURSAL:</b> {$value['CDGCO']} - {$value['SUCURSAL']}</div>
-                         <div style="margin-bottom: 5px;"><b>USUARIO:</b> {$value['USUARIO_CAJA']}</div>
-                    </td>
+                    
                     <td style="padding: 10px !important;">
                         <div style="margin-bottom: 5px; font-size: 15px;">{$concepto} $ {$monto}</div>
                         <div style="margin-bottom: 5px;"><b>CONCEPTO:</b> {$value['CONCEPTO']}</div>
@@ -1497,8 +1504,7 @@ html;
         view::set('productos', $opcProductos);
         view::set('operacion', $opcOperaciones);
         View::set('tabla', $tabla);
-        View::render("trabajando");
-        //View::render("caja_admin_reporteria_transacciones_saldo");
+        View::render("caja_admin_reporteria_transacciones_saldo");
     }
 
 
