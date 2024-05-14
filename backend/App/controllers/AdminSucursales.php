@@ -727,6 +727,7 @@ class AdminSucursales extends Controller
             {$this->consultaServidor}
             {$this->configuraTabla}
             {$this->parseaNumero}
+            {$this->addParametro}
          
             $(document).ready(configuraTabla("sucursalesActivas"))
          
@@ -806,9 +807,12 @@ class AdminSucursales extends Controller
             }
              
             const activarSucursal = () => {
+                const datos = $("#datos").serializeArray()
+                addParametro(datos, "usuario", '{$_SESSION["usuario"]}')
+                 
                 consultaServidor(
                         "/AdminSucursales/ActivarSucursal/",
-                        $("#datos").serialize(),
+                        datos,
                         (res) => {
                             if (!res.success) return showError(res.mensaje)                            
                             showSuccess(res.mensaje).then(() => {
@@ -1175,9 +1179,7 @@ script;
         foreach ($sucursales as $sucursales) {
             if ($sucursales['CODIGO'] == $Sucursal) {
                 $sel_suc = 'Selected';
-            }
-            else
-            {
+            } else {
                 $sel_suc = '';
             }
             $opcSucursales .= "<option value='{$sucursales['CODIGO']}' $sel_suc>{$sucursales['NOMBRE']} ({$sucursales['CODIGO']})</option>";
@@ -2481,14 +2483,11 @@ script;
         $userAdmin = AdminSucursalesDao::GetUsuariosAdminAhorro();
         $tabla = "";
         foreach ($userAdmin as $key => $value) {
-            if($value['ESTADO'] == 0)
-            {
+            if ($value['ESTADO'] == 0) {
                 $estatus = 'DADO DE BAJA';
-            }else if($value['ESTADO'] == 1)
-            {
+            } else if ($value['ESTADO'] == 1) {
                 $estatus = 'ACTIVO';
-            }else if($value['ESTADO'] == 2)
-            {
+            } else if ($value['ESTADO'] == 2) {
                 $estatus = 'EN ESPERA';
             }
             $tabla .= <<<html

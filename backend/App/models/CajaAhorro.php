@@ -329,6 +329,15 @@ class CajaAhorro
             UPPER(DOMICILIO_CLIENTE(CL.CODIGO)) AS DIRECCION,
             (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1) AS CONTRATO,
             NVL((SELECT SALDO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1), 0) AS SALDO,
+            (SELECT CDGPE_COMISIONA FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1) AS EJECUTIVO_COMISIONA,
+            (
+                SELECT
+                    CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE)
+                FROM
+                    PE
+                WHERE
+                    PE.CODIGO = (SELECT CDGPE_COMISIONA FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1)
+            ) AS NOMBRE_EJECUTIVO_COMISIONA,
             CL.CODIGO AS CDGCL,
             (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1) AS CONTRATO,
             NVL(
@@ -1960,9 +1969,9 @@ sql;
         } else {
             if ($Producto == '3') {
                 $pro = "AND PRODUCTO = 'TRANSFERENCIA INVERSION'";
-            } else if($Producto == '1') {
+            } else if ($Producto == '1') {
                 $pro = "AND PRODUCTO = 'AHORRO CUENTA CORRIENTE'";
-            }else if($Producto == '2') {
+            } else if ($Producto == '2') {
                 $pro = "AND PRODUCTO = 'AHORRO CUENTA PEQUE'";
             }
         }

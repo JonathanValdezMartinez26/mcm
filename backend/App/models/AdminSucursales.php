@@ -184,7 +184,7 @@ sql;
     {
         $qrySuc = <<<sql
         INSERT INTO SUC_ESTADO_AHORRO
-            (CODIGO, CDG_SUCURSAL, FECHA_REGISTRO, MODIFICACION, ESTATUS, SALDO, SALDO_MINIMO, SALDO_MAXIMO, SALDO_INICIAL)
+            (CODIGO, CDG_SUCURSAL, FECHA_REGISTRO, MODIFICACION, ESTATUS, SALDO, SALDO_MINIMO, SALDO_MAXIMO, SALDO_INICIAL, CDGPE_REGISTRO)
         VALUES
             (
                 (SELECT NVL(MAX(TO_NUMBER(CODIGO)), 0) FROM SUC_ESTADO_AHORRO) + 1,
@@ -195,19 +195,21 @@ sql;
                 :saldo,
                 :minimo,
                 :maximo,
-                :saldo
+                :saldo,
+                :usuario
             )
         sql;
 
         $qryCaj = <<<sql
         INSERT INTO SUC_CAJERA_AHORRO
-            (CDG_ESTADO_AHORRO, CDG_USUARIO, HORA_APERTURA, HORA_CIERRE)
+            (CDG_ESTADO_AHORRO, CDG_USUARIO, HORA_APERTURA, HORA_CIERRE, CDGPE_REGISTRO)
         VALUES
             (
                 (SELECT MAX(TO_NUMBER(CODIGO)) FROM SUC_ESTADO_AHORRO),
                 :cajera,
                 :apertura,
-                :cierre
+                :cierre,
+                :usuario
             )
         sql;
 
@@ -221,12 +223,14 @@ sql;
                 "sucursal" => $datos['sucursal'],
                 "saldo" => $datos['saldo'],
                 "minimo" => $datos['montoMin'],
-                "maximo" => $datos['montoMax']
+                "maximo" => $datos['montoMax'],
+                "usuario" => $datos['usuario']
             ],
             [
                 "cajera" => $datos['cajera'],
                 "apertura" => $datos['horaA'],
-                "cierre" => $datos['horaC']
+                "cierre" => $datos['horaC'],
+                "usuario" => $datos['usuario']
             ]
         ];
 
