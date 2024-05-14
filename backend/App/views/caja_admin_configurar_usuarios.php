@@ -73,11 +73,12 @@
                     </div>
                     <div class="modal-body">
                         <div class="container-fluid">
-                            <div class="row">
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_horario">
-                                    <i class="fa fa-plus"></i> Nuevo Usuario
-                                </button>
-                                <hr style="border-top: 1px solid #787878; margin-top: 5px;">
+                           <div class="row">
+                               <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_horario">
+                                  <i class="fa fa-plus"></i> Nuevo Usuario
+                              </button>-->
+                               <p>Los usuarios que aqui se muestran tienen acceso al modulo de ahorro en la version <b>ADMINISTRADOR</b>, si desea asignar un nuevo usuario realice un soporte al área de desarrollo. </p>
+                               <hr style=" margin-top: 5px;">
                             </div>
                             <div class="row">
                                 <div class="dataTable_wrapper">
@@ -88,7 +89,6 @@
                                                 <th>Nombre</th>
                                                 <th>Puesto</th>
                                                 <th>Sucursal</th>
-                                                <th>Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>

@@ -2446,8 +2446,8 @@ html;
             $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
                   "lengthMenu": [
-                    [6, 50, -1],
-                    [6, 50, 'Todos'],
+                    [10, 50, -1],
+                    [10, 50, 'Todos'],
                 ],
                 "columnDefs": [{
                     "orderable": false,
@@ -2476,33 +2476,24 @@ html;
         </script>
 script;
 
-        $empleados = AdminSucursalesDao::GetUsuariosActivos();
-        $opcEmpleados = "<option value='0' disabled selected>Seleccione una opción</option>";
-        foreach ($empleados as $key => $val2) {
-            $opcEmpleados .= "<option  value='" . $val2['CODIGO'] . "'>" . $val2['EMPLEADO'] . "</option>";
-        }
 
-        $sucActivas = AdminSucursalesDao::GetSucursalesActivas();
+
+        $userAdmin = AdminSucursalesDao::GetUsuariosAdminAhorro();
         $tabla = "";
-        foreach ($sucActivas as $key => $val) {
+        foreach ($userAdmin as $key => $value) {
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;"></td>
-                    <td style="padding: 0px !important;"></td>
-                    <td style="padding: 0px !important;"></td>
-                    <td style="padding: 0px !important;"></td>
-                    
-                    <td style="padding: 0px !important;">  
-                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
-                    </td>
+                    <td style="padding: 10px !important;">{$value['CODIGO']}</td>
+                    <td style="padding: 10px !important;">{$value['EMPLEADO']}</td>
+                    <td style="padding: 10px !important;">{$value['NOMBRE_PUESTO']}</td>
+                    <td style="padding: 10px !important;">{$value['NOMBRE_SUCURSAL']} - ({$value['SUCURSAL']})</td>
+                   
                 </tr>
 html;
         }
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Configuración de Caja Usuarios")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('opcEmpleados', $opcEmpleados);
         View::set('tabla', $tabla);
         View::render("caja_admin_configurar_usuarios");
     }

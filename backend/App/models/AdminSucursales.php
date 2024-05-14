@@ -536,12 +536,37 @@ sql;
                 CODIGO, (NOMBRE1 || ' ' || NOMBRE2 || ' ' || PRIMAPE || ' ' || SEGAPE) AS EMPLEADO
             FROM
                 PE WHERE 
-                CODIGO = 'AMGM' AND CDGEM = 'EMPFIN'
-            OR CODIGO = 'PHEE'
-            OR CODIGO = 'PAES'
-            OR CODIGO = 'PAES'
-            OR CODIGO = 'GASC'
+                CDGEM = 'EMPFIN'
             ORDER BY NOMBRE1 ASC
+sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryAll($query);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    public static function GetUsuariosAdminAhorro()
+    {
+        $query = <<<sql
+        SELECT * FROM (SELECT ppa.ID_PERMISO_PERFIL_AHORRO, p.CODIGO, (p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE) AS EMPLEADO,
+        ppa.NOMBRE_PUESTO, ppa.CDGCO AS SUCURSAL, 'TODAS LAS SUCURSALES' AS NOMBRE_SUCURSAL  
+        FROM PE p 
+        INNER JOIN PERMISOS_PERFIL_AHORRO ppa ON ppa.CDGPE = P.CODIGO 
+        WHERE p.CDGEM = 'EMPFIN'
+        AND ppa.CDGCO = '000'
+        
+        UNION 
+        
+        SELECT ppa.ID_PERMISO_PERFIL_AHORRO, p.CODIGO, (p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE) AS EMPLEADO,
+        ppa.NOMBRE_PUESTO, ppa.CDGCO AS SUCURSAL, c.NOMBRE AS NOMBRE_SUCURSAL 
+        FROM PE p 
+        INNER JOIN PERMISOS_PERFIL_AHORRO ppa ON ppa.CDGPE = P.CODIGO 
+        INNER JOIN CO c ON c.CODIGO = ppa.CDGCO
+        WHERE p.CDGEM = 'EMPFIN')
+        ORDER BY ID_PERMISO_PERFIL_AHORRO
 sql;
 
         try {
