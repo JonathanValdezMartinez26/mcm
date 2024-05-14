@@ -55,6 +55,17 @@
                     <input class="form-control" id="montoTrn" name="montoTrn" value="$<?= number_format($montoTransferencias, 2, '.', ','); ?>" disabled>
                 </div>
             </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="montoTrn">Segmento</label>
+                    <select class="form-control" id="segmento" name="segmento" disabled>
+                        <option value="0">Todos</option>
+                        <option value="1">Ahorro</option>
+                        <option value="2">Inversión</option>
+                        <option value="3">Peques</option>
+                    </select>
+                </div>
+            </div>
         </div>
         <hr>
         <div class="row">

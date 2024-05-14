@@ -154,6 +154,8 @@ class CajaAhorro
             TI.TASA,
             TI.MONTO_MINIMO,
             TI.CDG_PLAZO,
+            PI.PLAZO AS PLAZO_NUMERO,
+            PI.PERIODICIDAD,
             CONCAT(
                 CONCAT(PI.PLAZO, ' '),
                 CASE PI.PERIODICIDAD
@@ -2170,9 +2172,9 @@ sql;
         } else {
             if ($Producto == '3') {
                 $pro = "AND PRODUCTO = 'TRANSFERENCIA INVERSION'";
-            } else if($Producto == '1') {
+            } else if ($Producto == '1') {
                 $pro = "AND PRODUCTO = 'AHORRO CUENTA CORRIENTE'";
-            }else if($Producto == '2') {
+            } else if ($Producto == '2') {
                 $pro = "AND PRODUCTO = 'AHORRO CUENTA PEQUE'";
             }
         }

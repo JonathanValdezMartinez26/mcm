@@ -286,7 +286,7 @@ class Ahorro extends Controller
         })
     }';
     private $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/[^0-9.-]/g, "")) || 0';
-    private $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { minimumFractionDigits: 2 })';
+    private $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })';
     private $limpiaMontos = 'const limpiaMontos = (datos, campos = []) => {
         datos.forEach(dato => {
             if (campos.includes(dato.name)) {
@@ -1539,11 +1539,13 @@ class Ahorro extends Controller
             }
              
             const cambioPlazo = () => {
-                const plazo = document.querySelector("#plazo").value
-                const tasa = tasasDisponibles.find(tasa => tasa.CODIGO == plazo)
+                const info = tasasDisponibles.find(tasa => tasa.CODIGO == document.querySelector("#plazo").value)
+                const plazo = parseaNumero(info.PLAZO_NUMERO)
+                const tasa = parseaNumero(info.TASA)     // MONTO * PLAZO *((TASA/100)/12)
+                const monto = parseaNumero(document.querySelector("#monto").value) 
                 if (tasa) {
-                    document.querySelector("#rendimiento").value = formatoMoneda(parseaNumero(document.querySelector("#monto").value) * parseaNumero(tasa.TASA) / 100)
-                    document.querySelector("#leyendaRendimiento").innerText = "* Rendimiento calculado con una tasa anual fija del " + tasa.TASA + "%"
+                    document.querySelector("#rendimiento").value = formatoMoneda(monto * plazo * ((tasa/100) / 12))
+                    document.querySelector("#leyendaRendimiento").innerText = "* Rendimiento calculado con una tasa anual fija del " + info.TASA + "%"
                     return
                 }
                  
