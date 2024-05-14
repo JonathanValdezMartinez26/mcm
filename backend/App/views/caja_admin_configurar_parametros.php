@@ -54,20 +54,20 @@
                 <div class="modal-content">
                     <div class="modal-header" style="padding-bottom: 0px">
                         <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                            <a class="navbar-brand">Admin sucursales / Configuración de Módulo para Ahorro</a>
+                            <a class="navbar-brand">Admin sucursales / Configuración de módulo para Ahorro / Parametros de operacion</a>
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
                                 <li class="linea"><a href="/AdminSucursales/Configuracion/">
-                                        <p style="font-size: 15px;">Activar Modulo en Sucursal</p>
+                                        <p style="font-size: 15px;">Activar modulo en sucursal</p>
                                     </a></li>
 
                                 <li class="linea"><a href="/AdminSucursales/ConfiguracionUsuarios/">
-                                        <p style="font-size: 15px;">Permisos a Usuarios</p>
+                                        <p style="font-size: 15px;">Permisos a usuarios</p>
                                     </a></li>
 
                                 <li><a href="">
-                                        <p style="font-size: 16px;"><b>Parámetros de Operación </b></p>
+                                        <p style="font-size: 16px;"><b>Parámetros de operación </b></p>
                                     </a></li>
                             </ul>
                         </div>

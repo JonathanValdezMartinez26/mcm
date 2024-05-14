@@ -56,7 +56,7 @@
                 <div class="modal-content">
                     <div class="modal-header" style="padding-bottom: 0px">
                         <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                            <a class="navbar-brand">Admin sucursales / Configuración de Módulo para Ahorro</a>
+                            <a class="navbar-brand">Admin sucursales / Configuración de módulo para Ahorro / Activar modulo en sucursal</a>
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
