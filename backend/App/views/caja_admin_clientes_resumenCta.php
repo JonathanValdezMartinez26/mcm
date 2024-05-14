@@ -58,13 +58,16 @@
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="montoTrn">Segmento</label>
-                    <select class="form-control" id="segmento" name="segmento" disabled>
+                    <select class="form-control" id="segmento" name="segmento">
                         <option value="0">Todos</option>
                         <option value="1">Ahorro</option>
                         <option value="2">Inversión</option>
                         <option value="3">Peques</option>
                     </select>
                 </div>
+            </div>
+            <div class="col-md-3" style="height: 70px; display: flex; align-items: center; justify-content: center;">
+                <button class="btn btn-primary" id="pdf" name="pdf" onclick="mPDF()"><i class="fa fa-file-pdf-o"></i> Descargar</button>
             </div>
         </div>
         <hr>

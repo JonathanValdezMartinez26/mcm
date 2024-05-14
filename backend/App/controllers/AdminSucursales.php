@@ -949,6 +949,7 @@ class AdminSucursales extends Controller
             {$this->parseaNumero}
             {$this->formatoMoneda}
             {$this->configuraTabla}
+            {$this->muestraPDF}
          
             const buscar = () => buscaCliente()
          
@@ -1022,6 +1023,23 @@ class AdminSucursales extends Controller
         $script = <<<script
         <script>
             $(document).ready(() => configuraTabla("tablaResumenCta"))
+         
+            const getFecha = (fecha) => {
+                const f = new Date(fecha + 'T06:00:00Z')
+                return f.toLocaleString("es-MX", { year: "numeric", month:"2-digit", day:"2-digit" })
+            }
+         
+            const mPDF = () => {
+                const host = window.location.origin
+                const fInicio = "01/01/2024" // getFecha(document.querySelector("#fechaInicio").value)
+                const fFin = new Date().toLocaleDateString("es-MX", { year: "numeric", month:"2-digit", day:"2-digit" }) // getFecha(document.querySelector("#fechaFin").value)
+                const url = host + '/Ahorro/EdoCta/?'
+                + 'cliente=' + infoCliente.CDGCL
+                + '&fInicio=' + fInicio
+                + '&fFin=' + fFin
+                 
+                muestraPDF("Resumen de Cuenta", url)
+            }
         </script>
         script;
 
@@ -1373,9 +1391,7 @@ script;
         foreach ($sucursales as $sucursales) {
             if ($sucursales['CODIGO'] == $Sucursal) {
                 $sel_suc = 'Selected';
-            }
-            else
-            {
+            } else {
                 $sel_suc = '';
             }
             $opcSucursales .= "<option value='{$sucursales['CODIGO']}' $sel_suc>{$sucursales['NOMBRE']} ({$sucursales['CODIGO']})</option>";
