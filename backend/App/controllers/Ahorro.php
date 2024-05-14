@@ -1223,12 +1223,6 @@ class Ahorro extends Controller
         </script>
         html;
 
-        $fechaMax = new DateTime();
-        for ($i = 0; $i < 7; $i++) {
-            $fechaMax->modify('+1 day');
-            if ($fechaMax->format('N') >= 6 || $fechaMax->format('N') === 0) $fechaMax->modify('+1 day');
-        }
-
         if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitud de Retiro")));
@@ -1237,8 +1231,8 @@ class Ahorro extends Controller
         View::set('montoMaximoExpress', $montoMaximoExpress);
         View::set('montoMaximoRetiro', $montoMaximoRetiro);
         View::set('fecha', date('d/m/Y H:i:s'));
-        View::set('fechaInput', date('Y-m-d'));
-        View::set('fechaInputMax', $fechaMax->format('Y-m-d'));
+        View::set('fechaInput', date('Y-m-d', strtotime('+1 day')));
+        View::set('fechaInputMax', date('Y-m-d', strtotime('+30 day')));
         View::render("caja_menu_retiro_ahorro");
     }
 

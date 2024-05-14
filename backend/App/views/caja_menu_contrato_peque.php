@@ -172,7 +172,7 @@
                                         <div class="col-md-5">
                                             <div class="form-group">
                                                 <label for="fecha_nac">Fecha de nacimiento *</label>
-                                                <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" max="<?= $fecha ?>" oninput=camposLlenos(event) onkeydown=iniveCambio(event) disabled>
+                                                <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" min="<?= date("Y-m-d", strtotime('-18 years')) ?>" max="<?= $fecha ?>" oninput=camposLlenos(event) onkeydown=iniveCambio(event) disabled>
                                             </div>
                                         </div>
                                         <div class="col-md-2">

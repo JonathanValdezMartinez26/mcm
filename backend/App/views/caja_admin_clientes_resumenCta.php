@@ -59,10 +59,10 @@
                 <div class="form-group">
                     <label for="montoTrn">Segmento</label>
                     <select class="form-control" id="segmento" name="segmento">
-                        <option value="0">Todos</option>
-                        <option value="1">Ahorro</option>
-                        <option value="2">Inversión</option>
-                        <option value="3">Peques</option>
+                        <option value="0">TODOS</option>
+                        <option value="1">AHORRO</option>
+                        <option value="2">INVERSIÓN</option>
+                        <option value="3">PEQUES</option>
                     </select>
                 </div>
             </div>

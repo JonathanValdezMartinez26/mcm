@@ -775,17 +775,17 @@ class CajaAhorro
                 FROM
                     MOVIMIENTOS_AHORRO MA
                 WHERE
-                    CDG_TICKET < T.CODIGO
+                    TO_NUMBER(MA.CDG_TICKET) < T.CODIGO
                     AND T.CDG_CONTRATO = MA.CDG_CONTRATO
             ) AS SALDO_ANTERIOR,
             (
                 SELECT
-                    SUM(MONTO)
+                    SUM(MA.MONTO)
                 FROM
-                    MOVIMIENTOS_AHORRO
+                    MOVIMIENTOS_AHORRO MA
                 WHERE
-                    CDG_TICKET = T.CODIGO
-                    AND CDG_TIPO_PAGO = 2
+                    TO_NUMBER(MA.CDG_TICKET) = T.CODIGO
+                    AND MA.CDG_TIPO_PAGO = 2
             ) AS COMISION,
             (
                 NVL((SELECT
@@ -798,7 +798,7 @@ class CajaAhorro
                 FROM
                     MOVIMIENTOS_AHORRO MA
                 WHERE
-                    CDG_TICKET = T.CODIGO
+                    TO_NUMBER(MA.CDG_TICKET) = T.CODIGO
                     AND T.CDG_CONTRATO = MA.CDG_CONTRATO), 0)
                 +
                 NVL((SELECT
@@ -811,41 +811,41 @@ class CajaAhorro
                 FROM
                     MOVIMIENTOS_AHORRO MA
                 WHERE
-                    CDG_TICKET < T.CODIGO
+                    TO_NUMBER(MA.CDG_TICKET) < T.CODIGO
                     AND T.CDG_CONTRATO = MA.CDG_CONTRATO), 0)
             ) AS SALDO_NUEVO,
             (
                 SELECT
-                    CASE CDG_TIPO_PAGO
+                    CASE MA.CDG_TIPO_PAGO
                         WHEN '5' THEN 'ENVIÓ A INVERSIÓN'
-                        ELSE CASE MOVIMIENTO
+                        ELSE CASE MA.MOVIMIENTO
                             WHEN '0' THEN 'RET. DE CTA. AHORRO'
                             ELSE 'DEP. A CTA. AHORRO'
                         END
                     END
                 FROM
-                    MOVIMIENTOS_AHORRO
+                    MOVIMIENTOS_AHORRO MA
                 WHERE
-                    CDG_TICKET = T.CODIGO
-                    AND CDG_TIPO_PAGO != 2
+                    TO_NUMBER(MA.CDG_TICKET) = T.CODIGO
+                    AND MA.CDG_TIPO_PAGO != 2
             ) AS ES_DEPOSITO,
             (
                 SELECT
-                    CASE CDG_TIPO_PAGO
+                    CASE MA.CDG_TIPO_PAGO
                         WHEN '5' THEN 'TRANSFERENCIA'
                         WHEN '8' THEN 'TRANSFERENCIA'
                         WHEN '9' THEN 'TRANSFERENCIA'
                         ELSE 'EFECTIVO'
                     END
                 FROM
-                    MOVIMIENTOS_AHORRO
+                    MOVIMIENTOS_AHORRO MA
                 WHERE
-                    CDG_TICKET = T.CODIGO
-                    AND CDG_TIPO_PAGO != 2
+                    TO_NUMBER(MA.CDG_TICKET) = T.CODIGO
+                    AND MA.CDG_TIPO_PAGO != 2
             ) AS METODO,
             (
                 SELECT
-                    CASE CDG_TIPO_PAGO
+                    CASE MA.CDG_TIPO_PAGO
                         WHEN '5' THEN 'APERTURADO POR'
                         WHEN '8' THEN 'REEMBOLSAMOS'
                         WHEN '9' THEN 'REEMBOLSAMOS'
@@ -855,46 +855,46 @@ class CajaAhorro
                         END
                     END
                 FROM
-                    MOVIMIENTOS_AHORRO
+                    MOVIMIENTOS_AHORRO MA
                 WHERE
-                    CDG_TICKET = T.CODIGO
-                    AND CDG_TIPO_PAGO != 2
+                    TO_NUMBER(MA.CDG_TICKET) = T.CODIGO
+                    AND MA.CDG_TIPO_PAGO != 2
             ) AS ENTREGA,
             (
                 SELECT
-                    CASE CDG_TIPO_PAGO
+                    CASE MA.CDG_TIPO_PAGO
                         WHEN '5' THEN 'Atendió'
                         WHEN '8' THEN 'Atendió'
                         WHEN '9' THEN 'Atendió'
-                        ELSE CASE MOVIMIENTO
+                        ELSE CASE MA.MOVIMIENTO
                             WHEN '0' THEN 'Entrego'
                             ELSE 'Recibió'
                         END
                     END
                 FROM
-                    MOVIMIENTOS_AHORRO
+                    MOVIMIENTOS_AHORRO MA
                 WHERE
-                    CDG_TICKET = T.CODIGO
-                    AND CDG_TIPO_PAGO != 2
+                    TO_NUMBER(MA.CDG_TICKET) = T.CODIGO
+                    AND MA.CDG_TIPO_PAGO != 2
             ) AS RECIBIO,
             (
                 SELECT
-                    CASE CDG_TIPO_PAGO
+                    CASE MA.CDG_TIPO_PAGO
                         WHEN '5' THEN 'INVERSIÓN'
                         WHEN '6' THEN 'RETIRO EXPRESS'
                         WHEN '7' THEN 'RETIRO PROGRAMADO'
                         WHEN '8' THEN 'REEMBOLSO'
                         WHEN '9' THEN 'REEMBOLSO'
-                        ELSE CASE MOVIMIENTO
+                        ELSE CASE MA.MOVIMIENTO
                             WHEN '0' THEN 'RETIRO'
                             ELSE 'DEPÓSITO'
                         END
                     END
                 FROM
-                    MOVIMIENTOS_AHORRO
+                    MOVIMIENTOS_AHORRO MA
                 WHERE
-                    CDG_TICKET = T.CODIGO
-                    AND CDG_TIPO_PAGO != 2
+                    TO_NUMBER(MA.CDG_TICKET) = T.CODIGO
+                    AND MA.CDG_TIPO_PAGO != 2
             ) AS COMPROBANTE,
             (
                 SELECT
@@ -906,7 +906,7 @@ class CajaAhorro
             ) AS NOM_EJECUTIVO,
             (
                 SELECT
-                    CASE CDG_TIPO_PAGO
+                    CASE MA.CDG_TIPO_PAGO
                         WHEN '5' THEN 'APERTURA CUENTA DE INVERSIÓN'
                         ELSE CASE APA.CDGPR_PRIORITARIO
                             WHEN '1' THEN 'CUENTA DE AHORRO CORRIENTE'
@@ -915,20 +915,20 @@ class CajaAhorro
                         END
                     END
                 FROM
-                    MOVIMIENTOS_AHORRO
+                    MOVIMIENTOS_AHORRO MA
                 WHERE
-                    CDG_TICKET = T.CODIGO
-                    AND CDG_TIPO_PAGO != 2
+                    TO_NUMBER(MA.CDG_TICKET) = T.CODIGO
+                    AND MA.CDG_TIPO_PAGO != 2
             ) AS PRODUCTO,
             T.CDGPE AS COD_EJECUTIVO,
             (
                 SELECT
-                    CDG_TIPO_PAGO
+                    MA.CDG_TIPO_PAGO
                 FROM
-                    MOVIMIENTOS_AHORRO
+                    MOVIMIENTOS_AHORRO MA
                 WHERE
-                    CDG_TICKET = T.CODIGO
-                    AND CDG_TIPO_PAGO != 2
+                    TO_NUMBER(MA.CDG_TICKET) = T.CODIGO
+                    AND MA.CDG_TIPO_PAGO != 2
             ) AS TIPO_PAGO
         FROM
             TICKETS_AHORRO T,
