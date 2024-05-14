@@ -390,6 +390,9 @@ class Ahorro extends Controller
                         const datosCliente = respuesta.datos
                         document.querySelector("#btnGeneraContrato").style.display = "none"
                         document.querySelector("#contratoOK").value = datosCliente.CONTRATO
+                        document.querySelector("#ejecutivo_comision").value = datosCliente.EJECUTIVO_COMISIONA
+                        // if (document.querySelector("#ejecutivo_comision").value === "") document.querySelector("#ejecutivo_comision").
+                         
                         if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 0) {
                                 await showInfo("La apertura del contrato no ha concluido, realice el depósito de apertura.")
                                 document.querySelector("#fecha_pago").value = getHoy()
@@ -822,6 +825,7 @@ class Ahorro extends Controller
     {
         $saldoMinimoApertura = 100;
         $montoMaximoRetiro = 50000;
+        $montoMaximoDeposito = 1000000;
 
         $extraFooter = <<<html
         <script>
@@ -831,7 +835,7 @@ class Ahorro extends Controller
              
             const saldoMinimoApertura = $saldoMinimoApertura
             const montoMaximoRetiro = $montoMaximoRetiro
-            const montoMaximoDeposito = 100000
+            const montoMaximoDeposito = $montoMaximoDeposito
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
