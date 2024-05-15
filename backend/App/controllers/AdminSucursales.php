@@ -1999,7 +1999,7 @@ html;
                 mensaje.style.fontSize = "15px"
                 mensaje.innerHTML = "<p>¿Está seguro de <b>" + accion + "</b> la solicitud de retiro programado?</p><p style='font-weight: bold'>Esta acción no se puede deshacer.</p>"
                  
-                confirmarMovimiento("Solicitudes de retiro Express", null, mensaje)
+                confirmarMovimiento("Solicitudes de retiro Programado", null, mensaje)
                     .then((confirmacion) => {
                         if (!confirmacion) return
                          
@@ -2041,7 +2041,7 @@ html;
                     }
                      
                     showSuccess(respuesta.mensaje).then(() => {
-                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}", false)
+                        // imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}", false)
                         swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
                         window.location.reload()
                     })
@@ -2141,7 +2141,7 @@ html;
             html;
         }
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitudes Pendientes Retiros Ordinarios")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitudes Pendientes Retiros Programados")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
         View::set('tabla', $tabla);
