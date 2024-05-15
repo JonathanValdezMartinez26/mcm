@@ -218,12 +218,14 @@ sql;
             $qryCaj
         ];
 
+        if (!$datos['saldo']) $datos['saldo'] = 0;
+
         $params = [
             [
                 "sucursal" => $datos['sucursal'],
                 "minimo" => $datos['montoMin'],
                 "maximo" => $datos['montoMax'],
-                "saldo" => $datos['saldo'] || 0,
+                "saldo" => $datos['saldo'],
                 "usuario" => $datos['usuario']
             ],
             [
