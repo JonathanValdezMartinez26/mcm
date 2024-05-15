@@ -1546,7 +1546,7 @@ class Ahorro extends Controller
             const cambioPlazo = () => {
                 const info = tasasDisponibles.find(tasa => tasa.CODIGO == document.querySelector("#plazo").value)
                 const plazo = parseaNumero(info.PLAZO_NUMERO)
-                const tasa = parseaNumero(info.TASA)     // MONTO * PLAZO *((TASA/100)/12)
+                const tasa = parseaNumero(info.TASA)
                 const monto = parseaNumero(document.querySelector("#monto").value) 
                 if (tasa) {
                     document.querySelector("#rendimiento").value = formatoMoneda(monto * plazo * ((tasa/100) / 12))
@@ -1591,7 +1591,7 @@ class Ahorro extends Controller
                  
                 limpiaMontos(datos, ["saldoActual", "montoOperacion", "saldoFinal"])
                 addParametro(datos, "sucursal", sucursal_ahorro)
-                addParametro(datos, "ejecutivo", ejecutivo)
+                addParametro(datos, "ejecutivo", usuario_ahorro)
                  
                 datos.push({ name: "tasa", value: document.querySelector("#plazo").value })
                  
