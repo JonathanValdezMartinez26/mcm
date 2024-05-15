@@ -106,7 +106,7 @@ html;
 html;
 
 
-    if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'GASC' || $this->__usuario == 'PHEE') {
+    if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'GASC' || $this->__usuario == 'PHEE' || $this->__usuario == 'AMGM') {
       $menu .= <<<html
            <hr>
            <h3>General WEB AHORRO</h3>
@@ -115,7 +115,7 @@ html;
     }
 
 
-    if ($permiso_ahorro == '1') {
+    if ($permiso_ahorro == '1' || $this->__usuario == 'AMGM') {
       $menu .= <<<html
                 <li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
         
