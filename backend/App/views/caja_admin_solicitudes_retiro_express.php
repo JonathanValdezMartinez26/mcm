@@ -161,6 +161,7 @@
                                                                             <tr>
                                                                                 <th>Detalles Cliente</th>
                                                                                 <th>Detalles Solicitud</th>
+                                                                                <th>Estatus</th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
