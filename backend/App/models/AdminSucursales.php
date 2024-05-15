@@ -702,6 +702,7 @@ sql;
                     PE
                 WHERE
                     CODIGO = SMA.CDG_USUARIO
+                    AND CDGEM = 'EMPFIN'
             ) AS NOMBRE_USUARIO,
             'RETIRO' AS MOVIMIENTO,
             TO_CHAR(SMA.MONTO, 'FM$999,999,999.00') AS MONTO
