@@ -2325,26 +2325,27 @@ html;
                          <div>
                             <b>SUCURSAL: </b>{$value_historial['SUCURSAL']}
                         </div>
+                         <div style="padding: 10px;">
+                            <b>CAJERA SOLICITA: </b>{$value_historial['CDGPE_NOMBRE']}
+                        </div>
                     </td>
                     <td style="padding: 15px!important;">
                      <div>
-                            <b>FECHA PREVISTA ENTREGA:</b> {$value_historial['FECHA_SOLICITUD']}
+                            <b>FECHA DE LA SOLICITUD EN CAJA: <br></b> {$value_historial['FECHA_SOLICITUD']}
                         </div>
-                        <div>
+                        <div style="padding-top: 18px;">
                             <b>CANTIDAD SOLICITADA: </b>$ {$cantidad_formateada}
                         </div>
                         <div>
                             <b>TIPO DE PRODUCTO: </b>{$value_historial['TIPO_PRODUCTO']} {$img}
                         </div>
-                        <hr>
+                     
+                     </td>
+                     <td style="padding: 15px!important;">
                          <div>
                             <b>ESTATUS FINAL: </b><b style="color: {$color};">{$value_historial['ESTATUS_ASIGNA_ACEPTA']}</b>
                         </div>
-                         <div>
-                            <b>CAJERA SOLICITA: </b>{$value_historial['CDGPE_NOMBRE']}
-                        </div>
-                        <hr>
-                         <div>
+                         <div style="padding: 10px;">
                             <b>ADMIN AUTORIZA: </b>{$value_historial['CDGPE_NOMBRE_AUTORIZA']}
                         </div>
                      </td>
