@@ -93,7 +93,7 @@
                                         <div class="arrow-down">
                                             <div class="arrow-down-inner"></div>
                                         </div>
-                                        <a id="tab0" href="#tabBody0" role="tab" aria-controls="tabBody0" aria-selected="true" data-toggle="tab" tabindex="0"><span class="fa fa-clock-o"></span><span class="hidden-xs"> Solicitudes pendientes</span></a>
+                                        <a id="tab0" href="#tabBody0" role="tab" aria-controls="tabBody0" aria-selected="true" data-toggle="tab" tabindex="0"><span class="fa fa-clock-o"></span><span class="hidden-xs"> Solicitudes pendientes express</span></a>
                                         <div class="whiteBlock"></div>
                                     </li>
 
@@ -101,7 +101,7 @@
                                         <div class="arrow-down">
                                             <div class="arrow-down-inner"></div>
                                         </div>
-                                        <a id="tab1" href="#tabBody1" role="tab" aria-controls="tabBody1" aria-selected="true" data-toggle="tab" tabindex="0"><span class="fa fa-history"></span><span class="hidden-xs"> Historial de Solicitudes</span></a>
+                                        <a id="tab1" href="#tabBody1" role="tab" aria-controls="tabBody1" aria-selected="true" data-toggle="tab" tabindex="0"><span class="fa fa-history"></span><span class="hidden-xs"> Historial de solicitudes express</span></a>
                                         <div class="whiteBlock"></div>
                                     </li>
                                 </ul>
