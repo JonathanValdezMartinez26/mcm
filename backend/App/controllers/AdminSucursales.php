@@ -2330,8 +2330,12 @@ html;
                         </div>
                     </td>
                     <td style="padding: 15px!important;">
-                     <div>
+                         <div>
                             <b>FECHA DE LA SOLICITUD EN CAJA: <br></b> {$value_historial['FECHA_SOLICITUD']}
+                        </div>
+                        <br>
+                        <div>
+                            <b>FECHA MAXIMA DE ENTREGA: <br></b> {$value_historial['FECHA_SOLICITUD']}
                         </div>
                         <div style="padding-top: 18px;">
                             <b>CANTIDAD SOLICITADA: </b>$ {$cantidad_formateada}
