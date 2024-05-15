@@ -1426,12 +1426,17 @@ class Ahorro extends Controller
         $saldoMinimoApertura = CajaAhorroDao::GetSaldoMinimoInversion();
         $tasas = CajaAhorroDao::GetTasas();
         $tasas = $tasas ? json_encode($tasas) : "[]";
+        $suc = $_SESSION['cdgco_ahorro'] !== "NULL" ? $_SESSION['cdgco_ahorro'] : CajaAhorroDao::GetSucCajeraAhorro($_SESSION['usuario'])['CDGCO_AHORRO'];
+        $usr = $_SESSION['usuario'];
 
         $extraFooter = <<<html
         <script>
             const saldoMinimoApertura = $saldoMinimoApertura
             const montoMaximo = 1000000
+            const sucursal_ahorro = "$suc"
+            const usuario_ahorro = "$usr"
             let tasasDisponibles
+         
             try {
                 tasasDisponibles = JSON.parse('$tasas')
             } catch (error) {
@@ -1585,8 +1590,8 @@ class Ahorro extends Controller
                 const datos = $("#registroOperacion").serializeArray()
                  
                 limpiaMontos(datos, ["saldoActual", "montoOperacion", "saldoFinal"])
-                addParametro(datos, "sucursal", "{$_SESSION['cdgco_ahorro']}")
-                addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
+                addParametro(datos, "sucursal", sucursal_ahorro)
+                addParametro(datos, "ejecutivo", ejecutivo)
                  
                 datos.push({ name: "tasa", value: document.querySelector("#plazo").value })
                  
@@ -1607,7 +1612,7 @@ class Ahorro extends Controller
                             }
                             showSuccess(respuesta.mensaje).then(() => {
                                 imprimeContrato(document.querySelector("#contrato").value, 2)
-                                imprimeTicket(respuesta.datos.ticket, {$_SESSION['cdgco_ahorro']})
+                                imprimeTicket(respuesta.datos.ticket, sucursal_ahorro)
                                 limpiaDatosCliente()
                             })
                         })

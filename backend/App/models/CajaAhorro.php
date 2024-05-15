@@ -29,6 +29,27 @@ use DateTime;
 
 class CajaAhorro
 {
+    public static function GetSucCajeraAhorro($cajera)
+    {
+        $qry = <<<sql
+        SELECT
+            SUC_ESTADO_AHORRO.CDG_SUCURSAL AS CDGCO_AHORRO
+        FROM
+            SUC_CAJERA_AHORRO
+        INNER JOIN
+            SUC_ESTADO_AHORRO ON CDG_ESTADO_AHORRO = CODIGO
+        WHERE
+            SUC_CAJERA_AHORRO.CDG_USUARIO = :cajera
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryOne($qry, ['cajera' => $cajera]);
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
     public static function GetEFed()
     {
         $query = <<<sql
