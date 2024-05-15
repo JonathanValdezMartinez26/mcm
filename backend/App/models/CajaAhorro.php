@@ -2029,26 +2029,7 @@ sql;
                 TIPO_MOVIMIENTO,
                 PRODUCTO
             FROM (
-                (
-                    SELECT 
-                        '1' AS MOVIMIENTO,
-                        CDG_SUCURSAL AS CDGCO,
-                        CO.NOMBRE AS SUCURSAL,
-                       'AMGM' AS USUARIO_CAJA,
-                       'ANGEL MOISES GUERRERO MEJIA' AS NOMBRE_CAJERA,
-                        'NO APLICA' AS CLIENTE, 
-                        'NO APLICA' AS TITULAR_CUENTA_EJE, 
-                        TO_CHAR(FECHA_REGISTRO, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
-                        FECHA_REGISTRO AS FECHA_MOV_FILTRO,
-                        'NO APLICA' AS CDG_TICKET, 
-                        SALDO_INICIAL AS MONTO, 
-                        'SALDO FINAL / INICIAL' AS CONCEPTO, 
-                        'INGRESO' AS TIPO_MOVIMIENTO,
-                        'AHORRO CUENTA CORRIENTE' AS PRODUCTO
-                    FROM SUC_ESTADO_AHORRO
-                    INNER JOIN CO ON CO.CODIGO = SUC_ESTADO_AHORRO.CDG_SUCURSAL 
-                )
-                UNION
+             
                 (
                    SELECT 
                       MOVIMIENTO,
