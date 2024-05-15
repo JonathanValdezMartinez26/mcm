@@ -2078,37 +2078,46 @@ sql;
                 UNION 
                 (
                     SELECT 
-                        ma.MOVIMIENTO,
-                        c2.CODIGO AS CDGCO,
-                        c2.NOMBRE AS SUCURSAL,
-                        p.CODIGO AS USUARIO_CAJA,
-                        p.NOMBRE1 || ' '|| p.NOMBRE2 || ' ' || p.PRIMAPE || ' '|| p.SEGAPE AS NOMBRE_CAJERA,
-                        c.CODIGO AS CLIENTE, 
-                        (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
-                        TO_CHAR(ma.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
-                        ma.FECHA_MOV AS FECHA_MOV_FILTRO,
-                        ma.CDG_TICKET, 
-                        ma.MONTO, 
-                        tpa.DESCRIPCION AS CONCEPTO, 
-                        CASE 
-                            WHEN tpa.DESCRIPCION IN ('APERTURA DE CUENTA - INSCRIPCIÓN', 'CAPITAL INICIAL - CUENTA CORRIENTE', 'DEPOSITO', 'DEPOSITO DEVOLUCIÓN FIN INVERSIÓN CAPITAL', 'DEPOSITO INTRESES FIN INVERSIÓN') THEN 'INGRESO'
-                            WHEN tpa.DESCRIPCION IN ('RETIRO') THEN 'EGRESO'
-                            WHEN tpa.DESCRIPCION IN ('TRANSFERENCIA INVERSIÓN (ENVIO)') THEN 'EGRESO SISTEMA'
-                            ELSE 'MOVIMIENTO VIRTUAL'
-                        END AS TIPO_MOVIMIENTO,
-                        CASE 
-                            WHEN tpa.DESCRIPCION = 'TRANSFERENCIA INVERSIÓN (ENVIO)' AND pp.DESCRIPCION = 'Ahorro Corriente' THEN 'INVERSION'
-                            ELSE pp.DESCRIPCION 
-                        END AS PRODUCTO
-                    FROM MOVIMIENTOS_AHORRO ma
-                    INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
-                    INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
-                    INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
-                    INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
-                    INNER JOIN CO c2 ON c2.CODIGO = apa.CDGCO 
-                    INNER JOIN TICKETS_AHORRO ta ON ta.CODIGO = ma.CDG_TICKET 
-                    INNER JOIN PE p ON p.CODIGO = ta.CDGPE 
-                    WHERE p.CDGEM = 'EMPFIN' 
+                    ma.MOVIMIENTO,
+                    c2.CODIGO AS CDGCO,
+                    c2.NOMBRE AS SUCURSAL,
+                    p.CODIGO AS USUARIO_CAJA,
+                    p.NOMBRE1 || ' '|| p.NOMBRE2 || ' ' || p.PRIMAPE || ' '|| p.SEGAPE AS NOMBRE_CAJERA,
+                    c.CODIGO AS CLIENTE, 
+                    (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
+                    TO_CHAR(ma.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
+                    ma.FECHA_MOV AS FECHA_MOV_FILTRO,
+                    ma.CDG_TICKET, 
+                    CASE 
+                        WHEN tpa.DESCRIPCION = 'CAPITAL INICIAL - CUENTA CORRIENTE' THEN ma.MONTO - (
+                            SELECT ma2.MONTO 
+                            FROM MOVIMIENTOS_AHORRO ma2 
+                            INNER JOIN TIPO_PAGO_AHORRO tpa2 ON tpa2.CODIGO = ma2.CDG_TIPO_PAGO 
+                            WHERE tpa2.DESCRIPCION = 'APERTURA DE CUENTA - INSCRIPCIÓN' 
+                            AND ma2.CDG_TICKET = ma.CDG_TICKET
+                        )
+                        ELSE ma.MONTO
+                    END AS MONTO,
+                    tpa.DESCRIPCION AS CONCEPTO, 
+                    CASE 
+                        WHEN tpa.DESCRIPCION IN ('APERTURA DE CUENTA - INSCRIPCIÓN', 'CAPITAL INICIAL - CUENTA CORRIENTE', 'DEPOSITO', 'DEPOSITO DEVOLUCIÓN FIN INVERSIÓN CAPITAL', 'DEPOSITO INTRESES FIN INVERSIÓN') THEN 'INGRESO'
+                        WHEN tpa.DESCRIPCION IN ('RETIRO') THEN 'EGRESO'
+                        WHEN tpa.DESCRIPCION IN ('TRANSFERENCIA INVERSIÓN (ENVIO)') THEN 'EGRESO SISTEMA'
+                        ELSE 'MOVIMIENTO VIRTUAL'
+                    END AS TIPO_MOVIMIENTO,
+                    CASE 
+                        WHEN tpa.DESCRIPCION = 'TRANSFERENCIA INVERSIÓN (ENVIO)' AND pp.DESCRIPCION = 'Ahorro Corriente' THEN 'INVERSION'
+                        ELSE pp.DESCRIPCION 
+                    END AS PRODUCTO
+                FROM MOVIMIENTOS_AHORRO ma
+                INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
+                INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
+                INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
+                INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
+                INNER JOIN CO c2 ON c2.CODIGO = apa.CDGCO 
+                INNER JOIN TICKETS_AHORRO ta ON ta.CODIGO = ma.CDG_TICKET 
+                INNER JOIN PE p ON p.CODIGO = ta.CDGPE 
+                WHERE p.CDGEM = 'EMPFIN'
                 )
             )
         ) 
@@ -2191,7 +2200,7 @@ sql;
 
 
         $query = <<<sql
-        SELECT 
+         SELECT 
             CONSECUTIVO,
             MOVIMIENTO,
             CDGCO,
@@ -2202,6 +2211,7 @@ sql;
             TITULAR_CUENTA_EJE,
             FECHA_MOV,
             FECHA_MOV_FILTRO,
+            FECHA_MOV_APLICA,
             CDG_TICKET,
             MONTO,
             CONCEPTO,
@@ -2221,6 +2231,7 @@ sql;
                 CLIENTE,
                 TITULAR_CUENTA_EJE,
                 FECHA_MOV,
+                FECHA_MOV_APLICA,
                 FECHA_MOV_FILTRO,
                 CDG_TICKET,
                 MONTO,
@@ -2238,6 +2249,7 @@ sql;
                         'NO APLICA' AS CLIENTE, 
                         'NO APLICA' AS TITULAR_CUENTA_EJE, 
                         TO_CHAR(FECHA_REGISTRO, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
+                        TO_CHAR(FECHA_REGISTRO, 'DD/MM/YYYY') AS FECHA_MOV_APLICA,
                         FECHA_REGISTRO AS FECHA_MOV_FILTRO,
                         'NO APLICA' AS CDG_TICKET, 
                         SALDO_INICIAL AS MONTO, 
@@ -2258,6 +2270,7 @@ sql;
                       'NO APLICA' AS CLIENTE, 
                       'NO APLICA' AS TITULAR_CUENTA_EJE, 
                       TO_CHAR(FECHA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
+                       TO_CHAR(FECHA, 'DD/MM/YYYY') AS FECHA_MOV_APLICA,
                       FECHA AS FECHA_MOV_FILTRO,
                       'NO APLICA' AS CDG_TICKET, 
                       MONTO, 
@@ -2279,48 +2292,83 @@ sql;
                 UNION 
                 (
                     SELECT 
-                        ma.MOVIMIENTO,
-                        c2.CODIGO AS CDGCO,
-                        c2.NOMBRE AS SUCURSAL,
-                        p.CODIGO AS USUARIO_CAJA,
-                        p.NOMBRE1 || ' '|| p.NOMBRE2 || ' ' || p.PRIMAPE || ' '|| p.SEGAPE AS NOMBRE_CAJERA,
-                        c.CODIGO AS CLIENTE, 
-                        (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
-                        TO_CHAR(ma.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
-                        ma.FECHA_MOV AS FECHA_MOV_FILTRO,
-                        ma.CDG_TICKET, 
-                        ma.MONTO, 
-                        tpa.DESCRIPCION AS CONCEPTO, 
-                        CASE 
-                            WHEN tpa.DESCRIPCION IN ('APERTURA DE CUENTA - INSCRIPCIÓN', 'CAPITAL INICIAL - CUENTA CORRIENTE', 'DEPOSITO', 'DEPOSITO DEVOLUCIÓN FIN INVERSIÓN CAPITAL', 'DEPOSITO INTRESES FIN INVERSIÓN') THEN 'INGRESO'
-                            WHEN tpa.DESCRIPCION IN ('RETIRO') THEN 'EGRESO'
-                            WHEN tpa.DESCRIPCION IN ('TRANSFERENCIA INVERSIÓN (ENVIO)') THEN 'EGRESO SISTEMA'
-                            ELSE 'MOVIMIENTO VIRTUAL'
-                        END AS TIPO_MOVIMIENTO,
-                        CASE 
-                            WHEN tpa.DESCRIPCION = 'TRANSFERENCIA INVERSIÓN (ENVIO)' AND pp.DESCRIPCION = 'Ahorro Corriente' THEN 'INVERSION'
-                            ELSE pp.DESCRIPCION 
-                        END AS PRODUCTO
-                    FROM MOVIMIENTOS_AHORRO ma
-                    INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
-                    INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
-                    INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
-                    INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
-                    INNER JOIN CO c2 ON c2.CODIGO = apa.CDGCO 
-                    INNER JOIN TICKETS_AHORRO ta ON ta.CODIGO = ma.CDG_TICKET 
-                    INNER JOIN PE p ON p.CODIGO = ta.CDGPE 
-                    WHERE p.CDGEM = 'EMPFIN' 
+                    ma.MOVIMIENTO,
+                    c2.CODIGO AS CDGCO,
+                    c2.NOMBRE AS SUCURSAL,
+                    p.CODIGO AS USUARIO_CAJA,
+                    p.NOMBRE1 || ' '|| p.NOMBRE2 || ' ' || p.PRIMAPE || ' '|| p.SEGAPE AS NOMBRE_CAJERA,
+                    c.CODIGO AS CLIENTE, 
+                    (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
+                    TO_CHAR(ma.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
+                    TO_CHAR(ma.FECHA_MOV, 'DD/MM/YYYY') AS FECHA_MOV_APLICA,
+                    ma.FECHA_MOV AS FECHA_MOV_FILTRO,
+                    ma.CDG_TICKET, 
+                    CASE 
+                        WHEN tpa.DESCRIPCION = 'CAPITAL INICIAL - CUENTA CORRIENTE' THEN ma.MONTO - (
+                            SELECT ma2.MONTO 
+                            FROM MOVIMIENTOS_AHORRO ma2 
+                            INNER JOIN TIPO_PAGO_AHORRO tpa2 ON tpa2.CODIGO = ma2.CDG_TIPO_PAGO 
+                            WHERE tpa2.DESCRIPCION = 'APERTURA DE CUENTA - INSCRIPCIÓN' 
+                            AND ma2.CDG_TICKET = ma.CDG_TICKET
+                        )
+                        ELSE ma.MONTO
+                    END AS MONTO,
+                    tpa.DESCRIPCION AS CONCEPTO, 
+                    CASE 
+                        WHEN tpa.DESCRIPCION IN ('APERTURA DE CUENTA - INSCRIPCIÓN', 'CAPITAL INICIAL - CUENTA CORRIENTE', 'DEPOSITO', 'DEPOSITO DEVOLUCIÓN FIN INVERSIÓN CAPITAL', 'DEPOSITO INTRESES FIN INVERSIÓN') THEN 'INGRESO'
+                        WHEN tpa.DESCRIPCION IN ('RETIRO', 'TRANSFERENCIA INVERSIÓN (ENVIO)') THEN 'EGRESO'
+                        ELSE 'MOVIMIENTO VIRTUAL'
+                    END AS TIPO_MOVIMIENTO,
+                    CASE 
+                        WHEN tpa.DESCRIPCION = 'TRANSFERENCIA INVERSIÓN (ENVIO)' AND pp.DESCRIPCION = 'Ahorro Corriente' THEN 'INVERSION'
+                        ELSE pp.DESCRIPCION 
+                    END AS PRODUCTO
+                FROM MOVIMIENTOS_AHORRO ma
+                INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
+                INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
+                INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
+                INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
+                INNER JOIN CO c2 ON c2.CODIGO = apa.CDGCO 
+                INNER JOIN TICKETS_AHORRO ta ON ta.CODIGO = ma.CDG_TICKET 
+                INNER JOIN PE p ON p.CODIGO = ta.CDGPE 
+                WHERE p.CDGEM = 'EMPFIN'
+                )
+                UNION 
+                (
+                	SELECT 
+                    ma.MOVIMIENTO,
+                    c2.CODIGO AS CDGCO,
+                    c2.NOMBRE AS SUCURSAL,
+                    p.CODIGO AS USUARIO_CAJA,
+                    p.NOMBRE1 || ' '|| p.NOMBRE2 || ' ' || p.PRIMAPE || ' '|| p.SEGAPE AS NOMBRE_CAJERA,
+                    c.CODIGO AS CLIENTE, 
+                    (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
+                    TO_CHAR(ma.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
+                    TO_CHAR(ma.FECHA_MOV, 'DD/MM/YYYY') AS FECHA_MOV_APLICA,
+                    ma.FECHA_MOV AS FECHA_MOV_FILTRO,
+                    ma.CDG_TICKET, 
+                    tpa.MONTO_INVERSION AS MONTO,
+                    'TRANSFERENCIA INVERSIÓN (RECEPCIÓN)' AS CONCEPTO, 
+                    'INGRESO' TIPO_MOVIMIENTO,
+                    'INVERSION' AS PRODUCTO
+                FROM MOVIMIENTOS_AHORRO ma
+                INNER JOIN CUENTA_INVERSION tpa ON tpa.FECHA_APERTURA = ma.FECHA_MOV 
+                INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
+                INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
+                INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
+                INNER JOIN CO c2 ON c2.CODIGO = apa.CDGCO 
+                INNER JOIN TICKETS_AHORRO ta ON ta.CODIGO = ma.CDG_TICKET 
+                INNER JOIN PE p ON p.CODIGO = ta.CDGPE 
+                WHERE p.CDGEM = 'EMPFIN'
                 )
             )
         ) 
-        WHERE TIPO_MOVIMIENTO != 'MOVIMIENTO VIRTUAL' AND TIPO_MOVIMIENTO != 'EGRESO SISTEMA'
-        AND FECHA_MOV_FILTRO BETWEEN TO_TIMESTAMP('$Inicial 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('$Final 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+        WHERE 
+        FECHA_MOV_FILTRO BETWEEN TO_TIMESTAMP('$Inicial 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('$Final 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
         $suc
         $pro
         $ope
         ORDER BY CONSECUTIVO ASC
-        
-        
 sql;
 
 

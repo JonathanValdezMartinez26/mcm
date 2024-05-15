@@ -128,22 +128,32 @@
                                             </div>
                                         </form>
 
-                                        <br>
                                         <form name="all" id="all" method="POST">
-                                            <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
+                                            <!--<button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>-->
 
                                         <hr>
+
+                                            <div class="col-md-12">
+                                                <div class="col-md-12">
+                                                    <p>Atención:
+                                                        <br><span class="count_top" style="font-size: 18px"><i class="fa fa-minus" style="color: #00ac00"></i></span> Movimiento virtual ingreso.
+                                                        | <span class="count_top" style="font-size: 18px"><i class="fa fa-arrow-down" style="color: #00ac00"></i></span> Movimiento en efectivo egreso.
+                                                        | <span class="count_top" style="font-size: 18px"><i class="fa fa-minus" style="color: #ac0000"></i></span> Movimiento virtual egreso.
+                                                        | <span class="count_top" style="font-size: 18px"><i class="fa fa-arrow-up" style="color: #ac0000"></i></span> Movimiento en efectivo egreso.
+                                                        | <span class="count_top" style="font-size: 18px"><i class="fa fa-asterisk" style="color: #005dac"></i></span> Movimiento virtual (Solicitud Retiro).
+
+                                                </div>
+                                            </div>
                                         <div class="dataTable_wrapper">
                                             <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                                 <thead>
                                                     <tr>
-                                                        <th>Cliente</th>
+                                                        <th>Fecha</th>
                                                         <th></th>
                                                         <th>Fecha Transacción</th>
                                                         <th>Detalle Producto</th>
                                                         <th>Ingreso</th>
                                                         <th>Egreso</th>
-                                                        <th>Saldo</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>

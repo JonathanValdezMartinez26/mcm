@@ -1507,12 +1507,16 @@ html;
             $monto = number_format($value['MONTO'], 2);
             $ingreso = number_format($value['INGRESO'], 2);
             $egreso = number_format($value['EGRESO'], 2);
-            $saldo = number_format($value['SALDO'], 2);
 
-            if ($value['CONCEPTO'] == 'TRANSFERENCIA INVERSION') {
-                $concepto = '<i class="fa fa-minus" style="color: #0000ac;"></i>';
-            } else if ($value['CONCEPTO'] == 'RETIRO') {
+
+            if ($value['CONCEPTO'] == 'TRANSFERENCIA INVERSIÓN (ENVIO)') {
+                $concepto = '<i class="fa fa-minus" style="color: #ac0000;"></i>';
+            } else if ($value['CONCEPTO'] == 'TRANSFERENCIA INVERSIÓN (RECEPCIÓN)' ) {
+                $concepto = '<i class="fa fa-minus" style="color: #00ac00;"></i>';
+            } else if ($value['CONCEPTO'] == 'RETIRO' ) {
                 $concepto = '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
+            }else if ($value['TIPO_MOVIMIENTO'] == 'MOVIMIENTO VIRTUAL' ) {
+                $concepto = '<i class="fa fa-asterisk" style="color: #005dac;"></i>';
             } else {
                 $concepto = '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
             }
@@ -1520,13 +1524,13 @@ html;
                 <tr style="padding: 0px !important;">
                 
                    <td style="padding: 10px !important;">
-                         <div style="margin-bottom: 5px;"><b>FECHA:</b> {$value['FECHA_MOV']}</div>
-                         <div style="margin-bottom: 5px;"><b>TRANSACCION:</b> {$value['FECHA_MOV']}</div>
+                         <div style="margin-bottom: 5px;"><b>FECHA:</b> {$value['FECHA_MOV_APLICA']}</div>
                     </td>
                     
                     <td style="padding: 10px !important;">
                          <div style="margin-bottom: 5px;"><b>SUCURSAL:</b> {$value['CDGCO']} - {$value['SUCURSAL']}</div>
                          <div style="margin-bottom: 5px;"><b>USUARIO:</b> {$value['USUARIO_CAJA']}</div>
+                         <hr>
                           <div style="margin-bottom: 5px;"><b>FECHA LARGA:</b> {$value['FECHA_MOV']}</div>
                     </td>
                     
@@ -1547,7 +1551,6 @@ html;
                     </td>
                     <td style="padding: 10px !important;">$ {$ingreso} </td>
                     <td style="padding: 10px !important;">$ {$egreso} </td>
-                    <td style="padding: 10px !important;">$ {$saldo} </td>
                 </tr>
 html;
         }
