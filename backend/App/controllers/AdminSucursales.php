@@ -2334,9 +2334,7 @@ html;
                             <b>FECHA DE LA SOLICITUD EN CAJA: <br></b> {$value_historial['FECHA_SOLICITUD']}
                         </div>
                         <br>
-                        <div>
-                            <b>FECHA MAXIMA DE ENTREGA: <br></b> {$value_historial['FECHA_SOLICITUD']}
-                        </div>
+                        
                         <div style="padding-top: 18px;">
                             <b>CANTIDAD SOLICITADA: </b>$ {$cantidad_formateada}
                         </div>
@@ -2351,6 +2349,9 @@ html;
                         </div>
                          <div style="padding: 10px;">
                             <b>ADMIN AUTORIZA: </b>{$value_historial['CDGPE_NOMBRE_AUTORIZA']}
+                        </div>
+                        <div>
+                            <b>FECHA MAXIMA DE ENTREGA: <br></b> {$value_historial['FECHA_SOLICITUD']}
                         </div>
                      </td>
                 </tr>
