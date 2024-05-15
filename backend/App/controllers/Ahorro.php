@@ -4272,7 +4272,7 @@ html;
                 $autoriza = "ACEPTADO";
 
                 $imprime = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="imprimeTicket('{$value['CODIGO']}');"><i class="fa fa-print"></i></button>
+                    <button type="button" class="btn btn-success btn-circle" onclick="imprimeTicket('{$value['CDGTICKET_AHORRO']}');"><i class="fa fa-print"></i></button>
 html;
             } else if ($value['AUTORIZA'] == 2) {
                 $imprime = <<<html
