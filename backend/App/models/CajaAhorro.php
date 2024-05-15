@@ -2693,9 +2693,9 @@ sql;
             ELSE TO_CHAR(TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO))
         END AS days_since_order,
         CASE
-            WHEN (TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO)) > 7 THEN 
-                'VENCIDA (' || TO_CHAR((TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO)) - 7) || ' días vencida)'
-            ELSE 'EN TIEMPO (' || TO_CHAR(7 - (TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO))) || ' días restantes)'
+            WHEN (TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO)) > 1 THEN 
+                'VENCIDA (' || TO_CHAR((TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO)) - 0) || ' días vencida)'
+            ELSE 'EN TIEMPO (' || TO_CHAR(0 - (TRUNC(SYSDATE) - TRUNC(sra.FECHA_REGISTRO))) || ' días restantes)'
         END AS solicitud_vencida,
         sra.CANTIDAD_SOLICITADA, 
         sra.CDGPE,
