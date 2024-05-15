@@ -2647,7 +2647,13 @@ script;
 
         $fechaI = date('Y-m-d', strtotime('-1 month'));
         $fechaF = date('Y-m-d');
-        $datos = AdminSucursalesDao::GetHistorialFondeosSucursal(['fechaI' => $fechaI, 'fechaF' => $fechaF, 'sucursal' => $_SESSION['cdgco_ahorro']]);
+        $param = [
+            'fechaI' => $fechaI,
+            'fechaF' => $fechaF
+        ];
+
+        if ($_SESSION['usuario'] !== 'AMGM') $param['sucursal'] = $_SESSION['cdgco_ahorro'];
+        $datos = AdminSucursalesDao::GetHistorialFondeosSucursal($param);
         $datos = json_decode($datos, true);
 
         $filas = "";
