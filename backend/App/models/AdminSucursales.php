@@ -192,7 +192,7 @@ sql;
                 SYSDATE,
                 SYSDATE,
                 'A',
-                :saldo,
+                0,
                 :minimo,
                 :maximo,
                 :saldo,
@@ -221,9 +221,9 @@ sql;
         $params = [
             [
                 "sucursal" => $datos['sucursal'],
-                "saldo" => $datos['saldo'],
                 "minimo" => $datos['montoMin'],
                 "maximo" => $datos['montoMax'],
+                "saldo" => $datos['saldo'] || 0,
                 "usuario" => $datos['usuario']
             ],
             [
@@ -237,8 +237,21 @@ sql;
         try {
             $ora = Database::getInstance();
             $res = $ora->insertaMultiple($qrys, $params);
-            if ($res) return self::Responde(true, "Sucursal activada correctamente");
-            else return self::Responde(false, "Error al activar sucursal");
+            if (!$res) return self::Responde(false, "Error al activar sucursal");
+
+            if ($datos['saldo'] > 0) {
+                $res = $ora->queryOne("SELECT MAX(CODIGO) AS ID FROM SUC_ESTADO_AHORRO WHERE CDG_SUCURSAL = '{$datos['sucursal']}' AND ESTATUS = 'A'");
+                $fondeo = self::AplicarFondeo([
+                    "codigoSEA" => $res["ID"],
+                    "montoOperacion" => $datos['saldo'],
+                    "usuario" => $datos["usuario"]
+                ]);
+
+                $fondeo = json_decode($fondeo);
+                if (!$fondeo->success) return self::Responde(false, "Error al activar sucursal", null, $fondeo->error);
+            }
+
+            return self::Responde(true, "Sucursal activada correctamente");
         } catch (Exception $e) {
             return self::Responde(false, "Error al activar sucursal", null, $e->getMessage());
         }
