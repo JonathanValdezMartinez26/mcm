@@ -1997,7 +1997,7 @@ html;
                 const mensaje = document.createElement("div")
                 mensaje.style.color = "black"
                 mensaje.style.fontSize = "15px"
-                mensaje.innerHTML = "<p>¿Está seguro de <b>" + accion + "</b> la solicitud de retiro Express?</p><p style='font-weight: bold'>Esta acción no se puede deshacer.</p>"
+                mensaje.innerHTML = "<p>¿Está seguro de <b>" + accion + "</b> la solicitud de retiro programado?</p><p style='font-weight: bold'>Esta acción no se puede deshacer.</p>"
                  
                 confirmarMovimiento("Solicitudes de retiro Express", null, mensaje)
                     .then((confirmacion) => {
@@ -2242,7 +2242,7 @@ html;
                     }
                      
                     showSuccess(respuesta.mensaje).then(() => {
-                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}", false)
+                        // imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}", false)
                         swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
                         window.location.reload()
                     })

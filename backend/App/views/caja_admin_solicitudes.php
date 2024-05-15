@@ -8,7 +8,7 @@
                 <div class="col-md-5" style="margin-top: 5px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/2910/2910156.png" style="border-radius: 3px; padding-top: 5px;" width="110" height="110">
                     <p style="font-size: 12px; padding-top: 5px; color: #000000"><b>Saldos de Sucursales </b></p>
-                    <! --  -->
+                    <! -- -->
                 </div>
             </a>
             <a id="link" href="/AdminSucursales/SolicitudesReimpresionTicket/">
@@ -59,7 +59,7 @@
                 <div class="modal-content">
                     <div class="modal-header" style="padding-bottom: 0px">
                         <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                            <a class="navbar-brand">Admin sucursales / Catálogo de Clientes</a>
+                            <a class="navbar-brand">Admin sucursales / Solicitudes / Reimpresión de tickets</a>
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
@@ -87,14 +87,18 @@
                                 <ul class="nav nav-tabs fancyTabs" role="tablist">
 
                                     <li class="tab fancyTab active">
-                                        <div class="arrow-down"><div class="arrow-down-inner"></div></div>
-                                        <a id="tab0" href="#tabBody0" role="tab" aria-controls="tabBody0" aria-selected="true" data-toggle="tab" tabindex="0"><span class="fa fa-clock-o"></span><span class="hidden-xs">  Solicitudes pendientes</span></a>
+                                        <div class="arrow-down">
+                                            <div class="arrow-down-inner"></div>
+                                        </div>
+                                        <a id="tab0" href="#tabBody0" role="tab" aria-controls="tabBody0" aria-selected="true" data-toggle="tab" tabindex="0"><span class="fa fa-clock-o"></span><span class="hidden-xs"> Solicitudes pendientes</span></a>
                                         <div class="whiteBlock"></div>
                                     </li>
 
                                     <li class="tab fancyTab">
-                                        <div class="arrow-down"><div class="arrow-down-inner"></div></div>
-                                        <a id="tab1" href="#tabBody1" role="tab" aria-controls="tabBody1" aria-selected="true" data-toggle="tab" tabindex="0"><span class="fa fa-history"></span><span class="hidden-xs">  Historial de Solicitudes</span></a>
+                                        <div class="arrow-down">
+                                            <div class="arrow-down-inner"></div>
+                                        </div>
+                                        <a id="tab1" href="#tabBody1" role="tab" aria-controls="tabBody1" aria-selected="true" data-toggle="tab" tabindex="0"><span class="fa fa-history"></span><span class="hidden-xs"> Historial de Solicitudes</span></a>
                                         <div class="whiteBlock"></div>
                                     </li>
                                 </ul>
@@ -116,14 +120,14 @@
                                                                     <div class="dataTable_wrapper">
                                                                         <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                                                                             <thead>
-                                                                            <tr>
-                                                                                <th>Cod Sucursal</th>
-                                                                                <th>Nombre Sucursal</th>
-                                                                                <th>Hora Cierre</th>
-                                                                            </tr>
+                                                                                <tr>
+                                                                                    <th>Cod Sucursal</th>
+                                                                                    <th>Nombre Sucursal</th>
+                                                                                    <th>Hora Cierre</th>
+                                                                                </tr>
                                                                             </thead>
                                                                             <tbody>
-                                                                            <?= $tabla; ?>
+                                                                                <?= $tabla; ?>
                                                                             </tbody>
                                                                         </table>
                                                                     </div>
@@ -152,14 +156,14 @@
                                                                 <div class="dataTable_wrapper">
                                                                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones1">
                                                                         <thead>
-                                                                        <tr>
-                                                                            <th>Cod Sucursal</th>
-                                                                            <th>Nombre Sucursal</th>
-                                                                            <th>Estatus</th>
-                                                                        </tr>
+                                                                            <tr>
+                                                                                <th>Cod Sucursal</th>
+                                                                                <th>Nombre Sucursal</th>
+                                                                                <th>Estatus</th>
+                                                                            </tr>
                                                                         </thead>
                                                                         <tbody>
-                                                                        <?= $tabla_his; ?>
+                                                                            <?= $tabla_his; ?>
                                                                         </tbody>
                                                                     </table>
                                                                 </div>
@@ -186,19 +190,19 @@
 
 
 <script>
-        function EditarHorario(sucursal, nombre_suc, hora_actual) {
+    function EditarHorario(sucursal, nombre_suc, hora_actual) {
 
 
-            var o = new Option(nombre_suc, sucursal);
-            $(o).html(nombre_suc);
-            $("#sucursal_e").append(o);
+        var o = new Option(nombre_suc, sucursal);
+        $(o).html(nombre_suc);
+        $("#sucursal_e").append(o);
 
-            document.getElementById("hora_ae").value = hora_actual;
+        document.getElementById("hora_ae").value = hora_actual;
 
-            $('#modal_update_horario').modal('show');
+        $('#modal_update_horario').modal('show');
 
-        }
-    </script>
+    }
+</script>
 
 <style>
     .imagen {
@@ -240,15 +244,8 @@
     }
 
     .fancyTab a:focus {
-        outline:none;
+        outline: none;
     }
-
-
-
-
-
-
-
 </style>
 
 
