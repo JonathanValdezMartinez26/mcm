@@ -1186,8 +1186,8 @@ class AdminSucursales extends Controller
             $("#muestra-cupones").tablesorter();
           var oTable = $('#muestra-cupones').DataTable({
                   "lengthMenu": [
-                    [4, 50, -1],
-                    [4, 50, 'Todos'],
+                    [10, 50, -1],
+                    [10, 50, 'Todos'],
                 ],
                 "columnDefs": [{
                     "orderable": false,
