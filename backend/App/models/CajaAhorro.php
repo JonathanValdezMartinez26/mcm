@@ -1587,7 +1587,7 @@ class CajaAhorro
         }
     }
 
-    public static function DevolucionRetiro($datos)
+    public static function  DevolucionRetiro($datos)
     {
         $query = [
             self::GetQueryTicket(),
@@ -1618,7 +1618,7 @@ class CajaAhorro
             if ($res) {
                 LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de devolución de retiro " . ($datos['tipo'] == 1 ? "express" : "programado") . " de cuenta de ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
-                return self::Responde(true, "El monto del retiro ($ " . number_format($datos['monto'], 2) . ") ha sido devuelto al cliente.", ['ticket' => $ticket['CODIGO']]);
+                return self::Responde(true, "Se han liberado $ " . number_format($datos['monto'], 2) . " a la cuenta del cliente por el apartado para el retiro " . ($datos['tipo'] == 1 ? "express" : "programado") . ".", ['ticket' => $ticket['CODIGO']]);
             }
             return self::Responde(false, "Ocurrió un error al registrar la devolución.");
         } catch (Exception $e) {
