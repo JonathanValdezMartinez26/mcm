@@ -89,7 +89,6 @@
                                         <label for="movil">Código de cliente SICAFIN *</label>
                                         <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" value="<?= $cliente ?>" required>
                                     </div>
-
                                     <div class="col-md-2" style="padding-top: 25px">
                                         <button type="button" class="btn btn-primary" onclick="buscaCliente()">
                                             <i class="fa fa-search"></i> Buscar
@@ -134,7 +133,6 @@
                                                     <input type="text" class="form-control" id="edad" readonly>
                                                 </div>
                                             </div>
-
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label for="direccion">Dirección</label>
@@ -142,7 +140,6 @@
                                                         </textarea>
                                                 </div>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
@@ -166,7 +163,7 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <label for="tipo">Monto mínimo <span class="fa fa-info"></span></label>
+                                                    <label for="monto_min">Monto mínimo <span class="fa fa-info"></span></label>
                                                     <input type="text" class="form-control" id="monto_min" name="monto_min" value="<?= number_format($saldoMinimoApertura, 2, '.', ','); ?>" readonly>
                                                 </div>
                                             </div>
@@ -174,7 +171,7 @@
                                         <div class="row">
                                             <div class="col-md-5">
                                                 <div class="form-group">
-                                                    <label for="Fecha">Manejo de ahorro cuenta</label>
+                                                    <label for="manejo_cta">Manejo de ahorro cuenta</label>
                                                     <select class="form-control mr-sm-3" id="manejo_cta" name="manejo_cta" readonly>
                                                         <option value="1">APLICA</option>
                                                     </select>
@@ -182,7 +179,7 @@
                                             </div>
                                             <div class="col-md-7">
                                                 <div class="form-group">
-                                                    <label for="Fecha">Sucursal *</label>
+                                                    <label for="sucursal">Sucursal *</label>
                                                     <select class="form-control mr-sm-3" id="sucursal" name="sucursal" disabled>
                                                         <?= $sucursales; ?>
                                                     </select>

@@ -375,6 +375,11 @@ class Ahorro extends Controller
             {$this->limpiaMontos}
              
             const buscaCliente = () => {
+                if (document.querySelector("#sucursal").value === "") {
+                    showError("Usted no tiene una sucursal asignada.\\n\\nNo es posible continuar con la operación, consulte a su administrador.")
+                    return
+                }
+                 
                 const noCliente = document.querySelector("#clienteBuscado").value
                 limpiaDatosCliente()
                  
@@ -615,6 +620,7 @@ class Ahorro extends Controller
             }
              
             const camposLlenos = (e) => {
+                if (document.querySelector("#sucursal").value === "") return
                 const val = () => {
                     let porcentaje = 0
                     for (let i = 1; i <= 3; i++) {
@@ -1466,7 +1472,7 @@ class Ahorro extends Controller
                 if (saldoActual >= saldoMinimoApertura) return document.querySelector("#monto").disabled = false
                 
                 showError("No es posible hacer la apertura de inversión.\\nEl saldo mínimo de apertura es de " + saldoMinimoApertura.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }) + 
-                    "\\nEl saldo actual del cliente es de " + saldoActual.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }))
+                "\\nEl saldo actual del cliente es de " + saldoActual.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }))
             }
             
             const limpiaDatosCliente = () => {
@@ -3443,7 +3449,7 @@ class Ahorro extends Controller
         $tktComision =  $datos['COMISION'] > 0 ?  '<tr><td style="text-align: left; width: 60%;">COMISION:</td><td style="text-align: right; width: 40%;">$ ' . number_format($datos['COMISION'], 2, '.', ',') . '</td></tr>' : "";
 
         $detalleMovimientos = "";
-        if ($datos['COMPROBANTE'] == 'DEPÓSITO') {
+        if ($datos['COMPROBANTE'] == 'DEPÓSITO' && !$tktComision) {
             $detalleMovimientos = <<<html
             <tr>
                 <td style="text-align: left; width: 60%;">

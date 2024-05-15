@@ -515,7 +515,7 @@ sql;
                 MONTO_INVERSION AS ABONO,
                 0 AS CARGO,
                 SUM(MONTO_INVERSION) OVER (ORDER BY FECHA_APERTURA) AS SALDO,
-                CDG_USUARIO AS USUARIO
+                NVL(CDG_USUARIO, 'SISTEMA') AS USUARIO
             FROM
                 CUENTA_INVERSION
             WHERE

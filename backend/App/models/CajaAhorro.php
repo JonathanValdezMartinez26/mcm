@@ -1173,9 +1173,9 @@ class CajaAhorro
     {
         $qryInversion = <<<sql
         INSERT INTO CUENTA_INVERSION
-            (CDG_CONTRATO, CDG_TASA, MONTO_INVERSION, FECHA_APERTURA, ESTATUS, ACCION)
+            (CDG_CONTRATO, CDG_TASA, MONTO_INVERSION, FECHA_APERTURA, ESTATUS, ACCION, CDG_USUARIO)
         VALUES
-            (:contrato, :tasa, :monto, SYSDATE, 'A', :accion)
+            (:contrato, :tasa, :monto, SYSDATE, 'A', :accion, :usuario)
         sql;
 
         $query = [
@@ -1189,7 +1189,8 @@ class CajaAhorro
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['monto'],
                 'tasa' => $datos['tasa'],
-                'accion' => $datos['renovacion']
+                'accion' => $datos['renovacion'],
+                'usuario' => $datos['ejecutivo']
             ],
             [
                 'contrato' => $datos['contrato'],
