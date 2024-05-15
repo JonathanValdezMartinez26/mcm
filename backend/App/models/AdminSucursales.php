@@ -659,6 +659,7 @@ sql;
                     PE
                 WHERE
                     CODIGO = SMA.CDG_USUARIO
+                    AND CDGEM = 'EMPFIN'
             ) AS NOMBRE_USUARIO,
             'FONDEO' AS MOVIMIENTO,
             TO_CHAR(SMA.MONTO, 'FM$999,999,999.00') AS MONTO
@@ -673,13 +674,13 @@ sql;
         sql;
 
 
-        if (isset($datos['sucursal'])) $qry .= " AND SEA.CDG_SUCURSAL = '{$datos['sucursal']}'";
-        if (isset($datos['fechaI']) && isset($datos['fechaF'])) $qry .= " AND TRUNC(SMA.FECHA) BETWEEN TO_DATE('{$datos['fechaI']}', 'YYYY-MM-DD') AND TO_DATE('{$datos['fechaF']}', 'YYYY-MM-DD')";
+        if ($datos['sucursal']) $qry .= " AND SEA.CDG_SUCURSAL = '{$datos['sucursal']}'";
+        if ($datos['fechaI'] && $datos['fechaF']) $qry .= " AND TRUNC(SMA.FECHA) BETWEEN TO_DATE('{$datos['fechaI']}', 'YYYY-MM-DD') AND TO_DATE('{$datos['fechaF']}', 'YYYY-MM-DD')";
 
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryAll($qry);
-            if (count($res) === 0) return self::Responde(false, "No se encontraron registros de fondeos para los parámetros proporcionados.");
+            if (count($res) === 0) return self::Responde(false, "No se encontraron registros de fondeos para los parámetros proporcionados.", null, $qry);
             return self::Responde(true, "Fondeo encontrados.", $res);
         } catch (Exception $e) {
             return self::Responde(false, "Error al buscar registros de fondeos.", null, $e->getMessage());

@@ -1511,11 +1511,11 @@ html;
 
             if ($value['CONCEPTO'] == 'TRANSFERENCIA INVERSIÓN (ENVIO)') {
                 $concepto = '<i class="fa fa-minus" style="color: #ac0000;"></i>';
-            } else if ($value['CONCEPTO'] == 'TRANSFERENCIA INVERSIÓN (RECEPCIÓN)' ) {
+            } else if ($value['CONCEPTO'] == 'TRANSFERENCIA INVERSIÓN (RECEPCIÓN)') {
                 $concepto = '<i class="fa fa-minus" style="color: #00ac00;"></i>';
-            } else if ($value['CONCEPTO'] == 'RETIRO' ) {
+            } else if ($value['CONCEPTO'] == 'RETIRO') {
                 $concepto = '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
-            }else if ($value['TIPO_MOVIMIENTO'] == 'MOVIMIENTO VIRTUAL' ) {
+            } else if ($value['TIPO_MOVIMIENTO'] == 'MOVIMIENTO VIRTUAL') {
                 $concepto = '<i class="fa fa-asterisk" style="color: #005dac;"></i>';
             } else {
                 $concepto = '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
@@ -2609,6 +2609,17 @@ script;
             })
              
             const imprimeExcel = (id) => exportaExcel(id, 'Historial Fondeo Sucursal')
+             
+            const validaFechas = () => {
+                const fechaI = $("#fechaI").val()
+                const fechaF = $("#fechaF").val()
+                 
+                if (fechaI === "" || fechaF === "") return showError("Debe seleccionar ambas fechas.")
+                if (fechaI > fechaF) {
+                    $("#fechaI").val(fechaF)
+                    return showError("La fecha inicial no puede ser mayor a la fecha final.")
+                }
+            }
              
             const buscarFondeos = () => {
                 const datos = {
