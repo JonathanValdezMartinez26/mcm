@@ -1953,6 +1953,31 @@ class CajaAhorro
         }
     }
 
+    public static function ValidaRetirosDia($datos)
+    {
+        $qry = <<<sql
+        SELECT
+            SUM(MONTO) AS RETIROS
+        FROM
+            MOVIMIENTOS_AHORRO
+        WHERE
+            CDG_TIPO_PAGO = 4
+            AND TRUNC(FECHA_MOV) = TRUNC(SYSDATE)
+            AND CDG_CONTRATO = '{$datos['contrato']}'
+        GROUP BY
+            TRUNC(FECHA_MOV)
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryOne($qry);
+            if (!$res) return self::Responde(true, "No se encontraron retiros para el día.");
+            return self::Responde(false, "Retiros del día.", $res);
+        } catch (Exception $e) {
+            return self::Responde(false, "Ocurrió un error al validar los retiros del día.");
+        }
+    }
+
     public static function GetSaldoMinimoApertura($sucursal)
     {
         $qry = <<<sql

@@ -838,6 +838,7 @@ class Ahorro extends Controller
         $saldoMinimoApertura = 100;
         $montoMaximoRetiro = 50000;
         $montoMaximoDeposito = 1000000;
+        $maximoRetiroDia = 50000;
 
         $extraFooter = <<<html
         <script>
@@ -848,6 +849,7 @@ class Ahorro extends Controller
             const saldoMinimoApertura = $saldoMinimoApertura
             const montoMaximoRetiro = $montoMaximoRetiro
             const montoMaximoDeposito = $montoMaximoDeposito
+            const maximoRetiroDia = $maximoRetiroDia
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
@@ -868,11 +870,15 @@ class Ahorro extends Controller
             {$this->limpiaMontos}
          
             const llenaDatosCliente = (datosCliente) => {
-                document.querySelector("#nombre").value = datosCliente.NOMBRE
-                document.querySelector("#curp").value = datosCliente.CURP
-                document.querySelector("#contrato").value = datosCliente.CONTRATO
-                document.querySelector("#cliente").value = datosCliente.CDGCL
-                document.querySelector("#saldoActual").value = formatoMoneda(datosCliente.SALDO)
+                consultaServidor("/Ahorro/ValidaRetirosDia/", { contrato: datosCliente.CONTRATO, cliente: datosCliente.CDGCL }, (respuesta) => {
+                    if (!respuesta.success && respuesta.datos.RETIROS >= maximoRetiroDia) return showError("El cliente " + datosCliente.CDGCL + " ha alcanzado el límite de retiros diarios.")
+                     
+                    document.querySelector("#nombre").value = datosCliente.NOMBRE
+                    document.querySelector("#curp").value = datosCliente.CURP
+                    document.querySelector("#contrato").value = datosCliente.CONTRATO
+                    document.querySelector("#cliente").value = datosCliente.CDGCL
+                    document.querySelector("#saldoActual").value = formatoMoneda(datosCliente.SALDO)
+                })
             }
              
             const limpiaDatosCliente = () => {
@@ -1030,6 +1036,11 @@ class Ahorro extends Controller
     {
         $resutado =  CajaAhorroDao::RegistraOperacion($_POST);
         echo $resutado;
+    }
+
+    public function ValidaRetirosDia()
+    {
+        echo CajaAhorroDao::ValidaRetirosDia($_POST);
     }
 
     // Registro de solicitudes de retiros mayores de cuentas de ahorro //
