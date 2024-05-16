@@ -56,17 +56,14 @@
             <div class="modal-content">
                 <div class="modal-header" style="padding-bottom: 0px">
                     <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                        <a class="navbar-brand">Admin sucursales / Log Transaccional </a>
+                        <a class="navbar-brand">Admin sucursales / Log transaccional </a>
                     </div>
                     <div>
                         <ul class="nav navbar-nav">
                             <li class="linea"><a href="/AdminSucursales/Log/">
-                                    <p style="font-size: 16px;">Historial Transacciones</p>
+                                    <p style="font-size: 16px;">Historial transacciones</p>
                                 </a></li>
 
-                            <li><a href="/AdminSucursales/LogConfiguracion/">
-                                    <p style="font-size: 16px;"><b>Historial Movimientos Configuración</b></p>
-                                </a></li>
                         </ul>
                     </div>
                 </div>
@@ -117,12 +114,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="row">
-                                <hr>
-                                <div class="col-md-12" style="text-align:center;">
-                                    <h3>Log de Transacciones</h3>
-                                </div>
-                            </div>
+                           
                             <div class="row">
                                 <div class="dataTable_wrapper">
                                     <table class="table table-striped table-bordered table-hover" id="log">

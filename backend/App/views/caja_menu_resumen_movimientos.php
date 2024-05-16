@@ -79,12 +79,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-12" style="text-align:center;">
-                                            <h4>Mi resumen de movimientos</h4>
-                                            <hr>
-                                        </div>
-                                    </div>
 
                                     <div class="card col-md-12">
                                         <form name="all" id="all" method="POST">

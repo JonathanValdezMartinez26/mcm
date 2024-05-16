@@ -63,11 +63,7 @@
                     <div>
                         <ul class="nav navbar-nav">
                             <li><a href="/AdminSucursales/Log/">
-                                    <p style="font-size: 16px;"><b>Historial Transacciones</b></p>
-                                </a></li>
-
-                            <li class="linea"><a href="/AdminSucursales/LogConfiguracion/">
-                                    <p style="font-size: 16px;">Historial Movimientos Configuración</p>
+                                    <p style="font-size: 16px;"><b>Historial transacciones</b></p>
                                 </a></li>
                         </ul>
                     </div>
@@ -119,12 +115,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="row">
-                                <hr>
-                                <div class="col-md-12" style="text-align:center;">
-                                    <h3>Log de Transacciones</h3>
-                                </div>
-                            </div>
+
                             <div class="row">
                                 <div class="dataTable_wrapper">
                                     <table class="table table-striped table-bordered table-hover" id="log">
