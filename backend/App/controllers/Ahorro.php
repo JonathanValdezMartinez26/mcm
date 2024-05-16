@@ -870,8 +870,11 @@ class Ahorro extends Controller
             {$this->limpiaMontos}
          
             const llenaDatosCliente = (datosCliente) => {
-                consultaServidor("/Ahorro/ValidaRetirosDia/", { contrato: datosCliente.CONTRATO, cliente: datosCliente.CDGCL }, (respuesta) => {
-                    if (!respuesta.success && respuesta.datos.RETIROS >= maximoRetiroDia) return showError("El cliente " + datosCliente.CDGCL + " ha alcanzado el límite de retiros diarios.")
+                consultaServidor("/Ahorro/ValidaRetirosDia/", { contrato: datosCliente.CONTRATO }, (respuesta) => {
+                    if (!respuesta.success && respuesta.datos.RETIROS >= maximoRetiroDia) {
+                        showError("El cliente " + datosCliente.CDGCL + " ha alcanzado el límite de retiros diarios.")
+                        document.querySelector("#retiro").disabled = true
+                    }
                      
                     document.querySelector("#nombre").value = datosCliente.NOMBRE
                     document.querySelector("#curp").value = datosCliente.CURP
@@ -885,6 +888,7 @@ class Ahorro extends Controller
                 document.querySelector("#registroOperacion").reset()
                 document.querySelector("#monto").disabled = true
                 document.querySelector("#btnRegistraOperacion").disabled = true
+                document.querySelector("#retiro").disabled = false
             }
              
             const validaMonto = () => {
@@ -1788,8 +1792,12 @@ class Ahorro extends Controller
     // Apertura de contratos para cuentas de ahorro Peques
     public function ContratoCuentaPeque()
     {
+        $maximoRetiroDia = 50000;
+
         $extraFooter = <<<html
         <script>
+            maximoRetiroDia = $maximoRetiroDia
+         
             window.onload = () => {
                 if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
             }
@@ -1854,20 +1862,22 @@ class Ahorro extends Controller
                     }
                         
                     const datosCliente = respuesta.datos
-                        
-                    document.querySelector("#nombre1").disabled = false
-                    document.querySelector("#nombre2").disabled = false
-                    document.querySelector("#apellido1").disabled = false
-                    document.querySelector("#apellido2").disabled = false
-                    document.querySelector("#fecha_nac").disabled = false
-                    document.querySelector("#ciudad").disabled = false
-                    document.querySelector("#curp").disabled = false
-                        
-                    document.querySelector("#fechaRegistro").value = datosCliente.FECHA_REGISTRO
-                    document.querySelector("#noCliente").value = noCliente.value
-                    document.querySelector("#nombre").value = datosCliente.NOMBRE
-                    document.querySelector("#direccion").value = datosCliente.DIRECCION
-                    noCliente.value = ""
+                    consultaServidor("/Ahorro/ValidaRetirosDia/", { contrato: datosCliente.CONTRATO }, (respuesta) => {
+                        if (!respuesta.success && respuesta.datos.RETIROS >= maximoRetiroDia) return showError("El cliente " + datosCliente.CDGCL + " ha alcanzado el límite de retiros diarios.")
+                            document.querySelector("#nombre1").disabled = false
+                            document.querySelector("#nombre2").disabled = false
+                            document.querySelector("#apellido1").disabled = false
+                            document.querySelector("#apellido2").disabled = false
+                            document.querySelector("#fecha_nac").disabled = false
+                            document.querySelector("#ciudad").disabled = false
+                            document.querySelector("#curp").disabled = false
+                                
+                            document.querySelector("#fechaRegistro").value = datosCliente.FECHA_REGISTRO
+                            document.querySelector("#noCliente").value = noCliente.value
+                            document.querySelector("#nombre").value = datosCliente.NOMBRE
+                            document.querySelector("#direccion").value = datosCliente.DIRECCION
+                            noCliente.value = ""
+                        })
                 })
             }
              
