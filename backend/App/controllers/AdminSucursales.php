@@ -1135,7 +1135,7 @@ class AdminSucursales extends Controller
                     if ($registro['TIPO'] == 5) {
                         $conteoTransferencias++;
                         $montoTransferencias += $registro['CARGO'];
-                    } else if ($registro['TIPO'] != 2) {
+                    } else if ($registro['TIPO'] != 2 && $registro['TIPO'] !== 13 && $registro['TIPO'] !== 14) {
                         $conteoCargos++;
                         $montoCargos += $registro['CARGO'];
                     }
@@ -1143,8 +1143,16 @@ class AdminSucursales extends Controller
             }
             foreach ($registro as $key2 => $celda) {
                 if ($key2 === "TIPO") continue;
-                if ($key2 === "ABONO" || $key2 === "CARGO" || $key2 === "SALDO") {
+                if ($key2 === "ABONO" || $key2 === "SALDO") {
                     $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " .  number_format($celda, 2, '.', ',') . "</td>";
+                } elseif ($key2 === "CARGO") {
+                    if ($registro['TIPO'] == 6 || $registro['TIPO'] == 7) {
+                        $filas .= "<td style='vertical-align: middle; text-align: right;'>$ 0.00</td>";
+                        $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " . number_format($celda, 2, '.', ',') . "</td>";
+                    } else {
+                        $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " . number_format($celda, 2, '.', ',') . "</td>";
+                        $filas .= "<td style='vertical-align: middle; text-align: right;'>$ 0.00</td>";
+                    }
                 } elseif ($key2 === "DESCRIPCION") {
                     $filas .= "<td style='vertical-align: middle; text-align: left;'>{$celda}</td>";
                 } else {

@@ -80,6 +80,7 @@
                                     <th>Concepto</th>
                                     <th>Abono</th>
                                     <th>Cargo</th>
+                                    <th>En transito</th>
                                     <th>Saldo Final</th>
                                     <th>Usuario</th>
                                 </tr>

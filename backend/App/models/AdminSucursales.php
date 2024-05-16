@@ -498,12 +498,22 @@ sql;
                     ELSE 0
                 END AS ABONO,
                 CASE MA.MOVIMIENTO
-                    WHEN '0' THEN MA.MONTO
+                    WHEN '0' THEN
+                        CASE MA.CDG_TIPO_PAGO
+                            WHEN '13' THEN 0
+                            WHEN '14' THEN 0
+                            ELSE MA.MONTO
+                        END
                     ELSE 0
                 END AS CARGO,
                 SUM(
                     CASE MA.MOVIMIENTO
-                        WHEN '0' THEN -MA.MONTO
+                        WHEN '0' THEN
+                            CASE MA.CDG_TIPO_PAGO
+                                WHEN '13' THEN 0
+                                WHEN '14' THEN 0
+                                ELSE -MA.MONTO
+                            END
                         WHEN '1' THEN MA.MONTO
                     END
                 ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO,
