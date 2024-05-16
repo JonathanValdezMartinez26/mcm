@@ -1292,7 +1292,8 @@ class Ahorro extends Controller
                             sucursal: "{$_SESSION['cdgco_ahorro']}", 
                             monto: resumen.MONTO, 
                             contrato: resumen.CONTRATO,
-                            cliente: resumen.CLIENTE
+                            cliente: resumen.CLIENTE,
+                            tipo: resumen.TIPO_RETIRO
                         }
                          
                         consultaServidor("/Ahorro/EntregaRetiro/", $.param(datos), (respuesta) => {

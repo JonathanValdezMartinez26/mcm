@@ -1538,7 +1538,7 @@ class CajaAhorro
 
     public static function EntregaRetiro($datos)
     {
-        $tipoRetiro = $datos['retiroExpress'] === true || $datos['retiroExpress'] === 'true' ? "Express" : "Programado";
+        $tipoRetiro = $datos['tipo'] == 1 ? "Express" : "Programado";
 
         $datosSolicitud = [
             'estatus' => 3,
