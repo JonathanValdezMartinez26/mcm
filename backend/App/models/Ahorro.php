@@ -60,11 +60,10 @@ sql;
             FROM ESIACOM.TICKETS_AHORRO_REIMPRIME TAR
             INNER JOIN TICKETS_AHORRO TA ON TA.CODIGO = TAR.CDGTICKET_AHORRO 
             WHERE TAR.CDGPE_SOLICITA = '$usuario' 
-            ORDER BY TAR.FECHA DESC
+            ORDER BY TAR.FREGISTRO DESC
 sql;
         }
-
-
+        
         $mysqli = Database::getInstance();
         return $mysqli->queryAll($query);
     }
