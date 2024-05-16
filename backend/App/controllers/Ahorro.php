@@ -1792,8 +1792,6 @@ class Ahorro extends Controller
     // Apertura de contratos para cuentas de ahorro Peques
     public function ContratoCuentaPeque()
     {
-        $maximoRetiroDia = 50000;
-
         $extraFooter = <<<html
         <script>
             window.onload = () => {
@@ -2024,7 +2022,15 @@ class Ahorro extends Controller
                     return campos.every((campo) => campo)
                 }
                 if (e.target.id === "fecha_nac") calculaEdad(e)
-                if (e.target.id !== "curp") generaCURP()
+                if (e.target.id !== "curp") generaCURP({
+                    nombre1: document.querySelector("#nombre1").value,
+                    nombre2: document.querySelector("#nombre1").value,
+                    apellido1: document.querySelector("#apellido1").value,
+                    apellido2: document.querySelector("#apellido2").value,
+                    fecha: document.querySelector("#fecha_nac").value,
+                    sexo: document.querySelector("#sexoH").checked ? "H" : "M",
+                    entidad: document.querySelector("#ciudad").value
+                })
                 document.querySelector("#btnGeneraContrato").disabled = !val()
             }
              
@@ -2046,56 +2052,28 @@ class Ahorro extends Controller
                 } else document.querySelector("#edad").removeAttribute("style")
             }
              
-            const generaCURP = () => {
-                // const nombre1 = document.querySelector("#nombre1").value
-                // const nombre2 = document.querySelector("#nombre2").value
-                // const apellido1 = document.querySelector("#apellido1").value
-                // const apellido2 = document.querySelector("#apellido2").value
-                // const sexo = document.querySelector("#sexoH").checked ? "H" : "M"
-                // const fecha_nac = document.querySelector("#fecha_nac").value
-                // const ciudad = document.querySelector("#ciudad").value
-                // const curp = document.querySelector("#curp")
-                // const fecha = fecha_nac.split("-")
-                // const anio = fecha[0].substring(2)
-                // const mes = fecha[1]
-                // const dia = fecha[2]
-                // const vocales = "AEIOU"
-                // const consonantes = "BCDFGHJKLMNPQRSTVWXYZ"
-                // const homonimos = {
-                //     "ñ": "n",
-                //     "á": "A",
-                //     "é": "E",
-                //     "í": "I",
-                //     "ó": "O",
-                //     "ú": "U"
-                // }
+            const generaCURP = (datos) => {
+                datos.apellido1 = datos.apellido1.toUpperCase()
+                datos.apellido2 = datos.apellido2.toUpperCase()
+                datos.nombre1 = datos.nombre1.toUpperCase()
+                datos.nombre2 = datos.nombre2.toUpperCase()
                  
-                // const primerConsonante = (nombre) => {
-                //     let consonante = ""
-                //     for (let i = 0; i < nombre.length; i++) {
-                //         if (consonantes.includes(nombre[i].toUpperCase())) {
-                //             consonante = nombre[i].toUpperCase()
-                //             break
-                //         }
-                //     }
-                //     return consonante || "X"
-                // }
-                 
-                // const primerVocal = (nombre) => {
-                //     let vocal = ""
-                //     for (let i = 0; i < nombre.length; i++) {
-                //         if (vocales.includes(nombre[i].toUpperCase())) {
-                //             vocal = nombre[i].toUpperCase()
-                //             break
-                //         }
-                //     }
-                //     return vocal || "X"
-                // }
-                 
-                // const homonimo = (letra) => homonimos[letra] || letra
-                 
-                // const curpGenerada = primerConsonante(apellido1) + homonimo(primerConsonante(apellido2)) + primerConsonante(nombre1) + primerConsonante(nombre2) + anio + mes + dia + sexo + ciudad
-                // curp.value = curpGenerada
+                const CURP = []
+                CURP[0] = datos.apellido1 ? datos.apellido1.charAt(0) : "X"
+                CURP[1] = datos.apellido1 ? datos.apellido1.slice(1).replace(/\a\e\i\o\u/gi, "").charAt(0) : "X"
+                CURP[2] = datos.apellido2 ? datos.apellido2.charAt(0) : "X"
+                CURP[3] = datos.nombre1 ? datos.nombre1.charAt(0) : "X"
+                CURP[4] = datos.fecha ? datos.fecha.slice(2, 4) : "00"
+                CURP[5] = datos.fecha ? datos.fecha.slice(5, 7) : "00"
+                CURP[6] = datos.fecha ? datos.fecha.slice(8, 10) : "00"
+                CURP[7] = datos.sexo ? datos.sexo : "X"
+                CURP[8] = datos.entidad ? datos.entidad : "NE"
+                CURP[9] = datos.apellido1 ? datos.apellido1.slice(1).replace(/[aeiou]/gi, "").charAt(0) : "X"
+                CURP[10] = datos.apellido2 ? datos.apellido2.slice(1).replace(/[aeiou]/gi, "").charAt(0) : "X"
+                CURP[11] = datos.nombre1 ? datos.nombre1.slice(1).replace(/[aeiou]/gi, "").charAt(0) : "X"
+                CURP[12] = "00"
+                
+                document.querySelector("#curp").value = CURP.join("")
             }
         </script>
         html;
