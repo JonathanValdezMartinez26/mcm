@@ -3372,9 +3372,6 @@ class Ahorro extends Controller
             * {
                 font-family: Arial, sans-serif;
                 text-align: justify;
-            }
-            body {
-                font-family: Helvetica, sans-serif;
                 margin: 0;
                 padding: 0;
             }
@@ -3392,10 +3389,6 @@ class Ahorro extends Controller
             }
         </style>  
         html;
-
-        $dep_ini = number_format($datos['DEP_INICIAL'], 2, '.', ',');
-        $comision = number_format($datos['COMISION'], 2, '.', ',');
-        $saldo_ini = number_format($datos['SALDO_INICIAL'], 2, '.', ',');
 
         $tabla = <<<html
         <div class="contenedor">
@@ -3427,9 +3420,9 @@ class Ahorro extends Controller
                 <ol class="listaLetras">
                     <li>Contar con la capacidad suficiente para la celebración del presente contrato.</li>
                     <li>
-                        Que su domicilio para los efectos de este contrato es el ubicado en Avenida Melchor
+                        Que su domicilio para los efectos de este contrato es el ubicado en <b>Avenida Melchor
                         Ocampo, número 416 Interior 1, Colonia Cuauhtémoc, Alcaldía Cuauhtémoc, Ciudad de
-                        México, C.P. 06500.
+                        México, C.P. 06500</b>.
                     </li>
                 </ol>
                 <li><b>LAS PARTES</b> declaran:</li>
@@ -3516,7 +3509,7 @@ class Ahorro extends Controller
             </p>
             <table style="width: 100%">
                 <tr>
-                    <td colspan="3" style="text-align: center; height: 150px">
+                    <td colspan="3" style="text-align: center; height: 90px">
                         <b>Ciudad de México, a {$datos['FECHA']}</b>
                     </td>
                 </tr>
@@ -3530,7 +3523,7 @@ class Ahorro extends Controller
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3" style="height: 100px"></td>
+                    <td colspan="3" style="height: 80px"></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 40%; border-top: 1px solid">
@@ -3586,7 +3579,7 @@ class Ahorro extends Controller
 
         $nombreArchivo = "Contrato " . $contrato;
 
-        $mpdf = new \mPDF('utf-8', 'Letter', 10, 'Arial');
+        $mpdf = new \mPDF('utf-8', 'Letter', 12, 'Arial', 5, 5, 5, 5, 0, 5);
         $fi = date('d/m/Y H:i:s');
         $pie = <<< html
         <table style="width: 100%; font-size: 10px">
