@@ -500,10 +500,20 @@ sql;
                             WHEN '7' THEN MA.MONTO
                             ELSE 0
                         END
-                    ELSE 0
+                    ELSE 
+                        CASE MA.CDG_TIPO_PAGO
+                            WHEN '8' THEN MA.MONTO
+                            WHEN '9' THEN MA.MONTO
+                            ELSE 0
+                        END
                 END AS TRANSITO,
                 CASE MA.MOVIMIENTO
-                    WHEN '1' THEN MA.MONTO
+                    WHEN '1' THEN 
+                        CASE MA.CDG_TIPO_PAGO
+                            WHEN '8' THEN 0
+                            WHEN '9' THEN 0
+                            ELSE MA.MONTO
+                        END
                     ELSE 0
                 END AS ABONO,
                 CASE MA.MOVIMIENTO
@@ -523,7 +533,12 @@ sql;
                                 WHEN '7' THEN 0
                                 ELSE -MA.MONTO
                             END
-                        WHEN '1' THEN MA.MONTO
+                        WHEN '1' THEN 
+                            CASE MA.CDG_TIPO_PAGO
+                                WHEN '8' THEN 0
+                                WHEN '9' THEN 0
+                                ELSE MA.MONTO
+                            END
                     END
                 ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO,
                 (

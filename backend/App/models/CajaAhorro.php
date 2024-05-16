@@ -848,7 +848,12 @@ class CajaAhorro
                                     WHEN '7' THEN 0
                                     ELSE -MA.MONTO
                                 END
-                            ELSE MA.MONTO
+                            ELSE 
+                                CASE MA.CDG_TIPO_PAGO
+                                    WHEN '8' THEN 0
+                                    WHEN '9' THEN 0
+                                    ELSE MA.MONTO
+                                END
                         END 
                     )
                 FROM
@@ -876,7 +881,12 @@ class CajaAhorro
                                     WHEN '7' THEN 0
                                     ELSE -MA.MONTO
                                 END
-                            ELSE MA.MONTO
+                            ELSE 
+                                CASE MA.CDG_TIPO_PAGO
+                                    WHEN '8' THEN 0
+                                    WHEN '9' THEN 0
+                                    ELSE MA.MONTO
+                                END
                         END 
                     )
                 FROM
@@ -894,7 +904,12 @@ class CajaAhorro
                                     WHEN '7' THEN 0
                                     ELSE -MA.MONTO
                                 END
-                            ELSE MA.MONTO
+                            ELSE 
+                            CASE MA.CDG_TIPO_PAGO
+                                WHEN '8' THEN 0
+                                WHEN '9' THEN 0
+                                ELSE MA.MONTO
+                            END
                         END 
                     )
                 FROM
@@ -924,8 +939,8 @@ class CajaAhorro
                         WHEN '5' THEN 'TRANSFERENCIA'
                         WHEN '6' THEN 'EN TRANSITO'
                         WHEN '7' THEN 'EN TRANSITO'
-                        WHEN '8' THEN 'TRANSFERENCIA'
-                        WHEN '9' THEN 'TRANSFERENCIA'
+                        WHEN '8' THEN 'EN TRANSITO'
+                        WHEN '9' THEN 'EN TRANSITO'
                         ELSE 'EFECTIVO'
                     END
                 FROM
@@ -940,8 +955,8 @@ class CajaAhorro
                         WHEN '5' THEN 'APERTURADO POR'
                         WHEN '6' THEN 'SOLICITUD RETIRÓ'
                         WHEN '7' THEN 'SOLICITUD RETIRÓ'
-                        WHEN '8' THEN 'REEMBOLSAMOS'
-                        WHEN '9' THEN 'REEMBOLSAMOS'
+                        WHEN '8' THEN 'CANCELACIÓN RETIRÓ'
+                        WHEN '9' THEN 'CANCELACIÓN RETIRÓ'
                         ELSE CASE MOVIMIENTO
                             WHEN '0' THEN 'ENTREGAMOS'
                             ELSE 'RECIBIMOS'
@@ -978,8 +993,8 @@ class CajaAhorro
                         WHEN '5' THEN 'INVERSIÓN'
                         WHEN '6' THEN 'RETIRO EXPRESS'
                         WHEN '7' THEN 'RETIRO PROGRAMADO'
-                        WHEN '8' THEN 'REEMBOLSO'
-                        WHEN '9' THEN 'REEMBOLSO'
+                        WHEN '8' THEN 'CANCELACIÓN'
+                        WHEN '9' THEN 'CANCELACIÓN'
                         ELSE CASE MA.MOVIMIENTO
                             WHEN '0' THEN 'RETIRO'
                             ELSE 'DEPÓSITO'
@@ -1850,10 +1865,20 @@ sql;
                             WHEN '7' THEN MA.MONTO
                             ELSE 0
                         END
-                    ELSE 0
+                    ELSE 
+                        CASE MA.CDG_TIPO_PAGO
+                            WHEN '8' THEN MA.MONTO
+                            WHEN '9' THEN MA.MONTO
+                            ELSE 0
+                        END
                 END AS TRANSITO,
                 CASE MA.MOVIMIENTO
-                    WHEN '1' THEN MA.MONTO
+                    WHEN '1' THEN 
+                        CASE MA.CDG_TIPO_PAGO
+                            WHEN '8' THEN 0
+                            WHEN '9' THEN 0
+                            ELSE MA.MONTO
+                        END
                     ELSE 0
                 END AS ABONO,
                 CASE MA.MOVIMIENTO
@@ -1873,7 +1898,12 @@ sql;
                                 WHEN '7' THEN 0
                                 ELSE -MA.MONTO
                             END
-                        WHEN '1' THEN MA.MONTO
+                        WHEN '1' THEN
+                            CASE MA.CDG_TIPO_PAGO
+                                WHEN '8' THEN 0
+                                WHEN '9' THEN 0
+                                ELSE MA.MONTO
+                            END
                     END
                 ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO
             FROM
@@ -2008,11 +2038,35 @@ sql;
                         CODIGO = MA.CDG_TIPO_PAGO
                 ) AS DESCRIPCION,
                 CASE MA.MOVIMIENTO
-                    WHEN '0' THEN MA.MONTO
+                    WHEN '0' THEN
+                        CASE MA.CDG_TIPO_PAGO
+                            WHEN '6' THEN MA.MONTO
+                            WHEN '7' THEN MA.MONTO
+                            ELSE 0
+                        END
+                    ELSE 
+                        CASE MA.CDG_TIPO_PAGO
+                            WHEN '8' THEN MA.MONTO
+                            WHEN '9' THEN MA.MONTO
+                            ELSE 0
+                        END
+                END AS TRANSITO,
+                CASE MA.MOVIMIENTO
+                    WHEN '0' THEN
+                        CASE MA.CDG_TIPO_PAGO
+                            WHEN '6' THEN 0
+                            WHEN '7' THEN 0
+                            ELSE MA.MONTO
+                        END
                     ELSE 0
                 END AS CARGO,
                 CASE MA.MOVIMIENTO
-                    WHEN '1' THEN MA.MONTO
+                    WHEN '1' THEN 
+                    CASE MA.CDG_TIPO_PAGO
+                        WHEN '8' THEN 0
+                        WHEN '9' THEN 0
+                        ELSE MA.MONTO
+                    END
                     ELSE 0
                 END AS ABONO,
                 SUM(

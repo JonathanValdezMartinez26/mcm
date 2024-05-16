@@ -1085,8 +1085,8 @@ class AdminSucursales extends Controller
         $movimientos = self::ListaMovimientos($_POST);
         $segmentos = AdminSucursalesDao::GetSegmentos($_POST);
         $opcSegmentos = "";
-        if ($segmentos['PEQUES'] > 0) $opcSegmentos .= "<option value='2'>PEQUES</option>";
-        if ($segmentos['INVERSIÓN'] > 0) $opcSegmentos .= "<option value='3'>INVERSIÓN</option>";
+        if ($segmentos['INVERSIÓN'] > 0) $opcSegmentos .= "<option value='2'>INVERSIÓN</option>";
+        if ($segmentos['PEQUES'] > 0) $opcSegmentos .= "<option value='3'>PEQUES</option>";
 
         if ($opcSegmentos === "") $opcSegmentos = "<option value='1'>AHORRO</option>";
         else $opcSegmentos = "<option value='0'>TODOS</option><option value='1'>AHORRO</option>" . $opcSegmentos;

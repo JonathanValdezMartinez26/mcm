@@ -3707,7 +3707,7 @@ class Ahorro extends Controller
     {
         $datos = CajaAhorroDao::DatosTicketArqueo($_GET);
         if (!$datos) {
-            echo "No se encontró el número de arqueo: " . $_GET['arqueo'] . " para la sucursal: " . $_GET['sucursal'];
+            echo "No se encontró el número de arqueo: " . ($_GET['arqueo'] ? $_GET['arqueo'] : "No indicado") . ", para la sucursal: " . $_GET['sucursal'];
             return;
         }
 
@@ -3964,7 +3964,7 @@ class Ahorro extends Controller
         $cargos = 0;
         $abonos = 0;
         $transito = 0;
-        $filas = "<tr><td colspan='5' style='text-align: center;'>Sin movimientos en el periodo.</td></tr>";
+        $filas = "<tr><td colspan='6' style='text-align: center;'>Sin movimientos en el periodo.</td></tr>";
         $salto = false;
         if ($datos || count($datos) > 0) {
             $filas = "";
@@ -4130,14 +4130,16 @@ class Ahorro extends Controller
             $tabla = "<span class='tituloTablas'>Cuenta Ahorro Peque</span>";
             $salto = false;
             foreach ($cuentas as $cuenta) {
+                $transito = 0;
                 $cargos = 0;
                 $abonos = 0;
                 $filas = "";
                 $datos = CajaAhorroDao::GetMovimientosPeque($cuenta['CONTRATO'], $fIni, $fFin);
                 if ($datos || count($datos) > 0) {
                     foreach ($datos as $dato) {
-                        $cargo = number_format($dato['CARGO'], 2, '.', ',');
+                        $transito = number_format($dato['TRANSITO'], 2, '.', ',');
                         $abono = number_format($dato['ABONO'], 2, '.', ',');
+                        $cargo = number_format($dato['CARGO'], 2, '.', ',');
                         $saldo = number_format($dato['SALDO'], 2, '.', ',');
                         $cargos += $dato['CARGO'];
                         $abonos += $dato['ABONO'];
@@ -4146,17 +4148,17 @@ class Ahorro extends Controller
                         <tr>
                             <td style="text-align: center;">{$dato['FECHA']}</td>
                             <td>{$dato['DESCRIPCION']}</td>
-                            <td style="text-align: right;">$ $cargo</td>
+                            <td style="text-align: right;">$ $transito</td>
                             <td style="text-align: right;">$ $abono</td>
+                            <td style="text-align: right;">$ $cargo</td>
                             <td style="text-align: right;">$ $saldo</td>
                         </tr>
                         html;
                     }
                     $salto = true;
                 }
-                $filas = $filas ? $filas : "<tr><td colspan='5' style='text-align: center;'>Sin movimientos en el periodo.</td></tr>";
+                $filas = $filas ? $filas : "<tr><td colspan='6' style='text-align: center;'>Sin movimientos en el periodo.</td></tr>";
 
-                $si = number_format($datos[0]['SALDO'] + $datos[0]['CARGO'] - $datos[0]['ABONO'], 2, '.', ',');
                 $sf = number_format($datos[count($datos) - 1]['SALDO'], 2, '.', ',');
                 $c = number_format($cargos, 2, '.', ',');
                 $a = number_format($abonos, 2, '.', ',');
@@ -4172,22 +4174,18 @@ class Ahorro extends Controller
                             </td>
                         </tr>
                         <tr>
-                            <th>Saldo Inicial</th>
                             <th>Abonos</th>
                             <th>Cargos</th>
                             <th>Saldo Final</th>
                         </tr>
                         <tr>
-                            <td style="text-align: center; width: 25%;">
-                                $ $si
-                            </td>
-                            <td style="text-align: center; width: 25%;">
+                            <td style="text-align: center; width: 33%;">
                                 $ $a
                             </td>
-                            <td style="text-align: center; width: 25%;">
+                            <td style="text-align: center; width: 33%;">
                                 $ $c
                             </td>
-                            <td style="text-align: center; width: 25%;">
+                            <td style="text-align: center; width: 33%;">
                                 $ $sf
                             </td>
                         </tr>
@@ -4199,8 +4197,9 @@ class Ahorro extends Controller
                             <tr>
                                 <th style="width: 80px;">Fecha</th>
                                 <th>Descripción</th>
-                                <th style="width: 100px;">Cargo</th>
+                                <th style="width: 100px;">Transito</th>
                                 <th style="width: 100px;">Abono</th>
+                                <th style="width: 100px;">Cargo</th>
                                 <th style="width: 100px;">Saldo</th>
                             </tr>
                         </thead>
