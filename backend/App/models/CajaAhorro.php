@@ -1376,47 +1376,15 @@ class CajaAhorro
         SELECT
             APA.CONTRATO,
             APA.CDGCL,
-            TO_CHAR(APA.FECHA_APERTURA, 'DD/MM/YYYY') AS FECHA_APERTURA,
-            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE_CLIENTE,
-            (
-                SELECT
-                    MONTO
-                FROM
-                    MOVIMIENTOS_AHORRO
-                WHERE
-                    CDG_TIPO_PAGO = 1
-                    AND CDG_CONTRATO = APA.CONTRATO
-            ) AS DEP_INICIAL,
-            (
-                SELECT
-                    MONTO
-                FROM
-                    MOVIMIENTOS_AHORRO
-                WHERE
-                    CDG_TIPO_PAGO = 2
-                    AND CDG_CONTRATO = APA.CONTRATO
-            ) AS COMISION,
-            (
-                SELECT
-                    SUM(CASE MOVIMIENTO
-                        WHEN '0' THEN -MONTO
-                        ELSE MONTO
-                    END)
-                FROM
-                    MOVIMIENTOS_AHORRO
-                WHERE
-                    (CDG_TIPO_PAGO = 1
-                    OR CDG_TIPO_PAGO = 2)
-                    AND CDG_CONTRATO = APA.CONTRATO
-            ) AS SALDO_INICIAL
+            TO_CHAR(APA.FECHA_APERTURA, 'DD "de" MONTH "del" YYYY') AS FECHA,
+            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
+            UPPER(DOMICILIO_CLIENTE(CL.CODIGO)) AS DIRECCION
         FROM
-            ASIGNA_PROD_AHORRO APA
-        LEFT JOIN
+            ASIGNA_PROD_AHORRO APA,
             CL
-        ON
-            CL.CODIGO = APA.CDGCL
         WHERE
-            APA.CONTRATO = '{$contrato}'
+            APA.CDGCL = CL.CODIGO
+            AND APA.CONTRATO = '$contrato'
         sql;
 
         try {
