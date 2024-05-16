@@ -227,7 +227,7 @@
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <label for="tipo">Tasa Anual</label>
+                                                    <label for="tasa">Tasa Anual</label>
                                                     <select class="form-control mr-sm-3" autofocus="" type="select" id="tasa" name="tasa" disabled>
                                                         <option value="5">5 %</option>
                                                     </select>

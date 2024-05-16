@@ -1905,6 +1905,7 @@ class Ahorro extends Controller
                     addParametro(datos, "credito", noCredito)
                     addParametro(datos, "sucursal", "{$_SESSION['cdgco_ahorro']}")
                     addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
+                    addParametro(datos, "tasa", document.querySelector("#tasa").value)
                     
                     datos.forEach((dato) => {
                         if (dato.name === "sexo") {
