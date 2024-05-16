@@ -114,9 +114,7 @@
 
 
                                                     <div class="container-fluid">
-                                                        <br>
-                                                        <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
-                                                        <hr>
+
                                                         <div class="col-md-12">
                                                             <div class="row">
                                                                 <div class="card col-md-12">
