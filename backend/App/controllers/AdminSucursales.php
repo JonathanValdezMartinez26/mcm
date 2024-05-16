@@ -1141,24 +1141,14 @@ class AdminSucursales extends Controller
                     }
                 }
             }
-            foreach ($registro as $key2 => $celda) {
-                if ($key2 === "TIPO") continue;
-                if ($key2 === "ABONO" || $key2 === "SALDO") {
-                    $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " .  number_format($celda, 2, '.', ',') . "</td>";
-                } elseif ($key2 === "CARGO") {
-                    if ($registro['TIPO'] == 6 || $registro['TIPO'] == 7) {
-                        $filas .= "<td style='vertical-align: middle; text-align: right;'>$ 0.00</td>";
-                        $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " . number_format($celda, 2, '.', ',') . "</td>";
-                    } else {
-                        $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " . number_format($celda, 2, '.', ',') . "</td>";
-                        $filas .= "<td style='vertical-align: middle; text-align: right;'>$ 0.00</td>";
-                    }
-                } elseif ($key2 === "DESCRIPCION") {
-                    $filas .= "<td style='vertical-align: middle; text-align: left;'>{$celda}</td>";
-                } else {
-                    $filas .= "<td style='vertical-align: middle;'>{$celda}</td>";
-                }
-            }
+            $filas .= "<td style='vertical-align: middle;'>{$registro['FECHA']}</td>";
+            $filas .= "<td style='vertical-align: middle;'>{$registro['CUENTA']}</td>";
+            $filas .= "<td style='vertical-align: middle;'>{$registro['DESCRIPCION']}</td>";
+            $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " . number_format($registro['TRANSITO'], 2, '.', ',') . "</td>";
+            $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " . number_format($registro['ABONO'], 2, '.', ',') . "</td>";
+            $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " . number_format($registro['CARGO'], 2, '.', ',') . "</td>";
+            $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " . number_format($registro['SALDO'], 2, '.', ',') . "</td>";
+            $filas .= "<td style='vertical-align: middle;'>{$registro['USUARIO']}</td>";
             $filas .= "</tr>";
         }
 

@@ -844,8 +844,8 @@ class CajaAhorro
                         CASE MA.MOVIMIENTO
                             WHEN '0' THEN 
                                 CASE MA.CDG_TIPO_PAGO
-                                    WHEN '13' THEN 0
-                                    WHEN '14' THEN 0
+                                    WHEN '6' THEN 0
+                                    WHEN '7' THEN 0
                                     ELSE -MA.MONTO
                                 END
                             ELSE MA.MONTO
@@ -871,11 +871,11 @@ class CajaAhorro
                     SUM(
                         CASE MA.MOVIMIENTO
                             WHEN '0' THEN 
-                            CASE MA.CDG_TIPO_PAGO
-                                WHEN '13' THEN 0
-                                WHEN '14' THEN 0
-                                ELSE -MA.MONTO
-                            END
+                                CASE MA.CDG_TIPO_PAGO
+                                    WHEN '6' THEN 0
+                                    WHEN '7' THEN 0
+                                    ELSE -MA.MONTO
+                                END
                             ELSE MA.MONTO
                         END 
                     )
@@ -890,8 +890,8 @@ class CajaAhorro
                         CASE MA.MOVIMIENTO
                             WHEN '0' THEN 
                                 CASE MA.CDG_TIPO_PAGO
-                                    WHEN '13' THEN 0
-                                    WHEN '14' THEN 0
+                                    WHEN '6' THEN 0
+                                    WHEN '7' THEN 0
                                     ELSE -MA.MONTO
                                 END
                             ELSE MA.MONTO
@@ -922,6 +922,8 @@ class CajaAhorro
                 SELECT
                     CASE MA.CDG_TIPO_PAGO
                         WHEN '5' THEN 'TRANSFERENCIA'
+                        WHEN '6' THEN 'EN TRANSITO'
+                        WHEN '7' THEN 'EN TRANSITO'
                         WHEN '8' THEN 'TRANSFERENCIA'
                         WHEN '9' THEN 'TRANSFERENCIA'
                         ELSE 'EFECTIVO'
@@ -936,6 +938,8 @@ class CajaAhorro
                 SELECT
                     CASE MA.CDG_TIPO_PAGO
                         WHEN '5' THEN 'APERTURADO POR'
+                        WHEN '6' THEN 'SOLICITUD RETIRÓ'
+                        WHEN '7' THEN 'SOLICITUD RETIRÓ'
                         WHEN '8' THEN 'REEMBOLSAMOS'
                         WHEN '9' THEN 'REEMBOLSAMOS'
                         ELSE CASE MOVIMIENTO
@@ -953,6 +957,8 @@ class CajaAhorro
                 SELECT
                     CASE MA.CDG_TIPO_PAGO
                         WHEN '5' THEN 'Atendió'
+                        WHEN '6' THEN 'Atendió'
+                        WHEN '7' THEN 'Atendió'
                         WHEN '8' THEN 'Atendió'
                         WHEN '9' THEN 'Atendió'
                         ELSE CASE MA.MOVIMIENTO
@@ -1821,20 +1827,13 @@ sql;
 
     public static function GetMovimientosAhorro($contrato, $fI, $fF)
     {
-        // (
-        //     SELECT
-        //         DESCRIPCION
-        //     FROM
-        //         TIPO_PAGO_AHORRO
-        //     WHERE
-        //         CODIGO = MA.CDG_TIPO_PAGO
-        // ) AS DESCRIPCION,
         $qryMovimientos = <<<sql
         SELECT
             *
         FROM (
             SELECT
                 TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY') AS FECHA,
+                MA.CDG_TIPO_PAGO AS TIPO,
                 CONCAT(
                         (SELECT DESCRIPCION
                         FROM TIPO_PAGO_AHORRO
@@ -1845,16 +1844,35 @@ sql;
                     )
                 AS DESCRIPCION,
                 CASE MA.MOVIMIENTO
-                    WHEN '0' THEN MA.MONTO
+                    WHEN '0' THEN
+                        CASE MA.CDG_TIPO_PAGO
+                            WHEN '6' THEN MA.MONTO
+                            WHEN '7' THEN MA.MONTO
+                            ELSE 0
+                        END
                     ELSE 0
-                END AS CARGO,
+                END AS TRANSITO,
                 CASE MA.MOVIMIENTO
                     WHEN '1' THEN MA.MONTO
                     ELSE 0
                 END AS ABONO,
+                CASE MA.MOVIMIENTO
+                    WHEN '0' THEN
+                        CASE MA.CDG_TIPO_PAGO
+                            WHEN '6' THEN 0
+                            WHEN '7' THEN 0
+                            ELSE MA.MONTO
+                        END
+                    ELSE 0
+                END AS CARGO,
                 SUM(
                     CASE MA.MOVIMIENTO
-                        WHEN '0' THEN -MA.MONTO
+                        WHEN '0' THEN 
+                            CASE MA.CDG_TIPO_PAGO
+                                WHEN '6' THEN 0
+                                WHEN '7' THEN 0
+                                ELSE -MA.MONTO
+                            END
                         WHEN '1' THEN MA.MONTO
                     END
                 ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO

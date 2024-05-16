@@ -3963,13 +3963,15 @@ class Ahorro extends Controller
         $datos = CajaAhorroDao::GetMovimientosAhorro($contrato, $fIni, $fFin);
         $cargos = 0;
         $abonos = 0;
+        $transito = 0;
         $filas = "<tr><td colspan='5' style='text-align: center;'>Sin movimientos en el periodo.</td></tr>";
         $salto = false;
         if ($datos || count($datos) > 0) {
             $filas = "";
             foreach ($datos as $dato) {
-                $cargo = number_format($dato['CARGO'], 2, '.', ',');
+                $transito = number_format($dato['TRANSITO'], 2, '.', ',');
                 $abono = number_format($dato['ABONO'], 2, '.', ',');
+                $cargo = number_format($dato['CARGO'], 2, '.', ',');
                 $saldo = number_format($dato['SALDO'], 2, '.', ',');
                 $cargos += $dato['CARGO'];
                 $abonos += $dato['ABONO'];
@@ -3978,8 +3980,9 @@ class Ahorro extends Controller
                 <tr>
                     <td style="text-align: center;">{$dato['FECHA']}</td>
                     <td>{$dato['DESCRIPCION']}</td>
-                    <td style="text-align: right;">$ $cargo</td>
+                    <td style="text-align: right;">$ $transito</td>
                     <td style="text-align: right;">$ $abono</td>
+                    <td style="text-align: right;">$ $cargo</td>
                     <td style="text-align: right;">$ $saldo</td>
                 </tr>
                 html;
@@ -3987,7 +3990,6 @@ class Ahorro extends Controller
             $salto = true;
         }
 
-        $si = number_format($datos[0]['SALDO'] + $datos[0]['CARGO'] - $datos[0]['ABONO'], 2, '.', ',');
         $sf = number_format($datos[count($datos) - 1]['SALDO'], 2, '.', ',');
         $c = number_format($cargos, 2, '.', ',');
         $a = number_format($abonos, 2, '.', ',');
@@ -4023,8 +4025,9 @@ class Ahorro extends Controller
                     <tr>
                         <th style="width: 80px;">Fecha</th>
                         <th>Descripción</th>
-                        <th style="width: 100px;">Cargo</th>
+                        <th style="width: 100px;">En transito</th>
                         <th style="width: 100px;">Abono</th>
+                        <th style="width: 100px;">Cargo</th>
                         <th style="width: 100px;">Saldo</th>
                     </tr>
                 </thead>

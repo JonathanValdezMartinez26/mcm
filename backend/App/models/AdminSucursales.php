@@ -494,14 +494,23 @@ sql;
                     )
                 AS DESCRIPCION,
                 CASE MA.MOVIMIENTO
+                    WHEN '0' THEN
+                        CASE MA.CDG_TIPO_PAGO
+                            WHEN '6' THEN MA.MONTO
+                            WHEN '7' THEN MA.MONTO
+                            ELSE 0
+                        END
+                    ELSE 0
+                END AS TRANSITO,
+                CASE MA.MOVIMIENTO
                     WHEN '1' THEN MA.MONTO
                     ELSE 0
                 END AS ABONO,
                 CASE MA.MOVIMIENTO
                     WHEN '0' THEN
                         CASE MA.CDG_TIPO_PAGO
-                            WHEN '13' THEN 0
-                            WHEN '14' THEN 0
+                            WHEN '6' THEN 0
+                            WHEN '7' THEN 0
                             ELSE MA.MONTO
                         END
                     ELSE 0
@@ -510,8 +519,8 @@ sql;
                     CASE MA.MOVIMIENTO
                         WHEN '0' THEN
                             CASE MA.CDG_TIPO_PAGO
-                                WHEN '13' THEN 0
-                                WHEN '14' THEN 0
+                                WHEN '6' THEN 0
+                                WHEN '7' THEN 0
                                 ELSE -MA.MONTO
                             END
                         WHEN '1' THEN MA.MONTO
@@ -537,6 +546,7 @@ sql;
                 '5' AS TIPO,
                 'INVERSIÓN' AS CUENTA,
                 'TRANSFERENCIA INVERSIÓN (RECEPCIÓN)' AS DESCRIPCION,
+                0 AS TRANSITO,
                 MONTO_INVERSION AS ABONO,
                 0 AS CARGO,
                 SUM(MONTO_INVERSION) OVER (ORDER BY FECHA_APERTURA) AS SALDO,

@@ -78,9 +78,9 @@
                                     <th>Fecha</th>
                                     <th>Tipo cuenta</th>
                                     <th>Concepto</th>
+                                    <th>En transito</th>
                                     <th>Abono</th>
                                     <th>Cargo</th>
-                                    <th>En transito</th>
                                     <th>Saldo Final</th>
                                     <th>Usuario</th>
                                 </tr>
