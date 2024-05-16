@@ -58,7 +58,7 @@
                     <div class="col-md-12">
                         <br><br>
                         <div class="col-md-6">
-                            <p>Para realizar un movimiento es necesario que el cliente tenga una cuenta ahorro corriente activa, de lo contrario, es necesaria la creación de una a través de la opción: <a href="/Ahorro/ContratoCuentaCorriente/" target="_blank">Nuevo Contrato</a>.</p>
+                            <p>Podrá encontrar el resumen detallado de las cuentas de los clientes MCM – Ahorro, si la información no es correcta, contacte a soporte. Si desea el detalle de los movimentos, consulte el siguiente <a href="/AdminSucursales/Reporteria/" target="_blank">enlace</a>.</p>
                             <hr>
                         </div>
                         <div class="col-md-4">
@@ -72,17 +72,14 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <br>
-                        <ul class="nav navbar-nav" id="opcionesCat">
+                        <ul class="nav navbar-nav" id="opcionesCat" style="margin-bottom: 20px;">
                             <li>
-                                <span style="font-size: 15px; margin: 0 15px;font-weight: bold;" id="ResumenCuenta" onclick=actualizaVista(event)>Resumen de cuenta</span>
+                                <span style="font-size: 15px; margin: 0 15px;font-weight: bold; color: #0D0A0A;" id="ResumenCuenta" onclick=actualizaVista(event)>Resumen de cuenta</span>
                             </li>
                             <li class="linea">
-                                <span style="font-size: 15px; margin: 0 15px;" id="rendimiento" onclick=actualizaVista(event)>Rendimiento</span>
+                                <span style="font-size: 15px; margin: 0 15px; color: #0D0A0A;" id="rendimiento" onclick=actualizaVista(event)>Rendimiento</span>
                             </li>
-                            <li class="linea">
-                                <span style="font-size: 15px; margin: 0 15px;" id="incidencias" onclick=actualizaVista(event)>Incidencias</span>
-                            </li>
+
                         </ul>
                     </div>
                 </div>

@@ -15,7 +15,7 @@
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="saldoFin">Saldo</label>
+                    <label for="saldoFin">Depósito inicial (Primer transacción)</label>
                     <input class="form-control" id="saldoFin" name="saldoFin" value="$<?= number_format($saldoFinal, 2, '.', ','); ?>" disabled>
                 </div>
             </div>
@@ -83,7 +83,7 @@
                                     <th>Concepto</th>
                                     <th>Abono</th>
                                     <th>Cargo</th>
-                                    <th>Saldo</th>
+                                    <th>Saldo Final</th>
                                     <th>Usuario</th>
                                 </tr>
                             </thead>
