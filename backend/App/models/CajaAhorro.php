@@ -1071,14 +1071,14 @@ class CajaAhorro
 
             $queryAPA = <<<sql
             INSERT INTO ASIGNA_PROD_AHORRO
-                (CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, SALDO)
+                (CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, SALDO, TASA, CDGCO, CDGPE_REGISTRO)
             VALUES
-                (:contrato, :cliente, SYSDATE, '2', 'A', 0)
+                (:contrato, :cliente, SYSDATE, '2', 'A', 0, :tasa, :sucursal, :ejecutivo)
             sql;
 
             $queryCL_PQ = <<<sql
             INSERT INTO CL_PQS
-                (CDGCL,CDG_CONTRATO,NOMBRE1,NOMBRE2,APELLIDO1,APELLIDO2,FECHA_NACIMIENTO,SEXO,CURP,PAIS,ENTIDAD,FECHA_REGISTRO,FECHA_MODIFICACION,ESTATUS,CDGCO,CDGPE_REGISTRA, tasa)
+                (CDGCL,CDG_CONTRATO,NOMBRE1,NOMBRE2,APELLIDO1,APELLIDO2,FECHA_NACIMIENTO,SEXO,CURP,PAIS,ENTIDAD,FECHA_REGISTRO,FECHA_MODIFICACION,ESTATUS,CDGCO,CDGPE_REGISTRO, tasa)
             VALUES
                 (:cliente, :contrato, :nombre1, :nombre2, :apellido1, :apellido2, :fecha_nacimiento, :sexo, :curp, :pais, :entidad, SYSDATE, SYSDATE, 'A', :sucursal, :ejecutivo, :tasa)
             sql;
@@ -1090,7 +1090,10 @@ class CajaAhorro
             $parametros = [
                 [
                     'contrato' => $noContrato,
-                    'cliente' => $datos['credito']
+                    'cliente' => $datos['credito'],
+                    'tasa' => $datos['tasa'],
+                    'sucursal' => $datos['sucursal'],
+                    'ejecutivo' => $datos['ejecutivo'],
                 ],
                 [
                     'cliente' => $datos['credito'],
