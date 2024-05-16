@@ -1036,7 +1036,7 @@ class Ahorro extends Controller
     public function SolicitudRetiroCuentaCorriente()
     {
         $montoMinimoRetiro = 10000;
-        $montoMaximoExpress = 49999.99;
+        $montoMaximoExpress = 1000000;
         $montoMaximoRetiro = 1000000;
 
         $extraFooter = <<<html
