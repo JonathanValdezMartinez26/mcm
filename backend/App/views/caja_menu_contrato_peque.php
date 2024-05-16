@@ -34,7 +34,7 @@
             <a id="link" href="/Ahorro/SaldosDia/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/5833/5833855.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
-                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Mis saldos del día </b></p>
+                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Arqueo </b></p>
                     <! -- https://cdn-icons-png.flaticon.com/512/5833/5833897.png -->
                 </div>
             </a>
@@ -65,22 +65,22 @@
                             <ul class="nav navbar-nav">
                                 <li>
                                     <a href="/Ahorro/CuentaPeque/">
-                                        <p style="font-size: 16px;">Ahorro Cuenta Corriente Peque</p>
+                                        <p style="font-size: 16px;">Ahorro cuenta corriente peque</p>
                                     </a>
                                 </li>
                                 <li class="linea">
                                     <a onclick=mostrarAhorro() href="">
-                                        <p style="font-size: 16px;"><b>Nuevo Contrato</b></p>
+                                        <p style="font-size: 16px;"><b>Nuevo contrato</b></p>
                                     </a>
                                 </li>
                                 <li class="linea">
                                     <a href="/Ahorro/SolicitudRetiroCuentaPeque/">
-                                        <p style="font-size: 15px;">Solicitud de Retiro</p>
+                                        <p style="font-size: 15px;">Solicitud de retiro</p>
                                     </a>
                                 </li>
                                 <li class="linea">
                                     <a href="/Ahorro/HistorialSolicitudRetiroCuentaPeque/">
-                                        <p style="font-size: 15px;">Procesar Solicitudes de Retiro</p>
+                                        <p style="font-size: 15px;">Procesar solicitudes de retiro</p>
                                     </a>
                                 </li>
                             </ul>

@@ -63,7 +63,7 @@ sql;
             ORDER BY TAR.FREGISTRO DESC
 sql;
         }
-        
+
         $mysqli = Database::getInstance();
         return $mysqli->queryAll($query);
     }

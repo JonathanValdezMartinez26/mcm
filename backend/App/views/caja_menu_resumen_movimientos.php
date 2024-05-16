@@ -32,7 +32,7 @@
             <a id="link" href="/Ahorro/SaldosDia/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/5833/5833855.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
-                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Mis saldos del día </b></p>
+                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Arqueo </b></p>
                     <! -- https://cdn-icons-png.flaticon.com/512/5833/5833897.png -->
                 </div>
             </a>
@@ -55,13 +55,13 @@
             <div class="modal-content">
                 <div class="modal-header" style="padding-bottom: 0px">
                     <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                        <a class="navbar-brand">Mi espacio / Estado de Cuenta</a>
+                        <a class="navbar-brand">Mi espacio / Resumen de movimientos</a>
                         &nbsp;&nbsp;
                     </div>
                     <div>
                         <ul class="nav navbar-nav">
-                            <li><a href="/Ahorro/ContratoCuentaCorriente/">
-                                    <p style="font-size: 16px;"><b>Generar estado de cuenta</b></p>
+                            <li><a href="/Ahorro/EstadoCuenta/">
+                                    <p style="font-size: 16px;"><b>Resumen de mis movimientos del día</b></p>
                                 </a></li>
                         </ul>
                     </div>
@@ -71,14 +71,6 @@
                         <div class="col-md-12">
                             <div class="row">
                                 <div class="card col-md-12">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="col-md-6">
-                                                <p>Podrás hacer tus búsquedas por los siguientes criterios tales como fecha, numero de cliente, nombre del cliente o numero de contrato.</p>
-                                                <hr>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="row">
                                         <div class="col-md-12" style="text-align:center;">
                                             <h4>Mi resumen de movimientos</h4>

@@ -32,7 +32,7 @@
             <a id="link" href="/Ahorro/SaldosDia/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/5833/5833855.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
-                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Mis saldos del día </b></p>
+                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Arqueo </b></p>
                     <! -- https://cdn-icons-png.flaticon.com/512/5833/5833897.png -->
                 </div>
             </a>
@@ -55,13 +55,13 @@
             <div class="modal-content">
                 <div class="modal-header" style="padding-bottom: 0px">
                     <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                        <a class="navbar-brand">Mi espacio / Estado de Cuenta</a>
+                        <a class="navbar-brand">Mi espacio / Resumen de movimientos del dia</a>
                         &nbsp;&nbsp;
                     </div>
                     <div>
                         <ul class="nav navbar-nav">
-                            <li><a href="/Ahorro/ContratoCuentaCorriente/">
-                                    <p style="font-size: 16px;"><b>Generar estado de cuenta</b></p>
+                            <li><a href="/Ahorro/EstadoCuenta/">
+                                    <p style="font-size: 16px;"><b>Resumen de mis movimientos del dia</b></p>
                                 </a></li>
                         </ul>
                     </div>

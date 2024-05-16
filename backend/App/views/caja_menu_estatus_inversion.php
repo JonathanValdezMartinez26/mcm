@@ -34,7 +34,7 @@
             <a id="link" href="/Ahorro/SaldosDia/">
                 <div class="col-md-5 imagen" style="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
                     <img src="https://cdn-icons-png.flaticon.com/512/5833/5833855.png" style="border-radius: 3px; padding-top: 5px;" width="100" height="110">
-                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Mis saldos del día </b></p>
+                    <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Arqueo </b></p>
                     <! -- https://cdn-icons-png.flaticon.com/512/5833/5833897.png -->
                 </div>
             </a>
@@ -63,10 +63,10 @@
                     <div>
                         <ul class="nav navbar-nav">
                             <li class="linea"><a href="/Ahorro/ContratoInversion/">
-                                    <p style="font-size: 15px;">Nuevo Contrato de Inversión</p>
+                                    <p style="font-size: 15px;">Nuevo contrato de inversión</p>
                                 </a></li>
                             <li><a href="/Ahorro/ConsultaInversion/">
-                                    <p style="font-size: 16px;"><b>Consultar Estatus de Inversión</b></p>
+                                    <p style="font-size: 16px;"><b>Consultar estatus de inversión</b></p>
                                 </a></li>
                         </ul>
                     </div>
