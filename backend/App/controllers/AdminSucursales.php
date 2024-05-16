@@ -1317,7 +1317,7 @@ html;
 
             if ($value['CONCEPTO'] == 'TRANSFERENCIA INVERSION') {
                 $concepto = '<i class="fa fa-minus" style="color: #0000ac;"></i>';
-            } else if ($value['CONCEPTO'] == 'RETIRO') {
+            } else if ($value['CONCEPTO'] == 'RETIRO' || $value['CONCEPTO'] == 'ENTREGA RETIRO PROGRAMADO' || $value['CONCEPTO'] == 'ENTREGA RETIRO EXPRESS') {
                 $concepto = '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
             } else {
                 $concepto = '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
