@@ -57,23 +57,23 @@
             <div class="modal-content">
                 <div class="modal-header" style="padding-bottom: 0px">
                     <div class="navbar-header card col-md-12" style="background: #2b2b2b">
-                        <a class="navbar-brand">Mi espacio / Saldos del día</a>
+                        <a class="navbar-brand">Mi espacio / Arqueo</a>
                         &nbsp;&nbsp;
                     </div>
-                    <div class="col-md-12" style="display: flex; align-items: center; justify-content: center; height: 40px;">
-                        <label style="font-size: 16px; font-weight: bold; margin: 0; padding: 0;">Saldos generales del día <?= $fecha; ?>
-                        </label>
+                    <div>
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <a onclick=mostrarAhorro() href="">
+                                    <p style="font-size: 16px;"><b>Resumen de arqueos</b></p>
+                                </a>
+                            </li>
+
+                        </ul>
                     </div>
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid">
                         <div class="row">
-                            <div class="row">
-                                <div class="col-md-12" style="text-align: center">
-                                    <label style="font-size: 18px; margin: 0; padding: 0;">Resumen de movimientos (entradas y salidas de efectivo)</label>
-                                </div>
-                            </div>
-                            <hr>
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
