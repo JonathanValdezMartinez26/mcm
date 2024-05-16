@@ -33,7 +33,7 @@ class CajaAhorro
     {
         $qry = <<<sql
         SELECT
-            SUC_ESTADO_AHORRO.CDG_SUCURSAL AS CDGCO_AHORRO
+            SUC_ESTADO_AHORRO.CDG_SUCURSAL AS CDGCO_AHORRO,
         FROM
             SUC_CAJERA_AHORRO
         INNER JOIN
@@ -53,7 +53,7 @@ class CajaAhorro
     public static function GetEFed()
     {
         $query = <<<sql
-        SELECT NOMBRE FROM EF WHERE NOMBRE != 'Desconocido'
+        SELECT NOMBRE, CDGCURP FROM EF WHERE NOMBRE != 'Desconocido'
         sql;
 
         $mysqli = Database::getInstance();
@@ -1078,9 +1078,9 @@ class CajaAhorro
 
             $queryCL_PQ = <<<sql
             INSERT INTO CL_PQS
-                (CDGCL,CDG_CONTRATO,NOMBRE1,NOMBRE2,APELLIDO1,APELLIDO2,FECHA_NACIMIENTO,SEXO,CURP,PAIS,ENTIDAD,FECHA_REGISTRO,FECHA_MODIFICACION,ESTATUS)
+                (CDGCL,CDG_CONTRATO,NOMBRE1,NOMBRE2,APELLIDO1,APELLIDO2,FECHA_NACIMIENTO,SEXO,CURP,PAIS,ENTIDAD,FECHA_REGISTRO,FECHA_MODIFICACION,ESTATUS,CDGCO,CDGPE_REGISTRA)
             VALUES
-                (:cliente, :contrato, :nombre1, :nombre2, :apellido1, :apellido2, :fecha_nacimiento, :sexo, :curp, :pais, :entidad, SYSDATE, SYSDATE, 'A')
+                (:cliente, :contrato, :nombre1, :nombre2, :apellido1, :apellido2, :fecha_nacimiento, :sexo, :curp, :pais, :entidad, SYSDATE, SYSDATE, 'A', :sucursal, :ejecutivo)
             sql;
 
             $fecha = DateTime::createFromFormat('Y-m-d', $datos['fecha_nac']);
@@ -1103,7 +1103,9 @@ class CajaAhorro
                     'sexo' => $sexo ? 'H' : 'M',
                     'curp' => $datos['curp'],
                     'pais' => $datos['pais'],
-                    'entidad' => $datos['entidad']
+                    'entidad' => $datos['entidad'],
+                    'sucursal' => $datos['sucursal'],
+                    'ejecutivo' => $datos['ejecutivo']
                 ]
             ];
 

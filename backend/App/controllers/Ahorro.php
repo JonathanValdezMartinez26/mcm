@@ -1893,7 +1893,7 @@ class Ahorro extends Controller
                 }
                  
                 const cliente = document.querySelector("#nombre").value
-                
+                 
                 confirmarMovimiento("Cuenta de ahorro Peques™",
                     "¿Está segura de continuar con la apertura de la cuenta Peques™ asociada al cliente "
                     + cliente
@@ -1903,6 +1903,8 @@ class Ahorro extends Controller
                     const noCredito = document.querySelector("#noCliente").value
                     const datos = $("#registroInicialAhorro").serializeArray()
                     addParametro(datos, "credito", noCredito)
+                    addParametro(datos, "sucursal", "{$_SESSION['cdgco_ahorro']}")
+                    addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                     
                     datos.forEach((dato) => {
                         if (dato.name === "sexo") {
@@ -1993,6 +1995,7 @@ class Ahorro extends Controller
                     return campos.every((campo) => campo)
                 }
                 if (e.target.id === "fecha_nac") calculaEdad(e)
+                if (e.target.id !== "curp") generaCURP()
                 document.querySelector("#btnGeneraContrato").disabled = !val()
             }
              
@@ -2013,6 +2016,58 @@ class Ahorro extends Controller
                     showError("El peque a registrar debe tener menos de 18 años.")
                 } else document.querySelector("#edad").removeAttribute("style")
             }
+             
+            const generaCURP = () => {
+                // const nombre1 = document.querySelector("#nombre1").value
+                // const nombre2 = document.querySelector("#nombre2").value
+                // const apellido1 = document.querySelector("#apellido1").value
+                // const apellido2 = document.querySelector("#apellido2").value
+                // const sexo = document.querySelector("#sexoH").checked ? "H" : "M"
+                // const fecha_nac = document.querySelector("#fecha_nac").value
+                // const ciudad = document.querySelector("#ciudad").value
+                // const curp = document.querySelector("#curp")
+                // const fecha = fecha_nac.split("-")
+                // const anio = fecha[0].substring(2)
+                // const mes = fecha[1]
+                // const dia = fecha[2]
+                // const vocales = "AEIOU"
+                // const consonantes = "BCDFGHJKLMNPQRSTVWXYZ"
+                // const homonimos = {
+                //     "ñ": "n",
+                //     "á": "A",
+                //     "é": "E",
+                //     "í": "I",
+                //     "ó": "O",
+                //     "ú": "U"
+                // }
+                 
+                // const primerConsonante = (nombre) => {
+                //     let consonante = ""
+                //     for (let i = 0; i < nombre.length; i++) {
+                //         if (consonantes.includes(nombre[i].toUpperCase())) {
+                //             consonante = nombre[i].toUpperCase()
+                //             break
+                //         }
+                //     }
+                //     return consonante || "X"
+                // }
+                 
+                // const primerVocal = (nombre) => {
+                //     let vocal = ""
+                //     for (let i = 0; i < nombre.length; i++) {
+                //         if (vocales.includes(nombre[i].toUpperCase())) {
+                //             vocal = nombre[i].toUpperCase()
+                //             break
+                //         }
+                //     }
+                //     return vocal || "X"
+                // }
+                 
+                // const homonimo = (letra) => homonimos[letra] || letra
+                 
+                // const curpGenerada = primerConsonante(apellido1) + homonimo(primerConsonante(apellido2)) + primerConsonante(nombre1) + primerConsonante(nombre2) + anio + mes + dia + sexo + ciudad
+                // curp.value = curpGenerada
+            }
         </script>
         html;
 
@@ -2022,7 +2077,7 @@ class Ahorro extends Controller
         $opciones_ent = "";
         foreach ($ComboEntidades as $key => $val2) {
             $opciones_ent .= <<<html
-                <option  value="{$val2['NOMBRE']}"> {$val2['NOMBRE']}</option>
+                <option  value="{$val2['CDGCURP']}"> {$val2['NOMBRE']}</option>
             html;
         }
 
