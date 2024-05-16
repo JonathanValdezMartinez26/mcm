@@ -187,6 +187,33 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal_cambio_fecha" tabindex="-1" role="dialog" aria-labelledby="modal_update_horario" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <center>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Cambio fecha de entrega</h4>
+                </center>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group">
+                        <label for="fecha_nueva">Nueva fecha de entrega</label>
+                        <input type="date" class="form-control" id="fecha_nueva" name="fecha_nueva" required>
+                        <input type="hidden" id="id_solicitud" name="id_solicitud">
+                        <input type="hidden" id="fecha_anterior" name="fecha_anterior">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="cambiar_fecha" onclick=cambiaFecha()><i class="glyphicon glyphicon-floppy-disk"></i>Cambiar fecha</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     function EditarHorario(sucursal, nombre_suc, hora_actual) {
         var o = new Option(nombre_suc, sucursal);

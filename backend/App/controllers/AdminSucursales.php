@@ -1956,8 +1956,10 @@ html;
 
     public function SolicitudRetiroOrdinario()
     {
+        $maxFecha = date('Y-m-d', strtotime('+15 day'));
+
         $extraFooter = <<<script
-        <script>
+        <script>         
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
@@ -1992,7 +1994,8 @@ html;
                 fecha2 = getParameterByName('Final')
             })
              
-            const actualizaSolicitud = (valor, idSolicitud) => {
+            const actualizaSolicitud = (valor, idSolicitud, fa = null) => {
+                if (valor === 3) return modificarSolicitud(idSolicitud, fa)
                 const accion = valor === 1 ?  "AUTORIZAR" : "RECHAZAR"
                 const mensaje = document.createElement("div")
                 mensaje.style.color = "black"
@@ -2047,6 +2050,39 @@ html;
                     })
                 })
             }
+             
+            const modificarSolicitud = (idSolicitud, fechaAnterior) => {
+                const fa = fechaAnterior.split("/")
+                const fn = new Date(fa[2], fa[1] - 1, fa[0], 0, 0, 0, 0)
+                 
+                document.querySelector("#id_solicitud").value = idSolicitud
+                document.querySelector("#fecha_anterior").value = fa[2] + "-" + fa[1] + "-" + fa[0]
+                 
+                const nuevaFecha = document.querySelector("#fecha_nueva")
+                nuevaFecha.value = fa[2] + "-" + fa[1] + "-" + fa[0]
+                nuevaFecha.min = fa[2] + "-" + fa[1] + "-" + fa[0]
+                nuevaFecha.max = fn.setDate(fn.getDate() + 15)
+                $("#modal_cambio_fecha").modal("show")
+            }
+             
+            const cambiaFecha = () => {
+                const fechaNueva = document.querySelector("#fecha_nueva").valueAsDate.toISOString().split("T")[0]
+                const fechaAnterior = document.querySelector("#fecha_anterior").value
+                const idSolicitud = document.querySelector("#id_solicitud").value                 
+                if (fechaNueva === "") return showError("Debe seleccionar una fecha")
+                if (fechaNueva === fechaAnterior) return showError("La fecha seleccionada es igual a la anterior")
+                 
+                consultaServidor(
+                    "/AdminSucursales/ModificaSolicitudRetiro/",
+                    $.param({ idSolicitud, fechaNueva, fechaAnterior }),
+                    (respuesta) => {
+                        if (!respuesta.success) return showError(respuesta.mensaje)
+                        showSuccess(respuesta.mensaje).then(() => {
+                            swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+                            window.location.reload()
+                        })
+                    })
+            }
         </script>
         script;
 
@@ -2089,9 +2125,9 @@ html;
                         </div>
                      </td>
                      <td style="padding: 10px!important;">  
-                        <button type="button" class="btn btn-success btn-circle" onclick="actualizaSolicitud(1,{$value['ID_SOL_RETIRO_AHORRO']})"><i class="fa fa-check-circle"></i></button>
+                        <button type="button" class="btn btn-success btn-circle" onclick="actualizaSolicitud(1,{$value['ID_SOL_RETIRO_AHORRO']});"><i class="fa fa-check-circle"></i></button>
                         <button type="button" class="btn btn-danger btn-circle" onclick="actualizaSolicitud(2,{$value['ID_SOL_RETIRO_AHORRO']});"><i class="fa fa-close"></i></button>
-                        <button type="button" class="btn btn-info btn-circle" ><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-info btn-circle" onclick="actualizaSolicitud(3,{$value['ID_SOL_RETIRO_AHORRO']},'{$value['FECHA_SOLICITUD_EXCEL']}');"=><i class="fa fa-edit"></i></button>
                     </td>
                 </tr>
             html;
@@ -2152,6 +2188,11 @@ html;
     public function ActualizaSolicitudRetiro()
     {
         echo CajaAhorroDao::ActualizaSolicitudRetiro($_POST);
+    }
+
+    public function ModificaSolicitudRetiro()
+    {
+        echo CajaAhorroDao::ModificaSolicitudRetiro($_POST);
     }
 
     public function SolicitudRetiroExpress()

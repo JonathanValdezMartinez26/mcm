@@ -2848,4 +2848,26 @@ sql;
             return self::Responde(false, "Ocurrió un error al actualizar la solicitud.", null, $e->getMessage());
         }
     }
+
+    public static function ModificaSolicitudRetiro($datos)
+    {
+        $qry = <<<sql
+        UPDATE SOLICITUD_RETIRO_AHORRO
+        SET FECHA_SOLICITUD = TO_DATE(:fechaNueva, 'YYYY-MM-DD')
+        WHERE ID_SOL_RETIRO_AHORRO = :idSolicitud
+        sql;
+
+        $params = [
+            "fechaNueva" => $datos["fechaNueva"],
+            "idSolicitud" => $datos["idSolicitud"]
+        ];
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->insertar($qry, $params);
+            return self::Responde(true, "Solicitud actualizada correctamente.", ["qry" => $qry, "res" => $res, "params" => $params]);
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al actualizar solicitud.", null, $e->getMessage());
+        }
+    }
 }
