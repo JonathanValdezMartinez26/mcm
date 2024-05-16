@@ -2771,7 +2771,18 @@ class Ahorro extends Controller
                         resumenRetiro(resumen, accion)
                     ).then((continuar) => {
                         if (!continuar) return
-                        consultaServidor("/Ahorro/EntregaRetiro/", $.param({estatus, id, ejecutivo: "{$_SESSION['usuario']}"}), (respuesta) => {
+                        const datos = {
+                            estatus, 
+                            id, 
+                            ejecutivo: "{$_SESSION['usuario']}", 
+                            sucursal: "{$_SESSION['cdgco_ahorro']}", 
+                            monto: resumen.MONTO, 
+                            contrato: resumen.CONTRATO,
+                            cliente: resumen.CLIENTE,
+                            tipo: resumen.TIPO_RETIRO
+                        }
+                        
+                        consultaServidor("/Ahorro/EntregaRetiro/", $.param(datos), (respuesta) => {
                             if (!respuesta.success) {
                                 console.log(respuesta.error)
                                 return showError(respuesta.mensaje)
@@ -2779,7 +2790,7 @@ class Ahorro extends Controller
                              
                             showSuccess(respuesta.mensaje).then(() => {
                                 if (estatus === 3) {
-                                    imprimeTicket(respuesta.datos.TICKET, "{$_SESSION['cdgco_ahorro']}")
+                                    imprimeTicket(respuesta.datos.CODIGO, "{$_SESSION['cdgco_ahorro']}")
                                     swal({ text: "Actualizando pagina...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
                                     window.location.reload()
                                 }

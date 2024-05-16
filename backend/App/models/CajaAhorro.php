@@ -692,11 +692,63 @@ class CajaAhorro
     public static function GetQueryMovimientoAhorro()
     {
         return <<<sql
-        INSERT INTO MOVIMIENTOS_AHORRO
-            (CODIGO, FECHA_MOV, CDG_TIPO_PAGO, CDG_CONTRATO, MONTO, MOVIMIENTO, DESCRIPCION, CDG_TICKET, FECHA_VALOR, CDG_RETIRO, CDGCO, CDGCL, CDGPE)
+        INSERT INTO
+            MOVIMIENTOS_AHORRO (
+                CODIGO,
+                FECHA_MOV,
+                CDG_TIPO_PAGO,
+                CDG_CONTRATO,
+                MONTO,
+                MOVIMIENTO,
+                DESCRIPCION,
+                CDG_TICKET,
+                FECHA_VALOR,
+                CDG_RETIRO,
+                CDGCO,
+                CDGCL,
+                CDGPE
+            )
         VALUES
-            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM MOVIMIENTOS_AHORRO) + 1, SYSDATE, :tipo_pago, :contrato, :monto, :movimiento, 'ALGUNA_DESCRIPCION', (SELECT MAX(TO_NUMBER(CODIGO)) AS CODIGO FROM TICKETS_AHORRO WHERE CDG_CONTRATO = :contrato), SYSDATE, (SELECT CASE :tipo_pago WHEN '6' THEN MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)) WHEN '7' THEN MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO)) ELSE NULL END FROM SOLICITUD_RETIRO_AHORRO WHERE CONTRATO = :contrato), :sucursal, :cliente, :ejecutivo)
-        sql;
+            (
+                (
+                    SELECT
+                        NVL(MAX(TO_NUMBER(CODIGO)), 0)
+                    FROM
+                        MOVIMIENTOS_AHORRO
+                ) + 1,
+                SYSDATE,
+                :tipo_pago,
+                :contrato,
+                :monto,
+                :movimiento,
+                'ALGUNA_DESCRIPCION',
+                (
+                    SELECT
+                        MAX(TO_NUMBER(CODIGO)) AS CODIGO
+                    FROM
+                        TICKETS_AHORRO
+                    WHERE
+                        CDG_CONTRATO = :contrato
+                ),
+                SYSDATE,
+                (
+                    SELECT
+                        CASE
+                            :tipo_pago
+                            WHEN '6' THEN MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO))
+                            WHEN '7' THEN MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO))
+                            ELSE NULL
+                        END
+                    FROM
+                        SOLICITUD_RETIRO_AHORRO
+                    WHERE
+                        CONTRATO = :contrato
+                ),
+                :sucursal,
+                :cliente,
+                :ejecutivo
+            )
+    sql;
     }
 
     public static function GetQueryValidaAhorro()
@@ -790,7 +842,12 @@ class CajaAhorro
                 SELECT
                     SUM(
                         CASE MA.MOVIMIENTO
-                            WHEN '0' THEN -MA.MONTO
+                            WHEN '0' THEN 
+                                CASE MA.CDG_TIPO_PAGO
+                                    WHEN '13' THEN 0
+                                    WHEN '14' THEN 0
+                                    ELSE -MA.MONTO
+                                END
                             ELSE MA.MONTO
                         END 
                     )
@@ -813,7 +870,12 @@ class CajaAhorro
                 NVL((SELECT
                     SUM(
                         CASE MA.MOVIMIENTO
-                            WHEN '0' THEN -MA.MONTO
+                            WHEN '0' THEN 
+                            CASE MA.CDG_TIPO_PAGO
+                                WHEN '13' THEN 0
+                                WHEN '14' THEN 0
+                                ELSE -MA.MONTO
+                            END
                             ELSE MA.MONTO
                         END 
                     )
@@ -826,7 +888,12 @@ class CajaAhorro
                 NVL((SELECT
                     SUM(
                         CASE MA.MOVIMIENTO
-                            WHEN '0' THEN -MA.MONTO
+                            WHEN '0' THEN 
+                                CASE MA.CDG_TIPO_PAGO
+                                    WHEN '13' THEN 0
+                                    WHEN '14' THEN 0
+                                    ELSE -MA.MONTO
+                                END
                             ELSE MA.MONTO
                         END 
                     )
