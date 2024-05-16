@@ -2061,7 +2061,7 @@ html;
                 const nuevaFecha = document.querySelector("#fecha_nueva")
                 nuevaFecha.value = fa[2] + "-" + fa[1] + "-" + fa[0]
                 nuevaFecha.min = fa[2] + "-" + fa[1] + "-" + fa[0]
-                nuevaFecha.max = fn.setDate(fn.getDate() + 15)
+                nuevaFecha.max = new Date(fn.setDate(fn.getDate() + 15)).toISOString().split("T")[0]
                 $("#modal_cambio_fecha").modal("show")
             }
              
@@ -2071,6 +2071,9 @@ html;
                 const idSolicitud = document.querySelector("#id_solicitud").value                 
                 if (fechaNueva === "") return showError("Debe seleccionar una fecha")
                 if (fechaNueva === fechaAnterior) return showError("La fecha seleccionada es igual a la anterior")
+                if (new Date(fechaNueva) < new Date(fechaAnterior)) return showError("La fecha seleccionada no puede ser menor a la anterior")
+                if (new Date(fechaNueva).getDay() === 0) return showError("La nueva fecha fecha de entrega no se puede agendar para un domingo")
+                if (new Date(fechaNueva).getDay() === 6) return showError("La nueva fecha fecha de entrega no se puede agendar para un sábado")
                  
                 consultaServidor(
                     "/AdminSucursales/ModificaSolicitudRetiro/",
