@@ -88,10 +88,7 @@
                     <div class="container-fluid">
                         <div class="col-md-12">
                             <div class="row">
-                                <div class="col-md-12" style="text-align: center">
-                                    <label style="font-size: 18px; margin: 0; padding: 0;">Solicitudes de Retiro</label>
-                                </div>
-                                <br>
+
                                 <div class="col-md-12">
 
                                     <button id="btnExportaExcel" type="button" class="btn btn-success btn-circle" onclick=imprimeExcel()><i class="fa fa-file-excel-o"></i><b> Exportar a Excel</b></button>
