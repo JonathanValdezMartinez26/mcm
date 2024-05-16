@@ -1083,6 +1083,7 @@ class AdminSucursales extends Controller
         script;
 
         $movimientos = self::ListaMovimientos($_POST);
+        $segmentos = AdminSucursalesDao::GetSegmentos($_POST);
 
         View::set('script', $script);
         View::set('cliente', $_POST['CDGCL']);

@@ -746,4 +746,47 @@ sql;
             return self::Responde(false, "Error al buscar registros de retiros.", null, $e->getMessage());
         }
     }
+
+    public static function GetSegmentos($datos)
+    {
+        $qry = <<<sql
+        SELECT
+            CDGCL,
+            APA.CONTRATO AS AHORRO,
+            (
+                SELECT
+                    COUNT(CONTRATO) AS PQS
+                FROM
+                    ASIGNA_PROD_AHORRO
+                WHERE
+                    CDGCL = APA.CDGCL
+                    AND CDGPR_PRIORITARIO = 2
+                GROUP BY
+                    CDGCL
+            ) PQS,
+            (
+                SELECT
+                    COUNT(CDG_CONTRATO)
+                FROM
+                    CUENTA_INVERSION
+                WHERE
+                    CDG_CONTRATO = APA.CONTRATO
+            ) AS INVERSION
+        FROM
+            ASIGNA_PROD_AHORRO APA
+        WHERE
+            CONTRATO = '{$datos['CONTRATO']}'
+            AND CDGPR_PRIORITARIO = 1
+        
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qry);
+            if ($res) return $res;
+            return [];
+        } catch (Exception $e) {
+            return [];
+        }
+    }
 }

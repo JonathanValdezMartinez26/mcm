@@ -3976,7 +3976,6 @@ class Ahorro extends Controller
             <table class="tablaTotales">
                 <thead>
                     <tr>
-                        <th>Saldo Inicial</th>
                         <th>Abonos</th>
                         <th>Cargos</th>
                         <th>Saldo Final</th>
@@ -3984,16 +3983,13 @@ class Ahorro extends Controller
                 </thead>
                 <tbody>
                     <tr>
-                        <td style="text-align: center; width: 25%;">
-                            $ $si
-                        </td>
-                        <td style="text-align: center; width: 25%;">
+                        <td style="text-align: center; width: 33%;">
                             $ $a
                         </td>
-                        <td style="text-align: center; width: 25%;">
+                        <td style="text-align: center; width: 33%;">
                             $ $c
                         </td>
-                        <td style="text-align: center; width: 25%;">
+                        <td style="text-align: center; width: 33%;">
                             $ $sf
                         </td>
                     </tr>
