@@ -1078,9 +1078,9 @@ class CajaAhorro
 
             $queryCL_PQ = <<<sql
             INSERT INTO CL_PQS
-                (CDGCL,CDG_CONTRATO,NOMBRE1,NOMBRE2,APELLIDO1,APELLIDO2,FECHA_NACIMIENTO,SEXO,CURP,PAIS,ENTIDAD,FECHA_REGISTRO,FECHA_MODIFICACION,ESTATUS,CDGCO,CDGPE_REGISTRA)
+                (CDGCL,CDG_CONTRATO,NOMBRE1,NOMBRE2,APELLIDO1,APELLIDO2,FECHA_NACIMIENTO,SEXO,CURP,PAIS,ENTIDAD,FECHA_REGISTRO,FECHA_MODIFICACION,ESTATUS,CDGCO,CDGPE_REGISTRA, tasa)
             VALUES
-                (:cliente, :contrato, :nombre1, :nombre2, :apellido1, :apellido2, :fecha_nacimiento, :sexo, :curp, :pais, :entidad, SYSDATE, SYSDATE, 'A', :sucursal, :ejecutivo)
+                (:cliente, :contrato, :nombre1, :nombre2, :apellido1, :apellido2, :fecha_nacimiento, :sexo, :curp, :pais, :entidad, SYSDATE, SYSDATE, 'A', :sucursal, :ejecutivo, :tasa)
             sql;
 
             $fecha = DateTime::createFromFormat('Y-m-d', $datos['fecha_nac']);
@@ -1105,7 +1105,8 @@ class CajaAhorro
                     'pais' => $datos['pais'],
                     'entidad' => $datos['entidad'],
                     'sucursal' => $datos['sucursal'],
-                    'ejecutivo' => $datos['ejecutivo']
+                    'ejecutivo' => $datos['ejecutivo'],
+                    'tasa' => $datos['tasa']
                 ]
             ];
 
