@@ -755,7 +755,7 @@ sql;
             APA.CONTRATO AS AHORRO,
             (
                 SELECT
-                    COUNT(CONTRATO) AS PQS
+                    COUNT(CONTRATO)
                 FROM
                     ASIGNA_PROD_AHORRO
                 WHERE
@@ -763,7 +763,7 @@ sql;
                     AND CDGPR_PRIORITARIO = 2
                 GROUP BY
                     CDGCL
-            ) PQS,
+            ) PEQUES,
             (
                 SELECT
                     COUNT(CDG_CONTRATO)
@@ -771,7 +771,7 @@ sql;
                     CUENTA_INVERSION
                 WHERE
                     CDG_CONTRATO = APA.CONTRATO
-            ) AS INVERSION
+            ) AS INVERSIÓN
         FROM
             ASIGNA_PROD_AHORRO APA
         WHERE
@@ -782,7 +782,7 @@ sql;
 
         try {
             $mysqli = Database::getInstance();
-            $res = $mysqli->queryAll($qry);
+            $res = $mysqli->queryOne($qry);
             if ($res) return $res;
             return [];
         } catch (Exception $e) {

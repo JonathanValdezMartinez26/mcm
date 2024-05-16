@@ -1084,6 +1084,13 @@ class AdminSucursales extends Controller
 
         $movimientos = self::ListaMovimientos($_POST);
         $segmentos = AdminSucursalesDao::GetSegmentos($_POST);
+        $opcSegmentos = "";
+        if ($segmentos['PEQUES'] > 0) $opcSegmentos .= "<option value='2'>PEQUES</option>";
+        if ($segmentos['INVERSIÓN'] > 0) $opcSegmentos .= "<option value='3'>INVERSIÓN</option>";
+
+        if ($opcSegmentos === "") $opcSegmentos = "<option value='1'>AHORRO</option>";
+        else $opcSegmentos = "<option value='0'>TODOS</option><option value='1'>AHORRO</option>" . $opcSegmentos;
+
 
         View::set('script', $script);
         View::set('cliente', $_POST['CDGCL']);
@@ -1098,6 +1105,7 @@ class AdminSucursales extends Controller
         View::set('montoTransferencias', $movimientos['montoTransferencias']);
         View::set('saldoFinal', $movimientos['saldoFinal']);
         View::set('filas', $movimientos['filas']);
+        View::set('opcSegmentos', $opcSegmentos);
         echo View::fetch("caja_admin_clientes_resumenCta");
     }
 

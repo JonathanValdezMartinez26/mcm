@@ -59,10 +59,7 @@
                 <div class="form-group">
                     <label for="montoTrn">Segmento</label>
                     <select class="form-control" id="segmento" name="segmento">
-                        <option value="0">TODOS</option>
-                        <option value="1">AHORRO</option>
-                        <option value="2">INVERSIÓN</option>
-                        <option value="3">PEQUES</option>
+                        <?= $opcSegmentos; ?>
                     </select>
                 </div>
             </div>
