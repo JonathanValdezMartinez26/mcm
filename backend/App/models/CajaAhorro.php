@@ -1457,6 +1457,14 @@ class CajaAhorro
 
     public static function HistoricoSolicitudRetiro($datos)
     {
+        $fal = <<<sql
+        CASE
+            WHEN (TRUNC(SYSDATE) - TRUNC(SR.FECHA_REGISTRO)) > 7 THEN 
+                'VENCIDA (' || TO_CHAR((TRUNC(SYSDATE) - TRUNC(SR.FECHA_REGISTRO)) - 7) || ' días vencida)'
+            ELSE 'EN TIEMPO (' || TO_CHAR(7 - (TRUNC(SYSDATE) - TRUNC(SR.FECHA_REGISTRO))) || ' días restantes)'
+            END AS VENCIMIENTO
+sql;
+
         $qry = <<<sql
         SELECT
             SR.ID_SOL_RETIRO_AHORRO AS ID,
@@ -1476,12 +1484,7 @@ class CajaAhorro
                 WHEN 3 THEN 'ENTREGADO'
                 WHEN 4 THEN 'DEVUELTO'
                 ELSE 'NO DEFINIDO'
-            END AS ESTATUS,
-            CASE
-            WHEN (TRUNC(SYSDATE) - TRUNC(SR.FECHA_REGISTRO)) > 7 THEN 
-                'VENCIDA (' || TO_CHAR((TRUNC(SYSDATE) - TRUNC(SR.FECHA_REGISTRO)) - 7) || ' días vencida)'
-            ELSE 'EN TIEMPO (' || TO_CHAR(7 - (TRUNC(SYSDATE) - TRUNC(SR.FECHA_REGISTRO))) || ' días restantes)'
-            END AS VENCIMIENTO
+            END AS ESTATUS
         FROM
             SOLICITUD_RETIRO_AHORRO SR
             INNER JOIN CL ON CL.CODIGO = (SELECT CDGCL FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = SR.CONTRATO)

@@ -1513,7 +1513,7 @@ html;
                 $concepto = '<i class="fa fa-minus" style="color: #ac0000;"></i>';
             } else if ($value['CONCEPTO'] == 'TRANSFERENCIA INVERSIÓN (RECEPCIÓN)') {
                 $concepto = '<i class="fa fa-minus" style="color: #00ac00;"></i>';
-            } else if ($value['CONCEPTO'] == 'RETIRO') {
+            } else if ($value['CONCEPTO'] == 'RETIRO' || $value['CONCEPTO'] == 'ENTREGA RETIRO PROGRAMADO' || $value['CONCEPTO'] == 'ENTREGA RETIRO EXPRESS') {
                 $concepto = '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
             } else if ($value['TIPO_MOVIMIENTO'] == 'MOVIMIENTO VIRTUAL') {
                 $concepto = '<i class="fa fa-asterisk" style="color: #005dac;"></i>';
