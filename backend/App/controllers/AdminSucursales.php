@@ -2094,7 +2094,7 @@ html;
 
         foreach ($SolicitudesOrdinarias as $key => $value) {
             $cantidad_formateada = number_format($value['CANTIDAD_SOLICITADA'], 2, '.', ',');
-            $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
+            $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value['TIPO_PRODUCTO'] == 'AHORRO CUENTA CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
 
             $tabla .= <<<html
                 <tr style="padding: 15px!important;">
@@ -2143,7 +2143,7 @@ html;
 
         foreach ($SolicitudesOrdinarias_Historial as $key => $value_historial) {
             $cantidad_formateada = number_format($value_historial['CANTIDAD_SOLICITADA'], 2, '.', ',');
-            $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
+            $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value['TIPO_PRODUCTO'] == 'AHORRO CUENTA CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
 
             $tabla_historial .= <<<html
                 <tr style="padding: 15px!important;">
@@ -2300,7 +2300,7 @@ html;
 
         foreach ($SolicitudesOrdinarias as $key => $value) {
             $cantidad_formateada = number_format($value['CANTIDAD_SOLICITADA'], 2, '.', ',');
-            $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
+            $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value['TIPO_PRODUCTO'] == 'AHORRO CUENTA CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
 
             $tabla .= <<<html
                 <tr style="padding: 15px!important;">
@@ -2346,7 +2346,7 @@ html;
 
         foreach ($SolicitudesExpressHistorial as $key => $value_historial) {
             $cantidad_formateada = number_format($value_historial['CANTIDAD_SOLICITADA'], 2, '.', ',');
-            $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value_historial['TIPO_PRODUCTO'] == 'AHORRO CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
+            $img =  '<img src="https://cdn-icons-png.flaticon.com/512' . ($value_historial['TIPO_PRODUCTO'] == 'AHORRO CUENTA CORRIENTE' ? '/5575/5575939' : '/2995/2995467') . '.png" style="border-radius: 3px; padding-top: 5px;" width="33" height="35">';
 
             if ($value_historial['ESTATUS_ASIGNA_ACEPTA'] == 'APROBADO') {
                 $estatus = 'ACEPTADO';

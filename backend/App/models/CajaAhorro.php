@@ -1106,7 +1106,7 @@ class CajaAhorro
                     'sexo' => $sexo ? 'H' : 'M',
                     'curp' => $datos['curp'],
                     'pais' => $datos['pais'],
-                    'entidad' => $datos['entidad'],
+                    'entidad' => $datos['ciudad'],
                     'sucursal' => $datos['sucursal'],
                     'ejecutivo' => $datos['ejecutivo'],
                     'tasa' => $datos['tasa']
@@ -1538,58 +1538,59 @@ class CajaAhorro
 
     public static function EntregaRetiro($datos)
     {
-        $datosSolicitud = $datos;
-        unset($datosSolicitud['sucursal']);
-        unset($datosSolicitud['monto']);
-        unset($datosSolicitud['contrato']);
         $tipoRetiro = $datos['retiroExpress'] === true || $datos['retiroExpress'] === 'true' ? "Express" : "Programado";
+
+        $datosSolicitud = [
+            'estatus' => 3,
+            'ejecutivo' => $datos['ejecutivo'],
+            'id' => $datos['id']
+        ];
+
+        $datosTicket = [
+            'contrato' => $datos['contrato'],
+            'monto' => $datos['monto'],
+            'ejecutivo' => $datos['ejecutivo'],
+            'sucursal' => $datos['sucursal']
+        ];
+
+        $datosMovimiento = [
+            'tipo_pago' => $tipoRetiro === "Express" ? '13' : '14',
+            'contrato' => $datos['contrato'],
+            'monto' => $datos['monto'],
+            'movimiento' => '0',
+            'cliente' => $datos['cliente'],
+            'ejecutivo' => $datos['ejecutivo'],
+            'sucursal' => $datos['sucursal']
+        ];
+
+        $datosInsert = [
+            $datosSolicitud,
+            $datosTicket,
+            $datosMovimiento,
+            ['sucursal' => $datos['sucursal'], 'monto' => $datos['monto']]
+        ];
+
+        $qrySolicitud = <<<sql
+        UPDATE
+            SOLICITUD_RETIRO_AHORRO
+        SET
+            ESTATUS = :estatus,
+            CDG_CIERRE_SOLICITUD = :ejecutivo,
+            FECHA_ESTATUS = SYSDATE,
+            FECHA_ENTREGA = SYSDATE
+        WHERE
+            ID_SOL_RETIRO_AHORRO = :id
+        sql;
+
+        $query = [
+            $qrySolicitud,
+            self::GetQueryTicket(),
+            self::GetQueryMovimientoAhorro(),
+            self::GetQueryActualizaSaldoSucursal(true)
+        ];
 
         try {
             $mysqli = Database::getInstance();
-
-            $qrySolicitud = <<<sql
-            UPDATE
-                SOLICITUD_RETIRO_AHORRO
-            SET
-                ESTATUS = :estatus,
-                CDG_CIERRE_SOLICITUD = :ejecutivo,
-                FECHA_ESTATUS = SYSDATE,
-                FECHA_ENTREGA = SYSDATE
-            WHERE
-                ID_SOL_RETIRO_AHORRO = :id
-            sql;
-
-            $datosTicket = [
-                'contrato' => $datos['contrato'],
-                'monto' => $datos['monto'],
-                'ejecutivo' => $datos['ejecutivo'],
-                'sucursal' => $datos['sucursal']
-            ];
-
-            $datosMovimiento = [
-                'tipo_pago' => '13',
-                'contrato' => $datos['contrato'],
-                'monto' => $datos['monto'],
-                'movimiento' => '0',
-                'cliente' => $datos['cliente'],
-                'ejecutivo' => $datos['ejecutivo'],
-                'sucursal' => $datos['sucursal']
-            ];
-
-            $query = [
-                $qrySolicitud,
-                self::GetQueryTicket(),
-                self::GetQueryMovimientoAhorro(),
-                self::GetQueryActualizaSaldoSucursal(true)
-            ];
-
-            $datosInsert = [
-                $datosSolicitud,
-                $datosTicket,
-                $datosMovimiento,
-                ['sucursal' => $datos['sucursal'], 'monto' => $datos['monto']]
-            ];
-
             $res = $mysqli->insertaMultiple($query, $datosInsert);
 
             LogTransaccionesAhorro::LogTransacciones($query[0], $datosInsert[0], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Actualización de estatus por entrega de retiro " . $tipoRetiro);
@@ -1597,9 +1598,10 @@ class CajaAhorro
             LogTransaccionesAhorro::LogTransacciones($query[2], $datosInsert[2], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de movimiento por entrega de retiro " . $tipoRetiro);
             LogTransaccionesAhorro::LogTransacciones($query[3], $datosInsert[4], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Actualización de saldo de sucursal por entrega de retiro " . $tipoRetiro);
 
-            if ($res) return self::Responde(true, "Entrega de retiro " . $tipoRetiro . " registrada correctamente.", $res);
+            if (!$res) return self::Responde(false, "Ocurrió un error al registrar la entrega del retiro " . $tipoRetiro . ".");
 
-            return self::Responde(false, "Ocurrió un error al registrar la entrega del retiro " . $tipoRetiro . ".");
+            $ticket = self::RecuperaTicket($datos['contrato']);
+            return self::Responde(true, "Entrega de retiro " . $tipoRetiro . " registrada correctamente.", $ticket);
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar la entrega del retiro " . $tipoRetiro . ".", null, $e->getMessage());
         }
