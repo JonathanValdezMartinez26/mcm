@@ -1796,8 +1796,6 @@ class Ahorro extends Controller
 
         $extraFooter = <<<html
         <script>
-            maximoRetiroDia = $maximoRetiroDia
-         
             window.onload = () => {
                 if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
             }
@@ -1862,22 +1860,20 @@ class Ahorro extends Controller
                     }
                         
                     const datosCliente = respuesta.datos
-                    consultaServidor("/Ahorro/ValidaRetirosDia/", { contrato: datosCliente.CONTRATO }, (respuesta) => {
-                        if (!respuesta.success && respuesta.datos.RETIROS >= maximoRetiroDia) return showError("El cliente " + datosCliente.CDGCL + " ha alcanzado el límite de retiros diarios.")
-                            document.querySelector("#nombre1").disabled = false
-                            document.querySelector("#nombre2").disabled = false
-                            document.querySelector("#apellido1").disabled = false
-                            document.querySelector("#apellido2").disabled = false
-                            document.querySelector("#fecha_nac").disabled = false
-                            document.querySelector("#ciudad").disabled = false
-                            document.querySelector("#curp").disabled = false
-                                
-                            document.querySelector("#fechaRegistro").value = datosCliente.FECHA_REGISTRO
-                            document.querySelector("#noCliente").value = noCliente.value
-                            document.querySelector("#nombre").value = datosCliente.NOMBRE
-                            document.querySelector("#direccion").value = datosCliente.DIRECCION
-                            noCliente.value = ""
-                        })
+                     
+                    document.querySelector("#nombre1").disabled = false
+                    document.querySelector("#nombre2").disabled = false
+                    document.querySelector("#apellido1").disabled = false
+                    document.querySelector("#apellido2").disabled = false
+                    document.querySelector("#fecha_nac").disabled = false
+                    document.querySelector("#ciudad").disabled = false
+                    document.querySelector("#curp").disabled = false
+                        
+                    document.querySelector("#fechaRegistro").value = datosCliente.FECHA_REGISTRO
+                    document.querySelector("#noCliente").value = noCliente.value
+                    document.querySelector("#nombre").value = datosCliente.NOMBRE
+                    document.querySelector("#direccion").value = datosCliente.DIRECCION
+                    noCliente.value = ""
                 })
             }
              
@@ -2143,14 +2139,19 @@ class Ahorro extends Controller
     // Movimientos sobre cuentas de ahorro Peques
     public function CuentaPeque()
     {
+        $maximoRetiroDia = 50000;
+        $montoMaximoRetiro = 1000000;
+
         $extraFooter = <<<html
         <script>
+            const maximoRetiroDia = $maximoRetiroDia
+            const montoMaximoRetiro = $montoMaximoRetiro
+            let retiroBloqueado = false
+            let valKD = false
+         
             window.onload = () => {
                 if (document.querySelector("#clienteBuscado").value !== "") buscaCliente()
             }
-        
-            const montoMaximoRetiro = 10000
-            let valKD = false
          
             {$this->showError}
             {$this->showSuccess}
@@ -2170,6 +2171,7 @@ class Ahorro extends Controller
             {$this->consultaServidor}
             
             const buscaCliente = () => {
+                retiroBloqueado = false
                 const noCliente = document.querySelector("#clienteBuscado").value
                 
                 if (!noCliente) {
@@ -2220,7 +2222,7 @@ class Ahorro extends Controller
                         }
                     }
                     const datosCliente = respuesta.datos
-                        
+                     
                     const contratos = document.createDocumentFragment()
                     const seleccionar = document.createElement("option")
                     seleccionar.value = ""
@@ -2241,7 +2243,6 @@ class Ahorro extends Controller
                         pqSeleccionado(datosCliente, document.querySelector("#contrato").value)
                     } else {
                         document.querySelector("#contrato").selectedIndex = 0
-                        document.querySelector("#contrato").disabled = false
                         document.querySelector("#contrato").addEventListener("change", (e) => {
                             pqSeleccionado(datosCliente, e.target.value)
                         })
@@ -2253,20 +2254,29 @@ class Ahorro extends Controller
                         document.querySelector("#retiro").checked = true
                         document.querySelector("#retiro").dispatchEvent(new Event("change"))
                     }
-                     
+                    
                     document.querySelector("#clienteBuscado").value = ""
+                    document.querySelector("#contrato").disabled = false
                 })
             }
              
             const pqSeleccionado = (datosCliente, pq) => {
+                retiroBloqueado = false
                 datosCliente.forEach(contrato => {
                     if (contrato.CDG_CONTRATO == pq) {
-                        document.querySelector("#nombre").value = contrato.CDG_CONTRATO
-                        document.querySelector("#curp").value = contrato.CURP
-                        document.querySelector("#cliente").value = contrato.CDGCL
-                        document.querySelector("#saldoActual").value = formatoMoneda(contrato.SALDO)
-                        document.querySelector("#deposito").disabled = false
-                        document.querySelector("#retiro").disabled = false
+                        consultaServidor("/Ahorro/ValidaRetirosDia/", $.param({ contrato: contrato.CDG_CONTRATO }), (respuesta) => {
+                            if (!respuesta.success && respuesta.datos.RETIROS >= maximoRetiroDia) {
+                                showError("El peque " + contrato.NOMBRE + " ha alcanzado el límite de retiros diarios.")
+                                retiroBloqueado = true   
+                            }
+                             
+                            document.querySelector("#nombre").value = contrato.CDG_CONTRATO
+                            document.querySelector("#curp").value = contrato.CURP
+                            document.querySelector("#cliente").value = contrato.CDGCL
+                            document.querySelector("#saldoActual").value = formatoMoneda(contrato.SALDO)
+                            document.querySelector("#deposito").disabled = false
+                            document.querySelector("#retiro").disabled = retiroBloqueado
+                        })
                     }
                 })
             }
