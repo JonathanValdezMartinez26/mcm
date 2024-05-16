@@ -2841,9 +2841,9 @@ sql;
             $res = $mysqli->queryOne($qry);
             if (!$res) {
                 $accion = $datos['estatus'] === '1' ? 'aprobada' : 'rechazada';
-                return self::Responde(true, "Solicitud " . $accion . " correctamente.", ["qry" => $qry, "res" => $res]);
+                return self::Responde(true, "Solicitud " . $accion . " correctamente.");
             }
-            return self::Responde(false, "Ocurrió un error al actualizar la solicitud.", ["qry" => $qry, "res" => $res]);
+            return self::Responde(false, "Ocurrió un error al actualizar la solicitud.");
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al actualizar la solicitud.", null, $e->getMessage());
         }
@@ -2865,7 +2865,7 @@ sql;
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->insertar($qry, $params);
-            return self::Responde(true, "Solicitud actualizada correctamente.", ["qry" => $qry, "res" => $res, "params" => $params]);
+            return self::Responde(true, "Solicitud actualizada correctamente.");
         } catch (Exception $e) {
             return self::Responde(false, "Error al actualizar solicitud.", null, $e->getMessage());
         }
