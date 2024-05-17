@@ -3386,6 +3386,10 @@ class Ahorro extends Controller
                 text-align: right;
                 padding-top: 50px;
                 margin-bottom: 180px;
+                font-weight: normal;
+            }
+            li {
+                font-size: 11pt;
             }
         </style>  
         html;
@@ -3399,49 +3403,51 @@ class Ahorro extends Controller
                 CONFORMIDAD CON LAS SIGUIENTES:
             </p>
             <h3>DECLARACIONES</h3>
-            <ol>
-                <li>Declara <b>"EL MUTUARIO Y/O PRESTATARIO"</b> bajo protesta de decir verdad:</li>
-                <ol class="listaLetras">
-                    <li>
-                        Ser persona física con plena capacidad jurídica para la celebración del presente
-                        contrato y para obligarse individualmente a todos sus términos con pleno
-                        conocimiento de su objetivo y efectos jurídicos.
-                    </li>
-                    <li>
-                        Tener su domicilio en <b>{$datos['DIRECCION']}</b>, mismo que señala para todos sus
-                        efectos derivados de este contrato.
-                    </li>
-                    <li>
-                        Que cuenta con la capacidad y solvencia económica suficiente para cumplir con las
-                        obligaciones a su cargo derivadas del presente contrato.
-                    </li>
+            <div calss="decalraciones">
+                <ol>
+                    <li>Declara <b>"EL MUTUARIO Y/O PRESTATARIO"</b> bajo protesta de decir verdad:</li>
+                    <ol class="listaLetras">
+                        <li>
+                            Ser persona física con plena capacidad jurídica para la celebración del presente
+                            contrato y para obligarse individualmente a todos sus términos con pleno
+                            conocimiento de su objetivo y efectos jurídicos.
+                        </li>
+                        <li>
+                            Tener su domicilio en <b>{$datos['DIRECCION']}</b>, mismo que señala para todos sus
+                            efectos derivados de este contrato.
+                        </li>
+                        <li>
+                            Que cuenta con la capacidad y solvencia económica suficiente para cumplir con las
+                            obligaciones a su cargo derivadas del presente contrato.
+                        </li>
+                    </ol>
+                    <li>Declara el <b>“MUTUANTE Y/O PRESTAMISTA”:</b></li>
+                    <ol class="listaLetras">
+                        <li>Contar con la capacidad suficiente para la celebración del presente contrato.</li>
+                        <li>
+                            Que su domicilio para los efectos de este contrato es el ubicado en <b>Avenida Melchor
+                            Ocampo, número 416 Interior 1, Colonia Cuauhtémoc, Alcaldía Cuauhtémoc, Ciudad de
+                            México, C.P. 06500</b>.
+                        </li>
+                    </ol>
+                    <li><b>LAS PARTES</b> declaran:</li>
+                    <ol class="listaLetras">
+                        <li>
+                            Que reconocen recíprocamente la capacidad jurídica con la que comparecen a la
+                            celebración de este contrato, manifestando que el mismo está libre de cualquier
+                            vicio del consentimiento que pudiera afectar su plena validez.
+                        </li>
+                        <li>
+                            Que manifiestan su consentimiento para celebrar el presente contrato de mutuo con
+                            interés.
+                        </li>
+                        <li>
+                            Que reconocen en forma mutua la personalidad con que actúan en la celebración del
+                            presente instrumento.
+                        </li>
+                    </ol>
                 </ol>
-                <li>Declara el <b>“MUTUANTE Y/O PRESTAMISTA”:</b></li>
-                <ol class="listaLetras">
-                    <li>Contar con la capacidad suficiente para la celebración del presente contrato.</li>
-                    <li>
-                        Que su domicilio para los efectos de este contrato es el ubicado en <b>Avenida Melchor
-                        Ocampo, número 416 Interior 1, Colonia Cuauhtémoc, Alcaldía Cuauhtémoc, Ciudad de
-                        México, C.P. 06500</b>.
-                    </li>
-                </ol>
-                <li><b>LAS PARTES</b> declaran:</li>
-                <ol class="listaLetras">
-                    <li>
-                        Que reconocen recíprocamente la capacidad jurídica con la que comparecen a la
-                        celebración de este contrato, manifestando que el mismo está libre de cualquier
-                        vicio del consentimiento que pudiera afectar su plena validez.
-                    </li>
-                    <li>
-                        Que manifiestan su consentimiento para celebrar el presente contrato de mutuo con
-                        interés.
-                    </li>
-                    <li>
-                        Que reconocen en forma mutua la personalidad con que actúan en la celebración del
-                        presente instrumento.
-                    </li>
-                </ol>
-            </ol>
+            </div>
             <h3>CLAUSULAS</h3>
             <p>
                 <b>PRIMERA.-</b> <b>OBJETO DEL CONTRATO.</b> Que las partes tienen pleno conocimiento que el
