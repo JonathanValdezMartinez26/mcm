@@ -308,7 +308,14 @@ class Ahorro extends Controller
                     targets: 0
                 }
             ],
-            order: false
+            order: false,
+            language: {
+                emptyTable: "No hay datos disponibles",
+                paginate: {
+                    previous: "Anterior",
+                    next: "Siguiente",
+                }
+            }
         })
 
         $("#"  + id + " input[type=search]").keyup(() => {
@@ -324,6 +331,20 @@ class Ahorro extends Controller
         const ws = XLSX.utils.table_to_sheet(tabla)
         XLSX.utils.book_append_sheet(wb, ws, nombreHoja)
         XLSX.writeFile(wb, nombreArchivo + ".xlsx")
+    }';
+    private $crearFilas = 'const creaFilas = (datos, id = null) => {
+        const filas = document.createDocumentFragment()
+        datos.forEach((dato) => {
+            const fila = document.createElement("tr")
+            Object.keys(dato).forEach((key) => {
+                const celda = document.createElement("td")
+                celda.style.verticalAlign = "middle"
+                celda.innerText = dato[key]
+                fila.appendChild(celda)
+            })
+            filas.appendChild(fila)
+        })
+        return filas
     }';
 
     function __construct()
@@ -1277,10 +1298,19 @@ class Ahorro extends Controller
             {$this->exportaExcel}
             {$this->imprimeTicket}
             {$this->muestraPDF}
+            {$this->addParametro}
          
             $(document).ready(() => {
                 configuraTabla("hstSolicitudes")
             })
+             
+            const validaFIF = (idI, idF) => {
+                const fechaI = document.getElementById(idI).value
+                const fechaF = document.getElementById(idF).value
+                if (fechaI && fechaF && fechaI > fechaF) {
+                    document.getElementById(idI).value = fechaF
+                }
+            }
             
             const imprimeExcel = () => exportaExcel("hstSolicitudes", "Historial solicitudes de retiro")
              
@@ -1398,10 +1428,62 @@ class Ahorro extends Controller
                     })
                 })
             }
+             
+            const buscar = () => {
+                const datos = []
+                addParametro(datos, "producto", 1)
+                addParametro(datos, "fechaI", document.querySelector("#fechaI").value)
+                addParametro(datos, "fechaF", document.querySelector("#fechaF").value)
+                addParametro(datos, "estatus", document.querySelector("#estatus").value)
+                addParametro(datos, "tipo", document.querySelector("#tipo").value)
+                 
+                consultaServidor("/Ahorro/HistoricoSolicitudRetiro/", $.param(datos), (respuesta) => {
+                    $("#hstSolicitudes").DataTable().destroy()
+                     
+                    if (respuesta.datos == "") showError("No se encontraron solicitudes de retiro en el rango de fechas seleccionado.")
+                     
+                    $("#hstSolicitudes tbody").html(respuesta.datos)
+                    configuraTabla("hstSolicitudes")
+                })
+            }
         </script>
         html;
 
-        $detalles = CajaAhorroDao::HistoricoSolicitudRetiro(["producto" => 1]);
+        $tabla = self::HistoricoSolicitudRetiro(1);
+        $tabla = $tabla['success'] ? $tabla['datos'] : "";
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial de solicitudes de retiro", [$this->XLSX])));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('tabla', $tabla);
+        View::set('fecha', date('Y-m-d'));
+        View::render("caja_menu_solicitud_retiro_historial");
+    }
+
+    public function ResumenEntregaRetiro()
+    {
+        echo CajaAhorroDao::ResumenEntregaRetiro($_POST);
+    }
+
+    public function EntregaRetiro()
+    {
+        echo CajaAhorroDao::EntregaRetiro($_POST);
+    }
+
+    public function DevolucionRetiro()
+    {
+        echo CajaAhorroDao::DevolucionRetiro($_POST);
+    }
+
+    public function HistoricoSolicitudRetiro($p = 1)
+    {
+        $producto = $_POST['producto'] ? $_POST['producto'] : $p;
+        $fi = $_POST['fechaI'] ? $_POST['fechaI'] : date('Y-m-d');
+        $ff = $_POST['fechaF'] ? $_POST['fechaF'] : date('Y-m-d');
+        $estatus = $_POST['estatus'] ? $_POST['estatus'] : "";
+        $tipo = $_POST['tipo'] ? $_POST['tipo'] : "";
+
+        $historico = json_decode(CajaAhorroDao::HistoricoSolicitudRetiro(["producto" => $producto, "fechaI" => $fi, "fechaF" => $ff, "estatus" => $estatus, "tipo" => $tipo]));
+        $detalles = $historico->success ? $historico->datos : [];
 
         $tabla = "";
         foreach ($detalles as $key1 => $detalle) {
@@ -1424,25 +1506,9 @@ class Ahorro extends Controller
             $tabla .= "</tr>";
         }
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial de solicitudes de retiro", [$this->XLSX])));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('tabla', $tabla);
-        View::render("caja_menu_solicitud_retiro_historial");
-    }
-
-    public function ResumenEntregaRetiro()
-    {
-        echo CajaAhorroDao::ResumenEntregaRetiro($_POST);
-    }
-
-    public function EntregaRetiro()
-    {
-        echo CajaAhorroDao::EntregaRetiro($_POST);
-    }
-
-    public function DevolucionRetiro()
-    {
-        echo CajaAhorroDao::DevolucionRetiro($_POST);
+        $r = json_encode(["success" => true, "datos" => $tabla, "fi" => $fi, "ff" => $ff, "estatus" => $estatus, "tipo" => $tipo, "qry" => $historico->error]);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') echo $r;
+        else return $r;
     }
 
     //********************INVERSIONES********************//
@@ -2726,10 +2792,19 @@ class Ahorro extends Controller
             {$this->exportaExcel}
             {$this->imprimeTicket}
             {$this->muestraPDF}
+            {$this->addParametro}
          
             $(document).ready(() => {
                 configuraTabla("hstSolicitudes")
             })
+             
+            const validaFIF = (idI, idF) => {
+                const fechaI = document.getElementById(idI).value
+                const fechaF = document.getElementById(idF).value
+                if (fechaI && fechaF && fechaI > fechaF) {
+                    document.getElementById(idI).value = fechaF
+                }
+            }
             
             const imprimeExcel = () => exportaExcel("hstSolicitudes", "Historial solicitudes de retiro")
              
@@ -2847,35 +2922,34 @@ class Ahorro extends Controller
                     })
                 })
             }
+             
+            const buscar = () => {
+                const datos = []
+                addParametro(datos, "producto", 2)
+                addParametro(datos, "fechaI", document.querySelector("#fechaI").value)
+                addParametro(datos, "fechaF", document.querySelector("#fechaF").value)
+                addParametro(datos, "estatus", document.querySelector("#estatus").value)
+                addParametro(datos, "tipo", document.querySelector("#tipo").value)
+                 
+                consultaServidor("/Ahorro/HistoricoSolicitudRetiro/", $.param(datos), (respuesta) => {
+                    $("#hstSolicitudes").DataTable().destroy()
+                     
+                    if (respuesta.datos == "") showError("No se encontraron solicitudes de retiro en el rango de fechas seleccionado.")
+                     
+                    $("#hstSolicitudes tbody").html(respuesta.datos)
+                    configuraTabla("hstSolicitudes")
+                })
+            }
         </script>
         html;
 
-        $detalles = CajaAhorroDao::HistoricoSolicitudRetiro(["producto" => 2]);
+        $tabla = self::HistoricoSolicitudRetiro(2);
+        $tabla = $tabla['success'] ? $tabla['datos'] : "";
 
-        $tabla = "";
-        foreach ($detalles as $key1 => $detalle) {
-            $tabla .= "<tr>";
-            $acciones = "";
-            foreach ($detalle as $key2 => $valor) {
-                if ($key2 === "ID") continue;
-                $v = $valor;
-                if ($key2 === "MONTO") $v = "$ " . number_format($valor, 2);
-
-                $tabla .= "<td style='vertical-align: middle;'>$v</td>";
-
-                if ($key2 === "ESTATUS" && $valor === "APROBADO") {
-                    $acciones = "<button type='button' class='btn btn-success btn-circle' onclick='actualizaEstatus(3, {$detalle["ID"]})'><i class='glyphicon glyphicon-transfer'></i></button>
-                    <button type='button' class='btn btn-danger btn-circle' onclick='actualizaEstatus(4, {$detalle["ID"]})'><i class='fa fa-trash'></i></button>";
-                }
-            }
-
-            $tabla .= "<td style='vertical-align: middle;'>" . $acciones . "</td>";
-            $tabla .= "</tr>";
-        }
-
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial de solicitudes de retiro")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Historial de solicitudes de retiro", [$this->XLSX])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('tabla', $tabla);
+        View::set('fecha', date('Y-m-d'));
         View::render("caja_menu_solicitud_retiro_peque_historial");
     }
 

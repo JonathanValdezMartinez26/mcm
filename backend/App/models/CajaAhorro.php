@@ -1513,14 +1513,6 @@ class CajaAhorro
 
     public static function HistoricoSolicitudRetiro($datos)
     {
-        $fal = <<<sql
-        CASE
-            WHEN (TRUNC(SYSDATE) - TRUNC(SR.FECHA_REGISTRO)) > 7 THEN 
-                'VENCIDA (' || TO_CHAR((TRUNC(SYSDATE) - TRUNC(SR.FECHA_REGISTRO)) - 7) || ' días vencida)'
-            ELSE 'EN TIEMPO (' || TO_CHAR(7 - (TRUNC(SYSDATE) - TRUNC(SR.FECHA_REGISTRO))) || ' días restantes)'
-            END AS VENCIMIENTO
-sql;
-
         $qry = <<<sql
         SELECT
             SR.ID_SOL_RETIRO_AHORRO AS ID,
@@ -1546,15 +1538,20 @@ sql;
             INNER JOIN CL ON CL.CODIGO = (SELECT CDGCL FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = SR.CONTRATO)
         WHERE
             CONTRATO IN (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGPR_PRIORITARIO = '{$datos['producto']}' GROUP BY CONTRATO)
-        ORDER BY
-            SR.FECHA_ESTATUS DESC
         sql;
 
+        if ($datos['fechaI'] && $datos['fechaF']) $qry .= " AND TRUNC(SR.FECHA_REGISTRO) BETWEEN TO_DATE('{$datos['fechaI']}', 'YYYY-MM-DD') AND TO_DATE('{$datos['fechaF']}', 'YYYY-MM-DD')";
+        if ($datos['estatus']) $qry .= " AND SR.ESTATUS = '{$datos['estatus']}'";
+        if ($datos['tipo']) $qry .= " AND SR.TIPO_RETIRO = '{$datos['tipo']}'";
+
+        $qry .= " ORDER BY SR.FECHA_ESTATUS DESC";
         try {
             $mysqli = Database::getInstance();
-            return $mysqli->queryAll($qry);
+            $res = $mysqli->queryAll($qry);
+            if (count($res) === 0) return self::Responde(false, "No se encontraron solicitudes de retiro para el producto {$datos['producto']}.", null);
+            return self::Responde(true, "Consulta realizada correctamente.", $res);
         } catch (Exception $e) {
-            return array();
+            return self::Responde(false, "Ocurrió un error al consultar las solicitudes de retiro.", null, $e->getMessage());
         }
     }
 
@@ -2717,7 +2714,7 @@ sql;
                 FROM
                     ARQUEO
                 WHERE
-                    TO_NUMBER(CDG_SUCURSAL) = '{$datos['sucursal']}'
+                    CDG_SUCURSAL = '{$datos['sucursal']}'
                 ORDER BY
                     FECHA DESC
             )
