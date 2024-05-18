@@ -332,19 +332,12 @@ class Ahorro extends Controller
         XLSX.utils.book_append_sheet(wb, ws, nombreHoja)
         XLSX.writeFile(wb, nombreArchivo + ".xlsx")
     }';
-    private $crearFilas = 'const creaFilas = (datos, id = null) => {
-        const filas = document.createDocumentFragment()
-        datos.forEach((dato) => {
-            const fila = document.createElement("tr")
-            Object.keys(dato).forEach((key) => {
-                const celda = document.createElement("td")
-                celda.style.verticalAlign = "middle"
-                celda.innerText = dato[key]
-                fila.appendChild(celda)
-            })
-            filas.appendChild(fila)
-        })
-        return filas
+    private $validaFIF = 'const validaFIF = (idI, idF) => {
+        const fechaI = document.getElementById(idI).value
+        const fechaF = document.getElementById(idF).value
+        if (fechaI && fechaF && fechaI > fechaF) {
+            document.getElementById(idI).value = fechaF
+        }
     }';
 
     function __construct()
@@ -1299,18 +1292,11 @@ class Ahorro extends Controller
             {$this->imprimeTicket}
             {$this->muestraPDF}
             {$this->addParametro}
+            {$this->validaFIF}
          
             $(document).ready(() => {
                 configuraTabla("hstSolicitudes")
             })
-             
-            const validaFIF = (idI, idF) => {
-                const fechaI = document.getElementById(idI).value
-                const fechaF = document.getElementById(idF).value
-                if (fechaI && fechaF && fechaI > fechaF) {
-                    document.getElementById(idI).value = fechaF
-                }
-            }
             
             const imprimeExcel = () => exportaExcel("hstSolicitudes", "Historial solicitudes de retiro")
              
@@ -1476,11 +1462,11 @@ class Ahorro extends Controller
 
     public function HistoricoSolicitudRetiro($p = 1)
     {
-        $producto = $_POST['producto'] ? $_POST['producto'] : $p;
-        $fi = $_POST['fechaI'] ? $_POST['fechaI'] : date('Y-m-d');
-        $ff = $_POST['fechaF'] ? $_POST['fechaF'] : date('Y-m-d');
-        $estatus = $_POST['estatus'] ? $_POST['estatus'] : "";
-        $tipo = $_POST['tipo'] ? $_POST['tipo'] : "";
+        $producto = $_POST['producto'] ?? $p;
+        $fi = $_POST['fechaI'] ?? date('Y-m-d');
+        $ff = $_POST['fechaF'] ?? date('Y-m-d');
+        $estatus = $_POST['estatus'] ?? "";
+        $tipo = $_POST['tipo'] ?? "";
 
         $historico = json_decode(CajaAhorroDao::HistoricoSolicitudRetiro(["producto" => $producto, "fechaI" => $fi, "fechaF" => $ff, "estatus" => $estatus, "tipo" => $tipo]));
         $detalles = $historico->success ? $historico->datos : [];
@@ -1506,8 +1492,8 @@ class Ahorro extends Controller
             $tabla .= "</tr>";
         }
 
-        $r = json_encode(["success" => true, "datos" => $tabla, "fi" => $fi, "ff" => $ff, "estatus" => $estatus, "tipo" => $tipo, "qry" => $historico->error]);
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') echo $r;
+        $r = ["success" => true, "datos" => $tabla];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') echo json_encode($r);
         else return $r;
     }
 
@@ -4491,59 +4477,78 @@ html;
     {
         $extraFooter = <<<html
         <script>
+            {$this->showError}
+            {$this->configuraTabla}
             {$this->muestraPDF}
             {$this->imprimeTicket}
+            {$this->addParametro}
+            {$this->validaFIF}
+            {$this->consultaServidor}
          
-            $(document).ready(function(){
-            $("#muestra-cupones").tablesorter();
-            var oTable = $('#muestra-cupones').DataTable({
-            "lengthMenu": [
-                    [10, 50, -1],
-                    [10, 50, 'Todos'],
-                ],
-                "columnDefs": [{
-                    "orderable": false,
-                    "targets": 0
-                }],
-                    "order": false
-            });
-            // Remove accented character from search input as well
-            $('#muestra-cupones input[type=search]').keyup( function () {
-                var table = $('#example').DataTable();
-                table.search(
-                    jQuery.fn.DataTable.ext.type.search.html(this.value)
-                ).draw();
-            });
-            var checkAll = 0;
-            });
+            $(document).ready(() => {
+                configuraTabla("solicitudes");
+            })
+             
+            const buscar = () => {
+                const datos = []
+                addParametro(datos, "usuario", "{$_SESSION['usuario']}")
+                addParametro(datos, "fechaI", document.querySelector("#fechaI").value)
+                addParametro(datos, "fechaF", document.querySelector("#fechaF").value)
+                addParametro(datos, "estatus", document.querySelector("#estatus").value)
+                 
+                consultaServidor("/Ahorro/GetSolicitudesTickets/", $.param(datos), (respuesta) => {
+                    $("#solicitudes").DataTable().destroy()
+                     
+                    if (respuesta.datos == "") showError("No se encontraron solicitudes de retiro en el rango de fechas seleccionado.")
+                     
+                    $("#solicitudes tbody").html(respuesta.datos)
+                    configuraTabla("solicitudes")
+                })
+            }
         </script>
         html;
 
-        $Consulta = AhorroDao::ConsultaSolicitudesTickets($this->__usuario);
+        $tabla = self::GetSolicitudesTickets();
+        $tabla = $tabla['success'] ? $tabla['datos'] : "";
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitudes de reimpresión Tickets", $this->XLSX)));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('tabla', $tabla);
+        View::set('fecha', date("Y-m-d"));
+        View::set('fecha_actual', date("Y-m-d H:i:s"));
+        View::render("caja_menu_reimprime_ticket_historial");
+    }
+
+    public function GetSolicitudesTickets()
+    {
+        $usuario = $_POST['usuario'] ?? $this->__usuario;
+        $fi = $_POST['fechaI'] ?? "2024-05-17"; //date('Y-m-d');
+        $ff = $_POST['fechaF'] ?? "2024-05-17"; //date('Y-m-d');
+        $estatus = $_POST['estatus'] ?? "";
+
+        $Consulta = AhorroDao::ConsultaSolicitudesTickets([
+            'usuario' => $usuario,
+            'fechaI' => $fi,
+            'fechaF' => $ff,
+            'estatus' => $estatus
+        ]);
+
         $tabla = "";
-
         foreach ($Consulta as $key => $value) {
-            $monto = number_format($value['MONTO'], 2);
-
             if ($value['AUTORIZA'] == 0) {
                 $autoriza = "PENDIENTE";
 
-                $imprime = <<<html
-                    <span class="count_top" style="font-size: 22px"><i class="fa fa-clock-o" style="color: #ac8200"></i></span>
-html;
+                $imprime = "<span class='count_top' style='font-size: 22px'><i class='fa fa-clock-o' style='color: #ac8200'></i></span>";
             } else if ($value['AUTORIZA'] == 1) {
                 $autoriza = "ACEPTADO";
 
                 $imprime = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="imprimeTicket('{$value['CDGTICKET_AHORRO']}');"><i class="fa fa-print"></i></button>
-html;
+                html;
             } else if ($value['AUTORIZA'] == 2) {
-                $imprime = <<<html
-                <span class="count_top" style="font-size: 22px"><i class="fa fa-close" style="color: #ac1d00"></i></span>
-html;
+                $imprime = '<span class="count_top" style="font-size: 22px"><i class="fa fa-close" style="color: #ac1d00"></i></span>';
                 $autoriza = "RECHAZADO";
             }
-
 
             if ($value['CDGPE_AUTORIZA'] == '') {
                 $autoriza_nombre = "-";
@@ -4552,27 +4557,23 @@ html;
             }
 
             $tabla .= <<<html
-                <tr style="padding: 0px !important;">
-                   <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
-                    <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>{$value['CDG_CONTRATO']} &nbsp;</td>
-                    <td style="padding: 0px !important;">{$value['FREGISTRO']} </td>
-                    <td style="padding: 0px !important;">{$value['MOTIVO']}</td>
-                    <td style="padding: 0px !important;"> {$autoriza}</td>
-                    <td style="padding: 0px !important;">{$autoriza_nombre}</td>
-                    <td style="padding: 0px !important;" class="center">
-                    {$imprime}
-                    </td>
+            <tr style="padding: 0px !important;">
+                <td style="padding: 0px !important;">{$value['CDGTICKET_AHORRO']} </td>
+                <td style="padding: 0px !important;" width="45" nowrap=""><span class="count_top" style="font-size: 14px"> &nbsp;&nbsp;<i class="fa fa-barcode" style="color: #787b70"></i> </span>{$value['CDG_CONTRATO']} &nbsp;</td>
+                <td style="padding: 0px !important;">{$value['FREGISTRO']} </td>
+                <td style="padding: 0px !important;">{$value['MOTIVO']}</td>
+                <td style="padding: 0px !important;"> {$autoriza}</td>
+                <td style="padding: 0px !important;">{$autoriza_nombre}</td>
+                <td style="padding: 0px !important;" class="center">
+                {$imprime}
                 </td>
-html;
+            </td>
+            html;
         }
 
-        $fecha_y_hora = date("Y-m-d H:i:s");
-
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Solicitudes de reimpresión Tickets")));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('tabla', $tabla);
-        View::set('fecha_actual', $fecha_y_hora);
-        View::render("caja_menu_reimprime_ticket_historial");
+        $r = ["success" => true, "datos" => $tabla];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') echo json_encode($r);
+        else return $r;
     }
 
     public function ReimprimeTicket()

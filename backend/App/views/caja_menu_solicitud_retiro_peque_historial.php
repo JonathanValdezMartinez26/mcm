@@ -133,8 +133,8 @@
                                 </div>
                             </div>
                         </div>
+                        <hr>
                         <div class="row">
-                            <hr>
                             <form name="all" id="all" method="POST">
                                 <div class="dataTable_wrapper">
                                     <table class="table table-striped table-bordered table-hover" id="hstSolicitudes">
@@ -146,7 +146,6 @@
                                                 <th>Fecha actualización</th>
                                                 <th>Monto solicitado</th>
                                                 <th>Estatus</th>
-                                                <!-- <th>Observaciones</th> -->
                                                 <th>Acciones</th>
                                             </tr>
                                         </thead>
