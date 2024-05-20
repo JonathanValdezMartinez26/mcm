@@ -114,7 +114,7 @@
                                     </button>
                                 </div>
                             </div>
-                           
+
                             <div class="row">
                                 <div class="dataTable_wrapper">
                                     <table class="table table-striped table-bordered table-hover" id="log">

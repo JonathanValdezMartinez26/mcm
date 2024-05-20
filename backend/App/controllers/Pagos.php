@@ -1998,6 +1998,7 @@ html;
 
         $dia = date("N");
 
+
         //$dia = 2;
 
         $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__usuario);
@@ -2014,8 +2015,32 @@ html;
 
         if ($horaActual <= $hora_cierre) {
             if ($dia == 1) {
-                $date_past = strtotime('-3 days', strtotime($fechaActual));
-                $date_past = date('Y-m-d', $date_past);
+                if($fue_dia_festivo == 4)
+                {
+                    $date_past = strtotime('-6 days', strtotime($fechaActual));
+                    $date_past = date('Y-m-d', $date_past);
+                }
+                else if($fue_dia_festivo == 3)
+                {
+                    $date_past = strtotime('-5 days', strtotime($fechaActual));
+                    $date_past = date('Y-m-d', $date_past);
+                }
+                else if($fue_dia_festivo == 2)
+                {
+                    $date_past = strtotime('-4 days', strtotime($fechaActual));
+                    $date_past = date('Y-m-d', $date_past);
+                }
+                else if($fue_dia_festivo == 1)
+                {
+                    $date_past = strtotime('-3 days', strtotime($fechaActual));
+                    $date_past = date('Y-m-d', $date_past);
+                }
+                else
+                {
+                    $date_past = strtotime('-3 days', strtotime($fechaActual));
+                    $date_past = date('Y-m-d', $date_past);
+                }
+
             } else {
                 if ($fue_dia_festivo == 1 && $dia == 2) {
                     $date_past = strtotime('-4 days', strtotime($fechaActual));
@@ -2089,8 +2114,34 @@ html;
 
 
 
-                        $date_past_b = strtotime('-3 days', strtotime($fechaActual));
-                        $date_past_b = date('Y-m-d', $date_past_b);
+                        if($fue_dia_festivo == 4)
+                        {
+                            $date_past_b = strtotime('-6 days', strtotime($fechaActual));
+                            $date_past_b = date('Y-m-d', $date_past_b);
+                        }
+                        else if($fue_dia_festivo == 3)
+                        {
+                            $date_past_b = strtotime('-5 days', strtotime($fechaActual));
+                            $date_past_b = date('Y-m-d', $date_past_b);
+                        }
+                        else if($fue_dia_festivo == 2)
+                        {
+                            $date_past_b = strtotime('-4 days', strtotime($fechaActual));
+                            $date_past_b = date('Y-m-d', $date_past_b);
+                        }
+                        else if($fue_dia_festivo == 1)
+                        {
+                            $date_past_b = strtotime('-3 days', strtotime($fechaActual));
+                            $date_past_b = date('Y-m-d', $date_past_b);
+                        }
+                        else
+                        {
+                            $date_past_b = strtotime('-3 days', strtotime($fechaActual));
+                            $date_past_b = date('Y-m-d', $date_past_b);
+                        }
+
+
+
 
 
                         $fecha_base = strtotime($value['FECHA']);
@@ -2099,23 +2150,27 @@ html;
                         $inicio_b = $date_past_b;
 
                         ///////////////////////////////////////////////////////////////////////////////////////////////////
-                        if (($inicio_b == $fecha_base) ||   (($fechaActual == $AdministracionOne[2]['FECHA_CAPTURA']) && $fecha_base == '2024-03-19')) // aqui poner el dia en que se estaran capturando
+                        if (($inicio_b == $fecha_base) ||  $fecha_base >= $date_past_b && $AdministracionOne[2]['FECHA_CAPTURA'] <= $AdministracionOne[2]['FECHA_CAPTURA']) // aqui poner el dia en que se estaran capturando
                         {
+
                             if ($horaActual <= $hora_cierre) {
                                 $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
                     <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                     
 html;
                             } else {
                                 $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
                     <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
+                      
 html;
                             }
                         } else {
                             $editar = <<<html
                     <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
                     <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
+                        
 html;
                         }
                     }
