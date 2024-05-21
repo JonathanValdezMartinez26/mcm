@@ -381,14 +381,14 @@ class AdminSucursales extends Controller
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldos de sucursales", [$this->XLSX])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('filas', $filas);
-        View::set('fechaI', date('Y-m-d', strtotime("-7 days")));
+        View::set('fechaI', date('Y-m-d'));
         View::set('fechaF', date('Y-m-d'));
         View::render("caja_admin_saldos_dia");
     }
 
     public function GetSaldosSucursal()
     {
-        $fechaI = $_POST['fechaI'] ?? date('Y-m-d', strtotime("-7 days"));
+        $fechaI = $_POST['fechaI'] ?? date('Y-m-d');
         $fechaF = $_POST['fechaF'] ?? date('Y-m-d');
 
         $saldos = AdminSucursalesDao::GetSaldosSucursales(['fechaI' => $fechaI, 'fechaF' => $fechaF]);
