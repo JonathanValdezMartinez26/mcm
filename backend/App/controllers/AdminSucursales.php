@@ -3217,12 +3217,12 @@ script;
         $adaptarTexto = true;
 
         $controlador = "AdminSucursales";
-        $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K');
-        $nombreColumna = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
-        $nombreCampo = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
+        $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L');
+        $nombreColumna = array('FECHA_MOV', 'CDGCO', 'SUCURSAL', 'FECHA_MOV_APLICA', 'CLIENTE', 'TITULAR_CUENTA_EJE', 'MONTO','CONCEPTO', 'PRODUCTO', 'TIPO_MOVIMIENTO', 'INGRESO', 'EGRESO');
+        $nombreCampo = array('FECHA_MOV', 'CDGCO', 'SUCURSAL', 'FECHA_MOV_APLICA', 'CLIENTE', 'TITULAR_CUENTA_EJE', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'TIPO_MOVIMIENTO', 'INGRESO', 'EGRESO');
 
 
-        $objPHPExcel->getActiveSheet()->SetCellValue('A' . $fila, 'Consulta de Movimientos Ahorro');
+        $objPHPExcel->getActiveSheet()->SetCellValue('A' . $fila, 'Consulta de Movimientos de Ahorro a Detalle (incluye transacciones virtuales)');
         $objPHPExcel->getActiveSheet()->mergeCells('A' . $fila . ':' . $columna[count($nombreColumna) - 1] . $fila);
         $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->applyFromArray($estilo_titulo);
         $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->getAlignment()->setWrapText($adaptarTexto);
@@ -3242,9 +3242,7 @@ script;
 
         $Layoutt = CajaAhorroDao::GetAllTransaccionesDetalle($fecha_inicio, $fecha_fin, $operacion, $producto, $sucursal);
 
-        $totalIngreso = 0;
-        $totalEgreso = 0;
-        $totalSaldo = 0;
+
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
@@ -3255,9 +3253,8 @@ script;
         }
 
         $fila += 1;
-        $totalSaldo = $totalIngreso - $totalEgreso;
 
-        $objPHPExcel->getActiveSheet()->SetCellValue($columna[7] . $fila, "TOTAL");
+
         $objPHPExcel->getActiveSheet()->getStyle($columna[7] . $fila)->applyFromArray($estilo_encabezado);
         $objPHPExcel->getActiveSheet()->getStyle($columna[7] . $fila)->getAlignment()->setWrapText($adaptarTexto);
 
