@@ -92,10 +92,10 @@
                                 </div>
                             </div>
                             <div class="row" style="padding-top: 20px;">
-                                <div class="col-md-2">
+                                <div class="col-md-3">
                                     <button id="btnArqueo" class="btn btn-primary" onclick=mostrarModal()><i class="glyphicon glyphicon-floppy-disk"></i><b> Generar arqueo</b></button>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-3">
                                     <button id="btnExportaExcel" class="btn btn-success btn-circle" onclick=imprimeExcel()><i class="fa fa-file-excel-o"></i><b> Exportar a Excel</b></button>
                                 </div>
                             </div>

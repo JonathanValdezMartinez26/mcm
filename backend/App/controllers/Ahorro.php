@@ -3023,7 +3023,7 @@ class Ahorro extends Controller
                             const host = window.location.origin
                             const titulo = 'Comprobante arqueo de caja'
                             const ruta = host + '/Ahorro/TicketArqueo/?'
-                            + 'sucursal=' + {$_SESSION['cdgco_ahorro']}
+                            + 'sucursal=' + "{$_SESSION['cdgco_ahorro']}"
                             
                             muestraPDF(titulo, ruta)
                              
