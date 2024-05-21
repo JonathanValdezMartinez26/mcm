@@ -2,22 +2,23 @@
 
 namespace App\controllers;
 
-include 'C:/xampp/htdocs/mcm/backend/App/models/Jobs.php';
+include 'C:/xampp/htdocs/mcm/backend/App/models/JobsAhorro.php';
 
-use \App\Models\CajaAhorro as CADao;
-use \App\models\Jobs as JobsDao;
+use \App\models\JobsAhorro as JobsDao;
 
 date_default_timezone_set('America/Mexico_City');
 
-$jobs = new Jobs();
+$jobs = new JobsAhorro();
 $jobs->DevengoInteresAhorroDiario();
 $jobs->LiquidaInversion();
+$jobs->RechazaSolicitudesSinAtender();
+$jobs->SucursalesSinArqueo();
 
-class Jobs
+class JobsAhorro
 {
     public function SaveLog($tdatos)
     {
-        $archivo = "C:/xampp/Jobs_php.log";
+        $archivo = "C:/xampp/JobsAhorro_php.log";
 
         clearstatcache();
         if (file_exists($archivo) && filesize($archivo) > 10 * 1024 * 1024) { // 10 MB
@@ -38,7 +39,7 @@ class Jobs
         self::SaveLog("Inicio -> Devengo Interés Ahorro Diario");
         $resumen = [];
         $creditos = JobsDao::GetCreditosActivos();
-        if ($creditos["success"]) return self::SaveLog("Error al obtener los créditos activos:" . $creditos["error"]);
+        if (!$creditos["success"]) return self::SaveLog("Error al obtener los créditos activos: " . $creditos["error"]);
         if (count($creditos["datos"]) == 0) return self::SaveLog("No se encontraron créditos activos para aplicar devengo.");
 
         foreach ($creditos["datos"] as $key => $credito) {
@@ -69,7 +70,7 @@ class Jobs
         self::SaveLog("Inicio -> Liquidación de Inversiones");
         $resumen = [];
         $inversiones = JobsDao::GetInversiones();
-        if (!$inversiones["success"]) return self::SaveLog("Error al obtener las inversiones:" . $inversiones["error"]);
+        if (!$inversiones["success"]) return self::SaveLog("Error al obtener las inversiones: " . $inversiones["error"]);
         if (count($inversiones["datos"]) == 0) return self::SaveLog("No se encontraron inversiones para liquidar.");
 
         foreach ($inversiones["datos"] as $key => $inversion) {
@@ -104,41 +105,58 @@ class Jobs
         self::SaveLog("Inicio -> Rechazo de Solicitudes de retiro sin Atender");
         $resumen = [];
         $solicitudes = JobsDao::GetSolicitudesRetiro();
-        if (!$solicitudes["success"]) return self::SaveLog("Error al obtener las solicitudes sin atender:" . $solicitudes["error"]);
+        if (!$solicitudes["success"]) return self::SaveLog("Error al obtener las solicitudes sin atender: " . $solicitudes["error"]);
         if (count($solicitudes["datos"]) == 0) return self::SaveLog("No se encontraron solicitudes sin atender para rechazar.");
 
         foreach ($solicitudes["datos"] as $key => $solicitud) {
-            $datosRetiro = CADao::ResumenEntregaRetiro([
-                "idSolicitud" => $solicitud["ID_SOLICITUD"]
-            ]);
-            $r = json_decode($datosRetiro);
-            $d = $r->datos;
-
             $datosRechazo = [
-                "idSolicitud" => $solicitud["ID_SOLICITUD"],
-                "estatus" => "R",
-                "ejecutivo" => "{$_SESSION['usuario']}",
+                "idSolicitud" => $solicitud["ID"]
             ];
 
             $datosDevolucion = [
-                "cliente" => $d["CLIENTE"],
-                "contrato" => $d["CONTRATO"],
-                "monto" => $d["MONTO"],
-                "ejecutivo" => "{$_SESSION['usuario']}",
+                "contrato" => $solicitud["CONTRATO"],
+                "monto" => $solicitud["MONTO"],
                 "sucursal" => "{$_SESSION['cdgco_ahorro']}",
-                "tipo" => $d["TIPO_RETIRO"],
+                "cliente" => $solicitud["CLIENTE"],
+                "tipo" => $solicitud["TIPO_RETIRO"],
             ];
 
             $resumen[] = [
                 "fecha" => date("Y-m-d H:i:s"),
-                "datos_rechazp" => $datosRechazo,
-                "RES_RECHAZA_SOLICITUD" => CADao::ActualizaSolicitudRetiro($datosRechazo),
+                "datos_rechazo" => $datosRechazo,
+                "RES_RECHAZA_SOLICITUD" => JobsDao::CancelaSolicitudRetiro($datosRechazo),
                 "datos_devolucion" => $datosDevolucion,
-                "RES_DEVUELVE_MONTO" => CADao::DevolucionRetiro($datosDevolucion),
+                "RES_DEVUELVE_MONTO" => JobsDao::DevolucionRetiro($datosDevolucion),
             ];
         };
 
         self::SaveLog(json_encode($resumen)); //, JSON_PRETTY_PRINT));
         self::SaveLog("Finalizado -> Rechazo de Solicitudes de retiro sin Atender");
+    }
+
+    public function SucursalesSinArqueo()
+    {
+        self::SaveLog("Inicio -> Sucursales sin Arqueo");
+        $resumen = [];
+        $sucursales = JobsDao::GetSucursalesSinArqueo();
+
+        if (!$sucursales["success"]) return self::SaveLog("Error al obtener las sucursales sin arqueo: " . $sucursales["error"]);
+        if (count($sucursales["datos"]) == 0) return self::SaveLog("No se encontraron sucursales sin arqueo.");
+
+        foreach ($sucursales["datos"] as $key => $sucursal) {
+            $datos = [
+                'ejecutivo' => 'SSTM',
+                'sucursal' => $sucursal['CDG_SUCURSAL']
+            ];
+
+            $resumen[] = [
+                "fecha" => date("Y-m-d H:i:s"),
+                "datos" => $datos,
+                "RES_REGISTRO_ARQUEO" => JobsDao::RegistraArqueoPendiente($datos)
+            ];
+        };
+
+        self::SaveLog(json_encode($resumen)); //, JSON_PRETTY_PRINT));
+        self::SaveLog("Finalizado -> Sucursales sin Arqueo");
     }
 }
