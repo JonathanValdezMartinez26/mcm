@@ -124,19 +124,13 @@
                                                         <i class="fa fa-search"></i> Buscar
                                                     </button>
                                                 </div>
-                                                <div class="col-md-4" style="padding-top: 25px">
-                                                    <button id="btnExportaExcel" type="button" class="btn btn-success btn-circle" onclick=imprimeExcel()>
-                                                        <i class="fa fa-file-excel-o"></i><b> Exportar a Excel</b>
-                                                    </button>
-                                                </div>
                                             </div>
                                         </form>
 
                                         <form name="all" id="all" method="POST">
-                                            <!--<button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>-->
-
+                                            <br>
+                                            <button id="export_excel_con_transacciones" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
                                             <hr>
-
                                             <div class="col-md-12">
                                                 <div class="col-md-12">
                                                     <p>Atención:
