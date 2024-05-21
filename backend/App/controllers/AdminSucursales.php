@@ -1375,6 +1375,7 @@ html;
     {
         $extraFooter = <<<script
         <script>
+            {$this->configuraTabla}
         
         function getParameterByName(name) {
             name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -1384,25 +1385,7 @@ html;
         }
              
          $(document).ready(function(){
-            $("#muestra-cupones").tablesorter();
-          var oTable = $('#muestra-cupones').DataTable({
-                  "lengthMenu": [
-                    [4, 50, -1],
-                    [4, 50, 'Todos'],
-                ],
-                "columnDefs": [{
-                    "orderable": false,
-                    "targets": 0,
-                }],
-                 "order": false
-            });
-            // Remove accented character from search input as well
-            $('#muestra-cupones input[type=search]').keyup( function () {
-                var table = $('#example').DataTable();
-                table.search(
-                    jQuery.fn.DataTable.ext.type.search.html(this.value)
-                ).draw();
-            });
+            configuraTabla("muestra-cupones")
             var checkAll = 0;
             
             fecha1 = getParameterByName('Inicial');
@@ -1411,13 +1394,11 @@ html;
             producto = getParameterByName('Producto');
             sucursal = getParameterByName('Sucursal');
             
-             $("#export_excel_consulta").click(function(){
+             $("#btnExportaExcel").click(function(){
               $('#all').attr('action', '/AdminSucursales/generarExcelPagosTransaccionesAll/?Inicial='+fecha1+'&Final='+fecha2+'&Operacion='+operacion+'&Producto='+producto+'&Sucursal='+sucursal);
               $('#all').attr('target', '_blank');
               $("#all").submit();
             });
-             
-             
         });
         
           
@@ -3089,8 +3070,14 @@ script;
 
         $Layoutt = CajaAhorroDao::GetAllTransacciones($fecha_inicio, $fecha_fin, $operacion, $producto, $sucursal);
 
+        $totalIngreso = 0;
+        $totalEgreso = 0;
+        $totalSaldo = 0;
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
+                if ($campo === 'INGRESO') $totalIngreso += $value[$campo];
+                if ($campo === 'EGRESO') $totalEgreso += $value[$campo];
+
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
                 $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_celda);
                 $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
@@ -3098,6 +3085,24 @@ script;
             $fila += 1;
         }
 
+        $fila += 1;
+        $totalSaldo = $totalIngreso - $totalEgreso;
+
+        $objPHPExcel->getActiveSheet()->SetCellValue($columna[7] . $fila, "TOTAL");
+        $objPHPExcel->getActiveSheet()->getStyle($columna[7] . $fila)->applyFromArray($estilo_encabezado);
+        $objPHPExcel->getActiveSheet()->getStyle($columna[7] . $fila)->getAlignment()->setWrapText($adaptarTexto);
+
+        $objPHPExcel->getActiveSheet()->SetCellValue($columna[8] . $fila, $totalIngreso);
+        $objPHPExcel->getActiveSheet()->getStyle($columna[8] . $fila)->applyFromArray($estilo_celda);
+        $objPHPExcel->getActiveSheet()->getStyle($columna[8] . $fila)->getAlignment()->setWrapText($adaptarTexto);
+
+        $objPHPExcel->getActiveSheet()->SetCellValue($columna[9] . $fila, $totalEgreso);
+        $objPHPExcel->getActiveSheet()->getStyle($columna[9] . $fila)->applyFromArray($estilo_celda);
+        $objPHPExcel->getActiveSheet()->getStyle($columna[9] . $fila)->getAlignment()->setWrapText($adaptarTexto);
+
+        $objPHPExcel->getActiveSheet()->SetCellValue($columna[10] . $fila, $totalSaldo);
+        $objPHPExcel->getActiveSheet()->getStyle($columna[10] . $fila)->applyFromArray($estilo_celda);
+        $objPHPExcel->getActiveSheet()->getStyle($columna[10] . $fila)->getAlignment()->setWrapText($adaptarTexto);
 
         $objPHPExcel->getActiveSheet()->getStyle('A1:' . $columna[count($columna) - 1] . $fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
         for ($i = 0; $i < $fila; $i++) {

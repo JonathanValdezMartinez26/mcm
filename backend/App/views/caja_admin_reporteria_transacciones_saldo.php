@@ -85,13 +85,13 @@
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="Inicial">Desde *</label>
-                                                        <input type="date" class="form-control" id="Inicial" name="Inicial" value="<?php echo $fecha_inicial;?>">
+                                                        <input type="date" class="form-control" id="Inicial" name="Inicial" value="<?php echo $fecha_inicial; ?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="Final">Hasta *</label>
-                                                        <input type="date" class="form-control" id="Final" name="Final" value="<?php echo $fecha_final;?>">
+                                                        <input type="date" class="form-control" id="Final" name="Final" value="<?php echo $fecha_final; ?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
@@ -119,10 +119,14 @@
                                                         </select>
                                                     </div>
                                                 </div>
-
                                                 <div class="col-md-4" style="padding-top: 25px">
                                                     <button class="btn btn-primary" onclick="getLog()">
                                                         <i class="fa fa-search"></i> Buscar
+                                                    </button>
+                                                </div>
+                                                <div class="col-md-4" style="padding-top: 25px">
+                                                    <button id="btnExportaExcel" type="button" class="btn btn-success btn-circle" onclick=imprimeExcel()>
+                                                        <i class="fa fa-file-excel-o"></i><b> Exportar a Excel</b>
                                                     </button>
                                                 </div>
                                             </div>
@@ -131,7 +135,7 @@
                                         <form name="all" id="all" method="POST">
                                             <!--<button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>-->
 
-                                        <hr>
+                                            <hr>
 
                                             <div class="col-md-12">
                                                 <div class="col-md-12">
@@ -144,23 +148,23 @@
 
                                                 </div>
                                             </div>
-                                        <div class="dataTable_wrapper">
-                                            <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Fecha</th>
-                                                        <th></th>
-                                                        <th>Fecha Transacción</th>
-                                                        <th>Detalle Producto</th>
-                                                        <th>Ingreso</th>
-                                                        <th>Egreso</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?= $tabla; ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                            <div class="dataTable_wrapper">
+                                                <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Fecha</th>
+                                                            <th></th>
+                                                            <th>Fecha Transacción</th>
+                                                            <th>Detalle Producto</th>
+                                                            <th>Ingreso</th>
+                                                            <th>Egreso</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?= $tabla; ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </form>
                                     </div>
                                 </div>
