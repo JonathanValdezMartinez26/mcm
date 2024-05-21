@@ -316,6 +316,13 @@ class AdminSucursales extends Controller
         })
         return filas
     }';
+    private $validaFIF = 'const validaFIF = (idI, idF) => {
+        const fechaI = document.getElementById(idI).value
+        const fechaF = document.getElementById(idF).value
+        if (fechaI && fechaF && fechaI > fechaF) {
+            document.getElementById(idI).value = fechaF
+        }
+    }';
 
     function __construct()
     {
@@ -333,16 +340,58 @@ class AdminSucursales extends Controller
         <script>
             {$this->configuraTabla}
             {$this->exportaExcel}
+            {$this->consultaServidor}
+            {$this->validaFIF}
+            {$this->showError}
+            {$this->showSuccess}
+            {$this->addParametro}
          
             $(document).ready(() => {
                 configuraTabla("saldos")
             })
              
             const imprimeExcel = () => exportaExcel("saldos", "Saldos de sucursales")
+             
+            const consultaSaldos = () => {
+                const fechaI = document.querySelector("#fechaI").value
+                const fechaF = document.querySelector("#fechaF").value
+                const datos = []
+                addParametro(datos, "fechaI", fechaI)
+                addParametro(datos, "fechaF", fechaF)
+                
+                consultaServidor(
+                    "/AdminSucursales/GetSaldosSucursal/",
+                    $.param(datos),
+                    (respuesta) => {
+                        $("#saldos").DataTable().destroy()
+                     
+                        if (respuesta.datos == "") showError("No se encontraron solicitudes de retiro en el rango de fechas seleccionado.")
+                         
+                        $("#saldos tbody").html(respuesta.datos)
+                        configuraTabla("saldos")
+                    }
+                )
+            }
         </script>
         script;
 
-        $saldos = AdminSucursalesDao::GetSaldosSucursales();
+        $filas = self::GetSaldosSucursal();
+        $filas = $filas['success'] ? $filas['datos'] : "";
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldos de sucursales", [$this->XLSX])));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('filas', $filas);
+        View::set('fechaI', date('Y-m-d', strtotime("-7 days")));
+        View::set('fechaF', date('Y-m-d'));
+        View::render("caja_admin_saldos_dia");
+    }
+
+    public function GetSaldosSucursal()
+    {
+        $fechaI = $_POST['fechaI'] ?? date('Y-m-d', strtotime("-7 days"));
+        $fechaF = $_POST['fechaF'] ?? date('Y-m-d');
+
+        $saldos = AdminSucursalesDao::GetSaldosSucursales(['fechaI' => $fechaI, 'fechaF' => $fechaF]);
         $filas = "";
         foreach ($saldos as $sucursal) {
             $filas .= "<tr>";
@@ -366,10 +415,9 @@ class AdminSucursales extends Controller
             $filas .= "</tr>";
         }
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldos de sucursales", [$this->XLSX])));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('filas', $filas);
-        View::render("caja_admin_saldos_dia");
+        $r = ["success" => true, "datos" => $filas];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') echo json_encode($r);
+        else return $r;
     }
 
     // Validar Transacciones Día

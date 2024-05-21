@@ -60,27 +60,51 @@
                         </div>
                         <div>
                             <ul class="nav navbar-nav">
-                                <li><a href="">
+                                <li>
+                                    <a href="">
                                         <p style="font-size: 16px;"><b>Saldos del día por sucursal</b></p>
-                                    </a></li>
-                                <li class="linea"><a href="/AdminSucursales/FondearSucursal/">
+                                    </a>
+                                </li>
+                                <li class="linea">
+                                    <a href="/AdminSucursales/FondearSucursal/">
                                         <p style="font-size: 15px;">Fondear sucursal</p>
-                                    </a></li>
-                                <li class="linea"><a href="/AdminSucursales/RetiroSucursal/">
+                                    </a>
+                                </li>
+                                <li class="linea">
+                                    <a href="/AdminSucursales/RetiroSucursal/">
                                         <p style="font-size: 15px;">Retiro efectivo</p>
-                                    </a></li>
-
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
                     <div class="modal-body">
                         <div class="container-fluid">
                             <div class="row">
-                                <button type="button" class="btn btn-success btn-circle" data-toggle="modal" data-target="#modal_agregar_horario" onclick=imprimeExcel()>
-                                    <i class="fa fa-file-excel-o"></i> Exportar a Excel
-                                </button>
-                                <hr style="border-top: 1px solid #787878; margin-top: 5px;">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="fechaI">Desde *</label>
+                                        <input type="date" class="form-control" id="fechaI" name="fechaI" value="<?= $fechaI; ?>" min="2024-01-01" max="<?= $fechaF; ?>" onchange="validaFIF('fechaI', 'fechaF')">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="fechaF">Hasta *</label>
+                                        <input type="date" class="form-control" id="fechaF" name="fechaF" value="<?= $fechaF; ?>" min="2024-01-01" max="<?= $fechaF; ?>" onchange="validaFIF('fechaI', 'fechaF')">
+                                    </div>
+                                </div>
+                                <div class="col-md-3" style="padding-top: 25px">
+                                    <button type="button" class="btn btn-primary btn-circle" onclick=consultaSaldos()>
+                                        <i class="fa fa-search"></i> Buscar
+                                    </button>
+                                </div>
+                                <div class="col-md-3" style="padding-top: 25px">
+                                    <button type="button" class="btn btn-success btn-circle" data-toggle="modal" data-target="#modal_agregar_horario" onclick=imprimeExcel()>
+                                        <i class="fa fa-file-excel-o"></i> Exportar a Excel
+                                    </button>
+                                </div>
                             </div>
+                            <hr>
                             <div class="row">
                                 <div class="dataTable_wrapper">
                                     <table class="table table-striped table-bordered table-hover" id="saldos">

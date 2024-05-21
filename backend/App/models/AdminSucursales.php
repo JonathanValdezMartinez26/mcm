@@ -631,9 +631,9 @@ sql;
         }
     }
 
-    public static function GetSaldosSucursales()
+    public static function GetSaldosSucursales($datos)
     {
-        $qryHoy = <<<sql
+        $qrySaldos = <<<sql
         SELECT
             *
         FROM (
@@ -683,12 +683,15 @@ sql;
                 SUC_ESTADO_AHORRO SEA ON SEA.CDG_SUCURSAL = A.CDG_SUCURSAL
             JOIN
                 CO ON CO.CODIGO = SEA.CDG_SUCURSAL
-        ) ORDER BY FECHA DESC, NOMBRE
-sql;
+        )
+        sql;
 
+        if ($datos['fechaI'] && $datos['fechaF']) $qrySaldos .= "WHERE FECHA BETWEEN TO_DATE('{$datos['fechaI']}', 'YYYY-MM-DD') AND TO_DATE('{$datos['fechaF']}', 'YYYY-MM-DD')";
+
+        $qrySaldos .= "ORDER BY FECHA DESC, NOMBRE";
         try {
             $mysqli = Database::getInstance();
-            return $mysqli->queryAll($qryHoy);
+            return $mysqli->queryAll($qrySaldos);
         } catch (Exception $e) {
             return [];
         }

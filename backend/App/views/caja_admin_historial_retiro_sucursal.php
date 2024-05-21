@@ -89,13 +89,13 @@
                             <div class="row">
                                 <div class="card col-md-12">
                                     <div class="row">
-                                        <div class="col-md-2">
+                                        <div class="col-md-3">
                                             <div class="form-group">
                                                 <label for="fechaI">Desde *</label>
                                                 <input type="date" class="form-control" id="fechaI" name="fechaI" value="<?= $fechaI; ?>" min="2024-01-01" max="<?= $fechaF; ?>" onchange=validaFechas()>
                                             </div>
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-md-3">
                                             <div class="form-group">
                                                 <label for="fechaF">Hasta *</label>
                                                 <input type="date" class="form-control" id="fechaF" name="fechaF" value="<?= $fechaF; ?>" min="2024-01-01" max="<?= $fechaF; ?>" onchange=validaFechas()>
@@ -112,7 +112,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4" style="padding-top: 25px">
+                                        <div class="col-md-3" style="padding-top: 25px">
                                             <button class="btn btn-primary" onclick=buscarRetirosSucursal()>
                                                 <i class="fa fa-search"></i> Buscar
                                             </button>
