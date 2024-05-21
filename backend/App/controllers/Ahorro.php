@@ -1483,8 +1483,8 @@ class Ahorro extends Controller
                 $tabla .= "<td style='vertical-align: middle;'>$v</td>";
 
                 if ($key2 === "ESTATUS" && $valor === "APROBADO") {
-                    $acciones = "<button type='button' class='btn btn-success btn-circle' onclick='actualizaEstatus(3, {$detalle["ID"]})'><i class='glyphicon glyphicon-transfer'></i></button>
-                    <button type='button' class='btn btn-danger btn-circle' onclick='actualizaEstatus(4, {$detalle["ID"]})'><i class='fa fa-trash'></i></button>";
+                    $acciones = "<button type='button' class='btn btn-success btn-circle' onclick='actualizaEstatus(3, {$detalle->ID})'><i class='glyphicon glyphicon-transfer'></i></button>
+                    <button type='button' class='btn btn-danger btn-circle' onclick='actualizaEstatus(4, {$detalle->ID})'><i class='fa fa-trash'></i></button>";
                 }
             }
 

@@ -4,107 +4,17 @@ namespace App\controllers;
 
 include 'C:/xampp/htdocs/mcm/backend/App/models/Jobs.php';
 
+use \App\Models\CajaAhorro as CADao;
 use \App\models\Jobs as JobsDao;
 
 date_default_timezone_set('America/Mexico_City');
 
-$j = new Jobs();
-$j->JobCheques();
+$jobs = new Jobs();
+$jobs->DevengoInteresAhorroDiario();
+$jobs->LiquidaInversion();
 
 class Jobs
 {
-    public function JobCheques_OLD()
-    {
-        self::SaveLog("Iniciando Job Cheques");
-        $resumen = [];
-        $creditos = JobsDao::CreditosAutorizados();
-        var_dump($creditos);
-
-        foreach ($creditos as $key => $credito) {
-            $chequera = JobsDao::GetNoChequera($credito["CDGCO"]);
-            $cheque = JobsDao::GetNoCheque($chequera["CDGCB"]);
-
-            $datos = [
-                "cheque" => $cheque["CHQSIG"],
-                "fexp" => $credito["FEXP"],
-                "usuario" => $_SESSION["usuario"] ?? "AMGM",
-                "cdgcb" => $chequera["CDGCB"],
-                "cdgcl" => $credito["CDGCL"],
-                "cdgns" => $credito["CDGNS"],
-                "ciclo" => $credito["CICLO"],
-                "cantautor" => $credito["CANTAUTOR"]
-            ];
-
-            $resumen[] = [
-                "fecha" => date("Y-m-d H:i:s"),
-                "datos" => $datos,
-                "RES_PRC_UPDATE" => JobsDao::ActualizaPRC($datos),
-                "RES_PRN_UPDATE" => JobsDao::ActualizaPRN($datos)
-            ];
-        }
-
-        self::SaveLog(json_encode($resumen, JSON_PRETTY_PRINT));
-        self::SaveLog("Finalizando Job Cheques");
-
-        echo "Job Cheques finalizado";
-    }
-
-    public function JobCheques()
-    {
-        self::SaveLog("Iniciando Job Cheques");
-        $resumen = [];
-        $creditos = JobsDao::CreditosAutorizados();
-        var_dump($creditos);
-
-        foreach ($creditos as $key => $credito) {
-            $chequera = JobsDao::GetNoChequera($credito["CDGCO"]);
-            $cheque = JobsDao::GetNoCheque($chequera["CDGCB"]);
-
-            $datos = [
-                //Datos para actualizar PRC y PRN
-                "cheque" => $cheque["CHQSIG"],
-                "fexp" => $credito["FEXP"],
-                "usuario" => $_SESSION["usuario"] ?? "AMGM",
-                "cdgcb" => $chequera["CDGCB"],
-                "cdgcl" => $credito["CDGCL"],
-                "cdgns" => $credito["CDGNS"],
-                "ciclo" => $credito["CICLO"],
-                "cantautor" => $credito["CANTAUTOR"],
-                //Datos para nuevas querys
-                "prmCDGEM" => 'EMPFIN',
-                "prmCDGCLNS" => $credito["CDGNS"],
-                "prmCLNS" => $credito["CDGCL"],
-                "prmCICLO" => $credito["CICLO"],
-                "prmINICIO" => $credito["FEXP"],
-                "vINTCTE" => 0,
-                "vINTERES" => 0
-            ];
-
-            // $datos["vINTCTE"] = JobsDao::GET_vINTCTE($datos)["vINTCTE"];
-            // $datos["vINTERES"] = JobsDao::GET_vINTERES($datos)["vINTERES"];
-
-            $resumen[] = [
-                "fecha" => date("Y-m-d H:i:s"),
-                "datos" => $datos,
-                "INCCTE" => JobsDao::GET_vINTCTE($datos)["vINTCTE"],
-                "INTERES" => JobsDao::GET_vINTERES($datos)["vINTERES"],
-                "RES_PRC_UPDATE" => JobsDao::ActualizaPRC($datos),
-                "RES_PRN_UPDATE" => JobsDao::ActualizaPRN($datos),
-                "RES_MPC_DELETE" => JobsDao::LimpiarMPC($datos),
-                "RES_JP_DELETE" => JobsDao::LimpiarJP($datos),
-                "RES_MP_DELETE" => JobsDao::LimpiarMP($datos),
-                "RES_MP_INSERT" => JobsDao::InsertarMP($datos),
-                "RES_JP_INSERT" => JobsDao::InsertarJP($datos),
-                "RES_MPC_INSERT" => JobsDao::InsertarMPC($datos),
-            ];
-        }
-
-        self::SaveLog(json_encode($resumen, JSON_PRETTY_PRINT));
-        self::SaveLog("Finalizando Job Cheques");
-
-        echo "Job Cheques finalizado";
-    }
-
     public function SaveLog($tdatos)
     {
         $archivo = "C:/xampp/Jobs_php.log";
@@ -121,5 +31,114 @@ class Jobs
 
         fwrite($log, $infoReg . PHP_EOL);
         fclose($log);
+    }
+
+    public function DevengoInteresAhorroDiario()
+    {
+        self::SaveLog("Inicio -> Devengo Interés Ahorro Diario");
+        $resumen = [];
+        $creditos = JobsDao::GetCreditosActivos();
+        if ($creditos["success"]) return self::SaveLog("Error al obtener los créditos activos:" . $creditos["error"]);
+        if (count($creditos["datos"]) == 0) return self::SaveLog("No se encontraron créditos activos para aplicar devengo.");
+
+        foreach ($creditos["datos"] as $key => $credito) {
+            $saldo = $credito["SALDO"];
+            $tasa = $credito["TASA"] / 100;
+            $devengo = $saldo * ($tasa / 360);
+
+            $datos = [
+                "contrato" => $credito["CONTRATO"],
+                "saldo" => $saldo,
+                "devengo" => $devengo,
+                "tasa" => $tasa,
+            ];
+
+            $resumen[] = [
+                "fecha" => date("Y-m-d H:i:s"),
+                "datos" => $datos,
+                "RES_APLICA_DEVENGO" => JobsDao::AplicaDevengo($datos),
+            ];
+        };
+
+        self::SaveLog(json_encode($resumen)); //, JSON_PRETTY_PRINT));
+        self::SaveLog("Finalizado -> Devengo Interés Ahorro Diario");
+    }
+
+    public function LiquidaInversion()
+    {
+        self::SaveLog("Inicio -> Liquidación de Inversiones");
+        $resumen = [];
+        $inversiones = JobsDao::GetInversiones();
+        if (!$inversiones["success"]) return self::SaveLog("Error al obtener las inversiones:" . $inversiones["error"]);
+        if (count($inversiones["datos"]) == 0) return self::SaveLog("No se encontraron inversiones para liquidar.");
+
+        foreach ($inversiones["datos"] as $key => $inversion) {
+            $monto = $inversion["MONTO"];
+            $tasa = (($inversion["TASA"] / 100) / 12);
+            $plazo = $inversion["PLAZO"];
+            $rendimiento = $monto * $plazo * $tasa;
+
+            $datos = [
+                "contrato" => $inversion["CONTRATO"],
+                "rendimiento" => $rendimiento,
+                "monto" => $monto,
+                "cliente" => $inversion["CLIENTE"],
+                "fecha_apertura" => $inversion["FECHA_APERTURA"],
+                "fecha_vencimiento" => $inversion["FECHA_VENCIMIENTO"],
+                "id_tasa" => $inversion["ID_TASA"],
+            ];
+
+            $resumen[] = [
+                "fecha" => date("Y-m-d H:i:s"),
+                "datos" => $datos,
+                "RES_LIQUIDA_INVERSION" => JobsDao::LiquidaInversion($datos),
+            ];
+        };
+
+        self::SaveLog(json_encode($resumen)); //, JSON_PRETTY_PRINT));
+        self::SaveLog("Finalizado -> Liquidación de Inversiones");
+    }
+
+    public function RechazaSolicitudesSinAtender()
+    {
+        self::SaveLog("Inicio -> Rechazo de Solicitudes de retiro sin Atender");
+        $resumen = [];
+        $solicitudes = JobsDao::GetSolicitudesRetiro();
+        if (!$solicitudes["success"]) return self::SaveLog("Error al obtener las solicitudes sin atender:" . $solicitudes["error"]);
+        if (count($solicitudes["datos"]) == 0) return self::SaveLog("No se encontraron solicitudes sin atender para rechazar.");
+
+        foreach ($solicitudes["datos"] as $key => $solicitud) {
+            $datosRetiro = CADao::ResumenEntregaRetiro([
+                "idSolicitud" => $solicitud["ID_SOLICITUD"]
+            ]);
+            $r = json_decode($datosRetiro);
+            $d = $r->datos;
+
+            $datosRechazo = [
+                "idSolicitud" => $solicitud["ID_SOLICITUD"],
+                "estatus" => "R",
+                "ejecutivo" => "{$_SESSION['usuario']}",
+            ];
+
+            $datosDevolucion = [
+                "cliente" => $d["CLIENTE"],
+                "contrato" => $d["CONTRATO"],
+                "monto" => $d["MONTO"],
+                "ejecutivo" => "{$_SESSION['usuario']}",
+                "sucursal" => "{$_SESSION['cdgco_ahorro']}",
+                "tipo" => $d["TIPO_RETIRO"],
+            ];
+
+            $resumen[] = [
+                "fecha" => date("Y-m-d H:i:s"),
+                "datos_rechazp" => $datosRechazo,
+                "RES_RECHAZA_SOLICITUD" => CADao::ActualizaSolicitudRetiro($datosRechazo),
+                "datos_devolucion" => $datosDevolucion,
+                "RES_DEVUELVE_MONTO" => CADao::DevolucionRetiro($datosDevolucion),
+            ];
+        };
+
+        self::SaveLog(json_encode($resumen)); //, JSON_PRETTY_PRINT));
+        self::SaveLog("Finalizado -> Rechazo de Solicitudes de retiro sin Atender");
     }
 }

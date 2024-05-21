@@ -5,470 +5,297 @@ namespace App\models;
 include 'C:/xampp/htdocs/mcm/backend/Core/Database.php';
 
 use \Core\Database;
+use Exception;
 
 class Jobs
 {
-    public static function CreditosAutorizados()
+    public static function Responde($respuesta, $mensaje, $datos = null, $error = null)
+    {
+        $res = [
+            "success" => $respuesta,
+            "mensaje" => $mensaje
+        ];
+
+        if ($datos != null) $res['datos'] = $datos;
+        if ($error != null) $res['error'] = $error;
+
+        return $res;
+    }
+
+    public static function GetCreditosActivos()
     {
         $qry = <<<sql
         SELECT
-            PRC.CDGCL, PRNN.CDGNS, PRNN.CICLO, PRNN.INICIO, PRNN.CDGCO, PRNN.CANTAUTOR, TRUNC(SYSDATE) AS FEXP  
+            APA.CONTRATO,
+            APA.SALDO,
+            APA.TASA
         FROM
-            PRN PRNN, PRC
-        WHERE 
-            PRNN.INICIO>TIMESTAMP '2024-04-11 00:00:00.000000' AND PRNN.SITUACION = 'T'
-            AND (SELECT COUNT(*) FROM PRN WHERE PRN.SITUACION = 'E' AND PRN.CDGNS = PRNN.CDGNS) = 0
-            AND PRC.CDGNS = PRNN.CDGNS 
-            AND PRC.NOCHEQUE IS NULL
-        sql;
-
-        $db = Database::getInstance();
-        return $db->queryAll($qry);
-    }
-
-    public static function GetNoChequera($cdgco)
-    {
-        $qry = <<<sql
-        SELECT CDGCB, CDGCO, CODIGO, CHEQUEINICIAL, CHEQUEFINAL  
-        FROM CHEQUERA
-        WHERE TO_NUMBER(CODIGO) = (SELECT MAX(TO_NUMBER(CODIGO)) AS int_column FROM CHEQUERA WHERE CDGCO = :cdgco)
-        AND CDGCO = :cdgco
-        sql;
-
-        $db = Database::getInstance();
-        return $db->queryOne($qry, ["cdgco" => $cdgco]);
-    }
-
-    public static function GetNoCheque($chequera)
-    {
-        $qry = <<<sql
-        SELECT FNSIGCHEQUE('EMPFIN', :chequera) CHQSIG FROM DUAL
-        sql;
-
-        $db = Database::getInstance();
-        return $db->queryOne($qry, ["chequera" => $chequera]);
-    }
-
-    public static function ActualizaPRC($datos)
-    {
-        $qry = <<<sql
-        UPDATE PRC SET
-            NOCHEQUE = LPAD(:cheque,7,'0'),
-            FEXP = :fexp,
-            ACTUALIZACHPE = :usuario,
-            SITUACION = 'E',
-            CDGCB = :cdgcb,
-            REPORTE = '   C',
-            FEXPCHEQUE = :fexp,
-            CANTENTRE = :cantautor,
-            ENTRREAL = :cantautor
+            ASIGNA_PROD_AHORRO APA
         WHERE
-            CDGCL = :cdgcl
-            AND CDGCLNS = :cdgns
-            AND CICLO = :ciclo
+            APA.SALDO > 0
+            AND APA.ESTATUS = 'A'
         sql;
 
-        $parametros = [
-            "cheque" => $datos["cheque"],
-            "fexp" => $datos["fexp"],
-            "usuario" => $datos["usuario"],
-            "cdgcb" => $datos["cdgcb"],
-            "cdgcl" => $datos["cdgcl"],
-            "cdgns" => $datos["cdgns"],
-            "ciclo" => $datos["ciclo"],
-            "cantautor" => $datos["cantautor"]
-        ];
-
-        $db = Database::getInstance();
-        return ["ActualizaPRC" => [$qry, $parametros]];
-        return $db->insertar($qry, $parametros);
+        try {
+            $db = Database::getInstance();
+            $res = $db->queryAll($qry);
+            return self::Responde(true, "Créditos activos obtenidos correctamente", $res);
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al obtener los créditos activos", null, $e->getMessage());
+        }
     }
 
-    public static function ActualizaPRN($datos)
+    public static function AplicaDevengo($datos)
     {
-        $qry = <<<sql
-        UPDATE PRN SET
-            REPORTE = '   C',
-            FEXP = :fexp,
-            ACTUALIZACHPE= :usuario,
-            SITUACION = 'E',
-            CDGCB = :cdgcb,
-            CANTENTRE = :cantautor,
-            ACTUALIZAENPE = 'AMGM',
-            ACTUALIZACPE = 'AMGM',
-            FCOMITE = SYSDATE
-        WHERE
-            CDGNS = :cdgns
-            AND CICLO = :ciclo
-        sql;
-
-        $parametros = [
-            "fexp" => $datos["fexp"],
-            "usuario" => $datos["usuario"],
-            "cdgcb" => $datos["cdgcb"],
-            "cdgns" => $datos["cdgns"],
-            "ciclo" => $datos["ciclo"],
-            "cantautor" => $datos["cantautor"]
-        ];
-
-        $db = Database::getInstance();
-        return ["ActualizaPRN" => [$qry, $parametros]];
-        return $db->insertar($qry, $parametros);
-    }
-
-    public static function LimpiarMPC($datos)
-    {
-        $qry = <<<sql
-        DELETE FROM
-            MPC
-        WHERE
-            CDGEM = :prmCDGEM
-            AND CDGCLNS = :prmCDGCLNS
-            AND CLNS = :prmCLNS
-            AND CICLO = :prmCICLO
-            AND FECHA = :prmINICIO
-            AND TIPO in ('IN', 'GR', 'Co', 'GA')
-            AND PERIODO = '00'
-        sql;
-
-        $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
-            "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCLNS" => $datos["prmCLNS"],
-            "prmCICLO" => $datos["prmCICLO"],
-            "prmINICIO" => $datos["prmINICIO"]
-        ];
-
-        $db = Database::getInstance();
-        return ["LimpiarMPC" => [$qry, $parametros]];
-        return $db->queryOne($qry, $parametros);
-    }
-
-    public static function LimpiarJP($datos)
-    {
-        $qry = <<<sql
-        DELETE FROM
-            JP
-        WHERE
-            CDGEM = :prmCDGEM
-            AND CDGCLNS = :prmCDGCLNS
-            AND CLNS = :prmCLNS
-            AND CICLO = :prmCICLO
-            AND FECHA = :prmINICIO
-            AND PERIODO = '00'
-            AND TIPO in ('IN', 'GR', 'Co', 'GA')
-        sql;
-
-        $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
-            "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCLNS" => $datos["prmCLNS"],
-            "prmCICLO" => $datos["prmCICLO"],
-            "prmINICIO" => $datos["prmINICIO"]
-        ];
-
-        $db = Database::getInstance();
-        return ["LimpiarJP" => [$qry, $parametros]];
-        return $db->queryOne($qry, $parametros);
-    }
-
-    public static function LimpiarMP($datos)
-    {
-        $qry = <<<sql
-        DELETE FROM
-            MP
-        WHERE
-            CDGEM = :prmCDGEM
-            AND cdgclns = :prmCDGCLNS
-            AND CLNS = :prmCLNS
-            AND ciclo = :prmCICLO
-            AND frealdep = :prmINICIO
-            AND TIPO IN ('IN', 'GR', 'Co', 'GA')
-        sql;
-
-        $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
-            "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCLNS" => $datos["prmCLNS"],
-            "prmCICLO" => $datos["prmCICLO"],
-            "prmINICIO" => $datos["prmINICIO"]
-        ];
-
-        $db = Database::getInstance();
-        return ["LimpiarMP" => [$qry, $parametros]];
-        return $db->queryOne($qry, $parametros);
-    }
-
-    public static function GET_vINTCTE($datos)
-    {
-        $qry = <<<sql
-        SELECT
-            (
-                round(
-                decode(
-                    nvl(PRN.periodicidad, ''),
-                    'S',
-                    (
-                    nvl(PRN.tasa, 0) * nvl(PRN.plazo, 0) * nvl(PRC.cantentre, 0)
-                    ) /(4 * 100),
-                    'Q',
-                    (
-                    nvl(PRN.tasa, 0) * nvl(PRN.plazo, 0) * nvl(PRC.cantentre, 0) * 15
-                    ) /(30 * 100),
-                    'C',
-                    (
-                    nvl(PRN.tasa, 0) * nvl(PRN.plazo, 0) * nvl(PRC.cantentre, 0)
-                    ) /(2 * 100),
-                    'M',
-                    (
-                    nvl(PRN.tasa, 0) * nvl(PRN.plazo, 0) * nvl(PRC.cantentre, 0)
-                    ) /(100),
-                    '',
-                    ''
-                ),
-                0
-                ) * -1
-            ) as vINTCTE
-        FROM
-            PRN,
-            PRC
-        WHERE
-            PRN.CDGEM = PRC.CDGEM
-            AND PRN.CDGNS = PRC.CDGNS
-            AND PRN.CICLO = PRC.CICLO
-            AND PRN.CDGEM = :prmCDGEM
-            AND PRN.CDGNS = :prmCDGCLNS
-            AND PRN.CICLO = :prmCICLO
-            AND PRC.CDGCL = :prmCLNS
-        sql;
-
-        $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
-            "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCICLO" => $datos["prmCICLO"],
-            "prmCLNS" => $datos["prmCLNS"]
-        ];
-
-        $db = Database::getInstance();
-        return ["GET_vINTCTE" => [$qry, $parametros]];
-        return $db->queryOne($qry, $parametros);
-    }
-
-    public static function GET_vINTERES($datos)
-    {
-        $qry = <<<sql
-        SELECT
-            (
-                APagarInteresPrN(
-                PrN.CdgEm,
-                PrN.CdgNS,
-                PrN.Ciclo,
-                nvl(PrN.CantEntre, prn.cantautor),
-                PrN.Tasa,
-                PrN.PLAZO,
-                PrN.Periodicidad,
-                PrN.CdgMCI,
-                PrN.Inicio,
-                PrN.DiaJunta,
-                PrN.MultPer,
-                PrN.PeriGrCap,
-                PrN.PeriGrInt,
-                PrN.DesfasePago,
-                PrN.CdgTI
-                ) * -1
-            ) as vINTERES
-        FROM
-            prn
-        WHERE
-            cdgem = :prmCDGEM
-            AND cdgns = :prmCDGCLNS
-            AND ciclo = :prmCICLO
-        sql;
-
-        $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
-            "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCICLO" => $datos["prmCICLO"]
-        ];
-
-        $db = Database::getInstance();
-        return ["GET_vINTERES" => [$qry, $parametros]];
-        return $db->queryOne($qry, $parametros);
-    }
-
-    public static function InsertarMP($datos)
-    {
-        $qry = <<<sql
+        $qryDevengo = <<<sql
         INSERT INTO
-            MP (
-                CDGEM,
-                CDGCLNS,
-                CICLO,
-                CLNS,
-                FREALDEP,
-                FDEPOSITO,
-                PERIODO,
-                SECUENCIA,
-                TIPO,
-                CANTIDAD,
-                CONCILIADO,
-                ESTATUS,
-                pagadocap,
-                PAGADOINT,
-                pagadorec,
-                MODO,
-                REFERENCIA,
-                REFCIE,
-                CDGNS,
-                ACTUALIZARPE
-            )
-        VALUES
-            (
-                :prmCDGEM,
-                :prmCDGCLNS,
-                :prmCICLO,
-                :prmCLNS,
-                :prmINICIO,
-                :prmINICIO,
-                '00',
-                '01',
-                'IN',
-                :vINTERES,
-                'D',
-                'B',
-                0,
-                :vINTERES,
-                0,
-                'G',
-                'Interés total del préstamo',
-                'Interés total del préstamo',
-                :vCDGNS,
-                :prmUSUARIO
-            )
-        sql;
-
-        $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
-            "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCLNS" => $datos["prmCLNS"],
-            "prmCICLO" => $datos["prmCICLO"],
-            "prmINICIO" => $datos["prmINICIO"],
-            "vINTERES" => $datos["vINTERES"],
-            "vCDGNS" => $datos["vCDGNS"],
-            "prmUSUARIO" => $datos["prmUSUARIO"]
-        ];
-
-        $db = Database::getInstance();
-        return ["InsertarMP" => [$qry, $parametros]];
-        return $db->queryOne($qry, $parametros);
-    }
-
-    public static function InsertarJP($datos)
-    {
-        $qry = <<<sql
-        INSERT INTO
-            JP (
-                CDGEM,
-                CDGCLNS,
-                CICLO,
-                CLNS,
+            DEVENGO_AHORRO (
+                CONTRATO,
+                SALDO_CIERRE,
                 FECHA,
-                PERIODO,
-                PAGOINFORME,
-                PAGOFICHA,
-                AHORRO,
-                RETIRO,
-                TIPO,
-                CDGNS,
-                texto,
-                CONCILIADO,
-                ACTUALIZARPE,
-                CONCBANINF,
-                CONCBANFI,
-                COINCIDEPAG
+                DEVENGO,
+                TASA
             )
         VALUES
             (
-                :prmCDGEM,
-                :prmCDGCLNS,
-                :prmCICLO,
-                :prmCLNS,
-                :prmINICIO,
-                '00',
-                :vINTERES,
-                :vINTERES,
-                0,
-                0,
-                'IN',
-                :vCDGNS,
-                'Interés total del préstamo',
-                'C',
-                :prmUSUARIO,
-                'S',
-                'S',
-                'S'
+                :contrato,
+                :saldo,
+                SYSDATE,
+                :devengo,
+                :tasa
             )
         sql;
 
-        $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
-            "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCLNS" => $datos["prmCLNS"],
-            "prmCICLO" => $datos["prmCICLO"],
-            "prmINICIO" => $datos["prmINICIO"],
-            "vINTERES" => $datos["vINTERES"],
-            "vCDGNS" => $datos["vCDGNS"],
-            "prmUSUARIO" => $datos["prmUSUARIO"]
+        $qrySaldo = <<<sql
+        UPDATE
+            ASIGNA_PROD_AHORRO
+        SET
+            INTERES = NVL(INTERES,0) + :devengo
+        WHERE
+            CONTRATO = :contrato
+        sql;
+
+        $datosSaldo = [
+            "contrato" => $datos["contrato"],
+            "devengo" => $datos["devengo"]
         ];
 
-        $db = Database::getInstance();
-        return ["limpiarMPC" => [$qry, $parametros]];
-        return $db->queryOne($qry, $parametros);
+        $qrys = [
+            $qryDevengo,
+            $qrySaldo
+        ];
+
+        $parametros = [
+            $datos,
+            $datosSaldo
+        ];
+
+        try {
+            $db = Database::getInstance();
+            $db->insertaMultiple($qrys, $parametros);
+            return self::Responde(true, "Devengo aplicado correctamente");
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al aplicar el devengo", null, $e->getMessage());
+        }
     }
 
-    public static function InsertarMPC($datos)
+    public static function GetInversiones()
     {
         $qry = <<<sql
+        SELECT
+            (SELECT CDGCL FROM ASIGNA_PROD_AHORRO WHERE CONTRATO = CI.CDG_CONTRATO) AS CLIENTE,
+            CI.CDG_CONTRATO AS CONTRATO,
+            CI.FECHA_APERTURA AS APERTURA,
+            CI.FECHA_VENCIMIENTO AS VENCIMIENTO,
+            CI.MONTO_INVERSION AS MONTO,
+            CI.CDG_TASA AS ID_TASA
+            TI.TASA,
+            PI.DESCRIPCION AS PLAZO
+        FROM
+            CUENTA_INVERSION CI
+        JOIN
+            TASA_INVERSION TI ON CI.CDG_TASA = TI.CODIGO
+        JOIN
+            PLAZO_INVERSION PI ON TI.CDG_PLAZO = PI.CODIGO
+        WHERE
+            CI.ESTATUS = 'A'
+            AND TRUNC(CI.FECHA_VENCIMIENTO) = TRUNC(SYSDATE)
+        sql;
+
+        try {
+            $db = Database::getInstance();
+            $res = $db->queryAll($qry);
+            return self::Responde(true, "Inversiones obtenidas correctamente", $res);
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al obtener las inversiones", null, $e->getMessage());
+        }
+    }
+
+    public static function LiquidaInversion($datos)
+    {
+        $qryLiquidacion = <<<sql
+        UPDATE
+            CUENTA_INVERSION
+        SET
+            RENDIMIENTO = :rendimiento,
+            ESTATUS = 'L',
+            FECHA_LIQUIDACION = SYSDATE,
+            MODIFICACION = SYSDATE
+        WHERE
+            CDG_CONTRATO = :contrato,
+            AND ESTATUS = 'A',
+            AND TRUNC(FECHA_VENCIMIENTO) = TRUNC(:fecha_vencimiento)
+            AND TRUNC(FECHA_APERTURA) = TRUNC(:fecha_apertura)
+            AND CDG_TASA = :id_tasa,
+            AND MONTO_INVERSION = :monto
+        sql;
+
+        $qryMovimiento = <<<sql
         INSERT INTO
-            MPC (
-                CDGEM,
+            MOVIMIENTOS_AHORRO (
+                CODIGO,
+                FECHA_MOV,
+                CDG_TIPO_PAGO,
+                CDG_CONTRATO,
+                MONTO,
+                MOVIMIENTO,
+                DESCRIPCION,
+                CDG_TICKET,
+                FECHA_VALOR,
+                CDG_RETIRO,
+                CDGCO,
                 CDGCL,
-                CICLO,
-                CLNS,
-                FECHA,
-                TIPO,
-                PERIODO,
-                CDGCLNS,
-                CDGNS,
-                CANTIDAD
+                CDGPE
             )
         VALUES
             (
-                :prmCDGEM,
-                :vCLIENTE,
-                :prmCICLO,
-                :prmCLNS,
-                :prmINICIO,
-                'IN',
-                '00',
-                :prmCDGCLNS,
-                :vCDGNS,
-                :vINTCTE
+                (
+                    SELECT
+                        NVL(MAX(TO_NUMBER(CODIGO)), 0)
+                    FROM
+                        MOVIMIENTOS_AHORRO
+                ) + 1,
+                SYSDATE,
+                :tipo_pago,
+                :contrato,
+                :monto,
+                :movimiento,
+                '',
+                (
+                    SELECT
+                        MAX(TO_NUMBER(CODIGO)) AS CODIGO
+                    FROM
+                        TICKETS_AHORRO
+                    WHERE
+                        CDG_CONTRATO = :contrato
+                ),
+                SYSDATE,
+                (
+                    SELECT
+                        CASE
+                            :tipo_pago
+                            WHEN '6' THEN MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO))
+                            WHEN '7' THEN MAX(TO_NUMBER(ID_SOL_RETIRO_AHORRO))
+                            ELSE NULL
+                        END
+                    FROM
+                        SOLICITUD_RETIRO_AHORRO
+                    WHERE
+                        CONTRATO = :contrato
+                ),
+                :sucursal,
+                :cliente,
+                :ejecutivo
             )
         sql;
 
-        $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
-            "vCLIENTE" => $datos["vCLIENTE"],
-            "prmCICLO" => $datos["prmCICLO"],
-            "prmCLNS" => $datos["prmCLNS"],
-            "prmINICIO" => $datos["prmINICIO"],
-            "vCDGNS" => $datos["vCDGNS"],
-            "vINTCTE" => $datos["vINTCTE"]
+        $qryTicket = <<<sql
+        INSERT INTO TICKETS_AHORRO
+            (CODIGO, FECHA, CDG_CONTRATO, MONTO, CDGPE, CDG_SUCURSAL)
+        VALUES
+            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM TICKETS_AHORRO) + 1, SYSDATE, :contrato, :monto, :ejecutivo, :sucursal)
+        sql;
+
+        $qrys = [
+            $qryLiquidacion,
+            $qryMovimiento,
+            $qryTicket,
+            $qryMovimiento,
+            $qryTicket
         ];
 
-        $db = Database::getInstance();
-        return ["limpiarMPC" => [$qry, $parametros]];
-        return $db->queryOne($qry, $parametros);
+        $parametros = [
+            [
+                "rendimiento" => $datos["rendimiento"],
+                "contrato" => $datos["contrato"],
+                "fecha_vencimiento" => $datos["fecha_vencimiento"],
+                "fecha_apertura" => $datos["fecha_apertura"],
+                "id_tasa" => $datos["id_tasa"],
+                "monto" => $datos["monto"]
+            ],
+            [
+                "cliente" => $datos["cliente"],
+                "monto" => $datos["monto"],
+                "contrato" => $datos["contrato"],
+                "tipo_pago" => 11,
+                "movimiento" => 1,
+                "sucursal" => '000',
+                "ejecutivo" => 'SSTM'
+            ],
+            [
+                "contrato" => $datos["contrato"],
+                "monto" => $datos["monto"],
+                "ejecutivo" => 'SSTM',
+                "sucursal" => '000'
+            ],
+            [
+                "cliente" => $datos["cliente"],
+                "monto" => $datos["rendimiento"],
+                "contrato" => $datos["contrato"],
+                "tipo_pago" => 12,
+                "movimiento" => 1,
+                "sucursal" => '000',
+                "ejecutivo" => 'SSTM'
+
+            ],
+            [
+                "contrato" => $datos["contrato"],
+                "monto" => $datos["rendimiento"],
+                "ejecutivo" => 'SSTM',
+                "sucursal" => '000'
+            ]
+        ];
+
+        try {
+            $db = Database::getInstance();
+            $db->insertaMultiple($qrys, $parametros);
+            return self::Responde(true, "Inversión liquidada correctamente");
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al liquidar la inversión", null, $e->getMessage());
+        }
+    }
+
+    public static function GetSolicitudesRetiro()
+    {
+        $qry = <<<sql
+        SELECT
+            SRA.ID_SOL_RETIRO_AHORRO AS ID,
+            SRA.CDG_CONTRATO AS CONTRATO,
+            SRA.FECHA_SOLICITUD AS FECHA,
+            SRA.MONTO_SOLICITADO AS MONTO
+        FROM
+            SOLICITUD_RETIRO_AHORRO SRA
+        WHERE
+            SRA.CDG_ESTATUS = 0
+            AND TRUNC(SRA.FECHA_SOLICITUD) < TRUNC(SYSDATE)
+        sql;
+
+        try {
+            $db = Database::getInstance();
+            $res = $db->queryAll($qry);
+            return self::Responde(true, "Solicitudes de retiro obtenidas correctamente", $res);
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al obtener las solicitudes de retiro", null, $e->getMessage());
+        }
     }
 }
