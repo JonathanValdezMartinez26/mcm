@@ -1565,7 +1565,7 @@ html;
                     
                     <td style="padding: 10px !important;">
                          <div style="margin-bottom: 5px;"><b>SUCURSAL:</b> {$value['CDGCO']} - {$value['SUCURSAL']}</div>
-                         <div style="margin-bottom: 5px;"><b>USUARIO:</b> {$value['USUARIO_CAJA']}</div>
+                         <div style="margin-bottom: 5px;"><b>USUARIO REGISTRA TRANSACCION:</b> {$value['USUARIO_CAJA']} - {$value['NOMBRE_CAJERA']} </div>
                          <hr>
                           <div style="margin-bottom: 5px;"><b>FECHA LARGA:</b> {$value['FECHA_MOV']}</div>
                     </td>
