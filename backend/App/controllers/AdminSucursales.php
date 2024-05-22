@@ -365,7 +365,7 @@ class AdminSucursales extends Controller
                     (respuesta) => {
                         $("#saldos").DataTable().destroy()
                      
-                        if (respuesta.datos == "") showError("No se encontraron solicitudes de retiro en el rango de fechas seleccionado.")
+                        if (respuesta.datos == "") showError("No se encontraron saldos para el rango de fechas seleccionado.")
                          
                         $("#saldos tbody").html(respuesta.datos)
                         configuraTabla("saldos")
@@ -3218,8 +3218,8 @@ script;
 
         $controlador = "AdminSucursales";
         $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N');
-        $nombreColumna = array('FECHA_MOV', 'CDGCO', 'SUCURSAL', 'FECHA_MOV_APLICA', 'USUARIO_CAJA', 'NOMBRE_CAJERA', 'CLIENTE', 'TITULAR_CUENTA_EJE', 'MONTO','CONCEPTO', 'PRODUCTO', 'TIPO_MOVIMIENTO', 'INGRESO', 'EGRESO');
-        $nombreCampo = array('FECHA_MOV', 'CDGCO', 'SUCURSAL', 'FECHA_MOV_APLICA', 'USUARIO_CAJA', 'NOMBRE_CAJERA','CLIENTE', 'TITULAR_CUENTA_EJE', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'TIPO_MOVIMIENTO', 'INGRESO', 'EGRESO');
+        $nombreColumna = array('FECHA_MOV', 'CDGCO', 'SUCURSAL', 'FECHA_MOV_APLICA', 'USUARIO_CAJA', 'NOMBRE_CAJERA', 'CLIENTE', 'TITULAR_CUENTA_EJE', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'TIPO_MOVIMIENTO', 'INGRESO', 'EGRESO');
+        $nombreCampo = array('FECHA_MOV', 'CDGCO', 'SUCURSAL', 'FECHA_MOV_APLICA', 'USUARIO_CAJA', 'NOMBRE_CAJERA', 'CLIENTE', 'TITULAR_CUENTA_EJE', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'TIPO_MOVIMIENTO', 'INGRESO', 'EGRESO');
 
 
         $objPHPExcel->getActiveSheet()->SetCellValue('A' . $fila, 'Consulta de Movimientos de Ahorro a Detalle (incluye transacciones virtuales)');

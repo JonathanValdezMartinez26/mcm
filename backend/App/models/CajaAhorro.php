@@ -407,7 +407,7 @@ class CajaAhorro
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
             CL.CURP,
             (SELECT CONTRATO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1) AS CONTRATO,
-            NVL((SELECT SALDO FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1), 0) AS SALDO,
+            NVL((SELECT SALDO_REAL FROM ASIGNA_PROD_AHORRO WHERE CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1), 0) AS SALDO,
             CL.CODIGO AS CDGCL,
             NVL(
                 (SELECT
@@ -1230,7 +1230,7 @@ class CajaAhorro
             CL_PQS.CDGCL,
             NVL((
                 SELECT
-                    SALDO
+                    SALDO_REAL
                 FROM
                     ASIGNA_PROD_AHORRO APA
                 WHERE
@@ -1546,7 +1546,7 @@ class CajaAhorro
         if ($datos['estatus']) $qry .= " AND SR.ESTATUS = '{$datos['estatus']}'";
         if ($datos['tipo']) $qry .= " AND SR.TIPO_RETIRO = '{$datos['tipo']}'";
 
-        $qry .= " ORDER BY SR.FECHA_ESTATUS DESC";
+        $qry .= " ORDER BY TRUNC(SR.FECHA_SOLICITUD), SR.FECHA_ESTATUS DESC";
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryAll($qry);
