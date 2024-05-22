@@ -1531,6 +1531,7 @@ class CajaAhorro
                 WHEN 2 THEN 'RECHAZADO'
                 WHEN 3 THEN 'ENTREGADO'
                 WHEN 4 THEN 'DEVUELTO'
+                WHEN 5 THEN 'CANCELADO'
                 ELSE 'NO DEFINIDO'
             END AS ESTATUS
         FROM

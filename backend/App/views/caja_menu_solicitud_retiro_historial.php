@@ -101,6 +101,7 @@
                                         <option value="2">RECHAZADO</option>
                                         <option value="3">ENTREGADO</option>
                                         <option value="4">DEVUELTO</option>
+                                        <option value="5">CANCELADO</option>
                                     </select>
                                 </div>
                             </div>
