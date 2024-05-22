@@ -2185,7 +2185,18 @@ sql;
             PRODUCTO,
             CASE WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO ELSE 0 END AS INGRESO,
             CASE WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN MONTO ELSE 0 END AS EGRESO,
-            SUM(CASE WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO ELSE -MONTO END) OVER (ORDER BY CONSECUTIVO ASC) AS SALDO
+            CASE WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO ELSE 0 END AS INGRESO,
+            CASE WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN MONTO ELSE 0 END AS EGRESO,
+            CASE WHEN TIPO_MOVIMIENTO = 'REPORTE' THEN MONTO ELSE 0  END AS REPORTE,
+    
+            CASE 
+		        WHEN TIPO_MOVIMIENTO = 'REPORTE' THEN MONTO
+		        ELSE SUM(CASE 
+		                    WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO 
+		                    WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN -MONTO 
+		                    ELSE 0 
+		                 END) OVER (ORDER BY CONSECUTIVO ASC)
+		    END AS SALDO
         FROM (
             SELECT 
                 ROW_NUMBER() OVER (ORDER BY FECHA_MOV_FILTRO ASC) AS CONSECUTIVO,
@@ -2220,10 +2231,14 @@ sql;
                       MONTO, 
                       CASE 
                         WHEN MOVIMIENTO = 0 THEN 'RETIRO DE EFECTIVO'
+                        WHEN MOVIMIENTO = 2 THEN 'SALDO INICIAL DEL DIA (DIARIO)'
+                        WHEN MOVIMIENTO = 3 THEN 'SALDO FINAL AL CIERRE DE LA SUCURSAL (DIARIO)'
                         ELSE 'FONDEO SUCURSAL'
                     END AS CONCEPTO, 
                     CASE 
                         WHEN MOVIMIENTO = 0 THEN 'EGRESO'
+                        WHEN MOVIMIENTO = 2 THEN 'REPORTE'
+                        WHEN MOVIMIENTO = 3 THEN 'REPORTE'
                         ELSE 'INGRESO'
                     END AS TIPO_MOVIMIENTO,
                       'AHORRO CUENTA CORRIENTE' AS PRODUCTO 
