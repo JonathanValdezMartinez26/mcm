@@ -102,7 +102,7 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-5">
                                                     <div class="form-group">
                                                         <label for="Producto">Producto *</label>
                                                         <select class="form-control" id="Producto" name="Producto">
@@ -110,7 +110,7 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="Sucursal">Sucursal activa*</label>
                                                         <select class="form-control" id="Sucursal" name="Sucursal">

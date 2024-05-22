@@ -98,6 +98,8 @@
                                         <i class="fa fa-search"></i> Buscar
                                     </button>
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-3" style="padding-top: 25px">
                                     <button type="button" class="btn btn-success btn-circle" data-toggle="modal" data-target="#modal_agregar_horario" onclick=imprimeExcel()>
                                         <i class="fa fa-file-excel-o"></i> Exportar a Excel
