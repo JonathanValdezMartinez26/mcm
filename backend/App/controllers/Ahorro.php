@@ -1046,8 +1046,7 @@ class Ahorro extends Controller
 
     public function BuscaContratoAhorro()
     {
-        $datos = CajaAhorroDao::BuscaContratoAhorro($_POST);
-        echo $datos;
+        echo CajaAhorroDao::BuscaContratoAhorro($_POST);
     }
 
     public function RegistraOperacion()
@@ -1468,7 +1467,7 @@ class Ahorro extends Controller
         $producto = $_POST['producto'] ?? $p;
         $fi = $_POST['fechaI'] ?? date('Y-m-d');
         $ff = $_POST['fechaF'] ?? date('Y-m-d');
-        $estatus = $_POST['estatus'] ?? "";
+        $estatus = $_POST['estatus'] ?? "1";
         $tipo = $_POST['tipo'] ?? "";
 
         $historico = json_decode(CajaAhorroDao::HistoricoSolicitudRetiro(["producto" => $producto, "fechaI" => $fi, "fechaF" => $ff, "estatus" => $estatus, "tipo" => $tipo]));
@@ -1487,7 +1486,7 @@ class Ahorro extends Controller
 
                 if ($key2 === "ESTATUS" && $valor === "APROBADO") {
                     $acciones .= "<button type='button' class='btn btn-success btn-circle' onclick='" .
-                        (($detalle->FECHA_SOLICITUD == date("d/m/Y") && $detalle->TIPO_RETIRO == "PROGRAMADO") ? "actualizaEstatus(3, {$detalle->ID})" :
+                        ($detalle->FECHA_SOLICITUD == date("d/m/Y") ? "actualizaEstatus(3, {$detalle->ID})" :
                             "validaFechaEntrega(\"{$detalle->FECHA_SOLICITUD}\")") .
                         "'><i class='glyphicon glyphicon-transfer'></i></button>";
                     $acciones .= "<button type='button' class='btn btn-danger btn-circle' onclick='actualizaEstatus(4, {$detalle->ID})'><i class='fa fa-trash'></i></button>";
@@ -2156,8 +2155,7 @@ class Ahorro extends Controller
 
     public function BuscaClientePQ()
     {
-        $datos = CajaAhorroDao::BuscaClienteNvoContratoPQ($_POST);
-        echo $datos;
+        echo CajaAhorroDao::BuscaClienteNvoContratoPQ($_POST);
     }
 
     public function AgregaContratoAhorroPQ()
@@ -2168,8 +2166,7 @@ class Ahorro extends Controller
 
     public function BuscaContratoPQ()
     {
-        $datos = CajaAhorroDao::BuscaClienteContratoPQ($_POST);
-        echo $datos;
+        echo CajaAhorroDao::BuscaClienteContratoPQ($_POST);
     }
 
     // Movimientos sobre cuentas de ahorro Peques

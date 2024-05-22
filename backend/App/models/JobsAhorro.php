@@ -26,6 +26,7 @@ class JobsAhorro
     {
         $qry = <<<sql
         SELECT
+            APA.CDGCL AS CLIENTE,
             APA.CONTRATO,
             APA.SALDO,
             APA.TASA
@@ -66,28 +67,30 @@ class JobsAhorro
             )
         sql;
 
-        $qrySaldo = <<<sql
-        UPDATE
-            ASIGNA_PROD_AHORRO
-        SET
-            INTERES = NVL(INTERES,0) + :devengo
-        WHERE
-            CONTRATO = :contrato
-        sql;
-
-        $datosSaldo = [
-            "contrato" => $datos["contrato"],
-            "devengo" => $datos["devengo"]
-        ];
-
         $qrys = [
             $qryDevengo,
-            $qrySaldo
+            self::GetQueryTicket(),
+            self::GetQueryMovimientoAhorro()
         ];
 
         $parametros = [
-            $datos,
-            $datosSaldo
+            [
+                "contrato" => $datos["contrato"],
+                "saldo" => $datos["saldo"],
+                "devengo" => $datos["devengo"],
+                "tasa" => $datos["tasa"]
+            ],
+            [
+                "contrato" => $datos["contrato"],
+                "monto" => $datos["devengo"],
+            ],
+            [
+                "contrato" => $datos["contrato"],
+                "monto" => $datos["devengo"],
+                "tipo_pago" => 15,
+                "movimiento" => 1,
+                "cliente" => $datos["cliente"]
+            ]
         ];
 
         try {
@@ -170,14 +173,10 @@ class JobsAhorro
             [
                 "contrato" => $datos["contrato"],
                 "monto" => $datos["monto"],
-                "ejecutivo" => 'SSTM',
-                "sucursal" => '000'
             ],
             [
                 "contrato" => $datos["contrato"],
                 "monto" => $datos["monto"],
-                "ejecutivo" => 'SSTM',
-                "sucursal" => '000',
                 "tipo_pago" => 11,
                 "movimiento" => 1,
                 "cliente" => $datos["cliente"],
@@ -185,14 +184,10 @@ class JobsAhorro
             [
                 "contrato" => $datos["contrato"],
                 "monto" => $datos["rendimiento"],
-                "ejecutivo" => 'SSTM',
-                "sucursal" => '000'
             ],
             [
                 "contrato" => $datos["contrato"],
                 "monto" => $datos["rendimiento"],
-                "ejecutivo" => 'SSTM',
-                "sucursal" => '000',
                 "tipo_pago" => 12,
                 "movimiento" => 1,
                 "cliente" => $datos["cliente"],
@@ -280,14 +275,10 @@ class JobsAhorro
             [
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['monto'],
-                'ejecutivo' => 'SSTM',
-                'sucursal' => $datos['sucursal']
             ],
             [
                 'contrato' => $datos['contrato'],
                 'monto' => $datos['monto'],
-                'ejecutivo' => 'SSTM',
-                'sucursal' => $datos['sucursal'],
                 'tipo_pago' => $datos['tipo'] == 1 ? '8' : '9',
                 'movimiento' => '1',
                 'cliente' => $datos['cliente'],
@@ -349,7 +340,7 @@ class JobsAhorro
             INSERT INTO ARQUEO
             (CDG_ARQUEO, CDG_USUARIO, CDG_SUCURSAL, FECHA, MONTO, B_1000, B_500, B_200, B_100, B_50, B_20, M_10, M_5, M_2, M_1, M_050, M_020, M_010, SALDO_SUCURSAL)
             VALUES
-            ((SELECT NVL(MAX(CDG_ARQUEO),0) FROM ARQUEO) + 1, :ejecutivo, :sucursal, SYSDATE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (SELECT
+            ((SELECT NVL(MAX(CDG_ARQUEO),0) FROM ARQUEO) + 1, 'SSTM', :sucursal, SYSDATE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (SELECT
                 SALDO
             FROM
                 SUC_ESTADO_AHORRO
@@ -358,7 +349,6 @@ class JobsAhorro
             sql;
 
             $parametros = [
-                'ejecutivo' => $datos['ejecutivo'],
                 'sucursal' => $datos['sucursal']
             ];
 
@@ -376,7 +366,7 @@ class JobsAhorro
         INSERT INTO TICKETS_AHORRO
             (CODIGO, FECHA, CDG_CONTRATO, MONTO, CDGPE, CDG_SUCURSAL)
         VALUES
-            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM TICKETS_AHORRO) + 1, SYSDATE, :contrato, :monto, :ejecutivo, :sucursal)
+            ((SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM TICKETS_AHORRO) + 1, SYSDATE, :contrato, :monto, 'SSTM', '000')
         sql;
     }
 
@@ -435,9 +425,9 @@ class JobsAhorro
                     WHERE
                         CONTRATO = :contrato
                 ),
-                :sucursal,
+                '000',
                 :cliente,
-                :ejecutivo
+                'SSTM'
             )
         sql;
     }

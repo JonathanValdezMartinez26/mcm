@@ -97,7 +97,7 @@
                                     <select class="form-control" id="estatus" name="estatus">
                                         <option value="">TODOS</option>
                                         <option value="0">REGISTRADO</option>
-                                        <option value="1">APROBADO</option>
+                                        <option value="1" selected>APROBADO</option>
                                         <option value="2">RECHAZADO</option>
                                         <option value="3">ENTREGADO</option>
                                         <option value="4">DEVUELTO</option>

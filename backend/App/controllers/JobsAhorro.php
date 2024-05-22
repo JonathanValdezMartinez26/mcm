@@ -45,9 +45,10 @@ class JobsAhorro
         foreach ($creditos["datos"] as $key => $credito) {
             $saldo = $credito["SALDO"];
             $tasa = $credito["TASA"] / 100;
-            $devengo = $saldo * ($tasa / 360);
+            $devengo = $saldo * ($tasa / 365);
 
             $datos = [
+                "cliente" => $credito["CLIENTE"],
                 "contrato" => $credito["CONTRATO"],
                 "saldo" => $saldo,
                 "devengo" => $devengo,
@@ -116,7 +117,6 @@ class JobsAhorro
             $datosDevolucion = [
                 "contrato" => $solicitud["CONTRATO"],
                 "monto" => $solicitud["MONTO"],
-                "sucursal" => "{$_SESSION['cdgco_ahorro']}",
                 "cliente" => $solicitud["CLIENTE"],
                 "tipo" => $solicitud["TIPO_RETIRO"],
             ];
@@ -145,7 +145,6 @@ class JobsAhorro
 
         foreach ($sucursales["datos"] as $key => $sucursal) {
             $datos = [
-                'ejecutivo' => 'SSTM',
                 'sucursal' => $sucursal['CDG_SUCURSAL']
             ];
 
