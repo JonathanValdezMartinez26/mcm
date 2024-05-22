@@ -360,6 +360,83 @@ class JobsAhorro
         }
     }
 
+    public static function GetSucursales()
+    {
+        $qry = <<<sql
+        SELECT
+            CODIGO,
+            CDG_SUCURSAL,
+            SALDO
+        FROM
+            SUC_ESTADO_AHORRO
+        sql;
+
+        try {
+            $db = Database::getInstance();
+            $res = $db->queryAll($qry);
+            return self::Responde(true, "Sucursales obtenidas correctamente", $res ?? []);
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al obtener las sucursales", null, $e->getMessage());
+        }
+    }
+
+    public static function CapturaSaldos($datos)
+    {
+        $qry = <<<sql
+        INSERT INTO
+            SUC_MOVIMIENTOS_AHORRO (
+                CODIGO,
+                CDG_ESTADO_AHORRO,
+                FECHA,
+                MONTO,
+                MOVIMIENTO,
+                CDG_USUARIO
+            )
+        VALUES
+            (
+                (
+                    SELECT
+                        NVL(MAX(TO_NUMBER(CODIGO)), 0)
+                    FROM
+                        SUC_MOVIMIENTOS_AHORRO
+                ) + 1,
+                :codigo,
+                :fecha,
+                :saldo,
+                :movimiento,
+                'SSTM'
+            )
+        sql;
+
+        $qrys = [
+            $qry,
+            $qry
+        ];
+
+        $parametros = [
+            [
+                "codigo" => $datos["codigo"],
+                "saldo" => $datos["saldo"],
+                "movimiento" => 2,
+                "fecha" => date("d/m/Y H:i:s")
+            ],
+            [
+                "codigo" => $datos["codigo"],
+                "saldo" => $datos["saldo"],
+                "movimiento" => 3,
+                "fecha" => date("d/m/Y H:i:s", strtotime("tomorrow 8am"))
+            ]
+        ];
+
+        try {
+            $db = Database::getInstance();
+            $db->insertaMultiple($qrys, $parametros);
+            return self::Responde(true, "Saldos capturados correctamente");
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al capturar los saldos", null, $e->getMessage());
+        }
+    }
+
     public static function GetQueryTicket()
     {
         return <<<sql
