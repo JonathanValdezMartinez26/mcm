@@ -1196,6 +1196,7 @@ class Ahorro extends Controller
                 
                 document.querySelector("#fecha_retiro_hide").removeAttribute("style")
                 document.querySelector("#fecha_retiro").setAttribute("style", "display: none;")
+                pasaFecha({ target: document.querySelector("#fecha_retiro") })
             }
              
             const compruebaSaldoFinal = () => {
@@ -1242,7 +1243,7 @@ class Ahorro extends Controller
                     + " (" + document.querySelector("#monto_letra").value + ")?"
                 ).then((continuar) => {
                     if (!continuar) return
-                    
+                     
                     consultaServidor("/Ahorro/RegistraSolicitud/", $.param(datos), (respuesta) => {
                             if (!respuesta.success) {
                                 console.log(respuesta.error)
@@ -1485,7 +1486,6 @@ class Ahorro extends Controller
                 $tabla .= "<td style='vertical-align: middle;'>$v</td>";
 
                 if ($key2 === "ESTATUS" && $valor === "APROBADO") {
-                    $acciones = "";
                     $acciones .= "<button type='button' class='btn btn-success btn-circle' onclick='" .
                         (($detalle->FECHA_SOLICITUD == date("d/m/Y") && $detalle->TIPO_RETIRO == "PROGRAMADO") ? "actualizaEstatus(3, {$detalle->ID})" :
                             "validaFechaEntrega(\"{$detalle->FECHA_SOLICITUD}\")") .
@@ -2689,6 +2689,7 @@ class Ahorro extends Controller
                 
                 document.querySelector("#fecha_retiro_hide").removeAttribute("style")
                 document.querySelector("#fecha_retiro").setAttribute("style", "display: none;")
+                pasaFecha({ target: document.querySelector("#fecha_retiro") })
             }
              
             const compruebaSaldoFinal = () => {
@@ -2766,7 +2767,7 @@ class Ahorro extends Controller
         View::set('montoMaximoExpress', $montoMaximoExpress);
         View::set('montoMaximoRetiro', $montoMaximoRetiro);
         View::set('fecha', date('d/m/Y H:i:s'));
-        View::set('fechaInput', date('Y-m-d'));
+        View::set('fechaInput', date('Y-m-d', strtotime('+1 day')));
         View::set('fechaInputMax', $fechaMax->format('Y-m-d'));
         View::render("caja_menu_retiro_peque");
     }
