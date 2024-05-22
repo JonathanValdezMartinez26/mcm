@@ -1434,7 +1434,7 @@ class Ahorro extends Controller
                 })
             }
              
-            const validaFechaEntrega = (fecha) => showError("La solicitud no está disponible para entrega, la fecha programada de entrega es el " + fecha)
+            const validaFechaEntrega = (fecha) => showError("La solicitud no está disponible para entrega, la fecha programada de entrega es el " + fecha + ".")
         </script>
         html;
 
@@ -2934,7 +2934,7 @@ class Ahorro extends Controller
                 })
             }
              
-            const validaFechaEntrega = (fecha) => showError("La solicitud no está disponible para entrega, la fecha programada de entrega es el " + fecha)
+            const validaFechaEntrega = (fecha) => showError("La solicitud no está disponible para entrega, la fecha programada de entrega es el " + fecha + ".")
         </script>
         html;
 
