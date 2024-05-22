@@ -139,6 +139,7 @@
                                                 <th>Fecha actualización</th>
                                                 <th>Monto solicitado</th>
                                                 <th>Estatus</th>
+                                                <th>Fecha entrega solicitada</th>
                                                 <th>Acciones</th>
                                             </tr>
                                         </thead>

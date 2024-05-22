@@ -1432,6 +1432,8 @@ class Ahorro extends Controller
                     configuraTabla("hstSolicitudes")
                 })
             }
+             
+            const validaFechaEntrega = (fecha) => showError("La solicitud no está disponible para entrega, la fecha programada de entrega es el " + fecha)
         </script>
         html;
 
@@ -1483,8 +1485,12 @@ class Ahorro extends Controller
                 $tabla .= "<td style='vertical-align: middle;'>$v</td>";
 
                 if ($key2 === "ESTATUS" && $valor === "APROBADO") {
-                    $acciones = "<button type='button' class='btn btn-success btn-circle' onclick='actualizaEstatus(3, {$detalle->ID})'><i class='glyphicon glyphicon-transfer'></i></button>
-                    <button type='button' class='btn btn-danger btn-circle' onclick='actualizaEstatus(4, {$detalle->ID})'><i class='fa fa-trash'></i></button>";
+                    $acciones = "";
+                    $acciones .= "<button type='button' class='btn btn-success btn-circle' onclick='" .
+                        (($detalle->FECHA_SOLICITUD == date("d/m/Y") && $detalle->TIPO_RETIRO == "PROGRAMADO") ? "actualizaEstatus(3, {$detalle->ID})" :
+                            "validaFechaEntrega(\"{$detalle->FECHA_SOLICITUD}\")") .
+                        "'><i class='glyphicon glyphicon-transfer'></i></button>";
+                    $acciones .= "<button type='button' class='btn btn-danger btn-circle' onclick='actualizaEstatus(4, {$detalle->ID})'><i class='fa fa-trash'></i></button>";
                 }
             }
 
@@ -2926,6 +2932,8 @@ class Ahorro extends Controller
                     configuraTabla("hstSolicitudes")
                 })
             }
+             
+            const validaFechaEntrega = (fecha) => showError("La solicitud no está disponible para entrega, la fecha programada de entrega es el " + fecha)
         </script>
         html;
 
