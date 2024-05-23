@@ -9,10 +9,35 @@ use \App\models\JobsAhorro as JobsDao;
 date_default_timezone_set('America/Mexico_City');
 
 $jobs = new JobsAhorro();
-$jobs->DevengoInteresAhorroDiario();
-$jobs->LiquidaInversion();
-$jobs->RechazaSolicitudesSinAtender();
-$jobs->SucursalesSinArqueo();
+
+if (isset($argv[1])) {
+    switch ($argv[1]) {
+        case 'DevengoInteresAhorroDiario':
+            $jobs->DevengoInteresAhorroDiario();
+            break;
+        case 'LiquidaInversion':
+            $jobs->LiquidaInversion();
+            break;
+        case 'RechazaSolicitudesSinAtender':
+            $jobs->RechazaSolicitudesSinAtender();
+            break;
+        case 'SucursalesSinArqueo':
+            $jobs->SucursalesSinArqueo();
+            break;
+        case 'CapturaSaldosSucursales':
+            $jobs->CapturaSaldosSucursales();
+            break;
+        default:
+            echo "No se encontró el job solicitado.";
+            break;
+    }
+} else {
+    $jobs->DevengoInteresAhorroDiario();
+    $jobs->LiquidaInversion();
+    $jobs->RechazaSolicitudesSinAtender();
+    $jobs->SucursalesSinArqueo();
+    $jobs->CapturaSaldosSucursales();
+}
 
 class JobsAhorro
 {
@@ -157,5 +182,31 @@ class JobsAhorro
 
         self::SaveLog(json_encode($resumen)); //, JSON_PRETTY_PRINT));
         self::SaveLog("Finalizado -> Sucursales sin Arqueo");
+    }
+
+    public function CapturaSaldosSucursales()
+    {
+        self::SaveLog("Inicio -> Captura de Saldos de Sucursales");
+        $resumen = [];
+        $sucursales = JobsDao::GetSucursales();
+
+        if (!$sucursales["success"]) return self::SaveLog("Error al obtener las sucursales: " . $sucursales["error"]);
+        if (count($sucursales["datos"]) == 0) return self::SaveLog("No se encontraron sucursales para capturar saldos.");
+
+        foreach ($sucursales["datos"] as $key => $sucursal) {
+            $datos = [
+                'codigo' => $sucursal['CODIGO'],
+                'saldo' => $sucursal['SALDO']
+            ];
+
+            $resumen[] = [
+                "fecha" => date("Y-m-d H:i:s"),
+                "datos" => $datos,
+                "RES_CAPTURA_SALDOS" => JobsDao::CapturaSaldos($datos)
+            ];
+        };
+
+        self::SaveLog(json_encode($resumen)); //, JSON_PRETTY_PRINT));
+        self::SaveLog("Finalizado -> Captura de Saldos de Sucursales");
     }
 }
