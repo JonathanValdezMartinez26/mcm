@@ -417,13 +417,13 @@ class JobsAhorro
             [
                 "codigo" => $datos["codigo"],
                 "saldo" => $datos["saldo"],
-                "movimiento" => 2,
+                "movimiento" => 3,
                 "fecha" => date("d/m/Y H:i:s")
             ],
             [
                 "codigo" => $datos["codigo"],
                 "saldo" => $datos["saldo"],
-                "movimiento" => 3
+                "movimiento" => 2
             ]
         ];
 
