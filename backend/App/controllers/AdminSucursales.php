@@ -2731,7 +2731,7 @@ script;
         </script>
         script;
 
-        $fechaI = date('Y-m-d', strtotime('-1 month'));
+        $fechaI = date('Y-m-d');
         $fechaF = date('Y-m-d');
         $param = [
             'fechaI' => $fechaI,
@@ -2818,7 +2818,7 @@ script;
         </script>
 script;
 
-        $fechaI = date('Y-m-d', strtotime('-1 month'));
+        $fechaI = date('Y-m-d');
         $fechaF = date('Y-m-d');
         $datos = AdminSucursalesDao::GetHistorialRetirosSucursal(['fechaI' => $fechaI, 'fechaF' => $fechaF, 'sucursal' => $_SESSION['cdgco_ahorro']]);
         $datos = json_decode($datos, true);
