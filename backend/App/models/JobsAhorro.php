@@ -16,8 +16,8 @@ class JobsAhorro
             "mensaje" => $mensaje
         ];
 
-        if ($datos != null) $res['datos'] = $datos;
-        if ($error != null) $res['error'] = $error;
+        if ($datos !== null) $res['datos'] = $datos;
+        if ($error !== null) $res['error'] = $error;
 
         return $res;
     }
@@ -128,7 +128,7 @@ class JobsAhorro
         try {
             $db = Database::getInstance();
             $res = $db->queryAll($qry);
-            return self::Responde(true, "Inversiones obtenidas correctamente", $res ?? []);
+            return self::Responde(true, "Inversiones obtenidas correctamente", ($res ?? []));
         } catch (Exception $e) {
             return self::Responde(false, "Error al obtener las inversiones", null, $e->getMessage());
         }

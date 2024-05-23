@@ -52,7 +52,7 @@ if (isset($argv[1])) {
             echo "No se encontró el job solicitado.\nEjecute 'php JobsAhorro.php help' para ver los jobs disponibles.\n";
             break;
     }
-}
+} else echo "Debe especificar el job a ejecutar.\nEjecute 'php JobsAhorro.php help' para ver los jobs disponibles.\n";
 
 class JobsAhorro
 {
