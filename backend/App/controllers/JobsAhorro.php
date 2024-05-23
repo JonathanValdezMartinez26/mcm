@@ -12,31 +12,46 @@ $jobs = new JobsAhorro();
 
 if (isset($argv[1])) {
     switch ($argv[1]) {
-        case 'DevengoInteresAhorroDiario':
-            $jobs->DevengoInteresAhorroDiario();
-            break;
-        case 'LiquidaInversion':
-            $jobs->LiquidaInversion();
-            break;
-        case 'RechazaSolicitudesSinAtender':
-            $jobs->RechazaSolicitudesSinAtender();
-            break;
         case 'SucursalesSinArqueo':
+            // Programar a las 5:20 pm, de lunes a viernes
             $jobs->SucursalesSinArqueo();
             break;
         case 'CapturaSaldosSucursales':
+            // Programas a las 5:22 pm, de lunes a viernes
             $jobs->CapturaSaldosSucursales();
             break;
+        case 'RechazaSolicitudesSinAtender':
+            // Programar a las 5:25 pm, de lunes a viernes
+            $jobs->RechazaSolicitudesSinAtender();
+            break;
+        case 'DevengoInteresAhorroDiario':
+            // Programar a las 6:00 pm, todos los días
+            $jobs->DevengoInteresAhorroDiario();
+            break;
+        case 'LiquidaInversion':
+            // Programar 11:50 pm, todos los dias
+            $jobs->LiquidaInversion();
+            break;
+        case 'Todos':
+            $jobs->SucursalesSinArqueo();
+            $jobs->CapturaSaldosSucursales();
+            $jobs->DevengoInteresAhorroDiario();
+            $jobs->RechazaSolicitudesSinAtender();
+            $jobs->LiquidaInversion();
+            break;
+        case 'help':
+            echo "Los jobs disponibles son: \n";
+            echo "SucursalesSinArqueo: Se recomienda se ejecute a las 5:20 pm, de lunes a viernes.\n";
+            echo "CapturaSaldosSucursales: Se recomienda se ejecute a las 5:22 pm, de lunes a viernes.\n";
+            echo "DevengoInteresAhorroDiario: Se recomienda se ejecute a las 6:00 pm, todos los días.\n";
+            echo "RechazaSolicitudesSinAtender: Se recomienda se ejecute a las 5:25 pm, de lunes a viernes.\n";
+            echo "LiquidaInversion: Se recomienda se ejecute a las 11:50 pm, todos los días.\n";
+            echo "Todos: Ejecuta todos los jobs disponibles, en el orden en que se mencionan.\n";
+            break;
         default:
-            echo "No se encontró el job solicitado.";
+            echo "No se encontró el job solicitado.\nEjecute 'php JobsAhorro.php help' para ver los jobs disponibles.\n";
             break;
     }
-} else {
-    $jobs->DevengoInteresAhorroDiario();
-    $jobs->LiquidaInversion();
-    $jobs->RechazaSolicitudesSinAtender();
-    $jobs->SucursalesSinArqueo();
-    $jobs->CapturaSaldosSucursales();
 }
 
 class JobsAhorro
