@@ -9,11 +9,35 @@ use \App\models\JobsAhorro as JobsDao;
 date_default_timezone_set('America/Mexico_City');
 
 $jobs = new JobsAhorro();
-$jobs->DevengoInteresAhorroDiario();
-$jobs->LiquidaInversion();
-$jobs->RechazaSolicitudesSinAtender();
-$jobs->SucursalesSinArqueo();
-$jobs->CapturaSaldosSucursales();
+
+if (isset($argv[1])) {
+    switch ($argv[1]) {
+        case 'DevengoInteresAhorroDiario':
+            $jobs->DevengoInteresAhorroDiario();
+            break;
+        case 'LiquidaInversion':
+            $jobs->LiquidaInversion();
+            break;
+        case 'RechazaSolicitudesSinAtender':
+            $jobs->RechazaSolicitudesSinAtender();
+            break;
+        case 'SucursalesSinArqueo':
+            $jobs->SucursalesSinArqueo();
+            break;
+        case 'CapturaSaldosSucursales':
+            $jobs->CapturaSaldosSucursales();
+            break;
+        default:
+            echo "No se encontró el job solicitado.";
+            break;
+    }
+} else {
+    $jobs->DevengoInteresAhorroDiario();
+    $jobs->LiquidaInversion();
+    $jobs->RechazaSolicitudesSinAtender();
+    $jobs->SucursalesSinArqueo();
+    $jobs->CapturaSaldosSucursales();
+}
 
 class JobsAhorro
 {
