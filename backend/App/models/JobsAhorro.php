@@ -404,7 +404,7 @@ class JobsAhorro
                 :fecha,
                 :saldo,
                 :movimiento,
-                'SSTM'
+                'SYSTEM'
             )
         sql;
 
@@ -423,10 +423,11 @@ class JobsAhorro
             [
                 "codigo" => $datos["codigo"],
                 "saldo" => $datos["saldo"],
-                "movimiento" => 3,
-                "fecha" => date("d/m/Y H:i:s", strtotime("tomorrow 8am"))
+                "movimiento" => 3
             ]
         ];
+
+        $parametros[1]["fecha"] = date("N") == 5 ? date("d/m/Y H:i:s", strtotime("+3 days 8am")) : date("d/m/Y H:i:s", strtotime("tomorrow 8am"));
 
         try {
             $db = Database::getInstance();
