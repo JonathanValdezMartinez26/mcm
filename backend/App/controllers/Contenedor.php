@@ -106,7 +106,7 @@ html;
 html;
 
 
-    if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'GASC' || $this->__usuario == 'PHEE' || $this->__usuario == 'AMGM') {
+    if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'GASC' || $this->__usuario == 'PHEE' || $this->__usuario == 'AMGM' || $this->__usuario == 'DCRI' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC') {
       $menu .= <<<html
            <hr>
            <h3>General WEB AHORRO</h3>
