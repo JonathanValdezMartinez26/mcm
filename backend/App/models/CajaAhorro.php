@@ -2193,7 +2193,6 @@ sql;
 		                    WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO 
 		                    WHEN CONCEPTO = 'SALDO INICIAL DEL DIA (DIARIO)' THEN MONTO 
 		                    WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN -MONTO 
-		                    
 		                    ELSE 0 
 		                 END) OVER (ORDER BY CONSECUTIVO ASC)
 		    END AS SALDO

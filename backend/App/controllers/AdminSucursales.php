@@ -3192,9 +3192,21 @@ script;
         $totalIngreso = 0;
         $totalEgreso = 0;
         $totalSaldo = 0;
-        foreach ($Layoutt as $key => $value) {
+        foreach ($Layoutt as $keyy => $value) {
+
             foreach ($nombreCampo as $key => $campo) {
-                if ($campo === 'INGRESO') $totalIngreso += $value[$campo];
+                $increment = $keyy++;
+
+                if($Layoutt[$increment]["CONCEPTO"] == 'SALDO INICIAL DEL DIA (DIARIO)')
+                {
+                    $inicio = $Layoutt[$increment]["SALDO"];
+                }
+                else
+                {
+                    $inicio = 0;
+                }
+
+                if ($campo === 'INGRESO' || $Layoutt[$increment]["CONCEPTO"] === 'SALDO INICIAL DEL DIA (DIARIO)' ) $totalIngreso += $value[$campo]+$inicio ;
                 if ($campo === 'EGRESO') $totalEgreso += $value[$campo];
 
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
@@ -3203,7 +3215,7 @@ script;
             }
             $fila += 1;
         }
-
+        
         $fila += 1;
         $totalSaldo = $totalIngreso - $totalEgreso;
 
