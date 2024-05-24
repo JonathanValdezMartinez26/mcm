@@ -29,6 +29,19 @@ use DateTime;
 
 class CajaAhorro
 {
+    public static function Responde($respuesta, $mensaje, $datos = null, $error = null)
+    {
+        $res = array(
+            "success" => $respuesta,
+            "mensaje" => $mensaje
+        );
+
+        if ($datos !== null) $res['datos'] = $datos;
+        if ($error !== null) $res['error'] = $error;
+
+        return json_encode($res);
+    }
+
     public static function GetSucCajeraAhorro($cajera)
     {
         $qry = <<<sql
@@ -58,19 +71,6 @@ class CajaAhorro
 
         $mysqli = Database::getInstance();
         return $mysqli->queryAll($query);
-    }
-
-    public static function Responde($respuesta, $mensaje, $datos = null, $error = null)
-    {
-        $res = array(
-            "success" => $respuesta,
-            "mensaje" => $mensaje
-        );
-
-        if ($datos != null) $res['datos'] = $datos;
-        if ($error != null) $res['error'] = $error;
-
-        return json_encode($res);
     }
 
     public static function GetCatalogoParentescos()
@@ -626,7 +626,6 @@ class CajaAhorro
             self::GetQueryActualizaSaldoSucursal(!$esDeposito)
         ];
 
-
         $datosInsert = [
             [
                 'contrato' => $datos['contrato'],
@@ -651,9 +650,15 @@ class CajaAhorro
 
         $tipoMov = $esDeposito ? "depósito" : "retiro";
 
+        $validacion = [
+            'query' => "SELECT SALDO FROM SUC_ESTADO_AHORRO WHERE CDG_SUCURSAL = :sucursal",
+            'datos' => ['sucursal' => $datos['sucursal']],
+            'funcion' => [CajaAhorro::class, 'ValidarSaldoSucursal']
+        ];
+
         try {
             $mysqli = Database::getInstance();
-            $res = $mysqli->insertaMultiple($query, $datosInsert);
+            $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
             if ($res) {
                 LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de " . $tipoMov . " en " . $datos['producto']);
                 $ticket = self::RecuperaTicket($datos['contrato']);
@@ -748,7 +753,7 @@ class CajaAhorro
                 :cliente,
                 :ejecutivo
             )
-    sql;
+        sql;
     }
 
     public static function GetQueryValidaAhorro()
@@ -799,6 +804,20 @@ class CajaAhorro
         WHERE
             CDG_SUCURSAL = :sucursal
         sql;
+    }
+
+    public static function ValidarSaldoSucursal($datos)
+    {
+        $resultado = [
+            'success' => true,
+            'mensaje' => ""
+        ];
+
+        if ($datos['SALDO'] >= 0) return $resultado;
+
+        $resultado['success'] = false;
+        $resultado['mensaje'] = "La sucursal no cuenta con saldo suficiente para realizar la operación.";
+        return $resultado;
     }
 
     public static function RecuperaTicket($contrato)
@@ -1647,9 +1666,15 @@ class CajaAhorro
             self::GetQueryActualizaSaldoSucursal(true)
         ];
 
+        $validacion = [
+            'query' => "SELECT SALDO FROM SUC_ESTADO_AHORRO WHERE CDG_SUCURSAL = :sucursal",
+            'datos' => ['sucursal' => $datos['sucursal']],
+            'funcion' => [CajaAhorro::class, 'ValidarSaldoSucursal']
+        ];
+
         try {
             $mysqli = Database::getInstance();
-            $res = $mysqli->insertaMultiple($query, $datosInsert);
+            $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
 
             LogTransaccionesAhorro::LogTransacciones($query[0], $datosInsert[0], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Actualización de estatus por entrega de retiro " . $tipoRetiro);
             LogTransaccionesAhorro::LogTransacciones($query[1], $datosInsert[1], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Creación de ticket por entrega de retiro " . $tipoRetiro);
@@ -1665,7 +1690,7 @@ class CajaAhorro
         }
     }
 
-    public static function  DevolucionRetiro($datos)
+    public static function DevolucionRetiro($datos)
     {
         $query = [
             self::GetQueryTicket(),

@@ -19,6 +19,7 @@ class Ahorro extends Controller
     private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
     private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
+    private $showWarning = 'const showWarning = (mensaje) => swal({ text: mensaje, icon: "warning" })';
     private $confirmarMovimiento = 'const confirmarMovimiento = async (titulo, mensaje, html = null) => {
         return await swal({ title: titulo, content: html, text: mensaje, icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
     }';
@@ -864,9 +865,11 @@ class Ahorro extends Controller
             const montoMaximoRetiro = $montoMaximoRetiro
             const montoMaximoDeposito = $montoMaximoDeposito
             const maximoRetiroDia = $maximoRetiroDia
+            let retiroDispobible = maximoRetiroDia
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
+            {$this->showWarning}
             {$this->confirmarMovimiento}
             {$this->validarYbuscar}
             {$this->buscaCliente}
@@ -884,12 +887,14 @@ class Ahorro extends Controller
             {$this->limpiaMontos}
          
             const llenaDatosCliente = (datosCliente) => {
+                retiroDispobible = maximoRetiroDia
                 consultaServidor("/Ahorro/ValidaRetirosDia/", { contrato: datosCliente.CONTRATO }, (respuesta) => {
                     if (!respuesta.success && respuesta.datos.RETIROS >= maximoRetiroDia) {
-                        showError("El cliente " + datosCliente.CDGCL + " ha alcanzado el límite de retiros diarios.")
+                        showWarning("El cliente " + datosCliente.CDGCL + " ha alcanzado el límite de retiros diarios.")
                         document.querySelector("#retiro").disabled = true
+                        retiroDispobible = maximoRetiroDia - respuesta.datos.RETIROS
                     }
-                     
+                    
                     document.querySelector("#nombre").value = datosCliente.NOMBRE
                     document.querySelector("#curp").value = datosCliente.CURP
                     document.querySelector("#contrato").value = datosCliente.CONTRATO
@@ -987,12 +992,21 @@ class Ahorro extends Controller
                 if (saldoFinal < 0) {
                     document.querySelector("#saldoFinal").setAttribute("style", "color: red")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
+                    document.querySelector("#tipSaldo").innerText = "El monto a retirar no puede ser mayor al saldo de la cuenta."
+                    document.querySelector("#btnRegistraOperacion").disabled = true
+                    return
                 } else {
                     document.querySelector("#saldoFinal").removeAttribute("style")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
                 }
+                if (document.querySelector("#retiro").checked && retiroDispobible < parseaNumero(document.querySelector("#montoOperacion").value)) {
+                    document.querySelector("#saldoFinal").setAttribute("style", "color: red")
+                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
+                    document.querySelector("#tipSaldo").innerText = "El monto a retirar excede el límite de retiros diarios, disponible para retirar el día de hoy: " + retiroDispobible.toLocaleString("es-MX", { style: "currency", currency: "MXN" })
+                    document.querySelector("#btnRegistraOperacion").disabled = true
+                    return
+                }
                 document.querySelector("#btnRegistraOperacion").disabled = !(saldoFinal >= 0 && parseaNumero(document.querySelector("#montoOperacion").value) > 0)
-                
             }
              
             const registraOperacion = (e) => {
@@ -1021,7 +1035,7 @@ class Ahorro extends Controller
                     if (!continuar) return
                     consultaServidor("/Ahorro/RegistraOperacion/", $.param(datos), (respuesta) => {
                         if (!respuesta.success){
-                            console.log(respuesta.error)
+                            if (respuesta.error) return showError(respuesta.error)
                             return showError(respuesta.mensaje)
                         }
                         showSuccess(respuesta.mensaje).then(() => {
@@ -1305,7 +1319,7 @@ class Ahorro extends Controller
                  
                 consultaServidor("/Ahorro/ResumenEntregaRetiro", $.param({id}), (respuesta) => {
                     if (!respuesta.success) {
-                        console.log(respuesta.error)
+                        if (respuesta.error) return showError(respuesta.error)
                         return showError(respuesta.mensaje)
                     }
                      
@@ -1329,7 +1343,7 @@ class Ahorro extends Controller
                          
                         consultaServidor("/Ahorro/EntregaRetiro/", $.param(datos), (respuesta) => {
                             if (!respuesta.success) {
-                                console.log(respuesta.error)
+                                if (respuesta.error) return showError(respuesta.error)
                                 return showError(respuesta.mensaje)
                             }
                              
@@ -2179,6 +2193,7 @@ class Ahorro extends Controller
         <script>
             const maximoRetiroDia = $maximoRetiroDia
             const montoMaximoRetiro = $montoMaximoRetiro
+            let retiroDispobible = maximoRetiroDia
             let retiroBloqueado = false
             let valKD = false
          
@@ -2189,6 +2204,7 @@ class Ahorro extends Controller
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
+            {$this->showWarning}
             {$this->confirmarMovimiento}
             {$this->validarYbuscar}
             {$this->getHoy}
@@ -2294,13 +2310,15 @@ class Ahorro extends Controller
             }
              
             const pqSeleccionado = (datosCliente, pq) => {
+                retiroDispobible = maximoRetiroDia
                 retiroBloqueado = false
                 datosCliente.forEach(contrato => {
                     if (contrato.CDG_CONTRATO == pq) {
                         consultaServidor("/Ahorro/ValidaRetirosDia/", $.param({ contrato: contrato.CDG_CONTRATO }), (respuesta) => {
                             if (!respuesta.success && respuesta.datos.RETIROS >= maximoRetiroDia) {
-                                showError("El peque " + contrato.NOMBRE + " ha alcanzado el límite de retiros diarios.")
+                                showWarning("El peque " + contrato.NOMBRE + " ha alcanzado el límite de retiros diarios.")
                                 retiroBloqueado = true   
+                                retiroDispobible = maximoRetiroDia - respuesta.datos.RETIROS
                             }
                              
                             document.querySelector("#nombre").value = contrato.CDG_CONTRATO
@@ -2413,9 +2431,19 @@ class Ahorro extends Controller
                 if (saldoFinal < 0) {
                     document.querySelector("#saldoFinal").setAttribute("style", "color: red")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
+                    document.querySelector("#tipSaldo").innerText = "El monto a retirar no puede ser mayor al saldo de la cuenta."
+                    document.querySelector("#btnRegistraOperacion").disabled = true
+                    return
                 } else {
                     document.querySelector("#saldoFinal").removeAttribute("style")
                     document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
+                }
+                if (document.querySelector("#retiro").checked && retiroDispobible < parseaNumero(document.querySelector("#montoOperacion").value)) {
+                    document.querySelector("#saldoFinal").setAttribute("style", "color: red")
+                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
+                    document.querySelector("#tipSaldo").innerText = "El monto a retirar excede el límite de retiros diarios, disponible para retirar el día de hoy: " + retiroDispobible.toLocaleString("es-MX", { style: "currency", currency: "MXN" })
+                    document.querySelector("#btnRegistraOperacion").disabled = true
+                    return
                 }
                 document.querySelector("#btnRegistraOperacion").disabled = !(saldoFinal >= 0 && parseaNumero(document.querySelector("#montoOperacion").value) > 0)
             }
@@ -2451,7 +2479,7 @@ class Ahorro extends Controller
                     
                     consultaServidor("/Ahorro/registraOperacion/", $.param(datos), (respuesta) => {
                             if (!respuesta.success){
-                                console.log(respuesta.error)
+                                if (respuesta.error) return showError(respuesta.error)
                                 return showError(respuesta.mensaje)
                             }
                             
@@ -2827,7 +2855,7 @@ class Ahorro extends Controller
                         
                         consultaServidor("/Ahorro/EntregaRetiro/", $.param(datos), (respuesta) => {
                             if (!respuesta.success) {
-                                console.log(respuesta.error)
+                                if (respuesta.error) return showError(respuesta.error)
                                 return showError(respuesta.mensaje)
                             }
                              
