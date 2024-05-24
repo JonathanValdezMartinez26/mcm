@@ -161,11 +161,11 @@
                                     <label style="color: #000000">Movimiento:</label>
                                 </div>
                                 <div class="col-md-2" style="text-align: center; font-size: 18px; padding-top: 5px;">
-                                    <input type="radio" name="esDeposito" id="deposito" onchange=cambioMovimiento(event)>
+                                    <input type="radio" name="esDeposito" id="deposito" onchange=cambioMovimiento(event) disabled>
                                     <label for="deposito">Depósito</label>
                                 </div>
                                 <div class="col-md-2" style="text-align: center; font-size: 18px; padding-top: 5px;">
-                                    <input type="radio" name="esDeposito" id="retiro" onchange=cambioMovimiento(event)>
+                                    <input type="radio" name="esDeposito" id="retiro" onchange=cambioMovimiento(event) disabled>
                                     <label for="retiro">Retiro</label>
                                 </div>
                                 <div class="col-md-1" style="display: flex; justify-content: flex-end;">

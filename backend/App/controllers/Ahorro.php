@@ -27,7 +27,8 @@ class Ahorro extends Controller
         if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
         if (e.keyCode === 13) buscaCliente(t)
     }';
-    private $buscaCliente = 'const buscaCliente = (t) => {
+    private $buscaCliente = <<<script
+    const buscaCliente = (t) => {
         document.querySelector("#btnBskClnt").disabled = true
         const noCliente = document.querySelector("#clienteBuscado").value
          
@@ -46,11 +47,17 @@ class Ahorro extends Controller
                     return showError(respuesta.mensaje)
                 }
                  
+                if (respuesta.datos.SUCURSAL !== noSucursal) {
+                    limpiaDatosCliente()
+                    return showError("El cliente " + noCliente + " no puede realizar transacciones en esta sucursal, su contrato esta asignado a la sucursal " + respuesta.datos.NOMBRE_SUCURSAL + ", contacte a la gerencia de Administración.")
+                }
+                 
                 llenaDatosCliente(respuesta.datos)
             })
         
         document.querySelector("#btnBskClnt").disabled = false
-    }';
+    }
+    script;
     private $getHoy = 'const getHoy = (completo = true) => {
         const hoy = new Date()
         const dd = String(hoy.getDate()).padStart(2, "0")
@@ -865,6 +872,7 @@ class Ahorro extends Controller
             const montoMaximoRetiro = $montoMaximoRetiro
             const montoMaximoDeposito = $montoMaximoDeposito
             const maximoRetiroDia = $maximoRetiroDia
+            const noSucursal = "{$_SESSION['cdgco_ahorro']}"
             let retiroDispobible = maximoRetiroDia
             {$this->showError}
             {$this->showSuccess}
@@ -888,10 +896,11 @@ class Ahorro extends Controller
          
             const llenaDatosCliente = (datosCliente) => {
                 retiroDispobible = maximoRetiroDia
+                let blkRetiro = false
                 consultaServidor("/Ahorro/ValidaRetirosDia/", { contrato: datosCliente.CONTRATO }, (respuesta) => {
                     if (!respuesta.success && respuesta.datos.RETIROS >= maximoRetiroDia) {
                         showWarning("El cliente " + datosCliente.CDGCL + " ha alcanzado el límite de retiros diarios.")
-                        document.querySelector("#retiro").disabled = true
+                        blkRetiro = true
                         retiroDispobible = maximoRetiroDia - respuesta.datos.RETIROS
                     }
                     
@@ -900,6 +909,8 @@ class Ahorro extends Controller
                     document.querySelector("#contrato").value = datosCliente.CONTRATO
                     document.querySelector("#cliente").value = datosCliente.CDGCL
                     document.querySelector("#saldoActual").value = formatoMoneda(datosCliente.SALDO)
+                    document.querySelector("#deposito").disabled = false
+                    document.querySelector("#retiro").disabled = blkRetiro
                 })
             }
              
@@ -907,7 +918,8 @@ class Ahorro extends Controller
                 document.querySelector("#registroOperacion").reset()
                 document.querySelector("#monto").disabled = true
                 document.querySelector("#btnRegistraOperacion").disabled = true
-                document.querySelector("#retiro").disabled = false
+                document.querySelector("#retiro").disabled = true
+                document.querySelector("#deposito").disabled = true
             }
              
             const validaMonto = () => {
@@ -1090,6 +1102,7 @@ class Ahorro extends Controller
             const montoMinimo = $montoMinimoRetiro
             const montoMaximoExpress = $montoMaximoExpress
             const montoMaximoRetiro = $montoMaximoRetiro
+            const noSucursal = "{$_SESSION['cdgco_ahorro']}"
             let valKD = false
          
             {$this->showError}
@@ -1532,6 +1545,7 @@ class Ahorro extends Controller
             const montoMaximo = 1000000
             const sucursal_ahorro = "$suc"
             const usuario_ahorro = "$usr"
+            const noSucursal = "{$_SESSION['cdgco_ahorro']}"
             let tasasDisponibles
          
             try {
@@ -1759,6 +1773,8 @@ class Ahorro extends Controller
     {
         $extraFooter = <<<html
         <script>
+            const noSucursal = "{$_SESSION['cdgco_ahorro']}"
+         
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
@@ -1768,32 +1784,9 @@ class Ahorro extends Controller
             {$this->soloNumeros}
             {$this->primeraMayuscula}
             {$this->consultaServidor}
-         
-            const configuraTabla = (idTabla = "muestra-cupones") => {
-                $("#" + idTabla).tablesorter()
-                $("#" + idTabla).DataTable({
-                    lengthMenu: [
-                        [10, 40, -1],
-                        [10, 40, "Todos"]
-                    ],
-                    columnDefs: [
-                        {
-                            orderable: false,
-                            targets: 0
-                        }
-                    ],
-                    order: false
-                })
-            
-                $("#"  + idTabla + " input[type=search]").keyup(() => {
-                    $("#example")
-                        .DataTable()
-                        .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
-                        .draw()
-                })
-            }
+            {$this->configuraTabla}
              
-            $(document).ready(configuraTabla())
+            $(document).ready(configuraTabla("muestra-cupones"))
              
             const llenaDatosCliente = (datosCliente) => {
                 consultaServidor("/Ahorro/GetInversiones/", { contrato: datosCliente.CONTRATO }, (respuesta) => {
@@ -1833,17 +1826,20 @@ class Ahorro extends Controller
                     document.querySelector("#contrato").value = datosCliente.CONTRATO
                     document.querySelector("#nombre").value = datosCliente.NOMBRE
                     document.querySelector("#curp").value = datosCliente.CURP
-                    configuraTabla()
+                    configuraTabla("muestra-cupones")
                 }, "GET")
             }
                  
             const limpiaDatosCliente = () => {
+                const tTMP = $("#muestra-cupones").DataTable()
+                if (tTMP) tTMP.destroy()
                 document.querySelector("#datosTabla").innerHTML = ""
                 document.querySelector("#cliente").value = ""
                 document.querySelector("#contrato").value = ""
                 document.querySelector("#inversion").value = ""
                 document.querySelector("#nombre").value = ""
                 document.querySelector("#curp").value = ""
+                configuraTabla("muestra-cupones")
             }
         </script>
         html;
@@ -2000,7 +1996,7 @@ class Ahorro extends Controller
                     const noCredito = document.querySelector("#noCliente").value
                     const datos = $("#registroInicialAhorro").serializeArray()
                     addParametro(datos, "credito", noCredito)
-                    addParametro(datos, "sucursal", "{$_SESSION['cdgco_ahorro']}")
+                    addParametro(datos, "sucursal", noSucursal)
                     addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                     addParametro(datos, "tasa", document.querySelector("#tasa").value)
                     
@@ -2191,6 +2187,7 @@ class Ahorro extends Controller
 
         $extraFooter = <<<html
         <script>
+            const noSucursal = "{$_SESSION['cdgco_ahorro']}"
             const maximoRetiroDia = $maximoRetiroDia
             const montoMaximoRetiro = $montoMaximoRetiro
             let retiroDispobible = maximoRetiroDia
@@ -2270,8 +2267,13 @@ class Ahorro extends Controller
                             return
                         }
                     }
-                    const datosCliente = respuesta.datos
+                 
+                    if (respuesta.datos[0].SUCURSAL !== noSucursal) {
+                        limpiaDatosCliente()
+                        return showError("El cliente " + noCliente + " no puede realizar transacciones en esta sucursal, su contrato esta asignado a la sucursal " + respuesta.datos[0].NOMBRE_SUCURSAL + ", contacte a la gerencia de Administración.")
+                    }
                      
+                    const datosCliente = respuesta.datos
                     const contratos = document.createDocumentFragment()
                     const seleccionar = document.createElement("option")
                     seleccionar.value = ""
@@ -2453,7 +2455,7 @@ class Ahorro extends Controller
                 const datos = $("#registroOperacion").serializeArray()
                  
                 limpiaMontos(datos, ["saldoActual", "montoOperacion", "saldoFinal"])
-                addParametro(datos, "sucursal", "{$_SESSION['cdgco_ahorro']}")
+                addParametro(datos, "sucursal", noSucursal)
                 addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
                 addParametro(datos, "producto", "cuenta de ahorro Peques")
                  
@@ -2484,7 +2486,7 @@ class Ahorro extends Controller
                             }
                             
                             showSuccess(respuesta.mensaje).then(() => {
-                                imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}")
+                                imprimeTicket(respuesta.datos.ticket, noSucursal)
                                 limpiaDatosCliente()
                             })
                         })
@@ -2513,7 +2515,8 @@ class Ahorro extends Controller
             window.onload = () => {
                 if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
             }
-         
+            
+            const noSucursal = "{$_SESSION['cdgco_ahorro']}"
             const montoMinimoRetiro = $montoMinimoRetiro
             const montoMaximoExpress = $montoMaximoExpress
             const montoMaximoRetiro = $montoMaximoRetiro
@@ -2587,8 +2590,13 @@ class Ahorro extends Controller
                             return
                         }
                     }
+                 
+                    if (respuesta.datos[0].SUCURSAL !== noSucursal) {
+                        limpiaDatosCliente()
+                        return showError("El cliente " + noCliente + " no puede realizar transacciones en esta sucursal, su contrato esta asignado a la sucursal " + respuesta.datos[0].NOMBRE_SUCURSAL + ", contacte a la gerencia de Administración.")
+                    }
+                     
                     const datosCliente = respuesta.datos
-                        
                     const contratos = document.createDocumentFragment()
                     const seleccionar = document.createElement("option")
                     seleccionar.value = ""
