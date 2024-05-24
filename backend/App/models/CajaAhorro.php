@@ -1399,9 +1399,19 @@ class CajaAhorro
         SELECT
             APA.CONTRATO,
             APA.CDGCL,
-            TO_CHAR(APA.FECHA_APERTURA, 'DD "de" MONTH "del" YYYY') AS FECHA,
+            LOWER(TO_CHAR(APA.FECHA_APERTURA, 'DD "de" MONTH "del" YYYY')) AS FECHA_F_LEGAL,
+            TO_CHAR(APA.FECHA_APERTURA, 'DD/MM/YYYY') AS FECHA_APERTURA,
             CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
-            UPPER(DOMICILIO_CLIENTE(CL.CODIGO)) AS DIRECCION
+            UPPER(DOMICILIO_CLIENTE(CL.CODIGO)) AS DIRECCION,
+            (
+                SELECT
+                    MONTO
+                FROM
+                    MOVIMIENTOS_AHORRO
+                WHERE
+                    CDG_CONTRATO = APA.CONTRATO
+                    AND CDG_TIPO_PAGO = 1
+            ) AS MONTO_APERTURA
         FROM
             ASIGNA_PROD_AHORRO APA,
             CL
