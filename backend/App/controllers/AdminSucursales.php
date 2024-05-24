@@ -1280,7 +1280,7 @@ script;
 
         $fechaActual = date('Y-m-d');
         $Inicial = $_GET['Inicial'];
-        $Final = $_GET['Final'];
+        //$Final = $_GET['Final'];
         $Operacion = $_GET['Operacion'];
         $Producto = $_GET['Producto'];
         $Sucursal = $_GET['Sucursal'];
@@ -1356,12 +1356,12 @@ html;
 html;
 
 
-        if ($Inicial == '' || $Final == '') {
+        if ($Inicial == '') {
             $Inicial = $fechaActual;
             $Final = $fechaActual;
         }
-
-        $Transacciones = CajaAhorroDao::GetAllTransacciones($Inicial, $Final, $Operacion, $Producto, $Sucursal);
+        //$Transacciones = CajaAhorroDao::GetAllTransacciones($Inicial, $Final, $Operacion, $Producto, $Sucursal);
+        $Transacciones = CajaAhorroDao::GetAllTransacciones($Inicial, $Inicial, $Operacion, $Producto, $Sucursal);
 
         $tabla = "";
         foreach ($Transacciones as $key => $value) {
@@ -1412,6 +1412,7 @@ html;
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha_inicial', $Inicial);
         View::set('fecha_final', $Final);
+        View::set('fechaActual', $fechaActual);
         view::set('sucursales', $opcSucursales);
         view::set('productos', $opcProductos);
         view::set('operacion', $opcOperaciones);
@@ -1596,6 +1597,7 @@ html;
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha_inicial', $Inicial);
         View::set('fecha_final', $Final);
+        View::set('fechaActual', $fechaActual);
         view::set('sucursales', $opcSucursales);
         view::set('productos', $opcProductos);
         view::set('operacion', $opcOperaciones);

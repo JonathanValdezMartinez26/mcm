@@ -83,21 +83,15 @@
                                     <div class="card col-md-12">
                                         <form class="" id="consulta" action="/Operaciones/PerfilTransaccional/" method="GET" onsubmit="return Validar()">
                                             <div class="row">
-                                                <div class="col-md-2">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <label for="Inicial">Desde *</label>
-                                                        <input type="date" class="form-control" id="Inicial" name="Inicial" value="<?php echo $fecha_inicial;?>">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <label for="Final">Hasta *</label>
-                                                        <input type="date" class="form-control" id="Final" name="Final" value="<?php echo $fecha_final;?>">
+                                                        <label for="Inicial">Fecha a consultar (flujo de efectivo) *</label>
+                                                        <input type="date" class="form-control" min="2024-05-22" max="<?php echo $fechaActual;?>" id="Inicial" name="Inicial" value="<?php echo $fecha_inicial;?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <label for="Sucursal">Sucursal activa*</label>
+                                                        <label for="Sucursal">Sucursal activa *</label>
                                                         <select class="form-control" id="Sucursal" name="Sucursal">
                                                             <option value="0">TODAS LAS SUCURSALES</option>
                                                             <?php echo $sucursales; ?>
