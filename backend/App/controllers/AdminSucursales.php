@@ -323,6 +323,10 @@ class AdminSucursales extends Controller
             document.getElementById(idI).value = fechaF
         }
     }';
+    private $getFecha = 'const getFecha = (fecha) => {
+        const f = new Date(fecha + "T06:00:00Z")
+        return f.toLocaleString("es-MX", { year: "numeric", month:"2-digit", day:"2-digit" })
+    }';
 
     function __construct()
     {
@@ -1036,6 +1040,7 @@ class AdminSucursales extends Controller
             {$this->formatoMoneda}
             {$this->configuraTabla}
             {$this->muestraPDF}
+            {$this->getFecha}
          
             const buscar = () => buscaCliente()
          
@@ -1064,12 +1069,12 @@ class AdminSucursales extends Controller
              
             const llenaDatosCliente = (datos) => {
                 infoCliente = datos
-                if (vistaActiva) return document.querySelector("#cuerpoModal").innerText = getVista(vistaActiva)
+                if (vistaActiva) return getVista(vistaActiva)
                 const opciones = document.querySelector("#opcionesCat").querySelectorAll("li")
                 opciones.forEach((opcion) => {
                     if (!opcion.classList.contains("linea")) vistaActiva = opcion.children[0].id
                 })
-                document.querySelector("#cuerpoModal").innerText = getVista(vistaActiva)
+                getVista(vistaActiva)
             }
              
             const limpiaDatosCliente = () => {
@@ -1085,8 +1090,7 @@ class AdminSucursales extends Controller
                 reiniciaOpciones()
                 e.target.parentElement.classList.remove("linea")
                 e.target.style.fontWeight = "bold"
-                document.querySelector("#cuerpoModal").innerHTML = ""
-                document.querySelector("#cuerpoModal").innerText = getVista(vistaActiva)
+                getVista(vistaActiva)
             }
              
             const reiniciaOpciones = () => {
@@ -1109,11 +1113,6 @@ class AdminSucursales extends Controller
         $script = <<<script
         <script>
             $(document).ready(() => configuraTabla("tablaResumenCta"))
-         
-            const getFecha = (fecha) => {
-                const f = new Date(fecha + 'T06:00:00Z')
-                return f.toLocaleString("es-MX", { year: "numeric", month:"2-digit", day:"2-digit" })
-            }
          
             const mPDF = () => {
                 const host = window.location.origin
@@ -1216,11 +1215,73 @@ class AdminSucursales extends Controller
         echo json_encode($respuesta);
     }
 
-    public function HistorialTrns()
+    public function Rendimiento()
     {
+        $script = <<<script
+        <script>
+            $(document).ready(() => configuraTabla("tablaRendimiento"))
+         
+            const buscarRendimientos = () => {
+                const datos = {
+                    CDGCL: infoCliente.CDGCL,
+                    fechaI: getFecha(document.querySelector("#fechaI").value),
+                    fechaF: getFecha(document.querySelector("#fechaF").value),
+                    producto: document.querySelector("#segmento").value
+                }
+                 
+                consultaServidor("/AdminSucursales/GetRendimientos/", datos, (respuesta) => {
+                    $("#tablaRendimiento").DataTable().destroy()
+                    
+                    if (respuesta.datos == "") showError("No se encontraron intereses devengados en el rango de fechas seleccionado.")
+                     
+                    $("#tablaRendimiento tbody").html(respuesta.datos)
+                    configuraTabla("tablaRendimiento")
+                })
+            }
+        </script>
+        script;
+
+        $datos = [
+            "CDGCL" => $_POST['CDGCL'],
+            "fechaI" => date('d/m/Y'),
+            "fechaF" => date('d/m/Y')
+        ];
+        $filas = self::GetRendimientos($datos);
+        $segmentos = AdminSucursalesDao::GetSegmentos($_POST);
+        $opcSegmentos = "";
+        if ($segmentos['PEQUES'] > 0) $opcSegmentos .= "<option value='2'>PEQUES</option>";
+
+        if ($opcSegmentos === "") $opcSegmentos = "<option value='1'>AHORRO</option>";
+        else $opcSegmentos = "<option value='0'>TODOS</option><option value='1'>AHORRO</option>" . $opcSegmentos;
+
+        View::set('script', $script);
         View::set('cliente', $_POST['CDGCL']);
         View::set('nombre', $_POST['NOMBRE']);
-        echo View::fetch("caja_admin_clientes_historialTrns");
+        View::set('fecha', date('Y-m-d'));
+        View::set('opcSegmentos', $opcSegmentos);
+        View::set('filas', $filas);
+        echo View::fetch("caja_admin_clientes_rendimiento");
+    }
+
+    public function GetRendimientos($d = null)
+    {
+        $datos = $d ? $d : $_POST;
+        $rendimientos = AdminSucursalesDao::GetRendimientos($datos);
+
+        $filas = "";
+        foreach ($rendimientos as $key => $rendimiento) {
+            $filas .= "<tr>";
+            foreach ($rendimiento as $key2 => $val) {
+                if ($key2 === "FECHA") $filas .= "<td style='vertical-align: middle;'>{$val}</td>";
+                elseif ($key2 === "SALDO" || $key2 === "DEVENGO") $filas .= "<td style='vertical-align: middle; text-align: right;'>$ " . number_format($val, 2, '.', ',') . "</td>";
+                elseif ($key2 === "TASA") $filas .= "<td style='vertical-align: middle;'>" . ($val * 100) . "%</td>";
+                else $filas .= "<td style='vertical-align: middle;'>{$val}</td>";
+            }
+            $filas .= "</tr>";
+        }
+
+        if ($d !== null) return $filas;
+        echo json_encode(["success" => true, "datos" => $filas]);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

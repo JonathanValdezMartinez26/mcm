@@ -77,7 +77,7 @@
                                 <span style="font-size: 15px; margin: 0 15px;font-weight: bold; color: #0D0A0A;" id="ResumenCuenta" onclick=actualizaVista(event)>Resumen de cuenta</span>
                             </li>
                             <li class="linea">
-                                <span style="font-size: 15px; margin: 0 15px; color: #0D0A0A;" id="rendimiento" onclick=actualizaVista(event)>Rendimiento</span>
+                                <span style="font-size: 15px; margin: 0 15px; color: #0D0A0A;" id="Rendimiento" onclick=actualizaVista(event)>Rendimiento</span>
                             </li>
 
                         </ul>
