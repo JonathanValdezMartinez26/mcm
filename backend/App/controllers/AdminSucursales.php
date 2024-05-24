@@ -3187,7 +3187,7 @@ script;
 
         /* FILAS DEL ARCHIVO EXCEL */
 
-        $Layoutt = CajaAhorroDao::GetAllTransacciones($fecha_inicio, $fecha_fin, $operacion, $producto, $sucursal);
+        $Layoutt = CajaAhorroDao::GetAllTransacciones($fecha_inicio, $fecha_inicio, $operacion, $producto, $sucursal);
 
         $totalIngreso = 0;
         $totalEgreso = 0;
@@ -3215,7 +3215,7 @@ script;
             }
             $fila += 1;
         }
-        
+
         $fila += 1;
         $totalSaldo = $totalIngreso - $totalEgreso;
 
