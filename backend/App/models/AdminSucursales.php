@@ -17,8 +17,8 @@ class AdminSucursales
             "mensaje" => $mensaje
         );
 
-        if ($datos != null) $res['datos'] = $datos;
-        if ($error != null) $res['error'] = $error;
+        if ($datos !== null) $res['datos'] = $datos;
+        if ($error !== null) $res['error'] = $error;
 
         return json_encode($res);
     }
@@ -572,6 +572,47 @@ sql;
                 CDG_CONTRATO = '$contrato'
         ) ORDER BY TO_DATE(FECHA, 'DD/MM/YYYY HH24:MI:SS') DESC, CUENTA DESC
 sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            $res = $mysqli->queryAll($qry);
+            if (count($res) === 0) return [];
+            return $res;
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    public static function GetRendimientos($datos)
+    {
+        $qry = <<<sql
+        SELECT
+            TO_CHAR(FECHA, 'DD/MM/YYYY') AS FECHA,
+            CONTRATO,
+            SALDO_CIERRE AS SALDO,
+            TASA,
+            DEVENGO
+        FROM
+            DEVENGO_AHORRO DA
+        WHERE
+            DA.CONTRATO IN (
+                SELECT
+                    APA.CONTRATO
+                FROM
+                    ASIGNA_PROD_AHORRO APA
+                WHERE
+                    APA.CDGCL = '{$datos['CDGCL']}'
+                    _filtro_producto_
+                    _filtro_fecha_
+                )
+        ORDER BY
+            FECHA DESC
+        sql;
+
+        $filtroProducto = $datos['producto'] ? "AND APA.CDGPR_PRIORITARIO = '{$datos['producto']}'" : "";
+        $filtroFecha = ($datos['fechaI'] && $datos['fechaF']) ? "AND TRUNC(DA.FECHA) BETWEEN TO_DATE('{$datos['fechaI']}', 'DD/MM/YYYY') AND TO_DATE('{$datos['fechaF']}', 'DD/MM/YYYY')" : "";
+        $qry = str_ireplace("_filtro_producto_", $filtroProducto, $qry);
+        $qry = str_ireplace("_filtro_fecha_", $filtroFecha, $qry);
 
         try {
             $mysqli = Database::getInstance();
