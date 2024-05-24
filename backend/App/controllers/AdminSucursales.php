@@ -1376,6 +1376,8 @@ html;
                 $concepto = '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
             }else if ($value['CONCEPTO'] == 'SALDO FINAL AL CIERRE DE LA SUCURSAL (DIARIO)') {
                 $concepto = '<i class="fa fa-dollar" style="color: #ff8600;"></i><i class="fa fa-dollar" style="color: #ff8600;"></i>';
+            }else if ($value['CONCEPTO'] == 'SALDO INICIAL DEL DIA (DIARIO)') {
+                $concepto = '<i class="fa fa-dollar" style="color: #ff8600;"></i>';
             } else {
                 $concepto = '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
             }
@@ -1552,8 +1554,12 @@ html;
                 $concepto = '<i class="fa fa-minus" style="color: #ac0000;"></i>';
             } else if ($value['CONCEPTO'] == 'TRANSFERENCIA INVERSIÓN (RECEPCIÓN)') {
                 $concepto = '<i class="fa fa-minus" style="color: #00ac00;"></i>';
-            } else if ($value['CONCEPTO'] == 'RETIRO' || $value['CONCEPTO'] == 'ENTREGA RETIRO PROGRAMADO' || $value['CONCEPTO'] == 'ENTREGA RETIRO EXPRESS' || $value['CONCEPTO'] == 'RETIRO DE EFECTIVO') {
+            } else if ($value['CONCEPTO'] == 'RETIRO' || $value['CONCEPTO'] == 'ENTREGA RETIRO PROGRAMADO' || $value['CONCEPTO'] == 'ENTREGA RETIRO EXPRESS') {
                 $concepto = '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
+            }else if ($value['CONCEPTO'] == 'SALDO FINAL AL CIERRE DE LA SUCURSAL (DIARIO)') {
+                $concepto = '<i class="fa fa-dollar" style="color: #ff8600;"></i><i class="fa fa-dollar" style="color: #ff8600;"></i>';
+            }else if ($value['CONCEPTO'] == 'SALDO INICIAL DEL DIA (DIARIO)') {
+                $concepto = '<i class="fa fa-dollar" style="color: #ff8600;"></i>';
             } else if ($value['TIPO_MOVIMIENTO'] == 'MOVIMIENTO VIRTUAL') {
                 $concepto = '<i class="fa fa-asterisk" style="color: #005dac;"></i>';
             } else {
