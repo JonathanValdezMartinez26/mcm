@@ -1312,9 +1312,9 @@ class CajaAhorro
     {
         $qryInversion = <<<sql
         INSERT INTO CUENTA_INVERSION
-            (CDG_CONTRATO, CDG_TASA, MONTO_INVERSION, FECHA_APERTURA, ESTATUS, ACCION, CDG_USUARIO)
+            (CDG_CONTRATO, CDG_TASA, MONTO_INVERSION, FECHA_APERTURA, ESTATUS, ACCION, CDG_USUARIO, CODIGO)
         VALUES
-            (:contrato, :tasa, :monto, SYSDATE, 'A', :accion, :usuario)
+            (:contrato, :tasa, :monto, SYSDATE, 'A', :accion, :usuario, (SELECT NVL(MAX(CODIGO),0) + 1 FROM CUENTA_INVERSION))
         sql;
 
         $query = [
@@ -1354,11 +1354,31 @@ class CajaAhorro
             if ($res) {
                 LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de inversión de cuenta ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
-                return self::Responde(true, "Inversión registrada correctamente.", ['ticket' => $ticket['CODIGO']]);
+                $codg = self::RecuperaCodigoInversion($datos['contrato']);
+                return self::Responde(true, "Inversión registrada correctamente.", ['ticket' => $ticket['CODIGO'], 'codigo' => $codg['CODIGO']]);
             }
             return self::Responde(false, "Ocurrió un error al registrar la inversión.");
         } catch (Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar la inversión.", null, $e->getMessage());
+        }
+    }
+
+    public static function RecuperaCodigoInversion($contrato)
+    {
+        $query = <<<sql
+        SELECT
+            MAX(CODIGO) AS CODIGO
+        FROM
+            CUENTA_INVERSION
+        WHERE
+            CDG_CONTRATO = '$contrato'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryOne($query);
+        } catch (Exception $e) {
+            return 0;
         }
     }
 
@@ -1393,7 +1413,7 @@ class CajaAhorro
         }
     }
 
-    public static function DatosContrato($contrato)
+    public static function DatosContratoAhorro($contrato)
     {
         $query = <<<sql
         SELECT
@@ -1418,6 +1438,35 @@ class CajaAhorro
         WHERE
             APA.CDGCL = CL.CODIGO
             AND APA.CONTRATO = '$contrato'
+        sql;
+
+        try {
+            $mysqli = Database::getInstance();
+            return $mysqli->queryOne($query);
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public static function DatosContratoInversion($codigoInversion)
+    {
+        $query = <<<sql
+        SELECT
+            CI.CDG_CONTRATO AS CONTRATO,
+            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE,
+            CI.MONTO_INVERSION AS MONTO,
+            LOWER(TO_CHAR(CI.FECHA_APERTURA, 'DD "de" MONTH "del" YYYY')) AS FECHA_F_LEGAL,
+            UPPER(DOMICILIO_CLIENTE(CL.CODIGO)) AS DIRECCION,
+            TRUNC(CI.FECHA_VENCIMIENTO) - TRUNC(CI.FECHA_APERTURA) AS DIAS,
+            (SELECT TASA FROM TASA_INVERSION WHERE CODIGO = CI.CDG_TASA) AS TASA
+        FROM
+            CUENTA_INVERSION CI,
+            ASIGNA_PROD_AHORRO APA,
+            CL
+        WHERE
+            CI.CDG_CONTRATO = APA.CONTRATO
+            AND APA.CDGCL = CL.CODIGO
+            AND CI.CODIGO = '$codigoInversion'
         sql;
 
         try {

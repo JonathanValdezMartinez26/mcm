@@ -1722,7 +1722,7 @@ class Ahorro extends Controller
                                 return showError(respuesta.mensaje)
                             }
                             showSuccess(respuesta.mensaje).then(() => {
-                                imprimeContrato(document.querySelector("#contrato").value, 2)
+                                imprimeContrato(respuesta.datos.codigo, 2)
                                 imprimeTicket(respuesta.datos.ticket, sucursal_ahorro)
                                 limpiaDatosCliente()
                             })
@@ -3462,12 +3462,12 @@ class Ahorro extends Controller
             2 => 'Cuenta de Inversión',
             3 => 'Cuenta de Ahorro Peque',
         ];
-        $contrato = $_GET['contrato'];
-        $datos = CajaAhorroDao::DatosContrato($contrato);
-        if (!$datos) {
-            echo "No se encontró información para el contrato: " . $contrato;
-            return;
-        }
+
+        if (!isset($_GET['contrato'])) exit('No se ha especificado el número de contrato');
+        if (!isset($_GET['producto'])) exit('No se ha especificado el producto:<br>1 = Cuenta de Ahorro Corriente<br>2 = Cuenta de Inversión<br>3 = Cuenta de Ahorro Peque');
+        if (!array_key_exists($_GET['producto'], $productos)) exit('El producto especificado no es válido');
+
+        $noContrato = $_GET['contrato'];
 
         $style = <<<html
         <style>
@@ -3495,7 +3495,8 @@ class Ahorro extends Controller
         html;
 
         $contrato = "";
-        if ($_GET['producto'] = 1) $contrato = self::GetContratoAhorro($datos);
+        if ($_GET['producto'] == 1) $contrato = self::GetContratoAhorro($noContrato);
+        if ($_GET['producto'] == 2) $contrato = self::GetContratoInversion($noContrato);
 
         $nombreArchivo = "Contrato de " . $productos[$_GET['producto']];
 
@@ -4300,7 +4301,7 @@ class Ahorro extends Controller
         return trim($letra);
     }
 
-    public function NumeroLetras($numero)
+    public function NumeroLetras($numero, $soloLetras = false)
     {
         if (!is_numeric($numero)) return "No es un número válido";
         $letra = '';
@@ -4312,11 +4313,15 @@ class Ahorro extends Controller
             str_pad(round(($numero - floor($numero)) * 100), 2, "0", STR_PAD_LEFT) . "/100 M.N."
         ];
 
+        if ($soloLetras) return $tmp[0];
         return implode(" ", $tmp);
     }
 
-    public function GetContratoAhorro($datos)
+    public function GetContratoAhorro($contrato)
     {
+        $datos = CajaAhorroDao::DatosContratoAhorro($contrato);
+        if (!$datos) exit("No se encontró información para el contrato: " . $contrato);
+
         $monto = "$" . number_format($datos['MONTO_APERTURA'], 2, '.', ',');
         $monto_letra = self::NumeroLetras($datos['MONTO_APERTURA']);
 
@@ -4504,6 +4509,210 @@ class Ahorro extends Controller
                 </tr>
             </table>
         </div>    
+        html;
+    }
+
+    public function GetContratoInversion($codigoInversion)
+    {
+        $datos = CajaAhorroDao::DatosContratoInversion($codigoInversion);
+        if (!$datos) exit("No se encontró información para el codigo de inversion: " . $codigoInversion);
+
+        $monto = "$" . number_format($datos['MONTO'], 2, '.', ',');
+        $monto_letra = self::NumeroLetras($datos['MONTO']);
+        $dias_letra = self::NumeroLetras($datos['DIAS'], true);
+
+        return <<<html
+        <div class="contenedor">
+            <p>
+                CONTRATO PRIVADO DE MUTUO A PLAZO DETERMINADO QUE CELEBRAN POR UNA PARTE EL (LA) <b>C.
+                {$datos['NOMBRE']}</b>, EN LO SUCESIVO COMO EL “MUTUANTE Y/O PRESTAMISTA” Y POR LA OTRA PARTE EL
+                C. ANTONIO LORENZO HERNÁNDEZ, EN LO SUCESIVO EL “MUTUARIO Y/O PRESTATARIO”, DE CONFORMIDAD
+                CON LAS SIGUIENTES:
+            </p>
+            <h3>DECLARACIONES</h3>
+            <div calss="decalraciones">
+                <ol>
+                    <li>Declara <b>"EL MUTUARIO Y/O PRESTATARIO"</b> bajo protesta de decir verdad:</li>
+                    <ol class="listaLetras">
+                        <li>
+                            Ser persona física con plena capacidad jurídica para la celebración del presente
+                            contrato y para obligarse individualmente a todos sus términos con pleno
+                            conocimiento de su objetivo y efectos jurídicos.
+                        </li>
+                        <li>
+                            Tener su domicilio en <b>{$datos['DIRECCION']}</b>, mismo que señala para todos
+                            sus efectos derivados de este contrato.
+                        </li>
+                        <li>
+                            Que cuenta con la capacidad y solvencia económica suficiente para cumplir con
+                            las obligaciones a su cargo derivadas del presente contrato.
+                        </li>
+                    </ol>
+                    <li>Declara el <b>“MUTUANTE Y/O PRESTAMISTA”:</b></li>
+                    <ol class="listaLetras">
+                        <li>
+                            Contar con la capacidad suficiente para la celebración del presente contrato.
+                        </li>
+                        <li>
+                            Que su domicilio para los efectos de este contrato es el ubicado en
+                            <b
+                                >Avenida Melchor Ocampo, número 416 Interior 1, Colonia Cuauhtémoc, Alcaldía
+                                Cuauhtémoc, Ciudad de México, C.P. 06500</b
+                            >.
+                        </li>
+                    </ol>
+                    <li><b>LAS PARTES</b> declaran:</li>
+                    <ol class="listaLetras">
+                        <li>
+                            Que reconocen recíprocamente la capacidad jurídica con la que comparecen a la
+                            celebración de este contrato, manifestando que el mismo está libre de cualquier
+                            vicio del consentimiento que pudiera afectar su plena validez.
+                        </li>
+                        <li>
+                            Que manifiestan su consentimiento para celebrar el presente contrato de mutuo
+                            con interés.
+                        </li>
+                        <li>
+                            Que reconocen en forma mutua la personalidad con que actúan en la celebración
+                            del presente instrumento.
+                        </li>
+                    </ol>
+                </ol>
+            </div>
+            <h3>CLAUSULAS</h3>
+            <p>
+                <b>PRIMERA.-</b> <b>OBJETO DEL CONTRATO.</b> Que las partes tienen pleno conocimiento que el
+                objeto del presente contrato es el préstamo de dinero con interés a un plazo determinado.
+            </p>
+            <p>
+                <b>SEGUNDA.-</b> <b>MONTO DEL PRESTAMO.</b> Es la cantidad de <b>{$monto} ({$monto_letra})</b>.
+            </p>
+            <p>
+                <b>TERCERA.-</b> <b>PLAZO.</b> Las partes convienen que el préstamo será cubierto en una
+                sola exhibición en un término de <b>{$datos['DIAS']} ({$dias_letra} días naturales)</b>, junto con los
+                intereses generados por el mismo, los días antes señalados empezarán a correr a partir de la
+                firma del presente contrato; el interés ordinario que obtendrá el “MUTUARIO Y/O PRESTATARIO”
+                será del <b>{$datos['TASA']}%</b> anualizado. En caso de que el “MUTUANTE Y/O PRESTAMISTA” requiera la cantidad
+                señalada en la Cláusula PRIMERA del presente instrumento antes del vencimiento pactado, se
+                hará acreedor a una penalización por parte del “MUTUARIO Y/O PRESTATARIO” del 10% sobre la
+                cantidad señalada en la cláusula SEGUNDA del presente instrumento.
+            </p>
+            <p>
+                <b>CUARTA.-</b> <b>RECIBO DE DINERO.</b> “MUTUARIO Y/O PRESTATARIO” recibe del “MUTUANTE Y/O
+                PRESTAMISTA” a su más entera satisfacción la cantidad de <b>{$monto} ({$monto_letra})</b>,
+                otorgando como el recibo más amplio y eficaz de la recepción de dicho dinero la firma del
+                presente contrato.
+            </p>
+            <p>
+                <b>QUINTA.-</b> <b>LUGAR DE PAGO.</b> “MUTUANTE Y/O PRESTAMISTA” acudirá al domicilio del
+                “MUTUARIO Y/O PRESTATARIO” o al lugar que éste le indique a recibir el pago, conforme a lo
+                señalado en la cláusula TERCERA del presente contrato, el “MUTUANTE Y/O PRESTAMISTA” deberá
+                acudir personalmente.
+            </p>
+            <p>
+                <b>SEXTA.-</b> <b>INTERÉS MORATORIO.</b> Si el “MUTUARIO Y/O PRESTATARIO” incumpliera en el
+                pago de las amortizaciones pactadas, “MUTUANTE Y/O PRESTAMISTA” aplicará intereses
+                moratorios a razón de 4.5% mensual sobre el capital devengado y no pagado conforme a la
+                cláusula tercera del presente instrumento.
+            </p>
+            <p>
+                <b>SEPTIMA.-</b> <b>INCUMPLIMIENTO.</b> En caso de incumplimiento de pago del “MUTUARIO Y/O
+                PRESTATARIO”, el “MUTUANTE Y/O PRESTAMISTA” podrá reclamar el cumplimiento forzoso del
+                presente contrato mediante los procesos legales que la Ley vigente determine.
+            </p>
+            <p>
+                <b>OCTAVA.-</b> <b>OTROS CONTRATOS.</b> En caso de que el “MUTUANTE Y/O PRESTAMISTA” tuviera
+                algún otro tipo de negociación con el “MUTUARIO Y/O PRESTATARIO”; autoriza desde este
+                momento que en caso de cualquier tipo de incumplimiento referente a pagos, se pueda aplicar
+                del presente contrato el pago pendiente a los otros instrumentos o contratos que existan.
+            </p>
+            <p>
+                <b>NOVENA.-</b> En caso de fallecimiento del “MUTUANTE Y/O PRESTAMISTA”, el adeudo que
+                exista en esa fecha deberá ser cubierto a la persona que haya señalado como beneficiario;
+                para que esto proceda, se deberá acreditar en forma fehaciente el hecho con el acta de
+                defunción correspondiente.
+            </p>
+            <p>
+                <b>DECIMA.-</b> Para la celebración del presente Contrato el “MUTUANTE Y/O PRESTAMISTA”
+                acepta cubrir al “MUTUARIO Y/O PRESTATARIO” a la firma del presente la cantidad de $200.00
+                (DOSCIENTOS PESOS 00/100 M. N.) por concepto de gastos de papelería.
+            </p>
+            <p>
+                <b>DECIMA PRIMERA.-</b> <b>LAS PARTES</b> manifiestan que no existe dolo ni cláusula
+                contraria a derecho, no dándose los supuestos de ignorancia ni extrema necesidad,
+                conscientes de su alcance y valor jurídico lo firman de conformidad.
+            </p>
+            <p>
+                <b>DECIMA SEGUNDA.-</b> <b>COMPETENCIA.</b> Para el cumplimiento y resolución del presente
+                contrato las partes se someten a la jurisdicción y competencia de los Juzgados de la Ciudad
+                de México, renunciando expresamente a la jurisdicción de futuro domicilio.
+            </p>
+            <table style="width: 100%">
+                <tr>
+                    <td colspan="3" style="text-align: center; height: 90px">
+                        <b>Ciudad de México, a {$datos['FECHA_F_LEGAL']}</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 45%">
+                        <b>EL MUTUANTE Y/O PRESTAMISTA</b>
+                    </td>
+                    <td style="width: 10%"></td>
+                    <td style="text-align: center; width: 45%">
+                        <b>EL MUTUARIO Y/O PRESTATARIO</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="height: 80px"></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 45%; border-top: 1px solid">
+                        <b>{$datos['NOMBRE']}</b>
+                    </td>
+                    <td style="width: 10%"></td>
+                    <td style="text-align: center; width: 45%; border-top: 1px solid">
+                        <b>ANTONIO LORENZO HERNÁNDEZ</b>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div style="page-break-after: always"></div>
+        <div>
+            <h3 class="fechaTitulo">Ciudad de México a {$datos['FECHA_F_LEGAL']}</h3>
+            <p>
+                El suscrito <b>{$datos['NOMBRE']}</b>, a través de la presente y bajo protesta de decir
+                verdad, manifiesto que los recursos que he exhibido y que se señalan a detalle en el
+                <b>CONTRATO DE MUTUO</b> de fecha {$datos['FECHA_F_LEGAL']}, celebrado en mi carácter de
+                <b>“MUTUANTE Y/O PRESTAMISTA”</b> con el <b>C. ANTONIO LORENZO HERNÁNDEZ</b> en su carácter
+                de “MUTUARIO Y/O PRESTATARIO” provienen de un <b>ORIGEN LÍCITO</b>, por lo que desde este
+                momento señalo que no me encuentro en ninguno de los supuestos referidos en el artículo 400
+                Bis del Código Penal Federal en vigor.
+            </p>
+            <p>
+                De la misma forma, <b>DESLINDO al “MUTUARIO Y/O PRESTATARIO”</b> de cualquier tema que pueda
+                presentarse en el futuro y que sea relacionado con los recursos económicos del suscrito en
+                los diversos actos jurídicos que se celebren.
+            </p>
+            <table style="width: 100%; padding-top: 150px">
+                <tr>
+                    <td style="text-align: center; width: 33%"></td>
+                    <td style="text-align: center; width: 33%">
+                        <b>ATENTAMENTE</b>
+                    </td>
+                    <td style="text-align: center; width: 33%"></td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="height: 100px"></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 25%"></td>
+                    <td style="text-align: center; width: 50%; border-top: 1px solid">
+                        <b>{$datos['NOMBRE']}</b>
+                    </td>
+                    <td style="text-align: center; width: 25%"></td>
+                </tr>
+            </table>
+        </div>
         html;
     }
 
