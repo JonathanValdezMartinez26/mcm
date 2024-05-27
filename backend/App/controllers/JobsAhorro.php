@@ -32,12 +32,11 @@ if (isset($argv[1])) {
             // Programar 11:50 pm, todos los dias
             $jobs->LiquidaInversion();
             break;
-        case 'Todos':
-            $jobs->SucursalesSinArqueo();
-            $jobs->CapturaSaldosSucursales();
-            $jobs->DevengoInteresAhorroDiario();
-            $jobs->RechazaSolicitudesSinAtender();
-            $jobs->LiquidaInversion();
+        case 'ComprobacionDevengoAhorro':
+            $jobs->ComprobacionDevengoAhorro();
+            break;
+        case 'prueba_horario':
+            echo date("Y-m-d H:i:s") . "\n";
             break;
         case 'help':
             echo "Los jobs disponibles son: \n";
@@ -46,7 +45,7 @@ if (isset($argv[1])) {
             echo "DevengoInteresAhorroDiario: Se recomienda se ejecute a las 6:00 pm, todos los días.\n";
             echo "RechazaSolicitudesSinAtender: Se recomienda se ejecute a las 5:25 pm, de lunes a viernes.\n";
             echo "LiquidaInversion: Se recomienda se ejecute a las 11:50 pm, todos los días.\n";
-            echo "Todos: Ejecuta todos los jobs disponibles, en el orden en que se mencionan.\n";
+            echo "ComprobacionDevengoAhorro: Se plica de forma manual unicamente cuando se requiera validar los intereses devengados.\n";
             break;
         default:
             echo "No se encontró el job solicitado.\nEjecute 'php JobsAhorro.php help' para ver los jobs disponibles.\n";
@@ -78,18 +77,18 @@ class JobsAhorro
     {
         self::SaveLog("Inicio -> Devengo Interés Ahorro Diario");
         $resumen = [];
-        $creditos = JobsDao::GetCreditosActivos();
-        if (!$creditos["success"]) return self::SaveLog("Error al obtener los créditos activos: " . $creditos["error"]);
-        if (count($creditos["datos"]) == 0) return self::SaveLog("No se encontraron créditos activos para aplicar devengo.");
+        $cuentas = JobsDao::GetCuentasActivas();
+        if (!$cuentas["success"]) return self::SaveLog("Error al obtener las cuentas de ahorro activas: " . $cuentas["error"]);
+        if (count($cuentas["datos"]) == 0) return self::SaveLog("No se encontraron cuentas de ahorro activas para aplicar devengo.");
 
-        foreach ($creditos["datos"] as $key => $credito) {
-            $saldo = $credito["SALDO"];
-            $tasa = $credito["TASA"] / 100;
+        foreach ($cuentas["datos"] as $key => $cuenta) {
+            $saldo = $cuenta["SALDO"];
+            $tasa = $cuenta["TASA"] / 100;
             $devengo = $saldo * ($tasa / 365);
 
             $datos = [
-                "cliente" => $credito["CLIENTE"],
-                "contrato" => $credito["CONTRATO"],
+                "cliente" => $cuenta["CLIENTE"],
+                "contrato" => $cuenta["CONTRATO"],
                 "saldo" => $saldo,
                 "devengo" => $devengo,
                 "tasa" => $tasa,
@@ -223,5 +222,38 @@ class JobsAhorro
 
         self::SaveLog(json_encode($resumen)); //, JSON_PRETTY_PRINT));
         self::SaveLog("Finalizado -> Captura de Saldos de Sucursales");
+    }
+
+    public function ComprobacionDevengoAhorro()
+    {
+        self::SaveLog("Inicio -> Comprobación de Devengo Ahorro");
+        $resumen = [];
+        $cuentas = JobsDao::GetCuentasAhorroValidacionDevengo();
+        if (!$cuentas["success"]) return self::SaveLog("Error al obtener las cuentas de ahorro activas: " . $cuentas["error"]);
+        if (count($cuentas["datos"]) == 0) return self::SaveLog("No se encontraron cuentas de ahorro activas para aplicar devengo.");
+
+        foreach ($cuentas["datos"] as $key => $cuenta) {
+            $saldo = $cuenta["SALDO"];
+            $tasa = $cuenta["TASA"] / 100;
+            $devengo = $saldo * ($tasa / 365);
+
+            $datos = [
+                "cliente" => $cuenta["CLIENTE"],
+                "contrato" => $cuenta["CONTRATO"],
+                "fecha" => $cuenta["FECHA"],
+                "saldo" => $saldo,
+                "devengo" => $devengo,
+                "tasa" => $tasa,
+            ];
+
+            $resumen[] = [
+                "fecha" => date("Y-m-d H:i:s"),
+                "datos" => $datos,
+                "RES_APLICA_DEVENGO" => JobsDao::AplicaDevengo($datos),
+            ];
+        };
+
+        self::SaveLog(json_encode($resumen)); //, JSON_PRETTY_PRINT));
+        self::SaveLog("Finalizado -> Comprobación de Devengo Ahorro");
     }
 }

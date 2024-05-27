@@ -22,19 +22,19 @@ class JobsAhorro
         return $res;
     }
 
-    public static function GetCreditosActivos()
+    public static function GetCuentasActivas()
     {
         $qry = <<<sql
         SELECT
             APA.CDGCL AS CLIENTE,
             APA.CONTRATO,
             APA.SALDO,
-            APA.TASA
+            APA.TASA,
+            APA.FECHA_APERTURA
         FROM
             ASIGNA_PROD_AHORRO APA
         WHERE
-            APA.SALDO > 0
-            AND APA.ESTATUS = 'A'
+            APA.ESTATUS = 'A'
         sql;
 
         try {
@@ -48,6 +48,7 @@ class JobsAhorro
 
     public static function AplicaDevengo($datos)
     {
+        $f = $datos["fecha"] ? ':fecha' : 'SYSDATE';
         $qryDevengo = <<<sql
         INSERT INTO
             DEVENGO_AHORRO (
@@ -61,7 +62,7 @@ class JobsAhorro
             (
                 :contrato,
                 :saldo,
-                SYSDATE,
+                $f,
                 :devengo,
                 :tasa
             )
@@ -92,6 +93,8 @@ class JobsAhorro
                 "cliente" => $datos["cliente"]
             ]
         ];
+
+        if ($datos["fecha"]) $parametros[0]["fecha"] = $datos["fecha"];
 
         try {
             $db = Database::getInstance();
@@ -264,7 +267,7 @@ class JobsAhorro
         }
     }
 
-    public static function  DevolucionRetiro($datos)
+    public static function DevolucionRetiro($datos)
     {
         $query = [
             self::GetQueryTicket(),
@@ -526,6 +529,46 @@ class JobsAhorro
             return $mysqli->queryOne($queryTicket);
         } catch (Exception $e) {
             return 0;
+        }
+    }
+
+    public static function GetCuentasAhorroValidacionDevengo()
+    {
+        $qry = <<<sql
+        WITH FECHAS AS (
+            SELECT
+                APA.CONTRATO,
+                TRUNC(APA.FECHA_APERTURA) + LEVEL - 1 AS FECHA
+            FROM
+                ASIGNA_PROD_AHORRO APA CONNECT BY LEVEL <= TRUNC(SYSDATE) - TRUNC(APA.FECHA_APERTURA) + 1
+                AND PRIOR APA.CONTRATO = APA.CONTRATO
+                AND PRIOR SYS_GUID() IS NOT NULL
+        )
+        SELECT
+            F.CONTRATO,
+            F.FECHA,
+            APA.CDGCL AS CLIENTE,
+            APA.CONTRATO,
+            APA.SALDO,
+            APA.TASA
+        FROM
+            FECHAS F
+            LEFT JOIN DEVENGO_AHORRO DA ON F.CONTRATO = DA.CONTRATO
+            LEFT JOIN ASIGNA_PROD_AHORRO APA ON F.CONTRATO = APA.CONTRATO
+        WHERE
+            DA.CONTRATO IS NULL
+            AND TRUNC(F.FECHA) != TRUNC(SYSDATE)
+        ORDER BY
+            F.CONTRATO,
+            F.FECHA
+        sql;
+
+        try {
+            $db = Database::getInstance();
+            $res = $db->queryAll($qry);
+            return self::Responde(true, "Créditos activos obtenidos correctamente", $res ?? []);
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al obtener los créditos activos", null, $e->getMessage());
         }
     }
 }

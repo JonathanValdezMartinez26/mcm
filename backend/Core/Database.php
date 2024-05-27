@@ -111,8 +111,9 @@ class Database
                 $stmt = $this->_mysqli->prepare($sql[$i]);
                 $result = $stmt->execute($valores);
                 if (!$result) {
+                    $err = $stmt->errorInfo();
                     $this->_mysqli->rollBack();
-                    throw new \Exception("Error: " . print_r($stmt->errorInfo(), 1) . "\nSql : " . $sql . "\nDatos : " . print_r($valores, 1));
+                    throw new \Exception("Error: " . print_r($err, 1) . "\nSql : " . $sql[$i] . "\nDatos : " . print_r($valores, 1));
                 }
             }
 
