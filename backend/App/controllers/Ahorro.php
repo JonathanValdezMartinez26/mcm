@@ -860,8 +860,11 @@ class Ahorro extends Controller
 
     public function BuscaCliente()
     {
-        $datos = CajaAhorroDao::BuscaClienteNvoContrato($_POST);
-        echo $datos;
+        if (self::ValidaHorario()) {
+            echo CajaAhorroDao::BuscaClienteNvoContrato($_POST);
+            return;
+        }
+        echo self::FueraHorario();
     }
 
     public function GetBeneficiarios()
@@ -1105,7 +1108,11 @@ class Ahorro extends Controller
 
     public function BuscaContratoAhorro()
     {
-        echo CajaAhorroDao::BuscaContratoAhorro($_POST);
+        if (self::ValidaHorario()) {
+            echo CajaAhorroDao::BuscaContratoAhorro($_POST);
+            return;
+        }
+        echo self::FueraHorario();
     }
 
     public function RegistraOperacion()
@@ -2205,7 +2212,11 @@ class Ahorro extends Controller
 
     public function BuscaClientePQ()
     {
-        echo CajaAhorroDao::BuscaClienteNvoContratoPQ($_POST);
+        if (self::ValidaHorario()) {
+            echo CajaAhorroDao::BuscaClienteNvoContratoPQ($_POST);
+            return;
+        }
+        echo self::FueraHorario();
     }
 
     public function AgregaContratoAhorroPQ()
@@ -2216,7 +2227,11 @@ class Ahorro extends Controller
 
     public function BuscaContratoPQ()
     {
-        echo CajaAhorroDao::BuscaClienteContratoPQ($_POST);
+        if (self::ValidaHorario()) {
+            echo CajaAhorroDao::BuscaClienteContratoPQ($_POST);
+            return;
+        }
+        echo self::FueraHorario();
     }
 
     // Movimientos sobre cuentas de ahorro Peques
@@ -3317,7 +3332,11 @@ class Ahorro extends Controller
 
     public function RegistraArqueo()
     {
-        echo CajaAhorroDao::RegistraArqueo($_POST);
+        if (self::ValidaHorario()) {
+            echo CajaAhorroDao::RegistraArqueo($_POST);
+            return;
+        }
+        echo self::FueraHorario();
     }
 
     public function IconoOperacion($movimiento, $operacion)
@@ -3501,6 +3520,19 @@ class Ahorro extends Controller
 
     //********************UTILS********************//
     // Generación de ticket's de operaciones realizadas
+    public function ValidaHorario()
+    {
+        $ahora = new DateTime();
+        $inicio = DateTime::createFromFormat('H:i:s', $_SESSION['inicio']);
+        $fin = DateTime::createFromFormat('H:i:s', $_SESSION['fin']);
+
+        return $ahora >= $inicio && $ahora <= $fin;
+    }
+
+    public function FueraHorario()
+    {
+        return json_encode(['success' => false, 'mensaje' => 'No es posible realizar operaciones fuera del horario establecido (' . $_SESSION['inicio'] . ' - ' . $_SESSION['fin'] . ')']);
+    }
 
     public function Contrato()
     {
@@ -4958,6 +4990,7 @@ class Ahorro extends Controller
         </div>    
         html;
     }
+
 
     //********************BORRAR????********************//
     public function SolicitudRetiroHistorial()
