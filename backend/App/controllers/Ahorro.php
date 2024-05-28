@@ -1865,6 +1865,7 @@ class Ahorro extends Controller
                 if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
             }
         
+            const noSucursal = "{$_SESSION['cdgco_ahorro']}"
             let valKD = false
              
             {$this->showError}

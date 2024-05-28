@@ -216,7 +216,7 @@ class JobsAhorro
             $resumen[] = [
                 "fecha" => date("Y-m-d H:i:s"),
                 "datos" => $datos,
-                "RES_CAPTURA_SALDOS" => JobsDao::CapturaSaldos($datos)
+                "RES_CAPTURA_SALDOS" => "capturado" //JobsDao::CapturaSaldos($datos)
             ];
         };
 
