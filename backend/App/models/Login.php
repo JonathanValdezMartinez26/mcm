@@ -67,7 +67,7 @@ sql;
         );
 
         $query_ahorro = <<<sql
-        SELECT  '1' as PERMISO, SUC_ESTADO_AHORRO.CDG_SUCURSAL  AS CDGCO_AHORRO
+        SELECT  '1' as PERMISO, SUC_ESTADO_AHORRO.CDG_SUCURSAL AS CDGCO_AHORRO, HORA_APERTURA, HORA_CIERRE
         FROM
             SUC_CAJERA_AHORRO
         INNER JOIN SUC_ESTADO_AHORRO ON CDG_ESTADO_AHORRO = CODIGO
@@ -75,8 +75,6 @@ sql;
 
 sql;
 
-
-        //var_dump($query1);
         return [$mysqli->queryOne($query1, $params1), $mysqli->queryOne($query_ahorro, $params_ahorro)];
 
 

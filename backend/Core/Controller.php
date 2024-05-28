@@ -33,6 +33,9 @@ class Controller
             $this->__perfil = $_SESSION['perfil'];
             $this->__ahorro = $_SESSION['ahorro'];
             $this->__cdgco_ahorro = $_SESSION['cdgco_ahorro'];
+
+            $this->__hora_inicio_ahorro = $_SESSION['inicio'];
+            $this->__hora_fin_ahorro = $_SESSION['fin'];
         }
     }
 
