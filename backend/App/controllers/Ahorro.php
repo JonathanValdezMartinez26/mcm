@@ -16,10 +16,26 @@ class Ahorro extends Controller
     private $_contenedor;
     private $operacionesNulas = [2, 5]; // [Comisión, Transferencia]
     private $XLSX = '<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
+    private $swal2 = '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
     private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
     private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
     private $showWarning = 'const showWarning = (mensaje) => swal({ text: mensaje, icon: "warning" })';
+    private $showBloqueo = 'const showBloqueo = (mensaje) => {
+        Swal.fire({
+            html: mensaje,
+            icon: "warning",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            showConfirmButton: false,
+            target: document.getElementById("bloqueoAhorro"),
+            customClass: {
+                container: "sweet-bloqueoAhorro-container",
+                popup: "sweet-bloqueoAhorro-popup",
+            }
+        })
+    }';
     private $confirmarMovimiento = 'const confirmarMovimiento = async (titulo, mensaje, html = null) => {
         return await swal({ title: titulo, content: html, text: mensaje, icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
     }';
@@ -346,6 +362,19 @@ class Ahorro extends Controller
         if (fechaI && fechaF && fechaI > fechaF) {
             document.getElementById(idI).value = fechaF
         }
+    }';
+    private $validaHorarioOperacion = 'const validaHorarioOperacion = (inicio, fin, sinMsj = false) => {
+        const horaActual = new Date()
+        const horaInicio = new Date()
+        const horaFin = new Date()
+        const [hi, mi, si] = inicio.split(":")
+        const [hf, mf, sf] = fin.split(":")
+        
+        horaInicio.setHours(hi, mi, si)
+        horaFin.setHours(hf, mf, sf)
+        if (sinMsj) return horaActual >= horaInicio && horaActual <= horaFin
+
+        if (!(horaActual >= horaInicio && horaActual <= horaFin)) showBloqueo("No es posible realizar operaciones fuera del horario establecido (de " + inicio + " a " + fin + ").<br><br><b>Consulte con la gerencia de administración.</b>")
     }';
 
     function __construct()
@@ -864,16 +893,13 @@ class Ahorro extends Controller
 
         $extraFooter = <<<html
         <script>
-            window.onload = () => {
-                if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
-            }
-             
             const saldoMinimoApertura = $saldoMinimoApertura
             const montoMaximoRetiro = $montoMaximoRetiro
             const montoMaximoDeposito = $montoMaximoDeposito
             const maximoRetiroDia = $maximoRetiroDia
             const noSucursal = "{$_SESSION['cdgco_ahorro']}"
             let retiroDispobible = maximoRetiroDia
+         
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
@@ -893,6 +919,13 @@ class Ahorro extends Controller
             {$this->formatoMoneda}
             {$this->consultaServidor}
             {$this->limpiaMontos}
+            {$this->showBloqueo}
+            {$this->validaHorarioOperacion}
+         
+            window.onload = () => {
+                validaHorarioOperacion("{$_SESSION['inicio']}", "{$_SESSION['fin']}")
+                if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
+            }
          
             const llenaDatosCliente = (datosCliente) => {
                 retiroDispobible = maximoRetiroDia
@@ -1062,7 +1095,7 @@ class Ahorro extends Controller
 
         if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Ahorro Corriente")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Ahorro Corriente", [$this->swal2])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         view::set('saldoMinimoApertura', $saldoMinimoApertura);
         view::set('montoMaximoRetiro', $montoMaximoRetiro);
@@ -1575,6 +1608,12 @@ class Ahorro extends Controller
             {$this->formatoMoneda}
             {$this->limpiaMontos}
             {$this->consultaServidor}
+            {$this->showBloqueo}
+            {$this->validaHorarioOperacion}
+         
+            window.onload = () => {
+                validaHorarioOperacion("{$_SESSION['inicio']}", "{$_SESSION['fin']}")
+            }
              
             const llenaDatosCliente = (datos) => {
                 const saldoActual = parseaNumero(datos.SALDO)
@@ -1755,7 +1794,7 @@ class Ahorro extends Controller
         }
         $opcEjecutivos .= "<option value='{$this->__usuario}'>{$this->__nombre} - CAJER(A)</option>";
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Contrato Inversión")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Contrato Inversión", [$this->swal2])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('d/m/Y H:i:s'));
         view::set('ejecutivos', $opcEjecutivos);
@@ -2195,10 +2234,6 @@ class Ahorro extends Controller
             let retiroBloqueado = false
             let valKD = false
          
-            window.onload = () => {
-                if (document.querySelector("#clienteBuscado").value !== "") buscaCliente()
-            }
-         
             {$this->showError}
             {$this->showSuccess}
             {$this->showInfo}
@@ -2216,6 +2251,13 @@ class Ahorro extends Controller
             {$this->formatoMoneda}
             {$this->limpiaMontos}
             {$this->consultaServidor}
+            {$this->showBloqueo}
+            {$this->validaHorarioOperacion}
+         
+            window.onload = () => {
+                validaHorarioOperacion("{$_SESSION['inicio']}", "{$_SESSION['fin']}")
+                if (document.querySelector("#clienteBuscado").value !== "") buscaCliente()
+            }
             
             const buscaCliente = () => {
                 retiroBloqueado = false
@@ -2499,7 +2541,7 @@ class Ahorro extends Controller
         if ($_GET['cliente']) View::set('cliente', $_GET['cliente']);
         if ($_GET['contrato']) View::set('contratoSel', $_GET['contrato']);
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Cuenta Peque")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Cuenta Peque", [$this->swal2])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('d/m/Y H:i:s'));
         View::render("caja_menu_peque");
@@ -3005,12 +3047,16 @@ class Ahorro extends Controller
             {$this->configuraTabla}
             {$this->muestraPDF}
             {$this->exportaExcel}
+            {$this->validaHorarioOperacion}
          
             $(document).ready(() => configuraTabla("tblArqueos"))
              
             const imprimeExcel = () => exportaExcel("tblArqueos", "Reporte de arqueos de caja al " + getHoy(false))
              
             const mostrarModal = () => {
+                if (!validaHorarioOperacion("{$_SESSION['inicio']}", "{$_SESSION['fin']}", true)) {
+                    return showError("El horario de operación para arqueos de caja es de " + "{$_SESSION['inicio']}" + " a " + "{$_SESSION['fin']}")
+                }
                 document.querySelector("#frmModal").reset()
                 $("#modalArqueo").modal("show")
                 $("#fechaArqueo").val(getHoy())
@@ -3498,6 +3544,7 @@ class Ahorro extends Controller
         $contrato = "";
         if ($_GET['producto'] == 1) $contrato = self::GetContratoAhorro($noContrato);
         if ($_GET['producto'] == 2) $contrato = self::GetContratoInversion($noContrato);
+        if ($_GET['producto'] == 3) $contrato = self::GetContratoPeque($noContrato);
 
         $nombreArchivo = "Contrato de " . $productos[$_GET['producto']];
 
@@ -4714,6 +4761,201 @@ class Ahorro extends Controller
                 </tr>
             </table>
         </div>
+        html;
+    }
+
+    public function GetContratoPeque($contrato)
+    {
+        $datos = CajaAhorroDao::DatosContratoPeque($contrato);
+        if (!$datos) exit("No se encontró información para el contrato: " . $contrato);
+
+        $monto = "$" . number_format($datos['MONTO_APERTURA'], 2, '.', ',');
+        $monto_letra = self::NumeroLetras($datos['MONTO_APERTURA']);
+
+        return <<<html
+        <div class="contenedor">
+            <p>
+                CONTRATO PRIVADO DE MUTUO A PLAZO INDETERMINADO QUE CELEBRAN POR UNA PARTE EL (LA)
+                <b>C. {$datos['NOMBRE']}</b>, EN LO SUCESIVO COMO EL “MUTUANTE Y/O PRESTAMISTA” Y POR LA OTRA
+                PARTE EL <b>C. ANTONIO LORENZO HERNÁNDEZ</b>, EN LO SUCESIVO EL “MUTUARIO Y/O PRESTATARIO”, DE
+                CONFORMIDAD CON LAS SIGUIENTES:
+            </p>
+            <h3>DECLARACIONES</h3>
+            <div calss="decalraciones">
+                <ol>
+                    <li>Declara <b>"EL MUTUARIO Y/O PRESTATARIO"</b> bajo protesta de decir verdad:</li>
+                    <ol class="listaLetras">
+                        <li>
+                            Ser persona física con plena capacidad jurídica para la celebración del presente
+                            contrato y para obligarse individualmente a todos sus términos con pleno
+                            conocimiento de su objetivo y efectos jurídicos.
+                        </li>
+                        <li>
+                            Tener su domicilio en <b>Avenida Melchor Ocampo, número 416 Interior 1, Colonia 
+                            Cuauhtémoc, Alcaldía Cuauhtémoc, Ciudad de México, C.P. 06500</b>, mismo que 
+                            señala para todos sus efectos derivados de este contrato.
+                        </li>
+                        <li>
+                            Que cuenta con la capacidad y solvencia económica suficiente para cumplir con las
+                            obligaciones a su cargo derivadas del presente contrato.
+                        </li>
+                    </ol>
+                    <li>Declara el <b>“MUTUANTE Y/O PRESTAMISTA”:</b></li>
+                    <ol class="listaLetras">
+                        <li>Contar con la capacidad suficiente para la celebración del presente contrato.</li>
+                        <li>
+                            Que su domicilio para los efectos de este contrato es el ubicado en <b>{$datos['DIRECCION']}</b>.
+                        </li>
+                    </ol>
+                    <li><b>LAS PARTES</b> declaran:</li>
+                    <ol class="listaLetras">
+                        <li>
+                            Que reconocen recíprocamente la capacidad jurídica con la que comparecen a la
+                            celebración de este contrato, manifestando que el mismo está libre de cualquier
+                            vicio del consentimiento que pudiera afectar su plena validez.
+                        </li>
+                        <li>
+                            Que manifiestan su consentimiento para celebrar el presente contrato de mutuo con
+                            interés.
+                        </li>
+                        <li>
+                            Que reconocen en forma mutua la personalidad con que actúan en la celebración del
+                            presente instrumento.
+                        </li>
+                    </ol>
+                </ol>
+            </div>
+            <h3>CLAUSULAS</h3>
+            <p>
+                <b>PRIMERA.-</b> <b>OBJETO DEL CONTRATO.</b> Que las partes tienen pleno conocimiento que el
+                objeto del presente contrato es el préstamo de dinero con interés a un plazo indeterminado.
+            </p>
+            <p>
+                <b>SEGUNDA.-</b> <b>MONTO DEL PRESTAMO.</b> Será variable conforme a los depósitos o
+                exhibiciones que haga el “MUTUANTE Y/O PRESTAMISTA” al “MUTUARIO Y/O PRESTATARIO”.
+            </p>
+            <p>
+                <b>TERCERA.-</b> <b>PLAZO.</b> Las partes convienen que el préstamo no contará con un plazo
+                determinado, por lo que una vez que el “MUTUANTE Y/O PRESTAMISTA” reclame la devolución del
+                monto mutuado le será devuelto en un plazo de siete días hábiles después de su solicitud de
+                devolución, la cual deberá hacer por escrito al “MUTUARIO Y/O PRESTATARIO”; el interés
+                ordinario que obtendrá el “MUTUARIO Y/O PRESTATARIO” será del 5% anualizado.
+            </p>
+            <p>
+                <b>CUARTA.-</b> <b>RECIBO DE DINERO.</b> “MUTUARIO Y/O PRESTATARIO” recibe del “MUTUANTE Y/O
+                PRESTAMISTA” a su más entera satisfacción la cantidad de <b>{$monto} ({$monto_letra})</b>,
+                otorgando como el recibo más amplio y eficaz de la recepción de dicho dinero la firma del
+                presente contrato; dicha cantidad será el mínimo que se podrá exhibir o entregar para
+                celebrar el presente contrato.
+            </p>
+            <p>
+                <b>QUINTA.-</b> <b>LUGAR DE PAGO.</b> “MUTUANTE Y/O PRESTAMISTA” acudirá al domicilio del
+                “MUTUARIO Y/O PRESTATARIO” o al lugar que éste le indique a recibir el pago, conforme a lo
+                señalado en la cláusula TERCERA del presente contrato, el “MUTUANTE Y/O PRESTAMISTA” deberá
+                acudir personalmente.
+            </p>
+            <p>
+                <b>SEXTA.-</b> <b>INTERÉS MORATORIO.</b> “MUTUARIO Y/O PRESTATARIO” pagará al “MUTUANTE Y/O
+                PRESTAMISTA” una comisión del 10% sobre el monto total del préstamo.
+            </p>
+            <p>
+                <b>SEPTIMA.-</b> <b>INCUMPLIMIENTO.</b> En caso de incumplimiento de pago del “MUTUARIO Y/O
+                PRESTATARIO”, el “MUTUANTE Y/O PRESTAMISTA” podrá reclamar el cumplimiento forzoso del
+                presente contrato mediante los procesos legales que la Ley vigente determine.
+            </p>
+            <p>
+                <b>OCTAVA.-</b> <b>OTROS CONTRATOS.</b> En caso de que el “MUTUANTE Y/O PRESTAMISTA” tuviera
+                algún otro tipo de negociación con el “MUTUARIO Y/O PRESTATARIO”; autoriza desde este
+                momento que en caso de cualquier tipo de incumplimiento referente a pagos, se pueda aplicar
+                del presente contrato el pago pendiente a los otros instrumentos o contratos que existan.
+            </p>
+            <p>
+                <b>NOVENA.-</b> En caso de fallecimiento del “MUTUANTE Y/O PRESTAMISTA”, el adeudo que
+                exista en esa fecha deberá ser cubierto a la persona que haya señalado como beneficiario;
+                para que esto proceda, se deberá acreditar en forma fehaciente el hecho con el acta de
+                defunción correspondiente.
+            </p>
+            <p>
+                <b>DECIMA.-</b> Para la celebración del presente Contrato el “MUTUANTE Y/O PRESTAMISTA”
+                acepta cubrir al “MUTUARIO Y/O PRESTATARIO” a la firma del presente la cantidad de $200.00
+                (DOSCIENTOS PESOS 00/100 M. N.) por concepto de gastos de papelería.
+            </p>
+            <p>
+                <b>DECIMA PRIMERA.-</b> <b>LAS PARTES</b> manifiestan que no existe dolo ni cláusula
+                contraria a derecho, no dándose los supuestos de ignorancia ni extrema necesidad,
+                conscientes de su alcance y valor jurídico lo firman de conformidad.
+            </p>
+            <p>
+                <b>DECIMA SEGUNDA.-</b> <b>COMPETENCIA.</b> Para el cumplimiento y resolución del presente
+                contrato las partes se someten a la jurisdicción y competencia de los Juzgados de la Ciudad
+                de México, renunciando expresamente a la jurisdicción de futuro domicilio.
+            </p>
+            <table style="width: 100%">
+                <tr>
+                    <td colspan="3" style="text-align: center; height: 90px">
+                        <b>Ciudad de México, a {$datos['FECHA_F_LEGAL']}</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 45%">
+                        <b>EL MUTUANTE Y/O PRESTAMISTA</b>
+                    </td>
+                    <td style="width: 10%"></td>
+                    <td style="text-align: center; width: 45%">
+                        <b>EL MUTUARIO Y/O PRESTATARIO</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="height: 80px"></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 45%; border-top: 1px solid">
+                        <b>{$datos['NOMBRE']}</b>
+                    </td>
+                    <td style="width: 10%"></td>
+                    <td style="text-align: center; width: 45%; border-top: 1px solid">
+                        <b>ANTONIO LORENZO HERNÁNDEZ</b>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div style="page-break-after: always"></div>
+        <div>
+            <h3 class="fechaTitulo">Ciudad de México a {$datos['FECHA_F_LEGAL']}</h3>
+            <p>
+                El suscrito <b>{$datos['NOMBRE']}</b>, a través de la presente y bajo
+                protesta de decir verdad, manifiesto que los recursos que he exhibido y que se señalan a
+                detalle en el <b>CONTRATO DE MUTUO</b> de fecha {$datos['FECHA_F_LEGAL']}, celebrado en mi carácter de
+                <b>“MUTUANTE Y/O PRESTAMISTA”</b> con el <b>C. ANTONIO LORENZO HERNÁNDEZ</b> en su carácter de “MUTUARIO
+                Y/O PRESTATARIO” provienen de un <b>ORIGEN LÍCITO</b>, por lo que desde este momento señalo que no
+                me encuentro en ninguno de los supuestos referidos en el artículo 400 Bis del Código Penal
+                Federal en vigor.
+            </p>
+            <p>
+                De la misma forma, <b>DESLINDO al “MUTUARIO Y/O PRESTATARIO”</b> de cualquier tema que pueda
+                presentarse en el futuro y que sea relacionado con los recursos económicos del suscrito en
+                los diversos actos jurídicos que se celebren.
+            </p>
+            <table style="width: 100%; padding-top: 150px">
+                <tr>
+                    <td style="text-align: center; width: 33%"></td>
+                    <td style="text-align: center; width: 33%">
+                        <b>ATENTAMENTE</b>
+                    </td>
+                    <td style="text-align: center; width: 33%"></td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="height: 100px"></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 25%"></td>
+                    <td style="text-align: center; width: 50%; border-top: 1px solid">
+                        <b>{$datos['NOMBRE']}</b>
+                    </td>
+                    <td style="text-align: center; width: 25%"></td>
+                </tr>
+            </table>
+        </div>    
         html;
     }
 

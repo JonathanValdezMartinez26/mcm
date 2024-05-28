@@ -53,7 +53,7 @@
                      </div>
                  </a>-->
         </div>
-        <div class="col-md-9">
+        <div class="col-md-9" id="bloqueoAhorro">
             <form id="registroOperacion" name="registroOperacion">
                 <div class="modal-content">
                     <div class="modal-header" style="padding-bottom: 0px">

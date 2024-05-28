@@ -2,7 +2,6 @@
 
 <div class="right_col">
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
-
         <div class="col-md-3 panel panel-body" style="margin-bottom: 0px;">
             <a id="link" href="/Ahorro/CuentaCorriente/">
                 <div class="col-md-5" style="margin-top: 5px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
@@ -61,7 +60,7 @@
                   </a>-->
         </div>
 
-        <div class="col-md-9">
+        <div class="col-md-9" id="bloqueoAhorro">
             <form id="registroOperacion" name="registroOperacion">
                 <div class="modal-content">
                     <div class="modal-header" style="padding-bottom: 0px">
