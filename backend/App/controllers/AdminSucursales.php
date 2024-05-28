@@ -1435,9 +1435,9 @@ html;
                 $concepto = '<i class="fa fa-minus" style="color: #0000ac;"></i>';
             } else if ($value['CONCEPTO'] == 'RETIRO' || $value['CONCEPTO'] == 'ENTREGA RETIRO PROGRAMADO' || $value['CONCEPTO'] == 'ENTREGA RETIRO EXPRESS' || $value['CONCEPTO'] == 'RETIRO DE EFECTIVO') {
                 $concepto = '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
-            }else if ($value['CONCEPTO'] == 'SALDO FINAL AL CIERRE DE LA SUCURSAL (DIARIO)') {
+            } else if ($value['CONCEPTO'] == 'SALDO FINAL AL CIERRE DE LA SUCURSAL (DIARIO)') {
                 $concepto = '<i class="fa fa-dollar" style="color: #ff8600;"></i><i class="fa fa-dollar" style="color: #ff8600;"></i>';
-            }else if ($value['CONCEPTO'] == 'SALDO INICIAL DEL DIA (DIARIO)') {
+            } else if ($value['CONCEPTO'] == 'SALDO INICIAL DEL DIA (DIARIO)') {
                 $concepto = '<i class="fa fa-dollar" style="color: #ff8600;"></i>';
             } else {
                 $concepto = '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
@@ -1617,9 +1617,9 @@ html;
                 $concepto = '<i class="fa fa-minus" style="color: #00ac00;"></i>';
             } else if ($value['CONCEPTO'] == 'RETIRO' || $value['CONCEPTO'] == 'ENTREGA RETIRO PROGRAMADO' || $value['CONCEPTO'] == 'ENTREGA RETIRO EXPRESS') {
                 $concepto = '<i class="fa fa-arrow-up" style="color: #ac0000;"></i>';
-            }else if ($value['CONCEPTO'] == 'SALDO FINAL AL CIERRE DE LA SUCURSAL (DIARIO)') {
+            } else if ($value['CONCEPTO'] == 'SALDO FINAL AL CIERRE DE LA SUCURSAL (DIARIO)') {
                 $concepto = '<i class="fa fa-dollar" style="color: #ff8600;"></i><i class="fa fa-dollar" style="color: #ff8600;"></i>';
-            }else if ($value['CONCEPTO'] == 'SALDO INICIAL DEL DIA (DIARIO)') {
+            } else if ($value['CONCEPTO'] == 'SALDO INICIAL DEL DIA (DIARIO)') {
                 $concepto = '<i class="fa fa-dollar" style="color: #ff8600;"></i>';
             } else if ($value['TIPO_MOVIMIENTO'] == 'MOVIMIENTO VIRTUAL') {
                 $concepto = '<i class="fa fa-asterisk" style="color: #005dac;"></i>';
@@ -3197,16 +3197,14 @@ script;
             foreach ($nombreCampo as $key => $campo) {
                 $increment = $keyy++;
 
-                if($Layoutt[$increment]["CONCEPTO"] == 'SALDO INICIAL DEL DIA (DIARIO)')
-                {
+                if ($Layoutt[$increment]["CONCEPTO"] == 'SALDO INICIAL DEL DIA (DIARIO)') {
                     $inicio = $Layoutt[$increment]["SALDO"];
-                }
-                else
-                {
+                    $totalSaldo = $Layoutt[$increment]["SALDO"];
+                } else {
                     $inicio = 0;
                 }
 
-                if ($campo === 'INGRESO' || $Layoutt[$increment]["CONCEPTO"] === 'SALDO INICIAL DEL DIA (DIARIO)' ) $totalIngreso += $value[$campo]+$inicio ;
+                if ($campo === 'INGRESO' || $Layoutt[$increment]["CONCEPTO"] === 'SALDO INICIAL DEL DIA (DIARIO)') $totalIngreso += $value[$campo]; //;
                 if ($campo === 'EGRESO') $totalEgreso += $value[$campo];
 
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
@@ -3217,7 +3215,7 @@ script;
         }
 
         $fila += 1;
-        $totalSaldo = $totalIngreso - $totalEgreso;
+        $totalSaldo = $totalSaldo + $totalIngreso - $totalEgreso;
 
         $objPHPExcel->getActiveSheet()->SetCellValue($columna[7] . $fila, "TOTAL");
         $objPHPExcel->getActiveSheet()->getStyle($columna[7] . $fila)->applyFromArray($estilo_encabezado);
