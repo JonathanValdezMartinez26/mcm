@@ -255,8 +255,7 @@ class Ahorro extends Controller
         })
     }
     script;
-    private $valida_MCM_Complementos = '
-    const valida_MCM_Complementos = () => {
+    private $valida_MCM_Complementos = 'const valida_MCM_Complementos = () => {
         const urlValida = "http://127.0.0.1:5005/api/impresora/verificar"
         let resultado = false
         
@@ -271,7 +270,8 @@ class Ahorro extends Controller
             error: (error) => {
                 const estatus = error.responseJSON ? error.responseJSON.estatus.impresora.mensaje : "El servicio de impresión no está disponible.\\nVerifique que MCM Complementos este instalado y en ejecución."
                 showError(estatus)
-            }
+            },
+            async: false
         })
 
         return resultado
