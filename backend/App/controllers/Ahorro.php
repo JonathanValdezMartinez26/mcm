@@ -4472,6 +4472,7 @@ class Ahorro extends Controller
 
         $monto = "$" . number_format($datos['MONTO_APERTURA'], 2, '.', ',');
         $monto_letra = self::NumeroLetras($datos['MONTO_APERTURA']);
+        $firma = "/img/firma_1.jpg";
 
         return <<<html
         <div class="contenedor">
@@ -4607,7 +4608,10 @@ class Ahorro extends Controller
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3" style="height: 80px"></td>
+                    <td colspan="2" style="height: 80px"></td>
+                    <td style="height: 80px; text-align: center; width: 45%">
+                        <img src="{$firma}" alt="Firma" style="width: 150px; height: 100px">
+                    </td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 45%; border-top: 1px solid">
@@ -4668,6 +4672,7 @@ class Ahorro extends Controller
         $monto = "$" . number_format($datos['MONTO'], 2, '.', ',');
         $monto_letra = self::NumeroLetras($datos['MONTO']);
         $dias_letra = self::NumeroLetras($datos['DIAS'], true);
+        $firma = "/img/firma_1.jpg";
 
         return <<<html
         <div class="contenedor">
@@ -4688,25 +4693,19 @@ class Ahorro extends Controller
                             conocimiento de su objetivo y efectos jurídicos.
                         </li>
                         <li>
-                            Tener su domicilio en <b>{$datos['DIRECCION']}</b>, mismo que señala para todos
-                            sus efectos derivados de este contrato.
+                            Tener su domicilio en <b>AMBAR MANZANA 29 L31CA LOMA DE SAN FRANCISCO ALMOLOYA DE JUAREZ,  ALMOLOYA DE JUAREZ, CP. 50940, MEXICO</b>, mismo que 
+                            señala para todos sus efectos derivados de este contrato.
                         </li>
                         <li>
-                            Que cuenta con la capacidad y solvencia económica suficiente para cumplir con
-                            las obligaciones a su cargo derivadas del presente contrato.
+                            Que cuenta con la capacidad y solvencia económica suficiente para cumplir con las
+                            obligaciones a su cargo derivadas del presente contrato.
                         </li>
                     </ol>
                     <li>Declara el <b>“MUTUANTE Y/O PRESTAMISTA”:</b></li>
                     <ol class="listaLetras">
+                        <li>Contar con la capacidad suficiente para la celebración del presente contrato.</li>
                         <li>
-                            Contar con la capacidad suficiente para la celebración del presente contrato.
-                        </li>
-                        <li>
-                            Que su domicilio para los efectos de este contrato es el ubicado en
-                            <b
-                                >Avenida Melchor Ocampo, número 416 Interior 1, Colonia Cuauhtémoc, Alcaldía
-                                Cuauhtémoc, Ciudad de México, C.P. 06500</b
-                            >.
+                            Que su domicilio para los efectos de este contrato es el ubicado en <b>{$datos['DIRECCION']}</b>.
                         </li>
                     </ol>
                     <li><b>LAS PARTES</b> declaran:</li>
@@ -4811,7 +4810,10 @@ class Ahorro extends Controller
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3" style="height: 80px"></td>
+                    <td colspan="2" style="height: 80px"></td>
+                    <td style="height: 80px; text-align: center; width: 45%">
+                        <img src="{$firma}" alt="Firma" style="width: 150px; height: 100px">
+                    </td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 45%; border-top: 1px solid">
@@ -4850,7 +4852,7 @@ class Ahorro extends Controller
                     <td style="text-align: center; width: 33%"></td>
                 </tr>
                 <tr>
-                    <td colspan="3" style="height: 100px"></td>
+                    <td colspan="3" style="height: 80px"></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 25%"></td>
