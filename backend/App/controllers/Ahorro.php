@@ -273,7 +273,7 @@ class Ahorro extends Controller
             async: false
         })
 
-        return true
+        return resultado
     }';
     private $imprimeContrato = <<<script
     const imprimeContrato = (numero_contrato, producto = 1) => {
