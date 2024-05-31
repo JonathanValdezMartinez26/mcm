@@ -4430,7 +4430,7 @@ class Ahorro extends Controller
 
         if ($numero >= 100) {
             $letra .= $cifras[floor($numero / 100) * 100];
-            $letra .= floor($numero / 100) == 1 ? 'to' : '';
+            $letra .= ($cifras[floor($numero / 100) * 100] === "cien" && $numero % 100 != 0) ? 'to' : '';
             $numero %= 100;
             $letra .= $numero > 0 ? ' ' : '';
         }
@@ -5058,7 +5058,6 @@ class Ahorro extends Controller
         </div>    
         html;
     }
-
 
     //********************BORRAR????********************//
     public function SolicitudRetiroHistorial()

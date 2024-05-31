@@ -1315,7 +1315,7 @@ class CajaAhorro
         INSERT INTO CUENTA_INVERSION
             (CDG_CONTRATO, CDG_TASA, MONTO_INVERSION, FECHA_APERTURA, ESTATUS, ACCION, CDG_USUARIO, CODIGO)
         VALUES
-            (:contrato, :tasa, :monto, SYSDATE, 'A', :accion, :usuario, (SELECT NVL(MAX(CODIGO),0) + 1 FROM CUENTA_INVERSION))
+            (:contrato, :tasa, :monto, SYSDATE, 'A', :accion, :usuario, (SELECT NVL(MAX(TO_NUMBER(CODIGO)),0) FROM CUENTA_INVERSION) + 1)
         sql;
 
         $query = [
