@@ -256,10 +256,10 @@ class Ahorro extends Controller
     }
     script;
     private $valida_MCM_Complementos = 'const valida_MCM_Complementos = () => {
-        swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
         const urlValida = "http://localhost:5005/api/impresora/verificar"
         let resultado = false
         
+        swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
         $.ajax({
             type: "GET",
             url: urlValida,
@@ -270,8 +270,7 @@ class Ahorro extends Controller
             error: (error) => {
                 const estatus = error.responseJSON ? error.responseJSON.estatus.impresora.mensaje : "El servicio de impresión no está disponible.\\nVerifique que MCM Complementos este instalado y en ejecución."
                 showError(estatus)
-            },
-            async: false
+            }
         })
 
         return resultado
@@ -413,7 +412,7 @@ class Ahorro extends Controller
         }
     }';
     private $validaHorarioOperacion = 'const validaHorarioOperacion = (inicio, fin, sinMsj = false) => {
-        fin = "19:00:00"
+        // fin = "19:00:00"
         const horaActual = new Date()
         const horaInicio = new Date()
         const horaFin = new Date()
@@ -3592,7 +3591,7 @@ class Ahorro extends Controller
     {
         $ahora = new DateTime();
         $inicio = DateTime::createFromFormat('H:i:s', $_SESSION['inicio']);
-        $fin = DateTime::createFromFormat('H:i:s', "19:00:00"); // $_SESSION['fin']);
+        $fin = DateTime::createFromFormat('H:i:s', $_SESSION['fin']); // "19:00:00"); // 
 
         return $ahora >= $inicio && $ahora <= $fin;
     }
