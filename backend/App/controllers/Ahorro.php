@@ -216,17 +216,66 @@ class Ahorro extends Controller
     }
     script;
     private $imprimeTicket = <<<script
-    const imprimeTicket = (ticket, sucursal = '', copia = true) => {
+    const imprimeTicket = async (ticket, sucursal = '', copia = true) => {
+        const espera = swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+        const rutaImpresion = 'http://localhost:5005/api/impresora/ticket'
         const host = window.location.origin
         const titulo = 'Ticket: ' + ticket
         const ruta = host + '/Ahorro/Ticket/?'
         + 'ticket=' + ticket
         + '&sucursal=' + sucursal
         + (copia ? '&copiaCliente=true' : '')
-        
-        muestraPDF(titulo, ruta)
+         
+        // muestraPDF(titulo, ruta)
+        fetch(ruta, {
+            method: 'GET'
+        })
+        .then(resp => resp.blob())
+        .then(blob => {
+            const datos = new FormData()
+            datos.append('ticket', blob)
+             
+            fetch(rutaImpresion, {
+                method: 'POST',
+                body: datos
+            })
+            .then(resp => resp.json())
+            .then(res => {
+                if (!res.success) return showError(res.mensaje)
+                showSuccess(res.mensaje)
+            })
+            .catch(error => {
+                console.error(error)
+                showError('El servicio de impresión no está disponible.')
+            })
+        })
+        .catch(error => {
+            console.error(error)
+            showError('Ocurrió un error al generar el ticket.')
+        })
     }
     script;
+    private $valida_MCM_Complementos = 'const valida_MCM_Complementos = () => {
+        swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+        const urlValida = "http://localhost:5005/api/impresora/verificar"
+        let resultado = false
+        
+        $.ajax({
+            type: "GET",
+            url: urlValida,
+            success: (res) => {
+                swal.close()
+                resultado = true
+            },
+            error: (error) => {
+                const estatus = error.responseJSON ? error.responseJSON.estatus.impresora.mensaje : "El servicio de impresión no está disponible.\\nVerifique que MCM Complementos este instalado y en ejecución."
+                showError(estatus)
+            },
+            async: false
+        })
+
+        return resultado
+    }';
     private $imprimeContrato = <<<script
     const imprimeContrato = (numero_contrato, producto = 1) => {
         if (!numero_contrato) return
@@ -281,7 +330,7 @@ class Ahorro extends Controller
         parametros.push({ name: newParametro, value: newValor })
     }';
     private $consultaServidor = 'const consultaServidor = (url, datos, fncOK, metodo = "POST", tipo = "JSON") => {
-        const espera = swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+        swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
         $.ajax({
             type: metodo,
             url: url,
@@ -298,6 +347,7 @@ class Ahorro extends Controller
                         }
                     }
                 }
+                if (tipo === "blob") res = new Blob([res], { type: "application/pdf" })
 
                 swal.close()
                 fncOK(res)
@@ -305,7 +355,6 @@ class Ahorro extends Controller
             error: (error) => {
                 console.error(error)
                 showError("Ocurrió un error al procesar la solicitud.")
-                msjW.close()
             }
         })
     }';
@@ -364,6 +413,7 @@ class Ahorro extends Controller
         }
     }';
     private $validaHorarioOperacion = 'const validaHorarioOperacion = (inicio, fin, sinMsj = false) => {
+        fin = "19:00:00"
         const horaActual = new Date()
         const horaInicio = new Date()
         const horaFin = new Date()
@@ -389,7 +439,6 @@ class Ahorro extends Controller
     // Apertura de contratos para cuentas de ahorro corriente
     public function ContratoCuentaCorriente()
     {
-
         $saldosMM = CajaAhorroDao::GetSaldoMinimoApertura($_SESSION['cdgco_ahorro']);
         $saldoMinimoApertura = $saldosMM['MONTO_MINIMO'];
         $costoInscripcion = 200;
@@ -424,6 +473,7 @@ class Ahorro extends Controller
             {$this->parseaNumero}
             {$this->formatoMoneda}
             {$this->limpiaMontos}
+            {$this->valida_MCM_Complementos}
              
             const buscaCliente = () => {
                 if (document.querySelector("#sucursal").value === "") {
@@ -437,6 +487,7 @@ class Ahorro extends Controller
                 if (!noCliente) return showError("Ingrese un número de cliente a buscar.")
                  
                 consultaServidor("/Ahorro/BuscaCliente/", { cliente: noCliente }, async (respuesta) => {
+                    document.querySelector("#lnkContrato").innerText = "Creación del contrato"
                     if (!respuesta.success) {
                         if (!respuesta.datos) {
                             limpiaDatosCliente()
@@ -446,6 +497,8 @@ class Ahorro extends Controller
                         const datosCliente = respuesta.datos
                         document.querySelector("#btnGeneraContrato").style.display = "none"
                         document.querySelector("#contratoOK").value = datosCliente.CONTRATO
+                        document.querySelector("#fecha").value = datosCliente.FECHA_CONTRATO
+                        document.querySelector("#lnkContrato").innerText = "Creación del contrato (" + datosCliente.FECHA_CONTRATO.split(" ")[0] + ")"
                         if (Array.from(document.querySelector("#ejecutivo_comision").options).some(option => option.value === datosCliente.EJECUTIVO_COMISIONA)) {
                             document.querySelector("#ejecutivo_comision").value = datosCliente.EJECUTIVO_COMISIONA
                         } else {
@@ -474,7 +527,7 @@ class Ahorro extends Controller
                         }
                          
                         if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 1) {
-                            await showInfo(respuesta.mensaje)
+                            await showInfo("El cliente " + datosCliente.CDGCL + " ya cuenta con un contrato de ahorro corriente aperturada el " + datosCliente.FECHA_CONTRATO + ".")
                             document.querySelector("#chkCreacionContrato").classList.remove("red")
                             document.querySelector("#chkCreacionContrato").classList.remove("fa-times")
                             document.querySelector("#chkCreacionContrato").classList.add("green")
@@ -571,6 +624,8 @@ class Ahorro extends Controller
             }
                         
             const pagoApertura = (e) => {
+                if (!valida_MCM_Complementos()) return
+                 
                 e.preventDefault()
                 if (parseaNumero(document.querySelector("#deposito").value) < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a " + saldoMinimoApertura.toLocaleString("es-MX", {style:"currency", currency:"MXN"}) + ".")
                  
@@ -924,7 +979,8 @@ class Ahorro extends Controller
             {$this->limpiaMontos}
             {$this->showBloqueo}
             {$this->validaHorarioOperacion}
-         
+            {$this->valida_MCM_Complementos}
+                      
             window.onload = () => {
                 validaHorarioOperacion("{$_SESSION['inicio']}", "{$_SESSION['fin']}")
                 if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
@@ -1058,6 +1114,8 @@ class Ahorro extends Controller
             }
              
             const registraOperacion = (e) => {
+                if (!valida_MCM_Complementos()) return
+                 
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
                 
@@ -1155,7 +1213,6 @@ class Ahorro extends Controller
             {$this->primeraMayuscula}
             {$this->numeroLetras}
             {$this->muestraPDF}
-            {$this->imprimeTicket}
             {$this->addParametro}
             {$this->sinContrato}
             {$this->getHoy}
@@ -1163,6 +1220,7 @@ class Ahorro extends Controller
             {$this->formatoMoneda}
             {$this->limpiaMontos}
             {$this->consultaServidor}
+            {$this->valida_MCM_Complementos}
              
             const llenaDatosCliente = (datosCliente) => {
                 if (parseaNumero(datosCliente.SALDO) < montoMinimo) {
@@ -1360,6 +1418,7 @@ class Ahorro extends Controller
             {$this->muestraPDF}
             {$this->addParametro}
             {$this->validaFIF}
+            {$this->valida_MCM_Complementos}
          
             $(document).ready(() => {
                 configuraTabla("hstSolicitudes")
@@ -1368,6 +1427,8 @@ class Ahorro extends Controller
             const imprimeExcel = () => exportaExcel("hstSolicitudes", "Historial solicitudes de retiro")
              
             const actualizaEstatus = (estatus, id) => {
+                if (!valida_MCM_Complementos()) return
+                 
                 const accion = estatus === 3 ? "entrega" : "cancelación"
                  
                 consultaServidor("/Ahorro/ResumenEntregaRetiro", $.param({id}), (respuesta) => {
@@ -1617,6 +1678,7 @@ class Ahorro extends Controller
             {$this->consultaServidor}
             {$this->showBloqueo}
             {$this->validaHorarioOperacion}
+            {$this->valida_MCM_Complementos}
          
             window.onload = () => {
                 validaHorarioOperacion("{$_SESSION['inicio']}", "{$_SESSION['fin']}")
@@ -1743,6 +1805,8 @@ class Ahorro extends Controller
             }
             
             const registraOperacion = (e) => {
+                if (!valida_MCM_Complementos()) return
+                 
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
                  
@@ -1924,7 +1988,6 @@ class Ahorro extends Controller
             {$this->numeroLetras}
             {$this->primeraMayuscula}
             {$this->muestraPDF}
-            {$this->imprimeTicket}
             {$this->imprimeContrato}
             {$this->addParametro}
             {$this->consultaServidor}
@@ -2268,6 +2331,7 @@ class Ahorro extends Controller
             {$this->consultaServidor}
             {$this->showBloqueo}
             {$this->validaHorarioOperacion}
+            {$this->valida_MCM_Complementos}
          
             window.onload = () => {
                 validaHorarioOperacion("{$_SESSION['inicio']}", "{$_SESSION['fin']}")
@@ -2509,6 +2573,8 @@ class Ahorro extends Controller
             }
              
             const registraOperacion = async (e) => {
+                if (!valida_MCM_Complementos()) return
+                 
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
                  
@@ -2589,7 +2655,6 @@ class Ahorro extends Controller
             {$this->primeraMayuscula}
             {$this->numeroLetras}
             {$this->muestraPDF}
-            {$this->imprimeTicket}
             {$this->addParametro}
             {$this->sinContrato}
             {$this->getHoy}
@@ -2877,6 +2942,7 @@ class Ahorro extends Controller
             {$this->imprimeTicket}
             {$this->muestraPDF}
             {$this->addParametro}
+            {$this->valida_MCM_Complementos}
          
             $(document).ready(() => {
                 configuraTabla("hstSolicitudes")
@@ -2893,6 +2959,8 @@ class Ahorro extends Controller
             const imprimeExcel = () => exportaExcel("hstSolicitudes", "Historial solicitudes de retiro")
              
             const actualizaEstatus = (estatus, id) => {
+                if (!valida_MCM_Complementos()) return
+                 
                 const accion = estatus === 3 ? "entrega" : "cancelación"
                  
                 consultaServidor("/Ahorro/ResumenEntregaRetiro", $.param({id}), (respuesta) => {
@@ -3524,7 +3592,7 @@ class Ahorro extends Controller
     {
         $ahora = new DateTime();
         $inicio = DateTime::createFromFormat('H:i:s', $_SESSION['inicio']);
-        $fin = DateTime::createFromFormat('H:i:s', $_SESSION['fin']);
+        $fin = DateTime::createFromFormat('H:i:s', "19:00:00"); // $_SESSION['fin']);
 
         return $ahora >= $inicio && $ahora <= $fin;
     }
@@ -3884,6 +3952,7 @@ class Ahorro extends Controller
         // Agregar contenido al PDF
         $mpdf->WriteHTML($ticketHTML);
         $mpdf->Output($nombreArchivo . '.pdf', 'I');
+
         exit;
     }
 
@@ -4351,7 +4420,7 @@ class Ahorro extends Controller
         if ($numero >= 100000) {
             $letra .= floor($numero / 100000) == 1 ? ' cien' : $cifras[floor($numero / 100000) * 100];
             $numero %= 100000;
-            $letra .= $numero > 0 ? ' ' : '';
+            $letra .= $numero > 1000 ? ' ' : ' mil ';
         }
 
         if ($numero >= 1000) {
@@ -5023,6 +5092,7 @@ html;
             {$this->addParametro}
             {$this->validaFIF}
             {$this->consultaServidor}
+            {$this->valida_MCM_Complementos}
          
             $(document).ready(() => {
                 configuraTabla("solicitudes");
@@ -5043,6 +5113,12 @@ html;
                     $("#solicitudes tbody").html(respuesta.datos)
                     configuraTabla("solicitudes")
                 })
+            }
+             
+            const impTkt = (tkt) => {
+                if (!valida_MCM_Complementos()) return
+                 
+                imprimeTicket(tkt)
             }
         </script>
         html;
@@ -5082,7 +5158,7 @@ html;
                 $autoriza = "ACEPTADO";
 
                 $imprime = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="imprimeTicket('{$value['CDGTICKET_AHORRO']}');"><i class="fa fa-print"></i></button>
+                    <button type="button" class="btn btn-success btn-circle" onclick="impTkt('{$value['CDGTICKET_AHORRO']}');"><i class="fa fa-print"></i></button>
                 html;
             } else if ($value['AUTORIZA'] == 2) {
                 $imprime = '<span class="count_top" style="font-size: 22px"><i class="fa fa-close" style="color: #ac1d00"></i></span>';
