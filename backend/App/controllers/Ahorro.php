@@ -218,7 +218,7 @@ class Ahorro extends Controller
     private $imprimeTicket = <<<script
     const imprimeTicket = async (ticket, sucursal = '', copia = true) => {
         const espera = swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
-        const rutaImpresion = 'http://localhost:5005/api/impresora/ticket'
+        const rutaImpresion = 'http://127.0.0.1:5005/api/impresora/ticket'
         const host = window.location.origin
         const titulo = 'Ticket: ' + ticket
         const ruta = host + '/Ahorro/Ticket/?'
@@ -256,21 +256,21 @@ class Ahorro extends Controller
     }
     script;
     private $valida_MCM_Complementos = 'const valida_MCM_Complementos = () => {
-        const urlValida = "http://localhost:5005/api/impresora/verificar"
-        let resultado = false
-        
         swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+        let resultado = false
         $.ajax({
             type: "GET",
-            url: urlValida,
+            url: "http://127.0.0.1:5005/api/impresora/verificar",
             success: (res) => {
                 swal.close()
                 resultado = true
             },
             error: (error) => {
-                const estatus = error.responseJSON ? error.responseJSON.estatus.impresora.mensaje : "El servicio de impresión no está disponible.\\nVerifique que MCM Complementos este instalado y en ejecución."
+                swal.close();
+                const estatus = error.responseJSON ? error.responseJSON.estatus.impresora.mensaje : "El servicio de impresión no está disponible.\nVerifique que MCM Complementos esté instalado y en ejecución.";
                 showError(estatus)
-            }
+            },
+            async: false
         })
 
         return resultado
@@ -670,11 +670,11 @@ class Ahorro extends Controller
                         document.querySelector("#AddPagoApertura").reset()
                         $("#modal_agregar_pago").modal("hide")
                         limpiaDatosCliente()
-                        imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}")
-                    
+                        
                         showSuccess("Se ha generado el contrato: " + contrato + ".")
                         .then(() => {
                             imprimeContrato(contrato, 1)
+                            imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}")
                         })
                     })
                 })
