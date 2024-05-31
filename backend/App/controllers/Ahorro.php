@@ -218,7 +218,7 @@ class Ahorro extends Controller
     private $imprimeTicket = <<<script
     const imprimeTicket = async (ticket, sucursal = '', copia = true) => {
         const espera = swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
-        const rutaImpresion = 'http://localhost:5005/api/impresora/ticket'
+        const rutaImpresion = 'http://127.0.0.1:5005/api/impresora/ticket'
         const host = window.location.origin
         const titulo = 'Ticket: ' + ticket
         const ruta = host + '/Ahorro/Ticket/?'
@@ -255,8 +255,9 @@ class Ahorro extends Controller
         })
     }
     script;
-    private $valida_MCM_Complementos = 'const valida_MCM_Complementos = () => {
-        const urlValida = "http://localhost:5005/api/impresora/verificar"
+    private $valida_MCM_Complementos = '
+    const valida_MCM_Complementos = () => {
+        const urlValida = "http://127.0.0.1:5005/api/impresora/verificar"
         let resultado = false
         
         swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
