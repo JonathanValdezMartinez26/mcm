@@ -4492,8 +4492,7 @@ class Ahorro extends Controller
                             conocimiento de su objetivo y efectos jurídicos.
                         </li>
                         <li>
-                            Tener su domicilio en <b>Avenida Melchor Ocampo, número 416 Interior 1, Colonia 
-                            Cuauhtémoc, Alcaldía Cuauhtémoc, Ciudad de México, C.P. 06500</b>, mismo que 
+                            Tener su domicilio en <b>AMBAR MANZANA 29 L31CA LOMA DE SAN FRANCISCO ALMOLOYA DE JUAREZ,  ALMOLOYA DE JUAREZ, CP. 50940, MEXICO</b>, mismo que 
                             señala para todos sus efectos derivados de este contrato.
                         </li>
                         <li>
@@ -4556,8 +4555,9 @@ class Ahorro extends Controller
                 acudir personalmente.
             </p>
             <p>
-                <b>SEXTA.-</b> <b>INTERÉS MORATORIO.</b> “MUTUARIO Y/O PRESTATARIO” pagará al “MUTUANTE Y/O
-                PRESTAMISTA” una comisión del 10% sobre el monto total del préstamo.
+                <b>SEXTA.-</b> <b>INTERÉS MORATORIO.</b> Si el “MUTUARIO Y/O PRESTATARIO” incumpliera en el pago de las amortizaciones pactadas,
+                 “MUTUANTE Y/O PRESTAMISTA” aplicará intereses moratorios a razón de 4.5% 
+                mensual sobre el capital devengado y no pagado conforme a la cláusula tercera del presente instrumento.
             </p>
             <p>
                 <b>SEPTIMA.-</b> <b>INCUMPLIMIENTO.</b> En caso de incumplimiento de pago del “MUTUARIO Y/O
