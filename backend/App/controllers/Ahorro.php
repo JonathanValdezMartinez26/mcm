@@ -255,23 +255,22 @@ class Ahorro extends Controller
         })
     }
     script;
-    private $valida_MCM_Complementos = 'const valida_MCM_Complementos = () => {
+    private $valida_MCM_Complementos = 'const valida_MCM_Complementos = async () => {
         swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+        
         let resultado = false
-        $.ajax({
-            type: "GET",
-            url: "http://127.0.0.1:5005/api/impresora/verificar",
-            success: (res) => {
+        try {
+            const res = await fetch("http://localhost:5005/api/impresora/verificar")
+            if (res.ok) {
                 swal.close()
                 resultado = true
-            },
-            error: (error) => {
-                swal.close();
-                const estatus = error.responseJSON ? error.responseJSON.estatus.impresora.mensaje : "El servicio de impresión no está disponible.\nVerifique que MCM Complementos esté instalado y en ejecución.";
-                showError(estatus)
-            },
-            async: false
-        })
+            } else {
+                const r = await res.json()
+                showError(r.estatus.impresora.mensaje.replaceAll("<br>", "\\n", "g"))
+            }
+        } catch (error) {
+            showError("El servicio de impresión no está disponible.")
+        }
 
         return resultado
     }';
@@ -412,7 +411,7 @@ class Ahorro extends Controller
         }
     }';
     private $validaHorarioOperacion = 'const validaHorarioOperacion = (inicio, fin, sinMsj = false) => {
-        // fin = "19:00:00"
+        fin = "19:00:00"
         const horaActual = new Date()
         const horaInicio = new Date()
         const horaFin = new Date()
@@ -622,8 +621,8 @@ class Ahorro extends Controller
                 $("#modal_agregar_pago").modal("show")
             }
                         
-            const pagoApertura = (e) => {
-                if (!valida_MCM_Complementos()) return
+            const pagoApertura = async (e) => {
+                if (!await valida_MCM_Complementos()) return
                  
                 e.preventDefault()
                 if (parseaNumero(document.querySelector("#deposito").value) < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a " + saldoMinimoApertura.toLocaleString("es-MX", {style:"currency", currency:"MXN"}) + ".")
@@ -1112,8 +1111,8 @@ class Ahorro extends Controller
                 document.querySelector("#btnRegistraOperacion").disabled = !(saldoFinal >= 0 && parseaNumero(document.querySelector("#montoOperacion").value) > 0)
             }
              
-            const registraOperacion = (e) => {
-                if (!valida_MCM_Complementos()) return
+            const registraOperacion = async (e) => {
+                if (!await valida_MCM_Complementos()) return
                  
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
@@ -1425,8 +1424,8 @@ class Ahorro extends Controller
             
             const imprimeExcel = () => exportaExcel("hstSolicitudes", "Historial solicitudes de retiro")
              
-            const actualizaEstatus = (estatus, id) => {
-                if (!valida_MCM_Complementos()) return
+            const actualizaEstatus = async (estatus, id) => {
+                if (!await valida_MCM_Complementos()) return
                  
                 const accion = estatus === 3 ? "entrega" : "cancelación"
                  
@@ -1803,8 +1802,8 @@ class Ahorro extends Controller
                 }
             }
             
-            const registraOperacion = (e) => {
-                if (!valida_MCM_Complementos()) return
+            const registraOperacion = async (e) => {
+                if (!await valida_MCM_Complementos()) return
                  
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
@@ -2572,7 +2571,7 @@ class Ahorro extends Controller
             }
              
             const registraOperacion = async (e) => {
-                if (!valida_MCM_Complementos()) return
+                if (!await valida_MCM_Complementos()) return
                  
                 e.preventDefault()
                 const datos = $("#registroOperacion").serializeArray()
@@ -2957,8 +2956,8 @@ class Ahorro extends Controller
             
             const imprimeExcel = () => exportaExcel("hstSolicitudes", "Historial solicitudes de retiro")
              
-            const actualizaEstatus = (estatus, id) => {
-                if (!valida_MCM_Complementos()) return
+            const actualizaEstatus = async (estatus, id) => {
+                if (!await valida_MCM_Complementos()) return
                  
                 const accion = estatus === 3 ? "entrega" : "cancelación"
                  
@@ -3591,7 +3590,7 @@ class Ahorro extends Controller
     {
         $ahora = new DateTime();
         $inicio = DateTime::createFromFormat('H:i:s', $_SESSION['inicio']);
-        $fin = DateTime::createFromFormat('H:i:s', $_SESSION['fin']); // "19:00:00"); // 
+        $fin = DateTime::createFromFormat('H:i:s',  "19:00:00"); // $_SESSION['fin']); //
 
         return $ahora >= $inicio && $ahora <= $fin;
     }
@@ -5115,8 +5114,8 @@ html;
                 })
             }
              
-            const impTkt = (tkt) => {
-                if (!valida_MCM_Complementos()) return
+            const impTkt = async (tkt) => {
+                if (!await valida_MCM_Complementos()) return
                  
                 imprimeTicket(tkt)
             }
