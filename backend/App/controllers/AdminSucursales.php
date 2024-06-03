@@ -1696,7 +1696,7 @@ script;
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', date('Y-m-d'));
         View::render("caja_admin_reporteria_transacciones");
-        View::render("caja_admin_reporteria");
+        //View::render("caja_admin_reporteria");
     }
 
 
