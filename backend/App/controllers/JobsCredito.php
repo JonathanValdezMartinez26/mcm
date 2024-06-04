@@ -2,7 +2,7 @@
 
 namespace App\controllers;
 
-include 'C:/xampp/htdocs/mcm/backend/App/models/Jobs.php';
+include 'C:/xampp/htdocs/mcm/backend/App/models/JobsCredito.php';
 
 use \App\models\JobsCredito as JobsDao;
 
@@ -15,11 +15,11 @@ class JobsCredito
 {
     public function SaveLog($tdatos)
     {
-        $archivo = "C:/xampp/Jobs_php.log";
+        $archivo = "C:/xampp/JobsCredito_php.log";
 
         clearstatcache();
         if (file_exists($archivo) && filesize($archivo) > 10 * 1024 * 1024) { // 10 MB
-            $nuevoNombre = "C:/xampp/Jobs_php_" . date('Ymd') . ".log";
+            $nuevoNombre = "C:/xampp/Jobs_ahorro" . date('Ymd') . ".log";
             rename($archivo, $nuevoNombre);
         }
 
