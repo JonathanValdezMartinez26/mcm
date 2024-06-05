@@ -5,8 +5,12 @@ namespace App\controllers;
 include 'C:/xampp/htdocs/mcm/backend/App/models/JobsAhorro.php';
 
 use \App\models\JobsAhorro as JobsDao;
+use DateTime;
+use DateTimeZone;
 
-date_default_timezone_set('America/Mexico_City');
+$validaHV = new DateTime('now', new DateTimeZone('America/Mexico_City'));
+if ($validaHV->format('I')) date_default_timezone_set('America/Mazatlan');
+else date_default_timezone_set('America/Mexico_City');
 
 $jobs = new JobsAhorro();
 
@@ -57,11 +61,11 @@ class JobsAhorro
 {
     public function SaveLog($tdatos)
     {
-        $archivo = "C:/xampp/JobsAhorro_php.log";
+        $archivo = "C:/xampp/JobsAhorro.log";
 
         clearstatcache();
         if (file_exists($archivo) && filesize($archivo) > 10 * 1024 * 1024) { // 10 MB
-            $nuevoNombre = "C:/xampp/Jobs_php_" . date('Ymd') . ".log";
+            $nuevoNombre = "C:/xampp/JobsAhorro" . date('Ymd') . ".log";
             rename($archivo, $nuevoNombre);
         }
 
@@ -216,7 +220,7 @@ class JobsAhorro
             $resumen[] = [
                 "fecha" => date("Y-m-d H:i:s"),
                 "datos" => $datos,
-                "RES_CAPTURA_SALDOS" => "capturado" //JobsDao::CapturaSaldos($datos)
+                "RES_CAPTURA_SALDOS" => JobsDao::CapturaSaldos($datos)
             ];
         };
 

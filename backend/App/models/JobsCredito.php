@@ -15,7 +15,8 @@ class JobsCredito
          SELECT
             PRC.CDGCL, PRNN.CDGNS, PRNN.CICLO, PRNN.INICIO, PRNN.CDGCO, PRNN.CANTAUTOR, TRUNC(SYSDATE) AS FEXP,
             (APagarInteresPrN('EMPFIN',PRNN.CDGNS,PRNN.CICLO, nvl(PRNN.CANTENTRE , PRNN.CANTAUTOR), PRNN.Tasa, PRNN.PLAZO, PRNN.PERIODICIDAD , PRNN.CDGMCI , 
-            PRNN.INICIO, PRNN.DIAJUNTA , PRNN.MULTPER , PRNN.PERIGRCAP , PRNN.PERIGRINT ,  PRNN.DESFASEPAGO ,   PRNN.CDGTI) * -1)AS INTERES, (APagarInteresPrN('EMPFIN',PRNN.CDGNS,PRNN.CICLO, nvl(PRNN.CANTENTRE , PRNN.CANTAUTOR), PRNN.Tasa, PRNN.PLAZO, PRNN.PERIODICIDAD , PRNN.CDGMCI , 
+            PRNN.INICIO, PRNN.DIAJUNTA , PRNN.MULTPER , PRNN.PERIGRCAP , PRNN.PERIGRINT ,  PRNN.DESFASEPAGO ,   PRNN.CDGTI) * -1)AS INTERES, 
+            (APagarInteresPrN('EMPFIN',PRNN.CDGNS,PRNN.CICLO, nvl(PRNN.CANTENTRE , PRNN.CANTAUTOR), PRNN.Tasa, PRNN.PLAZO, PRNN.PERIODICIDAD , PRNN.CDGMCI , 
             PRNN.INICIO, PRNN.DIAJUNTA , PRNN.MULTPER , PRNN.PERIGRCAP , PRNN.PERIGRINT ,  PRNN.DESFASEPAGO ,   PRNN.CDGTI) * -1)AS PAGADOINT
         FROM
             PRN PRNN, PRC
@@ -84,7 +85,6 @@ sql;
         ];
 
         $db = Database::getInstance();
-        return ["ActualizaPRC" => [$qry, $parametros]];
         return $db->insertar($qry, $parametros);
     }
 
@@ -116,7 +116,6 @@ sql;
         ];
 
         $db = Database::getInstance();
-        return ["ActualizaPRN" => [$qry, $parametros]];
         return $db->insertar($qry, $parametros);
     }
 
@@ -142,7 +141,6 @@ sql;
         ];
 
         $db = Database::getInstance();
-        return ["LimpiarMPC" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
 
@@ -168,7 +166,6 @@ sql;
         ];
 
         $db = Database::getInstance();
-        return ["LimpiarJP" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
 
@@ -193,7 +190,6 @@ sql;
         ];
 
         $db = Database::getInstance();
-        return ["LimpiarMP" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
 
@@ -226,7 +222,7 @@ sql;
                 ),
                 0
                 ) * -1
-            ) as vINTCTE
+            ) as VINTCTE
         FROM
             PRN,
             PRC
@@ -247,10 +243,8 @@ sql;
         ];
 
         $db = Database::getInstance();
-        return ["GET_vINTCTE" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
-
 
     public static function InsertarMP($datos)
     {
@@ -259,63 +253,64 @@ sql;
             MP (
                 CDGEM,
                 CDGCLNS,
-                CICLO,
                 CLNS,
-                FREALDEP,
-                FDEPOSITO,
+                CDGNS,
+                CICLO,
                 PERIODO,
                 SECUENCIA,
+                REFERENCIA,
+                REFCIE,
                 TIPO,
+                FREALDEP,
+                FDEPOSITO,
                 CANTIDAD,
+                MODO,
                 CONCILIADO,
                 ESTATUS,
+                ACTUALIZARPE
                 pagadocap,
                 PAGADOINT,
                 pagadorec,
-                MODO,
-                REFERENCIA,
-                REFCIE,
+              
+              
                 CDGNS,
-                ACTUALIZARPE
+                
             )
         VALUES
             (
-                :prmCDGEM,
+                'EMPFIN',
                 :prmCDGCLNS,
+                'G',
+                :prmCDGNS,
                 :prmCICLO,
-                :prmCLNS,
-                :prmINICIO,
-                :prmINICIO,
-                '00',
+                '0',
                 '01',
+                'Interés total del préstamo',
+                'Interés total del préstamo',
                 'IN',
+                :prmINICIO,
+                :prmINICIO,
                 :vINTERES,
+                'G',
                 'D',
                 'B',
+                'AMGM'
                 0,
                 :vINTERES,
-                0,
-                'G',
-                'Interés total del préstamo',
-                'Interés total del préstamo',
-                :vCDGNS,
-                :prmUSUARIO
+                0
             )
-        sql;
+sql;
 
         $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
             "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCLNS" => $datos["prmCLNS"],
+            "prmCDGNS" => $datos["cdgns"],
             "prmCICLO" => $datos["prmCICLO"],
             "prmINICIO" => $datos["prmINICIO"],
-            "vINTERES" => $datos["vINTERES"],
-            "vCDGNS" => $datos["vCDGNS"],
-            "prmUSUARIO" => $datos["prmUSUARIO"]
+            "vINTERES" => $datos["vINTERES"]
+            //,"prmUSUARIO" => $datos["usuario"]
         ];
 
         $db = Database::getInstance();
-        return ["InsertarMP" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
 
@@ -345,10 +340,10 @@ sql;
             )
         VALUES
             (
-                :prmCDGEM,
+                'EMPFIN',
                 :prmCDGCLNS,
                 :prmCICLO,
-                :prmCLNS,
+                'G',
                 :prmINICIO,
                 '00',
                 :vINTERES,
@@ -364,21 +359,18 @@ sql;
                 'S',
                 'S'
             )
-        sql;
+sql;
 
         $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
             "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCLNS" => $datos["prmCLNS"],
             "prmCICLO" => $datos["prmCICLO"],
             "prmINICIO" => $datos["prmINICIO"],
             "vINTERES" => $datos["vINTERES"],
-            "vCDGNS" => $datos["vCDGNS"],
-            "prmUSUARIO" => $datos["prmUSUARIO"]
+            "vCDGNS" => $datos["cdgns"],
+            "prmUSUARIO" => $datos["usuario"]
         ];
 
         $db = Database::getInstance();
-        return ["limpiarMPC" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
 
@@ -400,10 +392,10 @@ sql;
             )
         VALUES
             (
-                :prmCDGEM,
+                'EMPFIN',
                 :vCLIENTE,
                 :prmCICLO,
-                :prmCLNS,
+                'G',
                 :prmINICIO,
                 'IN',
                 '00',
@@ -411,20 +403,17 @@ sql;
                 :vCDGNS,
                 :vINTCTE
             )
-        sql;
+sql;
 
         $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
-            "vCLIENTE" => $datos["vCLIENTE"],
+            "vCLIENTE" => $datos["cdgcl"],
             "prmCICLO" => $datos["prmCICLO"],
-            "prmCLNS" => $datos["prmCLNS"],
             "prmINICIO" => $datos["prmINICIO"],
-            "vCDGNS" => $datos["vCDGNS"],
+            "vCDGNS" => $datos["cdgns"],
             "vINTCTE" => $datos["vINTCTE"]
         ];
 
         $db = Database::getInstance();
-        return ["limpiarMPC" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
 }

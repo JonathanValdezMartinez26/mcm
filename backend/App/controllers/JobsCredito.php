@@ -2,18 +2,12 @@
 
 namespace App\controllers;
 
-defined("APPPATH") or die("Access denied");
-
-use \Core\View;
-use \Core\Controller;
-use \Core\MasterDom;
-use \App\models\CajaAhorro as CajaAhorroDao;
 use \App\models\JobsCredito as JobsDao;
-use DateTime;
+use DateTimeZone;
 
-//use \App\models\JobsCredito as JobsDao;
-
-date_default_timezone_set('America/Mexico_City');
+$validaHV = new DateTime('now', new DateTimeZone('America/Mexico_City'));
+if ($validaHV->format('I')) date_default_timezone_set('America/Mazatlan');
+else date_default_timezone_set('America/Mexico_City');
 
 $jobs = new JobsCredito();
 $jobs->JobCheques();
@@ -22,11 +16,11 @@ class JobsCredito
 {
     public function SaveLog($tdatos)
     {
-        $archivo = "C:/xampp/Jobs_php.log";
+        $archivo = "C:/xampp/JobsCredito.log";
 
         clearstatcache();
         if (file_exists($archivo) && filesize($archivo) > 10 * 1024 * 1024) { // 10 MB
-            $nuevoNombre = "C:/xampp/Jobs_php_" . date('Ymd') . ".log";
+            $nuevoNombre = "C:/xampp/JobsCredito" . date('Ymd') . ".log";
             rename($archivo, $nuevoNombre);
         }
 
@@ -43,7 +37,6 @@ class JobsCredito
         self::SaveLog("Iniciando Job Cheques");
         $resumen = [];
         $creditos = JobsDao::CreditosAutorizados();
-        var_dump($creditos);
 
         foreach ($creditos as $key => $credito) {
             $chequera = JobsDao::GetNoChequera($credito["CDGCO"]);
@@ -71,6 +64,7 @@ class JobsCredito
             $resumen[] = [
                 "fecha" => date("Y-m-d H:i:s"),
                 "datos" => $datos,
+
                 "INTCTE" => JobsDao::GET_vINTCTE($datos)["vINTCTE"],
                 "RES_PRC_UPDATE" => JobsDao::ActualizaPRC($datos),
                 "RES_PRN_UPDATE" => JobsDao::ActualizaPRN($datos),
