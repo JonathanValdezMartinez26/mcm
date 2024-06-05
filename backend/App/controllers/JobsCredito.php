@@ -1,10 +1,17 @@
-<?PHP
+<?php
 
 namespace App\controllers;
 
-include 'C:/xampp/htdocs/mcm/backend/App/models/Jobs.php';
+defined("APPPATH") or die("Access denied");
 
+use \Core\View;
+use \Core\Controller;
+use \Core\MasterDom;
+use \App\models\CajaAhorro as CajaAhorroDao;
 use \App\models\JobsCredito as JobsDao;
+use DateTime;
+
+//use \App\models\JobsCredito as JobsDao;
 
 date_default_timezone_set('America/Mexico_City');
 
@@ -31,42 +38,6 @@ class JobsCredito
         fclose($log);
     }
 
-    public function JobCheques_OLD()
-    {
-        self::SaveLog("Iniciando Job Cheques");
-        $resumen = [];
-        $creditos = JobsDao::CreditosAutorizados();
-        var_dump($creditos);
-
-        foreach ($creditos as $key => $credito) {
-            $chequera = JobsDao::GetNoChequera($credito["CDGCO"]);
-            $cheque = JobsDao::GetNoCheque($chequera["CDGCB"]);
-
-            $datos = [
-                "cheque" => $cheque["CHQSIG"],
-                "fexp" => $credito["FEXP"],
-                "usuario" => $_SESSION["usuario"] ?? "AMGM",
-                "cdgcb" => $chequera["CDGCB"],
-                "cdgcl" => $credito["CDGCL"],
-                "cdgns" => $credito["CDGNS"],
-                "ciclo" => $credito["CICLO"],
-                "cantautor" => $credito["CANTAUTOR"]
-            ];
-
-            $resumen[] = [
-                "fecha" => date("Y-m-d H:i:s"),
-                "datos" => $datos,
-                "RES_PRC_UPDATE" => JobsDao::ActualizaPRC($datos),
-                "RES_PRN_UPDATE" => JobsDao::ActualizaPRN($datos)
-            ];
-        }
-
-        self::SaveLog(json_encode($resumen, JSON_PRETTY_PRINT));
-        self::SaveLog("Finalizando Job Cheques");
-
-        echo "Job Cheques finalizado";
-    }
-
     public function JobCheques()
     {
         self::SaveLog("Iniciando Job Cheques");
@@ -82,16 +53,16 @@ class JobsCredito
                 //Datos para actualizar PRC y PRN
                 "cheque" => $cheque["CHQSIG"],
                 "fexp" => $credito["FEXP"],
-                "usuario" => $_SESSION["usuario"] ?? "AMGM",
+                "usuario" => "AMGM",
                 "cdgcb" => $chequera["CDGCB"],
                 "cdgcl" => $credito["CDGCL"],
                 "cdgns" => $credito["CDGNS"],
                 "ciclo" => $credito["CICLO"],
                 "cantautor" => $credito["CANTAUTOR"],
                 //Datos para nuevas querys
-                "prmCDGEM" => 'EMPFIN',
+
                 "prmCDGCLNS" => $credito["CDGNS"],
-                "prmCLNS" => $credito["CDGCL"],
+                "prmCLNS" => $credito["CDGNS"],
                 "prmCICLO" => $credito["CICLO"],
                 "prmINICIO" => $credito["FEXP"],
                 "vINTCTE" => 0,

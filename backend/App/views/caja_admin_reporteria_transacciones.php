@@ -88,7 +88,7 @@
                                                 <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="Inicial">Fecha a consultar (flujo de efectivo) *</label>
-                                                        <input type="date" class="form-control" min="2024-05-22" max="<?php echo $fechaActual;?>" id="Inicial" name="Inicial" value="<?php echo $fecha_inicial;?>">
+                                                        <input type="date" class="form-control" min="2024-06-03" max="<?php echo $fechaActual;?>" id="Inicial" name="Inicial" value="<?php echo $fecha_inicial;?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
