@@ -94,7 +94,7 @@ class JobsCredito
                 //Datos para nuevas querys
                 "prmCDGEM" => 'EMPFIN',
                 "prmCDGCLNS" => $credito["CDGNS"],
-                "prmCLNS" => $credito["CDGCL"],
+                "prmCLNS" => $credito["CDGNS"],
                 "prmCICLO" => $credito["CICLO"],
                 "prmINICIO" => $credito["FEXP"],
                 "vINTCTE" => 0,
