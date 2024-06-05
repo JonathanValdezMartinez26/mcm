@@ -80,7 +80,6 @@ class JobsCredito
         ];
 
         $db = Database::getInstance();
-        return ["ActualizaPRC" => [$qry, $parametros]];
         return $db->insertar($qry, $parametros);
     }
 
@@ -112,7 +111,6 @@ class JobsCredito
         ];
 
         $db = Database::getInstance();
-        return ["ActualizaPRN" => [$qry, $parametros]];
         return $db->insertar($qry, $parametros);
     }
 
@@ -140,7 +138,6 @@ class JobsCredito
         ];
 
         $db = Database::getInstance();
-        return ["LimpiarMPC" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
 
@@ -168,7 +165,6 @@ class JobsCredito
         ];
 
         $db = Database::getInstance();
-        return ["LimpiarJP" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
 
@@ -195,7 +191,6 @@ class JobsCredito
         ];
 
         $db = Database::getInstance();
-        return ["LimpiarMP" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
 
@@ -357,7 +352,6 @@ class JobsCredito
         ];
 
         $db = Database::getInstance();
-        return ["InsertarMP" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
 
@@ -420,7 +414,6 @@ class JobsCredito
         ];
 
         $db = Database::getInstance();
-        return ["limpiarMPC" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
 
@@ -466,7 +459,6 @@ class JobsCredito
         ];
 
         $db = Database::getInstance();
-        return ["limpiarMPC" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
 }
