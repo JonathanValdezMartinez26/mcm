@@ -107,8 +107,8 @@ class JobsCredito
             $resumen[] = [
                 "fecha" => date("Y-m-d H:i:s"),
                 "datos" => $datos,
-                "INCCTE" => JobsDao::GET_vINTCTE($datos)["vINTCTE"],
-                "INTERES" => JobsDao::GET_vINTERES($datos)["vINTERES"],
+                "INCCTE" => JobsDao::GET_vINTCTE($datos)["VINTCTE"],
+                "INTERES" => JobsDao::GET_vINTERES($datos)["VINTERES"],
                 "RES_PRC_UPDATE" => JobsDao::ActualizaPRC($datos),
                 "RES_PRN_UPDATE" => JobsDao::ActualizaPRN($datos),
                 "RES_MPC_DELETE" => JobsDao::LimpiarMPC($datos),

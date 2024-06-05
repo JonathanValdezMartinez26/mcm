@@ -228,7 +228,7 @@ class JobsCredito
                 ),
                 0
                 ) * -1
-            ) as vINTCTE
+            ) as VINTCTE
         FROM
             PRN,
             PRC
@@ -250,7 +250,6 @@ class JobsCredito
         ];
 
         $db = Database::getInstance();
-        return ["GET_vINTCTE" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
 
@@ -276,7 +275,7 @@ class JobsCredito
                 PrN.DesfasePago,
                 PrN.CdgTI
                 ) * -1
-            ) as vINTERES
+            ) as VINTERES
         FROM
             prn
         WHERE
@@ -292,7 +291,6 @@ class JobsCredito
         ];
 
         $db = Database::getInstance();
-        return ["GET_vINTERES" => [$qry, $parametros]];
         return $db->queryOne($qry, $parametros);
     }
 
