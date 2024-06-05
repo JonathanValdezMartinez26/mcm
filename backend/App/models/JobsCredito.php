@@ -11,8 +11,12 @@ class JobsCredito
     public static function CreditosAutorizados()
     {
         $qry = <<<sql
-        SELECT
-            PRC.CDGCL, PRNN.CDGNS, PRNN.CICLO, PRNN.INICIO, PRNN.CDGCO, PRNN.CANTAUTOR, TRUNC(SYSDATE) AS FEXP  
+         
+         SELECT
+            PRC.CDGCL, PRNN.CDGNS, PRNN.CICLO, PRNN.INICIO, PRNN.CDGCO, PRNN.CANTAUTOR, TRUNC(SYSDATE) AS FEXP,
+            (APagarInteresPrN('EMPFIN',PRNN.CDGNS,PRNN.CICLO, nvl(PRNN.CANTENTRE , PRNN.CANTAUTOR), PRNN.Tasa, PRNN.PLAZO, PRNN.PERIODICIDAD , PRNN.CDGMCI , 
+            PRNN.INICIO, PRNN.DIAJUNTA , PRNN.MULTPER , PRNN.PERIGRCAP , PRNN.PERIGRINT ,  PRNN.DESFASEPAGO ,   PRNN.CDGTI) * -1)AS INTERES, (APagarInteresPrN('EMPFIN',PRNN.CDGNS,PRNN.CICLO, nvl(PRNN.CANTENTRE , PRNN.CANTAUTOR), PRNN.Tasa, PRNN.PLAZO, PRNN.PERIODICIDAD , PRNN.CDGMCI , 
+            PRNN.INICIO, PRNN.DIAJUNTA , PRNN.MULTPER , PRNN.PERIGRCAP , PRNN.PERIGRINT ,  PRNN.DESFASEPAGO ,   PRNN.CDGTI) * -1)AS PAGADOINT
         FROM
             PRN PRNN, PRC
         WHERE 
@@ -20,7 +24,7 @@ class JobsCredito
             AND (SELECT COUNT(*) FROM PRN WHERE PRN.SITUACION = 'E' AND PRN.CDGNS = PRNN.CDGNS) = 0
             AND PRC.CDGNS = PRNN.CDGNS 
             AND PRC.NOCHEQUE IS NULL
-        sql;
+sql;
 
         $db = Database::getInstance();
         return $db->queryAll($qry);
@@ -33,7 +37,7 @@ class JobsCredito
         FROM CHEQUERA
         WHERE TO_NUMBER(CODIGO) = (SELECT MAX(TO_NUMBER(CODIGO)) AS int_column FROM CHEQUERA WHERE CDGCO = :cdgco)
         AND CDGCO = :cdgco
-        sql;
+sql;
 
         $db = Database::getInstance();
         return $db->queryOne($qry, ["cdgco" => $cdgco]);
@@ -43,7 +47,7 @@ class JobsCredito
     {
         $qry = <<<sql
         SELECT FNSIGCHEQUE('EMPFIN', :chequera) CHQSIG FROM DUAL
-        sql;
+sql;
 
         $db = Database::getInstance();
         return $db->queryOne($qry, ["chequera" => $chequera]);
@@ -66,7 +70,7 @@ class JobsCredito
             CDGCL = :cdgcl
             AND CDGCLNS = :cdgns
             AND CICLO = :ciclo
-        sql;
+sql;
 
         $parametros = [
             "cheque" => $datos["cheque"],
@@ -100,7 +104,7 @@ class JobsCredito
         WHERE
             CDGNS = :cdgns
             AND CICLO = :ciclo
-        sql;
+sql;
 
         $parametros = [
             "fexp" => $datos["fexp"],
@@ -122,19 +126,17 @@ class JobsCredito
         DELETE FROM
             MPC
         WHERE
-            CDGEM = :prmCDGEM
+            CDGEM = 'EMPFIN'
             AND CDGCLNS = :prmCDGCLNS
-            AND CLNS = :prmCLNS
+            AND CLNS = 'G'
             AND CICLO = :prmCICLO
             AND FECHA = :prmINICIO
             AND TIPO in ('IN', 'GR', 'Co', 'GA')
             AND PERIODO = '00'
-        sql;
+sql;
 
         $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
             "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCLNS" => $datos["prmCLNS"],
             "prmCICLO" => $datos["prmCICLO"],
             "prmINICIO" => $datos["prmINICIO"]
         ];
@@ -150,19 +152,17 @@ class JobsCredito
         DELETE FROM
             JP
         WHERE
-            CDGEM = :prmCDGEM
+            CDGEM = 'EMPFIN'
             AND CDGCLNS = :prmCDGCLNS
-            AND CLNS = :prmCLNS
+            AND CLNS = 'G'
             AND CICLO = :prmCICLO
             AND FECHA = :prmINICIO
             AND PERIODO = '00'
             AND TIPO in ('IN', 'GR', 'Co', 'GA')
-        sql;
+sql;
 
         $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
             "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCLNS" => $datos["prmCLNS"],
             "prmCICLO" => $datos["prmCICLO"],
             "prmINICIO" => $datos["prmINICIO"]
         ];
@@ -178,18 +178,16 @@ class JobsCredito
         DELETE FROM
             MP
         WHERE
-            CDGEM = :prmCDGEM
+            CDGEM = 'EMPFIN'
             AND cdgclns = :prmCDGCLNS
-            AND CLNS = :prmCLNS
+            AND CLNS = 'G'
             AND ciclo = :prmCICLO
             AND frealdep = :prmINICIO
             AND TIPO IN ('IN', 'GR', 'Co', 'GA')
-        sql;
+sql;
 
         $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
             "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCLNS" => $datos["prmCLNS"],
             "prmCICLO" => $datos["prmCICLO"],
             "prmINICIO" => $datos["prmINICIO"]
         ];
@@ -236,17 +234,16 @@ class JobsCredito
             PRN.CDGEM = PRC.CDGEM
             AND PRN.CDGNS = PRC.CDGNS
             AND PRN.CICLO = PRC.CICLO
-            AND PRN.CDGEM = :prmCDGEM
-            AND PRN.CDGNS = :prmCDGCLNS
+            AND PRN.CDGEM = 'EMPFIN'
+            AND PRN.CDGNS = 'G'
             AND PRN.CICLO = :prmCICLO
-            AND PRC.CDGCL = :prmCLNS
-        sql;
+            AND PRC.CDGCL = :prmCL
+sql;
 
         $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
             "prmCDGCLNS" => $datos["prmCDGCLNS"],
             "prmCICLO" => $datos["prmCICLO"],
-            "prmCLNS" => $datos["prmCLNS"]
+            "prmCL" => $datos["cdgcl"]
         ];
 
         $db = Database::getInstance();
@@ -254,47 +251,6 @@ class JobsCredito
         return $db->queryOne($qry, $parametros);
     }
 
-    public static function GET_vINTERES($datos)
-    {
-        $qry = <<<sql
-        SELECT
-            (
-                APagarInteresPrN(
-                PrN.CdgEm,
-                PrN.CdgNS,
-                PrN.Ciclo,
-                nvl(PrN.CantEntre, prn.cantautor),
-                PrN.Tasa,
-                PrN.PLAZO,
-                PrN.Periodicidad,
-                PrN.CdgMCI,
-                PrN.Inicio,
-                PrN.DiaJunta,
-                PrN.MultPer,
-                PrN.PeriGrCap,
-                PrN.PeriGrInt,
-                PrN.DesfasePago,
-                PrN.CdgTI
-                ) * -1
-            ) as vINTERES
-        FROM
-            prn
-        WHERE
-            cdgem = :prmCDGEM
-            AND cdgns = :prmCDGCLNS
-            AND ciclo = :prmCICLO
-        sql;
-
-        $parametros = [
-            "prmCDGEM" => $datos["prmCDGEM"],
-            "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCICLO" => $datos["prmCICLO"]
-        ];
-
-        $db = Database::getInstance();
-        return ["GET_vINTERES" => [$qry, $parametros]];
-        return $db->queryOne($qry, $parametros);
-    }
 
     public static function InsertarMP($datos)
     {

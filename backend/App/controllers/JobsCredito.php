@@ -62,21 +62,16 @@ class JobsCredito
                 //Datos para nuevas querys
 
                 "prmCDGCLNS" => $credito["CDGNS"],
-                "prmCLNS" => $credito["CDGNS"],
                 "prmCICLO" => $credito["CICLO"],
                 "prmINICIO" => $credito["FEXP"],
-                "vINTCTE" => 0,
-                "vINTERES" => 0
+                "vINTERES" => $credito["INTERES"]
             ];
 
-            // $datos["vINTCTE"] = JobsDao::GET_vINTCTE($datos)["vINTCTE"];
-            // $datos["vINTERES"] = JobsDao::GET_vINTERES($datos)["vINTERES"];
 
             $resumen[] = [
                 "fecha" => date("Y-m-d H:i:s"),
                 "datos" => $datos,
-                "INCCTE" => JobsDao::GET_vINTCTE($datos)["vINTCTE"],
-                "INTERES" => JobsDao::GET_vINTERES($datos)["vINTERES"],
+                "INTCTE" => JobsDao::GET_vINTCTE($datos)["vINTCTE"],
                 "RES_PRC_UPDATE" => JobsDao::ActualizaPRC($datos),
                 "RES_PRN_UPDATE" => JobsDao::ActualizaPRN($datos),
                 "RES_MPC_DELETE" => JobsDao::LimpiarMPC($datos),
