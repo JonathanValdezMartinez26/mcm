@@ -1,7 +1,6 @@
 <?php
 
 namespace Core;
-
 // defined("APPPATH") or die("Access denied");
 
 use \Core\App;
@@ -13,7 +12,6 @@ use \PDO;
 
 class Database
 {
-
     const MAIL = "cesar.cor.riv@gmail.com" /*"tecnico@webmaster.com"*/;
     const TEMA = 'ecommerce';
     static $_instance;

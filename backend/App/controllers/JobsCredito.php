@@ -15,11 +15,11 @@ class JobsCredito
 {
     public function SaveLog($tdatos)
     {
-        $archivo = "C:/xampp/JobsCredito_php.log";
+        $archivo = "C:/xampp/JobsCredito.log";
 
         clearstatcache();
         if (file_exists($archivo) && filesize($archivo) > 10 * 1024 * 1024) { // 10 MB
-            $nuevoNombre = "C:/xampp/Jobs_ahorro" . date('Ymd') . ".log";
+            $nuevoNombre = "C:/xampp/JobsCredito" . date('Ymd') . ".log";
             rename($archivo, $nuevoNombre);
         }
 
@@ -72,7 +72,6 @@ class JobsCredito
         self::SaveLog("Iniciando Job Cheques");
         $resumen = [];
         $creditos = JobsDao::CreditosAutorizados();
-        var_dump($creditos);
 
         foreach ($creditos as $key => $credito) {
             $chequera = JobsDao::GetNoChequera($credito["CDGCO"]);

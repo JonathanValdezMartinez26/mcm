@@ -57,11 +57,11 @@ class JobsAhorro
 {
     public function SaveLog($tdatos)
     {
-        $archivo = "C:/xampp/JobsAhorro_php.log";
+        $archivo = "C:/xampp/JobsAhorro.log";
 
         clearstatcache();
         if (file_exists($archivo) && filesize($archivo) > 10 * 1024 * 1024) { // 10 MB
-            $nuevoNombre = "C:/xampp/Jobs_php_" . date('Ymd') . ".log";
+            $nuevoNombre = "C:/xampp/JobsAhorro" . date('Ymd') . ".log";
             rename($archivo, $nuevoNombre);
         }
 
@@ -216,7 +216,7 @@ class JobsAhorro
             $resumen[] = [
                 "fecha" => date("Y-m-d H:i:s"),
                 "datos" => $datos,
-                "RES_CAPTURA_SALDOS" => "capturado" //JobsDao::CapturaSaldos($datos)
+                "RES_CAPTURA_SALDOS" => JobsDao::CapturaSaldos($datos)
             ];
         };
 
