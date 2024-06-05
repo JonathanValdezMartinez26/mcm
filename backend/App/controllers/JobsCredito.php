@@ -2,6 +2,8 @@
 
 namespace App\controllers;
 
+include 'C:/xampp/htdocs/mcm/backend/App/models/JobsCredito.php';
+
 use \App\models\JobsCredito as JobsDao;
 use DateTime;
 use DateTimeZone;
