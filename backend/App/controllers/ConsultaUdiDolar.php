@@ -5,8 +5,12 @@ namespace App\controllers;
 include 'C:/xampp/htdocs/mcm/backend/App/models/ConsultaUdiDolar.php';
 
 use \App\models\ConsultaUdiDolar as ConsultaUdiDolarDao;
+use DateTime;
+use DateTimeZone;
 
-date_default_timezone_set('America/Mexico_City');
+$validaHV = new DateTime('now', new DateTimeZone('America/Mexico_City'));
+if ($validaHV->format('I')) date_default_timezone_set('America/Mazatlan');
+else date_default_timezone_set('America/Mexico_City');
 
 $dolar_udi = new ConsultaUdiDolar();
 

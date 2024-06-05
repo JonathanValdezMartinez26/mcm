@@ -5,8 +5,12 @@ namespace App\controllers;
 include 'C:/xampp/htdocs/mcm/backend/App/models/JobsAhorro.php';
 
 use \App\models\JobsAhorro as JobsDao;
+use DateTime;
+use DateTimeZone;
 
-date_default_timezone_set('America/Mexico_City');
+$validaHV = new DateTime('now', new DateTimeZone('America/Mexico_City'));
+if ($validaHV->format('I')) date_default_timezone_set('America/Mazatlan');
+else date_default_timezone_set('America/Mexico_City');
 
 $jobs = new JobsAhorro();
 
