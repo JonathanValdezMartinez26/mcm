@@ -3,6 +3,7 @@
 namespace App\controllers;
 
 use \App\models\JobsCredito as JobsDao;
+use DateTime;
 use DateTimeZone;
 
 $validaHV = new DateTime('now', new DateTimeZone('America/Mexico_City'));
