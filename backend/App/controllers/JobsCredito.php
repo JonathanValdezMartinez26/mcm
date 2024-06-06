@@ -13,8 +13,8 @@ if ($validaHV->format('I')) date_default_timezone_set('America/Mazatlan');
 else date_default_timezone_set('America/Mexico_City');
 
 $jobs = new JobsCredito();
-// $jobs->JobCheques();
-$jobs->ReInserta("C:\Users\Alberto\Desktop\prueba.json");
+$jobs->JobCheques();
+// $jobs->ReInserta("C:\Users\Alberto\Desktop\prueba.json");
 
 class JobsCredito
 {
