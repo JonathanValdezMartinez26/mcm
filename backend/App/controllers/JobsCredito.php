@@ -13,7 +13,8 @@ if ($validaHV->format('I')) date_default_timezone_set('America/Mazatlan');
 else date_default_timezone_set('America/Mexico_City');
 
 $jobs = new JobsCredito();
-$jobs->JobCheques();
+// $jobs->JobCheques();
+$jobs->ReInserta("C:\Users\Alberto\Desktop\prueba.json");
 
 class JobsCredito
 {
@@ -48,27 +49,23 @@ class JobsCredito
             $datos = [
                 //Datos para actualizar PRC y PRN
                 "cheque" => $cheque["CHQSIG"],
-                "fexp" => $credito["FEXP"],
-                "usuario" => "AMGM",
                 "cdgcb" => $chequera["CDGCB"],
                 "cdgcl" => $credito["CDGCL"],
                 "cdgns" => $credito["CDGNS"],
                 "ciclo" => $credito["CICLO"],
                 "cantautor" => $credito["CANTAUTOR"],
-                //Datos para nuevas querys
-
+                //Datos para MP, JP y MPC
                 "prmCDGCLNS" => $credito["CDGNS"],
                 "prmCICLO" => $credito["CICLO"],
-                "prmINICIO" => $credito["FEXP"],
-                "vINTERES" => $credito["INTERES"]
+                "prmINICIO" => $credito["INICIO"],
+                "vINTERES" => $credito["INTERES"],
+                "vCLIENTE" => $credito["CDGCL"],
             ];
 
 
             $resumen[] = [
                 "fecha" => date("Y-m-d H:i:s"),
                 "datos" => $datos,
-
-                "INTCTE" => JobsDao::GET_vINTCTE($datos)["vINTCTE"],
                 "RES_PRC_UPDATE" => JobsDao::ActualizaPRC($datos),
                 "RES_PRN_UPDATE" => JobsDao::ActualizaPRN($datos),
                 "RES_MPC_DELETE" => JobsDao::LimpiarMPC($datos),
@@ -84,5 +81,38 @@ class JobsCredito
         self::SaveLog("Finalizando Job Cheques");
 
         echo "Job Cheques finalizado";
+    }
+
+    public function ReInserta($archivo)
+    {
+        self::SaveLog("Iniciando ReInserta");
+        $resumen = [];
+        $creditos = json_decode(file_get_contents($archivo), true);
+
+        if (!is_array($creditos)) $creditos = [$creditos];
+
+        foreach ($creditos as $key => $credito) {
+            $datos = [
+                //Datos para MP, JP y MPC
+                "prmCDGCLNS" => $credito["datos"]["prmCDGCLNS"],
+                "prmCICLO" => $credito["datos"]["prmCICLO"],
+                "prmINICIO" => $credito["datos"]["prmINICIO"],
+                "vINTERES" => $credito["datos"]["vINTERES"],
+                "vCLIENTE" => $credito["datos"]["vCLIENTE"]
+            ];
+
+            $resumen[] = [
+                "fecha" => date("Y-m-d H:i:s"),
+                "datos" => $datos,
+                "RES_MP_INSERT" => JobsDao::InsertarMP($datos),
+                "RES_JP_INSERT" => JobsDao::InsertarJP($datos),
+                "RES_MPC_INSERT" => JobsDao::InsertarMPC($datos),
+            ];
+        }
+
+        self::SaveLog(json_encode($resumen, JSON_PRETTY_PRINT));
+        self::SaveLog("Finalizando ReInserta");
+
+        echo "ReInserta finalizado";
     }
 }

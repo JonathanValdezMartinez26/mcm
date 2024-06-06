@@ -11,13 +11,12 @@ class JobsCredito
     public static function CreditosAutorizados()
     {
         $qry = <<<sql
-         
-         SELECT
-            PRC.CDGCL, PRNN.CDGNS, PRNN.CICLO, PRNN.INICIO, PRNN.CDGCO, PRNN.CANTAUTOR, TRUNC(SYSDATE) AS FEXP,
+        SELECT
+            PRC.CDGCL, PRNN.CDGNS, PRNN.CICLO, TO_CHAR(PRNN.INICIO, 'YYYY-MM-DD') AS INICIO, PRNN.CDGCO, PRNN.CANTAUTOR, TRUNC(SYSDATE) AS FEXP,
             (APagarInteresPrN('EMPFIN',PRNN.CDGNS,PRNN.CICLO, nvl(PRNN.CANTENTRE , PRNN.CANTAUTOR), PRNN.Tasa, PRNN.PLAZO, PRNN.PERIODICIDAD , PRNN.CDGMCI , 
-            PRNN.INICIO, PRNN.DIAJUNTA , PRNN.MULTPER , PRNN.PERIGRCAP , PRNN.PERIGRINT ,  PRNN.DESFASEPAGO ,   PRNN.CDGTI) * -1)AS INTERES, 
+            PRNN.INICIO, PRNN.DIAJUNTA , PRNN.MULTPER , PRNN.PERIGRCAP , PRNN.PERIGRINT ,  PRNN.DESFASEPAGO ,   PRNN.CDGTI) * -1) AS INTERES, 
             (APagarInteresPrN('EMPFIN',PRNN.CDGNS,PRNN.CICLO, nvl(PRNN.CANTENTRE , PRNN.CANTAUTOR), PRNN.Tasa, PRNN.PLAZO, PRNN.PERIODICIDAD , PRNN.CDGMCI , 
-            PRNN.INICIO, PRNN.DIAJUNTA , PRNN.MULTPER , PRNN.PERIGRCAP , PRNN.PERIGRINT ,  PRNN.DESFASEPAGO ,   PRNN.CDGTI) * -1)AS PAGADOINT
+            PRNN.INICIO, PRNN.DIAJUNTA , PRNN.MULTPER , PRNN.PERIGRCAP , PRNN.PERIGRINT ,  PRNN.DESFASEPAGO ,   PRNN.CDGTI) * -1) AS PAGADOINT
         FROM
             PRN PRNN, PRC
         WHERE 
@@ -59,12 +58,12 @@ sql;
         $qry = <<<sql
         UPDATE PRC SET
             NOCHEQUE = LPAD(:cheque,7,'0'),
-            FEXP = :fexp,
-            ACTUALIZACHPE = :usuario,
+            FEXP = SYSDATE,
+            ACTUALIZACHPE = 'AMGM',
             SITUACION = 'E',
             CDGCB = :cdgcb,
             REPORTE = '   C',
-            FEXPCHEQUE = :fexp,
+            FEXPCHEQUE = SYSDATE,
             CANTENTRE = :cantautor,
             ENTRREAL = :cantautor
         WHERE
@@ -75,13 +74,11 @@ sql;
 
         $parametros = [
             "cheque" => $datos["cheque"],
-            "fexp" => $datos["fexp"],
-            "usuario" => $datos["usuario"],
             "cdgcb" => $datos["cdgcb"],
+            "cantautor" => $datos["cantautor"],
             "cdgcl" => $datos["cdgcl"],
             "cdgns" => $datos["cdgns"],
             "ciclo" => $datos["ciclo"],
-            "cantautor" => $datos["cantautor"]
         ];
 
         $db = Database::getInstance();
@@ -93,8 +90,8 @@ sql;
         $qry = <<<sql
         UPDATE PRN SET
             REPORTE = '   C',
-            FEXP = :fexp,
-            ACTUALIZACHPE= :usuario,
+            FEXP = SYSDATE,
+            ACTUALIZACHPE= 'AMGM',
             SITUACION = 'E',
             CDGCB = :cdgcb,
             CANTENTRE = :cantautor,
@@ -107,12 +104,10 @@ sql;
 sql;
 
         $parametros = [
-            "fexp" => $datos["fexp"],
-            "usuario" => $datos["usuario"],
             "cdgcb" => $datos["cdgcb"],
+            "cantautor" => $datos["cantautor"],
             "cdgns" => $datos["cdgns"],
-            "ciclo" => $datos["ciclo"],
-            "cantautor" => $datos["cantautor"]
+            "ciclo" => $datos["ciclo"]
         ];
 
         $db = Database::getInstance();
@@ -129,7 +124,7 @@ sql;
             AND CDGCLNS = :prmCDGCLNS
             AND CLNS = 'G'
             AND CICLO = :prmCICLO
-            AND FECHA = :prmINICIO
+            AND FECHA = TO_DATE(:prmINICIO, 'YYYY-MM-DD')
             AND TIPO in ('IN', 'GR', 'Co', 'GA')
             AND PERIODO = '00'
 sql;
@@ -154,7 +149,7 @@ sql;
             AND CDGCLNS = :prmCDGCLNS
             AND CLNS = 'G'
             AND CICLO = :prmCICLO
-            AND FECHA = :prmINICIO
+            AND FECHA = TO_DATE(:prmINICIO, 'YYYY-MM-DD')
             AND PERIODO = '00'
             AND TIPO in ('IN', 'GR', 'Co', 'GA')
 sql;
@@ -179,7 +174,7 @@ sql;
             AND cdgclns = :prmCDGCLNS
             AND CLNS = 'G'
             AND ciclo = :prmCICLO
-            AND frealdep = :prmINICIO
+            AND frealdep = TO_DATE(:prmINICIO, 'YYYY-MM-DD')
             AND TIPO IN ('IN', 'GR', 'Co', 'GA')
 sql;
 
@@ -187,59 +182,6 @@ sql;
             "prmCDGCLNS" => $datos["prmCDGCLNS"],
             "prmCICLO" => $datos["prmCICLO"],
             "prmINICIO" => $datos["prmINICIO"]
-        ];
-
-        $db = Database::getInstance();
-        return $db->queryOne($qry, $parametros);
-    }
-
-    public static function GET_vINTCTE($datos)
-    {
-        $qry = <<<sql
-        SELECT
-            (
-                round(
-                decode(
-                    nvl(PRN.periodicidad, ''),
-                    'S',
-                    (
-                    nvl(PRN.tasa, 0) * nvl(PRN.plazo, 0) * nvl(PRC.cantentre, 0)
-                    ) /(4 * 100),
-                    'Q',
-                    (
-                    nvl(PRN.tasa, 0) * nvl(PRN.plazo, 0) * nvl(PRC.cantentre, 0) * 15
-                    ) /(30 * 100),
-                    'C',
-                    (
-                    nvl(PRN.tasa, 0) * nvl(PRN.plazo, 0) * nvl(PRC.cantentre, 0)
-                    ) /(2 * 100),
-                    'M',
-                    (
-                    nvl(PRN.tasa, 0) * nvl(PRN.plazo, 0) * nvl(PRC.cantentre, 0)
-                    ) /(100),
-                    '',
-                    ''
-                ),
-                0
-                ) * -1
-            ) as VINTCTE
-        FROM
-            PRN,
-            PRC
-        WHERE
-            PRN.CDGEM = PRC.CDGEM
-            AND PRN.CDGNS = PRC.CDGNS
-            AND PRN.CICLO = PRC.CICLO
-            AND PRN.CDGEM = 'EMPFIN'
-            AND PRN.CDGNS = 'G'
-            AND PRN.CICLO = :prmCICLO
-            AND PRC.CDGCL = :prmCL
-sql;
-
-        $parametros = [
-            "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCICLO" => $datos["prmCICLO"],
-            "prmCL" => $datos["cdgcl"]
         ];
 
         $db = Database::getInstance();
@@ -267,14 +209,10 @@ sql;
                 MODO,
                 CONCILIADO,
                 ESTATUS,
-                ACTUALIZARPE
-                pagadocap,
+                ACTUALIZARPE,
+                PAGADOCAP,
                 PAGADOINT,
-                pagadorec,
-              
-              
-                CDGNS,
-                
+                PAGADOREC
             )
         VALUES
             (
@@ -288,13 +226,13 @@ sql;
                 'Interés total del préstamo',
                 'Interés total del préstamo',
                 'IN',
-                :prmINICIO,
-                :prmINICIO,
+                TO_DATE(:prmINICIO, 'YYYY-MM-DD'),
+                TO_DATE(:prmINICIO, 'YYYY-MM-DD'),
                 :vINTERES,
                 'G',
                 'D',
                 'B',
-                'AMGM'
+                'AMGM',
                 0,
                 :vINTERES,
                 0
@@ -303,15 +241,14 @@ sql;
 
         $parametros = [
             "prmCDGCLNS" => $datos["prmCDGCLNS"],
-            "prmCDGNS" => $datos["cdgns"],
+            "prmCDGNS" => $datos["prmCDGCLNS"],
             "prmCICLO" => $datos["prmCICLO"],
             "prmINICIO" => $datos["prmINICIO"],
             "vINTERES" => $datos["vINTERES"]
-            //,"prmUSUARIO" => $datos["usuario"]
         ];
 
         $db = Database::getInstance();
-        return $db->queryOne($qry, $parametros);
+        return $db->insertCheques($qry, $parametros);
     }
 
     public static function InsertarJP($datos)
@@ -331,7 +268,7 @@ sql;
                 RETIRO,
                 TIPO,
                 CDGNS,
-                texto,
+                TEXTO,
                 CONCILIADO,
                 ACTUALIZARPE,
                 CONCBANINF,
@@ -344,17 +281,17 @@ sql;
                 :prmCDGCLNS,
                 :prmCICLO,
                 'G',
-                :prmINICIO,
+                TO_DATE(:prmINICIO, 'YYYY-MM-DD'),
                 '00',
                 :vINTERES,
                 :vINTERES,
                 0,
                 0,
                 'IN',
-                :vCDGNS,
+                :prmCDGCLNS,
                 'Interés total del préstamo',
                 'C',
-                :prmUSUARIO,
+                'AMGM',
                 'S',
                 'S',
                 'S'
@@ -366,12 +303,10 @@ sql;
             "prmCICLO" => $datos["prmCICLO"],
             "prmINICIO" => $datos["prmINICIO"],
             "vINTERES" => $datos["vINTERES"],
-            "vCDGNS" => $datos["cdgns"],
-            "prmUSUARIO" => $datos["usuario"]
         ];
 
         $db = Database::getInstance();
-        return $db->queryOne($qry, $parametros);
+        return $db->insertCheques($qry, $parametros);
     }
 
     public static function InsertarMPC($datos)
@@ -396,24 +331,24 @@ sql;
                 :vCLIENTE,
                 :prmCICLO,
                 'G',
-                :prmINICIO,
+                TO_DATE(:prmINICIO, 'YYYY-MM-DD'),
                 'IN',
                 '00',
                 :prmCDGCLNS,
-                :vCDGNS,
-                :vINTCTE
+                :prmCDGCLNS,
+                :vINTERES
             )
 sql;
 
         $parametros = [
-            "vCLIENTE" => $datos["cdgcl"],
+            "vCLIENTE" => $datos["vCLIENTE"],
             "prmCICLO" => $datos["prmCICLO"],
             "prmINICIO" => $datos["prmINICIO"],
-            "vCDGNS" => $datos["cdgns"],
-            "vINTCTE" => $datos["vINTCTE"]
+            "prmCDGCLNS" => $datos["prmCDGCLNS"],
+            "vINTERES" => $datos["vINTERES"]
         ];
 
         $db = Database::getInstance();
-        return $db->queryOne($qry, $parametros);
+        return $db->insertCheques($qry, $parametros);
     }
 }
