@@ -77,7 +77,7 @@ class JobsCredito
             ];
         }
 
-        self::SaveLog(json_encode($resumen, JSON_PRETTY_PRINT));
+        self::SaveLog(json_encode($resumen)); //, JSON_PRETTY_PRINT));
         self::SaveLog("Finalizando Job Cheques");
 
         echo "Job Cheques finalizado";
