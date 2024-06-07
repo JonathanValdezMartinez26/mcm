@@ -319,13 +319,24 @@ sql;
     public static function ReingresarClientesCredito($credito){
 
         $query=<<<sql
-        SELECT CDGNS, CDGCL, (NOMBRE1 || ' ' || NOMBRE2 || ' ' || PRIMAPE || ' ' || SEGAPE) AS NOMBRE_CLIENTE, 
-        TO_CHAR(FIN, 'DD/MM/YYYY') AS FECHA_BAJA, UPPER(m.DESCRIPCION) AS MOTIVO_BAJA,
-        FIN AS FECHA_BAJA_REAL
-        FROM CN c
-        INNER JOIN MS m ON m.CODIGO = c.CDGMS 
-        INNER JOIN CL c2 ON c2.CODIGO = c.CDGCL 
-        WHERE CDGNS = '$credito'
+        SELECT CDGNS, CDGCL, NOMBRE_CLIENTE, INICIO, FECHA_BAJA ,FECHA_BAJA_REAL, CODIGO_MOTIVO, MOTIVO_BAJA
+        FROM (
+            SELECT 
+                CDGNS, 
+                CDGCL, 
+                (NOMBRE1 || ' ' || NOMBRE2 || ' ' || PRIMAPE || ' ' || SEGAPE) AS NOMBRE_CLIENTE, 
+                INICIO, 
+                TO_CHAR(FIN, 'DD-MM-YYYY') AS FECHA_BAJA,
+                FIN AS FECHA_BAJA_REAL, 
+                m.CODIGO AS CODIGO_MOTIVO,
+                UPPER(m.DESCRIPCION) AS MOTIVO_BAJA,
+                ROW_NUMBER() OVER (PARTITION BY CDGCL ORDER BY FIN DESC) AS RN
+            FROM CN c
+            INNER JOIN MS m ON m.CODIGO = c.CDGMS 
+            INNER JOIN CL c2 ON c2.CODIGO = c.CDGCL 
+            WHERE CDGNS = '$credito'
+        ) sub
+        WHERE RN = 1
 sql;
 
         $mysqli = Database_cultiva::getInstance();
@@ -333,6 +344,26 @@ sql;
 
     }
 
+    public static function updateCliente($cdgcl){
+
+        $mysqli = Database_cultiva::getInstance(1);
+
+        $query_update=<<<sql
+        UPDATE CN
+        SET ESTATUS = 'A'
+        WHERE CN.CDGCL = '$cdgcl->_cdgcl' AND ESTATUS = 'B' AND FIN IS NULL
+sql;
+        $query_delete=<<<sql
+        DELETE FROM CN
+        WHERE CN.CDGCL = '$cdgcl->_cdgcl' AND FIN IS NOT NULL AND ESTATUS = 'A'
+sql;
+
+        var_dump($query_delete);
+        var_dump($query_update);
+
+
+        //return [$update, $delete];
+    }
 
 
 

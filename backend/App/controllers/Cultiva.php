@@ -4,6 +4,7 @@ defined("APPPATH") OR die("Access denied");
 
 use \Core\View;
 use \Core\Controller;
+use \Core\MasterDom;
 use \App\models\Operaciones AS OperacionesDao;
 
 class Cultiva extends Controller
@@ -244,42 +245,33 @@ html;
        
        ponerElCursorAlFinal('Credito');
        
-       function ActivarCredito(){	
+       function ActivarCredito(cdgcl, fecha, motivo){	
            
-             monto = document.getElementById("monto_e").value; 
-             
-            if(monto == '')
+            if(motivo == '')
                 {
-                    if(monto == 0)
-                        {
-                             swal("Atención", "Ingrese un monto mayor a $0", "warning");
-                             document.getElementById("monto_e").focus();
-                        }
+                     swal("Atención", "Ingrese un monto mayor a $0", "warning");
+                     document.getElementById("monto_e").focus();
+                  
                 }
             else
                 {
-                    texto = $("#ejecutivo_e :selected").text();
-                   
                     $.ajax({
                     type: 'POST',
-                    url: '/Pagos/PagosEdit/',
-                    data: $('#Edit').serialize()+ "&ejec_e="+texto,
+                    url: '/Cultiva/ReactivarCredito/',
+                    data: "cdgcl="+cdgcl,
                     success: function(respuesta) {
-                         if(respuesta=='1 Proceso realizado exitosamente'){
-                      
-                        document.getElementById("monto_e").value = "";
-                        
-                         swal("Registro guardado exitosamente", {
+                         if(respuesta=='1'){
+                    
+                                swal("Registro guardado exitosamente", {
                                       icon: "success",
                                     });
                         location.reload();
-                        }
-                        else {
-                        $('#modal_editar_pago').modal('hide')
-                         swal(respuesta, {
+                        }else 
+                            {
+                                swal(respuesta, {
                                       icon: "error",
                                     });
-                        }
+                            }
                     }
                     });
                 }
@@ -322,7 +314,7 @@ html;
                     <td style="padding: 10px !important;">{$value['NOMBRE_CLIENTE']}</td>
                     <td style="padding: 10px !important;">{$value['FECHA_BAJA']}</td>
                     <td style="padding: 10px !important;">{$value['MOTIVO_BAJA']}</td>
-                    <td> <button type="button" class="btn btn-danger btn-circle" onclick="ActivarCredito('{$value['CDGCL']}', '{$value['FECHA_BAJA_REAL']}', '{$value['MOTIVO_BAJA']}');"><i class="fa fa-check"></i></button></td>
+                    <td> <button type="button" class="btn btn-danger btn-circle" onclick="ActivarCredito('{$value['CDGCL']}', '{$value['FECHA_BAJA_REAL']}', '{$value['CODIGO_MOTIVO']}');"><i class="fa fa-check"></i></button></td>
                 </tr>
 html;
             }
@@ -336,5 +328,17 @@ html;
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::render("reingresar_clientes_cultiva_ini");
         }
+    }
+
+    public function ReactivarCredito()
+    {
+        $cliente = new \stdClass();
+
+        $cdgcl = MasterDom::getDataAll('cdgcl');
+        $cliente->_cdgcl = $cdgcl;
+
+
+        $id = OperacionesDao::updateCliente($cliente);
+        return $id;
     }
 }
