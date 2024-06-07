@@ -101,6 +101,17 @@ class Database
         }
     }
 
+    public function insertCheques($sql, $parametros)
+    {
+        $stmt = $this->_mysqli->prepare($sql);
+        $result = $stmt->execute($parametros);
+
+        if ($result) return $result;
+
+        $arr = $stmt->errorInfo();
+        return "PDOStatement::errorInfo():\n" . json_encode($arr);
+    }
+
     public function insertaMultiple($sql, $registros, $validacion = null)
     {
         try {
