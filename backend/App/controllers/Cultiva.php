@@ -239,11 +239,71 @@ html;
         <title>Reingresar Clientes Cultiva</title>
         <link rel="shortcut icon" href="/img/logo.png">
 html;
-
         $extraFooter = <<<html
       <script>
-      
-            ponerElCursorAlFinal('Credito');
+       
+       ponerElCursorAlFinal('Credito');
+       
+       function ActivarCredito(){	
+           
+             monto = document.getElementById("monto_e").value; 
+             
+            if(monto == '')
+                {
+                    if(monto == 0)
+                        {
+                             swal("Atención", "Ingrese un monto mayor a $0", "warning");
+                             document.getElementById("monto_e").focus();
+                        }
+                }
+            else
+                {
+                    texto = $("#ejecutivo_e :selected").text();
+                   
+                    $.ajax({
+                    type: 'POST',
+                    url: '/Pagos/PagosEdit/',
+                    data: $('#Edit').serialize()+ "&ejec_e="+texto,
+                    success: function(respuesta) {
+                         if(respuesta=='1 Proceso realizado exitosamente'){
+                      
+                        document.getElementById("monto_e").value = "";
+                        
+                         swal("Registro guardado exitosamente", {
+                                      icon: "success",
+                                    });
+                        location.reload();
+                        }
+                        else {
+                        $('#modal_editar_pago').modal('hide')
+                         swal(respuesta, {
+                                      icon: "error",
+                                    });
+                        }
+                    }
+                    });
+                }
+    }
+    
+       $(document).ready(function(){
+            $("#muestra-cupones").tablesorter();
+          var oTable = $('#muestra-cupones').DataTable({
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 0
+                }],
+                 "order": false
+            });
+            // Remove accented character from search input as well
+            $('#muestra-cupones input[type=search]').keyup( function () {
+                var table = $('#example').DataTable();
+                table.search(
+                    jQuery.fn.DataTable.ext.type.search.html(this.value)
+                ).draw();
+            });
+            var checkAll = 0;
+            
+        });
       
       </script>
 html;
@@ -257,20 +317,23 @@ html;
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 0px !important;">{$value['CDGNS']}</td>
-                    <td style="padding: 0px !important;">{$value['CDGCL']}</td>
-                    <td style="padding: 0px !important;">{$value['NOMBRE_CLIENTE']}</td>
-                    <td style="padding: 0px !important;">{$value['FECHA_BAJA']}</td>
-                    <td style="padding: 0px !important;">{$value['MOTIVO_BAJA']}</td>
-                    <td></td>
+                    <td style="padding: 10px !important;">{$value['CDGNS']}</td>
+                    <td style="padding: 10px !important;">{$value['CDGCL']}</td>
+                    <td style="padding: 10px !important;">{$value['NOMBRE_CLIENTE']}</td>
+                    <td style="padding: 10px !important;">{$value['FECHA_BAJA']}</td>
+                    <td style="padding: 10px !important;">{$value['MOTIVO_BAJA']}</td>
+                    <td> <button type="button" class="btn btn-danger btn-circle" onclick="ActivarCredito('{$value['CDGCL']}', '{$value['FECHA_BAJA_REAL']}', '{$value['MOTIVO_BAJA']}');"><i class="fa fa-check"></i></button></td>
                 </tr>
 html;
             }
+            View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
             View::set('tabla', $tabla);
             View::render("reingresar_clientes_cultiva_sec");
 
         } else {
-
+            View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
             View::render("reingresar_clientes_cultiva_ini");
         }
     }
