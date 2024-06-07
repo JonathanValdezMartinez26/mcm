@@ -3207,10 +3207,14 @@ script;
                 if ($campo === 'INGRESO' || $Layoutt[$increment]["CONCEPTO"] === 'SALDO INICIAL DEL DIA (DIARIO)') $totalIngreso += $value[$campo]; //;
                 if ($campo === 'EGRESO') $totalEgreso += $value[$campo];
 
+
+                //var_dump($value[$campo]);
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
                 $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_celda);
                 $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
             }
+
+
             $fila += 1;
         }
 

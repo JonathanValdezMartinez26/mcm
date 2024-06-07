@@ -302,14 +302,23 @@ html;
 html;
     }
 
-    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLMV') {
-      $menu .= <<<html
+    if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLMV' || $this->__usuario == 'MCDP') {
+        $menu .= <<<html
         <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
                 </i>&nbsp;Cultiva<span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
-                  <li><a href="/Cultiva/">Consulta Clientes Solicitudes</a></li>
-                  
+                        <li><a href="/Cultiva/">Consulta Clientes Solicitudes</a></li>
+html;
+    }
+
+    if ($this->__perfil == 'ADMIN'  || $this->__usuario == 'MCDP') {
+        $menu .= <<<html
+                        <li><a href="/Cultiva/ReingresarClientesCredito/">Reingresar Clientes a Grupo</a></li>
+html;
+    }
+        if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLMV' || $this->__usuario == 'MCDP') {
+            $menu .= <<<html
                   </ul>
                 </li>
         </ul>

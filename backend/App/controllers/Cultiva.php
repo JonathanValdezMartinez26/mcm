@@ -232,4 +232,46 @@ html;
 
 
     }
+
+    public function ReingresarClientesCredito()
+    {
+        $extraHeader = <<<html
+        <title>Reingresar Clientes Cultiva</title>
+        <link rel="shortcut icon" href="/img/logo.png">
+html;
+
+        $extraFooter = <<<html
+      <script>
+      
+            ponerElCursorAlFinal('Credito');
+      
+      </script>
+html;
+
+        $credito = $_GET['Credito'];
+
+        if ($credito != '') {
+
+            $Clientes = OperacionesDao::ReingresarClientesCredito($credito);
+            foreach ($Clientes as $key => $value) {
+
+                $tabla .= <<<html
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;">{$value['CDGNS']}</td>
+                    <td style="padding: 0px !important;">{$value['CDGCL']}</td>
+                    <td style="padding: 0px !important;">{$value['NOMBRE_CLIENTE']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_BAJA']}</td>
+                    <td style="padding: 0px !important;">{$value['MOTIVO_BAJA']}</td>
+                    <td></td>
+                </tr>
+html;
+            }
+            View::set('tabla', $tabla);
+            View::render("reingresar_clientes_cultiva_sec");
+
+        } else {
+
+            View::render("reingresar_clientes_cultiva_ini");
+        }
+    }
 }

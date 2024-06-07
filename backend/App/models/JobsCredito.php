@@ -267,13 +267,11 @@ sql;
                 MODO,
                 CONCILIADO,
                 ESTATUS,
-                ACTUALIZARPE
+                ACTUALIZARPE,
                 pagadocap,
                 PAGADOINT,
-                pagadorec,
+                pagadorec
               
-              
-                CDGNS,
                 
             )
         VALUES
@@ -294,7 +292,7 @@ sql;
                 'G',
                 'D',
                 'B',
-                'AMGM'
+                'AMGM',
                 0,
                 :vINTERES,
                 0

@@ -236,4 +236,6 @@ html;
         View::set('footer', $this->_contenedor->footer($extraFooter));
 
     }
+
+
 }

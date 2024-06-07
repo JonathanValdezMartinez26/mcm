@@ -316,6 +316,23 @@ sql;
 
     }
 
+    public static function ReingresarClientesCredito($credito){
+
+        $query=<<<sql
+        SELECT CDGNS, CDGCL, (NOMBRE1 || ' ' || NOMBRE2 || ' ' || PRIMAPE || ' ' || SEGAPE) AS NOMBRE_CLIENTE, 
+        TO_CHAR(FIN, 'DD/MM/YYYY') AS FECHA_BAJA, UPPER(m.DESCRIPCION) AS MOTIVO_BAJA
+        FROM CN c
+        INNER JOIN MS m ON m.CODIGO = c.CDGMS 
+        INNER JOIN CL c2 ON c2.CODIGO = c.CDGCL 
+        WHERE CDGNS = '$credito'
+sql;
+
+        $mysqli = Database_cultiva::getInstance();
+        return $mysqli->queryAll($query);
+
+    }
+
+
 
 
 }
