@@ -305,7 +305,8 @@ html;
         if ($credito != '') {
 
             $Clientes = OperacionesDao::ReingresarClientesCredito($credito);
-            foreach ($Clientes as $key => $value) {
+
+            foreach ($Clientes[0] as $key => $value) {
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
@@ -321,6 +322,7 @@ html;
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::set('tabla', $tabla);
+            View::set('Nombre', $Clientes[1]['NOMBRE']);
             View::render("reingresar_clientes_cultiva_sec");
 
         } else {

@@ -34,8 +34,8 @@
                         <div class="col-md-3 col-sm-4  tile_stats_count">
                             <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Nombre del Grupo</span>
 
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['CLIENTE']; ?></div>
-                            <span class="count_top badge" style="padding: 1px 1px; background: #a8a4ac"><h5><b><i class="">SITUACIÓN: <?php echo $Administracion[0]['SITUACION_NOMBRE']; ?></i></b></h5></span>
+                            <div class="count" style="font-size: 14px"><?php echo $Nombre; ?></div>
+
                         </div>
 
                     </div>

@@ -339,8 +339,16 @@ sql;
         WHERE RN = 1
 sql;
 
+        $query2=<<<sql
+            SELECT 
+                NOMBRE
+            FROM NS
+            WHERE CODIGO = '$credito'
+           
+sql;
+
         $mysqli = Database_cultiva::getInstance();
-        return $mysqli->queryAll($query);
+        return [$mysqli->queryAll($query),$mysqli->queryOne($query2)] ;
 
     }
 
