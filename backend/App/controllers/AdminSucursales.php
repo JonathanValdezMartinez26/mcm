@@ -3025,7 +3025,7 @@ script;
     {
 
 
-        var_dump("Hola");
+        //var_dump("Hola");
         $objPHPExcel = new \PHPExcel();
         $objPHPExcel->getProperties()->setCreator("jma");
         $objPHPExcel->getProperties()->setLastModifiedBy("jma");
@@ -3195,31 +3195,36 @@ script;
         foreach ($Layoutt as $keyy => $value) {
 
             foreach ($nombreCampo as $key => $campo) {
-                $increment = $keyy++;
-
-                if ($Layoutt[$increment]["CONCEPTO"] == 'SALDO INICIAL DEL DIA (DIARIO)') {
-                    $inicio = $Layoutt[$increment]["SALDO"];
-                    $totalSaldo = $Layoutt[$increment]["SALDO"];
-                } else {
-                    $inicio = 0;
-                }
-
-                if ($campo === 'INGRESO' || $Layoutt[$increment]["CONCEPTO"] === 'SALDO INICIAL DEL DIA (DIARIO)') $totalIngreso += $value[$campo]; //;
-                if ($campo === 'EGRESO') $totalEgreso += $value[$campo];
-
-
-                //var_dump($value[$campo]);
                 $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
                 $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_celda);
                 $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
             }
 
+            ///////////////////////
+            $increment = $keyy++;
+            if ( $Layoutt[$increment]["CONCEPTO"] == 'INGRESO'  || $Layoutt[$increment]["CONCEPTO"] == 'FONDEO SUCURSAL')
+            {
+                $totalSaldo += $Layoutt[$increment]["INGRESO"];
+
+            }
+            else if($Layoutt[$increment]["CONCEPTO"] == 'SALDO INICIAL DEL DIA (DIARIO)')
+            {
+                $totalSaldo += $Layoutt[$increment]["REPORTE"];
+            }else
+            {
+                $totalSaldo -= $Layoutt[$increment]["EGRESO"];
+            }
+
+            if ($Layoutt[$increment]["CONCEPTO"] === 'INGRESO' || $Layoutt[$increment]["CONCEPTO"] === 'FONDEO SUCURSAL') $totalIngreso += $Layoutt[$increment]["INGRESO"];
+            if ($Layoutt[$increment]["CONCEPTO"] === 'EGRESO') $totalEgreso += $Layoutt[$increment]["EGRESO"];
+            //////////////////
+
 
             $fila += 1;
         }
-
+        //exit();
         $fila += 1;
-        $totalSaldo = $totalSaldo + $totalIngreso - $totalEgreso;
+        $totalSaldo = $totalSaldo ;
 
         $objPHPExcel->getActiveSheet()->SetCellValue($columna[7] . $fila, "TOTAL");
         $objPHPExcel->getActiveSheet()->getStyle($columna[7] . $fila)->applyFromArray($estilo_encabezado);
