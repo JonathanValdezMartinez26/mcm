@@ -489,8 +489,6 @@ html;
                     ConsultascatnivelatenId: Number(document.querySelector("#ConsultascatnivelatenId").value),
                     ConsultasPori: document.querySelector("#ConsultasPori").value,
                 }]
-                
-                console.log(datos)
                     
                 const procesaRespuesta = (respuesta) => {
                     if (respuesta.errors.length > 0) {
