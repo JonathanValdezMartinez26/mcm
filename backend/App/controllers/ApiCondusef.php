@@ -30,30 +30,7 @@ class ApiCondusef extends Controller
 html;
 
         $extraFooter = <<<html
-            <script>
-                $(document).ready(function(){
-                    $("#muestra-cupones").tablesorter();
-                    var oTable = $('#muestra-cupones').DataTable({
-                    "lengthMenu": [
-                            [30, 50, -1],
-                            [30, 50, 'Todos'],
-                        ],
-                        "columnDefs": [{
-                            "orderable": false,
-                            "targets": 0
-                        }],
-                        "order": false
-                    });
-                    // Remove accented character from search input as well
-                    $('#muestra-cupones input[type=search]').keyup( function () {
-                        var table = $('#example').DataTable();
-                        table.search(
-                            jQuery.fn.DataTable.ext.type.search.html(this.value)
-                        ).draw();
-                    });
-                    var checkAll = 0;
-                });
-                                                  
+            <script>                                                  
                 const showError = (mensaje) => swal(mensaje, { icon: "error" })
                 const showAviso = (mensaje) => swal(mensaje, { icon: "warning" })
                 const showSuccess = (mensaje) => swal(mensaje, { icon: "success" , showConfirmButton: true,}).then((result) => {location.reload();} )
@@ -186,10 +163,49 @@ html;
                     elemento.selectedIndex = 0
                     elemento.disabled = !(opciones.length > 1)
                 }
+
+                const validaRequeridos = () => {
+                    const requeridos = [
+                        "#QuejasNoTrim",
+                        "#QuejasNum",
+                        "#QuejasFolio",
+                        "#QuejasFecRecepcion",
+                        "#MedioId",
+                        "#NivelATId",
+                        "#product",
+                        "#CausasId",
+                        "#QuejasPORI",
+                        "#QuejasEstatus",
+                        "#QuejasCP",
+                        "#EstadosId",
+                        "#QuejasMunId",
+                        "#QuejasLocId",
+                        "#QuejasColId",
+                        "#QuejasTipoPersona",
+                        "#QuejasSexo",
+                        "#QuejasEdad",
+                        "#QuejasFecResolucion",
+                        "#QuejasFecNotificacion",
+                        "#QuejasRespuesta",
+                        "#QuejasNumPenal",
+                        "#PenalizacionId"
+                    ]
                 
-                const registraQueja =(e) => {
+                    const elementos = document.querySelectorAll(requeridos.join(","))
+                    let validacion = false
+                
+                    elementos.forEach((elemento) => {
+                        if (elemento.value === "" || elemento.value === "Seleccione") {
+                            validacion = true
+                        }
+                    })
+                
+                    document.querySelector("#btnAgregar").disabled = validacion
+                }
+                
+                const registrarQueja =(e) => {
                     e.preventDefault()
-                    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJhMmI1MTc4OC1hMzk3LTQxMjUtOGUxNi1lZWZjMmEyY2E1MzEiLCJ1c2VybmFtZSI6IkN1bHRpdmFPQyIsImluc3RpdHVjaW9uaWQiOiJGOUNGMjUzMy03RjRDLTQ3RkYtOTIyNi04MEE4QjA3OCIsImluc3RpdHVjaW9uQ2xhdmUiOjE1NDk0LCJkZW5vbWluYWNpb25fc29jaWFsIjoiRmluYW5jaWVyYSBDdWx0aXZhLCBTLkEuUC5JLiBkZSBDLlYuLCBTT0ZPTSwgRS5OLlIuIiwic2VjdG9yaWQiOjI0LCJzZWN0b3IiOiJTT0NJRURBREVTIEZJTkFOQ0lFUkFTIERFIE9CSkVUTyBNVUxUSVBMRSBFTlIiLCJpYXQiOjE3MTAzNTEwNTUsImV4cCI6MTcxMTIxNTA1NX0.aac7IoeyX7_JNNLb1z6iixtIqtALaxLi98Ttjx18RNs"
+                    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJkYmE0MWMyZi1kNzBkLTQ4NmUtYjA0Yi0zZWYxMDc3YTNmNDciLCJ1c2VybmFtZSI6InN5c3RlbU1DTSIsImluc3RpdHVjaW9uaWQiOiJGOUNGMjUzMy03RjRDLTQ3RkYtOTIyNi04MEE4QjA3OCIsImluc3RpdHVjaW9uQ2xhdmUiOjE1NDk0LCJkZW5vbWluYWNpb25fc29jaWFsIjoiRmluYW5jaWVyYSBDdWx0aXZhLCBTLkEuUC5JLiBkZSBDLlYuLCBTT0ZPTSwgRS5OLlIuIiwic2VjdG9yaWQiOjI0LCJzZWN0b3IiOiJTT0NJRURBREVTIEZJTkFOQ0lFUkFTIERFIE9CSkVUTyBNVUxUSVBMRSBFTlIiLCJzeXN0ZW0iOiJSRURFQ08iLCJpYXQiOjE3MTgxNDM2OTcsImV4cCI6MTcyMDczNTY5N30._5nqkX_PuvsWNF6RhNKSi885EEKOi7lSPC4FwcBOObk"
                     const datos = [{
                         QuejasNoTrim: Number(document.querySelector("#QuejasNoTrim").value),
                         QuejasNum: Number(document.querySelector("#QuejasNum").value),
@@ -215,8 +231,6 @@ html;
                         QuejasNumPenal: Number(document.querySelector("#QuejasNumPenal").value),
                         PenalizacionId: Number(document.querySelector("#PenalizacionId").value),
                     }]
-                    
-                     
                      
                     const procesaRespuesta = (respuesta) => {
                         if (respuesta.errors.length > 0) {
@@ -226,14 +240,10 @@ html;
                             })
                             return showError(mensaje)
                         }
-                        else
-                            {
-                                 return showSuccess("Queja registrada exitosamente bajo el folio: " + document.querySelector("#QuejasFolio").value)
-                            }
+                        
+                        return showSuccess("Queja registrada exitosamente bajo el folio: " + document.querySelector("#QuejasFolio").value)
                     }
-                    
-                    
-                                
+                            
                     consumeAPI("https://api.condusef.gob.mx/redeco/quejas", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REDECO.")
                 }
             </script>
