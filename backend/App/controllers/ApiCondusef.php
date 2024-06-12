@@ -441,8 +441,7 @@ html;
                 elemento.selectedIndex = 0
                 elemento.disabled = !(opciones.length > 1)
             }
-
-
+         
             const validaRequeridos = () => {
                 const requeridos = [
                     "#ConsultasTrim",
@@ -512,7 +511,7 @@ html;
                 consumeAPI("https://api-reune-pruebas.condusef.gob.mx/reune/consultas/general", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REUNE.")   
             }
         </script>
-html;
+        html;
 
         $trimestres = [
             "1" => "Enero - Marzo",
