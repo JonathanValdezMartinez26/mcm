@@ -160,7 +160,7 @@
                     <div class=" col-md-3">
                         <div class="form-group">
                             <label for="QuejasFecResolucion">Fecha de resolución *</label>
-                            <input type="date" class="form-control" id="QuejasFecResolucion" value="<?= $fecha ?>" disabled />
+                            <input type="date" class="form-control" id="QuejasFecResolucion" value="<?= $fecha ?>" />
                         </div>
                     </div>
 
@@ -173,7 +173,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="QuejasRespuesta">Resolución *</label>
-                            <select class="form-control" id="QuejasRespuesta" disabled>
+                            <select class="form-control" id="QuejasRespuesta">
                                 <option value="0">Pendiente</option>
                                 <option value="1">
                                     1 - Totalmente favorable al usuario
