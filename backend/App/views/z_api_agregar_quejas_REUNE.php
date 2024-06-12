@@ -46,7 +46,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="ConsultasEstatusCon">Estatus *</label>
-                            <select class="form-control" id="ConsultasEstatusCon" disabled>
+                            <select class="form-control" id="ConsultasEstatusCon">
                                 <option value="1">PENDIENTE</option>
                                 <option value="2">CONCLUIDO</option>
                             </select>
@@ -139,7 +139,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="ConsultasFecAten">Fecha de atención *</label>
-                            <input type="date" class="form-control" id="ConsultasFecAten" value=<?= $fecha ?> disabled />
+                            <input type="date" class="form-control" id="ConsultasFecAten" value=<?= $fecha ?>  />
                         </div>
                     </div>
                 </div>
