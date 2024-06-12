@@ -13,8 +13,20 @@
                 <div class="col-md-12">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="QuejasNoTrim">Mes a informar *</label>
-                            <select class="form-control" id="QuejasNoTrim" onchange=validaRequeridos(event)>
+                            <label for="QuejasDenominacion">Institución *</label>
+                            <input class="form-control" id="QuejasDenominacion" value="Financiera Cultiva, S.A.P.I. de C.V., SOFOM, E.N.R." disabled />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="QuejasSector">Sector *</label>
+                            <input class="form-control" id="QuejasSector" value="Sociedades Financieras de Objeto Múltiple E.N.R." disabled />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="QuejasNoMes">Mes a informar *</label>
+                            <select class="form-control" id="QuejasNoMes" onchange=validaRequeridos(event)>
                                 <?= $meses; ?>
                             </select>
                         </div>
@@ -39,28 +51,28 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="MedioId">Medio de recepción *</label>
-                            <select class="form-control" id="MedioId" onchange=validaRequeridos(event)></select>
+                            <label for="QuejasMedio">Medio de recepción *</label>
+                            <select class="form-control" id="QuejasMedio" onchange=validaRequeridos(event)></select>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="NivelATId">Nivel de atención o contacto *</label>
-                            <select class="form-control" id="NivelATId" onchange=validaRequeridos(event)></select>
+                            <label for="QuejasNivelAT">Nivel de atención o contacto *</label>
+                            <select class="form-control" id="QuejasNivelAT" onchange=validaRequeridos(event)></select>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="product">Producto o servicio *</label>
-                            <select class="form-control" id="product" onchange=validaRequeridos(event)>
+                            <label for="QuejasProducto">Producto o servicio *</label>
+                            <select class="form-control" id="QuejasProducto" onchange=validaRequeridos(event)>
                                 <?= $productos; ?>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="CausasId">Causa de la queja *</label>
-                            <select class="form-control" id="CausasId" onchange=validaRequeridos(event)>
+                            <label for="QuejasCausa">Causa de la queja *</label>
+                            <select class="form-control" id="QuejasCausa" onchange=validaRequeridos(event)>
                                 <?= $causas; ?>
                             </select>
                         </div>
@@ -99,8 +111,8 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="EstadosId">Estado *</label>
-                            <select class="form-control" id="EstadosId" onchange=validaRequeridos(event) disabled></select>
+                            <label for="QuejasEstados">Estado *</label>
+                            <select class="form-control" id="QuejasEstados" onchange=validaRequeridos(event) disabled></select>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -142,13 +154,13 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="QuejasEdad">Edad *</label>
-                            <input class="form-control" id="QuejasEdad" type="number" min="18" max="99" onkeypress=validaLargo(event) oninput=validaRequeridos() />
+                            <input class="form-control" id="QuejasEdad" type="number" min="18" max="99" onkeypress=validaLargo(event) oninput=validaRequeridos() onblur=validaEdad(event) />
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class=" col-md-3">
                         <div class="form-group">
                             <label for="QuejasFecResolucion">Fecha de resolución *</label>
-                            <input type="date" class="form-control" id="QuejasFecResolucion" value="<?= $fecha ?>" oninput=validaRequeridos() />
+                            <input type="date" class="form-control" id="QuejasFecResolucion" value="<?= $fecha ?>" disabled />
                         </div>
                     </div>
 
@@ -161,7 +173,8 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="QuejasRespuesta">Resolución *</label>
-                            <select class="form-control" id="QuejasRespuesta" onchange=validaRequeridos()>
+                            <select class="form-control" id="QuejasRespuesta" disabled>
+                                <option value="0">Pendiente</option>
                                 <option value="1">
                                     1 - Totalmente favorable al usuario
                                 </option>
@@ -182,8 +195,8 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="PenalizacionId">Tipo de penalización *</label>
-                            <select class="form-control" id="PenalizacionId" oninput=validaRequeridos()>
+                            <label for="QuejasPenalizacion">Tipo de penalización *</label>
+                            <select class="form-control" id="QuejasPenalizacion" oninput=validaRequeridos()>
                                 <option value="1">
                                     CONTRACTUALES - CANCELACIÓN DEL CONTRATO
                                 </option>

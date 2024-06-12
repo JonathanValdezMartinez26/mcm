@@ -14,19 +14,19 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="InstitucionClave">Institución *</label>
-                            <input class="form-control" id="InstitucionClave" value="Cultiva Financiera S.A. de C.V." readonly />
+                            <input class="form-control" id="InstitucionClave" value="Financiera Cultiva, S.A.P.I. de C.V., SOFOM, E.N.R." disabled />
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="Sector">Sector *</label>
-                            <input class="form-control" id="Sector" value="Sociedades Financieras de Objeto Múltiple E.N.R." readonly />
+                            <input class="form-control" id="Sector" value="Sociedades Financieras de Objeto Múltiple E.N.R." disabled />
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="NumConsultas">Número de quejas *</label>
-                            <input class="form-control" id="NumConsultas" value="1" readonly />
+                            <input class="form-control" id="NumConsultas" value="1" disabled />
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -46,7 +46,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="ConsultasEstatusCon">Estatus *</label>
-                            <select class="form-control" id="ConsultasEstatusCon" onchange=validaRequeridos()>
+                            <select class="form-control" id="ConsultasEstatusCon" disabled>
                                 <option value="1">PENDIENTE</option>
                                 <option value="2">CONCLUIDO</option>
                             </select>
@@ -61,7 +61,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="ConsultascatnivelatenId">Nivel de atención o contacto *</label>
-                            <select class="form-control" id="ConsultascatnivelatenId" onchange=validaRequeridos(event)></select>
+                            <select class="form-control" id="ConsultascatnivelatenId" disabled></select>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -139,7 +139,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="ConsultasFecAten">Fecha de atención *</label>
-                            <input type="date" class="form-control" id="ConsultasFecAten" oninput=validaRequeridos() value="<?= $fecha ?>" />
+                            <input type="date" class="form-control" id="ConsultasFecAten" value=<?= $fecha ?> disabled />
                         </div>
                     </div>
                 </div>
