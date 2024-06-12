@@ -61,7 +61,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="ConsultascatnivelatenId">Nivel de atención o contacto *</label>
-                            <select class="form-control" id="ConsultascatnivelatenId" disabled></select>
+                            <select class="form-control" id="ConsultascatnivelatenId"></select>
                         </div>
                     </div>
                     <div class="col-md-3">
