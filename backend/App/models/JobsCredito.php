@@ -210,17 +210,9 @@ sql;
                 CONCILIADO,
                 ESTATUS,
                 ACTUALIZARPE,
-<<<<<<< HEAD
-                pagadocap,
-                PAGADOINT,
-                pagadorec
-              
-                
-=======
                 PAGADOCAP,
                 PAGADOINT,
                 PAGADOREC
->>>>>>> 8397f735375f6aa63d704e0f789085c00de1b463
             )
         VALUES
             (
