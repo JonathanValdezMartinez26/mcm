@@ -80,7 +80,9 @@ $spnMensaje = "<span class='text-danger' id='spnMensaje'>" . $mensaje . "</span>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="MediosId">Medio de recepción *</label>
-                            <select class="form-control" id="MediosId" onchange=validaRequeridos()></select>
+                            <select class="form-control" id="MediosId" onchange=validaRequeridos()>
+                                <?= $medios; ?>
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-3">
