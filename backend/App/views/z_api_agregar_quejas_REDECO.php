@@ -52,13 +52,17 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="QuejasMedio">Medio de recepción *</label>
-                            <select class="form-control" id="QuejasMedio" onchange=validaRequeridos(event)></select>
+                            <select class="form-control" id="QuejasMedio" onchange=validaRequeridos(event)>
+                                <?= $medios; ?>
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="QuejasNivelAT">Nivel de atención o contacto *</label>
-                            <select class="form-control" id="QuejasNivelAT" onchange=validaRequeridos(event)></select>
+                            <select class="form-control" id="QuejasNivelAT" onchange=validaRequeridos(event)>
+                                <?= $niveles; ?>
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-3">

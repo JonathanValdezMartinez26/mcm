@@ -3202,7 +3202,10 @@ script;
 
             ///////////////////////
             $increment = $keyy++;
-            if ( $Layoutt[$increment]["CONCEPTO"] == 'INGRESO'  || $Layoutt[$increment]["CONCEPTO"] == 'FONDEO SUCURSAL')
+            if ( $Layoutt[$increment]["CONCEPTO"] == 'DEPOSITO'
+                || $Layoutt[$increment]["CONCEPTO"] == 'CAPITAL INICIAL - CUENTA CORRIENTE'
+                || $Layoutt[$increment]["CONCEPTO"] == 'APERTURA DE CUENTA - INSCRIPCIÓN'
+                || $Layoutt[$increment]["CONCEPTO"] == 'FONDEO SUCURSAL')
             {
                 $totalSaldo += $Layoutt[$increment]["INGRESO"];
 

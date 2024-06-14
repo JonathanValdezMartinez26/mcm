@@ -24,11 +24,6 @@ class ApiCondusef extends Controller
     {
         $fecha = date('Y-m-d');
 
-        $extraHeader = <<<html
-        <title>Registrar Quejas REDECO</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-
         $extraFooter = <<<html
             <script>                                                  
                 const showError = (mensaje) => swal(mensaje, { icon: "error" })
@@ -50,18 +45,6 @@ html;
                         headers: { "Authorization": token }
                     })
                 }
-                 
-                consumeAPI("https://api.condusef.gob.mx/catalogos/medio-recepcion/", (data) => {
-                    const medio = document.querySelector("#QuejasMedio")
-                    const opciones = getOpciones(data.medio, "medioId", "medioDsc")
-                    insertaOpciones(medio, opciones)
-                })
-                 
-                consumeAPI("https://api.condusef.gob.mx/catalogos/niveles-atencion", (data) => {
-                    const atencion = document.querySelector("#QuejasNivelAT")
-                    const opciones = getOpciones(data.nivelesDeAtencion, "nivelDeAtencionId", "nivelDeAtencionDsc")
-                    insertaOpciones(atencion, opciones)
-                })
                  
                 const limpiaCampos = (mensaje = "") => {
                     if (mensaje !== "") showError(mensaje)
@@ -90,7 +73,7 @@ html;
                     }
                     if (e.keyCode < 48 || e.keyCode > 57) return e.preventDefault()
                 }
-
+         
                 const validaEdad = (e) => {
                     if (e.target.value < 18) {
                         return showAviso("La edad mínima para registrar una queja es de 18 años.")
@@ -170,7 +153,7 @@ html;
                     elemento.selectedIndex = 0
                     elemento.disabled = !(opciones.length > 1)
                 }
-
+         
                 const validaRequeridos = () => {
                     const requeridos = [
                         "#QuejasNoMes",
@@ -203,7 +186,7 @@ html;
                         if (elemento.value === "" || elemento.value === "Seleccione") {
                             validacion = true
                         }
-
+         
                         if (elemento.id === "QuejasEdad" && Number(elemento.value) < 18) {
                             validacion = false
                         }
@@ -254,7 +237,7 @@ html;
                     consumeAPI("https://api.condusef.gob.mx/redeco/quejas", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REDECO.")
                 }
             </script>
-html;
+        html;
 
         $meses = [
             "1" => "Enero",
@@ -277,35 +260,73 @@ html;
             else $opcionesMeses .= "<option value='{$key}'>{$value}</option>";
         }
 
+        $medios = self::GetMediosREDECO();
+        $opcionesMedios = "<option value='' disabled selected>Seleccionar</option>";
+        foreach ($medios as $key => $value) {
+            $opcionesMedios .= "<option value='{$value['medioId']}'>{$value['medioDsc']}</option>";
+        }
+
+        $niveles = self::GetNivelesREDECO();
+        $opcionesNiveles = "<option value='' disabled selected>Seleccionar</option>";
+        foreach ($niveles as $key => $value) {
+            $opcionesNiveles .= "<option value='{$value['nivelDeAtencionId']}'>{$value['nivelDeAtencionDsc']}</option>";
+        }
+
         $productos = ApiCondusefDao::GetProductos();
-        $opcionesProductos = "";
+        $opcionesProductos = "<option value='' disabled selected>Seleccionar</option>";
         foreach ($productos as $key => $value) {
             $opcionesProductos .= "<option value='{$value['CODIGO']}'>{$value['PRODUCTO']}</option>";
         }
 
         $causas = ApiCondusefDao::GetCausas();
-        $opcionesCausas = "";
+        $opcionesCausas = "<option value='' disabled selected>Seleccionar</option>";
         foreach ($causas as $key => $value) {
             $opcionesCausas .= "<option value='{$value['CODIGO']}'>{$value['DESCRIPCION']}</option>";
         }
 
-        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Registrar Quejas REDECO")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', $fecha);
         View::set('meses', $opcionesMeses);
+        View::set('medios', $opcionesMedios);
+        View::set('niveles', $opcionesNiveles);
         View::set('productos', $opcionesProductos);
         View::set('causas', $opcionesCausas);
         View::render("z_api_agregar_quejas_REDECO");
+    }
+
+    public function GetMediosREDECO()
+    {
+        $url = "https://api.condusef.gob.mx/catalogos/medio-recepcion/";
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+
+        if (curl_errno($ch)) return [];
+        curl_close($ch);
+        return json_decode($response, true)['medio'];
+    }
+
+    public function GetNivelesREDECO()
+    {
+        $url = "https://api.condusef.gob.mx/catalogos/niveles-atencion/";
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+
+        if (curl_errno($ch)) return [];
+        curl_close($ch);
+        return json_decode($response, true)['nivelesDeAtencion'];
     }
 
 
     public function AddReune()
     {
         $fecha = date('Y-m-d');
-        $extraHeader = <<<html
-        <title>Registrar Quejas REUNE</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
 
         $extraFooter = <<<html
         <script>                                                
@@ -328,18 +349,6 @@ html;
                     headers: { "Authorization": token }
                 })
             }
-                
-            consumeAPI("https://api.condusef.gob.mx/catalogos/medio-recepcion/", (data) => {
-                const medio = document.querySelector("#MediosId")
-                const opciones = getOpciones(data.medio, "medioId", "medioDsc")
-                insertaOpciones(medio, opciones)
-            })
-                
-            // consumeAPI("https://api.condusef.gob.mx/catalogos/niveles-atencion", (data) => {
-            //     const atencion = document.querySelector("#ConsultascatnivelatenId")
-            //     const opciones = getOpciones(data.nivelesDeAtencion, "nivelDeAtencionId", "nivelDeAtencionDsc")
-            //     insertaOpciones(atencion, opciones)
-            // })
                 
             const limpiaCampos = (mensaje = "") => {
                 if (mensaje !== "") showError(mensaje)
@@ -441,8 +450,7 @@ html;
                 elemento.selectedIndex = 0
                 elemento.disabled = !(opciones.length > 1)
             }
-
-
+         
             const validaRequeridos = () => {
                 const requeridos = [
                     "#ConsultasTrim",
@@ -474,7 +482,7 @@ html;
                 document.querySelector("#btnAgregar").disabled = validacion
             }
             
-            const registrarQueja =(e) => {
+            const registrarQueja = (e) => {
                 e.preventDefault()
                 const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJkYmE0MWMyZi1kNzBkLTQ4NmUtYjA0Yi0zZWYxMDc3YTNmNDciLCJ1c2VybmFtZSI6InN5c3RlbU1DTSIsImluc3RpdHVjaW9uaWQiOiJGOUNGMjUzMy03RjRDLTQ3RkYtOTIyNi04MEE4QjA3OCIsImluc3RpdHVjaW9uQ2xhdmUiOjE1NDk0LCJkZW5vbWluYWNpb25fc29jaWFsIjoiRmluYW5jaWVyYSBDdWx0aXZhLCBTLkEuUC5JLiBkZSBDLlYuLCBTT0ZPTSwgRS5OLlIuIiwic2VjdG9yaWQiOjI0LCJzZWN0b3IiOiJTT0NJRURBREVTIEZJTkFOQ0lFUkFTIERFIE9CSkVUTyBNVUxUSVBMRSBFTlIiLCJzeXN0ZW0iOiJSRVVORSIsImlhdCI6MTcxODE2ODY3OSwiZXhwIjoxNzIwNzYwNjc5fQ._y9D9eSHh-e3cqGfCr1Az6mDtS0e0Uh1K2fDvAH9QI0"
                 const datos = [{
@@ -512,7 +520,7 @@ html;
                 consumeAPI("https://api-reune-pruebas.condusef.gob.mx/reune/consultas/general", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REUNE.")   
             }
         </script>
-html;
+        html;
 
         $trimestres = [
             "1" => "Enero - Marzo",
@@ -527,22 +535,45 @@ html;
             else $opcionesMeses .= "<option value='{$key}'>{$value}</option>";
         }
 
+        $medios = [
+            "1" => "Correo electrónico",
+            "2" => "Página de internet",
+            "3" => "Sucursales",
+            "4" => "Teléfono",
+            "5" => "UNE",
+            "6" => "CONDUSEF-SIGE gestión electrónica",
+            "7" => "CONDUSEF-Gestión ordinaria",
+            "8" => "Mensajeria",
+            "9" => "Fax",
+            "17" => "Oficinas de atención",
+            "18" => "Centro de atención telefónica",
+            "20" => "Aplicación movil",
+            "21" => "Interfaces",
+            "22" => "Api's",
+            "23" => "Bots"
+        ];
+        $opcionesMedios = "<option value='' disabled selected>Seleccionar</option>";
+        foreach ($medios as $key => $value) {
+            $opcionesMedios .= "<option value='{$key}'>{$value}</option>";
+        }
+
         $productos = ApiCondusefDao::GetProductos();
-        $opcionesProductos = "";
+        $opcionesProductos = "<option value='' disabled selected>Seleccionar</option>";
         foreach ($productos as $key => $value) {
             $opcionesProductos .= "<option value='{$value['CODIGO']}'>{$value['PRODUCTO']}</option>";
         }
 
         $causas = ApiCondusefDao::GetCausas();
-        $opcionesCausas = "";
+        $opcionesCausas = "<option value='' disabled selected>Seleccionar</option>";
         foreach ($causas as $key => $value) {
             $opcionesCausas .= "<option value='{$value['CODIGO']}'>{$value['DESCRIPCION']}</option>";
         }
 
-        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Registrar Quejas REUNE")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('fecha', $fecha);
         View::set('meses', $opcionesMeses);
+        View::set('medios', $opcionesMedios);
         View::set('productos', $opcionesProductos);
         View::set('causas', $opcionesCausas);
         View::render("z_api_agregar_quejas_REUNE");
