@@ -78,10 +78,6 @@
                                             <option value="11:00:00">11:00 a.m</option>
                                             <option value="11:10:00">11:10 a.m</option>
                                             <option value="11:15:00">11:15 a.m</option>
-                                            <option value="11:30:00">11:30 a.m</option>
-                                            <option value="11:40:00">11:40 a.m</option>
-                                            <option value="11:50:00">11:50 a.m</option>
-                                            <option value="11:59:00">11:59 p.m</option>
                                         </select>
                                     </div>
                                 </div>
