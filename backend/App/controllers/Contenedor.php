@@ -117,6 +117,13 @@ html;
     }
 
 
+      if ($this->__usuario == 'AMGM' || $this->__usuario == 'PHEE') {
+          $menu .= <<<html
+                <li><a href="/AdminSucursales/TransaccionesOperaciones/"><i class="glyphicon glyphicon-paste"> </i>&nbsp; Reporteria Ahorro </a> </li>
+          
+html;
+      }
+
     if ($permiso_ahorro == '1' || $this->__usuario == 'AMGM') {
       $menu .= <<<html
                 <li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
@@ -131,6 +138,8 @@ html;
           
 html;
     }
+
+
 
     $menu .= <<<html
               <hr>
