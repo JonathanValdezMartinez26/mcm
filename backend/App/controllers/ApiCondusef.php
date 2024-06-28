@@ -244,7 +244,7 @@ class ApiCondusef extends Controller
                     consumeAPI("https://api.condusef.gob.mx/redeco/quejas", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REDECO.", procesaError)
                 }
             </script>
-        html;
+html;
 
         $meses = [
             "1" => "Enero",
@@ -530,7 +530,7 @@ class ApiCondusef extends Controller
                 consumeAPI("https://api-reune-pruebas.condusef.gob.mx/reune/consultas/general", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REUNE.", procesaError)   
             }
         </script>
-        html;
+html;
 
         $trimestres = [
             "1" => "Enero - Marzo",

@@ -2768,7 +2768,7 @@ sql;
         ORDER BY CONSECUTIVO ASC
 sql;
 
-        var_dump($query);
+      //  var_dump($query);
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryAll($query);
@@ -2790,7 +2790,7 @@ sql;
         INNER JOIN PE p ON p.CODIGO = tar.CDGPE_SOLICITA 
         WHERE p.CDGEM = 'EMPFIN'
         AND tar.AUTORIZA = '0'
-        sql;
+sql;
 
         try {
             $mysqli = Database::getInstance();
