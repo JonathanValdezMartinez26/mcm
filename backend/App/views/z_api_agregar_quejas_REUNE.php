@@ -79,15 +79,10 @@ $spnMensaje = "<span class='text-danger' id='spnMensaje'>" . $mensaje . "</span>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-<<<<<<< HEAD
-                            <label for="ConsultascatnivelatenId">Nivel de atención o contacto *</label>
-                            <select class="form-control" id="ConsultascatnivelatenId"></select>
-=======
                             <label for="MediosId">Medio de recepción *</label>
                             <select class="form-control" id="MediosId" onchange=validaRequeridos()>
                                 <?= $medios; ?>
                             </select>
->>>>>>> 10de150d25f3ae04b6840832cb68a944c6fb5e4b
                         </div>
                     </div>
                     <div class="col-md-3">

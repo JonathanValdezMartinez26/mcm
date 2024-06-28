@@ -2590,7 +2590,7 @@ sql;
 
 
         $query = <<<sql
-         SELECT 
+        SELECT 
             CONSECUTIVO,
             MOVIMIENTO,
             CDGCO,
@@ -2609,16 +2609,17 @@ sql;
             PRODUCTO,
             CASE WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO ELSE 0 END AS INGRESO,
             CASE WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN MONTO ELSE 0 END AS EGRESO,
-            CASE WHEN TIPO_MOVIMIENTO = 'REPORTE' THEN MONTO ELSE 0  END AS REPORTE,
-    
+            CASE WHEN TIPO_MOVIMIENTO = 'REPORTE' THEN MONTO ELSE 0 END AS REPORTE,
             CASE 
-		        WHEN TIPO_MOVIMIENTO = 'REPORTE' THEN MONTO
-		        ELSE SUM(CASE 
-		                    WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO 
-		                    WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN -MONTO 
-		                    ELSE 0 
-		                 END) OVER (ORDER BY CONSECUTIVO ASC)
-		    END AS SALDO
+                WHEN TIPO_MOVIMIENTO = 'REPORTE' THEN MONTO
+                ELSE SUM(CASE 
+                            WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO 
+                            WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN -MONTO 
+                            ELSE 0 
+                         END) OVER (ORDER BY CONSECUTIVO ASC)
+            END AS SALDO,
+            CDGPE_COMISIONA,
+            NOMBRE_COMISIONA
         FROM (
             SELECT 
                 ROW_NUMBER() OVER (ORDER BY FECHA_MOV_FILTRO ASC) AS CONSECUTIVO,
@@ -2636,9 +2637,10 @@ sql;
                 MONTO,
                 CONCEPTO,
                 TIPO_MOVIMIENTO,
-                PRODUCTO
+                PRODUCTO, 
+                CDGPE_COMISIONA,
+                NOMBRE_COMISIONA
             FROM (
-          
                 (
                    SELECT 
                       MOVIMIENTO,
@@ -2649,7 +2651,7 @@ sql;
                       'NO APLICA' AS CLIENTE, 
                       'NO APLICA' AS TITULAR_CUENTA_EJE, 
                       TO_CHAR(FECHA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
-                       TO_CHAR(FECHA, 'DD/MM/YYYY') AS FECHA_MOV_APLICA,
+                      TO_CHAR(FECHA, 'DD/MM/YYYY') AS FECHA_MOV_APLICA,
                       FECHA AS FECHA_MOV_FILTRO,
                       'NO APLICA' AS CDG_TICKET, 
                       MONTO, 
@@ -2665,7 +2667,9 @@ sql;
                         WHEN MOVIMIENTO = 3 THEN 'REPORTE'
                         ELSE 'INGRESO'
                     END AS TIPO_MOVIMIENTO,
-                      'AHORRO CUENTA CORRIENTE' AS PRODUCTO 
+                      'AHORRO CUENTA CORRIENTE' AS PRODUCTO, 
+                      NULL AS CDGPE_COMISIONA, 
+                      NULL AS NOMBRE_COMISIONA
                       FROM SUC_MOVIMIENTOS_AHORRO sma 
                     INNER JOIN SUC_ESTADO_AHORRO sea ON sea.CODIGO = sma.CDG_ESTADO_AHORRO 
                     INNER JOIN CO c ON c.CODIGO = sea.CDG_SUCURSAL
@@ -2705,7 +2709,15 @@ sql;
                     CASE 
                         WHEN tpa.DESCRIPCION = 'TRANSFERENCIA INVERSIÓN (ENVIO)' AND pp.DESCRIPCION = 'Ahorro Corriente' THEN 'INVERSION'
                         ELSE pp.DESCRIPCION 
-                    END AS PRODUCTO
+                    END AS PRODUCTO,
+                    CASE 
+                        WHEN (apa.CDGPE_COMISIONA IS NOT NULL AND tpa.DESCRIPCION = 'CAPITAL INICIAL - CUENTA CORRIENTE')  THEN p.CODIGO
+                        ELSE NULL  -- Otra acción que desees si no se cumple la condición
+                    END AS CDGPE_COMISIONA,
+                     CASE 
+                        WHEN (apa.CDGPE_COMISIONA IS NOT NULL AND tpa.DESCRIPCION = 'CAPITAL INICIAL - CUENTA CORRIENTE')  THEN p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE
+                        ELSE NULL  -- Otra acción que desees si no se cumple la condición
+                    END AS NOMBRE_COMISIONA
                 FROM MOVIMIENTOS_AHORRO ma
                 INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
                 INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
@@ -2718,7 +2730,7 @@ sql;
                 )
                 UNION 
                 (
-                	SELECT 
+                    SELECT 
                     ma.MOVIMIENTO,
                     c2.CODIGO AS CDGCO,
                     c2.NOMBRE AS SUCURSAL,
@@ -2732,8 +2744,10 @@ sql;
                     ma.CDG_TICKET, 
                     tpa.MONTO_INVERSION AS MONTO,
                     'TRANSFERENCIA INVERSIÓN (RECEPCIÓN)' AS CONCEPTO, 
-                    'INGRESO' TIPO_MOVIMIENTO,
-                    'INVERSION' AS PRODUCTO
+                    'INGRESO' AS TIPO_MOVIMIENTO,
+                    'INVERSION' AS PRODUCTO, 
+                    NULL AS CDGPE_COMISIONA,
+                    NULL AS NOMBRE_COMISIONA
                 FROM MOVIMIENTOS_AHORRO ma
                 INNER JOIN CUENTA_INVERSION tpa ON tpa.FECHA_APERTURA = ma.FECHA_MOV 
                 INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
@@ -2754,7 +2768,7 @@ sql;
         ORDER BY CONSECUTIVO ASC
 sql;
 
-
+        var_dump($query);
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryAll($query);

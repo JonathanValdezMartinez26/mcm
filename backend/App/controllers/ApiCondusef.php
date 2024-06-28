@@ -30,7 +30,7 @@ class ApiCondusef extends Controller
                 const showAviso = (mensaje) => swal(mensaje, { icon: "warning" })
                 const showSuccess = (mensaje) => swal(mensaje, { icon: "success" , showConfirmButton: true,}).then((result) => {location.reload();} )
             
-                const consumeAPI = (url, callback, datos = null, tipoDatos = 'json', tipo = "get", token = null, msgError = "") => {
+                const consumeAPI = (url, callback, datos = null, tipoDatos = 'json', tipo = "get", token = null, msgError = "", fncERR = null) => {
                     $.ajax({
                         type: tipo,
                         url: url,
@@ -40,7 +40,8 @@ class ApiCondusef extends Controller
                         success: callback,
                         error: (resError) => {
                             console.log(resError.responseJSON)
-                            showError(msgError)
+                            if (fncERR) fncERR(resError.responseJSON)
+                            else showError(msgError)
                         },
                         headers: { "Authorization": token }
                     })
@@ -221,20 +222,26 @@ class ApiCondusef extends Controller
                         "QuejasSexo": document.querySelector("#QuejasSexo").value,
                         "QuejasEdad": Number(document.querySelector("#QuejasEdad").value),
                         "QuejasFecResolucion": null,
-                        "QuejasFecNotificacion": formatoFecha(document.querySelector("#QuejasFecNotificacion").value),
+                        "QuejasFecNotificacion": null, //formatoFecha(document.querySelector("#QuejasFecNotificacion").value),
                         "QuejasRespuesta": null,
                         "QuejasNumPenal": Number(document.querySelector("#QuejasNumPenal").value),
                         "QuejasPenalizacion": Number(document.querySelector("#QuejasPenalizacion").value),
                     }]
                      
                     const procesaRespuesta = (respuesta) => {
-                        if (respuesta["Quejas enviadas"] === 0) 
-                            return showError(respuesta.message)
-                        
                         return showSuccess("Queja registrada exitosamente con el folio: " + document.querySelector("#QuejasFolio").value)
                     }
+
+                    const procesaError = (respuesta) => {
+                        let mensaje = "Ocurrieron los siguientes errores:\\n\\n"
+                        respuesta.errors[datos[0].QuejasFolio].forEach((error, i) => {
+                            mensaje += (i+1) + ".-" + error + "\\n" 
+                        })
+                        mensaje += "\\n" + respuesta.message
+                        return showError(mensaje)
+                    }
                             
-                    consumeAPI("https://api.condusef.gob.mx/redeco/quejas", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REDECO.")
+                    consumeAPI("https://api.condusef.gob.mx/redeco/quejas", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REDECO.", procesaError)
                 }
             </script>
         html;
@@ -334,7 +341,7 @@ class ApiCondusef extends Controller
             const showAviso = (mensaje) => swal(mensaje, { icon: "warning" })
             const showSuccess = (mensaje) => swal(mensaje, { icon: "success" , showConfirmButton: true,}).then((result) => {location.reload();} )
         
-            const consumeAPI = (url, callback, datos = null, tipoDatos = 'json', tipo = "get", token = null, msgError = "") => {
+            const consumeAPI = (url, callback, datos = null, tipoDatos = 'json', tipo = "get", token = null, msgError = "", fncERR = null) => {
                 $.ajax({
                     type: tipo,
                     url: url,
@@ -344,7 +351,8 @@ class ApiCondusef extends Controller
                     success: callback,
                     error: (resError) => {
                         console.log(resError.responseJSON)
-                        showError(msgError)
+                        if (fncERR) fncERR(resError.responseJSON)
+                        else showError(msgError)
                     },
                     headers: { "Authorization": token }
                 })
@@ -507,17 +515,19 @@ class ApiCondusef extends Controller
                 }]
                     
                 const procesaRespuesta = (respuesta) => {
-                    if (respuesta.errors.length > 0) {
-                        let mensaje = "Ocurrieron los siguientes errores:\\n"
-                        respuesta.errors[0].queja.errors.forEach(error => {
-                            mensaje += error + ".\\n" 
-                        })
-                        return showError(mensaje)
-                    } else {
-                        return showSuccess("Queja registrada exitosamente bajo el folio: " + document.querySelector("#QuejasFolio").value)
-                    }
+                    return showSuccess("Queja registrada exitosamente con el folio: " + document.querySelector("#QuejasFolio").value)
                 }
-                consumeAPI("https://api-reune-pruebas.condusef.gob.mx/reune/consultas/general", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REUNE.")   
+
+                const procesaError = (respuesta) => {
+                    let mensaje = "Ocurrieron los siguientes errores:\\n\\n"
+                    respuesta.errors[datos[0].ConsultasFolio].forEach((error, i) => {
+                        mensaje += (i+1) + ".-" + error + "\\n" 
+                    })
+                    mensaje += "\\n" + respuesta.message
+                    return showError(mensaje)
+                }
+
+                consumeAPI("https://api-reune-pruebas.condusef.gob.mx/reune/consultas/general", procesaRespuesta, datos, "json", "post", token, "Ocurrió un error de comunicación con el portal de REUNE.", procesaError)   
             }
         </script>
         html;

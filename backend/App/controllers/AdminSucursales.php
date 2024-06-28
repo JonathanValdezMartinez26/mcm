@@ -1817,6 +1817,21 @@ html;
             } else {
                 $concepto = '<i class="fa fa-arrow-down" style="color: #00ac00;"></i>';
             }
+
+            //////////////////////////////////////////////////////////////////////////////////// SE AGREGAN ESTOS CAMBIOS EL 26/06/2024 SON PARA IDENTIFICAR PAGO DE COMISIONES
+            if ($value['CDGPE_COMISIONA'] != NULL) {
+                $comisiona = <<<html
+                <div style="margin-bottom: 5px;"><b>COMISIÓN:</b> {$value['CDGPE_COMISIONA']}-  {$value['NOMBRE_COMISIONA']}</div>
+html;
+            }
+            else
+            {
+                $comisiona = <<<html
+                <div style="margin-bottom: 5px;"><b>COMISIÓN:</b> NO APLICA</div>
+html;
+            }
+            ////////////////////////////////////////////////////////////////////////////////////
+
             $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                 
@@ -1838,13 +1853,12 @@ html;
                           <div>NOMBRE CLIENTE: <b>{$value['TITULAR_CUENTA_EJE']}</b></div>
                     </td>
                     
-                   
-                    
-                    
                     <td style="padding: 10px !important;">
                         <div style="margin-bottom: 5px; font-size: 15px;">{$concepto} $ {$monto}</div>
                         <div style="margin-bottom: 5px;"><b>CONCEPTO:</b> {$value['CONCEPTO']}</div>
                         <div style="margin-bottom: 5px;"><b>PRODUCTO:</b> {$value['PRODUCTO']}</div>
+                        {$comisiona}
+                        
                     </td>
                     <td style="padding: 10px !important;">$ {$ingreso} </td>
                     <td style="padding: 10px !important;">$ {$egreso} </td>
