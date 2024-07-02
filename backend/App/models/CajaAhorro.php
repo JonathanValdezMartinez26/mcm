@@ -2768,7 +2768,7 @@ sql;
         ORDER BY CONSECUTIVO ASC
 sql;
 
-      //  var_dump($query);
+      // var_dump($query);
         try {
             $mysqli = Database::getInstance();
             $res = $mysqli->queryAll($query);

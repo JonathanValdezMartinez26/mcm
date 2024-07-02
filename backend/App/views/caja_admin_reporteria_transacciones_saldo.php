@@ -139,7 +139,7 @@
                                                         | <span class="count_top" style="font-size: 18px"><i class="fa fa-arrow-down" style="color: #00ac00"></i></span> Movimiento en efectivo egreso.
                                                         | <span class="count_top" style="font-size: 18px"><i class="fa fa-minus" style="color: #ac0000"></i></span> Movimiento virtual egreso.
                                                         | <span class="count_top" style="font-size: 18px"><i class="fa fa-arrow-up" style="color: #ac0000"></i></span> Movimiento en efectivo egreso.
-                                                        | <span class="count_top" style="font-size: 18px"><i class="fa fa-asterisk" style="color: #005dac"></i></span> Movimiento virtual (Solicitud Retiro).
+                                                        | <span class="count_top" style="font-size: 18px"><i class="fa fa-asterisk" style="color: #005dac"></i></span> Movimiento virtual.
 
                                                 </div>
                                             </div>
