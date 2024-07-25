@@ -4,6 +4,7 @@ defined("APPPATH") OR die("Access denied");
 
 use \Core\Database;
 use \App\interfaces\Crud;
+use ScssPhp\ScssPhp\Block\ElseBlock;
 
 class CallCenter{
 
@@ -391,7 +392,15 @@ sql;
 
         if($usuario != '')
         {
-            $var_ = "AND SPR.CDGPE IN('".$usuario."')";
+            if($usuario== 'AMGM' || $usuario == 'PHEE' || $usuario == 'HSEJ')
+            {
+                $var_ = '';
+            }
+            else
+            {
+                $var_ = "AND SPR.CDGPE IN('".$usuario."')";
+            }
+
         }
         else
         {
@@ -557,7 +566,7 @@ sql;
                  
                  
 sql;
-                //var_dump($query);
+               // var_dump($query);
                 return $mysqli->queryAll($query);
 
     }
