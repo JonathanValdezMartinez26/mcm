@@ -361,11 +361,26 @@ sql;
 
     public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $usuario, $suc){
 
-
-
+        $mysqli = Database::getInstance();
+        $cdgco_all = array();
         $string_from_array = implode(', ', $cdgco);
+
+
         if($suc == '000')
         {
+            $all_suc_query =<<<sql
+              select codigo from co
+sql;
+            $all_suc =  $mysqli->queryAll($all_suc_query);
+
+            foreach ($all_suc as $key => $val2) {
+                array_push($cdgco_all, $val2['CODIGO']);
+            }
+
+
+            $string_from_array = implode(', ', $cdgco_all);
+
+            //var_dump($all_suc);
             $var = 'SPR.CDGCO IN('.$string_from_array.') AND ';
         }
         else
@@ -385,7 +400,7 @@ sql;
 
 
 
-                $mysqli = Database::getInstance();
+
                 $query=<<<sql
                   SELECT * FROM (SELECT DISTINCT (SPR.CDGNS || '-' || SPR.CICLO) AS A, SPR.REGION AS B, SPR.FECHA_TRABAJO AS C,  
                  SPR.FECHA_SOL AS D, '' AS E, SPR.NOMBRE_SUCURSAL AS F, SPR.EJECUTIVO AS G, SPR.CDGNS AS H, (SPR.NOMBRE) AS I,
