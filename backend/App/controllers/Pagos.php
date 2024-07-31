@@ -848,51 +848,30 @@ html;
              $("#all").submit();
         }
         
-         function boton_terminar(barcode)
-        {
-            var resume_table = document.getElementById("terminar_resumen");
-            total = document.getElementById("validados_r_total");
-            sum_contador = 1;
-            contenido = parseInt(total.innerHTML) + 1;
+        function boton_terminar(barcode) {
+            let tabla = document.querySelector("#terminar_resumen").querySelector("tbody")
+            let filas = tabla.querySelectorAll("tr")
             
-            for (var i = 1, row; row = resume_table.rows[i]; i++) {
-                
-              sum_contador++;
-              
-                    col = row.cells[0];
-                    pk = col.innerText;
-                  
+            swal({
+                title: "Procesando Pagos",
+                text: "Espere por favor...",
+                buttons: false,
+                onOpen: function() {
+                    swal.showLoading()
+                }
+            })
+
+            Array.from(filas).forEach((fila) => {
+                pk = fila.cells[0].innerText
                 $.ajax({
                     type: 'POST',
                     url: '/Pagos/PagosAddApp/',
-                    data: 'cortecaja_pk='+pk+'&barcode='+barcode,
-                    success: function(respuesta) {
-                                swal({
-                                    title: "Procesando Pagos",
-                                    text: "Espere por favor...",
-                                    timer: 100,
-                                    onOpen: function() {
-                                        swal.showLoading()
-                                    }
-                                })
-                        }
-                    });
-                
-                 if(contenido == sum_contador)
-                     {
-                         //alert("Son iguales");
-                         location.reload();
-                     }
-                 else
-                     {
-                         //alert("No son iguales");
-                     }
-               
-            }
-          
+                    data: 'cortecaja_pk='+pk+'&barcode='+barcode
+                })
+            })
+
+            location.reload()
         }
-       
-      
       </script>
 html;
 
