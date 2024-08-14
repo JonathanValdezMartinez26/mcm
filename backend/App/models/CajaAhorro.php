@@ -2417,7 +2417,7 @@ sql;
         $pro
         $ope
         ORDER BY CONSECUTIVO ASC
-        sql;
+sql;
 
         try {
             $mysqli = Database::getInstance();
