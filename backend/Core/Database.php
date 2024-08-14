@@ -16,7 +16,6 @@ class Database
     const TEMA = 'ecommerce';
     static $_instance;
     static $_mysqli;
-
     static $_debug;
     static $_mail;
 
