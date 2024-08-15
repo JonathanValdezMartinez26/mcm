@@ -1,17 +1,21 @@
 <?php
+
 namespace App\models;
-defined("APPPATH") OR die("Access denied");
+
+defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
 use \Core\MasterDom;
 use \App\interfaces\Crud;
 use \App\controllers\UtileriasLog;
 
-class Creditos{
+class Creditos
+{
 
-    public static function ConsultaGarantias($noCredito){
-      $mysqli = Database::getInstance();
-      $query=<<<sql
+    public static function ConsultaGarantias($noCredito)
+    {
+        $mysqli = new Database();
+        $query = <<<sql
 SELECT
     GARPREN.SECUENCIA,
     GARPREN.ARTICULO,
@@ -30,12 +34,13 @@ WHERE
 
 sql;
 
-      return $mysqli->queryAll($query);
+        return $mysqli->queryAll($query);
     }
 
-    public static function ActualizacionCredito($noCredito){
-        $mysqli = Database::getInstance();
-        $query=<<<sql
+    public static function ActualizacionCredito($noCredito)
+    {
+        $mysqli = new Database();
+        $query = <<<sql
 SELECT
     GARPREN.SECUENCIA,
     GARPREN.ARTICULO,
@@ -56,9 +61,10 @@ sql;
         return $mysqli->queryAll($query);
     }
 
-    public static function SelectSucursalAllCreditoCambioSuc($noCredito){
+    public static function SelectSucursalAllCreditoCambioSuc($noCredito)
+    {
 
-        $query=<<<sql
+        $query = <<<sql
         SELECT 
 		SC.CDGNS NO_CREDITO,
 		SC.CDGCL ID_CLIENTE,
@@ -97,13 +103,14 @@ sql;
 sql;
 
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->queryOne($query);
     }
 
-    public static function ListaSucursales(){
-    //////cambiar el parametro CDGPE
-        $query=<<<sql
+    public static function ListaSucursales()
+    {
+        //////cambiar el parametro CDGPE
+        $query = <<<sql
         SELECT DISTINCT 
             RG.CODIGO ID_REGION,
             RG.NOMBRE REGION,
@@ -119,25 +126,25 @@ sql;
 	            SUCURSAL ASC
 sql;
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->queryAll($query);
-
     }
 
-    public static function UpdateSucursal($sucursal_c){
+    public static function UpdateSucursal($sucursal_c)
+    {
 
-           $credito = $sucursal_c->_credito;
-           $ciclo = $sucursal_c->_ciclo;
-           $nueva_sucursal = $sucursal_c->_nueva_sucursal;
+        $credito = $sucursal_c->_credito;
+        $ciclo = $sucursal_c->_ciclo;
+        $nueva_sucursal = $sucursal_c->_nueva_sucursal;
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->queryProcedureActualizaSucursal($credito, $ciclo, $nueva_sucursal);
-
     }
 
-    public static function ProcedureGarantias($garantias_c){
+    public static function ProcedureGarantias($garantias_c)
+    {
         $credito = $garantias_c->_credito;
-        $articulo= $garantias_c->_articulo;
+        $articulo = $garantias_c->_articulo;
         $marca = $garantias_c->_marca;
         $modelo = $garantias_c->_modelo;
         $serie = $garantias_c->_serie;
@@ -145,24 +152,24 @@ sql;
         $usuario = $garantias_c->_usuario;
         $valor = $garantias_c->_valor;
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->queryProcedureInsertGarantias($credito, $articulo, $marca, $modelo, $serie, $factura, $usuario, $valor, 1);
-
     }
 
-    public static function ProcedureGarantiasDelete($id, $secu){
+    public static function ProcedureGarantiasDelete($id, $secu)
+    {
 
         $credito = $id;
-        $secuencia= $secu;
+        $secuencia = $secu;
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->queryProcedureDeleteGarantias($credito, $secuencia, 3);
-
     }
 
-    public static function ProcedureGarantiasUpdate($garantias_c){
+    public static function ProcedureGarantiasUpdate($garantias_c)
+    {
         $credito = $garantias_c->_credito;
-        $articulo= $garantias_c->_articulo;
+        $articulo = $garantias_c->_articulo;
         $marca = $garantias_c->_marca;
         $modelo = $garantias_c->_modelo;
         $serie = $garantias_c->_serie;
@@ -173,14 +180,14 @@ sql;
 
 
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->queryProcedureUpdatesGarantias($credito, $articulo, $marca, $modelo, $serie, $factura, $usuario, $valor, $secuencia);
-
     }
 
-    public static function ConsultarPagosAdministracionOne($noCredito){
+    public static function ConsultarPagosAdministracionOne($noCredito)
+    {
 
-        $query=<<<sql
+        $query = <<<sql
         SELECT 
 		SC.CDGNS NO_CREDITO,
 		SC.CDGCL ID_CLIENTE,
@@ -215,37 +222,36 @@ sql;
 sql;
 
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->queryOne($query);
     }
-///////////////////////////////////////////////////////////////////////////////////////////
-    public static function UpdateActulizaCredito($credito_c){
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    public static function UpdateActulizaCredito($credito_c)
+    {
 
         $credito = $credito_c->_credito;
         $credito_n = $credito_c->_credito_nuevo;
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->queryProcedureActualizaNumCredito($credito, $credito_n);
-
     }
-    public static function UpdateActulizaCiclo($credito_c){
+    public static function UpdateActulizaCiclo($credito_c)
+    {
 
         $credito = $credito_c->_credito;
         $ciclo_nuevo = $credito_c->_ciclo_nuevo;
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->queryProcedureActualizaNumCreditoCiclo($credito, $ciclo_nuevo);
-
     }
-    public static function UpdateActulizaSituacion($credito_c){
+    public static function UpdateActulizaSituacion($credito_c)
+    {
 
         $credito = $credito_c->_credito;
         $ciclo_nuevo = $credito_c->_ciclo_nuevo;
         $situacion = $credito_c->_situacion;
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->queryProcedureActualizaNumCreditoSituacion($credito, $ciclo_nuevo, $situacion);
-
     }
-
 }

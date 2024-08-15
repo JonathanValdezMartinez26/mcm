@@ -56,7 +56,7 @@ class Apertura
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryAll($query_busca_cliente);
         } catch (Exception $e) {
             return "";
@@ -76,7 +76,7 @@ class Apertura
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryAll($query_tasa);
         } catch (Exception $e) {
             return "";
@@ -140,7 +140,7 @@ class Apertura
         ];
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $ticket = $mysqli->insertar($qryTicket, $datosTicket, true);
             if (!$ticket) return self::Responde(false, "Ocurrió un error al crear el ticket de ahorro", $datos, $datosTicket);
 
@@ -167,7 +167,7 @@ class Apertura
             ];
 
             try {
-                $mysqli = Database::getInstance();
+                $mysqli = new Database();
                 $res = $mysqli->insertaMultiple($qryPago, $registros);
                 if ($res === true) return self::Responde(true, "Deposito por apertura de cuenta de ahorro registrado correctamente.");
                 $error = array('datos' => $datos, 'registros' => $registros, 'res' => $res);

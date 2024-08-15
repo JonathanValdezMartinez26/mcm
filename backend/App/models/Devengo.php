@@ -36,7 +36,7 @@ class Devengo
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $existe = $mysqli->queryOne($qryValidacion);
 
             if ($existe['EXISTE'] == 1) {
@@ -152,7 +152,7 @@ class Devengo
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $valoresDefecto = $mysqli->queryOne($qryValoresDefecto);
 
             if (!$valoresDefecto) return self::Responde(false, "No se encontraron valores por defecto para el crédito {$datos[0]['credito']}", $datos);
@@ -198,7 +198,7 @@ class Devengo
 
     public static function ReactivarCredito($noCredito, $noCiclo)
     {
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
 
         $query = <<<sql
         SELECT * FROM TBL_CIERRE_DIA 

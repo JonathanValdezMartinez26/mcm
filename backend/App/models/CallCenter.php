@@ -1,22 +1,26 @@
 <?php
+
 namespace App\models;
-defined("APPPATH") OR die("Access denied");
+
+defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
 use \App\interfaces\Crud;
 use ScssPhp\ScssPhp\Block\ElseBlock;
 
-class CallCenter{
+class CallCenter
+{
 
 
-    public static function getAllDescription($credito, $ciclo, $fec){
+    public static function getAllDescription($credito, $ciclo, $fec)
+    {
 
-         $date = str_replace('/', '-', $fec);
-         $newDate = date("Y-m-d H:i:s", strtotime($date));
+        $date = str_replace('/', '-', $fec);
+        $newDate = date("Y-m-d H:i:s", strtotime($date));
 
 
-        $mysqli = Database::getInstance();
-        $query=<<<sql
+        $mysqli = new Database();
+        $query = <<<sql
            SELECT 
 		SC.CDGNS NO_CREDITO,
 		SC.CDGCL ID_CLIENTE,
@@ -54,9 +58,9 @@ sql;
 
         $credito_ = $mysqli->queryOne($query);
         $id_cliente = $credito_['ID_CLIENTE'];
-        $id_aval= $credito_['ID_AVAL'];
+        $id_aval = $credito_['ID_AVAL'];
 
-        $query2=<<<sql
+        $query2 = <<<sql
          SELECT
         CONCATENA_NOMBRE(CL.NOMBRE1,CL.NOMBRE2,CL.PRIMAPE,CL.SEGAPE) NOMBRE,
         CL.NACIMIENTO,
@@ -97,9 +101,8 @@ sql;
         $cliente = $mysqli->queryOne($query2);
 
         $id_cliente_recomendado = $cliente['CLABE'];
-        if($id_cliente_recomendado != '')
-        {
-            $query_recomendado=<<<sql
+        if ($id_cliente_recomendado != '') {
+            $query_recomendado = <<<sql
              SELECT
             CONCATENA_NOMBRE(CL.NOMBRE1,CL.NOMBRE2,CL.PRIMAPE,CL.SEGAPE) NOMBRE,
             CL.NACIMIENTO,
@@ -138,13 +141,12 @@ sql;
 sql;
 
             $res_recomendado = $mysqli->queryOne($query_recomendado);
-        }
-        else{
+        } else {
             $res_recomendado = '';
         }
 
         //var_dump($query2);
-        $query3=<<<sql
+        $query3 = <<<sql
          SELECT
         CONCATENA_NOMBRE(CL.NOMBRE1,CL.NOMBRE2,CL.PRIMAPE,CL.SEGAPE) NOMBRE,
         CL.NACIMIENTO,
@@ -183,7 +185,7 @@ sql;
 sql;
 
 
-          $desbloqueo_cl=<<<sql
+        $desbloqueo_cl = <<<sql
                 SELECT COUNT(ID_SCALL) as LLAMADA_UNO, 
                        CASE WHEN (DIA_LLAMADA_1_CL IS NOT NULL)  THEN (DIA_LLAMADA_1_CL ||' '|| TO_CHAR(HORA_LLAMADA_1_CL ,'HH24:MI:SS') || ' (' || TIPO_LLAM_1_CL ||')' ) ELSE '-' END AS HORA_LLAMADA_UNO, 
                        CASE WHEN (DIA_LLAMADA_2_CL IS NOT NULL)  THEN (DIA_LLAMADA_2_CL ||' '|| TO_CHAR(HORA_LLAMADA_2_CL ,'HH24:MI:SS') || ' (' || TIPO_LLAM_2_CL ||')' )  ELSE '-' END AS HORA_LLAMADA_DOS, 
@@ -196,7 +198,7 @@ sql;
                 
 sql;
 
-          $desbloqueo_aval=<<<sql
+        $desbloqueo_aval = <<<sql
                 select COUNT(ID_SCALL) as LLAMADA_UNO, 
                        DIA_LLAMADA_1_AV AS NUM_LLAM, 
                        CASE WHEN (DIA_LLAMADA_1_AV IS NOT NULL)  THEN (DIA_LLAMADA_1_AV ||' '|| TO_CHAR(HORA_LLAMADA_1_AV ,'HH24:MI:SS') || ' (' || TIPO_LLAM_1_AV ||')' ) ELSE '-' END AS HORA_LLAMADA_UNO, 
@@ -221,13 +223,13 @@ sql;
 
 
         return [$credito_, $cliente, $aval, $llamada_cl, $llamada_av, $res_recomendado];
-
     }
 
-    public static function getComboSucursales($CDGPE){
+    public static function getComboSucursales($CDGPE)
+    {
 
-        $mysqli = Database::getInstance();
-        $query=<<<sql
+        $mysqli = new Database();
+        $query = <<<sql
            SELECT CO.CODIGO, CO.NOMBRE  FROM ASIGNACION_SUC_A
            INNER JOIN CO ON CO.CODIGO = ASIGNACION_SUC_A.CDGCO 
            WHERE ASIGNACION_SUC_A.CDGPE = '$CDGPE'
@@ -236,68 +238,64 @@ sql;
 sql;
         //var_dump($query);
         return $mysqli->queryAll($query);
-
     }
 
-    public static function getComboSucursalesAllCDGCO(){
+    public static function getComboSucursalesAllCDGCO()
+    {
 
-        $mysqli = Database::getInstance();
-        $query=<<<sql
+        $mysqli = new Database();
+        $query = <<<sql
            SELECT CO.CODIGO, CO.NOMBRE  FROM ASIGNACION_SUC_A
            INNER JOIN CO ON CO.CODIGO = ASIGNACION_SUC_A.CDGCO 
 		    
 sql;
         //var_dump($query);
         return $mysqli->queryAll($query);
-
     }
 
-    public static function getComboSucursalesGlobales(){
+    public static function getComboSucursalesGlobales()
+    {
 
-        $mysqli = Database::getInstance();
-        $query=<<<sql
+        $mysqli = new Database();
+        $query = <<<sql
            SELECT CO.CODIGO, CO.NOMBRE  FROM CO
 		    
 sql;
         //var_dump($query);
         return $mysqli->queryAll($query);
-
     }
 
-    public static function getComboSucursalesHorario(){
+    public static function getComboSucursalesHorario()
+    {
 
-        $mysqli = Database::getInstance();
-        $query=<<<sql
+        $mysqli = new Database();
+        $query = <<<sql
            SELECT CO.CODIGO, CO.NOMBRE  FROM CO
            WHERE NOT EXISTS(SELECT CDGCO FROM CIERRE_HORARIO WHERE CIERRE_HORARIO.CDGCO = CO.CODIGO)
 		    
 sql;
         //var_dump($query);
         return $mysqli->queryAll($query);
-
     }
 
-    public static function getAllSolicitudesHistorico($fecha_inicio, $fecha_fin, $cdgco, $cdgpe, $perfil, $suc){
+    public static function getAllSolicitudesHistorico($fecha_inicio, $fecha_fin, $cdgco, $cdgpe, $perfil, $suc)
+    {
 
 
 
 
-        if($suc == '000')
-        {
+        if ($suc == '000') {
             $string_from_array = implode(', ', $cdgco);
             $con_array_cdgco = '';
-        }
-        else
-        {
+        } else {
             $string_from_array = $suc;
-            $con_array_cdgco = 'AND SPR.CDGCO IN('.$string_from_array.')';
+            $con_array_cdgco = 'AND SPR.CDGCO IN(' . $string_from_array . ')';
         }
 
         //var_dump($string_from_array);
-        if($string_from_array != '')
-        {
-            $mysqli = Database::getInstance();
-            $query=<<<sql
+        if ($string_from_array != '') {
+            $mysqli = new Database();
+            $query = <<<sql
                  SELECT * FROM (SELECT DISTINCT ID_SCALL, CDGNS, CICLO, FECHA_SOL, INICIO, SPR.CDGCO, CDGCL, NOMBRE, NOMBRE_SUCURSAL, CODIGO_SUCURSAL, REGION, CODIGO_REGION, EJECUTIVO, ID_EJECUTIVO, FECHA, CDGPE, PE.NOMBRE1, PRIMAPE, SEGAPE,  ESTATUS_CL, ESTATUS_AV, SOLICITUD, FECHA_TRABAJO, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS_FINAL, VOBO_REG, SEMAFORO, PRORROGA, REACTIVACION, TEL_CL, TIPO_LLAM_1_CL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, TIPO_LLAM_2_CL,DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, PRG_UNO_CL,PRG_DOS_CL,PRG_TRES_CL, PRG_CUATRO_CL, '' AS PRG_CINCO_CL, '' AS PRG_SEIS_CL, '' AS PRG_SIETE_CL, '' AS PRG_OCHO_CL, PRG_NUEVE_CL, PRG_DIEZ_CL, PRG_ONCE_CL,  PRG_DOCE_CL, CDGCL_AV,  TEL_AV,  FECHA_TRABAJO_AV, TIPO_LLAM_1_AV,  DIA_LLAMADA_1_AV,  HORA_LLAMADA_1_AV, TIPO_LLAM_2_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, PRG_UNO_AV, PRG_DOS_AV, PRG_TRES_AV, PRG_CUATRO_AV,PRG_CINCO_AV, PRG_SEIS_AV, PRG_SIETE_AV,  PRG_OCHO_AV, PRG_NUEVE_AV, CDGPE_ANALISTA,LLAMADA_POST_VENTA, CDGPE_ANALISTA_INICIAL, NUMERO_INTENTOS_CL, NUMERO_INTENTOS_AV, FIN_CL,FIN_AV, COMENTARIO_PRORROGA
                  FROM SOLICITUDES_PROCESADAS SPR
                  INNER JOIN PE ON PE.CODIGO = SPR.CDGPE
@@ -323,13 +321,10 @@ sql;
 sql;
             //var_dump($query);
             return $mysqli->queryAll($query);
-        }
-        else
-        {
-            if($perfil == 'ADMIN' || $perfil == 'ACALL' || $cdgpe == 'ESMM')
-            {
-                $mysqli = Database::getInstance();
-                $query=<<<sql
+        } else {
+            if ($perfil == 'ADMIN' || $perfil == 'ACALL' || $cdgpe == 'ESMM') {
+                $mysqli = new Database();
+                $query = <<<sql
                  SELECT * FROM (SELECT DISTINCT ID_SCALL, CDGNS, CICLO, FECHA_SOL, INICIO, SPR.CDGCO, CDGCL, NOMBRE, NOMBRE_SUCURSAL, CODIGO_SUCURSAL, REGION, CODIGO_REGION, EJECUTIVO, ID_EJECUTIVO, FECHA, CDGPE, PE.NOMBRE1, PRIMAPE, SEGAPE,  ESTATUS_CL, ESTATUS_AV, SOLICITUD, FECHA_TRABAJO, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS_FINAL, VOBO_REG, SEMAFORO, PRORROGA, REACTIVACION, TEL_CL, TIPO_LLAM_1_CL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, TIPO_LLAM_2_CL,DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, PRG_UNO_CL,PRG_DOS_CL,PRG_TRES_CL, PRG_CUATRO_CL, '' AS PRG_CINCO_CL, '' AS PRG_SEIS_CL, '' AS PRG_SIETE_CL, '' AS PRG_OCHO_CL, PRG_NUEVE_CL, PRG_DIEZ_CL, PRG_ONCE_CL,  PRG_DOCE_CL, CDGCL_AV,  TEL_AV,  FECHA_TRABAJO_AV, TIPO_LLAM_1_AV,  DIA_LLAMADA_1_AV,  HORA_LLAMADA_1_AV, TIPO_LLAM_2_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, PRG_UNO_AV, PRG_DOS_AV, PRG_TRES_AV, PRG_CUATRO_AV,PRG_CINCO_AV, PRG_SEIS_AV, PRG_SIETE_AV,  PRG_OCHO_AV, PRG_NUEVE_AV, CDGPE_ANALISTA,LLAMADA_POST_VENTA, CDGPE_ANALISTA_INICIAL, NUMERO_INTENTOS_CL, NUMERO_INTENTOS_AV, FIN_CL,FIN_AV, COMENTARIO_PRORROGA, RECOMENDADO
                  FROM SOLICITUDES_PROCESADAS SPR
                  INNER JOIN PE ON PE.CODIGO = SPR.CDGPE
@@ -348,28 +343,24 @@ sql;
 sql;
                 //var_dump($query);
                 return $mysqli->queryAll($query);
-            }
-            else
-            {
+            } else {
                 return false;
             }
-
         }
-
     }
 
     /////////////////////////////////////////////
 
-    public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $usuario, $suc){
+    public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $usuario, $suc)
+    {
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         $cdgco_all = array();
         $string_from_array = implode(', ', $cdgco);
 
 
-        if($suc == '000')
-        {
-            $all_suc_query =<<<sql
+        if ($suc == '000') {
+            $all_suc_query = <<<sql
               select codigo from co
 sql;
             $all_suc =  $mysqli->queryAll($all_suc_query);
@@ -382,35 +373,26 @@ sql;
             $string_from_array = implode(', ', $cdgco_all);
 
             //var_dump($all_suc);
-            $var = 'SPR.CDGCO IN('.$string_from_array.') AND ';
-        }
-        else
-        {
-            $var = 'SPR.CDGCO IN('.$suc.') AND ';
+            $var = 'SPR.CDGCO IN(' . $string_from_array . ') AND ';
+        } else {
+            $var = 'SPR.CDGCO IN(' . $suc . ') AND ';
         }
 
 
-        if($usuario != '')
-        {
-            if($usuario== 'AMGM' || $usuario == 'PHEE' || $usuario == 'HSEJ')
-            {
+        if ($usuario != '') {
+            if ($usuario == 'AMGM' || $usuario == 'PHEE' || $usuario == 'HSEJ') {
                 $var_ = '';
+            } else {
+                $var_ = "AND SPR.CDGPE IN('" . $usuario . "')";
             }
-            else
-            {
-                $var_ = "AND SPR.CDGPE IN('".$usuario."')";
-            }
-
-        }
-        else
-        {
+        } else {
             $var_ = '';
         }
 
 
 
 
-                $query=<<<sql
+        $query = <<<sql
                   SELECT * FROM (SELECT DISTINCT (SPR.CDGNS || '-' || SPR.CICLO) AS A, SPR.REGION AS B, SPR.FECHA_TRABAJO AS C,  
                  SPR.FECHA_SOL AS D, '' AS E, SPR.NOMBRE_SUCURSAL AS F, SPR.EJECUTIVO AS G, SPR.CDGNS AS H, (SPR.NOMBRE) AS I,
                  SPR.CICLO AS J, SPR.TEL_CL AS K, SPR.TIPO_LLAM_1_CL AS L, 
@@ -566,30 +548,27 @@ sql;
                  
                  
 sql;
-               // var_dump($query);
-                return $mysqli->queryAll($query);
-
+        // var_dump($query);
+        return $mysqli->queryAll($query);
     }
 
-    public static function getAllSolicitudes($cdgco){
+    public static function getAllSolicitudes($cdgco)
+    {
 
         $string_from_array = implode(', ', $cdgco);
         //var_dump($string_from_array);
 
-        if($string_from_array != '')
-        {
-            $in = 'SPE.CDGCO IN('.$string_from_array.') AND';
-            $in_1 = 'SPR.CDGCO IN('.$string_from_array.') AND';
-        }
-        else
-        {
+        if ($string_from_array != '') {
+            $in = 'SPE.CDGCO IN(' . $string_from_array . ') AND';
+            $in_1 = 'SPR.CDGCO IN(' . $string_from_array . ') AND';
+        } else {
             $in = '';
             $in_1 = '';
         }
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
 
-        $query=<<<sql
+        $query = <<<sql
          
 
         SELECT * FROM  
@@ -612,14 +591,14 @@ sql;
 
         //var_dump($query);
         return $mysqli->queryAll($query);
-
     }
 
-    public static function getAllSolicitudesBusquedaRapida($cdgns){
+    public static function getAllSolicitudesBusquedaRapida($cdgns)
+    {
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
 
-        $query=<<<sql
+        $query = <<<sql
 	    SELECT * FROM (
 
         SELECT ID_SCALL, CDGNS, CICLO, FECHA_SOL, INICIO, 
@@ -663,59 +642,54 @@ sql;
         return $mysqli->queryAll($query);
     }
 
-    public static function getAllSolicitudesProrroga($cdgco){
+    public static function getAllSolicitudesProrroga($cdgco)
+    {
 
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
 
-        $query=<<<sql
+        $query = <<<sql
 	    SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
 	    WHERE SEMAFORO = '1' AND PRORROGA = '1'
 sql;
 
         //var_dump($query);
         return $mysqli->queryAll($query);
-
     }
 
-    public static function getAllSolicitudesReactivar($cdgco){
+    public static function getAllSolicitudesReactivar($cdgco)
+    {
 
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
 
-        $query=<<<sql
+        $query = <<<sql
 	    SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
 	    WHERE SEMAFORO = '1' AND REACTIVACION = '1'
 sql;
 
         //var_dump($query);
         return $mysqli->queryAll($query);
-
     }
 
-    public static function getAllSolicitudesConcentrado($Fecha, $Region){
+    public static function getAllSolicitudesConcentrado($Fecha, $Region)
+    {
 
-        if($Region != '')
-        {
-            if($Region != '0')
-            {
+        if ($Region != '') {
+            if ($Region != '0') {
                 $Region_cond = "AND RG.CODIGO = '$Region'";
-            }
-            else
-            {
+            } else {
                 $Region_cond = '';
             }
-           // $condicional = " AND SOL_CALL_CENTER.FECHA_SOL BETWEEN TO_DATE('$Fecha', 'YY-mm-dd') AND TO_DATE('$Fecha', 'YY-mm-dd') $Region_cond";
+            // $condicional = " AND SOL_CALL_CENTER.FECHA_SOL BETWEEN TO_DATE('$Fecha', 'YY-mm-dd') AND TO_DATE('$Fecha', 'YY-mm-dd') $Region_cond";
             $condicional = " $Region_cond";
-        }
-        else
-        {
-            $condicional= '';
+        } else {
+            $condicional = '';
         }
 
 
-        $mysqli = Database::getInstance();
-        $query=<<<sql
+        $mysqli = new Database();
+        $query = <<<sql
           SELECT DISTINCT 
  		SOL_CALL_CENTER.CDGNS || '-' || SOL_CALL_CENTER.CICLO AS CLAVE,
         RG.CODIGO AS CODIGO_REGION,
@@ -770,16 +744,16 @@ sql;
         $condicional
          
 sql;
-    //var_dump($query);
+        //var_dump($query);
         return $mysqli->queryAll($query);
-
     }
 
-    public static function getAllAnalistas(){
+    public static function getAllAnalistas()
+    {
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
 
-        $query3=<<<sql
+        $query3 = <<<sql
         SELECT
             CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) NOMBRE,
             UT.CDGTUS PERFIL, PE.CDGCO, PE.CODIGO AS USUARIO
@@ -795,33 +769,33 @@ sql;
             AND UT.CDGTUS = 'CALLC'
 sql;
         return $mysqli->queryAll($query3);
-
-
     }
 
-    public static function getAllRegiones(){
-        $mysqli = Database::getInstance();
+    public static function getAllRegiones()
+    {
+        $mysqli = new Database();
 
-        $query3=<<<sql
+        $query3 = <<<sql
         SELECT RG.NOMBRE AS REGION, CO.CODIGO, CO.NOMBRE FROM CO
         INNER JOIN RG ON RG.CODIGO = CO.CDGRG                                                          
         WHERE NOT EXISTS(SELECT CDGCO FROM ASIGNACION_SUC_A WHERE ASIGNACION_SUC_A.CDGCO = CO.CODIGO)
         ORDER BY CODIGO
 sql;
         return $mysqli->queryAll($query3);
-/////
-///
-///
-/// SELECT CO.CODIGO, CO.NOMBRE  FROM CO
-//           WHERE NOT EXISTS(SELECT CDGCO FROM CIERRE_HORARIO WHERE CIERRE_HORARIO.CDGCO = CO.CODIGO)
+        /////
+        ///
+        ///
+        /// SELECT CO.CODIGO, CO.NOMBRE  FROM CO
+        //           WHERE NOT EXISTS(SELECT CDGCO FROM CIERRE_HORARIO WHERE CIERRE_HORARIO.CDGCO = CO.CODIGO)
 
     }
 
-    public static function getAllAnalistasAsignadas(){
+    public static function getAllAnalistasAsignadas()
+    {
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
 
-        $query3=<<<sql
+        $query3 = <<<sql
          SELECT ASIGNACION_SUC_A.CDGPE, ASIGNACION_SUC_A.CDGCO, CO.NOMBRE, ASIGNACION_SUC_A.FECHA_INICIO, 
                 ASIGNACION_SUC_A.FECHA_FIN, ASIGNACION_SUC_A.FECHA_ALTA, ASIGNACION_SUC_A.CDGOCPE, 
                 PE.NOMBRE1 || ' ' || PE.NOMBRE2 || ' ' || PE.PRIMAPE || ' ' || PE.SEGAPE AS NOMBRE_EJEC
@@ -835,14 +809,13 @@ sql;
                
 sql;
         return $mysqli->queryAll($query3);
-
-
     }
 
-    public static function UpdateResumen($encuesta){
-        $mysqli = Database::getInstance();
+    public static function UpdateResumen($encuesta)
+    {
+        $mysqli = new Database();
 
-        $query=<<<sql
+        $query = <<<sql
                 UPDATE SOL_CALL_CENTER
                 SET COMENTARIO_INICIAL='$encuesta->_comentarios_iniciales', COMENTARIO_FINAL='$encuesta->_comentarios_finales' , COMENTARIO_PRORROGA='$encuesta->_comentarios_prorroga'
                 WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
@@ -852,18 +825,17 @@ sql;
         return $mysqli->insert($query);
     }
 
-    public static function UpdateProrroga($prorroga){
-        $mysqli = Database::getInstance();
+    public static function UpdateProrroga($prorroga)
+    {
+        $mysqli = new Database();
 
-        if($prorroga->_prorroga == '2')
-        {
-            $q= ", ESTATUS = NULL, SEMAFORO = NULL ";
-        }else
-        {
+        if ($prorroga->_prorroga == '2') {
+            $q = ", ESTATUS = NULL, SEMAFORO = NULL ";
+        } else {
             $q = "";
         }
 
-        $query=<<<sql
+        $query = <<<sql
                 UPDATE SOL_CALL_CENTER
                 SET PRORROGA='$prorroga->_prorroga' $q
                 WHERE ID_SCALL='$prorroga->_id_call'
@@ -873,10 +845,11 @@ sql;
         return $mysqli->insert($query);
     }
 
-    public static function ReactivarSolicitud($reactivar){
-        $mysqli = Database::getInstance();
+    public static function ReactivarSolicitud($reactivar)
+    {
+        $mysqli = new Database();
 
-        $query=<<<sql
+        $query = <<<sql
                 UPDATE SOL_CALL_CENTER
                 SET REACTIVACION = 1 
                 WHERE ID_SCALL='$reactivar->_id_call'
@@ -885,18 +858,16 @@ sql;
         return $mysqli->insert($query);
     }
 
-    public static function ReactivarSolicitudAdmin($reactivar){
-        $mysqli = Database::getInstance();
-        if($reactivar->_opcion == 'SI')
-        {
+    public static function ReactivarSolicitudAdmin($reactivar)
+    {
+        $mysqli = new Database();
+        if ($reactivar->_opcion == 'SI') {
             $qu = " ,ESTATUS = NULL, SEMAFORO = NULL ";
-        }
-        else
-        {
+        } else {
             $qu = "";
         }
 
-        $query=<<<sql
+        $query = <<<sql
                 UPDATE SOL_CALL_CENTER
                 SET REACTIVACION = '400' $qu
                 WHERE ID_SCALL='$reactivar->_id_call'
@@ -906,10 +877,11 @@ sql;
     }
 
 
-    public static function UpdateResumenFinal($encuesta){
-        $mysqli = Database::getInstance();
+    public static function UpdateResumenFinal($encuesta)
+    {
+        $mysqli = new Database();
 
-        $query=<<<sql
+        $query = <<<sql
                 UPDATE SOL_CALL_CENTER
                 SET COMENTARIO_INICIAL='$encuesta->_comentarios_iniciales', COMENTARIO_FINAL='$encuesta->_comentarios_finales', SEMAFORO = '1', ESTATUS = '$encuesta->_estatus_solicitud', VOBO_GERENTE_REGIONAL = '$encuesta->_vobo_gerente', PRORROGA = '4', REACTIVACION = NULL  
                 WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
@@ -920,71 +892,59 @@ sql;
     }
 
 
-    public static function insertEncuestaCL($encuesta){
+    public static function insertEncuestaCL($encuesta)
+    {
 
         //var_dump($encuesta->_cdgpe);
-        $mysqli = Database::getInstance(1);
+        $mysqli = new Database();
 
-        if($encuesta->_completo == '1')
-        {
-            if($encuesta->_llamada == '1')
-            {
+        if ($encuesta->_completo == '1') {
+            if ($encuesta->_llamada == '1') {
                 //Agregar un registro completo (Bien) lLAMADA 1
-                $query=<<<sql
+                $query = <<<sql
             INSERT INTO SOL_CALL_CENTER
             (ID_SCALL, CDGRG, FECHA_TRA_CL, FECHA_SOL, CDGNS, CDGCO, CDGPE, CDGCL_CL, CICLO, TEL_CL, TIPO_LLAM_1_CL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, PRG_UNO_CL, PRG_DOS_CL, PRG_TRES_CL, PRG_CUATRO_CL, PRG_CINCO_CL, PRG_SEIS_CL, PRG_SIETE_CL, PRG_OCHO_CL, PRG_NUEVE_CL, PRG_DIEZ_CL, PRG_ONCE_CL, PRG_DOCE_CL, CDGCL_AV, TEL_AV, FECHA_TRABAJO_AV, TIPO_LLAM_1_AV, DIA_LLAMADA_1_AV, HORA_LLAMADA_1_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, PRG_UNO_AV, PRG_DOS_AV, PRG_TRES_AV, PRG_CUATRO_AV, PRG_CINCO_AV, PRG_SEIS_AV, PRG_SIETE_AV, PRG_OCHO_AV, PRG_NUEVE_AV, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS, INCIDENCIA_COMERCIAL, VOBO_GERENTE_REGIONAL, CDGPE_ANALISTA, SEMAFORO, LLAMADA_POST_VENTA, PRORROGA, CDGPE_ANALISTA_INICIAL, NUMERO_INTENTOS_CL, NUMERO_INTENTOS_AV, FIN_CL, FIN_AV, REACTIVACION, COMENTARIO_PRORROGA)
             VALUES(sol_call_center_id.nextval, '$encuesta->_cdgre', TIMESTAMP '$encuesta->_fecha.000000', TIMESTAMP '$encuesta->_fecha_solicitud.000000', '$encuesta->_cdgns','$encuesta->_cdgco', '$encuesta->_cdgpe', '$encuesta->_cliente', '$encuesta->_ciclo', '$encuesta->_movil', '$encuesta->_tipo_llamada', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, NULL, '$encuesta->_uno', '$encuesta->_dos', '$encuesta->_tres', '$encuesta->_cuatro', '$encuesta->_cinco', '$encuesta->_seis', '$encuesta->_siete', '$encuesta->_ocho', '$encuesta->_nueve', '$encuesta->_diez', '$encuesta->_once', '$encuesta->_doce', '$encuesta->_id_aval_cl', '$encuesta->_telefono_aval_cl', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '1', NULL, NULL, NULL)
 sql;
-            }
-            else
-            { //Agregar un registro completo (Bien) lLAMADA 2
-                $query=<<<sql
+            } else { //Agregar un registro completo (Bien) lLAMADA 2
+                $query = <<<sql
                 UPDATE SOL_CALL_CENTER
                 SET TIPO_LLAM_2_CL='$encuesta->_tipo_llamada', DIA_LLAMADA_2_CL=CURRENT_TIMESTAMP, HORA_LLAMADA_2_CL=CURRENT_TIMESTAMP, PRG_UNO_CL='$encuesta->_uno', PRG_DOS_CL='$encuesta->_dos', PRG_TRES_CL='$encuesta->_tres', PRG_CUATRO_CL='$encuesta->_cuatro', PRG_CINCO_CL='$encuesta->_cinco', PRG_SEIS_CL='$encuesta->_seis', PRG_SIETE_CL='$encuesta->_siete', PRG_OCHO_CL='$encuesta->_ocho', PRG_NUEVE_CL='$encuesta->_nueve', PRG_DIEZ_CL='$encuesta->_diez', PRG_ONCE_CL='$encuesta->_once', PRG_DOCE_CL='$encuesta->_doce',  CDGCL_AV='$encuesta->_id_aval_cl', TEL_AV='$encuesta->_telefono_aval_cl', FIN_CL='1', 
                 NUMERO_INTENTOS_CL ='$encuesta->_llamada'
                 WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
 sql;
             }
-
-        }
-        else if($encuesta->_completo == '0')
-        {
-            if($encuesta->_llamada == '1')
-            {
+        } else if ($encuesta->_completo == '0') {
+            if ($encuesta->_llamada == '1') {
                 //Agregar un registro incompleto
-                $query=<<<sql
+                $query = <<<sql
                 INSERT INTO SOL_CALL_CENTER
                 (ID_SCALL, CDGRG, FECHA_TRA_CL, FECHA_SOL, CDGNS, CDGCO, CDGPE, CDGCL_CL, CICLO, TEL_CL, TIPO_LLAM_1_CL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, PRG_UNO_CL, PRG_DOS_CL, PRG_TRES_CL, PRG_CUATRO_CL, PRG_CINCO_CL, PRG_SEIS_CL, PRG_SIETE_CL, PRG_OCHO_CL, PRG_NUEVE_CL, PRG_DIEZ_CL, PRG_ONCE_CL, PRG_DOCE_CL, CDGCL_AV, TEL_AV, FECHA_TRABAJO_AV, TIPO_LLAM_1_AV, DIA_LLAMADA_1_AV, HORA_LLAMADA_1_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, PRG_UNO_AV, PRG_DOS_AV, PRG_TRES_AV, PRG_CUATRO_AV, PRG_CINCO_AV, PRG_SEIS_AV, PRG_SIETE_AV, PRG_OCHO_AV, PRG_NUEVE_AV, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS, INCIDENCIA_COMERCIAL, VOBO_GERENTE_REGIONAL, CDGPE_ANALISTA, SEMAFORO, LLAMADA_POST_VENTA, PRORROGA, CDGPE_ANALISTA_INICIAL, NUMERO_INTENTOS_CL, NUMERO_INTENTOS_AV, FIN_CL, FIN_AV, REACTIVACION, COMENTARIO_PRORROGA)
                 VALUES(sol_call_center_id.nextval, '$encuesta->_cdgre', TIMESTAMP '$encuesta->_fecha.000000', TIMESTAMP '$encuesta->_fecha_solicitud.000000', '$encuesta->_cdgns', '$encuesta->_cdgco', '$encuesta->_cdgpe', '$encuesta->_cliente', '$encuesta->_ciclo', '$encuesta->_movil', '$encuesta->_tipo_llamada', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, NULL, '$encuesta->_uno', '$encuesta->_dos', '$encuesta->_tres', '$encuesta->_cuatro', '$encuesta->_cinco', '$encuesta->_seis', '$encuesta->_siete', '$encuesta->_ocho', '$encuesta->_nueve', '$encuesta->_diez', '$encuesta->_once', '$encuesta->_doce', '$encuesta->_id_aval_cl', '$encuesta->_telefono_aval_cl', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL)
 sql;
-            }
-            else
-            {
+            } else {
 
-                $query=<<<sql
+                $query = <<<sql
                 UPDATE SOL_CALL_CENTER
                 SET TIPO_LLAM_2_CL='$encuesta->_tipo_llamada', DIA_LLAMADA_2_CL=CURRENT_TIMESTAMP, HORA_LLAMADA_2_CL=CURRENT_TIMESTAMP, PRG_UNO_CL='$encuesta->_uno', PRG_DOS_CL='$encuesta->_dos', PRG_TRES_CL='$encuesta->_tres', PRG_CUATRO_CL='$encuesta->_cuatro', PRG_CINCO_CL='$encuesta->_cinco', PRG_SEIS_CL='$encuesta->_seis', PRG_SIETE_CL='$encuesta->_siete', PRG_OCHO_CL='$encuesta->_ocho', PRG_NUEVE_CL='$encuesta->_nueve', PRG_DIEZ_CL='$encuesta->_diez', PRG_ONCE_CL='$encuesta->_once', PRG_DOCE_CL='$encuesta->_doce', CDGCL_AV='$encuesta->_id_aval_cl', TEL_AV='$encuesta->_telefono_aval_cl', FIN_CL=NULL,
                 NUMERO_INTENTOS_CL ='$encuesta->_llamada'                                                                                                                                                                                                                                
                 WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
 sql;
             }
-
-
         }
         //var_dump($query);
         return $mysqli->insert($query);
     }
 
-    public static function insertEncuestaAV($encuesta){
+    public static function insertEncuestaAV($encuesta)
+    {
 
-        $mysqli = Database::getInstance(1);
+        $mysqli = new Database();
 
-        if($encuesta->_completo == '1')
-        {
-            if($encuesta->_llamada == '1')
-            {
+        if ($encuesta->_completo == '1') {
+            if ($encuesta->_llamada == '1') {
                 //Agregar un registro completo (Bien) lLAMADA 1
-                $query=<<<sql
+                $query = <<<sql
             UPDATE SOL_CALL_CENTER
             SET FECHA_TRABAJO_AV= TIMESTAMP '2023-08-22 04:21:40.000000', 
             TIPO_LLAM_1_AV='$encuesta->_tipo_llamada', DIA_LLAMADA_1_AV=CURRENT_TIMESTAMP, HORA_LLAMADA_1_AV=CURRENT_TIMESTAMP, 
@@ -992,10 +952,8 @@ sql;
             PRG_SIETE_AV='$encuesta->_siete', PRG_OCHO_AV='$encuesta->_ocho', PRG_NUEVE_AV='$encuesta->_nueve', NUMERO_INTENTOS_AV ='$encuesta->_llamada', FIN_AV = '1'
             WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
 sql;
-            }
-            else
-            { //Agregar un registro completo (Bien) lLAMADA 2
-                $query=<<<sql
+            } else { //Agregar un registro completo (Bien) lLAMADA 2
+                $query = <<<sql
                 UPDATE SOL_CALL_CENTER
             SET TIPO_LLAM_2_AV='$encuesta->_tipo_llamada', DIA_LLAMADA_2_AV=CURRENT_TIMESTAMP, HORA_LLAMADA_2_AV=CURRENT_TIMESTAMP, 
             PRG_UNO_AV='$encuesta->_uno', PRG_DOS_AV='$encuesta->_dos', PRG_TRES_AV='$encuesta->_tres', PRG_CUATRO_AV='$encuesta->_cuatro', PRG_CINCO_AV='$encuesta->_cinco', PRG_SEIS_AV='$encuesta->_seis', 
@@ -1003,25 +961,19 @@ sql;
             WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
 sql;
             }
-
-        }
-        else if($encuesta->_completo == '0')
-        {
-            if($encuesta->_llamada == '1')
-            {
+        } else if ($encuesta->_completo == '0') {
+            if ($encuesta->_llamada == '1') {
                 //Agregar un registro incompleto
-                $query=<<<sql
+                $query = <<<sql
                 UPDATE SOL_CALL_CENTER
                 SET FECHA_TRABAJO_AV= TIMESTAMP '2023-08-22 04:21:40.000000', TIPO_LLAM_1_AV='$encuesta->_tipo_llamada', DIA_LLAMADA_1_AV=CURRENT_TIMESTAMP, HORA_LLAMADA_1_AV=CURRENT_TIMESTAMP, 
                 PRG_UNO_AV='$encuesta->_uno', PRG_DOS_AV='$encuesta->_dos', PRG_TRES_AV='$encuesta->_tres', PRG_CUATRO_AV='$encuesta->_cuatro', PRG_CINCO_AV='$encuesta->_cinco', PRG_SEIS_AV='$encuesta->_seis', 
                 PRG_SIETE_AV='$encuesta->_siete', PRG_OCHO_AV='$encuesta->_ocho', PRG_NUEVE_AV='$encuesta->_nueve', NUMERO_INTENTOS_AV ='$encuesta->_llamada'
                 WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
 sql;
-            }
-            else
-            {
+            } else {
 
-                $query=<<<sql
+                $query = <<<sql
                 UPDATE SOL_CALL_CENTER
                 SET TIPO_LLAM_2_AV='$encuesta->_tipo_llamada', DIA_LLAMADA_2_AV=CURRENT_TIMESTAMP, HORA_LLAMADA_2_AV=CURRENT_TIMESTAMP,
                 PRG_UNO_AV='$encuesta->_uno', PRG_DOS_AV='$encuesta->_dos', PRG_TRES_AV='$encuesta->_tres', PRG_CUATRO_AV='$encuesta->_cuatro', PRG_CINCO_AV='$encuesta->_cinco', PRG_SEIS_AV='$encuesta->_seis', 
@@ -1029,16 +981,16 @@ sql;
                 WHERE CDGCO='$encuesta->_cdgco' AND CDGCL_CL='$encuesta->_cliente' AND CICLO = '$encuesta->_ciclo'
 sql;
             }
-
         }
         //var_dump($query);
         return $mysqli->insert($query);
     }
 
-    public static function DeleteAsignaSuc($cdgco){
+    public static function DeleteAsignaSuc($cdgco)
+    {
 
-        $mysqli = Database::getInstance(1);
-                $query=<<<sql
+        $mysqli = new Database();
+        $query = <<<sql
                 DELETE FROM ASIGNACION_SUC_A
                 WHERE CDGCO = '$cdgco'
 sql;
@@ -1049,11 +1001,12 @@ sql;
 
 
 
-    public static function insertAsignaSucursal($asigna){
+    public static function insertAsignaSucursal($asigna)
+    {
 
-        $mysqli = Database::getInstance(1);
+        $mysqli = new Database();
 
-           $query=<<<sql
+        $query = <<<sql
             INSERT INTO ASIGNACION_SUC_A
             (ID_ASIGNACION, CDGEM, CDGPE, CDGCO, FECHA_INICIO, FECHA_FIN, FECHA_ALTA, CDGOCPE)
             VALUES(SUC_SUCURSALES.nextval, 'EMPFIN', '$asigna->_ejecutivo', '$asigna->_region', TIMESTAMP '$asigna->_fecha_registro', TIMESTAMP '$asigna->_fecha_inicio 00:00:00.000000', TIMESTAMP '$asigna->_fecha_fin 00:00:00.000000', 'AMGM')
@@ -1062,5 +1015,4 @@ sql;
         //var_dump($query);
         return $mysqli->insert($query);
     }
-
 }

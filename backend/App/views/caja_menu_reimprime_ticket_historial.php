@@ -51,14 +51,6 @@
                     <! -- https://cdn-icons-png.flaticon.com/512/942/942752.png -->
                 </div>
             </a>
-
-            <!--<a id="link" href="/Ahorro/Calculadora/">
-                      <div class="col-md-5" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                          <img src="https://cdn-icons-png.flaticon.com/512/5833/5833832.png" style="border-radius: 3px; padding-top: 5px;" width="98" height="110">
-                          <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Calculadora  </b></p>
-
-                      </div>
-                  </a>-->
         </div>
         <div class="col-md-9">
             <form id="registroInicialAhorro" name="registroInicialAhorro">

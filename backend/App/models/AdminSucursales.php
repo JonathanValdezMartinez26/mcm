@@ -58,7 +58,7 @@ class AdminSucursales
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryAll($query);
         } catch (Exception $e) {
             return [];
@@ -73,7 +73,7 @@ class AdminSucursales
 sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryAll($query);
         } catch (Exception $e) {
             return [];
@@ -102,7 +102,7 @@ sql;
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryAll($query);
         } catch (Exception $e) {
             return [];
@@ -122,7 +122,7 @@ sql;
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($query);
             if ($res) return self::Responde(true, "Monto de sucursal encontrado", $res);
             return self::Responde(false, "No se encontró monto de sucursal");
@@ -150,7 +150,7 @@ sql;
 
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qry);
             return self::Responde(true, "Cajeras encontradas", $res);
         } catch (Exception $e) {
@@ -171,7 +171,7 @@ sql;
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($qry);
             if ($res) return self::Responde(true, "Horario de cajera encontrado", $res);
             else return self::Responde(false, "No se encontró horario de cajera");
@@ -237,7 +237,7 @@ sql;
         ];
 
         try {
-            $ora = Database::getInstance();
+            $ora = new Database();
             $res = $ora->insertaMultiple($qrys, $params);
             if (!$res) return self::Responde(false, "Error al activar sucursal");
 
@@ -297,7 +297,7 @@ sql;
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($qry);
             if ($res) return self::Responde(true, "Datos encontrados.", $res);
             else return self::Responde(false, "La sucursal " . $datos["sucursal"] . " no se encuentra habilitada para operar cuentas de ahorro.");
@@ -329,7 +329,7 @@ sql;
         ];
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $mysqli->insertar($qry, $params);
             return self::Responde(true, "Fondeo realizado correctamente.");
         } catch (Exception $e) {
@@ -360,7 +360,7 @@ sql;
         ];
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $mysqli->insertar($qry, $params);
             return self::Responde(true, "Retiro realizado correctamente.");
         } catch (Exception $e) {
@@ -396,7 +396,7 @@ sql;
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qry);
             return self::Responde(true, "Movimientos encontrados.", $res);
         } catch (Exception $e) {
@@ -418,7 +418,7 @@ sql;
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($qry);
             if ($res) return self::Responde(true, "Montos de apertura encontrados.", $res);
             return self::Responde(false, "No se encontraron montos de apertura.");
@@ -465,7 +465,7 @@ sql;
         }
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $mysqli->insertar($qry, $params);
             return self::Responde(true, "Montos de apertura guardados correctamente.");
         } catch (Exception $e) {
@@ -574,7 +574,7 @@ sql;
 sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qry);
             if (count($res) === 0) return [];
             return $res;
@@ -615,7 +615,7 @@ sql;
         $qry = str_ireplace("_filtro_fecha_", $filtroFecha, $qry);
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qry);
             if (count($res) === 0) return [];
             return $res;
@@ -636,7 +636,7 @@ sql;
 sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryAll($query);
         } catch (Exception $e) {
             return [];
@@ -665,7 +665,7 @@ sql;
 sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryAll($query);
         } catch (Exception $e) {
             return [];
@@ -731,7 +731,7 @@ sql;
 
         $qrySaldos .= "ORDER BY FECHA DESC, NOMBRE";
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryAll($qrySaldos);
         } catch (Exception $e) {
             return [];
@@ -775,7 +775,7 @@ sql;
         if ($datos['fechaI'] && $datos['fechaF']) $qry .= " AND TRUNC(SMA.FECHA) BETWEEN TO_DATE('{$datos['fechaI']}', 'YYYY-MM-DD') AND TO_DATE('{$datos['fechaF']}', 'YYYY-MM-DD')";
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qry);
             if (count($res) === 0) return self::Responde(false, "No se encontraron registros de fondeos para los parámetros proporcionados.", null, $qry);
             return self::Responde(true, "Fondeo encontrados.", $res);
@@ -817,7 +817,7 @@ sql;
         if (isset($datos['fechaI']) && isset($datos['fechaF'])) $qry .= " AND TRUNC(SMA.FECHA) BETWEEN TO_DATE('{$datos['fechaI']}', 'YYYY-MM-DD') AND TO_DATE('{$datos['fechaF']}', 'YYYY-MM-DD')";
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qry);
             if (count($res) === 0) return self::Responde(false, "No se encontraron registros de retiros para los parámetros proporcionados.");
             return self::Responde(true, "Retiros encontrados.", $res);
@@ -860,7 +860,7 @@ sql;
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($qry);
             if ($res) return $res;
             return [];

@@ -4,7 +4,7 @@ namespace App\models;
 
 defined("APPPATH") or die("Access denied");
 
-use \Core\Database_cultiva;
+use \Core\Database;
 use Exception;
 
 class ApiCondusef
@@ -33,7 +33,8 @@ class ApiCondusef
 sql;
 
         try {
-            $mysqli = Database_cultiva::getInstance();
+            $mysqli = new Database();
+            $mysqli->SetDB_CULTIVA();
             $resultado = $mysqli->queryAll($query);
             if ($resultado == null) return array();
             return $resultado;
@@ -53,7 +54,8 @@ sql;
 sql;
 
         try {
-            $mysqli = Database_cultiva::getInstance();
+            $mysqli = new Database();
+            $mysqli->SetDB_CULTIVA();
             $resultado = $mysqli->queryAll($query);
             if ($resultado == null) return array();
             return $resultado;

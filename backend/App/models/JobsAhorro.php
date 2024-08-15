@@ -38,7 +38,7 @@ class JobsAhorro
         sql;
 
         try {
-            $db = Database::getInstance();
+            $db = new Database();
             $res = $db->queryAll($qry);
             return self::Responde(true, "Créditos activos obtenidos correctamente", $res ?? []);
         } catch (Exception $e) {
@@ -97,7 +97,7 @@ class JobsAhorro
         if ($datos["fecha"]) $parametros[0]["fecha"] = $datos["fecha"];
 
         try {
-            $db = Database::getInstance();
+            $db = new Database();
             $db->insertaMultiple($qrys, $parametros);
             return self::Responde(true, "Devengo aplicado correctamente");
         } catch (Exception $e) {
@@ -129,7 +129,7 @@ class JobsAhorro
         sql;
 
         try {
-            $db = Database::getInstance();
+            $db = new Database();
             $res = $db->queryAll($qry);
             return self::Responde(true, "Inversiones obtenidas correctamente", ($res ?? []));
         } catch (Exception $e) {
@@ -199,7 +199,7 @@ class JobsAhorro
         ];
 
         try {
-            $db = Database::getInstance();
+            $db = new Database();
             $db->insertaMultiple($qrys, $parametros);
             return self::Responde(true, "Inversión liquidada correctamente");
         } catch (Exception $e) {
@@ -236,7 +236,7 @@ class JobsAhorro
         sql;
 
         try {
-            $db = Database::getInstance();
+            $db = new Database();
             $res = $db->queryAll($qry);
             return self::Responde(true, "Solicitudes de retiro obtenidas correctamente", $res ?? []);
         } catch (Exception $e) {
@@ -258,7 +258,7 @@ class JobsAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($qry);
             if (!$res) return self::Responde(true, "Solicitud cancelada correctamente.");
             return self::Responde(false, "Ocurrió un error al cancelar la solicitud.");
@@ -289,7 +289,7 @@ class JobsAhorro
         ];
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
                 $ticket = self::RecuperaTicket($datos['contrato']);
@@ -327,7 +327,7 @@ class JobsAhorro
         sql;
 
         try {
-            $db = Database::getInstance();
+            $db = new Database();
             $res = $db->queryAll($qry);
             return self::Responde(true, "Sucursales sin arqueo obtenidas correctamente", $res ?? []);
         } catch (Exception $e) {
@@ -355,7 +355,7 @@ class JobsAhorro
                 'sucursal' => $datos['sucursal']
             ];
 
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->insertar($qry, $parametros);
             return self::Responde(true, "Arqueo registrado correctamente.");
         } catch (Exception $e) {
@@ -375,7 +375,7 @@ class JobsAhorro
         sql;
 
         try {
-            $db = Database::getInstance();
+            $db = new Database();
             $res = $db->queryAll($qry);
             return self::Responde(true, "Sucursales obtenidas correctamente", $res ?? []);
         } catch (Exception $e) {
@@ -433,7 +433,7 @@ class JobsAhorro
         $parametros[1]["fecha"] = date("N") == 5 ? date("d/m/Y H:i:s", strtotime("+3 days 8am")) : date("d/m/Y H:i:s", strtotime("tomorrow 8am"));
 
         try {
-            $db = Database::getInstance();
+            $db = new Database();
             $db->insertaMultiple($qrys, $parametros);
             return self::Responde(true, "Saldos capturados correctamente");
         } catch (Exception $e) {
@@ -525,7 +525,7 @@ class JobsAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryOne($queryTicket);
         } catch (Exception $e) {
             return 0;
@@ -564,7 +564,7 @@ class JobsAhorro
         sql;
 
         try {
-            $db = Database::getInstance();
+            $db = new Database();
             $res = $db->queryAll($qry);
             return self::Responde(true, "Créditos activos obtenidos correctamente", $res ?? []);
         } catch (Exception $e) {

@@ -5,7 +5,6 @@ namespace App\models;
 defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
-use \Core\Database_cultiva;
 use Exception;
 
 class Reune
@@ -34,7 +33,7 @@ class Reune
         sql;
 
         try {
-            $mysqli = Database_cultiva::getInstance();
+            $mysqli = new Database();
             $resultado = $mysqli->queryAll($query);
             if ($resultado == null) return array();
             return $resultado;
@@ -54,7 +53,8 @@ class Reune
         sql;
 
         try {
-            $mysqli = Database_cultiva::getInstance();
+            $mysqli = new Database();
+            $mysqli->SetDB_CULTIVA();
             $resultado = $mysqli->queryAll($query);
             if ($resultado == null) return array();
             return $resultado;

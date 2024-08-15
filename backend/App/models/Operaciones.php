@@ -1,12 +1,16 @@
 <?php
+
 namespace App\models;
-defined("APPPATH") OR die("Access denied");
 
-use \Core\Database_cultiva;
+defined("APPPATH") or die("Access denied");
 
-class Operaciones{
+use \Core\Database;
 
-    public static function ConsultarDesembolsos($Inicial, $Final){
+class Operaciones
+{
+
+    public static function ConsultarDesembolsos($Inicial, $Final)
+    {
 
         //$query=<<<sql
         //SELECT PRN.CANTENTRE, PRC.CDGEM, PRN.CICLO, EF.NOMBRE AS LOCALIDAD, '001'  AS SUCURSAL,
@@ -26,9 +30,9 @@ class Operaciones{
         //AND PRC.SITUACION = 'E'
         //AND PRC.FEXPCHEQUE BETWEEN TO_DATE('$Inicial', 'YY-mm-dd') AND TO_DATE('$Final', 'YY-mm-dd') ORDER BY PRN.INICIO
 
-//sql;
+        //sql;
         //AND PRC.CDGNS = '003065'
-        $query=<<<sql
+        $query = <<<sql
         SELECT * FROM DESEMBOLSOS_VIEW  
         WHERE FDEPOSITO
         BETWEEN TO_DATE('$Inicial', 'YY-mm-dd') AND TO_DATE('$Final', 'YY-mm-dd') ORDER BY FDEPOSITO ASC
@@ -39,16 +43,18 @@ sql;
 
 
         try {
-            $mysqli = Database_cultiva::getInstance();
+            $mysqli = new Database();
+            $mysqli->SetDB_CULTIVA();
             return $mysqli->queryAll($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "";
         }
     }
 
-    public static function ConsultarClientes($Inicial, $Final){
+    public static function ConsultarClientes($Inicial, $Final)
+    {
 
-        $query=<<<sql
+        $query = <<<sql
         SELECT DISTINCT TO_CHAR(' '||CDGCL) AS CDGCL, TO_CHAR(GRUPO) AS GRUPO, ORIGEN, CLIENTES AS NOMBRE, ADICIONAL,
                         A_PATERNO, A_MATERNO, TIPO_PERSONA, RFC, CURP, 
         RAZON_SOCIAL, FECHA_NAC, NACIONALIDAD, DOMICILIO, COLONIA, CIUDAD, PAIS, SUC_ID_ESTADO, TELEFONO,
@@ -75,17 +81,18 @@ sql;
 
         //var_dump($query);
         try {
-            $mysqli = Database_cultiva::getInstance();
+            $mysqli = new Database();
+            $mysqli->SetDB_CULTIVA();
             return $mysqli->queryAll($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "";
         }
-
     }
 
-    public static function CuentasRelacionadas($Inicial, $Final){
+    public static function CuentasRelacionadas($Inicial, $Final)
+    {
 
-        $query=<<<sql
+        $query = <<<sql
                SELECT DISTINCT TO_CHAR(' '||CDGCL) AS CLIENTE, 
                 TO_CHAR(GRUPO) AS GRUPO, 
                 ULTIMO_CICLO AS CUENTA_RELACION, 
@@ -108,15 +115,17 @@ sql;
 sql;
         //var_dump($query);
         try {
-            $mysqli = Database_cultiva::getInstance();
+            $mysqli = new Database();
+            $mysqli->SetDB_CULTIVA();
             return $mysqli->queryAll($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "";
         }
     }
 
-    public static function ConsultarPagos($Inicial, $Final){
-        $query=<<<sql
+    public static function ConsultarPagos($Inicial, $Final)
+    {
+        $query = <<<sql
                 SELECT PRN.CANTENTRE, PRC.CDGEM, PRN.CICLO, EF.NOMBRE AS LOCALIDAD,
                 CASE WHEN IB.CODIGO  = 13 THEN '001' ------------------------ IMBURSA
                 WHEN IB.CODIGO = 11  THEN '002' ---------------------- PAYCASH
@@ -154,21 +163,22 @@ sql;
 sql;
 
         //$query=<<<sql
-           //     SELECT * FROM PAGOS_MP
-           //    WHERE FDEPOSITO BETWEEN TO_DATE('$Inicial', 'YY-mm-dd') AND TO_DATE('$Final', 'YY-mm-dd') ORDER BY CICLO  DESC
-//sql;
-       // var_dump($query);
+        //     SELECT * FROM PAGOS_MP
+        //    WHERE FDEPOSITO BETWEEN TO_DATE('$Inicial', 'YY-mm-dd') AND TO_DATE('$Final', 'YY-mm-dd') ORDER BY CICLO  DESC
+        //sql;
+        // var_dump($query);
 
         try {
-            $mysqli = Database_cultiva::getInstance();
+            $mysqli = new Database();
+            $mysqli->SetDB_CULTIVA();
             return $mysqli->queryAll($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "";
         }
-
     }
 
-    public static function ConsultarPagosNacimiento($Inicial, $Final){
+    public static function ConsultarPagosNacimiento($Inicial, $Final)
+    {
 
         //$query=<<<sql
         //SELECT PRN.CANTENTRE, PRC.CDGEM, PRN.CICLO, EF.NOMBRE AS LOCALIDAD,
@@ -198,9 +208,9 @@ sql;
         //AND PRN.CDGNS = PRC.CDGNS
         //AND prn.SITUACION = 'E'
         //AND PRN.INICIO BETWEEN TO_DATE('$Inicial', 'YY-mm-dd') AND TO_DATE('$Final', 'YY-mm-dd') ORDER BY PRN.INICIO
-//sql;
+        //sql;
 
-        $query=<<<sql
+        $query = <<<sql
                 SELECT PRN.CANTENTRE, PRC.CDGEM, PRN.CICLO, EF.NOMBRE AS LOCALIDAD,
                 CASE WHEN IB.CODIGO  = 13 THEN '001' ------------------------ IMBURSA
                 WHEN IB.CODIGO = 11  THEN '002' ---------------------- PAYCASH
@@ -240,16 +250,17 @@ sql;
 sql;
 
         try {
-            $mysqli = Database_cultiva::getInstance();
+            $mysqli = new Database();
+            $mysqli->SetDB_CULTIVA();
             return $mysqli->queryAll($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "";
         }
-
     }
 
-    public static function ConsultarPerfilTransaccional($Inicial, $Final){
-        $query=<<<sql
+    public static function ConsultarPerfilTransaccional($Inicial, $Final)
+    {
+        $query = <<<sql
                 SELECT CDGCL, GRUPO, NOMBRE, INSTRUMENTO, TIPO_MONEDA, T_CAMBIO, MONT_PRESTAMO,
               PLAZO, FRECUENCIA, TOTAL_PAGOS, MONTO_FIN_PAGO, ADELANTAR_PAGO, NUMERO_APORTACIONES,
               MONTO_APORTACIONES, CUOTA_PAGO, SALDO, ID_SUCURSAL_SISTEMA, ORIGEN_RECURSO, 
@@ -262,16 +273,17 @@ sql;
 sql;
 
         try {
-            $mysqli = Database_cultiva::getInstance();
+            $mysqli = new Database();
+            $mysqli->SetDB_CULTIVA();
             return $mysqli->queryAll($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "";
         }
-
     }
 
-    public static function UDIS_DOLAR(){
-        $query=<<<sql
+    public static function UDIS_DOLAR($Inicial, $Final)
+    {
+        $query = <<<sql
                 SELECT CDGCL, GRUPO, NOMBRE, INSTRUMENTO, TIPO_MONEDA, T_CAMBIO, MONT_PRESTAMO,
               PLAZO, FRECUENCIA, TOTAL_PAGOS, MONTO_FIN_PAGO, ADELANTAR_PAGO, NUMERO_APORTACIONES,
               MONTO_APORTACIONES, CUOTA_PAGO, SALDO, ID_SUCURSAL_SISTEMA, ORIGEN_RECURSO, 
@@ -284,18 +296,19 @@ sql;
 sql;
 
         try {
-            $mysqli = Database_cultiva::getInstance();
+            $mysqli = new Database();
+            $mysqli->SetDB_CULTIVA();
             return $mysqli->queryAll($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "";
         }
-
     }
 
-    public static function ConsultaGruposCultiva($fecha_inicial, $fecha_final){
+    public static function ConsultaGruposCultiva($fecha_inicial, $fecha_final)
+    {
 
 
-        $query=<<<sql
+        $query = <<<sql
             SELECT 
             CO.NOMBRE AS SUCURSAL,  
             SC.CDGNS, NS.NOMBRE as NOMBRE_GRUPO ,   TO_CHAR((CL.NOMBRE1 || ' ' || CL.NOMBRE2 || ' ' || CL.PRIMAPE || ' ' || CL.SEGAPE )) AS CLIENTE, 
@@ -311,14 +324,15 @@ sql;
 sql;
 
 
-        $mysqli = Database_cultiva::getInstance();
+        $mysqli = new Database();
+        $mysqli->SetDB_CULTIVA();
         return $mysqli->queryAll($query);
-
     }
 
-    public static function ReingresarClientesCredito($credito){
+    public static function ReingresarClientesCredito($credito)
+    {
 
-        $query=<<<sql
+        $query = <<<sql
         SELECT CDGNS, CDGCL, NOMBRE_CLIENTE, INICIO, FECHA_BAJA ,FECHA_BAJA_REAL, CODIGO_MOTIVO, MOTIVO_BAJA
         FROM (
             SELECT 
@@ -339,7 +353,7 @@ sql;
         WHERE RN = 1
 sql;
 
-        $query2=<<<sql
+        $query2 = <<<sql
             SELECT 
                 NOMBRE
             FROM NS
@@ -347,21 +361,23 @@ sql;
            
 sql;
 
-        $mysqli = Database_cultiva::getInstance();
-        return [$mysqli->queryAll($query),$mysqli->queryOne($query2)] ;
-
+        $mysqli = new Database();
+        $mysqli->SetDB_CULTIVA();
+        return [$mysqli->queryAll($query), $mysqli->queryOne($query2)];
     }
 
-    public static function updateCliente($cdgcl){
+    public static function updateCliente($cdgcl)
+    {
 
-        $mysqli = Database_cultiva::getInstance(1);
+        $mysqli = new Database();
+        $mysqli->SetDB_CULTIVA();
 
-        $query_update=<<<sql
+        $query_update = <<<sql
         UPDATE CN
         SET ESTATUS = 'A'
         WHERE CN.CDGCL = '$cdgcl->_cdgcl' AND ESTATUS = 'B' AND FIN IS NULL
 sql;
-        $query_delete=<<<sql
+        $query_delete = <<<sql
         DELETE FROM CN
         WHERE CN.CDGCL = '$cdgcl->_cdgcl' AND FIN IS NOT NULL AND ESTATUS = 'A'
 sql;
@@ -372,7 +388,4 @@ sql;
 
         //return [$update, $delete];
     }
-
-
-
 }

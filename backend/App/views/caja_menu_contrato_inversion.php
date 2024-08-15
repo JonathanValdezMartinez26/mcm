@@ -1,5 +1,13 @@
 <?php echo $header; ?>
 
+<?php
+
+use App\components\BuscarCliente;
+
+$buscarCliente = new BuscarCliente('Para hacer la apertura de una cuenta de Inversión, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/ContratoCuentaCorriente/" target="_blank">presione aquí</a>.');
+
+?>
+
 <div class="right_col">
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="col-md-3 panel panel-body" sstyle="margin-top: 20px; margin-left: 10px; margin-right: 30px; border: 1px solid #dfdfdf; border-radius: 10px;">
@@ -45,14 +53,6 @@
                     <! -- https://cdn-icons-png.flaticon.com/512/942/942752.png -->
                 </div>
             </a>
-            <!--<a id="link" href="/Ahorro/Calculadora/">
-                     <div class="col-md-5" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                         <img src="https://cdn-icons-png.flaticon.com/512/5833/5833832.png" style="border-radius: 3px; padding-top: 5px;" width="98" height="110">
-                         <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Calculadora  </b></p>
-
-                     </div>
-                 </a>-->
-
         </div>
         <div class="col-md-9" id="bloqueoAhorro">
             <form id="registroOperacion" name="registroOperacion">
@@ -75,21 +75,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p>Para hacer la apertura de una cuenta de Inversión, el cliente debe tener una cuenta activa de Ahorro Corriente, si el cliente no tiene una cuenta abierta <a href="/Ahorro/ContratoCuentaCorriente/" target="_blank">presione aquí</a>.</p>
-                                    <hr>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="movil">Código de cliente SICAFIN *</label>
-                                    <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="clienteBuscado" name="clienteBuscado" placeholder="000000" required>
-                                </div>
-                                <div class="col-md-2" style="padding-top: 25px;">
-                                    <button type="button" class="btn btn-primary" id="btnBskClnt" onclick="buscaCliente()">
-                                        <i class="fa fa-search"></i> Buscar
-                                    </button>
-                                </div>
-                            </div>
+                            <?= $buscarCliente->mostrar(); ?>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -242,12 +228,6 @@
     </div>
 </div>
 
-
-
-
-
-
-
 <style>
     .imagen {
         transform: scale(var(--escala, 1));
@@ -265,6 +245,5 @@
         text-decoration: underline;
     }
 </style>
-
 
 <?php echo $footer; ?>

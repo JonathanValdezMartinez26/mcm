@@ -9,24 +9,6 @@ use \App\models\LogTransaccionesAhorro;
 use Exception;
 use DateTime;
 
-/**
- * Tablas de registros:
- * - ASIGNA_PROD_AHORRO
- * - BENEFICIARIOS_AHORRO
- * - MOVIMIENTOS_AHORRO
- * - TICKETS_AHORRO
- * - CUENTA_INVERSION
- * - CL_PQS
- *
- * Limpieza de tablas:
- * DELETE FROM ASIGNA_PROD_AHORRO;
- * DELETE FROM BENEFICIARIOS_AHORRO;
- * DELETE FROM MOVIMIENTOS_AHORRO;
- * DELETE FROM TICKETS_AHORRO;
- * DELETE FROM CUENTA_INVERSION;
- * DELETE FROM CL_PQS;
- */
-
 class CajaAhorro
 {
     public static function Responde($respuesta, $mensaje, $datos = null, $error = null)
@@ -46,7 +28,7 @@ class CajaAhorro
     {
         $qry = <<<sql
         SELECT
-            SUC_ESTADO_AHORRO.CDG_SUCURSAL AS CDGCO_AHORRO,
+            SUC_ESTADO_AHORRO.CDG_SUCURSAL AS CDGCO_AHORRO
         FROM
             SUC_CAJERA_AHORRO
         INNER JOIN
@@ -56,7 +38,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryOne($qry, ['cajera' => $cajera]);
         } catch (Exception $e) {
             return 0;
@@ -69,7 +51,7 @@ class CajaAhorro
         SELECT NOMBRE, CDGCURP FROM EF WHERE NOMBRE != 'Desconocido'
         sql;
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->queryAll($query);
     }
 
@@ -83,7 +65,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
@@ -94,11 +76,8 @@ class CajaAhorro
 
     public static function GetSucursalAsignadaCajeraAhorro($usuario = '')
     {
-        if ($usuario == '') {
-            $var =  '';
-        } else {
-            $var = "WHERE SUC_CAJERA_AHORRO.CDG_USUARIO = '" . $usuario . "'";
-        }
+        $var = $usuario == "" ? "" : "WHERE SUC_CAJERA_AHORRO.CDG_USUARIO = '" . $usuario . "'";
+
         $query = <<<sql
         SELECT
             CO.CODIGO, CO.NOMBRE  
@@ -111,7 +90,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
@@ -137,7 +116,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
@@ -158,7 +137,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($query);
             if ($res) return $res['MONTO_MINIMO'];
             return 0;
@@ -200,7 +179,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
@@ -223,7 +202,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qry);
             if ($res) return $res;
             return array();
@@ -246,7 +225,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qry);
             if ($res) return $res;
             return array();
@@ -269,7 +248,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qry);
             if ($res) return $res;
             return array();
@@ -291,7 +270,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if ($res) return self::Responde(true, "Consulta realizada correctamente.", $res);
             return self::Responde(false, "No se encontraron beneficiarios para el contrato {$contrato}.");
@@ -334,7 +313,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryAll($query_busca_cliente);
         } catch (Exception $e) {
             return "";
@@ -390,7 +369,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($queryValidacion);
             if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}.");
             if ($res['NO_CONTRATOS'] >= 1) return self::Responde(false, "El cliente {$datos['cliente']} ya cuenta con un contrato de ahorro.", $res);
@@ -412,6 +391,7 @@ class CajaAhorro
             CL.CODIGO AS CDGCL,
             (SELECT CDGCO FROM ASIGNA_PROD_AHORRO WHERE CDGEM = 'EMPFIN' AND CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1) AS SUCURSAL,
             (SELECT NOMBRE FROM CO WHERE CODIGO = (SELECT CDGCO FROM ASIGNA_PROD_AHORRO WHERE CDGEM = 'EMPFIN' AND CDGCL = CL.CODIGO AND CDGPR_PRIORITARIO = 1)) AS NOMBRE_SUCURSAL,
+            (SELECT COUNT(*) FROM HUELLAS WHERE CLIENTE = CL.CODIGO) AS HUELLAS,
             NVL(
                 (SELECT
                     MA.MONTO
@@ -437,7 +417,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($query);
             if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}.");
             if ($res['NO_CONTRATOS'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro.", $res);
@@ -469,7 +449,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($queryValidacion, ['cliente' => $datos['credito']]);
             if ($res) return self::Responde(false, "El cliente ya cuenta con un contrato de ahorro");
 
@@ -540,7 +520,7 @@ class CajaAhorro
 
 
             try {
-                $mysqli = Database::getInstance();
+                $mysqli = new Database();
                 $res = $mysqli->insertaMultiple($inserts, $datosInsert);
                 if ($res) {
                     LogTransaccionesAhorro::LogTransacciones($inserts, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $noContrato, "Registro de nuevo contrato ahorro corriente");
@@ -605,7 +585,7 @@ class CajaAhorro
         ];
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
 
             if ($res) {
@@ -660,7 +640,7 @@ class CajaAhorro
         ];
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
             if ($res) {
                 LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de " . $tipoMov . " en " . $datos['producto']);
@@ -835,7 +815,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryOne($queryTicket);
         } catch (Exception $e) {
             return 0;
@@ -1073,7 +1053,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryOne($query);
         } catch (Exception $e) {
             return 0;
@@ -1144,7 +1124,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($queryValidacion);
             if (!$res) return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}.");
             if ($res['NO_CONTRATOS'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro.", $res);
@@ -1167,7 +1147,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($queryValidacion, ['cliente' => $datos['credito']]);
             if ($res) {
                 foreach ($res as $key => $value) {
@@ -1229,7 +1209,7 @@ class CajaAhorro
             ];
 
             try {
-                $mysqli = Database::getInstance();
+                $mysqli = new Database();
                 $res = $mysqli->insertaMultiple($inserts, $parametros);
                 LogTransaccionesAhorro::LogTransacciones($inserts, $parametros, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $noContrato, "Registro de nueva cuenta de ahorro Peque");
                 if ($res) return self::Responde(true, "Contrato de ahorro registrado correctamente.", ['contrato' => $noContrato]);
@@ -1252,6 +1232,7 @@ class CajaAhorro
             CL_PQS.CDGCL,
             CL_PQS.CDGCO AS SUCURSAL,
             (SELECT NOMBRE FROM CO WHERE CODIGO = CL_PQS.CDGCO) AS NOMBRE_SUCURSAL,
+            (SELECT COUNT(*) FROM HUELLAS WHERE CLIENTE = CL_PQS.CDGCL) AS HUELLAS,
             NVL((
                 SELECT
                     SALDO_REAL
@@ -1267,7 +1248,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if (count($res) === 0) {
                 $qryVal = <<<sql
@@ -1350,7 +1331,7 @@ class CajaAhorro
         ];
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
                 LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de inversión de cuenta ahorro corriente");
@@ -1376,7 +1357,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryOne($query);
         } catch (Exception $e) {
             return 0;
@@ -1405,7 +1386,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if (count($res) === 0) return self::Responde(false, "No se encontraron inversiones para el contrato {$datos['contrato']}.");
             return self::Responde(true, "Consulta realizada correctamente.", $res);
@@ -1442,7 +1423,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryOne($query);
         } catch (Exception $e) {
             return 0;
@@ -1471,7 +1452,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryOne($query);
         } catch (Exception $e) {
             return 0;
@@ -1506,7 +1487,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryOne($query);
         } catch (Exception $e) {
             return 0;
@@ -1526,7 +1507,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryOne($query);
         } catch (Exception $e) {
             return 0;
@@ -1586,7 +1567,7 @@ class CajaAhorro
 
         $tipoMov = $tipoRetiro === 1 ? "express" : "programado";
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
                 LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de solicitud de retiro " . $tipoMov . " de cuenta de ahorro corriente");
@@ -1622,7 +1603,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryAll($qry);
         } catch (Exception $e) {
             return array();
@@ -1666,7 +1647,7 @@ class CajaAhorro
 
         $qry .= " ORDER BY TRUNC(SR.FECHA_SOLICITUD), SR.FECHA_ESTATUS DESC";
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qry);
             if (count($res) === 0) return self::Responde(false, "No se encontraron solicitudes de retiro para el producto {$datos['producto']}.", null);
             return self::Responde(true, "Consulta realizada correctamente.", $res);
@@ -1703,7 +1684,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($qry);
             if (!$res) return self::Responde(false, "No se encontraron datos para el retiro solicitado.");
             return self::Responde(true, "Consulta realizada correctamente.", $res);
@@ -1772,7 +1753,7 @@ class CajaAhorro
         ];
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
 
             LogTransaccionesAhorro::LogTransacciones($query[0], $datosInsert[0], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Actualización de estatus por entrega de retiro " . $tipoRetiro);
@@ -1815,7 +1796,7 @@ class CajaAhorro
         ];
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
                 LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de devolución de retiro " . ($datos['tipo'] == 1 ? "express" : "programado") . " de cuenta de ahorro corriente");
@@ -1849,7 +1830,7 @@ class CajaAhorro
         $qry .= $datos["sucursal"] ? " AND LTA.SUCURSAL = :sucursal" : "";
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $resultado = $mysqli->queryAll($qry, $datos);
             if (count($resultado) === 0) return self::Responde(false, "No se encontraron registros para la consulta.", $qry);
             return self::Responde(true, "Consulta realizada correctamente.", $resultado);
@@ -1896,7 +1877,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryAll($qry);
         } catch (Exception $e) {
             return array();
@@ -1922,7 +1903,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($qryDatosGenerale);
             if (!$res) return array();
             return $res;
@@ -2009,7 +1990,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qryMovimientos);
             if (count($res) === 0) return array();
             return $res;
@@ -2076,7 +2057,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qryMovimientos);
             if (count($res) === 0) return array();
             return $res;
@@ -2105,7 +2086,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qryCuentas);
             if (count($res) === 0) return array();
             return $res;
@@ -2177,7 +2158,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qryMovimientos);
             if (count($res) === 0) return array();
             return $res;
@@ -2202,7 +2183,7 @@ class CajaAhorro
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($qry);
             if (!$res) return self::Responde(true, "No se encontraron retiros para el día.");
             return self::Responde(false, "Retiros del día.", $res);
@@ -2224,7 +2205,7 @@ class CajaAhorro
 sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($qry);
             if (!$res) return ['MONTO_MINIMO' => 300, 'MONTO_MAXIMO' => 10000];
             return $res;
@@ -2280,11 +2261,15 @@ sql;
             }
         }
 
+
         if ($Sucursal == '' || $Sucursal == 0) {
             $suc = "";
         } else {
             $suc = " AND CDGCO = '" . $Sucursal . "'";
         }
+
+
+
 
         $query = <<<sql
         SELECT 
@@ -2420,7 +2405,7 @@ sql;
 sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
@@ -2483,11 +2468,8 @@ sql;
             $suc = " AND CDGCO = '" . $Sucursal . "'";
         }
 
-
-
-
         $query = <<<sql
-        SELECT 
+         SELECT 
             CONSECUTIVO,
             MOVIMIENTO,
             CDGCO,
@@ -2506,17 +2488,16 @@ sql;
             PRODUCTO,
             CASE WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO ELSE 0 END AS INGRESO,
             CASE WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN MONTO ELSE 0 END AS EGRESO,
-            CASE WHEN TIPO_MOVIMIENTO = 'REPORTE' THEN MONTO ELSE 0 END AS REPORTE,
+            CASE WHEN TIPO_MOVIMIENTO = 'REPORTE' THEN MONTO ELSE 0  END AS REPORTE,
+    
             CASE 
-                WHEN TIPO_MOVIMIENTO = 'REPORTE' THEN MONTO
-                ELSE SUM(CASE 
-                            WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO 
-                            WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN -MONTO 
-                            ELSE 0 
-                         END) OVER (ORDER BY CONSECUTIVO ASC)
-            END AS SALDO,
-            CDGPE_COMISIONA,
-            NOMBRE_COMISIONA
+		        WHEN TIPO_MOVIMIENTO = 'REPORTE' THEN MONTO
+		        ELSE SUM(CASE 
+		                    WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO 
+		                    WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN -MONTO 
+		                    ELSE 0 
+		                 END) OVER (ORDER BY CONSECUTIVO ASC)
+		    END AS SALDO
         FROM (
             SELECT 
                 ROW_NUMBER() OVER (ORDER BY FECHA_MOV_FILTRO ASC) AS CONSECUTIVO,
@@ -2534,10 +2515,9 @@ sql;
                 MONTO,
                 CONCEPTO,
                 TIPO_MOVIMIENTO,
-                PRODUCTO, 
-                CDGPE_COMISIONA,
-                NOMBRE_COMISIONA
+                PRODUCTO
             FROM (
+          
                 (
                    SELECT 
                       MOVIMIENTO,
@@ -2548,7 +2528,7 @@ sql;
                       'NO APLICA' AS CLIENTE, 
                       'NO APLICA' AS TITULAR_CUENTA_EJE, 
                       TO_CHAR(FECHA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
-                      TO_CHAR(FECHA, 'DD/MM/YYYY') AS FECHA_MOV_APLICA,
+                       TO_CHAR(FECHA, 'DD/MM/YYYY') AS FECHA_MOV_APLICA,
                       FECHA AS FECHA_MOV_FILTRO,
                       'NO APLICA' AS CDG_TICKET, 
                       MONTO, 
@@ -2564,9 +2544,7 @@ sql;
                         WHEN MOVIMIENTO = 3 THEN 'REPORTE'
                         ELSE 'INGRESO'
                     END AS TIPO_MOVIMIENTO,
-                      'AHORRO CUENTA CORRIENTE' AS PRODUCTO, 
-                      NULL AS CDGPE_COMISIONA, 
-                      NULL AS NOMBRE_COMISIONA
+                      'AHORRO CUENTA CORRIENTE' AS PRODUCTO 
                       FROM SUC_MOVIMIENTOS_AHORRO sma 
                     INNER JOIN SUC_ESTADO_AHORRO sea ON sea.CODIGO = sma.CDG_ESTADO_AHORRO 
                     INNER JOIN CO c ON c.CODIGO = sea.CDG_SUCURSAL
@@ -2606,15 +2584,7 @@ sql;
                     CASE 
                         WHEN tpa.DESCRIPCION = 'TRANSFERENCIA INVERSIÓN (ENVIO)' AND pp.DESCRIPCION = 'Ahorro Corriente' THEN 'INVERSION'
                         ELSE pp.DESCRIPCION 
-                    END AS PRODUCTO,
-                    CASE 
-                        WHEN (apa.CDGPE_COMISIONA IS NOT NULL AND tpa.DESCRIPCION = 'CAPITAL INICIAL - CUENTA CORRIENTE')  THEN p.CODIGO
-                        ELSE NULL  -- Otra acción que desees si no se cumple la condición
-                    END AS CDGPE_COMISIONA,
-                     CASE 
-                        WHEN (apa.CDGPE_COMISIONA IS NOT NULL AND tpa.DESCRIPCION = 'CAPITAL INICIAL - CUENTA CORRIENTE')  THEN p.NOMBRE1 || ' ' || p.NOMBRE2 || ' ' || p.PRIMAPE || ' ' || p.SEGAPE
-                        ELSE NULL  -- Otra acción que desees si no se cumple la condición
-                    END AS NOMBRE_COMISIONA
+                    END AS PRODUCTO
                 FROM MOVIMIENTOS_AHORRO ma
                 INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
                 INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
@@ -2627,7 +2597,7 @@ sql;
                 )
                 UNION 
                 (
-                    SELECT 
+                	SELECT 
                     ma.MOVIMIENTO,
                     c2.CODIGO AS CDGCO,
                     c2.NOMBRE AS SUCURSAL,
@@ -2641,10 +2611,8 @@ sql;
                     ma.CDG_TICKET, 
                     tpa.MONTO_INVERSION AS MONTO,
                     'TRANSFERENCIA INVERSIÓN (RECEPCIÓN)' AS CONCEPTO, 
-                    'INGRESO' AS TIPO_MOVIMIENTO,
-                    'INVERSION' AS PRODUCTO, 
-                    NULL AS CDGPE_COMISIONA,
-                    NULL AS NOMBRE_COMISIONA
+                    'INGRESO' TIPO_MOVIMIENTO,
+                    'INVERSION' AS PRODUCTO
                 FROM MOVIMIENTOS_AHORRO ma
                 INNER JOIN CUENTA_INVERSION tpa ON tpa.FECHA_APERTURA = ma.FECHA_MOV 
                 INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
@@ -2665,9 +2633,8 @@ sql;
         ORDER BY CONSECUTIVO ASC
 sql;
 
-      // var_dump($query);
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
@@ -2687,10 +2654,10 @@ sql;
         INNER JOIN PE p ON p.CODIGO = tar.CDGPE_SOLICITA 
         WHERE p.CDGEM = 'EMPFIN'
         AND tar.AUTORIZA = '0'
-sql;
+        sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
@@ -2717,7 +2684,7 @@ sql;
 sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
@@ -2725,7 +2692,6 @@ sql;
             return array();
         }
     }
-
 
     public static function AutorizaSolicitudtICKET($update, $user)
     {
@@ -2735,10 +2701,9 @@ sql;
         WHERE CODIGO = $update->_ticket
 sql;
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->insert($query);
     }
-
 
     public static function HistoricoArqueo($datos)
     {
@@ -2763,7 +2728,6 @@ sql;
                     CO
                 WHERE
                     CO.CODIGO = AR.CDG_SUCURSAL
-            
             ) AS SUCURSAL,
             AR.MONTO
         FROM
@@ -2781,7 +2745,7 @@ sql;
         $qry .= " ORDER BY AR.FECHA DESC";
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($qry);
             if ($res) return self::Responde(true, "Consulta realizada correctamente.", $res);
             return self::Responde(false, "No se encontraron registros para la consulta.", $qry);
@@ -2802,7 +2766,7 @@ sql;
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($qryValidacion);
             if (!$res) return self::Responde(false, "No se encontró el saldo de la sucursal {$datos['sucursal']}.");
             if ($res['SALDO'] > $datos['monto']) return self::Responde(false, "No es posible realizar el arqueo ya que hay un saldo negativo.");
@@ -2849,32 +2813,32 @@ sql;
         FROM
             (
                 SELECT
-                CDG_ARQUEO,
-                CDG_USUARIO,
-                (SELECT CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) FROM PE WHERE PE.CODIGO = ARQUEO.CDG_USUARIO AND PE.CDGEM = 'EMPFIN') AS USUARIO,
-                CDG_SUCURSAL,
-                (SELECT NOMBRE FROM CO WHERE CODIGO = ARQUEO.CDG_SUCURSAL) AS SUCURSAL,
-                TO_CHAR(FECHA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
-                MONTO,
-                B_1000,
-                B_500,
-                B_200,
-                B_100,
-                B_50,
-                B_20,
-                M_10,
-                M_5,
-                M_2,
-                M_1,
-                M_050,
-                M_020,
-                M_010
+                AR.CDG_ARQUEO,
+                AR.CDG_USUARIO,
+                (SELECT CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) FROM PE WHERE PE.CODIGO = AR.CDG_USUARIO AND PE.CDGEM = 'EMPFIN') AS USUARIO,
+                AR.CDG_SUCURSAL,
+                (SELECT NOMBRE FROM CO WHERE CODIGO = AR.CDG_SUCURSAL) AS SUCURSAL,
+                TO_CHAR(AR.FECHA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
+                AR.MONTO,
+                AR.B_1000,
+                AR.B_500,
+                AR.B_200,
+                AR.B_100,
+                AR.B_50,
+                AR.B_20,
+                AR.M_10,
+                AR.M_5,
+                AR.M_2,
+                AR.M_1,
+                AR.M_050,
+                AR.M_020,
+                AR.M_010
                 FROM
-                    ARQUEO
+                    ARQUEO AR
                 WHERE
-                    CDG_SUCURSAL = '{$datos['sucursal']}'
+                    AR.CDG_SUCURSAL = '{$datos['sucursal']}'
                 ORDER BY
-                    FECHA DESC
+                    AR.FECHA DESC
             )
         sql;
 
@@ -2885,7 +2849,7 @@ sql;
         }
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryOne($qry);
         } catch (Exception $e) {
             return [];
@@ -2900,7 +2864,7 @@ sql;
         WHERE CODIGO = $update->_ticket
 sql;
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->insert($query);
     }
 
@@ -2951,7 +2915,7 @@ sql;
 sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
@@ -2963,7 +2927,6 @@ sql;
     public static function GetSolicitudesRetiroAhorroOrdinariaHistorial()
     {
         $query = <<<sql
-       
         SELECT 
             sra.ID_SOL_RETIRO_AHORRO, 
             sra.CONTRATO, 
@@ -2995,11 +2958,10 @@ sql;
             sra.ESTATUS != 0 
             AND sra.CDGPE_ASIGNA_ESTATUS IS NOT NULL
             AND sra.TIPO_RETIRO = 2
-                
 sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
@@ -3011,8 +2973,7 @@ sql;
     public static function GetSolicitudesRetiroAhorroExpress()
     {
         $query = <<<sql
-       
-         SELECT 
+        SELECT 
         sra.ID_SOL_RETIRO_AHORRO, 
         sra.CONTRATO, 
         c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE AS CLIENTE, 
@@ -3056,7 +3017,7 @@ sql;
 sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
@@ -3068,7 +3029,6 @@ sql;
     public static function GetSolicitudesRetiroAhorroExpressHistorial()
     {
         $query = <<<sql
-       
         SELECT 
         sra.ID_SOL_RETIRO_AHORRO, 
         sra.CONTRATO, 
@@ -3120,11 +3080,10 @@ sql;
         AND p.CDGEM = 'EMPFIN'
     ORDER BY 
         sra.FECHA_ESTATUS
-            
 sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
@@ -3147,7 +3106,7 @@ sql;
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->queryOne($qry);
             if (!$res) {
                 $accion = $datos['estatus'] === '1' ? 'aprobada' : 'rechazada';
@@ -3173,11 +3132,136 @@ sql;
         ];
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $res = $mysqli->insertar($qry, $params);
             return self::Responde(true, "Solicitud actualizada correctamente.");
         } catch (Exception $e) {
             return self::Responde(false, "Error al actualizar solicitud.", null, $e->getMessage());
+        }
+    }
+
+    public static function RegistraHuellas($datos)
+    {
+        $params = [
+            "cliente" => $datos["cliente"],
+            "ejecutivo" => $datos["ejecutivo"],
+            "pulgarI" => is_null($datos["izquierda"]["pulgar"]) ? "" : $datos["izquierda"]["pulgar"],
+            "indiceI" => is_null($datos["izquierda"]["indice"]) ? "" : $datos["izquierda"]["indice"],
+            "medioI" => is_null($datos["izquierda"]["medio"]) ? "" : $datos["izquierda"]["medio"],
+            "anularI" => is_null($datos["izquierda"]["anular"]) ? "" : $datos["izquierda"]["anular"],
+            "meniqueI" => is_null($datos["izquierda"]["menique"]) ? "" : $datos["izquierda"]["menique"],
+            "pulgarD" => is_null($datos["derecha"]["pulgar"]) ? "" : $datos["derecha"]["pulgar"],
+            "indiceD" => is_null($datos["derecha"]["indice"]) ? "" : $datos["derecha"]["indice"],
+            "medioD" => is_null($datos["derecha"]["medio"]) ? "" : $datos["derecha"]["medio"],
+            "anularD" => is_null($datos["derecha"]["anular"]) ? "" : $datos["derecha"]["anular"],
+            "meniqueD" => is_null($datos["derecha"]["menique"]) ? "" : $datos["derecha"]["menique"]
+        ];
+
+        $qry = <<<sql
+        INSERT INTO HUELLAS
+            (CLIENTE, FECHA_REGISTRO, EJECUTIVO, PULGAR_I, INDICE_I, MEDIO_I, ANULAR_I, MENIQUE_I, PULGAR_D, INDICE_D, MEDIO_D, ANULAR_D, MENIQUE_D)
+        VALUES
+            ('{$params["cliente"]}', SYSDATE, '{$params["ejecutivo"]}', '{$params["pulgarI"]}', '{$params["indiceI"]}', '{$params["medioI"]}', '{$params["anularI"]}', '{$params["meniqueI"]}', '{$params["pulgarD"]}', '{$params["indiceD"]}', '{$params["medioD"]}', '{$params["anularD"]}', '{$params["meniqueD"]}')
+        sql;
+
+        try {
+            $mysqli = new Database();
+            $mysqli->insertar($qry, []);
+            return self::Responde(true, "Huellas registradas correctamente.");
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al registrar huella.", null, $e->getMessage());
+        }
+    }
+
+    public static function GetHuellas($datos)
+    {
+        $d = $datos["dedo"] ? $datos["dedo"] : "PULGAR_I, INDICE_I, MEDIO_I, ANULAR_I, MENIQUE_I, PULGAR_D, INDICE_D, MEDIO_D, ANULAR_D, MENIQUE_D";
+
+        $qry = <<<sql
+        SELECT
+            CLIENTE,
+            HUELLA
+        FROM
+            HUELLAS
+        UNPIVOT (
+            HUELLA FOR columna IN (
+                $d
+            )
+        )
+        WHERE HUELLA IS NOT NULL
+        sql;
+
+        $qry .= $datos["cliente"] ? " AND CLIENTE = '{$datos["cliente"]}'" : "";
+
+        try {
+            $mysqli = new Database();
+            return $mysqli->queryAll($qry);
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    public static function ValidaRegistroHuellas($datos)
+    {
+        $qry = <<<sql
+        SELECT
+            COUNT(*) AS HUELLAS
+        FROM
+            HUELLAS
+        WHERE
+            CLIENTE = '{$datos["cliente"]}'
+        sql;
+
+        try {
+            $mysqli = new Database();
+            $res = $mysqli->queryOne($qry);
+            return self::Responde(true, "Consulta realizada correctamente.", $res);
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al consultar huellas.", null, $e->getMessage());
+        }
+    }
+
+    public static function ActualizaHuella($datos)
+    {
+        $dedos = [];
+        foreach ($datos["dedos"] as $dedo => $huella) {
+            array_push($dedos, "$dedo = '$huella'");
+        }
+        $dedos = implode(", ", $dedos);
+
+        $qry = <<<sql
+        UPDATE
+            HUELLAS
+        SET
+            $dedos
+        WHERE
+            CLIENTE = '{$datos["cliente"]}'
+        sql;
+
+        try {
+            $mysqli = new Database();
+            $res = $mysqli->insertar($qry, []);
+            return self::Responde(true, "Huellas actualizadas correctamente.", $res);
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al actualizar huellas.", null, $e->getMessage());
+        }
+    }
+
+    public static function EliminaHuellas($datos)
+    {
+        $qry = <<<sql
+        DELETE FROM
+            HUELLAS
+        WHERE
+            CLIENTE = '{$datos["cliente"]}'
+        sql;
+
+        try {
+            $mysqli = new Database();
+            $res = $mysqli->eliminar($qry);
+            return self::Responde(true, "Huellas eliminadas correctamente.", $res);
+        } catch (Exception $e) {
+            return self::Responde(false, "Error al eliminar huellas.", null, $e->getMessage());
         }
     }
 }

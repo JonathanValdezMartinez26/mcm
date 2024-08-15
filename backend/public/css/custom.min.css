@@ -10,6 +10,23 @@
     font-size: 16px;
     color: rgba(0, 0, 0, 0.64);
 }
+.sweet-bloqueo-mano-popup {
+    justify-items: center;
+    width: auto;
+}
+.sweet-bloqueo-mano-htmlContainer {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly !important;
+    justify-items: center;
+    width: 300px;
+    height: 450px;
+    font-size: medium !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    justify-content: space-around !important;
+}
 .left_col {
     background: #313131;
 }

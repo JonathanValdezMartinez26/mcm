@@ -26,7 +26,7 @@ class JobsCredito
             AND PRC.NOCHEQUE IS NULL
 sql;
 
-        $db = Database::getInstance();
+        $db = new Database();
         return $db->queryAll($qry);
     }
 
@@ -39,7 +39,7 @@ sql;
         AND CDGCO = :cdgco
 sql;
 
-        $db = Database::getInstance();
+        $db = new Database();
         return $db->queryOne($qry, ["cdgco" => $cdgco]);
     }
 
@@ -49,7 +49,7 @@ sql;
         SELECT FNSIGCHEQUE('EMPFIN', :chequera) CHQSIG FROM DUAL
 sql;
 
-        $db = Database::getInstance();
+        $db = new Database();
         return $db->queryOne($qry, ["chequera" => $chequera]);
     }
 
@@ -81,7 +81,7 @@ sql;
             "ciclo" => $datos["ciclo"],
         ];
 
-        $db = Database::getInstance();
+        $db = new Database();
         return $db->insertar($qry, $parametros);
     }
 
@@ -110,7 +110,7 @@ sql;
             "ciclo" => $datos["ciclo"]
         ];
 
-        $db = Database::getInstance();
+        $db = new Database();
         return $db->insertar($qry, $parametros);
     }
 
@@ -135,7 +135,7 @@ sql;
             "prmINICIO" => $datos["prmINICIO"]
         ];
 
-        $db = Database::getInstance();
+        $db = new Database();
         return $db->queryOne($qry, $parametros);
     }
 
@@ -160,7 +160,7 @@ sql;
             "prmINICIO" => $datos["prmINICIO"]
         ];
 
-        $db = Database::getInstance();
+        $db = new Database();
         return $db->queryOne($qry, $parametros);
     }
 
@@ -184,7 +184,7 @@ sql;
             "prmINICIO" => $datos["prmINICIO"]
         ];
 
-        $db = Database::getInstance();
+        $db = new Database();
         return $db->queryOne($qry, $parametros);
     }
 
@@ -247,7 +247,7 @@ sql;
             "vINTERES" => $datos["vINTERES"]
         ];
 
-        $db = Database::getInstance();
+        $db = new Database();
         return $db->insertCheques($qry, $parametros);
     }
 
@@ -305,7 +305,7 @@ sql;
             "vINTERES" => $datos["vINTERES"],
         ];
 
-        $db = Database::getInstance();
+        $db = new Database();
         return $db->insertCheques($qry, $parametros);
     }
 
@@ -348,7 +348,7 @@ sql;
             "vINTERES" => $datos["vINTERES"]
         ];
 
-        $db = Database::getInstance();
+        $db = new Database();
         return $db->insertCheques($qry, $parametros);
     }
 }

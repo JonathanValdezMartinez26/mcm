@@ -8,13 +8,15 @@ use \App\models\General as GeneralDao;
 
 class Controller
 {
-
     public $__usuario = '';
     public $__nombre = '';
     public $__puesto = '';
     public $__cdgco = '';
     public $__cdgco_ahorro = '';
     public $__perfil = '';
+    public $__ahorro = '';
+    public $__hora_inicio_ahorro = '';
+    public $__hora_fin_ahorro = '';
 
     public function __construct()
     {
@@ -33,7 +35,6 @@ class Controller
             $this->__perfil = $_SESSION['perfil'];
             $this->__ahorro = $_SESSION['ahorro'];
             $this->__cdgco_ahorro = $_SESSION['cdgco_ahorro'];
-
             $this->__hora_inicio_ahorro = $_SESSION['inicio'];
             $this->__hora_fin_ahorro = $_SESSION['fin'];
         }
@@ -41,20 +42,16 @@ class Controller
 
     public function GetExtraHeader($titulo, $elementos = [])
     {
-        if (empty($elementos)) {
-            return <<<html
-            <title>$titulo</title>
-            <link rel="shortcut icon" href="/img/logo.png">
-html;
-        } else {
-            $html = <<<html
-            <title>$titulo</title>
-            <link rel="shortcut icon" href="/img/logo.png">
-            html;
+        $html = <<<html
+        <title>$titulo</title>
+        html;
+
+        if (!empty($elementos)) {
             foreach ($elementos as $elemento) {
                 $html .= "\n" . $elemento;
             }
-            return $html;
         }
+
+        return $html;
     }
 }

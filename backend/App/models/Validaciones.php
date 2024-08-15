@@ -38,7 +38,7 @@ class Validaciones
             CL_PROMO_TELARANA clpt
         sql;
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryAll($query);
         } catch (Exception $e) {
             return "";
@@ -62,7 +62,7 @@ class Validaciones
         ];
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             if ($mysqli->insertar($query, $datos)) return self::Responde(true, "Cliente invitado registrado exitosamente.");
             return self::Responde(false, "No se pudo registrar el vinculo entre anfitrión e invitado.");
         } catch (Exception $e) {
@@ -89,7 +89,7 @@ class Validaciones
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $resultado = $mysqli->queryOne($query);
             if ($resultado == null) return 0;
 
@@ -123,7 +123,7 @@ class Validaciones
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $resultado = $mysqli->queryAll($query);
             if ($resultado == null) return array();
             return $resultado;
@@ -144,7 +144,7 @@ class Validaciones
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $resultado = $mysqli->queryOne($query);
             if ($resultado == null) return null;
             return $resultado['CODIGO'];
@@ -168,7 +168,7 @@ class Validaciones
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             $resultado = $mysqli->queryOne($query);
             if ($resultado == null) return self::Responde(false, "No se encontró el $param {$cliente['codigo']}");
             $nombre = "{$resultado['CODIGO']} - {$resultado['NOMBRE']}";

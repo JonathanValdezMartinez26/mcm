@@ -1,7 +1,0 @@
-[database]
-adapter  = Mysql
-host     = aplicaciones.c143ha16sf1b.us-west-2.rds.amazonaws.com
-port     = 3399
-user     = medico
-password = Xc4r@medico
-database = medicos

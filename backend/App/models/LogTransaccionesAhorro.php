@@ -54,7 +54,7 @@ class LogTransaccionesAhorro
         ];
 
         try {
-            $db = Database::getInstance();
+            $db = new Database();
             $db->insertar($qry, $parametros);
             return [$qry, $parametros];
         } catch (Exception $e) {

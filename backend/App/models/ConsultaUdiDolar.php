@@ -2,9 +2,9 @@
 
 namespace App\models;
 
-include 'C:/xampp/htdocs/mcm/backend/Core/Database_cultiva.php';
+include 'C:/xampp/htdocs/mcm/backend/Core/Database.php';
 
-use \Core\Database_cultiva;
+use \Core\Database;
 use Exception;
 
 class ConsultaUdiDolar
@@ -24,7 +24,8 @@ class ConsultaUdiDolar
 
     public static function AddUdiDolar($fecha, $dolar, $udi)
     {
-        $mysqli = Database_cultiva::getInstance();
+        $mysqli = new Database();
+        $mysqli->SetDB_CULTIVA();
         $ret_dolar = '';
         $ret_udi = '';
 

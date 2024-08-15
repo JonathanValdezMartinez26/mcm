@@ -13,7 +13,7 @@ class Reportes
     public static function ConsultaUsuariosSICAFINMCM()
     {
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         $query = <<<sql
         SELECT
             *
@@ -91,7 +91,8 @@ sql;
     public static function ConsultaUsuariosSICAFINCultiva()
     {
 
-        $mysqli = Database_cultiva::getInstance();
+        $mysqli = new Database();
+        $mysqli->SetDB_CULTIVA();
         $query = <<<sql
         SELECT
             *

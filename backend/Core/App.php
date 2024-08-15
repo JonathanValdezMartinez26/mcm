@@ -1,22 +1,24 @@
 <?php
+
 namespace Core;
-defined("APPPATH") OR die("Access denied");
+
+defined("APPPATH") or die("Access denied");
 
 class App
 {
     /**
-    * @var
-    */
+     * @var
+     */
     private $_controller;
 
     /**
-    * @var
-    */
+     * @var
+     */
     private $_method = "index";
 
     /**
-    * @var
-    */
+     * @var
+     */
     private $_params = [];
 
     /**
@@ -26,8 +28,8 @@ class App
     public $config = [];
 
     /**
-    * @var
-    */
+     * @var
+     */
     const NAMESPACE_CONTROLLERS = "App\controllers\\";
 
     /**
@@ -44,42 +46,35 @@ class App
         $url = $this->parseUrl();
 
         //comprobamos que exista el archivo en el directorio controllers
-        if(file_exists(self::CONTROLLERS_PATH.ucfirst($url[0]) . ".php"))
-        {
+        if (file_exists(self::CONTROLLERS_PATH . ucfirst($url[0]) . ".php")) {
             //nombre del archivo a llamar
             $this->_controller = ucfirst($url[0]);
             //eliminamos el controlador de url, así sólo nos quedaran los parámetros del método
             unset($url[0]);
-        }
-        else
-        {
+        } else {
             //include APPPATH . "/views/errors/404.php";
-	    header('Location: /Principal/');
+            header('Location: /Principal/');
             exit;
         }
 
         //obtenemos la clase con su espacio de nombres
-        $fullClass = self::NAMESPACE_CONTROLLERS.$this->_controller;
+        $fullClass = self::NAMESPACE_CONTROLLERS . $this->_controller;
 
         //asociamos la instancia a $this->_controller
-	try{
-           $this->_controller = new $fullClass;
-	}catch(Exception $e){}
+        try {
+            $this->_controller = new $fullClass;
+        } catch (\Exception $e) {
+        }
 
         //si existe el segundo segmento comprobamos que el método exista en esa clase
-        if(isset($url[1]))
-        {
-
+        if (isset($url[1])) {
             //aquí tenemos el método
             $this->_method = $url[1];
-            if(method_exists($this->_controller, $url[1]))
-            {
+            if (method_exists($this->_controller, $url[1])) {
                 //eliminamos el método de url, así sólo nos quedaran los parámetros del método
                 unset($url[1]);
-            }
-            else
-            {
-                View::render("principal_all");
+            } else {
+                View::render("principal");
             }
         }
         //asociamos el resto de segmentos a $this->_params para pasarlos al método llamado, por defecto será un array vacío
@@ -92,8 +87,7 @@ class App
      */
     public function parseUrl()
     {
-        if(isset($_GET["url"]))
-        {
+        if (isset($_GET["url"])) {
             return explode("/", filter_var(rtrim($_GET["url"], "/"), FILTER_SANITIZE_URL));
         }
     }

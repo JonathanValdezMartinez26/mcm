@@ -1,5 +1,14 @@
 <?php echo $header; ?>
 
+<?php
+
+use App\components\TarjetaMano;
+
+$izquierda = new TarjetaMano('izquierda');
+$derecha = new TarjetaMano('derecha');
+
+?>
+
 <div class="right_col">
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="col-md-3 panel panel-body" style="margin-bottom: 0px;">
@@ -45,13 +54,6 @@
                     <! -- https://cdn-icons-png.flaticon.com/512/942/942752.png -->
                 </div>
             </a>
-            <!--<a id="link" href="/Ahorro/Calculadora/">
-                     <div class="col-md-5" style="margin-top: 20px; margin-left: 0px; border: 1px solid #dfdfdf; border-radius: 10px;">
-                         <img src="https://cdn-icons-png.flaticon.com/512/5833/5833832.png" style="border-radius: 3px; padding-top: 5px;" width="98" height="110">
-                         <p style="font-size: 12px; padding-top: 6px; color: #000000"><b>Calculadora  </b></p>
-
-                     </div>
-                 </a>-->
         </div>
         <div class="col-md-9">
             <div class="modal-content">
@@ -260,12 +262,15 @@
                                             </div>
                                         </div>
                                         <div class="row" id="marcadores" style="height: 20px; opacity: 0">
-                                            <div class="col-md-6" style="display: flex; justify-content: center; align-items: center;">
+                                            <div class="col-md-4" style="display: flex; justify-content: center; align-items: center;">
                                                 <input id="contratoOK" type="hidden" />
                                                 <i class="fa fa-times red" id="chkCreacionContrato"></i><a href="javascript:void(0);" onclick=reImprimeContrato(event) style="color: #000; cursor: default;" id="lnkContrato">Creación del contrato</a>
                                             </div>
-                                            <div class="col-md-6" style="display: flex; justify-content: center; align-items: center;">
+                                            <div class="col-md-4" style="display: flex; justify-content: center; align-items: center;">
                                                 <i class="fa fa-times red" id="chkPagoApertura"></i><span style="color: #000; user-select: none;">Deposito de apertura</span>
+                                            </div>
+                                            <div class="col-md-4" style="display: flex; justify-content: center; align-items: center;">
+                                                <i class="fa fa-times red" id="chkRegistroHuellas"></i><a href="javascript:void(0);" onclick=mostrarModalHuellas() style="color: #000; cursor: default;" id="lnkHuellas">Registro de Huellas</a>
                                             </div>
                                         </div>
                                         <div class="modal-footer" style="height: 20px;">
@@ -275,12 +280,54 @@
                                             </button>
                                         </div>
                                         <br>
-
                                     </form>
                                     <br>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <div class="modal fade in" id="modal_registra_huellas" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block; padding-right: 15px;"> -->
+<div class="modal fade" id="modal_registra_huellas" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button id="cerrar_modal" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Registro de huellas dactilares</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <label for="nombre_cliente_huellas">Nombre del cliente</label>
+                                <input type="text" class="form-control" id="nombre_cliente_huellas" name="nombre_cliente" value="<?php echo $Cliente[0]['NOMBRE']; ?>" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="codigo_cl_huellas">Código de cliente SICAFIN</label>
+                                <input type="number" class="form-control" id="codigo_cl_huellas" name="codigo_cl" value="<?php echo $credito; ?>" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <?= $izquierda->mostrar(); ?>
+                        <?= $derecha->mostrar(); ?>
+                    </div>
+                    <div class="row">
+                        <div id="notificacionesHuella" style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100px;">
+                            <span id="mensajeHuella" style="font-size: x-large; text-align: center;"><?= $mensajeCaptura ?></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="registraHuellas" class="btn btn-primary" onclick=guardarHuellas() disabled><span class="glyphicon glyphicon-floppy-disk"></span>Registrar huellas</button>
                     </div>
                 </div>
             </div>
@@ -439,6 +486,5 @@
         text-decoration: underline;
     }
 </style>
-
 
 <?php echo $footer; ?>

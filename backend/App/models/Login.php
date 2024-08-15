@@ -12,7 +12,7 @@ class Login
 
     public static function getById($usuario)
     {
-        $mysqli = Database::getInstance(true);
+        $mysqli = new Database();
 
 
         $query = <<<sql
@@ -76,13 +76,11 @@ sql;
 sql;
 
         return [$mysqli->queryOne($query1, $params1), $mysqli->queryOne($query_ahorro, $params_ahorro)];
-
-
     }
 
     public static function getUser($usuario)
     {
-        $mysqli = Database::getInstance(true);
+        $mysqli = new Database();
         $query = <<<sql
         SELECT
             CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) NOMBRE,
@@ -104,6 +102,4 @@ sql;
 
         return $mysqli->queryAll($query);
     }
-
-
 }

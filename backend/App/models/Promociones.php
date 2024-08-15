@@ -54,7 +54,7 @@ class Promociones
         sql;
 
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryAll($query);
         } catch (Exception $e) {
             return "";
@@ -116,7 +116,7 @@ class Promociones
         sql;
         //var_dump($query);
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryOne($query);
         } catch (Exception $e) {
             return "";
@@ -148,7 +148,7 @@ class Promociones
             CPT.CICLO_INVITACION DESC
         sql;
         try {
-            $mysqli = Database::getInstance();
+            $mysqli = new Database();
             return $mysqli->queryAll($query);
         } catch (Exception $e) {
             return "";
@@ -170,7 +170,7 @@ class Promociones
         }
 
         try {
-            // $mysqli = Database::getInstance();
+            // $mysqli = new Database();
             // return $mysqli->insert($query);
             return self::Responde(true, "Pago registrado correctamente", $query);
         } catch (Exception $e) {

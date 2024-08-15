@@ -35,7 +35,7 @@ sql;
         }
 
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->queryAll($query);
     }
 
@@ -56,7 +56,7 @@ sql;
         if (count($filtros) > 0) $query .= " WHERE " . implode(" AND ", $filtros);
         $query .= " ORDER BY TAR.FREGISTRO DESC";
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->queryAll($query);
     }
 
@@ -74,7 +74,7 @@ sql;
 
         //var_dump($query_consulta_existe_sol);
 
-        $mysqli = Database::getInstance(1);
+        $mysqli = new Database();
         $res = $mysqli->queryOne($query_consulta_existe_sol);
 
 
@@ -111,7 +111,7 @@ sql;
         }
 
 
-        $mysqli = Database::getInstance();
+        $mysqli = new Database();
         return $mysqli->queryAll($query);
     }
 }
