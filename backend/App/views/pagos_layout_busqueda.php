@@ -1,5 +1,4 @@
 <?php echo $header; ?>
-<div class="loader"></div>
 <div class="right_col">
         <div class="panel panel-body" style="margin-bottom: 0px;">
             <div class="x_title">

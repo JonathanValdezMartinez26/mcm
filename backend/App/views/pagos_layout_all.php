@@ -1,5 +1,4 @@
 <?php echo $header; ?>
-<div class="loader"></div>
 <div class="right_col">
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
