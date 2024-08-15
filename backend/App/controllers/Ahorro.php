@@ -3570,7 +3570,7 @@ class Ahorro extends Controller
             const imprimeExcel = () => exportaExcel("tblArqueos", "Reporte de arqueos de caja al " + getHoy(false))
              
             const mostrarModal = () => {
-                validaHorarioOperacion()
+                validaHorarioOperacion("{$_SESSION['inicio']}", "{$_SESSION['fin']}")
                 document.querySelector("#frmModal").reset()
                 $("#modalArqueo").modal("show")
                 $("#fechaArqueo").val(getHoy())
