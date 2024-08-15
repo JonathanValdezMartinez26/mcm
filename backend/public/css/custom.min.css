@@ -236,7 +236,7 @@ body .container.body .right_col {
 .nav-md .container.body .right_col {
     padding: 10px 20px 22px;
     margin-left: 230px;
-    min-height: 940px !important;
+    min-height: 100vh !important;
 }
 .nav_title {
     width: 230px;

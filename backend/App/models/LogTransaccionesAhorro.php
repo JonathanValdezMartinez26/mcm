@@ -11,12 +11,12 @@ class LogTransaccionesAhorro
 {
     public function BindingQuery($qry, $parametros = null)
     {
+        return "";
         if ($parametros) {
             foreach ($parametros as $parametro => $valor)
                 $qry = str_replace(":" . $parametro, "'" . $valor . "'", $qry);
         }
 
-        return $qry;
     }
 
     public static function LogTransaccion($datos)
