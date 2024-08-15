@@ -205,7 +205,7 @@ class Ahorro extends Controller
             plantilla += '<head>'
             plantilla += '<meta charset="UTF-8">'
             plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-            plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo_ico.png">'
+            plantilla += '<link rel="shortcut icon" href="' + window.location.origin + '/img/logo_ico.png">'
             plantilla += '<title>' + titulo + '</title>'
             plantilla += '</head>'
             plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
