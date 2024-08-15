@@ -589,7 +589,7 @@ class CajaAhorro
             $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
 
             if ($res) {
-                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Depósito de apertura de cuenta de ahorro corriente");
+                //LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Depósito de apertura de cuenta de ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "Pago de apertura registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
@@ -643,7 +643,7 @@ class CajaAhorro
             $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
             if ($res) {
-                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de " . $tipoMov . " en " . $datos['producto']);
+                //LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de " . $tipoMov . " en " . $datos['producto']);
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "El " . $tipoMov . " fue registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
@@ -1211,7 +1211,7 @@ class CajaAhorro
             try {
                 $mysqli = new Database();
                 $res = $mysqli->insertaMultiple($inserts, $parametros);
-                LogTransaccionesAhorro::LogTransacciones($inserts, $parametros, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $noContrato, "Registro de nueva cuenta de ahorro Peque");
+                //LogTransaccionesAhorro::LogTransacciones($inserts, $parametros, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $noContrato, "Registro de nueva cuenta de ahorro Peque");
                 if ($res) return self::Responde(true, "Contrato de ahorro registrado correctamente.", ['contrato' => $noContrato]);
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.");
             } catch (Exception $e) {
@@ -1334,7 +1334,7 @@ class CajaAhorro
             $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
-                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de inversión de cuenta ahorro corriente");
+                //LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de inversión de cuenta ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 $codg = self::RecuperaCodigoInversion($datos['contrato']);
                 return self::Responde(true, "Inversión registrada correctamente.", ['ticket' => $ticket['CODIGO'], 'codigo' => $codg['CODIGO']]);
@@ -1570,7 +1570,7 @@ class CajaAhorro
             $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
-                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de solicitud de retiro " . $tipoMov . " de cuenta de ahorro corriente");
+                //LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de solicitud de retiro " . $tipoMov . " de cuenta de ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "El retiro " . $tipoMov . " fue registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
@@ -1756,10 +1756,10 @@ class CajaAhorro
             $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
 
-            LogTransaccionesAhorro::LogTransacciones($query[0], $datosInsert[0], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Actualización de estatus por entrega de retiro " . $tipoRetiro);
-            LogTransaccionesAhorro::LogTransacciones($query[1], $datosInsert[1], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Creación de ticket por entrega de retiro " . $tipoRetiro);
-            LogTransaccionesAhorro::LogTransacciones($query[2], $datosInsert[2], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de movimiento por entrega de retiro " . $tipoRetiro);
-            LogTransaccionesAhorro::LogTransacciones($query[3], $datosInsert[4], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Actualización de saldo de sucursal por entrega de retiro " . $tipoRetiro);
+            //LogTransaccionesAhorro::LogTransacciones($query[0], $datosInsert[0], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Actualización de estatus por entrega de retiro " . $tipoRetiro);
+            //LogTransaccionesAhorro::LogTransacciones($query[1], $datosInsert[1], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Creación de ticket por entrega de retiro " . $tipoRetiro);
+            //LogTransaccionesAhorro::LogTransacciones($query[2], $datosInsert[2], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de movimiento por entrega de retiro " . $tipoRetiro);
+            //LogTransaccionesAhorro::LogTransacciones($query[3], $datosInsert[4], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Actualización de saldo de sucursal por entrega de retiro " . $tipoRetiro);
 
             if (!$res) return self::Responde(false, "Ocurrió un error al registrar la entrega del retiro " . $tipoRetiro . ".");
 
@@ -1799,7 +1799,7 @@ class CajaAhorro
             $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
-                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de devolución de retiro " . ($datos['tipo'] == 1 ? "express" : "programado") . " de cuenta de ahorro corriente");
+                //LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de devolución de retiro " . ($datos['tipo'] == 1 ? "express" : "programado") . " de cuenta de ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "Se han liberado $ " . number_format($datos['monto'], 2) . " a la cuenta del cliente por el apartado para el retiro " . ($datos['tipo'] == 1 ? "express" : "programado") . ".", ['ticket' => $ticket['CODIGO']]);
             }
