@@ -198,14 +198,14 @@ class Ahorro extends Controller
         return primeraMayuscula(convertir(parteEntera)) + (numero == 1 ? " peso " : " pesos ") + parteDecimal + "/100 M.N."
     }';
     private $primeraMayuscula = 'const primeraMayuscula = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1)';
-    private $muestraPDF = <<<script
+    private $muestraPDF = <<<JAVASCRIPT
     const muestraPDF = (titulo, ruta) => {
         let plantilla = '<!DOCTYPE html>'
             plantilla += '<html lang="es">'
             plantilla += '<head>'
             plantilla += '<meta charset="UTF-8">'
             plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-            plantilla += '<link rel="shortcut icon" href="" + host + "/img/logo_ico.png">'
+            plantilla += '<link rel="shortcut icon" href="' + host + '/img/logo_ico.png">'
             plantilla += '<title>' + titulo + '</title>'
             plantilla += '</head>'
             plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
@@ -217,7 +217,7 @@ class Ahorro extends Controller
             const url = URL.createObjectURL(blob)
             window.open(url, '_blank')
     }
-    script;
+    JAVASCRIPT;
     private $imprimeTicket = <<<script
     const imprimeTicket = async (ticket, sucursal = '', copia = true) => {
         const espera = swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
