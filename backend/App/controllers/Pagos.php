@@ -1159,7 +1159,9 @@ html;
 
     public function Ticket($barcode)
     {
-        $mpdf = new \mPDF('c');
+        $mpdf = new \mPDF([
+            'mode' => 'c'
+        ]);
         $mpdf->defaultPageNumStyle = 'I';
         $mpdf->h2toc = array('H5' => 0, 'H6' => 1);
 
