@@ -2885,8 +2885,6 @@ html;
         $objPHPExcel->getProperties()->setDescription("Descripcion");
         $objPHPExcel->setActiveSheetIndex(0);
 
-
-
         $estilo_titulo = array(
             'font' => array('bold' => true, 'name' => 'Calibri', 'size' => 11, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
@@ -2906,7 +2904,6 @@ html;
 
         );
 
-
         $fila = 1;
         $adaptarTexto = true;
 
@@ -2914,7 +2911,6 @@ html;
         $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
         $nombreColumna = array('Sucursal', 'Codigo', 'Fecha', 'Cliente', 'Nombre', 'Ciclo', 'Monto', 'Tipo', 'Ejecutivo', 'Registro');
         $nombreCampo = array('NOMBRE_SUCURSAL', 'SECUENCIA', 'FECHA', 'CDGNS', 'NOMBRE', 'CICLO', 'MONTO', 'TIPO', 'EJECUTIVO', 'FREGISTRO');
-
 
         /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
         foreach ($nombreColumna as $key => $value) {
@@ -2926,7 +2922,6 @@ html;
         $fila += 1; //fila donde comenzaran a escribirse los datos
 
         /* FILAS DEL ARCHIVO EXCEL */
-
         $Layoutt = PagosDao::ConsultarPagosFechaSucursal($Sucursal, $fecha_inicio, $fecha_fin);
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
@@ -2936,7 +2931,6 @@ html;
             }
             $fila += 1;
         }
-
 
         $objPHPExcel->getActiveSheet()->getStyle('A1:' . $columna[count($columna) - 1] . $fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
         for ($i = 0; $i < $fila; $i++) {
@@ -2958,5 +2952,174 @@ html;
         \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
+    }
+
+    public function CorteEjecutivoReimprimir()
+    {
+        $extraFooter = <<<HTML
+        <script>
+            $(document).ready(() => {
+                configuraTabla("tbl-historico")
+                document.getElementById("fInicio").addEventListener("change", () => validaFIF("fInicio", "fFin"))
+                document.getElementById("fFin").addEventListener("change", () => validaFIF("fInicio", "fFin"))
+            })
+
+            const validaFIF = (idI, idF) => {
+                const fechaI = document.getElementById(idI).valueAsDate
+                const fechaF = document.getElementById(idF).valueAsDate
+                if (fechaI && fechaF && fechaI > fechaF) {
+                    document.getElementById(idI).valueAsDate = fechaF
+                }
+            }
+
+            const configuraTabla = (id) => {
+                $("#" + id).tablesorter()
+                $("#" + id).DataTable({
+                    lengthMenu: [
+                        [10, 40, -1],
+                        [10, 40, "Todos"]
+                    ],
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 0
+                        }
+                    ],
+                    order: false,
+                    language: {
+                        emptyTable: "No hay datos disponibles",
+                        paginate: {
+                            previous: "Anterior",
+                            next: "Siguiente",
+                        },
+                        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                        infoEmpty: "Sin registros disponibles",
+                    }
+                })
+
+                $("#"  + id + " input[type=search]").keyup(() => {
+                    $("#example")
+                        .DataTable()
+                        .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
+                        .draw()
+                })
+            }
+
+            const consultaServidor = (url, datos, fncOK, metodo = "POST", tipo = "JSON", tipoContenido = null) => {
+                swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+                const configuracion = {
+                    type: metodo,
+                    url: url,
+                    data: datos,
+                    success: (res) => {
+                        swal.close()
+                        fncOK(res)
+                    },
+                    error: (error) => {
+                        console.error(error)
+                        showError("Ocurrió un error al procesar la solicitud.")
+                    }
+                }
+                if (tipoContenido) configuracion.contentType = tipoContenido 
+                $.ajax(configuracion)
+            }
+
+            const buscar = () => {
+                const fechaI = document.getElementById("fInicio").value
+                const fechaF = document.getElementById("fFin").value
+                if (new Date(fechaI) > new Date(fechaF)) {
+                    swal("Atención", "La fecha de inicio no puede ser mayor a la fecha final", "warning")
+                    return
+                }
+
+                const datos = {
+                    fInicio: fechaI,
+                    fFin: fechaF
+                }
+
+                consultaServidor("/Pagos/GetPagosAppHistorico/", $.param(datos), (respuesta) => {
+                    if (!respuesta) swal({ text: "No se encontraron pagos en el rango de fechas seleccionado.", icon: "error" })
+                    
+                    $("#tbl-historico").DataTable().destroy()
+                    $("#tbl-historico tbody").html(respuesta)
+                    configuraTabla("tbl-historico", true)
+                })
+            }
+
+            const reimprime = (idComprobante) => {
+                if (!idComprobante) return
+                
+                const titulo = 'Comprobante ' + idComprobante
+                const ruta = window.location.origin + "/Pagos/Ticket/" + idComprobante
+                
+                muestraPDF(titulo, ruta)
+            }
+
+            const muestraPDF = (titulo, ruta) => {
+                let plantilla = '<!DOCTYPE html>'
+                plantilla += '<html lang="es">'
+                plantilla += '<head>'
+                plantilla += '<meta charset="UTF-8">'
+                plantilla += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+                plantilla += '<link rel="shortcut icon" href="' + window.location.origin + '/img/logo_ico.png">'
+                plantilla += '<title>' + titulo + '</title>'
+                plantilla += '</head>'
+                plantilla += '<body style="margin: 0; padding: 0; background-color: #333333;">'
+                plantilla += '<iframe src="' + ruta + '" style="width: 100%; height: 99vh; border: none; margin: 0; padding: 0;"></iframe>'
+                plantilla += '</body>'
+                plantilla += '</html>'
+            
+                const blob = new Blob([plantilla], { type: 'text/html' })
+                const url = URL.createObjectURL(blob)
+                window.open(url, '_blank')
+            }
+        </script>
+        HTML;
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Histórico de Pagos App")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fInicio', date('Y-m-d', strtotime('-7 day')));
+        View::set('fFin', date('Y-m-d'));
+        View::set('tabla', $this->GetPagosAppHistorico());
+        View::render("view_pagos_app_historico");
+    }
+
+    public function GetPagosAppHistorico()
+    {
+        $fi = $_POST['fInicio'] ? $_POST['fInicio'] : date('Y-m-d');
+        $ff = $_POST['fFin'] ? $_POST['fFin'] : date('Y-m-d', strtotime('-7 day'));
+
+        $pagos = PagosDao::ConsultarPagosAppHistorico($fi, $ff);
+
+        foreach ($pagos as $key => $value) {
+            $pago = number_format($value['TOTAL_PAGOS'], 2);
+            $multa = number_format($value['TOTAL_MULTA'], 2);
+            $refinanciamiento = number_format($value['TOTAL_REFINANCIAMIENTO'], 2);
+            $descuento = number_format($value['TOTAL_DESCUENTO'], 2);
+            $garantia = number_format($value['GARANTIA'], 2);
+            $monto_total = number_format($value['MONTO_TOTAL'], 2);
+
+            $tabla .= <<<HTML
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;">{$value['BARRAS']}</td>
+                    <td style="padding: 0px !important;">{$value['SUCURSAL']}</td>
+                    <td style="padding: 0px !important;">{$value['NUM_PAGOS']}</td>
+                    <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
+                    <td style="padding: 0px !important;"><strong>{$value['FECHA_D']}</strong></td>
+                    <td style="padding: 0px !important;">$ {$pago}</td>
+                    <td style="padding: 0px !important;">$ {$multa}</td>
+                    <td style="padding: 0px !important;">$ {$refinanciamiento}</td>
+                    <td style="padding: 0px !important;">$ {$descuento}</td>
+                    <td style="padding: 0px !important;">$ {$garantia}</td>
+                    <td style="padding: 0px !important;">$ {$monto_total}</td>
+                    <td style="padding: 0px !important;">
+                        <button class="btn btn-success btn-circle" onclick="reimprime('{$value['BARRAS']}')"><i class="fa fa-edit"></i> Reimprimir recibo</button>
+                    </td>
+                </tr>
+            HTML;
+        }
+
+        if ($_POST) echo $tabla;
+        else return $tabla;
     }
 }

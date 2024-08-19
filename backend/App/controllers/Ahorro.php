@@ -277,7 +277,7 @@ class Ahorro extends Controller
 
         return resultado
     }';
-    private $imprimeContrato = <<<script
+    private $imprimeContrato = <<<JAVASCRIPT
     const imprimeContrato = (numero_contrato, producto = 1) => {
         if (!numero_contrato) return
         const host = window.location.origin
@@ -289,7 +289,7 @@ class Ahorro extends Controller
          
         muestraPDF(titulo, ruta)
     }
-    script;
+    JAVASCRIPT;
     private $sinContrato = <<<script
     const sinContrato = (datosCliente) => {
         if (datosCliente["NO_CONTRATOS"] == 0) {

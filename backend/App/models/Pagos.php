@@ -244,43 +244,120 @@ sql;
     public static function ConsultarPagosApp()
     {
 
-        $query = <<<sql
-               SELECT (COD_SUC || COUNT(NOMBRE) || COMP_BARRA || CAST(SUM(MONTO) AS INTEGER)) AS BARRAS, COD_SUC, SUCURSAL, COUNT(NOMBRE) AS NUM_PAGOS, NOMBRE, FECHA_D, FECHA, 
-        FECHA_REGISTRO, CDGOCPE,
-        SUM(PAGOS) AS TOTAL_PAGOS, 
-        SUM(MULTA) AS TOTAL_MULTA, 
-        SUM(REFINANCIAMIENTO) AS TOTAL_REFINANCIAMIENTO, 
-        SUM(DESCUENTO) AS TOTAL_DESCUENTO, 
-        SUM(GARANTIA) AS GARANTIA, 
-        SUM(MONTO) AS MONTO_TOTAL
+        $query = <<<SQL
+        SELECT
+            (COD_SUC || COUNT(NOMBRE) || COMP_BARRA || CAST(SUM(MONTO) AS INTEGER)) AS BARRAS, COD_SUC, SUCURSAL, COUNT(NOMBRE) AS NUM_PAGOS, NOMBRE, FECHA_D, FECHA, 
+            FECHA_REGISTRO, CDGOCPE,
+            SUM(PAGOS) AS TOTAL_PAGOS, 
+            SUM(MULTA) AS TOTAL_MULTA, 
+            SUM(REFINANCIAMIENTO) AS TOTAL_REFINANCIAMIENTO, 
+            SUM(DESCUENTO) AS TOTAL_DESCUENTO, 
+            SUM(GARANTIA) AS GARANTIA, 
+            SUM(MONTO) AS MONTO_TOTAL
         FROM
-        (
-        SELECT TO_CHAR(FECHA, 'DDMMYYYY' ) AS COMP_BARRA ,CO.CODIGO AS COD_SUC, CO.NOMBRE AS SUCURSAL, CORTECAJA_PAGOSDIA.EJECUTIVO AS NOMBRE, 
-        TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH') || '- ' || TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MON-YYYY' ) AS FECHA_D ,
-        TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) AS FECHA,
-        TO_CHAR(CORTECAJA_PAGOSDIA.FREGISTRO) AS FECHA_REGISTRO,
-        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'P' THEN MONTO END PAGOS,
-        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'M' THEN MONTO END MULTA,
-        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'R' THEN MONTO END REFINANCIAMIENTO,
-        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'D' THEN MONTO END DESCUENTO,
-        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'G' THEN MONTO END GARANTIA, 
-        CORTECAJA_PAGOSDIA.MONTO, CORTECAJA_PAGOSDIA.CDGOCPE
-        FROM CORTECAJA_PAGOSDIA
-        INNER JOIN PRN ON PRN.CDGNS = CORTECAJA_PAGOSDIA.CDGNS 
-        INNER JOIN CO ON CO.CODIGO = PRN.CDGCO 
-        WHERE PROCESA_PAGOSDIA = '0'
-        AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
-        AND PRN.CDGCO = CO.CODIGO
-        )
+            (
+                SELECT TO_CHAR(FECHA, 'DDMMYYYY' ) AS COMP_BARRA ,CO.CODIGO AS COD_SUC, CO.NOMBRE AS SUCURSAL, CORTECAJA_PAGOSDIA.EJECUTIVO AS NOMBRE, 
+                TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH') || '- ' || TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MON-YYYY' ) AS FECHA_D ,
+                TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) AS FECHA,
+                TO_CHAR(CORTECAJA_PAGOSDIA.FREGISTRO) AS FECHA_REGISTRO,
+                CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'P' THEN MONTO END PAGOS,
+                CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'M' THEN MONTO END MULTA,
+                CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'R' THEN MONTO END REFINANCIAMIENTO,
+                CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'D' THEN MONTO END DESCUENTO,
+                CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'G' THEN MONTO END GARANTIA, 
+                CORTECAJA_PAGOSDIA.MONTO, CORTECAJA_PAGOSDIA.CDGOCPE
+                FROM CORTECAJA_PAGOSDIA
+                INNER JOIN PRN ON PRN.CDGNS = CORTECAJA_PAGOSDIA.CDGNS 
+                INNER JOIN CO ON CO.CODIGO = PRN.CDGCO 
+                WHERE PROCESA_PAGOSDIA = '0'
+                AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
+                AND PRN.CDGCO = CO.CODIGO
+            )
         GROUP BY NOMBRE, FECHA_D, FECHA, CDGOCPE, FECHA_REGISTRO, COD_SUC, SUCURSAL, COMP_BARRA
-        
-sql;
-
+        SQL;
 
         /////AND PRN.SITUACION = 'E' PONER ESTA CUANDO ESTEMOS EN PRODUCTIVO
         $mysqli = new Database();
         return $mysqli->queryAll($query);
     }
+
+    public static function ConsultarPagosAppHistorico($fi, $ff)
+    {
+        $qry = <<<SQL
+            SELECT
+                (
+                    COD_SUC || COUNT(NOMBRE) || COMP_BARRA || CAST(SUM(MONTO) AS INTEGER)
+                ) AS BARRAS,
+                COD_SUC,
+                SUCURSAL,
+                COUNT(NOMBRE) AS NUM_PAGOS,
+                NOMBRE,
+                FECHA_D,
+                FECHA,
+                FECHA_REGISTRO,
+                CDGOCPE,
+                SUM(PAGOS) AS TOTAL_PAGOS,
+                SUM(MULTA) AS TOTAL_MULTA,
+                SUM(REFINANCIAMIENTO) AS TOTAL_REFINANCIAMIENTO,
+                SUM(DESCUENTO) AS TOTAL_DESCUENTO,
+                SUM(GARANTIA) AS GARANTIA,
+                SUM(MONTO) AS MONTO_TOTAL
+            FROM
+                (
+                    SELECT
+                        TO_CHAR(FECHA, 'DDMMYYYY') AS COMP_BARRA,
+                        CO.CODIGO AS COD_SUC,
+                        CO.NOMBRE AS SUCURSAL,
+                        CORTECAJA_PAGOSDIA.EJECUTIVO AS NOMBRE,
+                        TO_CHAR(
+                            CORTECAJA_PAGOSDIA.FECHA,
+                            'DAY',
+                            'NLS_DATE_LANGUAGE=SPANISH'
+                        ) || '- ' || TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MON-YYYY') AS FECHA_D,
+                        TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY') AS FECHA,
+                        TO_CHAR(CORTECAJA_PAGOSDIA.FREGISTRO) AS FECHA_REGISTRO,
+                        CASE
+                            WHEN CORTECAJA_PAGOSDIA.TIPO = 'P' THEN MONTO
+                        END PAGOS,
+                        CASE
+                            WHEN CORTECAJA_PAGOSDIA.TIPO = 'M' THEN MONTO
+                        END MULTA,
+                        CASE
+                            WHEN CORTECAJA_PAGOSDIA.TIPO = 'R' THEN MONTO
+                        END REFINANCIAMIENTO,
+                        CASE
+                            WHEN CORTECAJA_PAGOSDIA.TIPO = 'D' THEN MONTO
+                        END DESCUENTO,
+                        CASE
+                            WHEN CORTECAJA_PAGOSDIA.TIPO = 'G' THEN MONTO
+                        END GARANTIA,
+                        CORTECAJA_PAGOSDIA.MONTO,
+                        CORTECAJA_PAGOSDIA.CDGOCPE
+                    FROM
+                        CORTECAJA_PAGOSDIA
+                        INNER JOIN PRN ON PRN.CDGNS = CORTECAJA_PAGOSDIA.CDGNS
+                        INNER JOIN CO ON CO.CODIGO = PRN.CDGCO
+                    WHERE
+                        PROCESA_PAGOSDIA = '1'
+                        AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
+                        AND PRN.CDGCO = CO.CODIGO
+                        AND TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'YYYY-MM-DD') BETWEEN '$fi' AND '$ff'
+                )
+            GROUP BY
+                NOMBRE,
+                FECHA_D,
+                FECHA,
+                CDGOCPE,
+                FECHA_REGISTRO,
+                COD_SUC,
+                SUCURSAL,
+                COMP_BARRA
+        SQL;
+
+        $mysqli = new Database();
+        return $mysqli->queryAll($qry);
+    }
+
     public static function ConsultarPagosAppDetalle($ejecutivo, $fecha, $suc)
     {
         $query = <<<sql
