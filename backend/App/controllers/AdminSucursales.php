@@ -3366,9 +3366,9 @@ script;
         $adaptarTexto = true;
 
         $controlador = "AdminSucursales";
-        $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L');
-        $nombreColumna = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO','SALDO INICIAL', 'INGRESO', 'EGRESO', 'SALDO');
-        $nombreCampo = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'REPORTE_INICIO','INGRESO', 'EGRESO', 'SALDO');
+        $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K');
+        $nombreColumna = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
+        $nombreCampo = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'INGRESO', 'EGRESO', 'SALDO');
 
 
         $objPHPExcel->getActiveSheet()->SetCellValue('A' . $fila, 'Consulta de Movimientos Ahorro');
@@ -3391,23 +3391,9 @@ script;
 
         $Layoutt = CajaAhorroDao::GetAllTransacciones($fecha_inicio, $fecha_inicio, $operacion, $producto, $sucursal);
 
-
-
-        if($sucursal == 0 || $sucursal == '')
-        {
-            $reporte = "REPORTE_INICIO";
-        }
-        else{
-            $reporte = "REPORTE_INICIO";
-        }
-
-
         $totalIngreso = 0;
         $totalEgreso = 0;
         $totalSaldo = 0;
-        $totalInicioDia = 0;
-
-
         foreach ($Layoutt as $keyy => $value) {
 
             foreach ($nombreCampo as $key => $campo) {
@@ -3416,69 +3402,47 @@ script;
                 $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
             }
 
-
+            ///////////////////////
             $increment = $keyy++;
-
-
-            if ( $Layoutt[$increment]["CONCEPTO"] == 'DEPOSITO'
+            if (
+                $Layoutt[$increment]["CONCEPTO"] == 'DEPOSITO'
                 || $Layoutt[$increment]["CONCEPTO"] == 'CAPITAL INICIAL - CUENTA CORRIENTE'
                 || $Layoutt[$increment]["CONCEPTO"] == 'APERTURA DE CUENTA - INSCRIPCIÓN'
-                || $Layoutt[$increment]["CONCEPTO"] == 'FONDEO SUCURSAL')
-            {
+                || $Layoutt[$increment]["CONCEPTO"] == 'FONDEO SUCURSAL'
+            ) {
                 $totalSaldo += $Layoutt[$increment]["INGRESO"];
-            }
-            else if($Layoutt[$increment]["CONCEPTO"] == 'SALDO INICIAL DEL DIA (DIARIO)')
-            {
-                $totalSaldo += $Layoutt[$increment]["$reporte"];
-            }
-
-            if ($Layoutt[$increment]["CONCEPTO"] === 'DEPOSITO' || $Layoutt[$increment]["CONCEPTO"] === 'CAPITAL INICIAL - CUENTA CORRIENTE'
-                || $Layoutt[$increment]["CONCEPTO"] === 'APERTURA DE CUENTA - INSCRIPCIÓN')
-            {
-                $totalIngreso += $Layoutt[$increment]["INGRESO"];
-
+            } else if ($Layoutt[$increment]["CONCEPTO"] == 'SALDO INICIAL DEL DIA (DIARIO)') {
+                $totalSaldo += $Layoutt[$increment]["REPORTE"];
+            } else {
+                $totalSaldo -= $Layoutt[$increment]["EGRESO"];
             }
 
+            if ($Layoutt[$increment]["TIPO_MOVIMIENTO"] === 'INGRESO') $totalIngreso += $Layoutt[$increment]["INGRESO"];
+            if ($Layoutt[$increment]["TIPO_MOVIMIENTO"] === 'EGRESO') $totalEgreso += $Layoutt[$increment]["EGRESO"];
+            //////////////////
 
-            if ($Layoutt[$increment]["CONCEPTO"] === 'EGRESO' || $Layoutt[$increment]["CONCEPTO"] === 'RETIRO DE EFECTIVO')
-            {
-                $totalEgreso += $Layoutt[$increment]["EGRESO"];
-            }
-
-            if ($Layoutt[$increment]["CONCEPTO"] === 'SALDO INICIAL DEL DIA (DIARIO)')
-            {
-                $totalInicioDia += $Layoutt[$increment]["REPORTE_INICIO"];
-            }
 
             $fila += 1;
-
-
-
         }
-
-
+        //exit();
         $fila += 1;
-        $totalSaldo = $totalSaldo - $totalEgreso ;
+        $totalSaldo = $totalSaldo;
 
         $objPHPExcel->getActiveSheet()->SetCellValue($columna[7] . $fila, "TOTAL");
         $objPHPExcel->getActiveSheet()->getStyle($columna[7] . $fila)->applyFromArray($estilo_encabezado);
         $objPHPExcel->getActiveSheet()->getStyle($columna[7] . $fila)->getAlignment()->setWrapText($adaptarTexto);
 
-        $objPHPExcel->getActiveSheet()->SetCellValue($columna[8] . $fila, " ( + ) " . $totalInicioDia);
+        $objPHPExcel->getActiveSheet()->SetCellValue($columna[8] . $fila, $totalIngreso);
         $objPHPExcel->getActiveSheet()->getStyle($columna[8] . $fila)->applyFromArray($estilo_celda);
         $objPHPExcel->getActiveSheet()->getStyle($columna[8] . $fila)->getAlignment()->setWrapText($adaptarTexto);
 
-        $objPHPExcel->getActiveSheet()->SetCellValue($columna[9] . $fila, " ( + ) " . $totalIngreso);
+        $objPHPExcel->getActiveSheet()->SetCellValue($columna[9] . $fila, $totalEgreso);
         $objPHPExcel->getActiveSheet()->getStyle($columna[9] . $fila)->applyFromArray($estilo_celda);
         $objPHPExcel->getActiveSheet()->getStyle($columna[9] . $fila)->getAlignment()->setWrapText($adaptarTexto);
 
-        $objPHPExcel->getActiveSheet()->SetCellValue($columna[10] . $fila, " ( - ) " . $totalEgreso);
+        $objPHPExcel->getActiveSheet()->SetCellValue($columna[10] . $fila, $totalSaldo);
         $objPHPExcel->getActiveSheet()->getStyle($columna[10] . $fila)->applyFromArray($estilo_celda);
         $objPHPExcel->getActiveSheet()->getStyle($columna[10] . $fila)->getAlignment()->setWrapText($adaptarTexto);
-
-        $objPHPExcel->getActiveSheet()->SetCellValue($columna[11] . $fila, " ( = ) " . $totalSaldo);
-        $objPHPExcel->getActiveSheet()->getStyle($columna[11] . $fila)->applyFromArray($estilo_celda);
-        $objPHPExcel->getActiveSheet()->getStyle($columna[11] . $fila)->getAlignment()->setWrapText($adaptarTexto);
 
         $objPHPExcel->getActiveSheet()->getStyle('A1:' . $columna[count($columna) - 1] . $fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
         for ($i = 0; $i < $fila; $i++) {
@@ -3499,6 +3463,7 @@ script;
 
         \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+
         $objWriter->save('php://output');
     }
 
