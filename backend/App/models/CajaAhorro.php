@@ -2404,6 +2404,9 @@ sql;
         ORDER BY CONSECUTIVO ASC
 sql;
 
+        echo $query;
+        exit();
+
         try {
             $mysqli = new Database();
             $res = $mysqli->queryAll($query);
