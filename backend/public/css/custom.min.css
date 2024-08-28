@@ -53,7 +53,7 @@
     padding: 10px 20px;
     margin-left: 70px;
     z-index: 2;
-    height: 96%;
+    height: 95%;
     overflow: auto;
 }
 .nav-sm .navbar.nav_title {
@@ -240,7 +240,7 @@ body .container.body .right_col {
 .nav-md .container.body .right_col {
     padding: 10px 20px 22px;
     margin-left: 230px;
-    height: 96%;
+    height: 95%;
     overflow: auto;
 }
 .nav_title {
