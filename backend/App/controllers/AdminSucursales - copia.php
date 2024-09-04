@@ -3431,14 +3431,14 @@ script;
             }
 
             if ($Layoutt[$increment]["CONCEPTO"] === 'DEPOSITO' || $Layoutt[$increment]["CONCEPTO"] === 'CAPITAL INICIAL - CUENTA CORRIENTE'
-                || $Layoutt[$increment]["CONCEPTO"] === 'APERTURA DE CUENTA - INSCRIPCIÓN' || $Layoutt[$increment]["CONCEPTO"] == 'FONDEO SUCURSAL')
+                || $Layoutt[$increment]["CONCEPTO"] === 'APERTURA DE CUENTA - INSCRIPCIÓN')
             {
                 $totalIngreso += $Layoutt[$increment]["INGRESO"];
 
             }
 
 
-            if ($Layoutt[$increment]["CONCEPTO"] === 'EGRESO' || $Layoutt[$increment]["CONCEPTO"] === 'RETIRO DE EFECTIVO' || $Layoutt[$increment]["CONCEPTO"] === 'RETIRO')
+            if ($Layoutt[$increment]["CONCEPTO"] === 'EGRESO' || $Layoutt[$increment]["CONCEPTO"] === 'RETIRO DE EFECTIVO')
             {
                 $totalEgreso += $Layoutt[$increment]["EGRESO"];
             }
