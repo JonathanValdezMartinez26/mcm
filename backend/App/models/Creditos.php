@@ -254,4 +254,73 @@ sql;
         $mysqli = new Database();
         return $mysqli->queryProcedureActualizaNumCreditoSituacion($credito, $ciclo_nuevo, $situacion);
     }
+
+    public static function GetCierreDiario($fecha)
+    {
+        $qry = <<<SQL
+        SELECT
+            CO.NOMBRE AS SUCURSAL,
+            CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS NOMBRE_ASESOR,
+            PRN.CDGNS AS CODIGO_GRUPO,
+            CL.CODIGO AS CODIGO_CLIENTE,
+            CL.CURP AS CURP_CLIENTE,
+            CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE_COMPLETO_CLIENTE,
+            CL_AVAL.CODIGO AS CODIGO_AVAL,
+            CL_AVAL.CURP AS CURP_AVAL,
+            CONCATENA_NOMBRE(CL_AVAL.NOMBRE1, CL_AVAL.NOMBRE2, CL_AVAL.PRIMAPE, CL_AVAL.SEGAPE) AS NOMBRE_COMPLETO_AVAL,
+            PRN.CICLO AS CICLO,
+            TO_CHAR(PRN.INICIO, 'DD/MM/YYYY') AS FECHA_INICIO,
+            CD.SDO_TOTAL AS SALDO_TOTAL,
+            CD.MORA_TOTAL AS MORA_TOTAL,
+            CD.DIAS_MORA AS DIAS_MORA,
+            CASE
+                WHEN (SYSDATE > PRN.INICIO + (DURACINI * 7)) THEN 'VENCIDO'
+                ELSE 'VIGENTE'
+            END AS TIPO_CARTERA
+        FROM
+            PRN
+            INNER JOIN CO ON CO.CODIGO = PRN.CDGCO
+            INNER JOIN PE ON PE.CODIGO = PRN.CDGOCPE
+            INNER JOIN SC ON SC.CDGNS = PRN.CDGNS
+            AND SC.CICLO = PRN.CICLO -- Join para el cliente
+            INNER JOIN CL ON CL.CODIGO = SC.CDGCL
+            AND SC.CANTSOLIC <> 9999 -- Subquery para el aval
+            LEFT JOIN (
+                SELECT
+                    SC_AUX.CDGNS,
+                    SC_AUX.CICLO,
+                    CL_AUX.CODIGO,
+                    CL_AUX.NOMBRE1,
+                    CL_AUX.NOMBRE2,
+                    CL_AUX.PRIMAPE,
+                    CL_AUX.SEGAPE,
+                    CL_AUX.CURP -- Agregado CL_AUX.CURP
+                FROM
+                    SC SC_AUX
+                    INNER JOIN CL CL_AUX ON CL_AUX.CODIGO = SC_AUX.CDGCL
+                WHERE
+                    SC_AUX.CANTSOLIC = 9999
+            ) CL_AVAL ON CL_AVAL.CDGNS = PRN.CDGNS
+            AND CL_AVAL.CICLO = PRN.CICLO -- Join adicional para obtener información de TBL_CIERRE_DIA
+            LEFT JOIN TBL_CIERRE_DIA CD ON CD.CDGEM = PRN.CDGEM
+            AND CD.CDGCLNS = PRN.CDGNS
+            AND (
+                PRN.CICLO = CD.CICLO
+                OR PRN.CICLOD = CD.CICLO
+            )
+            AND PRN.INICIO = CD.INICIO
+        WHERE
+            PRN.SITUACION = 'E'
+            AND TO_CHAR(CD.FECHA_CALC, 'YYYY-MM-DD') = '$fecha'
+            AND CD.CLNS = 'G'
+        SQL;
+
+        try {
+            $mysqli = new Database();
+            $res = $mysqli->queryAll($qry);
+            return $res;
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
 }

@@ -925,5 +925,123 @@ html;
 
     ////////////////////////////////////////////////////
 
+    public function cierreDiario()
+    {
+        $extraFooter = <<<HTML
+        <script>
+            const showError = (mensaje) => swal({ text: mensaje, icon: "error" })
+            const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })
+            const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })
+            const showWarning = (mensaje) => swal({ text: mensaje, icon: "warning" })
 
+            const configuraTabla = (id) => {
+                $("#" + id).tablesorter()
+                $("#" + id).DataTable({
+                    lengthMenu: [
+                        [10, 50, 100, -1],
+                        [10, 50, 100, "Todos"]
+                    ],
+                    columnDefs: [
+                        {
+                            orderable: true,
+                            targets: 0
+                        }
+                    ],
+                    order: false,
+                    language: {
+                        emptyTable: "No hay datos disponibles",
+                        paginate: {
+                            previous: "Anterior",
+                            next: "Siguiente",
+                        }
+                    }
+                })
+
+                $("#"  + id + " input[type=search]").keyup(() => {
+                    $("#example")
+                        .DataTable()
+                        .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
+                        .draw()
+                })
+            }
+
+            const consultaServidor = (url, datos, fncOK, metodo = "POST", tipo = "JSON", tipoContenido = null) => {
+                swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+                const configuracion = {
+                    type: metodo,
+                    url: url,
+                    data: datos,
+                    success: (res) => {
+                        if (tipo === "JSON") {
+                            try {
+                                res = JSON.parse(res)
+                            } catch (error) {
+                                console.error(error)
+                                res =  {
+                                    success: false,
+                                    mensaje: "Ocurrió un error al procesar la respuesta del servidor."
+                                }
+                            }
+                        }
+                        if (tipo === "blob") res = new Blob([res], { type: "application/pdf" })
+
+                        swal.close()
+                        fncOK(res)
+                    },
+                    error: (error) => {
+                        console.error(error)
+                        showError("Ocurrió un error al procesar la solicitud.")
+                    }
+                }
+                if (tipoContenido) configuracion.contentType = tipoContenido 
+                $.ajax(configuracion)
+            }
+
+            const buscarCierre = () => {
+                const fecha = document.getElementById('fecha').value
+                if (!fecha) return showError("Ingrese una fecha a buscar.")
+
+                consultaServidor("/Creditos/GetCierreDiario", { fecha }, (respuesta) => {
+                    $("#cierres").DataTable().destroy()
+
+                    if (!respuesta.success) return showError(respuesta.mensaje)
+
+                    $("#cierres tbody").html(respuesta.datos)
+                    configuraTabla("cierres")
+                })
+            }
+        </script>
+        HTML;
+
+        $ahora = new \DateTime();
+        $cierre = new \DateTime('16:00:00');
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Cierres Operativos")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('fecha', $ahora > $cierre ? date('Y-m-d') : date('Y-m-d', strtotime('-1 day')));
+        View::render('cierre_diario');
+    }
+
+    public function GetCierreDiario($f = null)
+    {
+        $fecha = $_POST['fecha'] ?? $f;
+        $datos = CreditosDao::GetCierreDiario($fecha);
+
+        $tabla = "";
+        foreach ($datos as $key => $dato) {
+            $tabla .= "<tr>";
+            foreach ($dato as $key2 => $campo) {
+                $tabla .= "<td style='vertical-align: middle;'>{$campo}</td>";
+            }
+            $tabla .= "</tr>";
+        }
+
+        if (!$_SERVER['REQUEST_METHOD'] === 'POST') return $tabla;
+
+        echo json_encode([
+            "success" => count($datos) > 0,
+            "datos" => $tabla,
+            "mensaje" => count($datos) > 0 ? "" : "No se encontraron registros."
+        ]);
+    }
 }
