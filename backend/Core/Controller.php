@@ -54,4 +54,41 @@ class Controller
 
         return $html;
     }
+
+    public function ColumnaExcel($letra, $campo, $titulo = '', $estilo = [])
+    {
+        $titulo = $titulo == '' ? $campo : $titulo;
+
+        return [
+            'letra' => $letra,
+            'campo' => $campo,
+            'estilo' => $estilo,
+            'titulo' => $titulo
+        ];
+    }
+
+    public function GetEstilosExcel()
+    {
+        return [
+            'titulo' => [
+                'font' => ['bold' => true],
+                'alignment' => ['horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER]
+            ],
+            'centrado' => [
+                'alignment' => ['horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER]
+            ],
+            'moneda' => [
+                'alignment' => ['horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_RIGHT],
+                'numberformat' => ['code' => \PHPExcel_Style_NumberFormat::FORMAT_CURRENCY_USD_SIMPLE]
+            ],
+            'fecha' => [
+                'alignment' => ['horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER],
+                'numberformat' => ['code' => \PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY]
+            ],
+            'fecha_hora' => [
+                'alignment' => ['horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER],
+                'numberformat' => ['code' => \PHPExcel_Style_NumberFormat::FORMAT_DATE_DATETIME]
+            ],
+        ];
+    }
 }
