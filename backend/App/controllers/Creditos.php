@@ -1051,7 +1051,7 @@ html;
         $estilos = self::GetEstilosExcel();
 
         $columnas = [
-            self::ColumnaExcel('A', 'SUCURSAL', 'SUCURSAL', $estilos['centrado']),
+            self::ColumnaExcel('A', 'SUCURSAL', 'SUCURSAL'),
             self::ColumnaExcel('B', 'NOMBRE_ASESOR', 'NOMBRE ASESOR'),
             self::ColumnaExcel('C', 'CODIGO_GRUPO', 'CODIGO GRUPO', $estilos['centrado']),
             self::ColumnaExcel('D', 'CODIGO_CLIENTE', 'CODIGO CLIENTE', $estilos['centrado']),
