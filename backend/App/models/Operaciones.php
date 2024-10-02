@@ -319,11 +319,11 @@ sql;
             INNER JOIN NS ON NS.CODIGO = SC.CDGNS 
             INNER JOIN CL ON CL.CODIGO = SC.CDGCL 
             INNER JOIN CO ON CO.CODIGO = NS.CDGCO 
-            WHERE SOLICITUD BETWEEN TIMESTAMP '$fecha_inicial 00:00:00.000000' AND TIMESTAMP '$fecha_final 11:59:00.000000'
+            WHERE SOLICITUD BETWEEN TIMESTAMP '$fecha_inicial 00:00:00.000000' AND TIMESTAMP '$fecha_final 23:59:00.000000'
             ORDER BY SC.SOLICITUD ASC
 sql;
 
-
+       // var_dump($query);
         $mysqli = new Database();
         $mysqli->SetDB_CULTIVA();
         return $mysqli->queryAll($query);
