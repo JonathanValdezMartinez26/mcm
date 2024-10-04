@@ -172,9 +172,7 @@
                                     <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo" onchange="MultaCiclo(this,'<?php echo $Administracion[0]['CICLO'];?>');">
                                         <option value="P">PAGO</option>
                                         <option value="X">PAGO ELECTRÓNICO</option>
-                                        <option value="Y">PAGO EXCEDENTE</option>
                                         <option value="M">MULTA</option>
-                                        <option value="Z">MULTA GESTORES</option>
                                         <option value="G">GARANTÍA</option>
                                         <option value="D">DESCUENTO</option>
                                         <?php
