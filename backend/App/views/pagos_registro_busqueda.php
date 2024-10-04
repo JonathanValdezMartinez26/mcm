@@ -171,10 +171,12 @@
                                     <label for="tipo">Tipo de Operación</label>
                                     <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo" onchange="MultaCiclo(this,'<?php echo $Administracion[0]['CICLO'];?>');">
                                         <option value="P">PAGO</option>
+                                        <option value="X">PAGO ELECTRÓNICO</option>
+                                        <option value="Y">PAGO EXCEDENTE</option>
                                         <option value="M">MULTA</option>
+                                        <option value="Z">MULTA GESTORES</option>
                                         <option value="G">GARANTÍA</option>
                                         <option value="D">DESCUENTO</option>
-
                                         <?php
                                         if($cdgco == '007' ||
                                            $cdgco == '014' ||
@@ -296,7 +298,10 @@
                                     <label for="tipo_e">Tipo de Operación</label>
                                     <select class="form-control mr-sm-3"  autofocus type="select" id="tipo_e" name="tipo_e">
                                         <option value="P">PAGO</option>
+                                        <option value="X">PAGO ELECTRÓNICO</option>
+                                        <option value="Y">PAGO EXCEDENTE</option>
                                         <option value="M">MULTA</option>
+                                        <option value="Z">MULTA GESTORES</option>
                                         <option value="G">GARANTÍA</option>
                                         <option value="D">DESCUENTO</option>
                                         <option value="R">REFINANCIAMIENTO</option>

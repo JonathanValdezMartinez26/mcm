@@ -204,11 +204,21 @@ html;
             if(estatus == 'LIQUIDADO')
                 {
                     select = $("#tipo");
-                     select.empty();
-                     select.append($("<option>", {
-                        value: 'M',
-                        text: 'MULTA'
-                      }));
+                    select.empty();
+                    select.append(
+                        $("<option>", {
+                            value: "M",
+                            text: "MULTA"
+                        }),
+                        $("<option>", {
+                            value: "Z",
+                            text: "MULTA GESTORES"
+                        }),
+                        $("<option>", {
+                            value: "Y",
+                            text: "PAGO EXCEDENTE"
+                        })
+                    )
                 }
          }
     
@@ -1908,10 +1918,20 @@ html;
                     
                     select = $("#tipo");
                     select.empty();
-                    select.append($("<option>", {
-                        value: 'M',
-                        text: 'MULTA GESTORES'
-                      }));
+                    select.append(
+                        $("<option>", {
+                            value: "M",
+                            text: "MULTA"
+                        }),
+                        $("<option>", {
+                            value: "Z",
+                            text: "MULTA GESTORES"
+                        }),
+                        $("<option>", {
+                            value: "Y",
+                            text: "PAGO EXCEDENTE"
+                        })
+                    )
                      
                     if(ciclo != '01')
                     {
