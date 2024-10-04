@@ -366,7 +366,7 @@
             select = $("#tipo_e");
             select.empty();
             select.append($("<option>", {
-                value: 'M',
+                value: 'Z',
                 text: 'MULTA GESTORES'
             }));
         }
