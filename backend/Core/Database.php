@@ -58,7 +58,7 @@ class Database
 
     private function DB_CULTIVA()
     {
-        $servidor = '25.95.21.168';
+        $servidor = '3.132.68.115';
         $this->db_cultiva = self::Conecta($servidor);
     }
 
