@@ -2,8 +2,6 @@
 
 namespace Core;
 
-defined("APPPATH") or die("Access denied");
-
 class App
 {
     /**
