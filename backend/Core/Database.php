@@ -2,6 +2,8 @@
 
 namespace Core;
 
+include_once dirname(__DIR__) . "/App.php";
+
 use PDO;
 
 /**
