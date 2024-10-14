@@ -10,32 +10,25 @@ use PDO;
 
 class Database
 {
-    private $db_mcm;
-    private $db_cultiva;
+    private $configuracion;
     public $db_activa;
 
-    function __construct()
+    function __construct($s = null, $u = null, $p = null)
     {
-        $this->DB_CULTIVA();
-        $this->DB_MCM();
-
-        // La base por defecto seria MCM
-        $this->db_activa = $this->db_mcm;
-
-        // La base por defecto seria CULTIVA
-        // $this->db_activa = $this->db_cultiva;
+        $this->configuracion = App::getConfig();
+        $this->Conecta($s, $u, $p);
     }
 
-    private function Conecta($s, $u = null, $p = null)
+    private function Conecta($s = null, $u = null, $p = null)
     {
-        $host = 'oci:dbname=//' . $s . ':1521/ESIACOM;charset=UTF8';
-        $usuario = $u ?? 'ESIACOM';
-        $password = $p ?? 'ESIACOM';
+        $host = 'oci:dbname=//' . ($s ?? $this->configuracion['SERVIDOR']) . ':1521/ESIACOM;charset=UTF8';
+        $usuario = $u ?? $this->configuracion['USUARIO'];
+        $password = $p ?? $this->configuracion['PASSWORD'];
         try {
-            return new PDO($host, $usuario, $password);
+            $this->db_activa =  new PDO($host, $usuario, $password);
         } catch (\PDOException $e) {
             echo self::muestraError($e);
-            return null;
+            $this->db_activa =  null;
         }
     }
 
@@ -47,29 +40,6 @@ class Database
         if ($parametros != null) $error .= "\nDatos: " . print_r($parametros, 1);
         echo $error . "\n";
         return $error;
-    }
-
-    private function DB_MCM()
-    {
-        $servidor = 'DRP';
-        //$servidor = 'mcm-server';
-        $this->db_mcm = self::Conecta($servidor);
-    }
-
-    private function DB_CULTIVA()
-    {
-        $servidor = '3.132.68.115';
-        $this->db_cultiva = self::Conecta($servidor);
-    }
-
-    public function SetDB_MCM()
-    {
-        $this->db_activa = $this->db_mcm;
-    }
-
-    public function SetDB_CULTIVA()
-    {
-        $this->db_activa = $this->db_cultiva;
     }
 
     public function insert($sql)
@@ -534,12 +504,10 @@ class Database
     }
     public function queryProcedureActualizaNumCreditoCiclo($credito_a, $ciclo_n)
     {
-
         $empresa = "EMPFIN";
         $credito_actual = $credito_a;
         $ciclo_n = $ciclo_n;
         $resultado_s = "";
-
 
         $query_text = "CALL SPACTUALIZACICLOGPO(?,?,?,?)";
 
@@ -562,13 +530,11 @@ class Database
 
     public function queryProcedureActualizaNumCreditoSituacion($credito_a, $ciclo_n, $situacion)
     {
-
         $empresa = "EMPFIN";
         $credito_actual = $credito_a;
         $ciclo_n = $ciclo_n;
         $situacion_n = $situacion;
         $resultado_s = "";
-
 
         $query_text = "CALL SPACTUALIZASITUACION(?,?,?,?,?)";
 

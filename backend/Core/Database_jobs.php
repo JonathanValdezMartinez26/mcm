@@ -51,14 +51,13 @@ class Database
 
     private function DB_MCM()
     {
-        $servidor = 'DRP';
-        // $servidor = 'mcm-server';
+        $servidor = $this->configuracion['SERVIDOR-MCM'];
         $this->db_mcm = self::Conecta($servidor);
     }
 
     private function DB_CULTIVA()
     {
-        $servidor = '25.95.21.168';
+        $servidor = $this->configuracion['SERVIDOR-CULTIVA'];
         $this->db_cultiva = self::Conecta($servidor);
     }
 
