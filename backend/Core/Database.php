@@ -141,10 +141,9 @@ class Database
         }
     }
 
-    public function queryOne($sql, $params = '')
+    public function queryOne($sql, $params = null)
     {
-
-        if ($params == '') {
+        if ($params == null) {
             try {
                 $stmt = $this->db_activa->query($sql);
                 return array_shift($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -155,8 +154,10 @@ class Database
         } else {
             try {
                 $stmt = $this->db_activa->prepare($sql);
-                foreach ($params as $values => $val)
+                foreach ($params as $values => $val) {
                     $stmt->bindParam($values, $val);
+                }
+
                 $stmt->execute($params);
                 return array_shift($stmt->fetchAll(PDO::FETCH_ASSOC));
             } catch (\PDOException $e) {
@@ -166,9 +167,9 @@ class Database
         }
     }
 
-    public function queryAll($sql, $params = '')
+    public function queryAll($sql, $params = null)
     {
-        if ($params == '') {
+        if ($params == null) {
             try {
                 $stmt = $this->db_activa->query($sql);
                 return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -179,8 +180,9 @@ class Database
         } else {
             try {
                 $stmt = $this->db_activa->prepare($sql);
-                foreach ($params as $values => $val)
+                foreach ($params as $values => $val) {
                     $stmt->bindParam($values, $val);
+                }
                 $stmt->execute($params);
                 return $stmt->fetchAll(PDO::FETCH_ASSOC);
             } catch (\PDOException $e) {
