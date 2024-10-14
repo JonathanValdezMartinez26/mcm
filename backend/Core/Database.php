@@ -2,7 +2,7 @@
 
 namespace Core;
 
-include_once dirname(__DIR__) . "/App.php";
+include_once dirname(__DIR__) . "/Core/App.php";
 
 use PDO;
 
