@@ -3,11 +3,10 @@
 namespace Jobs\models;
 
 include_once dirname(__DIR__) . "\..\Core\Model.php";
-include_once dirname(__DIR__) . "\..\Core\Database_jobs.php";
+include_once dirname(__DIR__) . "\..\Core\Database.php";
 
 use Core\Model;
 use Core\Database;
-use Exception;
 
 class JobsAhorro extends Model
 {
@@ -30,7 +29,7 @@ class JobsAhorro extends Model
             $db = new Database();
             $res = $db->queryAll($qry);
             return self::Responde(true, "Créditos activos obtenidos correctamente", $res ?? []);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al obtener los créditos activos", null, $e->getMessage());
         }
     }
@@ -89,7 +88,7 @@ class JobsAhorro extends Model
             $db = new Database();
             $db->insertaMultiple($qrys, $parametros);
             return self::Responde(true, "Devengo aplicado correctamente");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al aplicar el devengo", null, $e->getMessage());
         }
     }
@@ -121,7 +120,7 @@ class JobsAhorro extends Model
             $db = new Database();
             $res = $db->queryAll($qry);
             return self::Responde(true, "Inversiones obtenidas correctamente", ($res ?? []));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al obtener las inversiones", null, $e->getMessage());
         }
     }
@@ -191,7 +190,7 @@ class JobsAhorro extends Model
             $db = new Database();
             $db->insertaMultiple($qrys, $parametros);
             return self::Responde(true, "Inversión liquidada correctamente");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al liquidar la inversión", null, $e->getMessage());
         }
     }
@@ -228,7 +227,7 @@ class JobsAhorro extends Model
             $db = new Database();
             $res = $db->queryAll($qry);
             return self::Responde(true, "Solicitudes de retiro obtenidas correctamente", $res ?? []);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al obtener las solicitudes de retiro", null, $e->getMessage());
         }
     }
@@ -251,7 +250,7 @@ class JobsAhorro extends Model
             $res = $mysqli->queryOne($qry);
             if (!$res) return self::Responde(true, "Solicitud cancelada correctamente.");
             return self::Responde(false, "Ocurrió un error al cancelar la solicitud.");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al cancelar la solicitud.", null, $e->getMessage());
         }
     }
@@ -285,7 +284,7 @@ class JobsAhorro extends Model
                 return self::Responde(true, "Se han liberado $ " . number_format($datos['monto'], 2) . " a la cuenta del cliente por el apartado para el retiro " . ($datos['tipo'] == 1 ? "express" : "programado") . ".", ['ticket' => $ticket['CODIGO']]);
             }
             return self::Responde(false, "Ocurrió un error al registrar la devolución.");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar la devolución.", null, $e->getMessage());
         }
     }
@@ -319,7 +318,7 @@ class JobsAhorro extends Model
             $db = new Database();
             $res = $db->queryAll($qry);
             return self::Responde(true, "Sucursales sin arqueo obtenidas correctamente", $res ?? []);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al obtener las sucursales sin arqueo", null, $e->getMessage());
         }
     }
@@ -347,7 +346,7 @@ class JobsAhorro extends Model
             $mysqli = new Database();
             $res = $mysqli->insertar($qry, $parametros);
             return self::Responde(true, "Arqueo registrado correctamente.");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar el arqueo.", null, $e->getMessage());
         }
     }
@@ -367,7 +366,7 @@ class JobsAhorro extends Model
             $db = new Database();
             $res = $db->queryAll($qry);
             return self::Responde(true, "Sucursales obtenidas correctamente", $res ?? []);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al obtener las sucursales", null, $e->getMessage());
         }
     }
@@ -431,7 +430,7 @@ class JobsAhorro extends Model
             $db = new Database();
             $db->insertaMultiple($qrys, $parametros);
             return self::Responde(true, "Saldos capturados correctamente");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al capturar los saldos", null, $e->getMessage());
         }
     }
@@ -522,7 +521,7 @@ class JobsAhorro extends Model
         try {
             $mysqli = new Database();
             return $mysqli->queryOne($queryTicket);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return 0;
         }
     }
@@ -562,7 +561,7 @@ class JobsAhorro extends Model
             $db = new Database();
             $res = $db->queryAll($qry);
             return self::Responde(true, "Créditos activos obtenidos correctamente", $res ?? []);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al obtener los créditos activos", null, $e->getMessage());
         }
     }
