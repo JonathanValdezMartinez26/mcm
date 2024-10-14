@@ -2,6 +2,7 @@
 
 namespace Jobs\controllers;
 
+include_once dirname(__DIR__) . "\..\Core\Model.php";
 include_once dirname(__DIR__) . "\models\JobsCredito.php";
 
 use Core\Job;
