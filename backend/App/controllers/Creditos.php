@@ -820,89 +820,22 @@ html;
     {
 
         $credito = $_GET['Credito'];
+        // $estilos = \PHPSpreadsheet::GetEstilosExcel();
 
-        $objPHPExcel = new \PHPExcel();
-        $objPHPExcel->getProperties()->setCreator("jma");
-        $objPHPExcel->getProperties()->setLastModifiedBy("jma");
-        $objPHPExcel->getProperties()->setTitle("Reporte");
-        $objPHPExcel->getProperties()->setSubject("Reorte");
-        $objPHPExcel->getProperties()->setDescription("Descripcion");
-        $objPHPExcel->setActiveSheetIndex(0);
+        $columnas = [
+            \PHPSpreadsheet::ColumnaExcel('A', 'SECUENCIA', 'Secuencia'),
+            \PHPSpreadsheet::ColumnaExcel('B', 'ARTICULO', 'Articulo'),
+            \PHPSpreadsheet::ColumnaExcel('C', 'MARCA', 'Marca'),
+            \PHPSpreadsheet::ColumnaExcel('D', 'MODELO', 'Modelo'),
+            \PHPSpreadsheet::ColumnaExcel('E', 'NO_SERIE', 'Numero de Serie'),
+            \PHPSpreadsheet::ColumnaExcel('F', 'MONTO', 'Monto'),
+            \PHPSpreadsheet::ColumnaExcel('G', 'FACTURA', 'Factura'),
+            \PHPSpreadsheet::ColumnaExcel('H', 'FECREGISTRO', 'Registro')
+        ];
 
+        $filas = CreditosDao::ConsultaGarantias($credito);
 
-
-        $estilo_titulo = array(
-            'font' => array('bold' => true, 'name' => 'Calibri', 'size' => 11, 'color' => array('rgb' => '060606')),
-            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
-            'type' => \PHPExcel_Style_Fill::FILL_SOLID
-        );
-
-        $estilo_encabezado = array(
-            'font' => array('bold' => true, 'name' => 'Calibri', 'size' => 11, 'color' => array('rgb' => '060606')),
-            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
-            'type' => \PHPExcel_Style_Fill::FILL_SOLID
-        );
-
-        $estilo_celda = array(
-            'font' => array('bold' => false, 'name' => 'Calibri', 'size' => 11, 'color' => array('rgb' => '060606')),
-            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
-            'type' => \PHPExcel_Style_Fill::FILL_SOLID
-
-        );
-
-
-        $fila = 1;
-        $adaptarTexto = true;
-
-        $controlador = "Creditos";
-        $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H');
-        $nombreColumna = array('Secuencia', 'Articulo', 'Marca', 'Modelo', 'Numero de Serie', 'Monto', 'Factura', 'Registro');
-        $nombreCampo = array('SECUENCIA', 'ARTICULO', 'MARCA', 'MODELO', 'NO_SERIE', 'MONTO', 'FACTURA', 'FECREGISTRO');
-
-
-
-        /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
-        foreach ($nombreColumna as $key => $value) {
-            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, $value);
-            $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_encabezado);
-            $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
-            $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
-        }
-        $fila += 1; //fila donde comenzaran a escribirse los datos
-
-        /* FILAS DEL ARCHIVO EXCEL */
-
-        $Layoutt = CreditosDao::ConsultaGarantias($credito);
-        foreach ($Layoutt as $key => $value) {
-            foreach ($nombreCampo as $key => $campo) {
-                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_celda);
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
-            }
-            $fila += 1;
-        }
-
-
-        $objPHPExcel->getActiveSheet()->getStyle('A1:' . $columna[count($columna) - 1] . $fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        for ($i = 0; $i < $fila; $i++) {
-            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(20);
-        }
-
-
-        $objPHPExcel->getActiveSheet()->setTitle('Reporte');
-
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Layout Garantias ' . $controlador . '.xlsx"');
-        header('Cache-Control: max-age=0');
-        header('Cache-Control: max-age=1');
-        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-        header('Cache-Control: cache, must-revalidate');
-        header('Pragma: public');
-
-        \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
-        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save('php://output');
+        \PHPSpreadsheet::GeneraExcel('Layout Garantías Creditos', 'Reporte', 'Garantías', $columnas, $filas);
     }
 
     ////////////////////////////////////////////////////
@@ -1044,66 +977,31 @@ html;
         ]);
     }
 
-
     public function excelCierreDiario()
     {
         $fecha = $_GET['fecha'];
-        $estilos = self::GetEstilosExcel();
+        $estilos = \PHPSpreadsheet::GetEstilosExcel();
 
         $columnas = [
-            self::ColumnaExcel('A', 'SUCURSAL', 'SUCURSAL'),
-            self::ColumnaExcel('B', 'NOMBRE_ASESOR', 'NOMBRE ASESOR'),
-            self::ColumnaExcel('C', 'CODIGO_GRUPO', 'CODIGO GRUPO', $estilos['centrado']),
-            self::ColumnaExcel('D', 'CODIGO_CLIENTE', 'CODIGO CLIENTE', $estilos['centrado']),
-            self::ColumnaExcel('E', 'CURP_CLIENTE', 'CURP CLIENTE', $estilos['centrado']),
-            self::ColumnaExcel('F', 'NOMBRE_COMPLETO_CLIENTE', 'NOMBRE CLIENTE'),
-            self::ColumnaExcel('G', 'CODIGO_AVAL', 'CODIGO AVAL', $estilos['centrado']),
-            self::ColumnaExcel('H', 'CURP_AVAL', 'CURP AVAL', $estilos['centrado']),
-            self::ColumnaExcel('I', 'NOMBRE_COMPLETO_AVAL', 'NOMBRE AVAL'),
-            self::ColumnaExcel('J', 'CICLO', 'CICLO', $estilos['centrado']),
-            self::ColumnaExcel('K', 'FECHA_INICIO', 'FECHA INICIO', $estilos['fecha']),
-            self::ColumnaExcel('L', 'SALDO_TOTAL', 'SALDO TOTAL', $estilos['moneda']),
-            self::ColumnaExcel('M', 'MORA_TOTAL', 'MORA TOTAL', $estilos['moneda']),
-            self::ColumnaExcel('N', 'DIAS_MORA', 'DIAS MORA', $estilos['centrado']),
-            self::ColumnaExcel('O', 'TIPO_CARTERA', 'TIPO CARTERA', $estilos['centrado'])
+            \PHPSpreadsheet::ColumnaExcel('A', 'SUCURSAL', 'SUCURSAL'),
+            \PHPSpreadsheet::ColumnaExcel('B', 'NOMBRE_ASESOR', 'NOMBRE ASESOR'),
+            \PHPSpreadsheet::ColumnaExcel('C', 'CODIGO_GRUPO', 'CODIGO GRUPO', $estilos['centrado']),
+            \PHPSpreadsheet::ColumnaExcel('D', 'CODIGO_CLIENTE', 'CODIGO CLIENTE', $estilos['centrado']),
+            \PHPSpreadsheet::ColumnaExcel('E', 'CURP_CLIENTE', 'CURP CLIENTE', $estilos['centrado']),
+            \PHPSpreadsheet::ColumnaExcel('F', 'NOMBRE_COMPLETO_CLIENTE', 'NOMBRE CLIENTE'),
+            \PHPSpreadsheet::ColumnaExcel('G', 'CODIGO_AVAL', 'CODIGO AVAL', $estilos['centrado']),
+            \PHPSpreadsheet::ColumnaExcel('H', 'CURP_AVAL', 'CURP AVAL', $estilos['centrado']),
+            \PHPSpreadsheet::ColumnaExcel('I', 'NOMBRE_COMPLETO_AVAL', 'NOMBRE AVAL'),
+            \PHPSpreadsheet::ColumnaExcel('J', 'CICLO', 'CICLO', $estilos['centrado']),
+            \PHPSpreadsheet::ColumnaExcel('K', 'FECHA_INICIO', 'FECHA INICIO', $estilos['fecha']),
+            \PHPSpreadsheet::ColumnaExcel('L', 'SALDO_TOTAL', 'SALDO TOTAL', $estilos['moneda']),
+            \PHPSpreadsheet::ColumnaExcel('M', 'MORA_TOTAL', 'MORA TOTAL', $estilos['moneda']),
+            \PHPSpreadsheet::ColumnaExcel('N', 'DIAS_MORA', 'DIAS MORA', $estilos['centrado']),
+            \PHPSpreadsheet::ColumnaExcel('O', 'TIPO_CARTERA', 'TIPO CARTERA', $estilos['centrado'])
         ];
 
-        $excel = new \PHPExcel();
-        $excel->getProperties()->setCreator("Sistema MCM");
-        $excel->getProperties()->setLastModifiedBy("Sistema MCM");
-        $excel->setActiveSheetIndex(0);
-        $excel->getActiveSheet()->setTitle('Reporte');
+        $filas = CreditosDao::GetCierreDiario($fecha);
 
-        $excel->getActiveSheet()->SetCellValue('A1', 'Situación Cartera MCM');
-        $excel->getActiveSheet()->mergeCells('A1:' . $columnas[count($columnas) - 1]['letra'] . '1');
-        $excel->getActiveSheet()->getStyle('A1')->applyFromArray($estilos['titulo']);
-
-        foreach ($columnas as $key => $value) {
-            $excel->getActiveSheet()->SetCellValue($value['letra'] . '2', $value['titulo']);
-            $excel->getActiveSheet()->getStyle($value['letra'] . '2')->applyFromArray($estilos['titulo']);
-            $excel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
-        }
-
-        $datos = CreditosDao::GetCierreDiario($fecha);
-
-        $fila = 3;
-        foreach ($datos as $key => $value) {
-            foreach ($columnas as $key => $campo) {
-                $excel->getActiveSheet()->SetCellValue($campo['letra'] . $fila, html_entity_decode($value[$campo['campo']], ENT_QUOTES, "UTF-8"));
-                $excel->getActiveSheet()->getStyle($campo['letra'] . $fila)->applyFromArray($campo['estilo']);
-            }
-            $fila += 1;
-        }
-
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Situación Cartera MCM.xlsx"');
-        header('Cache-Control: max-age=0');
-        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-        header('Pragma: public');
-
-        \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
-        $objWriter = \PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
-        $objWriter->save('php://output');
+        \PHPSpreadsheet::GeneraExcel('Situación Cartera MCM', 'Reporte', 'Situación Cartera MCM', $columnas, $filas);
     }
 }
