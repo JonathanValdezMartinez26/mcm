@@ -229,7 +229,7 @@ html;
                 $titulo = "(Analistas)";
             } else {
                 $mis = 'Mis';
-                if ($this->__usuario == 'ESMM') {
+                if ($this->__usuario == 'ESMM' || $this->__usuario == 'MAPH' ) {
                     $opcion = '<li><a href="/CallCenter/HistoricoAnalistas/">Histórico Analistas</a></li>';
                 }
 
