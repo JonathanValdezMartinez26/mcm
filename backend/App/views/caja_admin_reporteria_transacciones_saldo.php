@@ -86,13 +86,13 @@
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="Inicial">Desde *</label>
-                                                        <input type="date" class="form-control" min="2024-05-22" max="<?php echo $fechaActual;?>" id="Inicial" name="Inicial" value="<?php echo $fecha_inicial; ?>">
+                                                        <input type="date" class="form-control" min="2024-05-22" max="<?php echo $fechaActual; ?>" id="Inicial" name="Inicial" value="<?php echo $fecha_inicial; ?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="Final">Hasta *</label>
-                                                        <input type="date" class="form-control" min="2024-05-22" max="<?php echo $fechaActual;?>" id="Final" name="Final" value="<?php echo $fecha_final; ?>">
+                                                        <input type="date" class="form-control" min="2024-05-22" max="<?php echo $fechaActual; ?>" id="Final" name="Final" value="<?php echo $fecha_final; ?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">

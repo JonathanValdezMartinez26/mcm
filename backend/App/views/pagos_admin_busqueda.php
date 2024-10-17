@@ -1,101 +1,103 @@
 <?php echo $header; ?>
 
 <div class="right_col">
-        <div class="panel panel-body" style="margin-bottom: 0px;">
-            <div class="x_title">
-                <h3> Administración de Pagos</h3>
-                <div class="clearfix"></div>
+    <div class="panel panel-body" style="margin-bottom: 0px;">
+        <div class="x_title">
+            <h3> Administración de Pagos</h3>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="card card-danger col-md-5">
+            <div class="card-header">
+                <h5 class="card-title">Seleccione el tipo de busqueda e ingrese el número de crédito </h5>
             </div>
 
-            <div class="card card-danger col-md-5" >
-                <div class="card-header">
-                    <h5 class="card-title">Seleccione el tipo de busqueda e ingrese el número de crédito </h5>
-                </div>
-
-                <div class="card-body">
-                    <form class="" action="/Pagos/" method="GET">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <select class="form-control sm-3 mr-sm-3" style="font-size: 18px;" autofocus type="select" id="" name="" placeholder="000000" aria-label="Search">
-                                    <option value="credito">Crédito</option>
-                                </select>
-                                <span id="availability1"></span>
-                            </div>
-                            <div class="col-md-4">
-                                <input class="form-control mr-sm-2" style="font-size: 24px;" autofocus type="text" onKeypress="if (event.keyCode < 9 || event.keyCode > 57) event.returnValue = false;" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
-                                <span id="availability1"></span>
-                            </div>
-                            <div class="col-md-4">
-                                <button class="btn btn-default" type="submit">Buscar</button>
-                            </div>
+            <div class="card-body">
+                <form class="" action="/Pagos/" method="GET">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <select class="form-control sm-3 mr-sm-3" style="font-size: 18px;" autofocus type="select" id="" name="" placeholder="000000" aria-label="Search">
+                                <option value="credito">Crédito</option>
+                            </select>
+                            <span id="availability1"></span>
                         </div>
-                    </form>
-                </div>
-            </div>
-            <div class="card col-md-12">
-                <hr style="border-top: 1px solid #e5e5e5; margin-top: 5px;">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_pago" onclick="BotonPago('<?php echo $Administracion[0]['SITUACION_NOMBRE']; ?>');">
-                     <i class="fa fa-plus"></i> Agregar Pago
-                </button>
-                <hr style="border-top: 1px solid #787878; margin-top: 5px;">
-                <div class="row" >
-                    <div class="tile_count float-right col-sm-12" style="margin-bottom: 1px; margin-top: 1px">
-                        <div class="col-md-3 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Cliente</span>
-
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['CLIENTE']; ?></div>
-                            <span class="count_top badge" style="padding: 1px 1px; background: <?php echo $Administracion[0]['COLOR']; ?>"><h5><b><i class="">SITUACIÓN: <?php echo $Administracion[0]['SITUACION_NOMBRE']; ?></i></b></h5></span>
+                        <div class="col-md-4">
+                            <input class="form-control mr-sm-2" style="font-size: 24px;" autofocus type="text" onKeypress="if (event.keyCode < 9 || event.keyCode > 57) event.returnValue = false;" id="Credito" name="Credito" placeholder="000000" aria-label="Search" value="<?php echo $credito; ?>">
+                            <span id="availability1"></span>
                         </div>
-                        <div class="col-md-1 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i class="fa fa-clock-o"></i> Ciclo</span>
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['CICLO']; ?> </div>
-                        </div>
-                        <div class="col-md-1 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i></i> Prestamo</span>
-                            <div class="count" style="font-size: 14px"> $ <?php echo number_format($Administracion[0]['MONTO']); ?></div>
-                        </div>
-                        <div class="col-md-1 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i></i> Día de Pago</span>
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['DIA_PAGO']; ?></div>
-                        </div>
-                        <div class="col-md-1 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i></i> Parcialidad</span>
-                            <div class="count" style="font-size: 14px">$ <?php echo number_format($Administracion[0]['PARCIALIDAD']); ?></div>
-                        </div>
-                        <div class="col-md-2 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i></i> Sucursal</span>
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['SUCURSAL']; ?></div>
-                        </div>
-                        <div class="col-md-2 col-sm-4  tile_stats_count">
-                            <span class="count_top" style="font-size: 15px"><i></i> Ejecutivo de cuenta</span>
-                            <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['EJECUTIVO']; ?> </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-default" type="submit">Buscar</button>
                         </div>
                     </div>
-                </div>
-                <div class="dataTable_wrapper">
-                    <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
-                        <thead>
-                        <tr>
-                                    <th>Medio</th>
-                                    <th>Consecutivo</th>
-                                    <th>CDGNS</th>
-                                    <th>Fecha</th>
-                                    <th>Ciclo</th>
-                                    <th>Monto</th>
-                                    <th>Tipo</th>
-                                    <th>Ejecutivo</th>
-                                    <th>Ultima Modificación</th>
-                                    <th>Acciones</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?= $tabla; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                </form>
+            </div>
+        </div>
+        <div class="card col-md-12">
+            <hr style="border-top: 1px solid #e5e5e5; margin-top: 5px;">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_agregar_pago" onclick="BotonPago('<?php echo $Administracion[0]['SITUACION_NOMBRE']; ?>');">
+                <i class="fa fa-plus"></i> Agregar Pago
+            </button>
+            <hr style="border-top: 1px solid #787878; margin-top: 5px;">
+            <div class="row">
+                <div class="tile_count float-right col-sm-12" style="margin-bottom: 1px; margin-top: 1px">
+                    <div class="col-md-3 col-sm-4  tile_stats_count">
+                        <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Cliente</span>
+
+                        <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['CLIENTE']; ?></div>
+                        <span class="count_top badge" style="padding: 1px 1px; background: <?php echo $Administracion[0]['COLOR']; ?>">
+                            <h5><b><i class="">SITUACIÓN: <?php echo $Administracion[0]['SITUACION_NOMBRE']; ?></i></b></h5>
+                        </span>
+                    </div>
+                    <div class="col-md-1 col-sm-4  tile_stats_count">
+                        <span class="count_top" style="font-size: 15px"><i class="fa fa-clock-o"></i> Ciclo</span>
+                        <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['CICLO']; ?> </div>
+                    </div>
+                    <div class="col-md-1 col-sm-4  tile_stats_count">
+                        <span class="count_top" style="font-size: 15px"><i></i> Prestamo</span>
+                        <div class="count" style="font-size: 14px"> $ <?php echo number_format($Administracion[0]['MONTO']); ?></div>
+                    </div>
+                    <div class="col-md-1 col-sm-4  tile_stats_count">
+                        <span class="count_top" style="font-size: 15px"><i></i> Día de Pago</span>
+                        <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['DIA_PAGO']; ?></div>
+                    </div>
+                    <div class="col-md-1 col-sm-4  tile_stats_count">
+                        <span class="count_top" style="font-size: 15px"><i></i> Parcialidad</span>
+                        <div class="count" style="font-size: 14px">$ <?php echo number_format($Administracion[0]['PARCIALIDAD']); ?></div>
+                    </div>
+                    <div class="col-md-2 col-sm-4  tile_stats_count">
+                        <span class="count_top" style="font-size: 15px"><i></i> Sucursal</span>
+                        <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['SUCURSAL']; ?></div>
+                    </div>
+                    <div class="col-md-2 col-sm-4  tile_stats_count">
+                        <span class="count_top" style="font-size: 15px"><i></i> Ejecutivo de cuenta</span>
+                        <div class="count" style="font-size: 14px"><?php echo $Administracion[0]['EJECUTIVO']; ?> </div>
+                    </div>
                 </div>
             </div>
+            <div class="dataTable_wrapper">
+                <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
+                    <thead>
+                        <tr>
+                            <th>Medio</th>
+                            <th>Consecutivo</th>
+                            <th>CDGNS</th>
+                            <th>Fecha</th>
+                            <th>Ciclo</th>
+                            <th>Monto</th>
+                            <th>Tipo</th>
+                            <th>Ejecutivo</th>
+                            <th>Ultima Modificación</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?= $tabla; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
+</div>
 </div>
 
 <div class="modal fade" id="modal_agregar_pago" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -103,7 +105,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Agregar Registro de Pago (Administrador Central)</h4></center>
+                <center>
+                    <h4 class="modal-title" id="myModalLabel">Agregar Registro de Pago (Administrador Central)</h4>
+                </center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -156,14 +160,17 @@
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="tipo">Tipo de Operación</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo" name="tipo">
+                                    <select class="form-control mr-sm-3" autofocus type="select" id="tipo" name="tipo">
                                         <option value="P">PAGO</option>
                                         <option value="X">PAGO ELECTRÓNICO</option>
+                                        <option value="Y">PAGO EXCEDENTE</option>
                                         <option value="M">MULTA</option>
+                                        <option value="Z">MULTA GESTORES</option>
                                         <option value="G">GARANTÍA</option>
                                         <option value="D">DESCUENTO</option>
                                         <?php
-                                        if($cdgco == '007' ||
+                                        if (
+                                            $cdgco == '007' ||
                                             $cdgco == '014' ||
                                             $cdgco == '020' ||
                                             $cdgco == '025' ||
@@ -171,8 +178,8 @@
                                             $cdgco == '027'
 
 
-                                            || $usuario == 'AMGM' || $usuario == 'GASC')
-                                        {
+                                            || $usuario == 'AMGM' || $usuario == 'GASC'
+                                        ) {
                                             $imp = '<option value="D">DESCUENTO DE CAMPAÑA POR LEALTAD</option>';
 
                                             echo $imp;
@@ -194,7 +201,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="ejecutivo">Nombre del Ejecutivo</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="ejecutivo" name="ejecutivo">
+                                    <select class="form-control mr-sm-3" autofocus type="select" id="ejecutivo" name="ejecutivo">
                                         <?php echo $status; ?>
                                     </select>
                                     <small id="emailHelp" class="form-text text-muted">Nombre del ejecutivo que entrega el pago.</small>
@@ -219,14 +226,16 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Editar Registro de Pago (Administrador Central)</h4></center>
+                <center>
+                    <h4 class="modal-title" id="myModalLabel">Editar Registro de Pago (Administrador Central)</h4>
+                </center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
                     <form onsubmit="enviar_edit(); return false" id="Edit">
                         <div class="row">
                             <div class="col-md-4" style="display: none">
-                                <div class="form-group" >
+                                <div class="form-group">
                                     <label for="Fecha_e_r">Fecha</label>
                                     <input onkeydown="return false" type="date" class="form-control" id="Fecha_e_r" name="Fecha_e_r" readonly>
                                     <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
@@ -273,14 +282,14 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="ciclo_e">Ciclo</label>
-                                    <input type="number" class="form-control" id="ciclo_e" name="ciclo_e" >
+                                    <input type="number" class="form-control" id="ciclo_e" name="ciclo_e">
                                 </div>
                             </div>
 
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="tipo_e">Tipo de Operación</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="tipo_e" name="tipo_e">
+                                    <select class="form-control mr-sm-3" autofocus type="select" id="tipo_e" name="tipo_e">
                                         <option value="P">PAGO</option>
                                         <option value="X">PAGO ELECTRÓNICO</option>
                                         <option value="Y">PAGO EXCEDENTE</option>
@@ -304,7 +313,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="ejecutivo_e">Nombre del Ejecutivo</label>
-                                    <select class="form-control mr-sm-3"  autofocus type="select" id="ejecutivo_e" name="ejecutivo_e">
+                                    <select class="form-control mr-sm-3" autofocus type="select" id="ejecutivo_e" name="ejecutivo_e">
                                         <?php echo $status; ?>
                                     </select>
                                     <small id="emailHelp" class="form-text text-muted">Nombre del ejecutivo que entrega el pago.</small>
@@ -331,7 +340,7 @@
         var day = ("0" + now.getDate()).slice(-2);
         var month = ("0" + (now.getMonth() + 1)).slice(-2);
 
-        var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+        var today = now.getFullYear() + "-" + (month) + "-" + (day);
 
 
         document.getElementById("Fecha_e").value = fecha;
@@ -342,12 +351,11 @@
         document.getElementById("monto_e").value = monto;
         document.getElementById("secuencia_e").value = secuencia;
 
-        if(estatus == 'LIQUIDADO')
-        {
+        if (estatus == 'LIQUIDADO') {
             select = $("#tipo_e");
             select.empty();
             select.append($("<option>", {
-                value: 'Z',
+                value: 'M',
                 text: 'MULTA GESTORES'
             }));
         }
@@ -361,8 +369,6 @@
         $('#modal_editar_pago').modal('show');
 
     }
-
-
 </script>
 
 

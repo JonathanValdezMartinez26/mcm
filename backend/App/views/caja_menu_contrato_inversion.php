@@ -246,4 +246,5 @@ $buscarCliente = new BuscarCliente('Para hacer la apertura de una cuenta de Inve
     }
 </style>
 
+
 <?php echo $footer; ?>

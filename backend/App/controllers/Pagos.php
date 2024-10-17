@@ -1922,7 +1922,7 @@ html;
         foreach ($status[0] as $key => $val2) {
             $select = ($status[1] == $val2['ID_EJECUTIVO']) ? 'selected' : '';
 
-            $getStatus .= '<option' .  $select  . 'value="' . $val2['ID_EJECUTIVO'] . '">' . $val2['EJECUTIVO'] . '</option>';
+            $getStatus .= '<option value="' . $val2['ID_EJECUTIVO'] . '" ' .  $select  . '>' . $val2['EJECUTIVO'] . '</option>';
         }
         if ($credito != '') {
             if ($AdministracionOne[0]['NO_CREDITO'] == '') {
@@ -2806,7 +2806,7 @@ html;
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
     }
-    
+
     public function CorteEjecutivoReimprimir()
     {
         $extraFooter = <<<HTML
@@ -2944,6 +2944,7 @@ html;
 
         $pagos = PagosDao::ConsultarPagosAppHistorico($fi, $ff);
 
+        $tabla = '';
         foreach ($pagos as $key => $value) {
             $pago = number_format($value['TOTAL_PAGOS'], 2);
             $multa = number_format($value['TOTAL_MULTA'], 2);

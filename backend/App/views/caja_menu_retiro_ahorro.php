@@ -239,4 +239,5 @@ $buscarCliente = new BuscarCliente('Para realizar un retiro es necesario que el 
     }
 </style>
 
+
 <?php echo $footer; ?>
