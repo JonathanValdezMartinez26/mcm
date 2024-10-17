@@ -5,7 +5,6 @@ namespace App\models;
 defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
-use Exception;
 
 class Promociones
 {
@@ -56,7 +55,7 @@ class Promociones
         try {
             $mysqli = new Database();
             return $mysqli->queryAll($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "";
         }
     }
@@ -118,7 +117,7 @@ class Promociones
         try {
             $mysqli = new Database();
             return $mysqli->queryOne($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "";
         }
     }
@@ -150,7 +149,7 @@ class Promociones
         try {
             $mysqli = new Database();
             return $mysqli->queryAll($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "";
         }
     }
@@ -173,7 +172,7 @@ class Promociones
             // $mysqli = new Database();
             // return $mysqli->insert($query);
             return self::Responde(true, "Pago registrado correctamente", $query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al registrar el pago", null, $e->getMessage());
         }
     }

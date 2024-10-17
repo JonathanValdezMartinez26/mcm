@@ -5,18 +5,17 @@ namespace App\models;
 defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
-use Exception;
 
 class LogTransaccionesAhorro
 {
-    public function BindingQuery($qry, $parametros = null)
+    public static function BindingQuery($qry, $parametros = null)
     {
-        return "";
         if ($parametros) {
             foreach ($parametros as $parametro => $valor)
                 $qry = str_replace(":" . $parametro, "'" . $valor . "'", $qry);
         }
 
+        return $qry;
     }
 
     public static function LogTransaccion($datos)
@@ -57,7 +56,7 @@ class LogTransaccionesAhorro
             $db = new Database();
             $db->insertar($qry, $parametros);
             return [$qry, $parametros];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $e->getMessage();
         }
     }

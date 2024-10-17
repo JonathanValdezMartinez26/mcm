@@ -5,7 +5,6 @@ namespace App\models;
 defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
-use Exception;
 
 class Validaciones
 {
@@ -40,7 +39,7 @@ class Validaciones
         try {
             $mysqli = new Database();
             return $mysqli->queryAll($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "";
         }
     }
@@ -65,7 +64,7 @@ class Validaciones
             $mysqli = new Database();
             if ($mysqli->insertar($query, $datos)) return self::Responde(true, "Cliente invitado registrado exitosamente.");
             return self::Responde(false, "No se pudo registrar el vinculo entre anfitrión e invitado.");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error interno al vincular al cliente invitado.");
         }
     }
@@ -94,7 +93,7 @@ class Validaciones
             if ($resultado == null) return 0;
 
             return $resultado['ULTIMO_CICLO'];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return -1;
         }
     }
@@ -127,7 +126,7 @@ class Validaciones
             $resultado = $mysqli->queryAll($query);
             if ($resultado == null) return array();
             return $resultado;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return null;
         }
     }
@@ -148,7 +147,7 @@ class Validaciones
             $resultado = $mysqli->queryOne($query);
             if ($resultado == null) return null;
             return $resultado['CODIGO'];
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return null;
         }
     }
@@ -191,7 +190,7 @@ class Validaciones
             }
 
             return self::Responde(true, "Consulta exitosa.", array("nombre" => $nombre));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error interno al buscar al cliente.");
         }
     }

@@ -4,8 +4,8 @@ namespace App\models;
 
 defined("APPPATH") or die("Access denied");
 
+use Core\App;
 use \Core\Database;
-use \Core\Database_cultiva;
 
 class Reportes
 {
@@ -90,9 +90,8 @@ sql;
     }
     public static function ConsultaUsuariosSICAFINCultiva()
     {
-
-        $mysqli = new Database();
-        $mysqli->SetDB_CULTIVA();
+        $config = App::getConfig();
+        $mysqli = new Database($config['SERVIDOR-CULTIVA']);
         $query = <<<sql
         SELECT
             *

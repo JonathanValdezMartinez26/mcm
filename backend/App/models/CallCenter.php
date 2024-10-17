@@ -5,8 +5,6 @@ namespace App\models;
 defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
-use \App\interfaces\Crud;
-use ScssPhp\ScssPhp\Block\ElseBlock;
 
 class CallCenter
 {
@@ -354,25 +352,10 @@ sql;
     public static function getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco, $usuario, $suc)
     {
 
-        $mysqli = new Database();
-        $cdgco_all = array();
+
+
         $string_from_array = implode(', ', $cdgco);
-
-
         if ($suc == '000') {
-            $all_suc_query = <<<sql
-              select codigo from co
-sql;
-            $all_suc =  $mysqli->queryAll($all_suc_query);
-
-            foreach ($all_suc as $key => $val2) {
-                array_push($cdgco_all, $val2['CODIGO']);
-            }
-
-
-            $string_from_array = implode(', ', $cdgco_all);
-
-            //var_dump($all_suc);
             $var = 'SPR.CDGCO IN(' . $string_from_array . ') AND ';
         } else {
             $var = 'SPR.CDGCO IN(' . $suc . ') AND ';
@@ -380,18 +363,14 @@ sql;
 
 
         if ($usuario != '') {
-            if ($usuario == 'AMGM' || $usuario == 'PHEE' || $usuario == 'HSEJ') {
-                $var_ = '';
-            } else {
-                $var_ = "AND SPR.CDGPE IN('" . $usuario . "')";
-            }
+            $var_ = "AND SPR.CDGPE IN('" . $usuario . "')";
         } else {
             $var_ = '';
         }
 
 
 
-
+        $mysqli = new Database();
         $query = <<<sql
                   SELECT * FROM (SELECT DISTINCT (SPR.CDGNS || '-' || SPR.CICLO) AS A, SPR.REGION AS B, SPR.FECHA_TRABAJO AS C,  
                  SPR.FECHA_SOL AS D, '' AS E, SPR.NOMBRE_SUCURSAL AS F, SPR.EJECUTIVO AS G, SPR.CDGNS AS H, (SPR.NOMBRE) AS I,
@@ -548,7 +527,7 @@ sql;
                  
                  
 sql;
-        // var_dump($query);
+        //var_dump($query);
         return $mysqli->queryAll($query);
     }
 
