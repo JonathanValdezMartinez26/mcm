@@ -60,15 +60,9 @@ class JobsCredito extends Job
                 'vINTERES' => $credito['INTERES'],
                 'vCLIENTE' => $credito['CDGCL'],
             ];
-            var_dump($credito);
-            var_dump($chequera);
-            var_dump($chequera['datos']['CDGCO']);
-            var_dump($cheque);
-            var_dump($cheque['datos']['CHQSIG']);
-            var_dump($datos);
-            continue;
-            // $resumen[] = JobsDao::GeneraCheques($datos);
-            $resumen[] = $datos;
+
+            $resumen[] = JobsDao::GeneraCheques($datos);
+            // $resumen[] = $datos;
         }
 
         self::SaveLog(json_encode($resumen)); //, JSON_PRETTY_PRINT));
