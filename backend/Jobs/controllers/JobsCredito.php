@@ -27,17 +27,17 @@ class JobsCredito extends Job
             $chequera = JobsDao::GetNoChequera($credito['CDGCO']);
             if (!$chequera['success'] || count($chequera['datos']) == 0) {
                 $resumen[] = [
-                    'credito' => $credito['datos'][0]['CDGCO'],
+                    'credito' => $credito['CDGCO'],
                     'error' => self::SaveLog($chequera['mensaje'] . ': ' . ($chequera['error'] ?? ''))
                 ];
                 continue;
             }
 
-            $cheque = JobsDao::GetNoCheque($chequera['datos'][0]['CDGCB']);
+            $cheque = JobsDao::GetNoCheque($chequera['datos']['CDGCB']);
             if (!$cheque['success'] || count($cheque['datos']) == 0) {
                 $resumen[] = [
-                    'credito' => $credito['datos'][0]['CDGCO'],
-                    'chequera' => $chequera['datos'][0]['CDGCB'],
+                    'credito' => $credito['CDGCO'],
+                    'chequera' => $chequera['datos']['CDGCB'],
                     'error' => self::SaveLog($cheque['mensaje'] . ': ' . ($cheque['error'] ?? ''))
                 ];
                 continue;
@@ -47,8 +47,8 @@ class JobsCredito extends Job
 
             $datos = [
                 //Datos para actualizar PRC y PRN
-                'cheque' => $cheque['datos'][0]['CHQSIG'],
-                'cdgcb' => $chequera['datos'][0]['CDGCB'],
+                'cheque' => $cheque['datos']['CHQSIG'],
+                'cdgcb' => $chequera['datos']['CDGCB'],
                 'cdgcl' => $credito['CDGCL'],
                 'cdgns' => $credito['CDGNS'],
                 'ciclo' => $credito['CICLO'],
@@ -62,9 +62,9 @@ class JobsCredito extends Job
             ];
             var_dump($credito);
             var_dump($chequera);
-            var_dump($chequera['datos'][0]['CDGCO']);
+            var_dump($chequera['datos']['CDGCO']);
             var_dump($cheque);
-            var_dump($cheque['datos'][0]['CHQSIG']);
+            var_dump($cheque['datos']['CHQSIG']);
             var_dump($datos);
             continue;
             // $resumen[] = JobsDao::GeneraCheques($datos);
