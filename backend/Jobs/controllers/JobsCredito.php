@@ -27,7 +27,7 @@ class JobsCredito extends Job
             $chequera = JobsDao::GetNoChequera($credito['CDGCO']);
             if (!$chequera['success'] || count($chequera['datos']) == 0) {
                 $resumen[] = [
-                    'credito' => $credito['CDGCO'],
+                    'credito' => $credito['datos'][0]['CDGCO'],
                     'error' => self::SaveLog($chequera['mensaje'] . ': ' . ($chequera['error'] ?? ''))
                 ];
                 continue;
@@ -36,12 +36,17 @@ class JobsCredito extends Job
             $cheque = JobsDao::GetNoCheque($chequera['datos'][0]['CDGCB']);
             if (!$cheque['success'] || count($cheque['datos']) == 0) {
                 $resumen[] = [
-                    'credito' => $credito['CDGCO'],
+                    'credito' => $credito['datos'][0]['CDGCO'],
                     'chequera' => $chequera['datos'][0]['CDGCB'],
                     'error' => self::SaveLog($cheque['mensaje'] . ': ' . ($cheque['error'] ?? ''))
                 ];
                 continue;
             }
+
+            var_dump($credito);
+            var_dump($chequera);
+            var_dump($cheque);
+            continue;
 
             $datos = [
                 //Datos para actualizar PRC y PRN
