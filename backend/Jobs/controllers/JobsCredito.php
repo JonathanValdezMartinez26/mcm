@@ -20,8 +20,8 @@ class JobsCredito extends Job
         self::SaveLog('Iniciando Job Cheques');
         $resumen = [];
         $creditos = JobsDao::CreditosAutorizados();
-        if (!$creditos['success']) return self::SaveLog($creditos['mensaje'] . ': ' . $creditos['error']);
-        if (count($creditos['datos']) == 0) return self::SaveLog('No hay créditos autorizados');
+        if (!$creditos['success']) return self::SaveLog('Job cheques finalizado: ' . $creditos['mensaje'] . '->' . $creditos['error']);
+        if (count($creditos['datos']) == 0) return self::SaveLog('Job cheques finalizado: No hay créditos autorizados');
 
         foreach ($creditos['datos'] as $key => $credito) {
             $chequera = JobsDao::GetNoChequera($credito['CDGCO']);
