@@ -43,12 +43,7 @@ class JobsCredito extends Job
                 continue;
             }
 
-            var_dump($credito);
-            var_dump($chequera);
-            var_dump($credito['datos'][0]['CDGCO']);
-            var_dump($cheque);
-            var_dump($cheque['datos'][0]['CHQSIG']);
-            continue;
+
 
             $datos = [
                 //Datos para actualizar PRC y PRN
@@ -65,7 +60,13 @@ class JobsCredito extends Job
                 'vINTERES' => $credito['INTERES'],
                 'vCLIENTE' => $credito['CDGCL'],
             ];
-
+            var_dump($credito);
+            var_dump($chequera);
+            var_dump($chequera['datos'][0]['CDGCO']);
+            var_dump($cheque);
+            var_dump($cheque['datos'][0]['CHQSIG']);
+            var_dump($datos);
+            continue;
             // $resumen[] = JobsDao::GeneraCheques($datos);
             $resumen[] = $datos;
         }
