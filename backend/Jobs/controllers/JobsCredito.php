@@ -45,7 +45,9 @@ class JobsCredito extends Job
 
             var_dump($credito);
             var_dump($chequera);
+            var_dump($credito['datos'][0]['CDGCO']);
             var_dump($cheque);
+            var_dump($cheque['datos'][0]['CHQSIG']);
             continue;
 
             $datos = [

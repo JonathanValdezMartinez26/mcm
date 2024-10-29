@@ -159,7 +159,8 @@ class Database
                 }
 
                 $stmt->execute($params);
-                return array_shift($stmt->fetchAll(PDO::FETCH_ASSOC));
+                $res = array_shift($stmt->fetchAll(PDO::FETCH_ASSOC));
+                return $res;
             } catch (\PDOException $e) {
                 self::muestraError($e, $sql, $params);
                 return false;
