@@ -43,8 +43,6 @@ class JobsCredito extends Job
                 continue;
             }
 
-
-
             $datos = [
                 //Datos para actualizar PRC y PRN
                 'cheque' => $cheque['datos']['CHQSIG'],
@@ -62,10 +60,9 @@ class JobsCredito extends Job
             ];
 
             $resumen[] = JobsDao::GeneraCheques($datos);
-            // $resumen[] = $datos;
         }
 
-        self::SaveLog(json_encode($resumen)); //, JSON_PRETTY_PRINT));
+        self::SaveLog(json_encode($resumen));
         self::SaveLog('Finalizando Job Cheques');
 
         echo 'Job Cheques finalizado';
