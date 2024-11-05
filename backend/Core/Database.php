@@ -146,7 +146,8 @@ class Database
         if ($params == null) {
             try {
                 $stmt = $this->db_activa->query($sql);
-                return array_shift($stmt->fetchAll(PDO::FETCH_ASSOC));
+                $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                return array_shift($res);
             } catch (\PDOException $e) {
                 self::muestraError($e, $sql, $params);
                 return false;
