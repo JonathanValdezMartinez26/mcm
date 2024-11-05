@@ -85,7 +85,7 @@ html;
 
         $menu = "";
 
-        if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'AMGM' || $this->__usuario == 'DCRI' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC' || $this->__usuario == 'PHEE') {
+        if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'AMGM' || $this->__usuario == 'CAMG' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC' || $this->__usuario == 'PHEE') {
             $menu .= <<<html
            <hr>
            <h3>General WEB AHORRO</h3>
@@ -99,7 +99,7 @@ html;
 html;
         }
 
-        if ($this->__usuario == 'AMGM' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'DCRI' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC' || $this->__usuario == 'PHEE') {
+        if ($this->__usuario == 'AMGM' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC' || $this->__usuario == 'PHEE') {
             $menu .= <<<html
                 <li><a href="/AdminSucursales/SaldosDiarios/"><i class="glyphicon glyphicon-paste"> </i>&nbsp; Admin Sucursales </a> </li>
              </ul>
@@ -148,6 +148,8 @@ html;
             || $this->__usuario == 'GOIY' //USUARIO DE SELENE - Huamantla, Santa Ana, Apizaco y Tlaxcala
             || $this->__usuario == 'DAGC' //DANIELA
             || $this->__usuario == 'COVG' //USUARIO GABRIELA VELAZQUEZ
+			|| $this->__usuario == 'CAMG' //USUARIO REMPLAZO IRENE PUEBLA
+		
             || $this->__usuario == 'TESP'
         ) {
             $menu .= <<<html
@@ -229,7 +231,7 @@ html;
                 $titulo = "(Analistas)";
             } else {
                 $mis = 'Mis';
-                if ($this->__usuario == 'ESMM') {
+                if ($this->__usuario == 'ESMM' || $this->__usuario == 'MAPH') {
                     $opcion = '<li><a href="/CallCenter/HistoricoAnalistas/">Histórico Analistas</a></li>';
                 }
 
