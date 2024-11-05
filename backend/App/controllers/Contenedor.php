@@ -82,15 +82,9 @@ class Contenedor extends Controller
 
         $menu = "";
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'AMGM' || $this->__usuario == 'CAMG' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC' || $this->__usuario == 'PHEE') {
-=======
-        if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'AMGM' || $this->__usuario == 'DCRI' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC') {
->>>>>>> d3833cc15b22d690f6dc9dfdf52decd724cc2a24
-=======
+
         if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'AMGM' || $this->__usuario == 'DCRI' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC' || $this->__usuario == 'PHEE') {
->>>>>>> parent of f8056eb (Cambios)
+
             $menu .= <<<html
             <hr>
             <h3>General WEB AHORRO</h3>
@@ -105,15 +99,8 @@ html;
 html;
         }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        if ($this->__usuario == 'AMGM' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC' || $this->__usuario == 'PHEE') {
-=======
-        if ($this->__usuario == 'AMGM' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'DCRI' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC') {
->>>>>>> d3833cc15b22d690f6dc9dfdf52decd724cc2a24
-=======
+
         if ($this->__usuario == 'AMGM' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'DCRI' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC' || $this->__usuario == 'PHEE') {
->>>>>>> parent of f8056eb (Cambios)
             $menu .= <<<html
                 <li><a href="/AdminSucursales/SaldosDiarios/"><i class="glyphicon glyphicon-paste"> </i>&nbsp; Admin Sucursales </a> </li>
              </ul>
@@ -241,15 +228,10 @@ html;
                 $titulo = "(Analistas)";
             } else {
                 $mis = 'Mis';
-<<<<<<< HEAD
-<<<<<<< HEAD
+
                 if ($this->__usuario == 'ESMM' || $this->__usuario == 'MAPH') {
-=======
-                if ($this->__usuario == 'ESMM' || $this->__usuario == 'MAPH' ) {
->>>>>>> d3833cc15b22d690f6dc9dfdf52decd724cc2a24
-=======
-                if ($this->__usuario == 'ESMM') {
->>>>>>> parent of f8056eb (Cambios)
+
+
                     $opcion = '<li><a href="/CallCenter/HistoricoAnalistas/">Histórico Analistas</a></li>';
                 }
 
