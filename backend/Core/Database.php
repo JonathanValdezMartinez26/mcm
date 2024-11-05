@@ -23,6 +23,7 @@ class Database
 
     private function Conecta($s = null, $u = null, $p = null)
     {
+        $s = $this->configuracion[$s] ?? $s;
         $host = 'oci:dbname=//' . ($s ?? $this->configuracion['SERVIDOR']) . ':1521/ESIACOM;charset=UTF8';
         $usuario = $u ?? $this->configuracion['USUARIO'];
         $password = $p ?? $this->configuracion['PASSWORD'];

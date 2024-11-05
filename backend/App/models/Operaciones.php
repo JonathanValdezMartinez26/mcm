@@ -4,11 +4,11 @@ namespace App\models;
 
 defined("APPPATH") or die("Access denied");
 
+use \Core\App;
 use \Core\Database;
 
 class Operaciones
 {
-
     public static function ConsultarDesembolsos($Inicial, $Final)
     {
         $query = <<<SQL
@@ -23,7 +23,7 @@ class Operaciones
         SQL;
 
         try {
-            $db = new Database();
+            $db = new Database('SERVIDOR-CULTIVA');
             return $db->queryAll($query);
         } catch (\Exception $e) {
             return "";
@@ -55,7 +55,7 @@ class Operaciones
                 FECHA_ALTA DESC
         SQL;
 
-        $db = new Database();
+        $db = new Database('SERVIDOR-CULTIVA');
         if ($db->db_activa == null) return "";
         return $db->queryAll($query);
     }
@@ -100,7 +100,7 @@ class Operaciones
                 FECHA_ALTA DESC
         SQL;
 
-        $db = new Database();
+        $db = new Database('SERVIDOR-CULTIVA');
         if ($db->db_activa == null) return "";
         return $db->queryAll($query);
     }
@@ -172,7 +172,7 @@ class Operaciones
                 PRN.CICLO DESC  
         SQL;
 
-        $db = new Database();
+        $db = new Database('SERVIDOR-CULTIVA');
         if ($db->db_activa == null) return "";
         return $db->queryAll($query);
     }
@@ -251,7 +251,7 @@ class Operaciones
                 PRN.CICLO DESC
         SQL;
 
-        $db = new Database();
+        $db = new Database('SERVIDOR-CULTIVA');
         if ($db->db_activa == null) return "";
         return $db->queryAll($query);
     }
@@ -274,7 +274,7 @@ class Operaciones
                 AND ULTIMO_CICLO != 'D1'
         SQL;
 
-        $db = new Database();
+        $db = new Database('SERVIDOR-CULTIVA');
         if ($db->db_activa == null) return "";
         return $db->queryAll($query);
     }
@@ -307,7 +307,7 @@ class Operaciones
                 SC.SOLICITUD ASC
         SQL;
 
-        $db = new Database();
+        $db = new Database('SERVIDOR-CULTIVA');
         if ($db->db_activa == null) return "";
         return $db->queryAll($query);
     }
@@ -362,7 +362,7 @@ class Operaciones
                 CODIGO = '$credito'
         SQL;
 
-        $db = new Database();
+        $db = new Database('SERVIDOR-CULTIVA');
         if ($db->db_activa == null) return [];
         return [$db->queryAll($query), $db->queryOne($query2)];
     }
