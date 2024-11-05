@@ -5,7 +5,6 @@ namespace App\models;
 defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
-use \Core\Database_cultiva;
 use Exception;
 
 class AdminSucursales

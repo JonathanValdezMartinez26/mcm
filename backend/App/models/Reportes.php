@@ -4,8 +4,8 @@ namespace App\models;
 
 defined("APPPATH") or die("Access denied");
 
+use Core\App;
 use \Core\Database;
-use \Core\Database_cultiva;
 
 class Reportes
 {
@@ -34,7 +34,7 @@ class Reportes
                     END AS ACTIVO,
                     (
 						SELECT
-							WM_CONCAT(TUS.NOMBRE)
+							LISTAGG(TUS.NOMBRE, ',<br>')
 						FROM
 							TUS,
 							UT
@@ -66,7 +66,7 @@ class Reportes
                     END AS ACTIVO,
                     (
 						SELECT
-							WM_CONCAT(TUS.NOMBRE)
+							LISTAGG(TUS.NOMBRE, ',<br>')
 						FROM
 							TUS,
 							UT
@@ -90,9 +90,8 @@ sql;
     }
     public static function ConsultaUsuariosSICAFINCultiva()
     {
-
-        $mysqli = new Database();
-        $mysqli->SetDB_CULTIVA();
+        $config = App::getConfig();
+        $mysqli = new Database($config['SERVIDOR-CULTIVA']);
         $query = <<<sql
         SELECT
             *
@@ -113,7 +112,7 @@ sql;
                 END AS ACTIVO,
                 (
                     SELECT
-                        WM_CONCAT(TUS.NOMBRE)
+                        LISTAGG(TUS.NOMBRE, ',<br>')
                     FROM
                         TUS,
                         UT
@@ -145,7 +144,7 @@ sql;
                 END AS ACTIVO,
                 (
                     SELECT
-                        WM_CONCAT(TUS.NOMBRE)
+                        LISTAGG(TUS.NOMBRE, ',<br>')
                     FROM
                         TUS,
                         UT

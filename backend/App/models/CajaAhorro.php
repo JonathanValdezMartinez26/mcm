@@ -6,8 +6,6 @@ defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
 use \App\models\LogTransaccionesAhorro;
-use Exception;
-use DateTime;
 
 class CajaAhorro
 {
@@ -40,7 +38,7 @@ class CajaAhorro
         try {
             $mysqli = new Database();
             return $mysqli->queryOne($qry, ['cajera' => $cajera]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return 0;
         }
     }
@@ -69,7 +67,7 @@ class CajaAhorro
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -94,7 +92,7 @@ class CajaAhorro
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -120,7 +118,7 @@ class CajaAhorro
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -141,7 +139,7 @@ class CajaAhorro
             $res = $mysqli->queryOne($query);
             if ($res) return $res['MONTO_MINIMO'];
             return 0;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return 0;
         }
     }
@@ -183,7 +181,7 @@ class CajaAhorro
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -206,7 +204,7 @@ class CajaAhorro
             $res = $mysqli->queryAll($qry);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -229,7 +227,7 @@ class CajaAhorro
             $res = $mysqli->queryAll($qry);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -252,7 +250,7 @@ class CajaAhorro
             $res = $mysqli->queryAll($qry);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -274,7 +272,7 @@ class CajaAhorro
             $res = $mysqli->queryAll($query);
             if ($res) return self::Responde(true, "Consulta realizada correctamente.", $res);
             return self::Responde(false, "No se encontraron beneficiarios para el contrato {$contrato}.");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los beneficiarios del contrato {$contrato}.", null, $e->getMessage());
         }
     }
@@ -315,7 +313,7 @@ class CajaAhorro
         try {
             $mysqli = new Database();
             return $mysqli->queryAll($query_busca_cliente);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return "";
         }
     }
@@ -375,7 +373,7 @@ class CajaAhorro
             if ($res['NO_CONTRATOS'] >= 1) return self::Responde(false, "El cliente {$datos['cliente']} ya cuenta con un contrato de ahorro.", $res);
             if ($res) return self::Responde(true, "Consulta realizada correctamente.", $res);
             return self::Responde(false, "No se encontraron datos para el cliente {$datos['cliente']}.");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los datos del cliente.", null, $e->getMessage());
         }
     }
@@ -423,7 +421,7 @@ class CajaAhorro
             if ($res['NO_CONTRATOS'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro.", $res);
             if ($res['NO_CONTRATOS'] >= 1 && $res['CONTRATO_COMPLETO'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no ha concluido el proceso de apertura de su cuenta de ahorro.", $res);
             return self::Responde(true, "Consulta realizada correctamente.", $res);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los datos del cliente.", null, $e->getMessage());
         }
     }
@@ -469,7 +467,7 @@ class CajaAhorro
                 (:contrato, :nombre, :parentesco, 'A', SYSDATE, :porcentaje)
             sql;
 
-            $fecha = DateTime::createFromFormat('Y-m-d', $datos['fecha']);
+            $fecha = \DateTime::createFromFormat('Y-m-d', $datos['fecha']);
             $fecha = $fecha !== false && $fecha->format('Y-m-d') === $datos['fecha'] ? $fecha->format('d-m-Y') : $datos['fecha'];
 
             $datosInsert = [
@@ -523,14 +521,14 @@ class CajaAhorro
                 $mysqli = new Database();
                 $res = $mysqli->insertaMultiple($inserts, $datosInsert);
                 if ($res) {
-                    //LogTransaccionesAhorro::LogTransacciones($inserts, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $noContrato, "Registro de nuevo contrato ahorro corriente");
+                    LogTransaccionesAhorro::LogTransacciones($inserts, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $noContrato, "Registro de nuevo contrato ahorro corriente");
                     return self::Responde(true, "Contrato de ahorro registrado correctamente.", ['contrato' => $noContrato]);
                 }
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.");
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.", null, $e->getMessage());
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al validar si el cliente ya cuenta con un contrato de ahorro.", null, $e->getMessage());
         }
     }
@@ -589,12 +587,12 @@ class CajaAhorro
             $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
 
             if ($res) {
-                //LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Depósito de apertura de cuenta de ahorro corriente");
+                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Depósito de apertura de cuenta de ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "Pago de apertura registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
             return self::Responde(false, "Ocurrió un error al registrar el pago de apertura.");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar el pago de apertura.", null, $e->getMessage());
         }
     }
@@ -643,12 +641,12 @@ class CajaAhorro
             $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
             if ($res) {
-                //LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de " . $tipoMov . " en " . $datos['producto']);
+                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de " . $tipoMov . " en " . $datos['producto']);
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "El " . $tipoMov . " fue registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
             return self::Responde(false, "Ocurrió un error al registrar el " . $tipoMov . ".");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar el " . $tipoMov  . ".", null, $e->getMessage());
         }
     }
@@ -817,7 +815,7 @@ class CajaAhorro
         try {
             $mysqli = new Database();
             return $mysqli->queryOne($queryTicket);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return 0;
         }
     }
@@ -1055,7 +1053,7 @@ class CajaAhorro
         try {
             $mysqli = new Database();
             return $mysqli->queryOne($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return 0;
         }
     }
@@ -1130,7 +1128,7 @@ class CajaAhorro
             if ($res['NO_CONTRATOS'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con un contrato de ahorro.", $res);
             if ($res['NO_CONTRATOS'] >= 1 && $res['CONTRATO_COMPLETO'] == 0) return self::Responde(false, "El cliente {$datos['cliente']} no ha concluido el proceso de apertura de su cuenta de ahorro.", $res);
             return self::Responde(true, "Consulta realizada correctamente.", $res);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los datos del cliente.", null, $e->getMessage());
         }
     }
@@ -1173,7 +1171,7 @@ class CajaAhorro
                 (:cliente, :contrato, :nombre1, :nombre2, :apellido1, :apellido2, :fecha_nacimiento, :sexo, :curp, :pais, :entidad, SYSDATE, SYSDATE, 'A', :sucursal, :ejecutivo, :tasa)
             sql;
 
-            $fecha = DateTime::createFromFormat('Y-m-d', $datos['fecha_nac']);
+            $fecha = \DateTime::createFromFormat('Y-m-d', $datos['fecha_nac']);
             $fecha = $fecha !== false && $fecha->format('Y-m-d') === $datos['fecha_nac'] ? $fecha->format('d-m-Y') : $datos['fecha_nac'];
             $sexo = $datos['sexo'] === true || $datos['sexo'] === 'true';
 
@@ -1211,13 +1209,13 @@ class CajaAhorro
             try {
                 $mysqli = new Database();
                 $res = $mysqli->insertaMultiple($inserts, $parametros);
-                //LogTransaccionesAhorro::LogTransacciones($inserts, $parametros, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $noContrato, "Registro de nueva cuenta de ahorro Peque");
+                LogTransaccionesAhorro::LogTransacciones($inserts, $parametros, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $noContrato, "Registro de nueva cuenta de ahorro Peque");
                 if ($res) return self::Responde(true, "Contrato de ahorro registrado correctamente.", ['contrato' => $noContrato]);
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.");
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.", null, $e->getMessage());
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al validar si el cliente ya cuenta con un contrato de ahorro.", null, $e->getMessage());
         }
     }
@@ -1285,7 +1283,7 @@ class CajaAhorro
                 return self::Responde(false, "El cliente {$datos['cliente']} no cuenta con cuentas de ahorro Peques.", $res2);
             }
             return self::Responde(true, "Consulta realizada correctamente.", $res);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los datos del cliente.", null, $e->getMessage());
         }
     }
@@ -1334,13 +1332,13 @@ class CajaAhorro
             $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
-                //LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de inversión de cuenta ahorro corriente");
+                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de inversión de cuenta ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 $codg = self::RecuperaCodigoInversion($datos['contrato']);
                 return self::Responde(true, "Inversión registrada correctamente.", ['ticket' => $ticket['CODIGO'], 'codigo' => $codg['CODIGO']]);
             }
             return self::Responde(false, "Ocurrió un error al registrar la inversión.");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar la inversión.", null, $e->getMessage());
         }
     }
@@ -1359,7 +1357,7 @@ class CajaAhorro
         try {
             $mysqli = new Database();
             return $mysqli->queryOne($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return 0;
         }
     }
@@ -1390,7 +1388,7 @@ class CajaAhorro
             $res = $mysqli->queryAll($query);
             if (count($res) === 0) return self::Responde(false, "No se encontraron inversiones para el contrato {$datos['contrato']}.");
             return self::Responde(true, "Consulta realizada correctamente.", $res);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar las inversiones.", null, $e->getMessage());
         }
     }
@@ -1425,7 +1423,7 @@ class CajaAhorro
         try {
             $mysqli = new Database();
             return $mysqli->queryOne($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return 0;
         }
     }
@@ -1454,7 +1452,7 @@ class CajaAhorro
         try {
             $mysqli = new Database();
             return $mysqli->queryOne($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return 0;
         }
     }
@@ -1489,7 +1487,7 @@ class CajaAhorro
         try {
             $mysqli = new Database();
             return $mysqli->queryOne($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return 0;
         }
     }
@@ -1509,7 +1507,7 @@ class CajaAhorro
         try {
             $mysqli = new Database();
             return $mysqli->queryOne($query);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return 0;
         }
     }
@@ -1570,12 +1568,12 @@ class CajaAhorro
             $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
-                //LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de solicitud de retiro " . $tipoMov . " de cuenta de ahorro corriente");
+                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de solicitud de retiro " . $tipoMov . " de cuenta de ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "El retiro " . $tipoMov . " fue registrado correctamente.", ['ticket' => $ticket['CODIGO']]);
             }
             return self::Responde(false, "Ocurrió un error al registrar el retiro " . $tipoMov . ".");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar el retiro " . $tipoMov  . ".", null, $e->getMessage());
         }
     }
@@ -1605,7 +1603,7 @@ class CajaAhorro
         try {
             $mysqli = new Database();
             return $mysqli->queryAll($qry);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -1651,7 +1649,7 @@ class CajaAhorro
             $res = $mysqli->queryAll($qry);
             if (count($res) === 0) return self::Responde(false, "No se encontraron solicitudes de retiro para el producto {$datos['producto']}.", null);
             return self::Responde(true, "Consulta realizada correctamente.", $res);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar las solicitudes de retiro.", null, $e->getMessage());
         }
     }
@@ -1688,7 +1686,7 @@ class CajaAhorro
             $res = $mysqli->queryOne($qry);
             if (!$res) return self::Responde(false, "No se encontraron datos para el retiro solicitado.");
             return self::Responde(true, "Consulta realizada correctamente.", $res);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los datos de la solicitud.", null, $e->getMessage());
         }
     }
@@ -1756,16 +1754,16 @@ class CajaAhorro
             $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert, $validacion);
 
-            //LogTransaccionesAhorro::LogTransacciones($query[0], $datosInsert[0], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Actualización de estatus por entrega de retiro " . $tipoRetiro);
-            //LogTransaccionesAhorro::LogTransacciones($query[1], $datosInsert[1], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Creación de ticket por entrega de retiro " . $tipoRetiro);
-            //LogTransaccionesAhorro::LogTransacciones($query[2], $datosInsert[2], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de movimiento por entrega de retiro " . $tipoRetiro);
-            //LogTransaccionesAhorro::LogTransacciones($query[3], $datosInsert[4], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Actualización de saldo de sucursal por entrega de retiro " . $tipoRetiro);
+            LogTransaccionesAhorro::LogTransacciones($query[0], $datosInsert[0], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Actualización de estatus por entrega de retiro " . $tipoRetiro);
+            LogTransaccionesAhorro::LogTransacciones($query[1], $datosInsert[1], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Creación de ticket por entrega de retiro " . $tipoRetiro);
+            LogTransaccionesAhorro::LogTransacciones($query[2], $datosInsert[2], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de movimiento por entrega de retiro " . $tipoRetiro);
+            LogTransaccionesAhorro::LogTransacciones($query[3], $datosInsert[4], $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Actualización de saldo de sucursal por entrega de retiro " . $tipoRetiro);
 
             if (!$res) return self::Responde(false, "Ocurrió un error al registrar la entrega del retiro " . $tipoRetiro . ".");
 
             $ticket = self::RecuperaTicket($datos['contrato']);
             return self::Responde(true, "Entrega de retiro " . $tipoRetiro . " registrada correctamente.", $ticket);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar la entrega del retiro " . $tipoRetiro . ".", null, $e->getMessage());
         }
     }
@@ -1799,12 +1797,12 @@ class CajaAhorro
             $mysqli = new Database();
             $res = $mysqli->insertaMultiple($query, $datosInsert);
             if ($res) {
-                //LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de devolución de retiro " . ($datos['tipo'] == 1 ? "express" : "programado") . " de cuenta de ahorro corriente");
+                LogTransaccionesAhorro::LogTransacciones($query, $datosInsert, $_SESSION['cdgco_ahorro'], $_SESSION['usuario'], $datos['contrato'], "Registro de devolución de retiro " . ($datos['tipo'] == 1 ? "express" : "programado") . " de cuenta de ahorro corriente");
                 $ticket = self::RecuperaTicket($datos['contrato']);
                 return self::Responde(true, "Se han liberado $ " . number_format($datos['monto'], 2) . " a la cuenta del cliente por el apartado para el retiro " . ($datos['tipo'] == 1 ? "express" : "programado") . ".", ['ticket' => $ticket['CODIGO']]);
             }
             return self::Responde(false, "Ocurrió un error al registrar la devolución.");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar la devolución.", null, $e->getMessage());
         }
     }
@@ -1834,7 +1832,7 @@ class CajaAhorro
             $resultado = $mysqli->queryAll($qry, $datos);
             if (count($resultado) === 0) return self::Responde(false, "No se encontraron registros para la consulta.", $qry);
             return self::Responde(true, "Consulta realizada correctamente.", $resultado);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los registros.", null, $e->getMessage());
         }
     }
@@ -1879,7 +1877,7 @@ class CajaAhorro
         try {
             $mysqli = new Database();
             return $mysqli->queryAll($qry);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -1907,7 +1905,7 @@ class CajaAhorro
             $res = $mysqli->queryOne($qryDatosGenerale);
             if (!$res) return array();
             return $res;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -1994,7 +1992,7 @@ class CajaAhorro
             $res = $mysqli->queryAll($qryMovimientos);
             if (count($res) === 0) return array();
             return $res;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -2061,7 +2059,7 @@ class CajaAhorro
             $res = $mysqli->queryAll($qryMovimientos);
             if (count($res) === 0) return array();
             return $res;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -2090,7 +2088,7 @@ class CajaAhorro
             $res = $mysqli->queryAll($qryCuentas);
             if (count($res) === 0) return array();
             return $res;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -2162,7 +2160,7 @@ class CajaAhorro
             $res = $mysqli->queryAll($qryMovimientos);
             if (count($res) === 0) return array();
             return $res;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -2187,7 +2185,7 @@ class CajaAhorro
             $res = $mysqli->queryOne($qry);
             if (!$res) return self::Responde(true, "No se encontraron retiros para el día.");
             return self::Responde(false, "Retiros del día.", $res);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al validar los retiros del día.");
         }
     }
@@ -2209,7 +2207,7 @@ sql;
             $res = $mysqli->queryOne($qry);
             if (!$res) return ['MONTO_MINIMO' => 300, 'MONTO_MAXIMO' => 10000];
             return $res;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return ['MONTO_MINIMO' => 300, 'MONTO_MAXIMO' => 10000];
         }
     }
@@ -2263,213 +2261,153 @@ sql;
 
 
         if ($Sucursal == '' || $Sucursal == 0) {
-            $query = <<<sql
-                SELECT CONSECUTIVO, MOVIMIENTO, CDGCO, SUCURSAL, USUARIO_CAJA, NOMBRE_CAJERA, 
-               CLIENTE, TITULAR_CUENTA_EJE, FECHA_MOV, FECHA_MOV_FILTRO, CDG_TICKET, MONTO, CONCEPTO, TIPO_MOVIMIENTO, PRODUCTO,
-               CASE WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO ELSE 0 END AS INGRESO,
-               CASE WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN MONTO ELSE 0 END AS EGRESO, 
-               CASE WHEN TIPO_MOVIMIENTO = 'REPORTE INICIO' THEN MONTO ELSE 0 END AS REPORTE_INICIO, 
-               CASE WHEN TIPO_MOVIMIENTO = 'REPORTE FIN' THEN MONTO ELSE 0 END AS REPORTE_FIN,
-               CASE WHEN TIPO_MOVIMIENTO IN ('REPORTE FIN') THEN MONTO ELSE SUM(
-                        CASE WHEN TIPO_MOVIMIENTO = 'INGRESO' OR TIPO_MOVIMIENTO ='REPORTE INICIO' THEN MONTO
-                             WHEN CONCEPTO = 'SALDO INICIAL DEL DIA (DIARIO)' THEN MONTO
-                             WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN -MONTO
-                             ELSE 0 END) 
-                    OVER (ORDER BY CONSECUTIVO ASC) END AS SALDO 
-        FROM ( 
-            SELECT ROW_NUMBER() OVER (ORDER BY FECHA_MOV_FILTRO ASC) AS CONSECUTIVO,
-                   MOVIMIENTO, CDGCO, USUARIO_CAJA, NOMBRE_CAJERA, SUCURSAL, CLIENTE, TITULAR_CUENTA_EJE, 
-                   FECHA_MOV, FECHA_MOV_FILTRO, CDG_TICKET, MONTO, CONCEPTO, 
-                   CASE WHEN MOVIMIENTO = 0 THEN 'EGRESO' 
-                        WHEN MOVIMIENTO = 2 THEN 'REPORTE INICIO' 
-                        WHEN MOVIMIENTO = 3 THEN 'REPORTE FIN' 
-                        ELSE 'INGRESO' 
-                   END AS TIPO_MOVIMIENTO, 
-                   PRODUCTO 
-            FROM (--ESTE BLOQUE ES PARA LOS REGISTROS DE INICIO Y FIN 
-                (SELECT MOVIMIENTO, CDG_SUCURSAL AS CDGCO, c.NOMBRE AS SUCURSAL, 
-                        p.CODIGO AS USUARIO_CAJA, 
-                        p.NOMBRE1 || ' '|| p.NOMBRE2 || ' ' || p.PRIMAPE || ' '|| p.SEGAPE AS NOMBRE_CAJERA, 
-                        'NO APLICA' AS CLIENTE, 
-                        'NO APLICA' AS TITULAR_CUENTA_EJE, 
-                        TO_CHAR(FECHA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV, 
-                        FECHA AS FECHA_MOV_FILTRO, 
-                        'NO APLICA' AS CDG_TICKET,
-                        MONTO, 
-                        CASE WHEN MOVIMIENTO = 0 THEN 'RETIRO DE EFECTIVO' 
-                             WHEN MOVIMIENTO = 2 THEN 'SALDO INICIAL DEL DIA (DIARIO)' 
-                             WHEN MOVIMIENTO = 3 THEN 'SALDO FINAL AL CIERRE DE LA SUCURSAL (DIARIO)' 
-                             ELSE 'FONDEO SUCURSAL' 
-                        END AS CONCEPTO, 
-                        CASE WHEN MOVIMIENTO = 0 THEN 'EGRESO' 
-                             WHEN MOVIMIENTO = 2 THEN 'REPORTE INICIO' 
-                             WHEN MOVIMIENTO = 3 THEN 'REPORTE FIN' 
-                             ELSE 'INGRESO' 
-                        END AS TIPO_MOVIMIENTO, 
-                        'AHORRO CUENTA CORRIENTE' AS PRODUCTO 
-                 FROM SUC_MOVIMIENTOS_AHORRO sma 
-                 INNER JOIN SUC_ESTADO_AHORRO sea ON sea.CODIGO = sma.CDG_ESTADO_AHORRO 
-                 INNER JOIN CO c ON c.CODIGO = sea.CDG_SUCURSAL 
-                 INNER JOIN PE p ON p.CODIGO = sma.CDG_USUARIO 
-                 WHERE p.CDGEM = 'EMPFIN') 
-                UNION 
-                (SELECT 
-                        CASE WHEN (ma.MOVIMIENTO = 0 AND tpa.DESCRIPCION = 'APERTURA DE CUENTA - INSCRIPCIÓN') THEN '1' 
-                             ELSE ma.MOVIMIENTO
-                        END AS MOVIMIENTO, 
-                        c2.CODIGO AS CDGCO,
-                        c2.NOMBRE AS SUCURSAL,
-                        p.CODIGO AS USUARIO_CAJA, 
-                        p.NOMBRE1 || ' '|| p.NOMBRE2 || ' ' || p.PRIMAPE || ' '|| p.SEGAPE AS NOMBRE_CAJERA, 
-                        c.CODIGO AS CLIENTE, 
-                        (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE,
-                        TO_CHAR(ma.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV, 
-                        ma.FECHA_MOV AS FECHA_MOV_FILTRO, 
-                        ma.CDG_TICKET, 
-                        CASE WHEN tpa.DESCRIPCION = 'CAPITAL INICIAL - CUENTA CORRIENTE' THEN ma.MONTO - 
-                              (SELECT ma2.MONTO 
-                               FROM MOVIMIENTOS_AHORRO ma2 
-                               INNER JOIN TIPO_PAGO_AHORRO tpa2 ON tpa2.CODIGO = ma2.CDG_TIPO_PAGO
-                               WHERE tpa2.DESCRIPCION = 'APERTURA DE CUENTA - INSCRIPCIÓN' AND ma2.CDG_TICKET = ma.CDG_TICKET)
-                             ELSE ma.MONTO 
-                        END AS MONTO, 
-                        tpa.DESCRIPCION AS CONCEPTO, 
-                        CASE WHEN tpa.DESCRIPCION IN ('APERTURA DE CUENTA - INSCRIPCIÓN', 'CAPITAL INICIAL - CUENTA CORRIENTE', 'DEPOSITO') THEN 'INGRESO' 
-                             WHEN tpa.DESCRIPCION IN ('RETIRO', 'ENTREGA RETIRO PROGRAMADO', 'ENTREGA RETIRO EXPRESS') THEN 'EGRESO' 
-                             WHEN tpa.DESCRIPCION IN ('TRANSFERENCIA INVERSIÓN (ENVIO)') THEN 'EGRESO SISTEMA' 
-                             ELSE 'MOVIMIENTO VIRTUAL' 
-                        END AS TIPO_MOVIMIENTO, 
-                        CASE WHEN tpa.DESCRIPCION = 'TRANSFERENCIA INVERSIÓN (ENVIO)' AND pp.DESCRIPCION = 'Ahorro Corriente' THEN 'INVERSION' 
-                             ELSE pp.DESCRIPCION 
-                        END AS PRODUCTO 
-                 FROM MOVIMIENTOS_AHORRO ma 
-                 INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
-                 INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
-                 INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO
-                 INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
-                 INNER JOIN CO c2 ON c2.CODIGO = apa.CDGCO 
-                 INNER JOIN TICKETS_AHORRO ta ON ta.CODIGO = ma.CDG_TICKET
-                 INNER JOIN PE p ON p.CODIGO = ta.CDGPE 
-                 WHERE p.CDGEM = 'EMPFIN') 
-            ) 
-        ) 
-        WHERE TIPO_MOVIMIENTO != 'MOVIMIENTO VIRTUAL' AND TIPO_MOVIMIENTO != 'EGRESO SISTEMA'
-        AND CONCEPTO != 'SALDO FINAL AL CIERRE DE LA SUCURSAL (DIARIO)'
-        AND FECHA_MOV_FILTRO BETWEEN TO_TIMESTAMP('$Inicial 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('$Final 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-        ORDER BY CONSECUTIVO ASC
-        
-        
-        
-sql;
+            $suc = "";
         } else {
             $suc = " AND CDGCO = '" . $Sucursal . "'";
-            $query = <<<sql
-              SELECT CONSECUTIVO, MOVIMIENTO, CDGCO, SUCURSAL, USUARIO_CAJA, NOMBRE_CAJERA, 
-               CLIENTE, TITULAR_CUENTA_EJE, FECHA_MOV, FECHA_MOV_FILTRO, CDG_TICKET, MONTO, CONCEPTO, TIPO_MOVIMIENTO, PRODUCTO,
-               CASE WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO ELSE 0 END AS INGRESO,
-               CASE WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN MONTO ELSE 0 END AS EGRESO, 
-               CASE WHEN TIPO_MOVIMIENTO = 'REPORTE INICIO' THEN MONTO ELSE 0 END AS REPORTE_INICIO, 
-               CASE WHEN TIPO_MOVIMIENTO = 'REPORTE FIN' THEN MONTO ELSE 0 END AS REPORTE_FIN,
-               CASE WHEN TIPO_MOVIMIENTO IN ('REPORTE FIN') THEN MONTO ELSE SUM(
-                        CASE WHEN TIPO_MOVIMIENTO = 'INGRESO' OR TIPO_MOVIMIENTO ='REPORTE INICIO' THEN MONTO
-                             WHEN CONCEPTO = 'SALDO INICIAL DEL DIA (DIARIO)' THEN MONTO
-                             WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN -MONTO
-                             ELSE 0 END) 
-                    OVER (ORDER BY CONSECUTIVO ASC) END AS SALDO 
-        FROM ( 
-            SELECT ROW_NUMBER() OVER (ORDER BY FECHA_MOV_FILTRO ASC) AS CONSECUTIVO,
-                   MOVIMIENTO, CDGCO, USUARIO_CAJA, NOMBRE_CAJERA, SUCURSAL, CLIENTE, TITULAR_CUENTA_EJE, 
-                   FECHA_MOV, FECHA_MOV_FILTRO, CDG_TICKET, MONTO, CONCEPTO, 
-                   CASE WHEN MOVIMIENTO = 0 THEN 'EGRESO' 
-                        WHEN MOVIMIENTO = 2 THEN 'REPORTE INICIO' 
-                        WHEN MOVIMIENTO = 3 THEN 'REPORTE FIN' 
-                        ELSE 'INGRESO' 
-                   END AS TIPO_MOVIMIENTO, 
-                   PRODUCTO 
-            FROM (--ESTE BLOQUE ES PARA LOS REGISTROS DE INICIO Y FIN 
-                (SELECT MOVIMIENTO, CDG_SUCURSAL AS CDGCO, c.NOMBRE AS SUCURSAL, 
-                        p.CODIGO AS USUARIO_CAJA, 
-                        p.NOMBRE1 || ' '|| p.NOMBRE2 || ' ' || p.PRIMAPE || ' '|| p.SEGAPE AS NOMBRE_CAJERA, 
-                        'NO APLICA' AS CLIENTE, 
-                        'NO APLICA' AS TITULAR_CUENTA_EJE, 
-                        TO_CHAR(FECHA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV, 
-                        FECHA AS FECHA_MOV_FILTRO, 
-                        'NO APLICA' AS CDG_TICKET,
-                        MONTO, 
-                        CASE WHEN MOVIMIENTO = 0 THEN 'RETIRO DE EFECTIVO' 
-                             WHEN MOVIMIENTO = 2 THEN 'SALDO INICIAL DEL DIA (DIARIO)' 
-                             WHEN MOVIMIENTO = 3 THEN 'SALDO FINAL AL CIERRE DE LA SUCURSAL (DIARIO)' 
-                             ELSE 'FONDEO SUCURSAL' 
-                        END AS CONCEPTO, 
-                        CASE WHEN MOVIMIENTO = 0 THEN 'EGRESO' 
-                             WHEN MOVIMIENTO = 2 THEN 'REPORTE INICIO' 
-                             WHEN MOVIMIENTO = 3 THEN 'REPORTE FIN' 
-                             ELSE 'INGRESO' 
-                        END AS TIPO_MOVIMIENTO, 
-                        'AHORRO CUENTA CORRIENTE' AS PRODUCTO 
-                 FROM SUC_MOVIMIENTOS_AHORRO sma 
-                 INNER JOIN SUC_ESTADO_AHORRO sea ON sea.CODIGO = sma.CDG_ESTADO_AHORRO 
-                 INNER JOIN CO c ON c.CODIGO = sea.CDG_SUCURSAL 
-                 INNER JOIN PE p ON p.CODIGO = sma.CDG_USUARIO 
-                 WHERE p.CDGEM = 'EMPFIN') 
-                UNION 
-                (SELECT 
-                        CASE WHEN (ma.MOVIMIENTO = 0 AND tpa.DESCRIPCION = 'APERTURA DE CUENTA - INSCRIPCIÓN') THEN '1' 
-                             ELSE ma.MOVIMIENTO
-                        END AS MOVIMIENTO, 
-                        c2.CODIGO AS CDGCO,
-                        c2.NOMBRE AS SUCURSAL,
-                        p.CODIGO AS USUARIO_CAJA, 
-                        p.NOMBRE1 || ' '|| p.NOMBRE2 || ' ' || p.PRIMAPE || ' '|| p.SEGAPE AS NOMBRE_CAJERA, 
-                        c.CODIGO AS CLIENTE, 
-                        (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE,
-                        TO_CHAR(ma.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV, 
-                        ma.FECHA_MOV AS FECHA_MOV_FILTRO, 
-                        ma.CDG_TICKET, 
-                        CASE WHEN tpa.DESCRIPCION = 'CAPITAL INICIAL - CUENTA CORRIENTE' THEN ma.MONTO - 
-                              (SELECT ma2.MONTO 
-                               FROM MOVIMIENTOS_AHORRO ma2 
-                               INNER JOIN TIPO_PAGO_AHORRO tpa2 ON tpa2.CODIGO = ma2.CDG_TIPO_PAGO
-                               WHERE tpa2.DESCRIPCION = 'APERTURA DE CUENTA - INSCRIPCIÓN' AND ma2.CDG_TICKET = ma.CDG_TICKET)
-                             ELSE ma.MONTO 
-                        END AS MONTO, 
-                        tpa.DESCRIPCION AS CONCEPTO, 
-                        CASE WHEN tpa.DESCRIPCION IN ('APERTURA DE CUENTA - INSCRIPCIÓN', 'CAPITAL INICIAL - CUENTA CORRIENTE', 'DEPOSITO') THEN 'INGRESO' 
-                             WHEN tpa.DESCRIPCION IN ('RETIRO', 'ENTREGA RETIRO PROGRAMADO', 'ENTREGA RETIRO EXPRESS') THEN 'EGRESO' 
-                             WHEN tpa.DESCRIPCION IN ('TRANSFERENCIA INVERSIÓN (ENVIO)') THEN 'EGRESO SISTEMA' 
-                             ELSE 'MOVIMIENTO VIRTUAL' 
-                        END AS TIPO_MOVIMIENTO, 
-                        CASE WHEN tpa.DESCRIPCION = 'TRANSFERENCIA INVERSIÓN (ENVIO)' AND pp.DESCRIPCION = 'Ahorro Corriente' THEN 'INVERSION' 
-                             ELSE pp.DESCRIPCION 
-                        END AS PRODUCTO 
-                 FROM MOVIMIENTOS_AHORRO ma 
-                 INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
-                 INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
-                 INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO
-                 INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
-                 INNER JOIN CO c2 ON c2.CODIGO = apa.CDGCO 
-                 INNER JOIN TICKETS_AHORRO ta ON ta.CODIGO = ma.CDG_TICKET
-                 INNER JOIN PE p ON p.CODIGO = ta.CDGPE 
-                 WHERE p.CDGEM = 'EMPFIN') 
-            ) 
-        ) 
-        WHERE TIPO_MOVIMIENTO != 'MOVIMIENTO VIRTUAL' AND TIPO_MOVIMIENTO != 'EGRESO SISTEMA'
-        AND CONCEPTO != 'SALDO FINAL AL CIERRE DE LA SUCURSAL (DIARIO)'
-        AND FECHA_MOV_FILTRO BETWEEN TO_TIMESTAMP('$Inicial 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('$Final 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-        $suc
-        ORDER BY CONSECUTIVO ASC
-sql;
         }
 
 
-       // var_dump($query);
+
+
+        $query = <<<sql
+        SELECT 
+            CONSECUTIVO,
+            MOVIMIENTO,
+            CDGCO,
+            SUCURSAL,
+            USUARIO_CAJA,
+            NOMBRE_CAJERA,
+            CLIENTE,
+            TITULAR_CUENTA_EJE,
+            FECHA_MOV,
+            FECHA_MOV_FILTRO,
+            CDG_TICKET,
+            MONTO,
+            CONCEPTO,
+            TIPO_MOVIMIENTO,
+            PRODUCTO,
+            CASE WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO ELSE 0 END AS INGRESO,
+            CASE WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN MONTO ELSE 0 END AS EGRESO,
+            CASE WHEN TIPO_MOVIMIENTO = 'REPORTE' THEN MONTO ELSE 0  END AS REPORTE,
+            CASE 
+		        WHEN TIPO_MOVIMIENTO = 'REPORTE' THEN MONTO
+		        ELSE SUM(CASE 
+		                    WHEN TIPO_MOVIMIENTO = 'INGRESO' THEN MONTO 
+		                    WHEN CONCEPTO = 'SALDO INICIAL DEL DIA (DIARIO)' THEN MONTO 
+		                    WHEN TIPO_MOVIMIENTO = 'EGRESO' THEN -MONTO 
+		                    ELSE 0 
+		                 END) OVER (ORDER BY CONSECUTIVO ASC)
+		    END AS SALDO
+        FROM (
+            SELECT 
+                ROW_NUMBER() OVER (ORDER BY FECHA_MOV_FILTRO ASC) AS CONSECUTIVO,
+                MOVIMIENTO,
+                CDGCO,
+                USUARIO_CAJA,
+                NOMBRE_CAJERA,
+                SUCURSAL,
+                CLIENTE,
+                TITULAR_CUENTA_EJE,
+                FECHA_MOV,
+                FECHA_MOV_FILTRO,
+                CDG_TICKET,
+                MONTO,
+                CONCEPTO,
+                TIPO_MOVIMIENTO,
+                PRODUCTO
+            FROM (
+                (
+                   SELECT 
+                      MOVIMIENTO,
+                      CDG_SUCURSAL AS CDGCO,
+                      c.NOMBRE AS SUCURSAL,
+                      p.CODIGO AS USUARIO_CAJA,
+                      p.NOMBRE1 || ' '|| p.NOMBRE2 || ' ' || p.PRIMAPE || ' '|| p.SEGAPE AS NOMBRE_CAJERA,
+                      'NO APLICA' AS CLIENTE, 
+                      'NO APLICA' AS TITULAR_CUENTA_EJE, 
+                      TO_CHAR(FECHA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
+                      FECHA AS FECHA_MOV_FILTRO,
+                      'NO APLICA' AS CDG_TICKET, 
+                      MONTO, 
+                      CASE 
+                        WHEN MOVIMIENTO = 0 THEN 'RETIRO DE EFECTIVO'
+                        WHEN MOVIMIENTO = 2 THEN 'SALDO INICIAL DEL DIA (DIARIO)'
+                        WHEN MOVIMIENTO = 3 THEN 'SALDO FINAL AL CIERRE DE LA SUCURSAL (DIARIO)'
+                        ELSE 'FONDEO SUCURSAL'
+                    END AS CONCEPTO, 
+                    CASE 
+                        WHEN MOVIMIENTO = 0 THEN 'EGRESO'
+                        WHEN MOVIMIENTO = 2 THEN 'REPORTE'
+                        WHEN MOVIMIENTO = 3 THEN 'REPORTE'
+                        ELSE 'INGRESO'
+                    END AS TIPO_MOVIMIENTO,
+                      'AHORRO CUENTA CORRIENTE' AS PRODUCTO 
+                      FROM SUC_MOVIMIENTOS_AHORRO sma 
+                    INNER JOIN SUC_ESTADO_AHORRO sea ON sea.CODIGO = sma.CDG_ESTADO_AHORRO 
+                    INNER JOIN CO c ON c.CODIGO = sea.CDG_SUCURSAL
+                    INNER JOIN PE p ON p.CODIGO = sma.CDG_USUARIO
+                    WHERE p.CDGEM = 'EMPFIN' 
+                    )	
+                UNION 
+                (
+                    SELECT 
+                    ma.MOVIMIENTO,
+                    c2.CODIGO AS CDGCO,
+                    c2.NOMBRE AS SUCURSAL,
+                    p.CODIGO AS USUARIO_CAJA,
+                    p.NOMBRE1 || ' '|| p.NOMBRE2 || ' ' || p.PRIMAPE || ' '|| p.SEGAPE AS NOMBRE_CAJERA,
+                    c.CODIGO AS CLIENTE, 
+                    (c.NOMBRE1 || ' ' || c.NOMBRE2 || ' ' || c.PRIMAPE || ' ' || c.SEGAPE) AS TITULAR_CUENTA_EJE, 
+                    TO_CHAR(ma.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_MOV,
+                    ma.FECHA_MOV AS FECHA_MOV_FILTRO,
+                    ma.CDG_TICKET, 
+                    CASE 
+                        WHEN tpa.DESCRIPCION = 'CAPITAL INICIAL - CUENTA CORRIENTE' THEN ma.MONTO - (
+                            SELECT ma2.MONTO 
+                            FROM MOVIMIENTOS_AHORRO ma2 
+                            INNER JOIN TIPO_PAGO_AHORRO tpa2 ON tpa2.CODIGO = ma2.CDG_TIPO_PAGO 
+                            WHERE tpa2.DESCRIPCION = 'APERTURA DE CUENTA - INSCRIPCIÓN' 
+                            AND ma2.CDG_TICKET = ma.CDG_TICKET
+                        )
+                        ELSE ma.MONTO
+                    END AS MONTO,
+                    tpa.DESCRIPCION AS CONCEPTO, 
+                    CASE 
+                        WHEN tpa.DESCRIPCION IN ('APERTURA DE CUENTA - INSCRIPCIÓN', 'CAPITAL INICIAL - CUENTA CORRIENTE', 'DEPOSITO') THEN 'INGRESO'
+                        WHEN tpa.DESCRIPCION IN ('RETIRO', 'ENTREGA RETIRO PROGRAMADO', 'ENTREGA RETIRO EXPRESS') THEN 'EGRESO'
+                        WHEN tpa.DESCRIPCION IN ('TRANSFERENCIA INVERSIÓN (ENVIO)') THEN 'EGRESO SISTEMA'
+                        ELSE 'MOVIMIENTO VIRTUAL'
+                    END AS TIPO_MOVIMIENTO,
+                    CASE 
+                        WHEN tpa.DESCRIPCION = 'TRANSFERENCIA INVERSIÓN (ENVIO)' AND pp.DESCRIPCION = 'Ahorro Corriente' THEN 'INVERSION'
+                        ELSE pp.DESCRIPCION 
+                    END AS PRODUCTO
+                FROM MOVIMIENTOS_AHORRO ma
+                INNER JOIN TIPO_PAGO_AHORRO tpa ON tpa.CODIGO = ma.CDG_TIPO_PAGO 
+                INNER JOIN ASIGNA_PROD_AHORRO apa ON apa.CONTRATO = ma.CDG_CONTRATO 
+                INNER JOIN PR_PRIORITARIO pp ON pp.CODIGO = apa.CDGPR_PRIORITARIO 
+                INNER JOIN CL c ON c.CODIGO = apa.CDGCL 
+                INNER JOIN CO c2 ON c2.CODIGO = apa.CDGCO 
+                INNER JOIN TICKETS_AHORRO ta ON ta.CODIGO = ma.CDG_TICKET 
+                INNER JOIN PE p ON p.CODIGO = ta.CDGPE 
+                WHERE p.CDGEM = 'EMPFIN'
+                )
+            )
+        ) 
+        WHERE TIPO_MOVIMIENTO != 'MOVIMIENTO VIRTUAL' AND TIPO_MOVIMIENTO != 'EGRESO SISTEMA'
+        AND FECHA_MOV_FILTRO BETWEEN TO_TIMESTAMP('$Inicial 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND TO_TIMESTAMP('$Final 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+        $suc
+        $pro
+        $ope
+        ORDER BY CONSECUTIVO ASC
+sql;
 
         try {
             $mysqli = new Database();
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -2698,7 +2636,7 @@ sql;
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -2721,7 +2659,7 @@ sql;
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -2748,7 +2686,7 @@ sql;
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -2809,7 +2747,7 @@ sql;
             $res = $mysqli->queryAll($qry);
             if ($res) return self::Responde(true, "Consulta realizada correctamente.", $res);
             return self::Responde(false, "No se encontraron registros para la consulta.", $qry);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al consultar los registros.", null, $e->getMessage());
         }
     }
@@ -2860,7 +2798,7 @@ sql;
 
             $res = $mysqli->insertar($qry, $parametros);
             return self::Responde(true, "Arqueo registrado correctamente.");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al registrar el arqueo.", null, $e->getMessage());
         }
     }
@@ -2911,7 +2849,7 @@ sql;
         try {
             $mysqli = new Database();
             return $mysqli->queryOne($qry);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return [];
         }
     }
@@ -2979,7 +2917,7 @@ sql;
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -3025,7 +2963,7 @@ sql;
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -3081,7 +3019,7 @@ sql;
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -3147,7 +3085,7 @@ sql;
             $res = $mysqli->queryAll($query);
             if ($res) return $res;
             return array();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return array();
         }
     }
@@ -3173,7 +3111,7 @@ sql;
                 return self::Responde(true, "Solicitud " . $accion . " correctamente.");
             }
             return self::Responde(false, "Ocurrió un error al actualizar la solicitud.");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Ocurrió un error al actualizar la solicitud.", null, $e->getMessage());
         }
     }
@@ -3195,7 +3133,7 @@ sql;
             $mysqli = new Database();
             $res = $mysqli->insertar($qry, $params);
             return self::Responde(true, "Solicitud actualizada correctamente.");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al actualizar solicitud.", null, $e->getMessage());
         }
     }
@@ -3228,7 +3166,7 @@ sql;
             $mysqli = new Database();
             $mysqli->insertar($qry, []);
             return self::Responde(true, "Huellas registradas correctamente.");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al registrar huella.", null, $e->getMessage());
         }
     }
@@ -3256,7 +3194,7 @@ sql;
         try {
             $mysqli = new Database();
             return $mysqli->queryAll($qry);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return [];
         }
     }
@@ -3276,7 +3214,7 @@ sql;
             $mysqli = new Database();
             $res = $mysqli->queryOne($qry);
             return self::Responde(true, "Consulta realizada correctamente.", $res);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al consultar huellas.", null, $e->getMessage());
         }
     }
@@ -3302,7 +3240,7 @@ sql;
             $mysqli = new Database();
             $res = $mysqli->insertar($qry, []);
             return self::Responde(true, "Huellas actualizadas correctamente.", $res);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al actualizar huellas.", null, $e->getMessage());
         }
     }
@@ -3320,7 +3258,7 @@ sql;
             $mysqli = new Database();
             $res = $mysqli->eliminar($qry);
             return self::Responde(true, "Huellas eliminadas correctamente.", $res);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return self::Responde(false, "Error al eliminar huellas.", null, $e->getMessage());
         }
     }

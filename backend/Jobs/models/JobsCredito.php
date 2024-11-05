@@ -2,8 +2,8 @@
 
 namespace Jobs\models;
 
-include_once dirname(__DIR__) . "\..\Core\Model.php";
-include_once dirname(__DIR__) . "\..\Core\Database_jobs.php";
+include_once dirname(__DIR__) . "/../Core/Model.php";
+include_once dirname(__DIR__) . "/../Core/Database.php";
 
 use Core\Model;
 use Core\Database;
@@ -14,45 +14,150 @@ class JobsCredito extends Model
     {
         $qry = <<<SQL
             SELECT
-                PRC.CDGCL, PRNN.CDGNS, PRNN.CICLO, TO_CHAR(PRNN.INICIO, 'YYYY-MM-DD') AS INICIO, PRNN.CDGCO, PRNN.CANTAUTOR, TRUNC(SYSDATE) AS FEXP,
-                (APagarInteresPrN('EMPFIN',PRNN.CDGNS,PRNN.CICLO, nvl(PRNN.CANTENTRE , PRNN.CANTAUTOR), PRNN.Tasa, PRNN.PLAZO, PRNN.PERIODICIDAD , PRNN.CDGMCI , 
-                PRNN.INICIO, PRNN.DIAJUNTA , PRNN.MULTPER , PRNN.PERIGRCAP , PRNN.PERIGRINT ,  PRNN.DESFASEPAGO ,   PRNN.CDGTI) * -1) AS INTERES, 
-                (APagarInteresPrN('EMPFIN',PRNN.CDGNS,PRNN.CICLO, nvl(PRNN.CANTENTRE , PRNN.CANTAUTOR), PRNN.Tasa, PRNN.PLAZO, PRNN.PERIODICIDAD , PRNN.CDGMCI , 
-                PRNN.INICIO, PRNN.DIAJUNTA , PRNN.MULTPER , PRNN.PERIGRCAP , PRNN.PERIGRINT ,  PRNN.DESFASEPAGO ,   PRNN.CDGTI) * -1) AS PAGADOINT
+                PRC.CDGCL,
+                PRNN.CDGNS,
+                PRNN.CICLO,
+                TO_CHAR(PRNN.INICIO, 'YYYY-MM-DD') AS INICIO,
+                PRNN.CDGCO,
+                PRNN.CANTAUTOR,
+                TRUNC(SYSDATE) AS FEXP,
+                (
+                    APagarInteresPrN(
+                        'EMPFIN',
+                        PRNN.CDGNS,
+                        PRNN.CICLO,
+                        NVL(PRNN.CANTENTRE, PRNN.CANTAUTOR),
+                        PRNN.Tasa,
+                        PRNN.PLAZO,
+                        PRNN.PERIODICIDAD,
+                        PRNN.CDGMCI,
+                        PRNN.INICIO,
+                        PRNN.DIAJUNTA,
+                        PRNN.MULTPER,
+                        PRNN.PERIGRCAP,
+                        PRNN.PERIGRINT,
+                        PRNN.DESFASEPAGO,
+                        PRNN.CDGTI
+                    ) * -1
+                ) AS INTERES,
+                (
+                    APagarInteresPrN(
+                        'EMPFIN',
+                        PRNN.CDGNS,
+                        PRNN.CICLO,
+                        NVL(PRNN.CANTENTRE, PRNN.CANTAUTOR),
+                        PRNN.Tasa,
+                        PRNN.PLAZO,
+                        PRNN.PERIODICIDAD,
+                        PRNN.CDGMCI,
+                        PRNN.INICIO,
+                        PRNN.DIAJUNTA,
+                        PRNN.MULTPER,
+                        PRNN.PERIGRCAP,
+                        PRNN.PERIGRINT,
+                        PRNN.DESFASEPAGO,
+                        PRNN.CDGTI
+                    ) * -1
+                ) AS PAGADOINT
             FROM
-                PRN PRNN, PRC
-            WHERE 
-                PRNN.INICIO>TIMESTAMP '2024-04-11 00:00:00.000000' AND PRNN.SITUACION = 'T'
-                AND (SELECT COUNT(*) FROM PRN WHERE PRN.SITUACION = 'E' AND PRN.CDGNS = PRNN.CDGNS) = 0
-                AND PRC.CDGNS = PRNN.CDGNS 
+                PRN PRNN,
+                PRC
+            WHERE
+                PRNN.INICIO > TIMESTAMP '2024-04-11 00:00:00.000000'
+                AND PRNN.SITUACION = 'T'
+                AND (
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        PRN
+                    WHERE
+                        PRN.SITUACION = 'E'
+                        AND PRN.CDGNS = PRNN.CDGNS
+                ) = 0
+                AND PRC.CDGNS = PRNN.CDGNS
                 AND PRC.NOCHEQUE IS NULL
         SQL;
 
-        $db = new Database();
-        return $db->queryAll($qry);
+        try {
+            $db = new Database();
+            $res = $db->queryAll($qry);
+            return self::Responde(true, "Se obtuvieron los créditos autorizados",  $res ?? []);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener los créditos autorizados", null, $e->getMessage());
+        }
     }
 
     public static function GetNoChequera($cdgco)
     {
         $qry = <<<SQL
-            SELECT CDGCB, CDGCO, CODIGO, CHEQUEINICIAL, CHEQUEFINAL  
-            FROM CHEQUERA
-            WHERE TO_NUMBER(CODIGO) = (SELECT MAX(TO_NUMBER(CODIGO)) AS int_column FROM CHEQUERA WHERE CDGCO = :cdgco)
-            AND CDGCO = :cdgco
+            SELECT
+                CDGCB,
+                CDGCO,
+                CODIGO,
+                CHEQUEINICIAL,
+                CHEQUEFINAL
+            FROM
+                CHEQUERA
+            WHERE
+                TO_NUMBER(CODIGO) = (
+                    SELECT
+                        MAX(TO_NUMBER(CODIGO)) AS int_column
+                    FROM
+                        CHEQUERA
+                    WHERE
+                        CDGCO = :cdgco
+                )
+                AND CDGCO = :cdgco
         SQL;
 
-        $db = new Database();
-        return $db->queryOne($qry, ["cdgco" => $cdgco]);
+        try {
+            $db = new Database();
+            $res = $db->queryOne($qry, ["cdgco" => $cdgco]);
+            return self::Responde(true, "Se obtuvo el número de chequera", $res ?? []);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener el número de chequera", null, $e->getMessage());
+        }
     }
 
     public static function GetNoCheque($chequera)
     {
         $qry = <<<SQL
-            SELECT FNSIGCHEQUE('EMPFIN', :chequera) CHQSIG FROM DUAL
+            SELECT
+                FNSIGCHEQUE('EMPFIN', :chequera) CHQSIG
+            FROM
+                DUAL
         SQL;
 
-        $db = new Database();
-        return $db->queryOne($qry, ["chequera" => $chequera]);
+        try {
+            $db = new Database();
+            $res = $db->queryOne($qry, ["chequera" => $chequera]);
+            return self::Responde(true, "Se obtuvo el número de cheque", $res ?? []);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener el número de cheque", $e->getMessage());
+        }
+    }
+
+    public static function GeneraCheques($datos)
+    {
+        $qrys = [];
+        $parametros = [];
+
+        [$qrys[], $parametros[]] = self::ActualizaPRC($datos);
+        [$qrys[], $parametros[]] = self::ActualizaPRN($datos);
+        [$qrys[], $parametros[]] = self::LimpiarMPC($datos);
+        [$qrys[], $parametros[]] = self::LimpiarJP($datos);
+        [$qrys[], $parametros[]] = self::LimpiarMP($datos);
+        [$qrys[], $parametros[]] = self::InsertarMP($datos);
+        [$qrys[], $parametros[]] = self::InsertarJP($datos);
+        [$qrys[], $parametros[]] = self::InsertarMPC($datos);
+
+        try {
+            $db = new Database();
+            $db->insertaMultiple($qrys, $parametros);
+            return self::Responde(true, "Cheque generado correctamente", $datos);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al generar el cheque", null, $e->getMessage());
+        }
     }
 
     public static function ActualizaPRC($datos)
@@ -83,8 +188,10 @@ class JobsCredito extends Model
             "ciclo" => $datos["ciclo"],
         ];
 
-        $db = new Database();
-        return $db->insertar($qry, $parametros);
+        return [
+            $qry,
+            $parametros
+        ];
     }
 
     public static function ActualizaPRN($datos)
@@ -112,8 +219,10 @@ class JobsCredito extends Model
             "ciclo" => $datos["ciclo"]
         ];
 
-        $db = new Database();
-        return $db->insertar($qry, $parametros);
+        return [
+            $qry,
+            $parametros
+        ];
     }
 
     public static function LimpiarMPC($datos)
@@ -137,8 +246,10 @@ class JobsCredito extends Model
             "prmINICIO" => $datos["prmINICIO"]
         ];
 
-        $db = new Database();
-        return $db->queryOne($qry, $parametros);
+        return [
+            $qry,
+            $parametros
+        ];
     }
 
     public static function LimpiarJP($datos)
@@ -162,8 +273,10 @@ class JobsCredito extends Model
             "prmINICIO" => $datos["prmINICIO"]
         ];
 
-        $db = new Database();
-        return $db->queryOne($qry, $parametros);
+        return [
+            $qry,
+            $parametros
+        ];
     }
 
     public static function LimpiarMP($datos)
@@ -186,8 +299,10 @@ class JobsCredito extends Model
             "prmINICIO" => $datos["prmINICIO"]
         ];
 
-        $db = new Database();
-        return $db->queryOne($qry, $parametros);
+        return [
+            $qry,
+            $parametros
+        ];
     }
 
     public static function InsertarMP($datos)
@@ -249,8 +364,10 @@ class JobsCredito extends Model
             "vINTERES" => $datos["vINTERES"]
         ];
 
-        $db = new Database();
-        return $db->insertCheques($qry, $parametros);
+        return [
+            $qry,
+            $parametros
+        ];
     }
 
     public static function InsertarJP($datos)
@@ -307,8 +424,10 @@ class JobsCredito extends Model
             "vINTERES" => $datos["vINTERES"],
         ];
 
-        $db = new Database();
-        return $db->insertCheques($qry, $parametros);
+        return [
+            $qry,
+            $parametros
+        ];
     }
 
     public static function InsertarMPC($datos)
@@ -350,7 +469,9 @@ class JobsCredito extends Model
             "vINTERES" => $datos["vINTERES"]
         ];
 
-        $db = new Database();
-        return $db->insertCheques($qry, $parametros);
+        return [
+            $qry,
+            $parametros
+        ];
     }
 }

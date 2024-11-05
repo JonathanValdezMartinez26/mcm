@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Core;
-
-defined("APPPATH") or die("Access denied");
+namespace Core;
 
 class Model
 {

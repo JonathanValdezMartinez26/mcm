@@ -7,7 +7,7 @@
                 <div class="clearfix"></div>
             </div>
 
-            <div class="card card-danger col-md-5" >
+            <div class="card card-danger col-md-5">
                 <div class="card-header">
                     <h5 class="card-title">Seleccione el tipo de búsqueda e ingrese el número de crédito </h5>
                 </div>

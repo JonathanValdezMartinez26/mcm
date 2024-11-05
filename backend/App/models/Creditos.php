@@ -5,9 +5,6 @@ namespace App\models;
 defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
-use \Core\MasterDom;
-use \App\interfaces\Crud;
-use \App\controllers\UtileriasLog;
 
 class Creditos
 {

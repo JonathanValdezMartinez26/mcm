@@ -26,7 +26,7 @@ class Login
             <script src="/js/validate/jquery.validate.js"></script>
             <script>
                 document.getElementById("usuario").focus()
-
+                
                 function enviar_formulario() {
                     $("#btnEntrar").click()
                 }
@@ -85,7 +85,7 @@ class Login
                             }
                         }
                     })
-                    
+
                     $("#btnEntrar").click(function () {
                         $.ajax({
                             type: "POST",
@@ -143,7 +143,7 @@ class Login
         $user = LoginDao::getById($usuario);
 
         if (count($user) >= 1) {
-            $user['NOMBRE'] = utf8_encode($user['NOMBRE']);
+            $user['NOMBRE'] = mb_convert_encoding($user['NOMBRE'], 'UTF-8');
             echo json_encode($user);
         }
     }

@@ -8,12 +8,11 @@ use \Core\Controller;
 
 require_once dirname(__DIR__) . '/libs/mpdf/mpdf.php';
 require_once dirname(__DIR__) . '/libs/phpexcel/Classes/PHPExcel.php';
+require_once dirname(__DIR__) . '/libs/PhpSpreadsheet/PhpSpreadsheet.php';
 
 class Contenedor extends Controller
 {
-
-
-    function __construct()
+    public function __construct()
     {
         parent::__construct();
     }
@@ -50,12 +49,10 @@ class Contenedor extends Controller
             <link rel="stylesheet" type="text/css" href="/css/bootstrap/bootstrap.css">
             <link rel="stylesheet" type="text/css" href="/css/bootstrap/bootstrap-switch.css">
             <link rel="stylesheet" type="text/css" href="/css/validate/screen.css">
-            <link rel="stylesheet" type="text/css" href="/css/bootstrap/bootstrap.min.css">
             <link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css">
-            <link rel="stylesheet" type="text/css" href="/css/menu/menu5custom.min.css">
             <link rel="stylesheet" type="text/css" href="/css/green.css">
             <link rel="stylesheet" type="text/css" href="/css/custom.min.css">
-            $extra
+            $extra 
         </head>
         <body class="nav-md">
             <div class="container body" >
@@ -81,25 +78,34 @@ class Contenedor extends Controller
                             </div>
                             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                                 <div class="menu_section">
-html;
+        html;
 
         $menu = "";
 
+<<<<<<< HEAD
         if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'AMGM' || $this->__usuario == 'CAMG' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC' || $this->__usuario == 'PHEE') {
+=======
+        if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'AMGM' || $this->__usuario == 'DCRI' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC') {
+>>>>>>> d3833cc15b22d690f6dc9dfdf52decd724cc2a24
             $menu .= <<<html
-           <hr>
-           <h3>General WEB AHORRO</h3>
+            <hr>
+            <h3>General WEB AHORRO</h3>
             <ul class="nav side-menu">     
 html;
         }
 
+
         if ($permiso_ahorro == '1' || $this->__usuario == 'AMGM') {
             $menu .= <<<html
-                <li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>   
+                <li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
 html;
         }
 
+<<<<<<< HEAD
         if ($this->__usuario == 'AMGM' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC' || $this->__usuario == 'PHEE') {
+=======
+        if ($this->__usuario == 'AMGM' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'DCRI' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC') {
+>>>>>>> d3833cc15b22d690f6dc9dfdf52decd724cc2a24
             $menu .= <<<html
                 <li><a href="/AdminSucursales/SaldosDiarios/"><i class="glyphicon glyphicon-paste"> </i>&nbsp; Admin Sucursales </a> </li>
              </ul>
@@ -113,6 +119,7 @@ html;
 html;
 
         if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil == 'GTOCA' || $this->__perfil == 'AMOCA' || $this->__perfil == 'OCOF' || $this->__perfil == 'CPAGO' || $this->__perfil == 'ACALL' || $this->__perfil == 'LAYOU' || $this->__usuario == 'TESP' || $this->__usuario == 'MGJC') {
+
             $menu .= <<<html
                 <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
                   <ul class="nav child_menu">
@@ -153,60 +160,57 @@ html;
             || $this->__usuario == 'TESP'
         ) {
             $menu .= <<<html
-                   <li><a href="/Pagos/PagosRegistro/">Registro de Pagos Caja</a></li>
+                <li><a href="/Pagos/PagosRegistro/">Registro de Pagos Caja</a></li>
 html;
         }
 
         if ($this->__perfil == 'ACALL') {
             $menu .= <<<html
-                   <li><a href="/Pagos/PagosConsultaUsuarios/">Consulta de Pagos Cliente</a></li>
+                <li><a href="/Pagos/PagosConsultaUsuarios/">Consulta de Pagos Cliente</a></li>
 html;
         }
 
         if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil == 'GTOCA' || $this->__perfil == 'AMOCA' || $this->__perfil == 'OCOF' || $this->__perfil == 'CPAGO' || $this->__perfil == 'ACALL') {
             $menu .= <<<html
-                   <li><a href="/Pagos/PagosConsulta/">Consultar Pagos</a></li>
+                <li><a href="/Pagos/PagosConsulta/">Consultar Pagos</a></li>
 html;
         }
 
         $menu .= <<<html
-                  </ul>
-                </li>
+                </ul>
+            </li>
 html;
 
         if ($this->__perfil == 'ADMIN' || $this->__perfil == 'GARAN' || $this->__perfil == 'CAMAG') {
             $menu .= <<<html
-                <li><a><i class="fa fa-users"> </i>&nbsp; Creditos <span class="fa fa-chevron-down"></span></a>
-                 <ul class="nav child_menu">
+            <li><a><i class="fa fa-users"> </i>&nbsp; Créditos <span class="fa fa-chevron-down"></span></a>
+                <ul class="nav child_menu">
 html;
         }
-
         if ($this->__perfil == 'ADMIN' || $this->__perfil == 'GARAN') {
             $menu .= <<<html
-                 
-                   <li><a href="/Creditos/ControlGarantias/">Control de Garantías</a></li>
+            <li><a href="/Creditos/ControlGarantias/">Control de Garantías</a></li>
 html;
         }
 
         if ($this->__perfil == 'ADMIN') {
             $menu .= <<<html
-        <li><a href="/Promociones/Telarana/">Calculo Descuento Telaraña</a></li>
-        <li><a href="/Validaciones/RegistroTelarana/">Registro Telaraña</a></li>
-        <li><a href="/Creditos/ActualizaCredito/">Actualización de Créditos</a></li>
-        <li><a href="/Devengo/">Devengo Crédito</a></li>
-       
+            <li><a href="/Promociones/Telarana/">Calculo Descuento Telaraña</a></li>
+            <li><a href="/Validaciones/RegistroTelarana/">Registro Telaraña</a></li>
+            <li><a href="/Creditos/ActualizaCredito/">Actualización de Créditos</a></li>
+            <li><a href="/Devengo/">Devengo Crédito</a></li>
+            <li><a href="/Creditos/cierreDiario">Situación Cartera</a></li>
 html;
         }
-
         if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CAMAG') {
             $menu .= <<<html
-                   <li><a href="/Creditos/CambioSucursal/">Cambio de Sucursal</a></li>
+            <li><a href="/Creditos/CambioSucursal/">Cambio de Sucursal</a></li>
 html;
         }
 
         $menu .= <<<html
-                  </ul>
-                </li>
+            </ul>
+        </li>
 html;
 
         if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CALLC'  || $this->__perfil == 'ACALL') {
@@ -231,7 +235,11 @@ html;
                 $titulo = "(Analistas)";
             } else {
                 $mis = 'Mis';
+<<<<<<< HEAD
                 if ($this->__usuario == 'ESMM' || $this->__usuario == 'MAPH') {
+=======
+                if ($this->__usuario == 'ESMM' || $this->__usuario == 'MAPH' ) {
+>>>>>>> d3833cc15b22d690f6dc9dfdf52decd724cc2a24
                     $opcion = '<li><a href="/CallCenter/HistoricoAnalistas/">Histórico Analistas</a></li>';
                 }
 
@@ -239,7 +247,7 @@ html;
             }
             $menu .= <<<html
                    <li><a href="/CallCenter/Pendientes/">$mis Pendientes $titulo</a></li>
-                   <li><a href="/CallCenter/Historico/">$mis Historicos $titulo</a></li>
+                   <li><a href="/CallCenter/Historico/">$mis Históricos $titulo</a></li>
                    $opcion
                   </ul>
                 </li>
@@ -247,39 +255,7 @@ html;
 html;
         }
 
-        if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLD') {
-            $menu .= <<<html
-              <ul class="nav side-menu">
-                <li><a><i class="glyphicon glyphicon glyphicon-th-list"> </i>&nbsp; Operaciones <span class="fa fa-chevron-down"></span></a>
-                  <ul class="nav child_menu">
-                   <li><a href="/Operaciones/ReportePLDDesembolsos/">PLD Reporte Desembolsos</a></li>
-                   <li><a href="/Operaciones/ReportePLDPagos/">PLD Reporte Pagos</a></li>
-                   <li><a href="/Operaciones/ReportePLDPagosNacimiento/">PLD R. Pagos Edad</a></li>
-                   <li><a href="/Operaciones/IdentificacionClientes/">Identificación (Clientes)</a></li>
-                   <li><a href="/Operaciones/CuentasRelacionadas/">Cuentas Relacionadas</a></li>
-                   <li><a href="/Operaciones/PerfilTransaccional/">Perfil Transaccional</a></li>
-                   <li><a href="/Operaciones/UDIS_DOLAR/">Cargar UDIS y DOLAR</a></li>
-                  </ul>
-                </li>
-              </ul>
-html;
-        }
-
-        if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLD') {
-            $menu .= <<<html
-              <ul class="nav side-menu">
-                <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
-                </i>&nbsp;Api Condusef<span class="fa fa-chevron-down"></span></a>
-                  <ul class="nav child_menu">
-                   <li><a href="/ApiCondusef/AddRedeco/">Registrar Quejas REDECO</a></li>
-                     <li><a href="/ApiCondusef/AddReune/">Registrar Quejas REUNE</a></li>
-                  </ul>
-                </li>
-              </ul>
-html;
-        }
-
-        if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLMV' || $this->__usuario == 'MCDP' || $this->__usuario == 'LGFR') {
+        if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLMV' || $this->__usuario == 'MCDP') {
             $menu .= <<<html
         <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
@@ -291,32 +267,33 @@ html;
 
         if ($this->__perfil == 'ADMIN'  || $this->__usuario == 'MCDP') {
             $menu .= <<<html
-                        <li><a href="/Cultiva/ReingresarClientesCredito/">Reingresar Clientes a Grupo</a></li>
+            <li><a href="/Cultiva/ReingresarClientesCredito/">Reingresar Clientes a Grupo</a></li>
 html;
         }
 
         if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLMV' || $this->__usuario == 'MCDP') {
             $menu .= <<<html
-                  </ul>
+                    </ul>
                 </li>
-        </ul>
+            </ul>
 html;
         }
 
         if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLMV' || $this->__usuario == 'PHEE') {
             $menu .= <<<html
-        <ul class="nav side-menu">
-                <li><a><i class="glyphicon glyphicon glyphicon-cog"> 
+            <ul class="nav side-menu">
+                <li>
+                    <a><i class="glyphicon glyphicon glyphicon-cog"> 
                 </i>&nbsp;Incidencias MCM<span class="fa fa-chevron-down"></span></a>
-                  <ul class="nav child_menu">
-                  <li><a href="/Incidencias/AutorizaRechazaSolicitud/">Error Autorizar y/o Rechazar Solicitud</a></li>
-                  <li><a href="/Incidencias/CalculoDevengo/">Calculo de Devengos</a></li>
-                  <li><a href="/Incidencias/CancelarRefinanciamiento/">Cancelar Refinanciamiento</a></li>
-                  <li><a href="/Incidencias/ActualizarFechaPagosNoConciliados/">Cambio de Fecha para Pagos No conciliados del día</a></li>
-                  <li><a href="/Incidencias/ActualizarFechaPagosNoConciliados/">Telaraña agregar referencias</a></li>
-                  </ul>
+                    <ul class="nav child_menu">
+                        <li><a href="/Incidencias/AutorizaRechazaSolicitud/">Error Autorizar y/o Rechazar Solicitud</a></li>
+                        <li><a href="/Incidencias/CalculoDevengo/">Calculo de Devengos</a></li>
+                        <li><a href="/Incidencias/CancelarRefinanciamiento/">Cancelar Refinanciamiento</a></li>
+                        <li><a href="/Incidencias/ActualizarFechaPagosNoConciliados/">Cambio de Fecha para Pagos No conciliados del día</a></li>
+                        <li><a href="/Incidencias/ActualizarFechaPagosNoConciliados/">Telaraña agregar referencias</a></li>
+                    </ul>
                 </li>
-        </ul>
+            </ul>
 html;
         }
 
@@ -324,6 +301,7 @@ html;
             $menu .= <<<html
               <ul class="nav side-menu">
 html;
+
             if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR') {
                 $menu .= <<<html
                 <li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>
@@ -361,11 +339,11 @@ html;
         }
 
         $menu .= <<<html
-                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="top_nav">
+            </div>
+            <div class="top_nav">
                 <div class="nav_menu">
                     <nav>
                         <div class="nav toggle">
