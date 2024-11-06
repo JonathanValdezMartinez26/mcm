@@ -202,6 +202,8 @@ class Ahorro extends Controller
     private $primeraMayuscula = 'const primeraMayuscula = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1)';
     private $muestraPDF = <<<script
     const muestraPDF = (titulo, ruta) => {
+        const host = window.location.origin
+
         let plantilla = '<!DOCTYPE html>'
             plantilla += '<html lang="es">'
             plantilla += '<head>'
