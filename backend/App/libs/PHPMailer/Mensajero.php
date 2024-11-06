@@ -28,18 +28,12 @@ class Mensajero
             $mensajero->SMTPAuth = true;
             $mensajero->Username = self::$user;
             $mensajero->Password = self::$pass;
-
-            if (!is_array($destinatarios)) $destinatarios = [$destinatarios];
-            $mensajero->setFrom(self::$user, self::$nombre);
-            foreach ($destinatarios as $destinatario) {
-                $mensajero->addBCC($destinatario);
-            }
-
             $mensajero->isHTML(true);
             $mensajero->Subject = $asunto;
             $mensajero->Body = $mensaje;
-            // $mensajero->AltBody = strip_tags($mensaje);
+            $mensajero->AltBody = strip_tags($mensaje);
             $mensajero->CharSet = 'UTF-8';
+            $mensajero->setFrom(self::$user, self::$nombre);
 
             if (!is_array($adjuntos)) $adjuntos = [$adjuntos];
             if (count($adjuntos) > 0) {
@@ -48,7 +42,12 @@ class Mensajero
                 }
             }
 
-            $mensajero->send();
+            if (!is_array($destinatarios)) $destinatarios = [$destinatarios];
+            foreach ($destinatarios as $destinatario) {
+                $mensajero->clearAddresses();
+                $mensajero->addAddress($destinatario);
+                $mensajero->send();
+            }
             return true;
         } catch (Exception $e) {
             return false;

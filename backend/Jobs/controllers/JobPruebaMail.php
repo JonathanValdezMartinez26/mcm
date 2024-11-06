@@ -29,24 +29,42 @@ class JobsPrueba extends Job
         $asunto = "Prueba de correo";
         $destinatarios = [
             "alberto.s@2gkapital.com.mx",
-            "albertosoto.lab@gmail.com"
+            "albertosoto.lab@gmail.com",
+            "c.garcia@masconmenos.com.mx"
         ];
         $mensaje = <<<HTML
-        <html>
-        <head>
-            <title>Prueba de correo</title>
-            <meta charset="utf-8">
-        </head>
-        <body>
-            <div style="background-color: #f0f0f0; padding: 10px;margin: auto; width: 50%; text-align: center; display: flex; flex-direction: column; align-items: center; border-radius: 10px;">
-                <img src="https://18.117.29.228/img/logo.png" alt="Empresa" style="width: 200px;">
-                <h1>Prueba de correo</h1>
-                <p>Esto es una prueba de correo</p>
-                <p>{$datos['mensaje']}</p>
-                <p><b>{$datos['datos']['PATRON']}</b></p>
-            </div>
-        </body>
-        </html>
+            <html>
+                <head>
+                    <title>Prueba de correo</title>
+                    <meta charset="utf-8" />
+                </head>
+                <body>
+                    <table
+                        style="
+                            background-color: #f0f0f0;
+                            padding: 10px;
+                            margin: auto;
+                            width: 300px;
+                            text-align: center;
+                            border-radius: 10px;
+                        "
+                    >
+                        <tr>
+                            <td style="text-align: center">
+                                <img
+                                    src="https://18.117.29.228/img/logo.png"
+                                    alt="Empresa"
+                                    style="width: 150px"
+                                />
+                                <h1 style="color: #333">Prueba de correo</h1>
+                                <p style="color: #666">Esto es una prueba de correo</p>
+                                <p style="color: #666">{$datos['mensaje']}</p>
+                                <p style="color: #333"><b>{$datos['datos']['PATRON']}</b></p>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+            </html>
         HTML;
 
         if (Mensajero::EnviarCorreo($destinatarios, $asunto, $mensaje)) echo "Correo enviado";
