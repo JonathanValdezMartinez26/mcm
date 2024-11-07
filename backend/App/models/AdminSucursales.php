@@ -569,6 +569,7 @@ sql;
                     CUENTA_INVERSION
                 WHERE
                     CDG_CONTRATO = '$contrato'
+                    AND ESTATUS = 'A'
             ) ORDER BY TO_DATE(FECHA, 'DD/MM/YYYY HH24:MI:SS') DESC, CUENTA DESC
         SQL;
 
