@@ -2,8 +2,8 @@
 
 namespace Jobs\controllers;
 
-include_once dirname(__DIR__) . "\..\Core\Job.php";
-include_once dirname(__DIR__) . "\models\JobsAhorro.php";
+include_once dirname(__DIR__) . '/../Core/Job.php';
+include_once dirname(__DIR__) . '/models/JobsAhorro.php';
 
 use Core\Job;
 use Jobs\models\JobsAhorro as JobsDao;
@@ -56,18 +56,21 @@ class JobsAhorro extends Job
         if (count($inversiones["datos"]) == 0) return self::SaveLog("No se encontraron inversiones para liquidar.");
 
         foreach ($inversiones["datos"] as $key => $inversion) {
-            $monto = $inversion["MONTO"];
-            $tasa = (($inversion["TASA"] / 100) / 12);
-            $plazo = $inversion["PLAZO"];
-            $rendimiento = $monto * $plazo * $tasa;
+            // Obtinene el monto de inversion, validar si el dato es tipo string y convertirlo a float
+            $monto = is_string($inversion["MONTO"]) ? floatval($inversion["MONTO"]) : $inversion["MONTO"];
+            $tasa = is_string($inversion["TASA"]) ? floatval($inversion["TASA"]) : $inversion["TASA"];
+            $plazo = is_string($inversion["PLAZO"]) ? floatval($inversion["PLAZO"]) : $inversion["PLAZO"];
+            $rendimiento = round($monto * $plazo * (($tasa / 100) / 12), 2);
 
             $datos = [
                 "contrato" => $inversion["CONTRATO"],
-                "rendimiento" => $rendimiento,
                 "monto" => $monto,
+                "tasa" => $tasa,
+                "plazo" => $plazo,
+                "rendimiento" => $rendimiento,
                 "cliente" => $inversion["CLIENTE"],
-                "fecha_apertura" => $inversion["FECHA_APERTURA"],
-                "fecha_vencimiento" => $inversion["FECHA_VENCIMIENTO"],
+                "fecha_apertura" => $inversion["APERTURA"],
+                "fecha_vencimiento" => $inversion["VENCIMIENTO"],
                 "id_tasa" => $inversion["ID_TASA"],
             ];
 

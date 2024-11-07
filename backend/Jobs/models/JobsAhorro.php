@@ -104,7 +104,7 @@ class JobsAhorro extends Model
                 CI.MONTO_INVERSION AS MONTO,
                 CI.CDG_TASA AS ID_TASA,
                 TI.TASA,
-                PI.DESCRIPCION AS PLAZO
+                PI.PLAZO
             FROM
                 CUENTA_INVERSION CI
             JOIN
@@ -136,11 +136,11 @@ class JobsAhorro extends Model
                 FECHA_LIQUIDACION = SYSDATE,
                 MODIFICACION = SYSDATE
             WHERE
-                CDG_CONTRATO = :contrato,
-                AND ESTATUS = 'A',
-                AND TRUNC(FECHA_VENCIMIENTO) = TRUNC(:fecha_vencimiento)
-                AND TRUNC(FECHA_APERTURA) = TRUNC(:fecha_apertura)
-                AND CDG_TASA = :id_tasa,
+                CDG_CONTRATO = :contrato
+                AND ESTATUS = 'A'
+                AND FECHA_VENCIMIENTO = TO_TIMESTAMP(:fecha_vencimiento, 'DD/MM/YY HH24:MI:SS.FF6')
+                AND FECHA_APERTURA = TO_TIMESTAMP(:fecha_apertura, 'DD/MM/YY HH24:MI:SS.FF6')
+                AND CDG_TASA = :id_tasa
                 AND MONTO_INVERSION = :monto
         SQL;
 

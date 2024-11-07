@@ -91,7 +91,7 @@ class Database
                 if (!$result) {
                     $err = $stmt->errorInfo();
                     $this->db_activa->rollBack();
-                    throw new \Exception("Error: " . print_r($err, 1) . "\nSql : " . $sql[$i] . "\nDatos : " . print_r($valores, 1));
+                    throw new \Exception("Error: " . print_r($err, 1) . "\nSql: " . $sql[$i] . "\nDatos: " . print_r($valores, 1));
                 }
             }
 
@@ -110,6 +110,8 @@ class Database
             return true;
         } catch (\PDOException $e) {
             $this->db_activa->rollBack();
+            throw new \Exception("Error en insertaMultiple: " . $e->getMessage() . "\nSql: " . $sql[$i] . "\nDatos: " . print_r($valores, 1));
+        } catch (\Exception $e) {
             throw new \Exception("Error en insertaMultiple: " . $e->getMessage());
         }
     }
