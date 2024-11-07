@@ -1823,9 +1823,7 @@ html;
                 $comisiona = <<<html
                 <div style="margin-bottom: 5px;"><b>COMISIÓN:</b> {$value['CDGPE_COMISIONA']}-  {$value['NOMBRE_COMISIONA']}</div>
 html;
-            }
-            else
-            {
+            } else {
                 $comisiona = <<<html
                 <div style="margin-bottom: 5px;"><b>COMISIÓN:</b> NO APLICA</div>
 html;
@@ -3272,7 +3270,18 @@ script;
         $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L');
         $nombreColumna = array('ID_SOL_RETIRO_AHORRO', 'CONTRATO', 'CLIENTE', 'FECHA_SOLICITUD', 'DAYS_SINCE_ORDER', 'SOLICITUD_VENCIDA', 'CANTIDAD_SOLICITADA', 'CDGPE', 'CDGPE_NOMBRE', 'TIPO_RETIRO', 'FECHA_ENTREGA', 'TIPO_PRODUCTO');
         $nombreCampo = array(
-            'ID_SOL_RETIRO_AHORRO', 'CONTRATO', 'CLIENTE', 'FECHA_SOLICITUD', 'DAYS_SINCE_ORDER', 'SOLICITUD_VENCIDA', 'CANTIDAD_SOLICITADA', 'CDGPE', 'CDGPE_NOMBRE', 'TIPO_RETIRO', 'FECHA_ENTREGA', 'TIPO_PRODUCTO'
+            'ID_SOL_RETIRO_AHORRO',
+            'CONTRATO',
+            'CLIENTE',
+            'FECHA_SOLICITUD',
+            'DAYS_SINCE_ORDER',
+            'SOLICITUD_VENCIDA',
+            'CANTIDAD_SOLICITADA',
+            'CDGPE',
+            'CDGPE_NOMBRE',
+            'TIPO_RETIRO',
+            'FECHA_ENTREGA',
+            'TIPO_PRODUCTO'
         );
 
 
@@ -3374,8 +3383,8 @@ script;
 
         $controlador = "AdminSucursales";
         $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L');
-        $nombreColumna = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO','SALDO INICIAL', 'INGRESO', 'EGRESO', 'SALDO');
-        $nombreCampo = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'REPORTE_INICIO','INGRESO', 'EGRESO', 'SALDO');
+        $nombreColumna = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'SALDO INICIAL', 'INGRESO', 'EGRESO', 'SALDO');
+        $nombreCampo = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'REPORTE_INICIO', 'INGRESO', 'EGRESO', 'SALDO');
 
 
         $objPHPExcel->getActiveSheet()->SetCellValue('A' . $fila, 'Consulta de Movimientos Ahorro');
@@ -3397,16 +3406,6 @@ script;
         /* FILAS DEL ARCHIVO EXCEL */
 
         $Layoutt = CajaAhorroDao::GetAllTransacciones($fecha_inicio, $fecha_inicio, $operacion, $producto, $sucursal);
-
-        if($sucursal == 0 || $sucursal == '')
-        {
-            $reporte = "REPORTE_INICIO";
-        }
-        else{
-            $reporte = "REPORTE_INICIO";
-        }
-
-
         $totalIngreso = 0;
         $totalEgreso = 0;
         $totalSaldo = 0;
@@ -3425,41 +3424,38 @@ script;
             $increment = $keyy++;
 
 
-            if ( $Layoutt[$increment]["CONCEPTO"] == 'DEPOSITO'
+            if (
+                $Layoutt[$increment]["CONCEPTO"] == 'DEPOSITO'
                 || $Layoutt[$increment]["CONCEPTO"] == 'CAPITAL INICIAL - CUENTA CORRIENTE'
                 || $Layoutt[$increment]["CONCEPTO"] == 'APERTURA DE CUENTA - INSCRIPCIÓN'
-                || $Layoutt[$increment]["CONCEPTO"] == 'FONDEO SUCURSAL')
-            {
+                || $Layoutt[$increment]["CONCEPTO"] == 'FONDEO SUCURSAL'
+            ) {
                 $totalSaldo += $Layoutt[$increment]["INGRESO"];
-            }
-            else if($Layoutt[$increment]["CONCEPTO"] == 'SALDO INICIAL DEL DIA (DIARIO)')
-            {
-                $totalSaldo += $Layoutt[$increment]["$reporte"];
+            } else if ($Layoutt[$increment]["CONCEPTO"] == 'SALDO INICIAL DEL DIA (DIARIO)') {
+                $totalSaldo += $Layoutt[$increment]["REPORTE"];
             }
 
-            if ($Layoutt[$increment]["CONCEPTO"] === 'DEPOSITO' || $Layoutt[$increment]["CONCEPTO"] === 'CAPITAL INICIAL - CUENTA CORRIENTE'
-                || $Layoutt[$increment]["CONCEPTO"] === 'APERTURA DE CUENTA - INSCRIPCIÓN' || $Layoutt[$increment]["CONCEPTO"] == 'FONDEO SUCURSAL')
-            {
+            if (
+                $Layoutt[$increment]["CONCEPTO"] === 'DEPOSITO' || $Layoutt[$increment]["CONCEPTO"] === 'CAPITAL INICIAL - CUENTA CORRIENTE'
+                || $Layoutt[$increment]["CONCEPTO"] === 'APERTURA DE CUENTA - INSCRIPCIÓN' || $Layoutt[$increment]["CONCEPTO"] == 'FONDEO SUCURSAL'
+            ) {
                 $totalIngreso += $Layoutt[$increment]["INGRESO"];
-
             }
 
 
-            if ($Layoutt[$increment]["CONCEPTO"] === 'EGRESO' || $Layoutt[$increment]["CONCEPTO"] === 'RETIRO DE EFECTIVO' || $Layoutt[$increment]["CONCEPTO"] === 'RETIRO')
-            {
+            if ($Layoutt[$increment]["CONCEPTO"] === 'EGRESO' || $Layoutt[$increment]["CONCEPTO"] === 'RETIRO DE EFECTIVO' || $Layoutt[$increment]["CONCEPTO"] === 'RETIRO') {
                 $totalEgreso += $Layoutt[$increment]["EGRESO"];
             }
 
-            if ($Layoutt[$increment]["CONCEPTO"] === 'SALDO INICIAL DEL DIA (DIARIO)')
-            {
-                $totalInicioDia += $Layoutt[$increment]["REPORTE_INICIO"];
+            if ($Layoutt[$increment]["CONCEPTO"] === 'SALDO INICIAL DEL DIA (DIARIO)') {
+                $totalInicioDia += $Layoutt[$increment]["REPORTE"];
             }
 
             $fila += 1;
         }
         //exit();
         $fila += 1;
-        $totalSaldo = $totalSaldo - $totalEgreso ;
+        $totalSaldo = $totalSaldo - $totalEgreso;
 
         $objPHPExcel->getActiveSheet()->SetCellValue($columna[7] . $fila, "TOTAL");
         $objPHPExcel->getActiveSheet()->getStyle($columna[7] . $fila)->applyFromArray($estilo_encabezado);
