@@ -3455,7 +3455,7 @@ script;
         }
         //exit();
         $fila += 1;
-        $totalSaldo = $totalSaldo;
+        $totalSaldo = $totalSaldo - $totalEgreso;
 
         $objPHPExcel->getActiveSheet()->SetCellValue($columna[7] . $fila, "TOTAL");
         $objPHPExcel->getActiveSheet()->getStyle($columna[7] . $fila)->applyFromArray($estilo_encabezado);
