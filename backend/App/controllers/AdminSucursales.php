@@ -3384,7 +3384,7 @@ script;
         $controlador = "AdminSucursales";
         $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L');
         $nombreColumna = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'SALDO INICIAL', 'INGRESO', 'EGRESO', 'SALDO');
-        $nombreCampo = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'REPORTE_INICIO', 'INGRESO', 'EGRESO', 'SALDO');
+        $nombreCampo = array('CLIENTE', 'TITULAR_CUENTA_EJE', 'FECHA_MOV', 'SUCURSAL', 'NOMBRE_CAJERA', 'MONTO', 'CONCEPTO', 'PRODUCTO', 'REPORTE', 'INGRESO', 'EGRESO', 'SALDO');
 
 
         $objPHPExcel->getActiveSheet()->SetCellValue('A' . $fila, 'Consulta de Movimientos Ahorro');
@@ -3455,7 +3455,7 @@ script;
         }
         //exit();
         $fila += 1;
-        $totalSaldo = $totalSaldo - $totalEgreso;
+        $totalSaldo = $totalSaldo;
 
         $objPHPExcel->getActiveSheet()->SetCellValue($columna[7] . $fila, "TOTAL");
         $objPHPExcel->getActiveSheet()->getStyle($columna[7] . $fila)->applyFromArray($estilo_encabezado);
