@@ -476,101 +476,101 @@ sql;
     {
         $contrato = $datos['CONTRATO'];
 
-        $qry = <<<sql
-        SELECT * FROM (
-            SELECT
-                TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
-                MA.CDG_TIPO_PAGO AS TIPO,
-                'AHORRO' AS CUENTA,
-                CONCAT(
-                    (SELECT DESCRIPCION
-                    FROM TIPO_PAGO_AHORRO
-                    WHERE CODIGO = MA.CDG_TIPO_PAGO),
-                    CASE 
-                        WHEN SRA.FECHA_SOLICITUD IS NULL THEN ''
-                        ELSE TO_CHAR(SRA.FECHA_SOLICITUD, ' - DD/MM/YYYY')
-                    END 
-                    )
-                AS DESCRIPCION,
-                CASE MA.MOVIMIENTO
-                    WHEN '0' THEN
-                        CASE MA.CDG_TIPO_PAGO
-                            WHEN '6' THEN MA.MONTO
-                            WHEN '7' THEN MA.MONTO
-                            ELSE 0
-                        END
-                    ELSE 
-                        CASE MA.CDG_TIPO_PAGO
-                            WHEN '8' THEN MA.MONTO
-                            WHEN '9' THEN MA.MONTO
-                            ELSE 0
-                        END
-                END AS TRANSITO,
-                CASE MA.MOVIMIENTO
-                    WHEN '1' THEN 
-                        CASE MA.CDG_TIPO_PAGO
-                            WHEN '8' THEN 0
-                            WHEN '9' THEN 0
-                            ELSE MA.MONTO
-                        END
-                    ELSE 0
-                END AS ABONO,
-                CASE MA.MOVIMIENTO
-                    WHEN '0' THEN
-                        CASE MA.CDG_TIPO_PAGO
-                            WHEN '6' THEN 0
-                            WHEN '7' THEN 0
-                            ELSE MA.MONTO
-                        END
-                    ELSE 0
-                END AS CARGO,
-                SUM(
+        $qry = <<<SQL
+            SELECT * FROM (
+                SELECT
+                    TO_CHAR(MA.FECHA_MOV, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
+                    MA.CDG_TIPO_PAGO AS TIPO,
+                    'AHORRO' AS CUENTA,
+                    CONCAT(
+                        (SELECT DESCRIPCION
+                        FROM TIPO_PAGO_AHORRO
+                        WHERE CODIGO = MA.CDG_TIPO_PAGO),
+                        CASE 
+                            WHEN SRA.FECHA_SOLICITUD IS NULL THEN ''
+                            ELSE TO_CHAR(SRA.FECHA_SOLICITUD, ' - DD/MM/YYYY')
+                        END 
+                        )
+                    AS DESCRIPCION,
                     CASE MA.MOVIMIENTO
                         WHEN '0' THEN
                             CASE MA.CDG_TIPO_PAGO
-                                WHEN '6' THEN 0
-                                WHEN '7' THEN 0
-                                ELSE -MA.MONTO
+                                WHEN '6' THEN MA.MONTO
+                                WHEN '7' THEN MA.MONTO
+                                ELSE 0
                             END
+                        ELSE 
+                            CASE MA.CDG_TIPO_PAGO
+                                WHEN '8' THEN MA.MONTO
+                                WHEN '9' THEN MA.MONTO
+                                ELSE 0
+                            END
+                    END AS TRANSITO,
+                    CASE MA.MOVIMIENTO
                         WHEN '1' THEN 
                             CASE MA.CDG_TIPO_PAGO
                                 WHEN '8' THEN 0
                                 WHEN '9' THEN 0
                                 ELSE MA.MONTO
                             END
-                    END
-                ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO,
-                (
-                SELECT
-                    T.CDGPE
+                        ELSE 0
+                    END AS ABONO,
+                    CASE MA.MOVIMIENTO
+                        WHEN '0' THEN
+                            CASE MA.CDG_TIPO_PAGO
+                                WHEN '6' THEN 0
+                                WHEN '7' THEN 0
+                                ELSE MA.MONTO
+                            END
+                        ELSE 0
+                    END AS CARGO,
+                    SUM(
+                        CASE MA.MOVIMIENTO
+                            WHEN '0' THEN
+                                CASE MA.CDG_TIPO_PAGO
+                                    WHEN '6' THEN 0
+                                    WHEN '7' THEN 0
+                                    ELSE -MA.MONTO
+                                END
+                            WHEN '1' THEN 
+                                CASE MA.CDG_TIPO_PAGO
+                                    WHEN '8' THEN 0
+                                    WHEN '9' THEN 0
+                                    ELSE MA.MONTO
+                                END
+                        END
+                    ) OVER (ORDER BY MA.FECHA_MOV, MA.MOVIMIENTO DESC) AS SALDO,
+                    (
+                    SELECT
+                        T.CDGPE
+                    FROM
+                        TICKETS_AHORRO T
+                    WHERE
+                        T.CODIGO = MA.CDG_TICKET
+                    ) AS USUARIO
                 FROM
-                    TICKETS_AHORRO T
+                    MOVIMIENTOS_AHORRO MA
+                    INNER JOIN TIPO_PAGO_AHORRO TPA ON TPA.CODIGO = MA.CDG_TIPO_PAGO
+                    LEFT JOIN SOLICITUD_RETIRO_AHORRO SRA ON SRA.ID_SOL_RETIRO_AHORRO = MA.CDG_RETIRO 
                 WHERE
-                    T.CODIGO = MA.CDG_TICKET
-                ) AS USUARIO
-            FROM
-                MOVIMIENTOS_AHORRO MA
-                INNER JOIN TIPO_PAGO_AHORRO TPA ON TPA.CODIGO = MA.CDG_TIPO_PAGO
-                LEFT JOIN SOLICITUD_RETIRO_AHORRO SRA ON SRA.ID_SOL_RETIRO_AHORRO = MA.CDG_RETIRO 
-            WHERE
-                MA.CDG_CONTRATO = '$contrato'
-            UNION ALL
-            SELECT
-                TO_CHAR(FECHA_APERTURA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
-                '5' AS TIPO,
-                'INVERSIÓN' AS CUENTA,
-                'TRANSFERENCIA INVERSIÓN (RECEPCIÓN)' AS DESCRIPCION,
-                0 AS TRANSITO,
-                MONTO_INVERSION AS ABONO,
-                0 AS CARGO,
-                SUM(MONTO_INVERSION) OVER (ORDER BY FECHA_APERTURA) AS SALDO,
-                NVL(CDG_USUARIO, 'SISTEMA') AS USUARIO
-            FROM
-                CUENTA_INVERSION
-            WHERE
-                CDG_CONTRATO = '$contrato'
-        ) ORDER BY TO_DATE(FECHA, 'DD/MM/YYYY HH24:MI:SS') DESC, CUENTA DESC
-sql;
+                    MA.CDG_CONTRATO = '$contrato'
+                UNION ALL
+                SELECT
+                    TO_CHAR(FECHA_APERTURA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
+                    '5' AS TIPO,
+                    'INVERSIÓN' AS CUENTA,
+                    'TRANSFERENCIA INVERSIÓN (RECEPCIÓN)' AS DESCRIPCION,
+                    0 AS TRANSITO,
+                    MONTO_INVERSION AS ABONO,
+                    0 AS CARGO,
+                    SUM(MONTO_INVERSION) OVER (ORDER BY FECHA_APERTURA) AS SALDO,
+                    NVL(CDG_USUARIO, 'SISTEMA') AS USUARIO
+                FROM
+                    CUENTA_INVERSION
+                WHERE
+                    CDG_CONTRATO = '$contrato'
+            ) ORDER BY TO_DATE(FECHA, 'DD/MM/YYYY HH24:MI:SS') DESC, CUENTA DESC
+        SQL;
 
         try {
             $mysqli = new Database();
