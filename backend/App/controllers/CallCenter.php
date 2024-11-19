@@ -4525,6 +4525,40 @@ html;
         $objWriter->save('php://output');
     }
 
+    public function pruebaSocket()
+    {
+        $socket = "<script src='/js/socket.io.min.js'></script>";
+        $extraFooter = <<<HTML
+            <script>
+                const socket = io("http://localhost:3333")
 
+                // Referencias al DOM
+                const messages = document.getElementById("messages")
+                const form = document.getElementById("form")
+                const input = document.getElementById("input")
+
+                // Escuchar mensajes desde el servidor
+                socket.on("chat message", (msg) => {
+                    const item = document.createElement("div")
+                    item.textContent = msg
+                    messages.appendChild(item)
+                    messages.scrollTop = messages.scrollHeight // Hacer scroll al final
+                })
+
+                // Enviar mensaje al servidor
+                form.addEventListener("submit", (e) => {
+                    e.preventDefault() // Evitar el comportamiento por defecto
+                    if (input.value) {
+                        socket.emit("chat message", input.value) // Emitir el mensaje
+                        input.value = "" // Limpiar el input
+                    }
+                })
+            </script>
+        HTML;
+            
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Prueba Socket", [$socket])));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("pruebaSocket", $extraFooter);
+    }
 
 }

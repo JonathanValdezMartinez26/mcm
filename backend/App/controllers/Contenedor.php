@@ -240,6 +240,7 @@ html;
             $menu .= <<<html
                    <li><a href="/CallCenter/Pendientes/">$mis Pendientes $titulo</a></li>
                    <li><a href="/CallCenter/Historico/">$mis Históricos $titulo</a></li>
+                   <li><a href="/CallCenter/PruebaSocket/">Prueba</a></li>
                    $opcion
                   </ul>
                 </li>
