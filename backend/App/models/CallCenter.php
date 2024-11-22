@@ -1020,7 +1020,7 @@ sql;
         if ($datos['cliente']) $query .= " AND CLIENTE <> '" . $datos['cliente'] . "'";
 
         try {
-            $db = new Database();
+            $db = new Database('SERVIDOR-AWS');
             $clientes = $db->queryAll($query);
             foreach ($clientes as $cliente) {
                 $r = self::ActualizaClienteEncuestaPostventa([
@@ -1060,7 +1060,7 @@ sql;
         $qry = $datos['limpiar'] ? $qry2 : $qry1;
         unset($datos['limpiar']);
         try {
-            $db = new Database();
+            $db = new Database('SERVIDOR-AWS');
             $r = $db->actualizar($qry, $datos);
 
             if ($r) return self::Responde(true, "Cliente asignado correctamente.");
@@ -1123,7 +1123,7 @@ sql;
         }
 
         try {
-            $db = new Database();
+            $db = new Database('SERVIDOR-AWS');
             $db->insertar($qry, $datos);
             return self::Responde(true, "Información guardada correctamente.");
         } catch (\Exception $e) {
