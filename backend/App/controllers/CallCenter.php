@@ -4363,6 +4363,8 @@ html;
 
     public function seguimientoClientes()
     {
+        $ids = session_id();
+
         $extraFooter = <<<HTML
             <script>
                 {$this->formatoMoneda}
@@ -4437,7 +4439,7 @@ html;
                     query: {
                         modulo: "callcenter",
                         asesor: datosEncuesta.asesor,
-                        sesionPHP: "PHPSESSID=" + document.cookie.split("=")[1].split(";")[0],
+                        sesionPHP: "$ids",
                         servidor: window.location.origin
                     }
                 })
@@ -4462,7 +4464,10 @@ html;
                 socket.on("clienteAsignado", (asignacion) => {
                     limpiaRespuestas()
 
-                    if (!asignacion.success) return showError(asignacion.mensaje)
+                    if (!asignacion.success) {
+                        console.log("Error al asignar cliente:", asignacion.error)
+                        return showError(asignacion.mensaje)
+                    }
 
                     const datos = asignacion.datos                    
                     datosEncuesta.cliente = datos.CLIENTE
