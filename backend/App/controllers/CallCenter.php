@@ -1,19 +1,25 @@
 <?php
+
 namespace App\controllers;
-defined("APPPATH") OR die("Access denied");
+
+defined("APPPATH") or die("Access denied");
 
 use \Core\View;
+use \Core\App;
 use \Core\MasterDom;
 use \Core\Controller;
-use \App\models\CallCenter AS CallCenterDao;
+use \App\models\CallCenter as CallCenterDao;
 
-class CallCenter extends Controller{
+class CallCenter extends Controller
+{
 
     private $_contenedor;
+    private $configuracion;
 
     function __construct()
     {
         parent::__construct();
+        $this->configuracion = App::getConfig();
         $this->_contenedor = new Contenedor;
         View::set('header', $this->_contenedor->header());
         View::set('footer', $this->_contenedor->footer());
@@ -24,7 +30,8 @@ class CallCenter extends Controller{
         $extraHeader = <<<html
         <title>Consulta de Clientes Call Center</title>
         <link rel="shortcut icon" href="/img/logo.png">
-html;        $extraFooter = <<<html
+html;
+        $extraFooter = <<<html
       <script>
    
        function getParameterByName(name) {
@@ -600,10 +607,9 @@ html;
 html;
         foreach ($ComboSucursales as $key => $val2) {
 
-            if($suc == $val2['CODIGO'])
-            {
+            if ($suc == $val2['CODIGO']) {
                 $sel = 'selected';
-            }else{
+            } else {
                 $sel = '';
             }
 
@@ -621,17 +627,14 @@ html;
 
             $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo, $fec);
 
-            if($AdministracionOne[0] == '')
-            {
+            if ($AdministracionOne[0] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('Administracion', $AdministracionOne);
                 View::set('credito', $credito);
                 View::set('ciclo', $ciclo);
                 View::render("callcenter_cliente_message_all");
-            }
-            else
-            {
+            } else {
 
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -641,39 +644,28 @@ html;
                 View::set('cdgpe', $this->__usuario);
                 View::set('pendientes', 'Mis ');
 
-                if($act == 'N'){
+                if ($act == 'N') {
                     View::render("callcenter_cliente_all_disable");
-                }
-                else{
+                } else {
                     View::render("callcenter_cliente_all");
                 }
             }
         } else {
 
-            if($credito == '' && $ciclo == '')
-            {
-                if($suc == '000' || $suc == '')
-                {
+            if ($credito == '' && $ciclo == '') {
+                if ($suc == '000' || $suc == '') {
                     $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_all);
                     //var_dump("1");
-                }
-                else
-                {
+                } else {
                     //var_dump("1010");
-                    if($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL')
-                    {
+                    if ($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL') {
                         $Solicitudes = CallCenterDao::getAllSolicitudes('');
-                    }
-                    else
-                    {
+                    } else {
                         array_push($cdgco_suc, $suc);
                         $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_suc);
                     }
-
                 }
-            }
-            else
-            {
+            } else {
                 array_push($cdgco_suc, $suc);
                 $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_suc);
                 //var_dump($Solicitudes);
@@ -683,139 +675,107 @@ html;
 
             foreach ($Solicitudes as $key => $value) {
 
-               if($value['ESTATUS_CL'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_CL'] == 'PENDIENTE') {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO') {
                     $color = 'warning';
                     $icon = 'fa-clock-o';
-                }
-                else
-                {
+                } else {
                     $color = 'success';
                     $icon = 'fa-check';
                 }
 
-                if($value['ESTATUS_AV'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_AV'] == 'PENDIENTE') {
                     $color_a = 'primary';
                     $icon_a = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $color_a = 'warning';
                     $icon_a = 'fa-clock-o';
-                }
-                else
-                {
+                } else {
                     $color_a = 'success';
                     $icon_a = 'fa-check';
                 }
 
-                if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $titulo_boton = 'Seguir';
                     $color_boton = '#F0AD4E';
                     $fuente = '#0D0A0A';
-                }else if($value['FIN_CL'] != '' || $value['FIN_AV'] != '')
-                {
+                } else if ($value['FIN_CL'] != '' || $value['FIN_AV'] != '') {
                     $titulo_boton = 'Acabar';
                     $color_boton = '#0D0A0A';
                     $fuente = '';
-                }else
-                {
+                } else {
                     $titulo_boton = 'Iniciar';
                     $color_boton = '#029f3f';
                     $fuente = '';
                 }
 
-                if($value['COMENTARIO_INICIAL'] == '')
-                {
+                if ($value['COMENTARIO_INICIAL'] == '') {
                     $icon_ci = 'fa-close';
                     $color_ci = 'danger';
-                }
-                else{
+                } else {
                     $icon_ci = 'fa-check';
                     $color_ci = 'success';
                 }
-                if($value['COMENTARIO_FINAL'] == '')
-                {
+                if ($value['COMENTARIO_FINAL'] == '') {
                     $icon_cf = 'fa-close';
                     $color_cf = 'danger';
-                }
-                else{
+                } else {
                     $icon_cf = 'fa-check';
                     $color_cf = 'success';
                 }
-                if($value['ESTATUS_FINAL'] == '')
-                {
+                if ($value['ESTATUS_FINAL'] == '') {
                     $icon_ef = 'fa-close';
                     $color_ef = 'danger';
-                }
-                else{
+                } else {
                     $icon_ef = 'fa-clock-o';
                     $color_ef = 'warning';
                 }
-                if($value['COMENTARIO_PRORROGA'] == '')
-                {
+                if ($value['COMENTARIO_PRORROGA'] == '') {
                     $icon_cp_a = 'fa-close';
                     $color_cp_a = 'danger';
-                }
-                else{
+                } else {
                     $icon_cp_a = 'fa-check';
                     $color_cp_a = 'success';
                 }
 
-                if($value['VOBO_REG'] == NULL)
-                {
+                if ($value['VOBO_REG'] == NULL) {
                     $vobo = '';
-                }
-                else{
+                } else {
                     $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
-
                 }
-                if($value['PRORROGA'] == 2)
-                {
+                if ($value['PRORROGA'] == 2) {
                     $prorroga = '<hr><div><b>TIENE ACTIVA LA PRORROGA </b><span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #9101b2"><span class="fa fa-bell"> </span> </span></div><hr>';
-                    $comentario_prorroga = '<div><span class="label label-'.$color_cp_a.'"><span class="fa '.$icon_cp_a.'"></span></span> Comentarios Prorroga</div>';
-                }
-                else{
+                    $comentario_prorroga = '<div><span class="label label-' . $color_cp_a . '"><span class="fa ' . $icon_cp_a . '"></span></span> Comentarios Prorroga</div>';
+                } else {
                     $prorroga = '';
                     $comentario_prorroga = '';
                 }
 
-                if($value['REACTIVACION'] != '400')
-                {
+                if ($value['REACTIVACION'] != '400') {
                     $reactivacion = '';
-                }
-                else{
+                } else {
                     $reactivacion = '<hr><div><b>SE REACTIVO LA SOLICITUD </b><span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #006c75"><span class="fa fa-bell"> </span> </span></div><hr>';
                 }
                 //var_dump($vobo);
 
-                if(substr($value['TEL_CL'],0,1) == '(')
-                {
+                if (substr($value['TEL_CL'], 0, 1) == '(') {
                     $format = $value['TEL_CL'];
-                }
-                else{
-                    $format = "(".substr($value['TEL_CL'],0,3).")"." ".substr($value['TEL_CL'],3,3)." - ".substr($value['TEL_CL'],6,4);
-
+                } else {
+                    $format = "(" . substr($value['TEL_CL'], 0, 3) . ")" . " " . substr($value['TEL_CL'], 3, 3) . " - " . substr($value['TEL_CL'], 6, 4);
                 }
                 //var_dump($value['TEL_CL']);
 
 
-                if($value['ID_SCALL'] == ''){
+                if ($value['ID_SCALL'] == '') {
                     $id_scall = '0000';
-                }else{
+                } else {
                     $id_scall = $value['ID_SCALL'];
                 }
 
 
-                if($value['RECOMENDADO'] != '')
-                {
+                if ($value['RECOMENDADO'] != '') {
                     $recomendado = '<div><b>CAMPAÑA ACTIVA</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #6a0013"><span class="fa fa-yelp"> </span> </span></div><b><em>RECOMIENDA MÁS Y PAGA MENOS <em></em></b><hr>';
                 }
 
@@ -876,7 +836,6 @@ html;
             View::set('sucursal', $opciones_suc);
             View::set('pendientes', 'Mis ');
             View::render("callcenter_pendientes_all");
-
         }
     }
     public function Busqueda()
@@ -933,22 +892,20 @@ html;
 
         if ($credito != '') {
 
-                $Administracion = CallCenterDao::getAllSolicitudesBusquedaRapida($credito);
-                foreach ($Administracion as $key => $value) {
+            $Administracion = CallCenterDao::getAllSolicitudesBusquedaRapida($credito);
+            foreach ($Administracion as $key => $value) {
 
-                    if($value['ESTATUS_GENERAL'] == "SIN HISTORIAL")
-                    {
-                        $ver_resumen = '';
-
-                    }else{
-                        $ver_resumen = <<<html
+                if ($value['ESTATUS_GENERAL'] == "SIN HISTORIAL") {
+                    $ver_resumen = '';
+                } else {
+                    $ver_resumen = <<<html
                         <a type="button" target="_blank" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Act=N&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle"><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen
                         </a>
 html;
-                    }
+                }
 
-                    $monto = number_format($value['MONTO'], 2);
-                    $tabla .= <<<html
+                $monto = number_format($value['MONTO'], 2);
+                $tabla .= <<<html
                      <tr style="padding: 0px !important; ">
                     <td style="padding: 5px !important; width:65px !important; width:125px !important;">
                         <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
@@ -994,21 +951,19 @@ html;
                     </td>
                 </tr>
 html;
-                }
+            }
 
-                View::set('tabla', $tabla);
-                View::set('credito', $credito);
-                View::set('usuario', $this->__usuario);
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::render("busqueda_registro_rapida");
-
+            View::set('tabla', $tabla);
+            View::set('credito', $credito);
+            View::set('usuario', $this->__usuario);
+            View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
+            View::render("busqueda_registro_rapida");
         } else {
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::render("callcenter_busqueda_rapida");
         }
-
     }
 
     public function Prorroga()
@@ -1016,7 +971,8 @@ html;
         $extraHeader = <<<html
         <title>Consulta de Clientes Call Center</title>
         <link rel="shortcut icon" href="/img/logo.png">
-html;        $extraFooter = <<<html
+html;
+        $extraFooter = <<<html
       <script>
       
       function ProrrogaAutorizar(id_call)
@@ -1599,17 +1555,14 @@ html;
 
         if ($credito != '' && $ciclo != '') {
 
-            if($AdministracionOne[0] == '')
-            {
+            if ($AdministracionOne[0] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('Administracion', $AdministracionOne);
                 View::set('credito', $credito);
                 View::set('ciclo', $ciclo);
                 View::render("callcenter_cliente_message_all");
-            }
-            else
-            {
+            } else {
 
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -1620,110 +1573,82 @@ html;
             }
         } else {
 
-            if($credito == '' && $ciclo == '' && $suc != '')
-            {
-                if($suc == '000')
-                {
+            if ($credito == '' && $ciclo == '' && $suc != '') {
+                if ($suc == '000') {
                     $Solicitudes = CallCenterDao::getAllSolicitudesProrroga($cdgco_all);
-                }
-                else
-                {
+                } else {
                     array_push($cdgco_suc, $suc);
                     $Solicitudes = CallCenterDao::getAllSolicitudesProrroga($cdgco_suc);
                 }
-            }
-            else
-            {
+            } else {
                 $Solicitudes = CallCenterDao::getAllSolicitudesProrroga($cdgco_all);
                 //var_dump($Solicitudes);
             }
 
 
             foreach ($Solicitudes as $key => $value) {
-                if($value['ESTATUS_CL'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_CL'] == 'PENDIENTE') {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO') {
                     $color = 'warning';
                     $icon = 'fa-clock-o';
-                }
-                else
-                {
+                } else {
                     $color = 'success';
                     $icon = 'fa-check';
                 }
 
-                if($value['ESTATUS_AV'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_AV'] == 'PENDIENTE') {
                     $color_a = 'primary';
                     $icon_a = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $color_a = 'warning';
                     $icon_a = 'fa-clock-o';
-                }
-                else
-                {
+                } else {
                     $color_a = 'success';
                     $icon_a = 'fa-check';
                 }
 
-                if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $titulo_boton = 'Seguir';
                     $color_boton = '#F0AD4E';
                     $fuente = '#0D0A0A';
-                }else if($value['FIN_CL'] != '' || $value['FIN_AV'] != '')
-                {
+                } else if ($value['FIN_CL'] != '' || $value['FIN_AV'] != '') {
                     $titulo_boton = 'Acabar';
                     $color_boton = '#0D0A0A';
                     $fuente = '';
-                }else
-                {
+                } else {
                     $titulo_boton = 'Iniciar';
                     $color_boton = '#029f3f';
                     $fuente = '';
                 }
 
-                if($value['COMENTARIO_INICIAL'] == '')
-                {
+                if ($value['COMENTARIO_INICIAL'] == '') {
                     $icon_ci = 'fa-close';
                     $color_ci = 'danger';
-                }
-                else{
+                } else {
                     $icon_ci = 'fa-check';
                     $color_ci = 'success';
                 }
-                if($value['COMENTARIO_FINAL'] == '')
-                {
+                if ($value['COMENTARIO_FINAL'] == '') {
                     $icon_cf = 'fa-close';
                     $color_cf = 'danger';
-                }
-                else{
+                } else {
                     $icon_cf = 'fa-check';
                     $color_cf = 'success';
                 }
-                if($value['ESTATUS_FINAL'] == '')
-                {
+                if ($value['ESTATUS_FINAL'] == '') {
                     $icon_ef = 'fa-close';
                     $color_ef = 'danger';
-                }
-                else{
+                } else {
                     $icon_ef = 'fa-check';
                     $color_ef = 'success';
                 }
 
-                if($value['VOBO_REG'] == NULL)
-                {
+                if ($value['VOBO_REG'] == NULL) {
                     $vobo = '';
-                }
-                else{
+                } else {
                     $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
-
                 }
                 //var_dump($vobo);
 
@@ -1766,7 +1691,6 @@ html;
             View::set('tabla', $tabla);
             View::set('sucursal', $opciones_suc);
             View::render("callcenter_prorroga_all");
-
         }
     }
 
@@ -1775,7 +1699,8 @@ html;
         $extraHeader = <<<html
         <title>Consulta de Clientes Call Center</title>
         <link rel="shortcut icon" href="/img/logo.png">
-html;        $extraFooter = <<<html
+html;
+        $extraFooter = <<<html
       <script>
       
       function ReactivarAutorizar(id_call)
@@ -2359,17 +2284,14 @@ html;
 
         if ($credito != '' && $ciclo != '') {
 
-            if($AdministracionOne[0] == '')
-            {
+            if ($AdministracionOne[0] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('Administracion', $AdministracionOne);
                 View::set('credito', $credito);
                 View::set('ciclo', $ciclo);
                 View::render("callcenter_cliente_message_all");
-            }
-            else
-            {
+            } else {
 
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -2380,110 +2302,82 @@ html;
             }
         } else {
 
-            if($credito == '' && $ciclo == '' && $suc != '')
-            {
-                if($suc == '000')
-                {
+            if ($credito == '' && $ciclo == '' && $suc != '') {
+                if ($suc == '000') {
                     $Solicitudes = CallCenterDao::getAllSolicitudesReactivar($cdgco_all);
-                }
-                else
-                {
+                } else {
                     array_push($cdgco_suc, $suc);
                     $Solicitudes = CallCenterDao::getAllSolicitudesReactivar($cdgco_suc);
                 }
-            }
-            else
-            {
+            } else {
                 $Solicitudes = CallCenterDao::getAllSolicitudesReactivar($cdgco_all);
                 //var_dump($Solicitudes);
             }
 
 
             foreach ($Solicitudes as $key => $value) {
-                if($value['ESTATUS_CL'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_CL'] == 'PENDIENTE') {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO') {
                     $color = 'warning';
                     $icon = 'fa-clock-o';
-                }
-                else
-                {
+                } else {
                     $color = 'success';
                     $icon = 'fa-check';
                 }
 
-                if($value['ESTATUS_AV'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_AV'] == 'PENDIENTE') {
                     $color_a = 'primary';
                     $icon_a = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $color_a = 'warning';
                     $icon_a = 'fa-clock-o';
-                }
-                else
-                {
+                } else {
                     $color_a = 'success';
                     $icon_a = 'fa-check';
                 }
 
-                if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $titulo_boton = 'Seguir';
                     $color_boton = '#F0AD4E';
                     $fuente = '#0D0A0A';
-                }else if($value['FIN_CL'] != '' || $value['FIN_AV'] != '')
-                {
+                } else if ($value['FIN_CL'] != '' || $value['FIN_AV'] != '') {
                     $titulo_boton = 'Acabar';
                     $color_boton = '#0D0A0A';
                     $fuente = '';
-                }else
-                {
+                } else {
                     $titulo_boton = 'Iniciar';
                     $color_boton = '#029f3f';
                     $fuente = '';
                 }
 
-                if($value['COMENTARIO_INICIAL'] == '')
-                {
+                if ($value['COMENTARIO_INICIAL'] == '') {
                     $icon_ci = 'fa-close';
                     $color_ci = 'danger';
-                }
-                else{
+                } else {
                     $icon_ci = 'fa-check';
                     $color_ci = 'success';
                 }
-                if($value['COMENTARIO_FINAL'] == '')
-                {
+                if ($value['COMENTARIO_FINAL'] == '') {
                     $icon_cf = 'fa-close';
                     $color_cf = 'danger';
-                }
-                else{
+                } else {
                     $icon_cf = 'fa-check';
                     $color_cf = 'success';
                 }
-                if($value['ESTATUS_FINAL'] == '')
-                {
+                if ($value['ESTATUS_FINAL'] == '') {
                     $icon_ef = 'fa-close';
                     $color_ef = 'danger';
-                }
-                else{
+                } else {
                     $icon_ef = 'fa-check';
                     $color_ef = 'success';
                 }
 
-                if($value['VOBO_REG'] == NULL)
-                {
+                if ($value['VOBO_REG'] == NULL) {
                     $vobo = '';
-                }
-                else{
+                } else {
                     $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
-
                 }
                 //var_dump($vobo);
 
@@ -2526,7 +2420,6 @@ html;
             View::set('tabla', $tabla);
             View::set('sucursal', $opciones_suc);
             View::render("callcenter_reactivar_all");
-
         }
     }
 
@@ -2598,8 +2491,7 @@ html;
 
         if ($credito != '' && $ciclo != '') {
 
-            if($AdministracionOne[0] == '')
-            {
+            if ($AdministracionOne[0] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('Administracion', $AdministracionOne);
@@ -2607,9 +2499,7 @@ html;
                 View::set('ciclo', $ciclo);
                 View::set('pendientes', 'Todos los ');
                 View::render("callcenter_cliente_message_all");
-            }
-            else
-            {
+            } else {
 
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -2624,107 +2514,81 @@ html;
             $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco);
 
             foreach ($Solicitudes as $key => $value) {
-                if($value['ESTATUS_CL'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_CL'] == 'PENDIENTE') {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO') {
                     $color = 'warning';
                     $icon = 'fa-clock-o';
-                }
-                else
-                {
+                } else {
                     $color = 'success';
                     $icon = 'fa-check';
                 }
 
-                if($value['ESTATUS_AV'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_AV'] == 'PENDIENTE') {
                     $color_a = 'primary';
                     $icon_a = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $color_a = 'warning';
                     $icon_a = 'fa-clock-o';
-                }
-                else
-                {
+                } else {
                     $color_a = 'success';
                     $icon_a = 'fa-check';
                 }
 
-                if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $titulo_boton = 'Seguir';
                     $color_boton = '#F0AD4E';
                     $fuente = '#0D0A0A';
-                }else if($value['FIN_CL'] != '' || $value['FIN_AV'] != '')
-                {
+                } else if ($value['FIN_CL'] != '' || $value['FIN_AV'] != '') {
                     $titulo_boton = 'Acabar';
                     $color_boton = '#0D0A0A';
                     $fuente = '';
-                }else
-                {
+                } else {
                     $titulo_boton = 'Iniciar';
                     $color_boton = '#029f3f';
                     $fuente = '';
                 }
 
-                if($value['COMENTARIO_INICIAL'] == '')
-                {
+                if ($value['COMENTARIO_INICIAL'] == '') {
                     $icon_ci = 'fa-close';
                     $color_ci = 'danger';
-                }
-                else{
+                } else {
                     $icon_ci = 'fa-check';
                     $color_ci = 'success';
                 }
-                if($value['COMENTARIO_FINAL'] == '')
-                {
+                if ($value['COMENTARIO_FINAL'] == '') {
                     $icon_cf = 'fa-close';
                     $color_cf = 'danger';
-                }
-                else{
+                } else {
                     $icon_cf = 'fa-check';
                     $color_cf = 'success';
                 }
-                if($value['ESTATUS_FINAL'] == '')
-                {
+                if ($value['ESTATUS_FINAL'] == '') {
                     $icon_ef = 'fa-close';
                     $color_ef = 'danger';
-                }
-                else{
+                } else {
                     $icon_ef = 'fa-clock-o';
                     $color_ef = 'warning';
                 }
-                if($value['COMENTARIO_PRORROGA'] == '')
-                {
+                if ($value['COMENTARIO_PRORROGA'] == '') {
                     $icon_cp_a = 'fa-close';
                     $color_cp_a = 'danger';
-                }
-                else{
+                } else {
                     $icon_cp_a = 'fa-check';
                     $color_cp_a = 'success';
                 }
 
-                if($value['VOBO_REG'] == NULL)
-                {
+                if ($value['VOBO_REG'] == NULL) {
                     $vobo = '';
-                }
-                else{
+                } else {
                     $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
-
                 }
 
-                if($value['PRORROGA'] == 2)
-                {
+                if ($value['PRORROGA'] == 2) {
                     $prorroga = '<hr><div><b>TIENE ACTIVA LA PRORROGA </b><span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #9101b2"><span class="fa fa-bell"> </span> </span></div><hr>';
-                    $comentario_prorroga = '<div><span class="label label-'.$color_cp_a.'"><span class="fa '.$icon_cp_a.'"></span></span> Comentarios Prorroga</div>';
-                }
-                else{
+                    $comentario_prorroga = '<div><span class="label label-' . $color_cp_a . '"><span class="fa ' . $icon_cp_a . '"></span></span> Comentarios Prorroga</div>';
+                } else {
                     $prorroga = '';
                     $comentario_prorroga = '';
                 }
@@ -2772,7 +2636,6 @@ html;
             View::set('sucursal', $opciones_suc);
             View::set('pendientes', 'Todos los ');
             View::render("callcenter_pendientes_all");
-
         }
     }
 
@@ -2888,7 +2751,7 @@ html;
             $opciones_region .= <<<html
                 <option  value="{$val_R['CODIGO']}">({$val_R['CODIGO']}) {$val_R['NOMBRE']}</option>
 html;
-    }
+        }
 
 
         $getAnalistas = <<<html
@@ -2935,15 +2798,16 @@ html;
 html;
         }
 
-            View::set('header', $this->_contenedor->header($extraHeader));
-            View::set('footer', $this->_contenedor->footer($extraFooter));
-            View::set('Analistas', $getAnalistas);
-            View::set('Regiones', $getRegiones);
-            View::set('tabla', $tabla);
-            View::render("asignar_sucursales_analistas");
+        View::set('header', $this->_contenedor->header($extraHeader));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('Analistas', $getAnalistas);
+        View::set('Regiones', $getRegiones);
+        View::set('tabla', $tabla);
+        View::render("asignar_sucursales_analistas");
     }
 
-    public function DeleteAsignaSuc(){
+    public function DeleteAsignaSuc()
+    {
 
         $cdgco = MasterDom::getDataAll('cdgco');
         $id = CallCenterDao::DeleteAsignaSuc($cdgco);
@@ -3138,10 +3002,9 @@ html;
 html;
         foreach ($ComboSucursales as $key => $val2) {
 
-            if($Sucursal == $val2['CODIGO'])
-            {
+            if ($Sucursal == $val2['CODIGO']) {
                 $sel = 'selected';
-            }else{
+            } else {
                 $sel = '';
             }
 
@@ -3159,151 +3022,115 @@ html;
             $Consulta = CallCenterDao::getAllSolicitudesHistorico($Inicial, $Final, $cdgco, $this->__usuario, $this->__perfil, $Sucursal);
             foreach ($Consulta as $key => $value) {
 
-                if($value['ESTATUS_CL'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_CL'] == 'PENDIENTE') {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO') {
                     $color = 'warning';
                     $icon = 'fa-clock-o';
-                }
-                else if($value['ESTATUS_CL'] == '-')
-                {
+                } else if ($value['ESTATUS_CL'] == '-') {
                     $color = 'danger';
                     $icon = 'fa-close';
-                }
-                else
-                {
+                } else {
                     $color = 'success';
                     $icon = 'fa-check';
                 }
 
-                if($value['ESTATUS_AV'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_AV'] == 'PENDIENTE') {
                     $color_a = 'primary';
                     $icon_a = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $color_a = 'warning';
                     $icon_a = 'fa-clock-o';
-                }
-                else if($value['ESTATUS_AV'] == '-')
-                {
+                } else if ($value['ESTATUS_AV'] == '-') {
                     $color_a = 'danger';
                     $icon_a = 'fa-close';
-                }
-                else
-                {
+                } else {
                     $color_a = 'success';
                     $icon_a = 'fa-check';
                 }
 
-                if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $titulo_boton = 'Pedir Prorroga';
                     $color_boton = '#F0AD4E';
                     $fuente = '#0D0A0A';
-                }else if($value['FIN_CL'] != '' || $value['FIN_AV'] != '')
-                {
+                } else if ($value['FIN_CL'] != '' || $value['FIN_AV'] != '') {
                     $titulo_boton = 'Pedir Prorroga';
                     $color_boton = '#0D0A0A';
                     $fuente = '';
-                }else
-                {
+                } else {
                     $titulo_boton = 'Pedir Prorroga';
                     $color_boton = '#029f3f';
                     $fuente = '';
                 }
 
-                if($value['COMENTARIO_INICIAL'] == '')
-                {
+                if ($value['COMENTARIO_INICIAL'] == '') {
                     $icon_ci = 'fa-close';
                     $color_ci = 'danger';
-                }
-                else{
+                } else {
                     $icon_ci = 'fa-check';
                     $color_ci = 'success';
                 }
-                if($value['COMENTARIO_FINAL'] == '')
-                {
+                if ($value['COMENTARIO_FINAL'] == '') {
                     $icon_cf = 'fa-close';
                     $color_cf = 'danger';
-                }
-                else{
+                } else {
                     $icon_cf = 'fa-check';
                     $color_cf = 'success';
                 }
-                if($value['ESTATUS_FINAL'] == '')
-                {
+                if ($value['ESTATUS_FINAL'] == '') {
                     $icon_ef = 'fa-close';
                     $color_ef = 'danger';
-                }
-                else{
+                } else {
                     $icon_ef = 'fa-check';
                     $color_ef = 'success';
                 }
 
-                if($value['VOBO_REG'] == NULL)
-                {
+                if ($value['VOBO_REG'] == NULL) {
                     $vobo = '';
-                }
-                else{
+                } else {
                     $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
                 }
 
-                if($value['PRORROGA'] == NULL)
-                {
+                if ($value['PRORROGA'] == NULL) {
                     $boton_titulo_prorroga = 'Prorroga';
                     $des_prorroga = '';
                     $boton_reactivar = '';
-                }
-                else
-                {
+                } else {
                     if ($value['PRORROGA'] == '1') {
                         $boton_titulo_prorroga = 'Prorroga <br>Pendiente';
-                    }else if ($value['PRORROGA'] == '2') {
+                    } else if ($value['PRORROGA'] == '2') {
                         $boton_titulo_prorroga = 'Prorroga <br>Aceptada';
-                    }else if($value['PRORROGA'] == '3'){
+                    } else if ($value['PRORROGA'] == '3') {
                         $boton_titulo_prorroga = 'Prorroga <br>Declinada';
-                    }else if($value['PRORROGA'] == '4'){
+                    } else if ($value['PRORROGA'] == '4') {
                         $boton_titulo_prorroga = 'Prorroga';
                     }
                 }
 
-                if($value['REACTIVACION'] == NULL)
-                {
+                if ($value['REACTIVACION'] == NULL) {
                     $boton_titulo_reactivar = 'Reactivar';
-                }
-                else {
+                } else {
 
                     if ($value['REACTIVACION'] == '1') {
                         $boton_titulo_reactivar = 'Reactivar <br>Pendiente';
-                    }else if ($value['REACTIVACION'] == '2') {
+                    } else if ($value['REACTIVACION'] == '2') {
                         $boton_titulo_reactivar = 'Reactivar <br>Aceptado';
-                    }else if($value['REACTIVACION'] == '3')
-                    {
+                    } else if ($value['REACTIVACION'] == '3') {
                         $boton_titulo_reactivar = 'Reactivar Declinado';
-                    }else if($value['REACTIVACION'] == '400')
-                    {
+                    } else if ($value['REACTIVACION'] == '400') {
                         $boton_titulo_reactivar = 'Reactivar Declinado';
                     }
-
                 }
 
                 //var_dump($value['PRORROGA']);
 
-                if($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-')
-                {
+                if ($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-') {
                     $botones_prorroga = <<<html
                 <td style="padding-top: 22px !important;">
                 </td>
 html;
-                }
-                else
-                {
+                } else {
                     $botones_prorroga = <<<html
                 <td style="padding-top: 22px !important;">
                         <a type="button" class="btn btn-primary btn-circle" onclick="ProrrogaPedir('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: $color_boton; color: $fuente " $des_prorroga><i class="fa fa-edit"></i> <b>$boton_titulo_prorroga</b>
@@ -3314,23 +3141,18 @@ html;
                 </td>
 html;
                 }
-                if($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-')
-                {
+                if ($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-') {
                     $ver_resumen = '';
-
-                }else{
+                } else {
                     $ver_resumen = <<<html
                         <hr>
                         <a type="button" target="_blank" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Act=N&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle"><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen
                         </a>
 html;
                 }
-                if($value['RECOMENDADO'] != '' && $value['CICLO'] == '01')
-                {
+                if ($value['RECOMENDADO'] != '' && $value['CICLO'] == '01') {
                     $recomendado = '<div><b>CAMPAÑA ACTIVA</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #6a0013"><span class="fa fa-yelp"> </span> </span></div><b><em>RECOMIENDA MÁS Y PAGA MENOS <em></em></b><hr>';
-                }
-                else
-                {
+                } else {
                     $recomendado = '';
                 }
 
@@ -3372,17 +3194,14 @@ html;
                 </tr>
 html;
             }
-            if($Consulta[0] == '')
-            {
+            if ($Consulta[0] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('Inicial', $fechaActual);
                 View::set('Final', $fechaActual);
                 View::set('sucursal', $opciones_suc);
                 View::render("historico_call_center_message_f");
-            }
-            else
-            {
+            } else {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('tabla', $tabla);
@@ -3391,8 +3210,7 @@ html;
                 View::set('sucursal', $opciones_suc);
                 View::render("Historico_Call_Center");
             }
-        }
-        else {
+        } else {
 
             $Consulta = CallCenterDao::getAllSolicitudesHistorico($fechaActual, $fechaActual, $cdgco, $this->__usuario, $this->__perfil, $Sucursal);
 
@@ -3401,139 +3219,108 @@ html;
 
             foreach ($Consulta as $key => $value) {
 
-                if($value['ESTATUS_CL'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_CL'] == 'PENDIENTE') {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO') {
                     $color = 'warning';
                     $icon = 'fa-clock-o';
-                }
-                else
-                {
+                } else {
                     $color = 'success';
                     $icon = 'fa-check';
                 }
 
-                if($value['ESTATUS_AV'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_AV'] == 'PENDIENTE') {
                     $color_a = 'primary';
                     $icon_a = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $color_a = 'warning';
                     $icon_a = 'fa-clock-o';
-                }
-                else
-                {
+                } else {
                     $color_a = 'success';
                     $icon_a = 'fa-check';
                 }
 
-                if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $titulo_boton = 'Pedir Prorroga';
                     $color_boton = '#F0AD4E';
                     $fuente = '#0D0A0A';
-                }else if($value['FIN_CL'] != '' || $value['FIN_AV'] != '')
-                {
+                } else if ($value['FIN_CL'] != '' || $value['FIN_AV'] != '') {
                     $titulo_boton = 'Pedir Prorroga';
                     $color_boton = '#0D0A0A';
                     $fuente = '';
-                }else
-                {
+                } else {
                     $titulo_boton = 'Pedir Prorroga';
                     $color_boton = '#029f3f';
                     $fuente = '';
                 }
 
-                if($value['COMENTARIO_INICIAL'] == '')
-                {
+                if ($value['COMENTARIO_INICIAL'] == '') {
                     $icon_ci = 'fa-close';
                     $color_ci = 'danger';
-                }
-                else{
+                } else {
                     $icon_ci = 'fa-check';
                     $color_ci = 'success';
                 }
-                if($value['COMENTARIO_FINAL'] == '')
-                {
+                if ($value['COMENTARIO_FINAL'] == '') {
                     $icon_cf = 'fa-close';
                     $color_cf = 'danger';
-                }
-                else{
+                } else {
                     $icon_cf = 'fa-check';
                     $color_cf = 'success';
                 }
-                if($value['ESTATUS_FINAL'] == '')
-                {
+                if ($value['ESTATUS_FINAL'] == '') {
                     $icon_ef = 'fa-close';
                     $color_ef = 'danger';
-                }
-                else{
+                } else {
                     $icon_ef = 'fa-check';
                     $color_ef = 'success';
                 }
 
-                if($value['VOBO_REG'] == NULL)
-                {
+                if ($value['VOBO_REG'] == NULL) {
                     $vobo = '';
-                }
-                else{
+                } else {
                     $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
                 }
 
-                if($value['PRORROGA'] == NULL)
-                {
+                if ($value['PRORROGA'] == NULL) {
                     $boton_titulo_prorroga = 'Prorroga';
                     $des_prorroga = '';
                     $boton_reactivar = '';
-                }
-                else
-                {
+                } else {
                     if ($value['PRORROGA'] == '1') {
                         $boton_titulo_prorroga = 'Prorroga <br>Pendiente';
-                    }else if ($value['PRORROGA'] == '2') {
+                    } else if ($value['PRORROGA'] == '2') {
                         $boton_titulo_prorroga = 'Prorroga <br>Aceptada';
-                    }else if($value['PRORROGA'] == '3'){
+                    } else if ($value['PRORROGA'] == '3') {
                         $boton_titulo_prorroga = 'Prorroga <br>Declinada';
-                    }else if($value['PRORROGA'] == '4'){
+                    } else if ($value['PRORROGA'] == '4') {
                         $boton_titulo_prorroga = 'Prorroga';
                     }
                 }
 
-                if($value['REACTIVACION'] == NULL)
-                {
+                if ($value['REACTIVACION'] == NULL) {
                     $boton_titulo_reactivar = 'Reactivar';
-                }
-                else {
+                } else {
 
                     if ($value['REACTIVACION'] == '1') {
                         $boton_titulo_reactivar = 'Reactivar <br>Pendiente';
-                    }else if ($value['REACTIVACION'] == '2') {
+                    } else if ($value['REACTIVACION'] == '2') {
                         $boton_titulo_reactivar = 'Reactivar <br>Aceptado';
-                    }else if($value['REACTIVACION'] == '3')
-                    {
+                    } else if ($value['REACTIVACION'] == '3') {
                         $boton_titulo_reactivar = 'Reactivar Declinado';
-                    }else if($value['REACTIVACION'] == '400')
-                    {
+                    } else if ($value['REACTIVACION'] == '400') {
                         $boton_titulo_reactivar = 'Reactivar Declinado';
                     }
                 }
 
 
-                if($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-')
-                {
+                if ($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-') {
                     $botones_prorroga = <<<html
                 <td style="padding-top: 22px !important;">
                 </td>
 html;
-                }
-                else
-                {
+                } else {
                     $botones_prorroga = <<<html
                 <td style="padding-top: 22px !important;">
                         <a type="button" class="btn btn-primary btn-circle" onclick="ProrrogaPedir('{$value['ID_SCALL']}','{$value['PRORROGA']}','{$value['REACTIVAR']}');" style="background: $color_boton; color: $fuente " $des_prorroga><i class="fa fa-edit"></i> <b>$boton_titulo_prorroga</b>
@@ -3545,11 +3332,9 @@ html;
 html;
                 }
 
-                if($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-')
-                {
+                if ($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-') {
                     $ver_resumen = '';
-
-                }else{
+                } else {
                     $ver_resumen = <<<html
                         <hr>
                         <a type="button" target="_blank" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Act=N&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle"><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen
@@ -3593,8 +3378,7 @@ html;
                 </tr>
 html;
             }
-            if($Consulta[0] == '')
-            {
+            if ($Consulta[0] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('fechaActual', $fechaActual);
@@ -3602,9 +3386,7 @@ html;
                 View::set('Final', $fechaActual);
                 View::set('sucursal', $opciones_suc);
                 View::render("historico_call_center_message_f");
-            }
-            else
-            {
+            } else {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('tabla', $tabla);
@@ -3613,7 +3395,6 @@ html;
                 View::set('sucursal', $opciones_suc);
                 View::render("Historico_Call_Center");
             }
-
         }
     }
 
@@ -3695,146 +3476,111 @@ html;
 
             foreach ($Consulta as $key => $value) {
 
-                if($value['ESTATUS_CL'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_CL'] == 'PENDIENTE') {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO') {
                     $color = 'warning';
                     $icon = 'fa-clock-o';
-                }
-                else if($value['ESTATUS_CL'] == '-')
-                {
+                } else if ($value['ESTATUS_CL'] == '-') {
                     $color = 'danger';
                     $icon = 'fa-close';
-                }
-                else
-                {
+                } else {
                     $color = 'success';
                     $icon = 'fa-check';
                 }
 
-                if($value['ESTATUS_AV'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_AV'] == 'PENDIENTE') {
                     $color_a = 'primary';
                     $icon_a = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $color_a = 'warning';
                     $icon_a = 'fa-clock-o';
-                }
-                else if($value['ESTATUS_AV'] == '-')
-                {
+                } else if ($value['ESTATUS_AV'] == '-') {
                     $color_a = 'danger';
                     $icon_a = 'fa-close';
-                }
-                else
-                {
+                } else {
                     $color_a = 'success';
                     $icon_a = 'fa-check';
                 }
 
-                if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $titulo_boton = 'Pedir Prorroga';
                     $color_boton = '#F0AD4E';
                     $fuente = '#0D0A0A';
-                }else if($value['FIN_CL'] != '' || $value['FIN_AV'] != '')
-                {
+                } else if ($value['FIN_CL'] != '' || $value['FIN_AV'] != '') {
                     $titulo_boton = 'Pedir Prorroga';
                     $color_boton = '#0D0A0A';
                     $fuente = '';
-                }else
-                {
+                } else {
                     $titulo_boton = 'Pedir Prorroga';
                     $color_boton = '#029f3f';
                     $fuente = '';
                 }
 
-                if($value['COMENTARIO_INICIAL'] == '')
-                {
+                if ($value['COMENTARIO_INICIAL'] == '') {
                     $icon_ci = 'fa-close';
                     $color_ci = 'danger';
-                }
-                else{
+                } else {
                     $icon_ci = 'fa-check';
                     $color_ci = 'success';
                 }
-                if($value['COMENTARIO_FINAL'] == '')
-                {
+                if ($value['COMENTARIO_FINAL'] == '') {
                     $icon_cf = 'fa-close';
                     $color_cf = 'danger';
-                }
-                else{
+                } else {
                     $icon_cf = 'fa-check';
                     $color_cf = 'success';
                 }
-                if($value['ESTATUS_FINAL'] == '')
-                {
+                if ($value['ESTATUS_FINAL'] == '') {
                     $icon_ef = 'fa-close';
                     $color_ef = 'danger';
-                }
-                else{
+                } else {
                     $icon_ef = 'fa-check';
                     $color_ef = 'success';
                 }
 
-                if($value['VOBO_REG'] == NULL)
-                {
+                if ($value['VOBO_REG'] == NULL) {
                     $vobo = '';
-                }
-                else{
+                } else {
                     $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
                 }
 
-                if($value['PRORROGA'] == NULL)
-                {
+                if ($value['PRORROGA'] == NULL) {
                     $boton_titulo_prorroga = 'Prorroga';
                     $des_prorroga = '';
                     $boton_reactivar = '';
-                }
-                else
-                {
+                } else {
                     if ($value['PRORROGA'] == '1') {
                         $boton_titulo_prorroga = 'Prorroga <br>Pendiente';
-                    }else if ($value['PRORROGA'] == '2') {
+                    } else if ($value['PRORROGA'] == '2') {
                         $boton_titulo_prorroga = 'Prorroga <br>Aceptada';
-                    }else if($value['PRORROGA'] == '3'){
+                    } else if ($value['PRORROGA'] == '3') {
                         $boton_titulo_prorroga = 'Prorroga <br>Declinada';
-                    }else if($value['PRORROGA'] == '4'){
+                    } else if ($value['PRORROGA'] == '4') {
                         $boton_titulo_prorroga = 'Prorroga';
                     }
                 }
 
-                if($value['REACTIVACION'] == NULL)
-                {
+                if ($value['REACTIVACION'] == NULL) {
                     $boton_titulo_reactivar = 'Reactivar';
-                }
-                else {
+                } else {
 
                     if ($value['REACTIVACION'] == '1') {
                         $boton_titulo_reactivar = 'Reactivar <br>Pendiente';
-                    }else if ($value['REACTIVACION'] == '2') {
+                    } else if ($value['REACTIVACION'] == '2') {
                         $boton_titulo_reactivar = 'Reactivar <br>Aceptado';
-                    }else if($value['REACTIVACION'] == '3')
-                    {
+                    } else if ($value['REACTIVACION'] == '3') {
                         $boton_titulo_reactivar = 'Reactivar Declinado';
-                    }else if($value['REACTIVACION'] == '400')
-                    {
+                    } else if ($value['REACTIVACION'] == '400') {
                         $boton_titulo_reactivar = 'Reactivar Declinado';
                     }
-
                 }
 
                 //var_dump($value['PRORROGA']);
-                if($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-')
-                {
+                if ($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-') {
                     $ver_resumen = '';
-
-                }else{
+                } else {
                     $ver_resumen = <<<html
                         <hr>
                         <a type="button" target="_blank" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Act=N&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle"><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen
@@ -3842,12 +3588,9 @@ html;
 html;
                 }
 
-                if($value['RECOMENDADO'] != '' && $value['CICLO'] == '01')
-                {
+                if ($value['RECOMENDADO'] != '' && $value['CICLO'] == '01') {
                     $recomendado = '<div><b>CAMPAÑA ACTIVA</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #6a0013"><span class="fa fa-yelp"> </span> </span></div><b><em>RECOMIENDA MÁS Y PAGA MENOS <em></em></b><hr>';
-                }
-                else
-                {
+                } else {
                     $recomendado = '';
                 }
 
@@ -3886,16 +3629,13 @@ html;
                 </tr>
 html;
             }
-            if($Consulta[0] == '')
-            {
+            if ($Consulta[0] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('Inicial', $fechaActual);
                 View::set('Final', $fechaActual);
                 View::render("historico_analistas_message_f");
-            }
-            else
-            {
+            } else {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('tabla', $tabla);
@@ -3903,142 +3643,111 @@ html;
                 View::set('Final', $Final);
                 View::render("Historico_Analistas_Center");
             }
-        }
-        else {
+        } else {
 
-            $Consulta = CallCenterDao::getAllSolicitudesHistorico($fechaActual, $fechaActual, '', $this->__usuario, $this->__perfil,$Sucursal);
+            $Consulta = CallCenterDao::getAllSolicitudesHistorico($fechaActual, $fechaActual, '', $this->__usuario, $this->__perfil, $Sucursal);
 
 
             foreach ($Consulta as $key => $value) {
 
-                if($value['ESTATUS_CL'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_CL'] == 'PENDIENTE') {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO') {
                     $color = 'warning';
                     $icon = 'fa-clock-o';
-                }
-                else
-                {
+                } else {
                     $color = 'success';
                     $icon = 'fa-check';
                 }
 
-                if($value['ESTATUS_AV'] == 'PENDIENTE')
-                {
+                if ($value['ESTATUS_AV'] == 'PENDIENTE') {
                     $color_a = 'primary';
                     $icon_a = 'fa-frown-o';
-                }
-                else if($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                } else if ($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $color_a = 'warning';
                     $icon_a = 'fa-clock-o';
-                }
-                else
-                {
+                } else {
                     $color_a = 'success';
                     $icon_a = 'fa-check';
                 }
 
-                if($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO')
-                {
+                if ($value['ESTATUS_CL'] == 'REGISTRO INCOMPLETO' || $value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $titulo_boton = 'Pedir Prorroga';
                     $color_boton = '#F0AD4E';
                     $fuente = '#0D0A0A';
-                }else if($value['FIN_CL'] != '' || $value['FIN_AV'] != '')
-                {
+                } else if ($value['FIN_CL'] != '' || $value['FIN_AV'] != '') {
                     $titulo_boton = 'Pedir Prorroga';
                     $color_boton = '#0D0A0A';
                     $fuente = '';
-                }else
-                {
+                } else {
                     $titulo_boton = 'Pedir Prorroga';
                     $color_boton = '#029f3f';
                     $fuente = '';
                 }
 
-                if($value['COMENTARIO_INICIAL'] == '')
-                {
+                if ($value['COMENTARIO_INICIAL'] == '') {
                     $icon_ci = 'fa-close';
                     $color_ci = 'danger';
-                }
-                else{
+                } else {
                     $icon_ci = 'fa-check';
                     $color_ci = 'success';
                 }
-                if($value['COMENTARIO_FINAL'] == '')
-                {
+                if ($value['COMENTARIO_FINAL'] == '') {
                     $icon_cf = 'fa-close';
                     $color_cf = 'danger';
-                }
-                else{
+                } else {
                     $icon_cf = 'fa-check';
                     $color_cf = 'success';
                 }
-                if($value['ESTATUS_FINAL'] == '')
-                {
+                if ($value['ESTATUS_FINAL'] == '') {
                     $icon_ef = 'fa-close';
                     $color_ef = 'danger';
-                }
-                else{
+                } else {
                     $icon_ef = 'fa-check';
                     $color_ef = 'success';
                 }
 
-                if($value['VOBO_REG'] == NULL)
-                {
+                if ($value['VOBO_REG'] == NULL) {
                     $vobo = '';
-                }
-                else{
+                } else {
                     $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
                 }
 
-                if($value['PRORROGA'] == NULL)
-                {
+                if ($value['PRORROGA'] == NULL) {
                     $boton_titulo_prorroga = 'Prorroga';
                     $des_prorroga = '';
                     $boton_reactivar = '';
-                }
-                else
-                {
+                } else {
                     if ($value['PRORROGA'] == '1') {
                         $boton_titulo_prorroga = 'Prorroga <br>Pendiente';
-                    }else if ($value['PRORROGA'] == '2') {
+                    } else if ($value['PRORROGA'] == '2') {
                         $boton_titulo_prorroga = 'Prorroga <br>Aceptada';
-                    }else if($value['PRORROGA'] == '3'){
+                    } else if ($value['PRORROGA'] == '3') {
                         $boton_titulo_prorroga = 'Prorroga <br>Declinada';
-                    }else if($value['PRORROGA'] == '4'){
+                    } else if ($value['PRORROGA'] == '4') {
                         $boton_titulo_prorroga = 'Prorroga';
                     }
                 }
 
-                if($value['REACTIVACION'] == NULL)
-                {
+                if ($value['REACTIVACION'] == NULL) {
                     $boton_titulo_reactivar = 'Reactivar';
-                }
-                else {
+                } else {
 
                     if ($value['REACTIVACION'] == '1') {
                         $boton_titulo_reactivar = 'Reactivar <br>Pendiente';
-                    }else if ($value['REACTIVACION'] == '2') {
+                    } else if ($value['REACTIVACION'] == '2') {
                         $boton_titulo_reactivar = 'Reactivar <br>Aceptado';
-                    }else if($value['REACTIVACION'] == '3')
-                    {
+                    } else if ($value['REACTIVACION'] == '3') {
                         $boton_titulo_reactivar = 'Reactivar Declinado';
-                    }else if($value['REACTIVACION'] == '400')
-                    {
+                    } else if ($value['REACTIVACION'] == '400') {
                         $boton_titulo_reactivar = 'Reactivar Declinado';
                     }
                 }
 
-                if($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-')
-                {
+                if ($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-') {
                     $ver_resumen = '';
-
-                }else{
+                } else {
                     $ver_resumen = <<<html
                         <hr>
                         <a type="button" target="_blank" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Act=N&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle"><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen
@@ -4081,17 +3790,14 @@ html;
                 </tr>
 html;
             }
-            if($Consulta[0] == '')
-            {
+            if ($Consulta[0] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('fechaActual', $fechaActual);
                 View::set('Inicial', $fechaActual);
                 View::set('Final', $fechaActual);
                 View::render("historico_analistas_message_f");
-            }
-            else
-            {
+            } else {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('tabla', $tabla);
@@ -4099,11 +3805,11 @@ html;
                 View::set('Final', $fechaActual);
                 View::render("Historico_Analistas_Center");
             }
-
         }
     }
 
-    public function PagosAddEncuestaCL(){
+    public function PagosAddEncuestaCL()
+    {
         $encuesta = new \stdClass();
         $fecha_solicitud = MasterDom::getDataAll('fecha_solicitud');
         $encuesta->_fecha_solicitud = $fecha_solicitud;
@@ -4140,7 +3846,8 @@ html;
         $id = CallCenterDao::insertEncuestaCL($encuesta);
     }
 
-    public function PagosAddEncuestaAV(){
+    public function PagosAddEncuestaAV()
+    {
         $encuesta = new \stdClass();
         $encuesta->_fecha_solicitud = MasterDom::getDataAll('fecha_solicitud_av');
         $encuesta->_cdgre = MasterDom::getData('cdgre_av');
@@ -4168,7 +3875,8 @@ html;
         $id = CallCenterDao::insertEncuestaAV($encuesta);
     }
 
-    public function Resumen(){
+    public function Resumen()
+    {
         $encuesta = new \stdClass();
         $encuesta->_cdgco = MasterDom::getData('cdgco_res');
         $encuesta->_cliente = MasterDom::getData('cliente_id_res');
@@ -4180,7 +3888,8 @@ html;
         $id = CallCenterDao::UpdateResumen($encuesta);
     }
 
-    public function ProrrogaUpdate(){
+    public function ProrrogaUpdate()
+    {
         $encuesta = new \stdClass();
         $encuesta->_prorroga = MasterDom::getData('prorroga');
         $encuesta->_id_call = MasterDom::getData('id_call');
@@ -4188,7 +3897,8 @@ html;
         $id = CallCenterDao::UpdateProrroga($encuesta);
     }
 
-    public function ReactivarSolicitudEjec(){
+    public function ReactivarSolicitudEjec()
+    {
         $encuesta = new \stdClass();
         $encuesta->_id_call = MasterDom::getData('id_call');
         $encuesta->_opcion = MasterDom::getData('opcion');
@@ -4196,7 +3906,8 @@ html;
         $id = CallCenterDao::ReactivarSolicitud($encuesta);
     }
 
-    public function ReactivarSolicitudAdminPost(){
+    public function ReactivarSolicitudAdminPost()
+    {
         $encuesta = new \stdClass();
         $encuesta->_id_call = MasterDom::getData('id_call');
         $encuesta->_opcion = MasterDom::getData('opcion');
@@ -4204,7 +3915,8 @@ html;
         $id = CallCenterDao::ReactivarSolicitudAdmin($encuesta);
     }
 
-    public function ResumenEjecutivo(){
+    public function ResumenEjecutivo()
+    {
         $encuesta = new \stdClass();
         $encuesta->_cdgco = MasterDom::getData('cdgco_res');
         $encuesta->_cliente = MasterDom::getData('cliente_id_res');
@@ -4217,7 +3929,8 @@ html;
         $id = CallCenterDao::UpdateResumenFinal($encuesta);
     }
 
-    public function AsignarSucursal(){
+    public function AsignarSucursal()
+    {
 
         $asigna = new \stdClass();
         $asigna->_fecha_registro = MasterDom::getDataAll('fecha_registro');
@@ -4229,7 +3942,8 @@ html;
         $id = CallCenterDao::insertAsignaSucursal($asigna);
     }
 
-    public function HistorialGenera(){
+    public function HistorialGenera()
+    {
 
         $cdgco_all = array();
 
@@ -4245,8 +3959,7 @@ html;
         $Sucursal = $_GET['Suc'];
 
 
-        if($fecha_fin == '' || $fecha_fin == '')
-        {
+        if ($fecha_fin == '' || $fecha_fin == '') {
             $fechaActual = date('Y-m-d');
             $fecha_inicio = $fechaActual;
             $fecha_fin = $fechaActual;
@@ -4264,19 +3977,19 @@ html;
 
 
         $estilo_titulo = array(
-            'font' => array('bold' => true,'name'=>'Calibri','size'=>10, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true, 'name' => 'Calibri', 'size' => 10, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_encabezado = array(
-            'font' => array('bold' => true,'name'=>'Calibri','size'=>10, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true, 'name' => 'Calibri', 'size' => 10, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_celda = array(
-            'font' => array('bold' => false,'name'=>'Calibri','size'=>9,'color' => array('rgb' => '060606')),
+            'font' => array('bold' => false, 'name' => 'Calibri', 'size' => 9, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
 
@@ -4290,63 +4003,125 @@ html;
         $adaptarTexto = true;
 
         $controlador = "CallCenter";
-        $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N','O', 'P', 'Q', 'R', 'S', 'T', 'U','V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD');
-        $nombreColumna = array('-','NOMBRE REGION','FECHA DE TRABAJO','SOLICITUD','INICIO','AGENCIA','EJECUTIVO','CLIENTE','NOMBRE DE CLIENTE','CICLO','TELEFONO CLIENTE','TIPO DE LLAMADA','¿Qué edad tiene?','¿Cuál es su fecha de nacimiento?','Me proporciona su domicilio completo por favor','¿Qué tiempo tiene viviendo en este domicilio?','Actualmente ¿cual es su principal fuente de ingresos?','¿Cuál es el nombre de su aval?','¿Que Relación tiene con su aval?','¿ Cual es la actividad económica de su aval?','Por favor me proporciona el número telefónico de su aval','¿Firmó su solicitud? ¿Cuando?','Me puede indicar ¿para qué utilizará su crédito?','¿Compartirá su crédito con alguna otra persona?','NOMBRE DEL AVAL','TELEFONO DE AVAL','TIPO DE LLAMADA','¿Qué edad tiene?','Me indica su fecha de nacimiento por favor','¿Cuál es su domicilio?','¿Qué tiempo lleva viviendo en este domicilio?','Actualmente  ¿cual es su principal fuente de ingresos?','¿Hace cuanto conoce a  “Nombre del cliente”?','¿Qué Relación tiene con “Nombre del cliente”?','¿Sabe a que se dedica el Sr. (nombre de cliente)?','Me puede proporcionar el numero telefónico de “cliente”','DIA/HORA DE LLAMADA 1 CL','DIA/HORA DE LLAMADA 2 CL','DIA/HORA DE LLAMADA 1 AV','DIA/HORA DE LLAMADA 1 AV','COMENTARIO INICIAL','COMENTARIO FINAL','ESTATUS','INCIDENCIA COMERCIAL - ADMINISTRACION','Vo Bo GERENTE REGIONAL','ANALISTA','SEMAFORO','FECHA DE DESEMBOLSO','$ ENTREGADA','$ PARCIALIDAD','MORA AL CORTE','#  SEMANAS CON ATRASO','MES','LLAMADA POSTVENTA','RECAPTURADA SI-NO','ANALISTA INICIAL');
-        $nombreCampo = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-            'N','O', 'P', 'Q', 'R', 'S', 'T', 'U','V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD',
-            'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'ASS',
-            'ATT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD'
+        $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD');
+        $nombreColumna = array('-', 'NOMBRE REGION', 'FECHA DE TRABAJO', 'SOLICITUD', 'INICIO', 'AGENCIA', 'EJECUTIVO', 'CLIENTE', 'NOMBRE DE CLIENTE', 'CICLO', 'TELEFONO CLIENTE', 'TIPO DE LLAMADA', '¿Qué edad tiene?', '¿Cuál es su fecha de nacimiento?', 'Me proporciona su domicilio completo por favor', '¿Qué tiempo tiene viviendo en este domicilio?', 'Actualmente ¿cual es su principal fuente de ingresos?', '¿Cuál es el nombre de su aval?', '¿Que Relación tiene con su aval?', '¿ Cual es la actividad económica de su aval?', 'Por favor me proporciona el número telefónico de su aval', '¿Firmó su solicitud? ¿Cuando?', 'Me puede indicar ¿para qué utilizará su crédito?', '¿Compartirá su crédito con alguna otra persona?', 'NOMBRE DEL AVAL', 'TELEFONO DE AVAL', 'TIPO DE LLAMADA', '¿Qué edad tiene?', 'Me indica su fecha de nacimiento por favor', '¿Cuál es su domicilio?', '¿Qué tiempo lleva viviendo en este domicilio?', 'Actualmente  ¿cual es su principal fuente de ingresos?', '¿Hace cuanto conoce a  “Nombre del cliente”?', '¿Qué Relación tiene con “Nombre del cliente”?', '¿Sabe a que se dedica el Sr. (nombre de cliente)?', 'Me puede proporcionar el numero telefónico de “cliente”', 'DIA/HORA DE LLAMADA 1 CL', 'DIA/HORA DE LLAMADA 2 CL', 'DIA/HORA DE LLAMADA 1 AV', 'DIA/HORA DE LLAMADA 1 AV', 'COMENTARIO INICIAL', 'COMENTARIO FINAL', 'ESTATUS', 'INCIDENCIA COMERCIAL - ADMINISTRACION', 'Vo Bo GERENTE REGIONAL', 'ANALISTA', 'SEMAFORO', 'FECHA DE DESEMBOLSO', '$ ENTREGADA', '$ PARCIALIDAD', 'MORA AL CORTE', '#  SEMANAS CON ATRASO', 'MES', 'LLAMADA POSTVENTA', 'RECAPTURADA SI-NO', 'ANALISTA INICIAL');
+        $nombreCampo = array(
+            'A',
+            'B',
+            'C',
+            'D',
+            'E',
+            'F',
+            'G',
+            'H',
+            'I',
+            'J',
+            'K',
+            'L',
+            'M',
+            'N',
+            'O',
+            'P',
+            'Q',
+            'R',
+            'S',
+            'T',
+            'U',
+            'V',
+            'W',
+            'X',
+            'Y',
+            'Z',
+            'AA',
+            'AB',
+            'AC',
+            'AD',
+            'AE',
+            'AF',
+            'AG',
+            'AH',
+            'AI',
+            'AJ',
+            'AK',
+            'AL',
+            'AM',
+            'AN',
+            'AO',
+            'AP',
+            'AQ',
+            'AR',
+            'ASS',
+            'ATT',
+            'AU',
+            'AV',
+            'AW',
+            'AX',
+            'AY',
+            'AZ',
+            'BA',
+            'BB',
+            'BC',
+            'BD'
         );
 
 
-        $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'Reporte de Solicitudes');
-        $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
-        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
-        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
+        $objPHPExcel->getActiveSheet()->SetCellValue('A' . $fila, 'Reporte de Solicitudes');
+        $objPHPExcel->getActiveSheet()->mergeCells('A' . $fila . ':' . $columna[count($nombreColumna) - 1] . $fila);
+        $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->applyFromArray($estilo_titulo);
+        $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->getAlignment()->setWrapText($adaptarTexto);
 
         $objPHPExcel->getActiveSheet()->getStyle('A2:A2')->applyFromArray(
-            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'FFC7CE'))) );
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'FFC7CE')))
+        );
         $objPHPExcel->getActiveSheet()->getStyle('B2:D2')->applyFromArray(
-            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'C5D9F1'))));
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'C5D9F1')))
+        );
         $objPHPExcel->getActiveSheet()->getStyle('E2:L2')->applyFromArray(
-            array('fill' => array( 'type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => '0070C0'))) );
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => '0070C0')))
+        );
         $objPHPExcel->getActiveSheet()->getStyle('M2:X2')->applyFromArray(
-            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'C5D9F1'))));
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'C5D9F1')))
+        );
         $objPHPExcel->getActiveSheet()->getStyle('Y2:AA2')->applyFromArray(
-            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => '0070C0'))));
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => '0070C0')))
+        );
 
 
         $objPHPExcel->getActiveSheet()->getStyle('AB2:AJ2')->applyFromArray(
-            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'C5D9F1'))));
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'C5D9F1')))
+        );
         $objPHPExcel->getActiveSheet()->getStyle('AK2:AN2')->applyFromArray(
-            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => '0070C0'))));
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => '0070C0')))
+        );
         $objPHPExcel->getActiveSheet()->getStyle('AO2:AU2')->applyFromArray(
-            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'C00000'))));
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'C00000')))
+        );
         $objPHPExcel->getActiveSheet()->getStyle('AV2:BD2')->applyFromArray(
-            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'FFFFCC'))));
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'FFFFCC')))
+        );
 
 
-        $fila +=1;
+        $fila += 1;
 
         /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
         foreach ($nombreColumna as $key => $value) {
-            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, $value);
-            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_encabezado);
-            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, $value);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_encabezado);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
         }
-        $fila +=1; //fila donde comenzaran a escribirse los datos
+        $fila += 1; //fila donde comenzaran a escribirse los datos
 
         /* FILAS DEL ARCHIVO EXCEL */
 
         $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco_all, $this->__usuario, $Sucursal);
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
-                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_celda);
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_celda);
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
             }
-            $fila +=1;
+            $fila += 1;
         }
 
 
@@ -4358,20 +4133,21 @@ html;
 
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Reporte Llamadas Finalizadas '.$fecha_inicio. ' al '.$fecha_fin.'.xlsx"');
+        header('Content-Disposition: attachment;filename="Reporte Llamadas Finalizadas ' . $fecha_inicio . ' al ' . $fecha_fin . '.xlsx"');
         header('Cache-Control: max-age=0');
         header('Cache-Control: max-age=1');
-        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-        header ('Cache-Control: cache, must-revalidate');
-        header ('Pragma: public');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
 
         \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
     }
 
-    public function HistorialGeneraAnalistas(){
+    public function HistorialGeneraAnalistas()
+    {
 
         $cdgco_all = array();
         $analistas_all = array();
@@ -4383,7 +4159,7 @@ html;
 
         //$ComboAnalistas = CallCenterDao::getAllAnalistas();
         //foreach ($ComboAnalistas as $key => $val2) {
-          //  array_push($analistas_all, $val2['USUARIO']);
+        //  array_push($analistas_all, $val2['USUARIO']);
         //}
 
         //$string_from_array = implode(', ', $analistas_all);
@@ -4396,14 +4172,12 @@ html;
         $fecha_inicio = $_GET['Inicial'];
         $fecha_fin = $_GET['Final'];
 
-        if($fecha_fin == '' || $fecha_fin == '')
-        {
+        if ($fecha_fin == '' || $fecha_fin == '') {
             $fechaActual = date('Y-m-d');
             $fecha_inicio = $fechaActual;
             $fecha_fin = $fechaActual;
             $sucursal = '000';
-        }
-        else{
+        } else {
             $sucursal = '000';
         }
 
@@ -4419,19 +4193,19 @@ html;
 
 
         $estilo_titulo = array(
-            'font' => array('bold' => true,'name'=>'Calibri','size'=>10, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true, 'name' => 'Calibri', 'size' => 10, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_encabezado = array(
-            'font' => array('bold' => true,'name'=>'Calibri','size'=>10, 'color' => array('rgb' => '060606')),
+            'font' => array('bold' => true, 'name' => 'Calibri', 'size' => 10, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
         );
 
         $estilo_celda = array(
-            'font' => array('bold' => false,'name'=>'Calibri','size'=>9,'color' => array('rgb' => '060606')),
+            'font' => array('bold' => false, 'name' => 'Calibri', 'size' => 9, 'color' => array('rgb' => '060606')),
             'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
             'type' => \PHPExcel_Style_Fill::FILL_SOLID
 
@@ -4445,52 +4219,114 @@ html;
         $adaptarTexto = true;
 
         $controlador = "CallCenter";
-        $columna = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N','O', 'P', 'Q', 'R', 'S', 'T', 'U','V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD');
-        $nombreColumna = array('-','NOMBRE REGION','FECHA DE TRABAJO','SOLICITUD','INICIO','AGENCIA','EJECUTIVO','CLIENTE','NOMBRE DE CLIENTE','CICLO','TELEFONO CLIENTE','TIPO DE LLAMADA','¿Qué edad tiene?','¿Cuál es su fecha de nacimiento?','Me proporciona su domicilio completo por favor','¿Qué tiempo tiene viviendo en este domicilio?','Actualmente ¿cual es su principal fuente de ingresos?','¿Cuál es el nombre de su aval?','¿Que Relación tiene con su aval?','¿ Cual es la actividad económica de su aval?','Por favor me proporciona el número telefónico de su aval','¿Firmó su solicitud? ¿Cuando?','Me puede indicar ¿para qué utilizará su crédito?','¿Compartirá su crédito con alguna otra persona?','NOMBRE DEL AVAL','TELEFONO DE AVAL','TIPO DE LLAMADA','¿Qué edad tiene?','Me indica su fecha de nacimiento por favor','¿Cuál es su domicilio?','¿Qué tiempo lleva viviendo en este domicilio?','Actualmente  ¿cual es su principal fuente de ingresos?','¿Hace cuanto conoce a  “Nombre del cliente”?','¿Qué Relación tiene con “Nombre del cliente”?','¿Sabe a que se dedica el Sr. (nombre de cliente)?','Me puede proporcionar el numero telefónico de “cliente”','DIA/HORA DE LLAMADA 1 CL','DIA/HORA DE LLAMADA 2 CL','DIA/HORA DE LLAMADA 1 AV','DIA/HORA DE LLAMADA 1 AV','COMENTARIO INICIAL','COMENTARIO FINAL','ESTATUS','INCIDENCIA COMERCIAL - ADMINISTRACION','Vo Bo GERENTE REGIONAL','ANALISTA','SEMAFORO','FECHA DE DESEMBOLSO','$ ENTREGADA','$ PARCIALIDAD','MORA AL CORTE','#  SEMANAS CON ATRASO','MES','LLAMADA POSTVENTA','RECAPTURADA SI-NO','ANALISTA INICIAL');
-        $nombreCampo = array('A','B','C','D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-            'N','O', 'P', 'Q', 'R', 'S', 'T', 'U','V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD',
-            'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'ASS',
-            'ATT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD'
+        $columna = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD');
+        $nombreColumna = array('-', 'NOMBRE REGION', 'FECHA DE TRABAJO', 'SOLICITUD', 'INICIO', 'AGENCIA', 'EJECUTIVO', 'CLIENTE', 'NOMBRE DE CLIENTE', 'CICLO', 'TELEFONO CLIENTE', 'TIPO DE LLAMADA', '¿Qué edad tiene?', '¿Cuál es su fecha de nacimiento?', 'Me proporciona su domicilio completo por favor', '¿Qué tiempo tiene viviendo en este domicilio?', 'Actualmente ¿cual es su principal fuente de ingresos?', '¿Cuál es el nombre de su aval?', '¿Que Relación tiene con su aval?', '¿ Cual es la actividad económica de su aval?', 'Por favor me proporciona el número telefónico de su aval', '¿Firmó su solicitud? ¿Cuando?', 'Me puede indicar ¿para qué utilizará su crédito?', '¿Compartirá su crédito con alguna otra persona?', 'NOMBRE DEL AVAL', 'TELEFONO DE AVAL', 'TIPO DE LLAMADA', '¿Qué edad tiene?', 'Me indica su fecha de nacimiento por favor', '¿Cuál es su domicilio?', '¿Qué tiempo lleva viviendo en este domicilio?', 'Actualmente  ¿cual es su principal fuente de ingresos?', '¿Hace cuanto conoce a  “Nombre del cliente”?', '¿Qué Relación tiene con “Nombre del cliente”?', '¿Sabe a que se dedica el Sr. (nombre de cliente)?', 'Me puede proporcionar el numero telefónico de “cliente”', 'DIA/HORA DE LLAMADA 1 CL', 'DIA/HORA DE LLAMADA 2 CL', 'DIA/HORA DE LLAMADA 1 AV', 'DIA/HORA DE LLAMADA 1 AV', 'COMENTARIO INICIAL', 'COMENTARIO FINAL', 'ESTATUS', 'INCIDENCIA COMERCIAL - ADMINISTRACION', 'Vo Bo GERENTE REGIONAL', 'ANALISTA', 'SEMAFORO', 'FECHA DE DESEMBOLSO', '$ ENTREGADA', '$ PARCIALIDAD', 'MORA AL CORTE', '#  SEMANAS CON ATRASO', 'MES', 'LLAMADA POSTVENTA', 'RECAPTURADA SI-NO', 'ANALISTA INICIAL');
+        $nombreCampo = array(
+            'A',
+            'B',
+            'C',
+            'D',
+            'E',
+            'F',
+            'G',
+            'H',
+            'I',
+            'J',
+            'K',
+            'L',
+            'M',
+            'N',
+            'O',
+            'P',
+            'Q',
+            'R',
+            'S',
+            'T',
+            'U',
+            'V',
+            'W',
+            'X',
+            'Y',
+            'Z',
+            'AA',
+            'AB',
+            'AC',
+            'AD',
+            'AE',
+            'AF',
+            'AG',
+            'AH',
+            'AI',
+            'AJ',
+            'AK',
+            'AL',
+            'AM',
+            'AN',
+            'AO',
+            'AP',
+            'AQ',
+            'AR',
+            'ASS',
+            'ATT',
+            'AU',
+            'AV',
+            'AW',
+            'AX',
+            'AY',
+            'AZ',
+            'BA',
+            'BB',
+            'BC',
+            'BD'
         );
 
 
-        $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'Reporte de Solicitudes');
-        $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
-        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
-        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
+        $objPHPExcel->getActiveSheet()->SetCellValue('A' . $fila, 'Reporte de Solicitudes');
+        $objPHPExcel->getActiveSheet()->mergeCells('A' . $fila . ':' . $columna[count($nombreColumna) - 1] . $fila);
+        $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->applyFromArray($estilo_titulo);
+        $objPHPExcel->getActiveSheet()->getStyle('A' . $fila)->getAlignment()->setWrapText($adaptarTexto);
 
         $objPHPExcel->getActiveSheet()->getStyle('A2:A2')->applyFromArray(
-            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'FFC7CE'))) );
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'FFC7CE')))
+        );
         $objPHPExcel->getActiveSheet()->getStyle('B2:D2')->applyFromArray(
-            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'C5D9F1'))));
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'C5D9F1')))
+        );
         $objPHPExcel->getActiveSheet()->getStyle('E2:L2')->applyFromArray(
-            array('fill' => array( 'type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => '0070C0'))) );
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => '0070C0')))
+        );
         $objPHPExcel->getActiveSheet()->getStyle('M2:X2')->applyFromArray(
-            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'C5D9F1'))));
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'C5D9F1')))
+        );
         $objPHPExcel->getActiveSheet()->getStyle('Y2:AA2')->applyFromArray(
-            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => '0070C0'))));
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => '0070C0')))
+        );
 
 
         $objPHPExcel->getActiveSheet()->getStyle('AB2:AJ2')->applyFromArray(
-            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'C5D9F1'))));
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'C5D9F1')))
+        );
         $objPHPExcel->getActiveSheet()->getStyle('AK2:AN2')->applyFromArray(
-            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => '0070C0'))));
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => '0070C0')))
+        );
         $objPHPExcel->getActiveSheet()->getStyle('AO2:AU2')->applyFromArray(
-            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'C00000'))));
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'C00000')))
+        );
         $objPHPExcel->getActiveSheet()->getStyle('AV2:BD2')->applyFromArray(
-            array( 'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID,'color' => array('rgb' => 'FFFFCC'))));
+            array('fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'FFFFCC')))
+        );
 
 
-        $fila +=1;
+        $fila += 1;
 
         /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
         foreach ($nombreColumna as $key => $value) {
-            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, $value);
-            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_encabezado);
-            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, $value);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_encabezado);
+            $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
             $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
         }
-        $fila +=1; //fila donde comenzaran a escribirse los datos
+        $fila += 1; //fila donde comenzaran a escribirse los datos
 
         /* FILAS DEL ARCHIVO EXCEL */
 
@@ -4498,11 +4334,11 @@ html;
         $Layoutt = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco_all, '', $sucursal);
         foreach ($Layoutt as $key => $value) {
             foreach ($nombreCampo as $key => $campo) {
-                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_celda);
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
+                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key] . $fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->applyFromArray($estilo_celda);
+                $objPHPExcel->getActiveSheet()->getStyle($columna[$key] . $fila)->getAlignment()->setWrapText($adaptarTexto);
             }
-            $fila +=1;
+            $fila += 1;
         }
 
 
@@ -4512,53 +4348,199 @@ html;
 
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Reporte Llamadas Finalizadas '.$fecha_inicio. ' al '.$fecha_fin.'.xlsx"');
+        header('Content-Disposition: attachment;filename="Reporte Llamadas Finalizadas ' . $fecha_inicio . ' al ' . $fecha_fin . '.xlsx"');
         header('Cache-Control: max-age=0');
         header('Cache-Control: max-age=1');
-        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-        header ('Cache-Control: cache, must-revalidate');
-        header ('Pragma: public');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
 
         \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save('php://output');
     }
 
-    public function pruebaSocket()
+    public function seguimientoClientes()
     {
-        $socket = "<script src='/js/socket.io.min.js'></script>";
         $extraFooter = <<<HTML
             <script>
-                const socket = io("http://localhost:3333")
+                {$this->formatoMoneda}
+                {$this->showError}
+                {$this->showSuccess}
+                {$this->showWait}
+                {$this->confirmarMovimiento}
+                const solicitaComentario = () => {
+                    return swal("Desea añadir un comentario u observación?", {
+                                content: "input",
+                                buttons: {
+                                    confirm: {
+                                        text: "Continuar"
+                                    }
+                                }
+                            })
+                }
+                let tiempo = null
+                const datosEncuesta = {
+                    asesor: "{$this->__usuario}",
+                    cliente: null,
+                    telefono: null,
+                    estatus: null,
+                    comentario_asesor: null,
+                    respuesta_1: null,
+                    comentario_1: null,
+                    respuesta_2: null,
+                    comentario_2: null,
+                    respuesta_3: null,
+                    comentario_3: null,
+                    respuesta_4: null,
+                    comentario_4: null,
+                    respuesta_5: null,
+                    comentario_5: null,
+                    comentario_general: null,
+                    duracion: 0,
+                }
 
-                // Referencias al DOM
-                const messages = document.getElementById("messages")
-                const form = document.getElementById("form")
-                const input = document.getElementById("input")
+                const abandono = document.createElement("span")
+                abandono.setAttribute("style", "width: 100%; font-size: 19px; text-align: center; margin-top: 20px; color: #000000a3;")
+                abandono.innerHTML = "<p>Segura desea <b>abandonar</b> la encuesta?<br>Se le asignará otro cliente.</p>"
 
-                // Escuchar mensajes desde el servidor
-                socket.on("chat message", (msg) => {
-                    const item = document.createElement("div")
-                    item.textContent = msg
-                    messages.appendChild(item)
-                    messages.scrollTop = messages.scrollHeight // Hacer scroll al final
+                const confirmacion = document.createElement("span")
+                confirmacion.setAttribute("style", "width: 100%; font-size: 19px; text-align: center; margin-top: 20px; color: #000000a3;")
+                confirmacion.innerHTML = "<p>Segura desea guardar la encuesta y continuar con otro cliente?</p>"
+
+                $(document).ready(() => {
+                    $("#fotoCliente").attr("src", "/img/profile_default.jpg")
+                    $("#inicio").on("click", function () {
+                        tiempo = new Date().getTime()
+                        if (!$(this).hasClass("active")) return cambiaEstado()
+
+                        guardaEncuesta("ABANDONO", true, abandono)
+                    })
+
+                    $(".modal-content").find(":radio").on("change", function () {
+                        datosEncuesta[$(this).attr("name")] = $(this).val() === "1" ? 1 : 0
+                        $("#guardaEncuesta").prop("disabled", ($('.respuesta:checked').length !== $(".pregunta").length))
+                    })
+
+                    $(".modal-content").find(":text").on("input", function () {
+                        datosEncuesta[$(this).attr("name")] = $(this).val()
+                    })
+
+                    $("#comentario_general").on("input", function () {
+                        datosEncuesta["comentario_general"] = $(this).val()
+                    })
                 })
 
-                // Enviar mensaje al servidor
-                form.addEventListener("submit", (e) => {
-                    e.preventDefault() // Evitar el comportamiento por defecto
-                    if (input.value) {
-                        socket.emit("chat message", input.value) // Emitir el mensaje
-                        input.value = "" // Limpiar el input
+                showWait("Conectando con el servidor...")
+                const socket = io("{$this->configuracion['URL_SOCKETGRAL']}", {
+                    query: {
+                        modulo: "callcenter",
+                        asesor: datosEncuesta.asesor,
+                        sesionPHP: "PHPSESSID=" + document.cookie.split("=")[1].split(";")[0],
+                        servidor: window.location.origin
                     }
                 })
+
+                socket.on("connect", () => {
+                    swal.close()
+                })
+
+                socket.on("connect_error", (error) => {
+                    console.log("Error al conectar con el socket:", error)
+                    showWait("Hay problemas con la conexión al servidor, reintentando...")
+                })
+
+                socket.on("logSocket", (datos) => {
+                    console.log("logSocket:", datos)
+                })
+
+                socket.on("asignando", () => {
+                    showWait("Asignando cliente...")
+                })
+
+                socket.on("clienteAsignado", (asignacion) => {
+                    limpiaRespuestas()
+
+                    if (!asignacion.success) return showError(asignacion.mensaje)
+
+                    const datos = asignacion.datos                    
+                    datosEncuesta.cliente = datos.CLIENTE
+                    datosEncuesta.telefono = datos.TELEFONO
+
+                    $("#nombre").text(datos.NOMBRE)
+                    $("#telefono").text(datos.TELEFONO)
+                    $("#cliente").text(datos.CLIENTE)
+                    $("#sucursal").text(datos.SUCURSAL + " - " + datos.NOMBRE_SUCURSAL)
+                    $("#ciclo").text(datos.CICLO)
+                    $("#monto").text("$ " + formatoMoneda(datos.MONTO))
+                    swal.close()
+                })
+
+                const cambiaEstado = () => {
+                    $("#inicio").toggleClass("active")
+                    $("#icono").toggleClass("fa-ban")
+                    $("#icono").toggleClass("fa-phone")
+                    $(".modal-content").slideToggle("slow", function () {
+                        $(this).find("input:text").val("")
+                        $(this).find(":radio").prop("checked", false)
+                        $(this).find("textarea").val("")
+                    })
+                    $("#guardaEncuesta").prop("disabled", true)
+                }
+
+                const guardaEncuesta = (stat, liberar = false, pregunta = confirmacion) => {
+                    confirmarMovimiento("Encuesta Postventa", null, confirmacion)
+                    .then((continuar) => {
+                        if (!continuar) return
+                        solicitaComentario().then((comentario) => {
+                            if (comentario) datosEncuesta.comentario_asesor = comentario
+                            datosEncuesta.estatus = stat
+                            datosEncuesta.duracion = Math.round((new Date().getTime() - tiempo) / 1000)
+                            socket.emit("guardaEncuesta", datosEncuesta)
+                            cambiaEstado()
+                            socket.emit("cambiaCliente", liberar)
+                        })
+                    })
+                }
+
+                const limpiaRespuestas = () => {
+                    $(".respuesta").each(function() {
+                        datosEncuesta[$(this).attr("name")] = null
+                    })
+                    $(".comentario").each(function() {
+                        datosEncuesta[$(this).attr("name")] = null
+                    })
+                    datosEncuesta.cliente = null
+                    datosEncuesta.telefono = null
+                    datosEncuesta.estatus = null
+                    datosEncuesta.duracion = 0
+                    datosEncuesta.comentario_asesor = null
+                    datosEncuesta.comentario_general = null
+                }
             </script>
         HTML;
-            
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Prueba Socket", [$socket])));
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Seguimiento de Clientes", [$this->socket, $this->swal])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render("pruebaSocket", $extraFooter);
+        View::render("seguimientoClientes", $extraFooter);
     }
 
+    public function AsignaClienteEncuestaPostventa()
+    {
+        $r = CallCenterDao::AsignaClienteEncuestaPostventa($_POST);
+        echo json_encode($r);
+    }
+
+    public function ActualizaClienteEncuestaPostventa()
+    {
+        $r = CallCenterDao::ActualizaClienteEncuestaPostventa($_POST);
+        echo json_encode($r);
+    }
+
+    public function GuardaEncuestaPostventa()
+    {
+        $r = CallCenterDao::GuardaEncuestaPostventa($_POST);
+        echo json_encode($r);
+    }
 }

@@ -18,14 +18,8 @@ class Ahorro extends Controller
     private $_contenedor;
     private $configuracion;
     private $operacionesNulas = [2, 5]; // [Comisión, Transferencia]
-    private $urlHuellas = 'http://mcm-server:8008/huellas/endpoints/';
     private $XLSX = '<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
-    private $swal2 = '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
     private $huellas = '<script src="/js/huellas/es6-shim.js"></script><script src="/js/huellas/fingerprint.sdk.min.js"></script><script src="/js/huellas/huellas.js"></script><script src="/js/huellas/websdk.client.bundle.min.js"></script>';
-    private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
-    private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
-    private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
-    private $showWarning = 'const showWarning = (mensaje) => swal({ text: mensaje, icon: "warning" })';
     private $showBloqueo = 'const showBloqueo = (mensaje) => {
         Swal.fire({
             html: mensaje,
@@ -40,9 +34,6 @@ class Ahorro extends Controller
                 popup: "sweet-bloqueoAhorro-popup",
             }
         })
-    }';
-    private $confirmarMovimiento = 'const confirmarMovimiento = async (titulo, mensaje, html = null) => {
-        return await swal({ title: titulo, content: html, text: mensaje, icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
     }';
     private $validarYbuscar = 'const validarYbuscar = (e, t) => {
         if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
@@ -334,39 +325,6 @@ class Ahorro extends Controller
     private $addParametro = 'const addParametro = (parametros, newParametro, newValor) => {
         parametros.push({ name: newParametro, value: newValor })
     }';
-    private $consultaServidor = 'const consultaServidor = (url, datos, fncOK, metodo = "POST", tipo = "JSON", tipoContenido = null) => {
-        swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
-        const configuracion = {
-            type: metodo,
-            url: url,
-            data: datos,
-            success: (res) => {
-                if (tipo === "JSON") {
-                    try {
-                        res = JSON.parse(res)
-                    } catch (error) {
-                        console.error(error)
-                        res =  {
-                            success: false,
-                            mensaje: "Ocurrió un error al procesar la respuesta del servidor."
-                        }
-                    }
-                }
-                if (tipo === "blob") res = new Blob([res], { type: "application/pdf" })
-
-                swal.close()
-                fncOK(res)
-            },
-            error: (error) => {
-                console.error(error)
-                showError("Ocurrió un error al procesar la solicitud.")
-            }
-        }
-        if (tipoContenido) configuracion.contentType = tipoContenido 
-        $.ajax(configuracion)
-    }';
-    private $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/[^0-9.-]/g, "")) || 0';
-    private $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })';
     private $limpiaMontos = 'const limpiaMontos = (datos, campos = []) => {
         datos.forEach(dato => {
             if (campos.includes(dato.name)) {

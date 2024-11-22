@@ -29,8 +29,7 @@ class JobsPrueba extends Job
         $asunto = "Prueba de correo";
         $destinatarios = [
             "alberto.s@2gkapital.com.mx",
-            "albertosoto.lab@gmail.com",
-            "c.garcia@masconmenos.com.mx"
+            "albertosoto.lab@gmail.com"
         ];
         $mensaje = <<<HTML
             <html>

@@ -8,7 +8,18 @@ use \Core\Database;
 
 class CallCenter
 {
+    public static function Responde($respuesta, $mensaje, $datos = null, $error = null)
+    {
+        $res = array(
+            "success" => $respuesta,
+            "mensaje" => $mensaje
+        );
 
+        if ($datos !== null) $res['datos'] = $datos;
+        if ($error !== null) $res['error'] = $error;
+
+        return json_encode($res);
+    }
 
     public static function getAllDescription($credito, $ciclo, $fec)
     {
@@ -993,5 +1004,130 @@ sql;
 
         //var_dump($query);
         return $mysqli->insert($query);
+    }
+
+    public static function AsignaClienteEncuestaPostventa($datos)
+    {
+        $query = <<<SQL
+            SELECT
+                *
+            FROM
+                CLIENTES_ENCUESTA_POSTVENTA
+            WHERE
+                ASESOR IS NULL
+        SQL;
+
+        if ($datos['cliente']) $query .= " AND CLIENTE <> '" . $datos['cliente'] . "'";
+
+        try {
+            $db = new Database();
+            $clientes = $db->queryAll($query);
+            foreach ($clientes as $cliente) {
+                $r = self::ActualizaClienteEncuestaPostventa([
+                    'asesor' => $datos['asesor'],
+                    'cliente' => $cliente['CLIENTE']
+                ]);
+
+                return self::Responde(true, "Cliente asignado correctamente.", $cliente);
+            }
+
+            return self::Responde(false, "No hay clientes disponibles para asignar.");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al asignar el cliente.", null, $e->getMessage());
+        }
+    }
+
+    public static function ActualizaClienteEncuestaPostventa($datos)
+    {
+        $qry1 = <<<SQL
+            UPDATE CLIENTES_ENCUESTA_POSTVENTA
+            SET
+                ASESOR = :asesor
+            WHERE
+                CLIENTE = :cliente
+                AND ASESOR IS NULL
+        SQL;
+
+        $qry2 = <<<SQL
+            UPDATE CLIENTES_ENCUESTA_POSTVENTA
+            SET
+                ASESOR = NULL
+            WHERE
+                CLIENTE = :cliente
+                AND ASESOR = :asesor
+        SQL;
+
+        $qry = $datos['limpiar'] ? $qry2 : $qry1;
+        unset($datos['limpiar']);
+        try {
+            $db = new Database();
+            $r = $db->actualizar($qry, $datos);
+
+            if ($r) return self::Responde(true, "Cliente asignado correctamente.");
+            return self::Responde(false, "No se asigno el cliente.");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al actualizar la información.", null, $e->getMessage());
+        }
+    }
+
+    public static function GuardaEncuestaPostventa($datos)
+    {
+        $qry = <<<SQL
+            INSERT INTO
+                ESIACOM.ENCUESTA_POSTVENTA (
+                    CLIENTE,
+                    TELEFONO,
+                    FECHA,
+                    ASESOR,
+                    ESTATUS,
+                    COMENTARIO_ASESOR,
+                    PREGUNTA_1,
+                    COMENTARIO_1,
+                    PREGUNTA_2,
+                    COMENTARIO_2,
+                    PREGUNTA_3,
+                    COMENTARIO_3,
+                    PREGUNTA_4,
+                    COMENTARIO_4,
+                    PREGUNTA_5,
+                    COMENTARIO_5,
+                    COMENTARIO_GENERAL,
+                    DURACION
+                )
+            VALUES
+                (
+                    :cliente,
+                    :telefono,
+                    SYSDATE,
+                    :asesor,
+                    :estatus,
+                    :comentario_asesor,
+                    :respuesta_1,
+                    :comentario_1,
+                    :respuesta_2,
+                    :comentario_2,
+                    :respuesta_3,
+                    :comentario_3,
+                    :respuesta_4,
+                    :comentario_4,
+                    :respuesta_5,
+                    :comentario_5,
+                    :comentario_general,
+                    :duracion
+                )
+        SQL;
+
+        // recorrer el array de datos y asiganr null a los valores vacios
+        foreach ($datos as $key => $value) {
+            if ($datos[$key] == 'null') $datos[$key] = null;
+        }
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $datos);
+            return self::Responde(true, "Información guardada correctamente.");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al guardar la encuesta.", null, $e->getMessage());
+        }
     }
 }

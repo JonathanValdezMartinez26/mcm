@@ -144,6 +144,18 @@ class Database
         }
     }
 
+    public function actualizar($sql, $datos)
+    {
+        try {
+            $resultado = $this->db_activa->prepare($sql);
+            $resultado->execute($datos);
+            if ($resultado->rowCount() == 0) return false;
+            return true;
+        } catch (\PDOException $e) {
+            throw new \Exception("Error en actualizar: " . $e->getMessage() . "\nSql : $sql \nDatos : " . print_r($datos, 1));
+        }
+    }
+
     public function queryOne($sql, $params = null)
     {
         if ($params == null) {
