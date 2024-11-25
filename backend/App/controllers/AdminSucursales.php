@@ -16,12 +16,6 @@ class AdminSucursales extends Controller
 {
     private $_contenedor;
     private $XLSX = '<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
-    private $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
-    private $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
-    private $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
-    private $confirmarMovimiento = 'const confirmarMovimiento = async (titulo, mensaje, html = null) => {
-        return await swal({ title: titulo, content: html, text: mensaje, icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
-    }';
     private $noSubmit = 'const noSUBMIT = (e) => e.preventDefault()';
     private $validarYbuscar = 'const validarYbuscar = (e) => {
         if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
@@ -138,35 +132,6 @@ class AdminSucursales extends Controller
         return primeraMayuscula(convertir(parteEntera)) + (numero == 1 ? " peso " : " pesos ") + parteDecimal + "/100 M.N."
     }';
     private $primeraMayuscula = 'const primeraMayuscula = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1)';
-    private $consultaServidor = 'const consultaServidor = (url, datos, fncOK, metodo = "POST", tipo = "json") => {
-        swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
-        $.ajax({
-            type: metodo,
-            url: url,
-            data: datos,
-            success: (res) => {
-                if (tipo === "json") {
-                    try {
-                        res = JSON.parse(res)
-                    } catch (error) {
-                        console.error(error)
-                        res =  {
-                            success: false,
-                            mensaje: "Ocurrió un error al procesar la respuesta del servidor."
-                        }
-                    }
-                } else if (tipo === "html") res = res
-
-                swal.close()
-                fncOK(res)
-            },
-            error: (error) => {
-                console.error(error)
-                showError("Ocurrió un error al procesar la solicitud.")
-                swal.close()
-            }
-        })
-    }';
     private $addParametro = 'const addParametro = (parametros, newParametro, newValor) => {
         parametros.push({ name: newParametro, value: newValor })
     }';
@@ -231,8 +196,6 @@ class AdminSucursales extends Controller
         
         document.querySelector("#btnBskClnt").disabled = false
     }';
-    private $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/-[^0-9.]/g, "")) || 0';
-    private $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { style: "currency", currency: "MXN" })';
     private $configuraTabla = 'const configuraTabla = (id, filas = 10) => {
         $("#" + id).tablesorter()
         $("#" + id).DataTable({
@@ -379,10 +342,10 @@ class AdminSucursales extends Controller
         </script>
         script;
 
-        $filas = self::GetSaldosSucursal();
-        $filas = $filas['success'] ? $filas['datos'] : "";
+        // $filas = self::GetSaldosSucursal();
+        $filas = ""; //$filas['success'] ? $filas['datos'] : "";
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldos de sucursales", [$this->XLSX])));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldos de sucursales")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('filas', $filas);
         View::set('fechaI', date('Y-m-d'));
@@ -3583,7 +3546,9 @@ script;
         }
 
         $fila += 1;
-
+        $totalIngreso = 0;
+        $totalEgreso = 0;
+        $totalSaldo = 0;
 
         $objPHPExcel->getActiveSheet()->getStyle($columna[7] . $fila)->applyFromArray($estilo_encabezado);
         $objPHPExcel->getActiveSheet()->getStyle($columna[7] . $fila)->getAlignment()->setWrapText($adaptarTexto);
