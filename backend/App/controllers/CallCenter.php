@@ -4553,7 +4553,7 @@ html;
                 })
 
                 const cambiaEstado = () => {
-                    $("#inicio").prop("disabled", $("#nombre").text() !== "")
+                    $("#inicio").prop("disabled", $("#nombre").text() === "")
                     $("#inicio").toggleClass("active")
                     $("#icono").toggleClass("fa-ban")
                     $("#icono").toggleClass("fa-phone")
