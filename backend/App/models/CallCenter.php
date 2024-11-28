@@ -1161,7 +1161,7 @@ sql;
             FROM
                 ENCUESTA_POSTVENTA
             WHERE
-                FECHA BETWEEN TO_DATE(:fechaI, 'YYYY-MM-DD') AND TO_DATE(:fechaF, 'YYYY-MM-DD')
+                TRUNC(FECHA) BETWEEN TO_DATE(:fechaI, 'YYYY-MM-DD') AND TO_DATE(:fechaF, 'YYYY-MM-DD')
         SQL;
 
         if ($datos['estatus'] && $datos['estatus'] !== '*') $qry .= ' AND ESTATUS = :estatus';
