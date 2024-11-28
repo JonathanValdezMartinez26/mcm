@@ -4524,14 +4524,15 @@ html;
                 })
 
                 socket.on("asignando", () => {
+                    cambiaEstado()
+                    limpiaRespuestas()
                     showWait("Asignando cliente...")
                 })
 
                 socket.on("clienteAsignado", (asignacion) => {
-                    limpiaRespuestas()
-
                     if (!asignacion.success) {
                         console.log("Error al asignar cliente:", asignacion.error)
+                        cambiaEstado()
                         return showError(asignacion.mensaje)
                     }
 
@@ -4552,6 +4553,7 @@ html;
                 })
 
                 const cambiaEstado = () => {
+                    $("#inicio").setAttr("disabled", $("#nombre").text() !== "")
                     $("#inicio").toggleClass("active")
                     $("#icono").toggleClass("fa-ban")
                     $("#icono").toggleClass("fa-phone")
@@ -4585,7 +4587,6 @@ html;
                             datosEncuesta.estatus = stat
                             datosEncuesta.duracion = Math.round((new Date().getTime() - tiempo) / 1000)
                             socket.emit("guardaEncuesta", {datosEncuesta, abandono})
-                            cambiaEstado()
                         })
                     })
                 }

@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 <div class="boton">
-                    <button type="button" id="inicio">
+                    <button type="button" id="inicio" disabled>
                         <i class="fa fa-phone" id="icono" aria-hidden="true" style="font-size: xx-large;"></i>
                         <span id="textoAuxiliar" style="display: block; font-size: medium;">Iniciar</span>
                     </button>
