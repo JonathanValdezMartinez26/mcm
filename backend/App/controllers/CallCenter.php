@@ -4524,8 +4524,6 @@ html;
                 })
 
                 socket.on("asignando", () => {
-                    cambiaEstado()
-                    limpiaRespuestas()
                     showWait("Asignando cliente...")
                 })
 
@@ -4542,6 +4540,7 @@ html;
                     datosEncuesta.ciclo = datos.CICLO
                     datosEncuesta.telefono = datos.TELEFONO
 
+                    $("#inicio").prop("disabled", false)
                     $("#nombre").text(datos.NOMBRE)
                     $("#telefono").text("Tel: " + datos.TELEFONO.replace(/(\d{2})(\d{4})(\d{4})/, "$1-$2-$3"))
                     $("#cliente").text(datos.CLIENTE)
@@ -4553,7 +4552,6 @@ html;
                 })
 
                 const cambiaEstado = () => {
-                    $("#inicio").prop("disabled", $("#nombre").text() === "")
                     $("#inicio").toggleClass("active")
                     $("#icono").toggleClass("fa-ban")
                     $("#icono").toggleClass("fa-phone")
@@ -4562,8 +4560,6 @@ html;
                         $(this).find("input:text").val("")
                         $(this).find(":radio").prop("checked", false)
                         $(this).find("textarea").val("")
-                    })
-                    if (!$("#inicio").hasClass("active")) {
                         $("#guardaEncuesta").prop("disabled", true)
                         $("#nombre").text("")
                         $("#telefono").text("")
@@ -4572,7 +4568,8 @@ html;
                         $("#ciclo").text("")
                         $("#monto").text("")
                         $("#fotoCliente").attr("src", "/img/n.gif")
-                    }
+                        $("#inicio").prop("disabled", $("#nombre").text() === "")
+                    })
                     vMotivo = null
                     vComentario = null
                 }
@@ -4587,6 +4584,8 @@ html;
                             datosEncuesta.estatus = stat
                             datosEncuesta.duracion = Math.round((new Date().getTime() - tiempo) / 1000)
                             socket.emit("guardaEncuesta", {datosEncuesta, abandono})
+                            cambiaEstado()
+                            limpiaRespuestas()
                         })
                     })
                 }
