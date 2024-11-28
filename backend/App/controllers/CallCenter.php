@@ -4560,8 +4560,8 @@ html;
                         $(this).find(":radio").prop("checked", false)
                         $(this).find("textarea").val("")
                     })
-                    
-                    if ($("#inicio").hasClass("active")) {
+
+                    if (!$("#inicio").hasClass("active")) {
                         $("#guardaEncuesta").prop("disabled", true)
                         $("#nombre").text("")
                         $("#telefono").text("")
