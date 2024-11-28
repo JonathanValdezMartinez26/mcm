@@ -4361,7 +4361,7 @@ html;
         $objWriter->save('php://output');
     }
 
-    public function seguimientoClientes()
+    public function EncuestaPostventa()
     {
         $ids = session_id();
 
@@ -4372,20 +4372,75 @@ html;
                 {$this->showSuccess}
                 {$this->showWait}
                 {$this->confirmarMovimiento}
-                const solicitaComentario = () => {
-                    return swal("Desea añadir un comentario u observación?", {
-                                content: "input",
+                let motivos = null
+                const solicitaComentario = (abandono = false) => {
+                    const contenedor = document.createElement("div")
+                    contenedor.setAttribute("style", "width: 100%; display: flex; flex-direction: column; align-items: center;")
+
+                    const titulo = document.createElement("span")
+                    titulo.setAttribute("style", "width: 100%; text-align: left;")
+                    titulo.textContent = abandono ? "Motivo de abandono" : "Comentario del asesor"
+                    contenedor.appendChild(titulo)
+
+                    const comentario = document.createElement("textarea")
+                    comentario.setAttribute("style", "resize: none; width: 100%; margin-top: 10px;")
+                    comentario.setAttribute("rows", 3)
+                    comentario.setAttribute("placeholder", "Escriba aquí " + (abandono ? "el motivo" :  "sus comentarios"))
+                    comentario.setAttribute("class", "swal-content__input")
+                    comentario.addEventListener("input", () => {
+                        vComentario = comentario.value
+                    })
+
+                    if (!abandono) contenedor.appendChild(comentario)
+                    else {
+                        comentario.style.display = "none"
+                        comentario.addEventListener("input", () => {
+                            $(".continuar").prop("disabled", !comentario.value)
+                        })
+
+                        const motivo = document.createElement("select")
+                        motivo.setAttribute("style", "width: 100%;")
+                        motivo.setAttribute("required", true)
+                        Object.entries(motivos).forEach(([clave, valor]) => {
+                            const opcion = document.createElement("option")
+                            opcion.setAttribute("value", clave)
+                            opcion.textContent = valor
+                            motivo.appendChild(opcion)
+                            if (!vMotivo) vMotivo = clave
+                        })
+                        motivo.addEventListener("change", () => {
+                            if (motivo.value !== "OT") comentario.value = ""
+                            comentario.required = motivo.value === "OT"
+                            comentario.style.display = motivo.value === "OT" ? "block" : "none"
+                            $(".continuar").prop("disabled", motivo.value === "OT" && !comentario.value)
+                            vMotivo = motivo.value
+                        })
+
+                        contenedor.appendChild(motivo)
+                        contenedor.appendChild(comentario)
+                    } 
+                    
+                    return swal("Cierre de encuesta", {
+                                content: {
+                                    element: contenedor
+                                },
                                 buttons: {
                                     confirm: {
-                                        text: "Continuar"
+                                        text: abandono ? "Abandonar" : "Finalizar",
+                                        className: "continuar"
                                     }
-                                }
+                                },
+                                closeOnClickOutside: false,
+                                closeOnEsc: false
                             })
                 }
                 let tiempo = null
+                let vMotivo = null
+                let vComentario = null
                 const datosEncuesta = {
                     asesor: "{$this->__usuario}",
                     cliente: null,
+                    ciclo: null,
                     telefono: null,
                     estatus: null,
                     comentario_asesor: null,
@@ -4401,18 +4456,19 @@ html;
                     comentario_5: null,
                     comentario_general: null,
                     duracion: 0,
+                    motivo: null
                 }
 
                 const abandono = document.createElement("span")
                 abandono.setAttribute("style", "width: 100%; font-size: 19px; text-align: center; margin-top: 20px; color: #000000a3;")
-                abandono.innerHTML = "<p>Segura desea <b>abandonar</b> la encuesta?<br>Se le asignará otro cliente.</p>"
+                abandono.innerHTML = "<p>¿Segura desea <b>abandonar</b> la encuesta?<br>Se le asignará otro cliente.</p>"
 
                 const confirmacion = document.createElement("span")
                 confirmacion.setAttribute("style", "width: 100%; font-size: 19px; text-align: center; margin-top: 20px; color: #000000a3;")
-                confirmacion.innerHTML = "<p>Segura desea guardar la encuesta y continuar con otro cliente?</p>"
+                confirmacion.innerHTML = "<p>¿Segura desea guardar la encuesta y continuar con otro cliente?</p>"
 
                 $(document).ready(() => {
-                    $("#fotoCliente").attr("src", "/img/profile_default.jpg")
+                    $("#fotoCliente").attr("src", "/img/n.gif")
                     $("#inicio").on("click", function () {
                         tiempo = new Date().getTime()
                         if (!$(this).hasClass("active")) return cambiaEstado()
@@ -4440,11 +4496,13 @@ html;
                         modulo: "callcenter",
                         asesor: datosEncuesta.asesor,
                         sesionPHP: "$ids",
-                        servidor: window.location.origin
+                        servidor: window.location.origin,
+                        datosRequeridos: JSON.stringify(datosEncuesta)
                     }
                 })
 
-                socket.on("connect", () => {
+                socket.on("conectado", (datos) => {
+                    motivos = datos.motivos
                     swal.close()
                 })
 
@@ -4469,16 +4527,19 @@ html;
                         return showError(asignacion.mensaje)
                     }
 
-                    const datos = asignacion.datos                    
+                    const datos = asignacion.datos
+                    const sexo = ["m", "f"].includes(datos.SEXO.toLowerCase()) ? datos.SEXO.toLowerCase() : "n"
                     datosEncuesta.cliente = datos.CLIENTE
+                    datosEncuesta.ciclo = datos.CICLO
                     datosEncuesta.telefono = datos.TELEFONO
 
                     $("#nombre").text(datos.NOMBRE)
-                    $("#telefono").text(datos.TELEFONO)
+                    $("#telefono").text("Tel: " + datos.TELEFONO.replace(/(\d{2})(\d{4})(\d{4})/, "$1-$2-$3"))
                     $("#cliente").text(datos.CLIENTE)
                     $("#sucursal").text(datos.SUCURSAL + " - " + datos.NOMBRE_SUCURSAL)
                     $("#ciclo").text(datos.CICLO)
                     $("#monto").text("$ " + formatoMoneda(datos.MONTO))
+                    $("#fotoCliente").attr("src", "/img/" + sexo + ".gif")
                     swal.close()
                 })
 
@@ -4486,25 +4547,37 @@ html;
                     $("#inicio").toggleClass("active")
                     $("#icono").toggleClass("fa-ban")
                     $("#icono").toggleClass("fa-phone")
+                    $("#textoAuxiliar").text($("#inicio").hasClass("active") ? "Abandonar" : "Iniciar")
                     $(".modal-content").slideToggle("slow", function () {
                         $(this).find("input:text").val("")
                         $(this).find(":radio").prop("checked", false)
                         $(this).find("textarea").val("")
                     })
-                    $("#guardaEncuesta").prop("disabled", true)
+                    if (!$("#inicio").hasClass("active")) {
+                        $("#guardaEncuesta").prop("disabled", true)
+                        $("#nombre").text("")
+                        $("#telefono").text("")
+                        $("#cliente").text("")
+                        $("#sucursal").text("")
+                        $("#ciclo").text("")
+                        $("#monto").text("")
+                        $("#fotoCliente").attr("src", "/img/n.gif")
+                    }
+                    vMotivo = null
+                    vComentario = null
                 }
 
-                const guardaEncuesta = (stat, liberar = false, pregunta = confirmacion) => {
-                    confirmarMovimiento("Encuesta Postventa", null, confirmacion)
+                const guardaEncuesta = (stat, abandono = false, pregunta = confirmacion) => {
+                    confirmarMovimiento("Encuesta Postventa", null, pregunta)
                     .then((continuar) => {
                         if (!continuar) return
-                        solicitaComentario().then((comentario) => {
-                            if (comentario) datosEncuesta.comentario_asesor = comentario
+                        solicitaComentario(abandono).then((comentario) => {
+                            datosEncuesta.comentario_asesor = vComentario
+                            datosEncuesta.motivo = vMotivo
                             datosEncuesta.estatus = stat
                             datosEncuesta.duracion = Math.round((new Date().getTime() - tiempo) / 1000)
-                            socket.emit("guardaEncuesta", datosEncuesta)
+                            socket.emit("guardaEncuesta", {datosEncuesta, abandono})
                             cambiaEstado()
-                            socket.emit("cambiaCliente", liberar)
                         })
                     })
                 }
@@ -4517,6 +4590,7 @@ html;
                         datosEncuesta[$(this).attr("name")] = null
                     })
                     datosEncuesta.cliente = null
+                    datosEncuesta.ciclo = null
                     datosEncuesta.telefono = null
                     datosEncuesta.estatus = null
                     datosEncuesta.duracion = 0
@@ -4526,9 +4600,9 @@ html;
             </script>
         HTML;
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Seguimiento de Clientes", [$this->socket, $this->swal])));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Postventa", [$this->socket, $this->swal])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render("seguimientoClientes", $extraFooter);
+        View::render("encuestaPostventa", $extraFooter);
     }
 
     public function AsignaClienteEncuestaPostventa()

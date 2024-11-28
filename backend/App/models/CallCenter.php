@@ -1025,7 +1025,8 @@ sql;
             foreach ($clientes as $cliente) {
                 $r = self::ActualizaClienteEncuestaPostventa([
                     'asesor' => $datos['asesor'],
-                    'cliente' => $cliente['CLIENTE']
+                    'cliente' => $cliente['CLIENTE'],
+                    'ciclo' => $cliente['CICLO']
                 ]);
 
                 return self::Responde(true, "Cliente asignado correctamente.", $cliente);
@@ -1045,6 +1046,7 @@ sql;
                 ASESOR = :asesor
             WHERE
                 CLIENTE = :cliente
+                AND CICLO = :ciclo
                 AND ASESOR IS NULL
         SQL;
 
@@ -1054,11 +1056,12 @@ sql;
                 ASESOR = NULL
             WHERE
                 CLIENTE = :cliente
+                AND CICLO = :ciclo
                 AND ASESOR = :asesor
         SQL;
 
-        $qry = $datos['limpiar'] ? $qry2 : $qry1;
-        unset($datos['limpiar']);
+        $qry = $datos['liberar'] ? $qry2 : $qry1;
+        unset($datos['liberar']);
         try {
             $db = new Database('SERVIDOR-AWS');
             $r = $db->actualizar($qry, $datos);
@@ -1092,7 +1095,9 @@ sql;
                     PREGUNTA_5,
                     COMENTARIO_5,
                     COMENTARIO_GENERAL,
-                    DURACION
+                    DURACION,
+                    CICLO,
+                    MOTIVO_ABANDONO
                 )
             VALUES
                 (
@@ -1113,13 +1118,15 @@ sql;
                     :respuesta_5,
                     :comentario_5,
                     :comentario_general,
-                    :duracion
+                    :duracion,
+                    :ciclo,
+                    :motivo
                 )
         SQL;
 
-        // recorrer el array de datos y asiganr null a los valores vacios
+        // recorrer el array de datos y asignar null a los valores vacios
         foreach ($datos as $key => $value) {
-            if ($datos[$key] == 'null') $datos[$key] = null;
+            $datos[$key] = ($datos[$key] == 'null') ? null : $datos[$key];
         }
 
         try {

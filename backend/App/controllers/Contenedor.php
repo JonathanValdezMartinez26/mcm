@@ -68,7 +68,7 @@ class Contenedor extends Controller
                             <div class="clearfix"></div>
                             <div class="profile clearfix">
                                 <div class="profile_pic">
-                                    <img src="/img/profile_default.jpg" alt="..." class="img-circle profile_img">
+                                    <img src="/img/profile_default.png" alt="..." class="img-circle profile_img">
                                 </div>
                                 <div class="profile_info">
                                     <span><b>USUARIO: </b>{$usuario}</span>
@@ -240,7 +240,7 @@ html;
             $menu .= <<<html
                    <li><a href="/CallCenter/Pendientes/">$mis Pendientes $titulo</a></li>
                    <li><a href="/CallCenter/Historico/">$mis Históricos $titulo</a></li>
-                   <li><a href="/CallCenter/seguimientoClientes/">Seguimiento de Clientes</a></li>
+                   <li><a href="/CallCenter/EncuestaPostventa/">Postventa</a></li>
                    $opcion
                   </ul>
                 </li>

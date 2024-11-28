@@ -3,7 +3,7 @@
 <div class="right_col">
     <div class="panel panel-body" style="overflow: auto;">
         <div class="x_title">
-            <h3>Seguimiento de clientes</h3>
+            <h3>Postventa</h3>
             <div class="clearfix"></div>
         </div>
         <div class="contenedor-card">
@@ -35,13 +35,16 @@
                             <span id="ciclo" style="display: block; width: 100%; font-size: large;"></span>
                         </div>
                         <div class="col-md-3">
-                            <label>Ultimo Crédito</label>
+                            <label>Monto del Crédito</label>
                             <span id="monto" style="display: block; width: 100%; font-size: large;"></span>
                         </div>
                     </div>
                 </div>
                 <div class="boton">
-                    <button type="button" id="inicio"><i class="fa fa-phone" id="icono" aria-hidden="true" style="font-size: xx-large;"></i></button>
+                    <button type="button" id="inicio">
+                        <i class="fa fa-phone" id="icono" aria-hidden="true" style="font-size: xx-large;"></i>
+                        <span id="textoAuxiliar" style="display: block; font-size: medium;">Iniciar</span>
+                    </button>
                 </div>
             </div>
             <div class="modal-content" style="display: none; width: 80%; margin: auto;">
@@ -168,8 +171,8 @@
 
     .card .boton button {
         transition: all 1s ease;
-        width: 60px;
-        height: 60px;
+        width: 95px;
+        height: 95px;
         background-color: #28a745;
         color: white;
         border: none;
@@ -179,6 +182,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        display: flex;
+        flex-direction: column;
     }
 
     .card .boton button:hover {
