@@ -5,22 +5,10 @@ namespace App\models;
 defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
+use \Core\Model;
 
-class CallCenter
+class CallCenter extends Model
 {
-    public static function Responde($respuesta, $mensaje, $datos = null, $error = null)
-    {
-        $res = array(
-            "success" => $respuesta,
-            "mensaje" => $mensaje
-        );
-
-        if ($datos !== null) $res['datos'] = $datos;
-        if ($error !== null) $res['error'] = $error;
-
-        return json_encode($res);
-    }
-
     public static function getAllDescription($credito, $ciclo, $fec)
     {
 
@@ -1077,7 +1065,7 @@ sql;
     {
         $qry = <<<SQL
             INSERT INTO
-                ESIACOM.ENCUESTA_POSTVENTA (
+                ENCUESTA_POSTVENTA (
                     CLIENTE,
                     TELEFONO,
                     FECHA,
@@ -1135,6 +1123,58 @@ sql;
             return self::Responde(true, "Información guardada correctamente.");
         } catch (\Exception $e) {
             return self::Responde(false, "Error al guardar la encuesta.", null, $e->getMessage());
+        }
+    }
+
+    public static function GetEstatusEncuestaPostventa()
+    {
+        $qry = <<<SQL
+            SELECT UNIQUE
+                ESTATUS
+            FROM
+                ENCUESTA_POSTVENTA
+            ORDER BY
+                ESTATUS
+        SQL;
+
+        try {
+            $db = new Database('SERVIDOR-AWS');
+            $estatus = $db->queryAll($qry);
+            return self::Responde(true, "Estatus encontrados.", $estatus);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener los estatus.", null, $e->getMessage());
+        }
+    }
+
+    public static function GetReporteEncuestaPostventa($datos)
+    {
+        $qry = <<<SQL
+            SELECT
+                CLIENTE,
+                CICLO,
+                TELEFONO,
+                TO_CHAR(FECHA, 'DD/MM/YYYY HH24:MI:SS') FECHA,
+                ASESOR,
+                ESTATUS,
+                MOTIVO_ABANDONO,
+                COMENTARIO_ASESOR
+            FROM
+                ENCUESTA_POSTVENTA
+            WHERE
+                FECHA BETWEEN TO_DATE(:fechaI, 'YYYY-MM-DD') AND TO_DATE(:fechaF, 'YYYY-MM-DD')
+        SQL;
+
+        if ($datos['estatus'] && $datos['estatus'] !== '*') $qry .= ' AND ESTATUS = :estatus';
+        else unset($datos['estatus']);
+
+        $qry .= ' ORDER BY FECHA DESC';
+
+        try {
+            $db = new Database('SERVIDOR-AWS');
+            $reporte = $db->queryAll($qry, $datos);
+            return self::Responde(true, "Reporte encontrado.", $reporte);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener el reporte.", null, $e->getMessage());
         }
     }
 }

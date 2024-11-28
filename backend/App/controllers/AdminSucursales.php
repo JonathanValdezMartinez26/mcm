@@ -9,8 +9,6 @@ use \Core\Controller;
 use \Core\MasterDom;
 use \App\models\AdminSucursales as AdminSucursalesDao;
 use \App\models\CajaAhorro as CajaAhorroDao;
-use \App\models\Operaciones as OperacionesDao;
-use Exception;
 
 class AdminSucursales extends Controller
 {
@@ -196,36 +194,6 @@ class AdminSucursales extends Controller
         
         document.querySelector("#btnBskClnt").disabled = false
     }';
-    private $configuraTabla = 'const configuraTabla = (id, filas = 10) => {
-        $("#" + id).tablesorter()
-        $("#" + id).DataTable({
-            lengthMenu: [
-                [filas, 40, -1],
-                [filas, 40, "Todos"]
-            ],
-            columnDefs: [
-                {
-                    orderable: false,
-                    targets: 0
-                }
-            ],
-            order: false,
-            language: {
-                emptyTable: "No hay datos disponibles",
-                paginate: {
-                    previous: "Anterior",
-                    next: "Siguiente",
-                }
-            }
-        })
-
-        $("#"  + id + " input[type=search]").keyup(() => {
-            $("#example")
-                .DataTable()
-                .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
-                .draw()
-        })
-    }';
     private $muestraPDF = <<<script
     const muestraPDF = (titulo, ruta) => {
         let plantilla = '<!DOCTYPE html>'
@@ -264,27 +232,6 @@ class AdminSucursales extends Controller
         const ws = XLSX.utils.table_to_sheet(tabla)
         XLSX.utils.book_append_sheet(wb, ws, nombreHoja)
         XLSX.writeFile(wb, nombreArchivo + ".xlsx")
-    }';
-    private $crearFilas = 'const creaFilas = (datos) => {
-        const filas = document.createDocumentFragment()
-        datos.forEach((dato) => {
-            const fila = document.createElement("tr")
-            Object.keys(dato).forEach((key) => {
-                const celda = document.createElement("td")
-                celda.style.verticalAlign = "middle"
-                celda.innerText = dato[key]
-                fila.appendChild(celda)
-            })
-            filas.appendChild(fila)
-        })
-        return filas
-    }';
-    private $validaFIF = 'const validaFIF = (idI, idF) => {
-        const fechaI = document.getElementById(idI).value
-        const fechaF = document.getElementById(idF).value
-        if (fechaI && fechaF && fechaI > fechaF) {
-            document.getElementById(idI).value = fechaF
-        }
     }';
     private $getFecha = 'const getFecha = (fecha) => {
         const f = new Date(fecha + "T06:00:00Z")

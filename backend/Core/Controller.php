@@ -51,7 +51,76 @@ class Controller
     }';
     public $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/[^0-9.-]/g, "")) || 0';
     public $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })';
+    public $configuraTabla = 'const configuraTabla = (id) => {
+        $("#" + id).DataTable({
+            lengthMenu: [
+                [10, 40, -1],
+                [10, 40, "Todos"]
+            ],
+            order: [],
+            language: {
+                emptyTable: "No hay datos disponibles",
+                paginate: {
+                    previous: "Anterior",
+                    next: "Siguiente",
+                },
+                info: "Mostrando de _START_ a _END_ de _TOTAL_ registros",
+                infoEmpty: "Sin registros para mostrar",
+                zeroRecords: "No se encontraron registros",
+                lengthMenu: "Mostrar _MENU_ registros por página",
+                search: "Buscar:",
+            }
+        })
 
+        $("#"  + id + " input[type=search]").keyup(() => {
+            $("#example")
+                .DataTable()
+                .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
+                .draw()
+        })
+    }';
+    public $crearFilas = 'const creaFilas = (datos) => {
+        const filas = document.createDocumentFragment()
+        datos.forEach((dato) => {
+            const fila = document.createElement("tr")
+            Object.keys(dato).forEach((key) => {
+                const celda = document.createElement("td")
+                celda.style.verticalAlign = "middle"
+                celda.innerText = dato[key]
+                fila.appendChild(celda)
+            })
+            filas.appendChild(fila)
+        })
+        return filas
+    }';
+    public $validaFIF = 'const validaFIF = (idI, idF) => {
+        const fechaI = document.getElementById(idI).value
+        const fechaF = document.getElementById(idF).value
+        if (fechaI && fechaF && fechaI > fechaF) {
+            document.getElementById(idI).value = fechaF
+        }
+    }';
+    public $descargaExcel = 'const descargaExcel = (url, parametros = {}) => {
+        const formDescarga = document.createElement("form")
+        formDescarga.action = url
+        formDescarga.method = "POST"
+        formDescarga.target = "_blank"
+        formDescarga.style.display = "none"
+
+        Object.entries(parametros).forEach(([clave, valor]) => {
+            const input = document.createElement("input")
+            input.name = clave
+            input.value = valor
+            formDescarga.appendChild(input)
+        })
+
+        document.body.appendChild(formDescarga)
+        formDescarga.submit()
+
+        document.body.removeChild(formDescarga)
+
+        showInfo("Generando el archivo, espere un momento...")
+    }';
 
     public $__usuario = '';
     public $__nombre = '';

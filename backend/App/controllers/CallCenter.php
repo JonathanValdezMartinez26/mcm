@@ -27,6 +27,7 @@ class CallCenter extends Controller
 
     public function Pendientes()
     {
+        $tabla = "";
         $extraHeader = <<<html
         <title>Consulta de Clientes Call Center</title>
         <link rel="shortcut icon" href="/img/logo.png">
@@ -840,6 +841,7 @@ html;
     }
     public function Busqueda()
     {
+        $tabla = '';
         $extraHeader = <<<html
         <title>Consulta de Clientes Call Center</title>
         <link rel="shortcut icon" href="/img/logo.png">
@@ -968,6 +970,7 @@ html;
 
     public function Prorroga()
     {
+        $tabla = '';
         $extraHeader = <<<html
         <title>Consulta de Clientes Call Center</title>
         <link rel="shortcut icon" href="/img/logo.png">
@@ -1696,6 +1699,7 @@ html;
 
     public function Reactivar()
     {
+        $tabla = '';
         $extraHeader = <<<html
         <title>Consulta de Clientes Call Center</title>
         <link rel="shortcut icon" href="/img/logo.png">
@@ -2425,6 +2429,7 @@ html;
 
     public function Global()
     {
+        $tabla = '';
         $extraHeader = <<<html
         <title>Consulta de Clientes Call Center</title>
         <link rel="shortcut icon" href="/img/logo.png">
@@ -2642,6 +2647,7 @@ html;
 
     public function Administracion()
     {
+        $tabla = '';
         $extraHeader = <<<html
         <title>Administrar Sucursales/Analistas</title>
         <link rel="shortcut icon" href="/img/logo.png">
@@ -2815,6 +2821,7 @@ html;
 
     public function Historico()
     {
+        $tabla = '';
         $extraHeader = <<<html
         <title>Histórico de Llamadas</title>
         <link rel="shortcut icon" href="/img/logo.png">
@@ -3400,6 +3407,7 @@ html;
 
     public function HistoricoAnalistas()
     {
+        $tabla = '';
         $extraHeader = <<<html
         <title>Histórico de Llamadas Analistas</title>
         <link rel="shortcut icon" href="/img/logo.png">
@@ -4621,5 +4629,106 @@ html;
     {
         $r = CallCenterDao::GuardaEncuestaPostventa($_POST);
         echo json_encode($r);
+    }
+
+    public function ReporteEncuestaPostventa()
+    {
+        $extraFooter = <<<HTML
+            <script>
+                {$this->showError}
+                {$this->showInfo}
+                {$this->configuraTabla}
+                {$this->descargaExcel}
+                {$this->consultaServidor}
+
+
+                $(document).ready(() => {
+                    configuraTabla("reporte")
+
+                    $("#buscar").on("click", () => {
+                        const parametros = {
+                            fechaI: $("#fechaI").val(),
+                            fechaF: $("#fechaF").val(),
+                            estatus: $("#estatus").val()
+                        }
+                        consultaServidor("/CallCenter/HTMLReporteEncuestaPostventa", parametros, (respuesta) => {
+                            $("#reporte").DataTable().destroy()
+                            if (!respuesta.success) showError(respuesta.mensaje)
+                            $("#reporte tbody").html(respuesta.datos)
+                            configuraTabla("reporte")
+                        })
+                    })
+
+                    $("#descargar").on("click", () => {
+                        const parametros = {
+                            fechaI: $("#fechaI").val(),
+                            fechaF: $("#fechaF").val(),
+                            estatus: $("#estatus").val()
+                        }
+
+                        descargaExcel("/CallCenter/ExcelReporteEncuestaPostventa", parametros)
+                    })
+                })
+            </script>
+        HTML;
+
+        $estatus = CallCenterDao::GetEstatusEncuestaPostventa();
+
+        $optEstatus = '<option value="*" selected>Todos</option>';
+        if ($estatus["success"]) {
+            foreach ($estatus["datos"] as $key => $value) {
+                $optEstatus .= '<option value="' . $value['ESTATUS'] . '">' . $value['ESTATUS'] . '</option>';
+            }
+        }
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporte encuesta Postventa", [$this->socket, $this->swal])));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set("fecha", date("Y-m-d"));
+        View::set("estatus", $optEstatus);
+        View::render("reporteEncuestaPostventa", $extraFooter);
+    }
+
+    public function HTMLReporteEncuestaPostventa()
+    {
+        $datos = CallCenterDao::GetReporteEncuestaPostventa($_POST);
+
+        if (!$datos["success"] || count($datos["datos"]) === 0) {
+            $r = ["success" => false, "mensaje" => "No se encontraron datos para los criterios seleccionados"];
+            echo json_encode($r);
+            return;
+        }
+
+
+        $filas = "";
+        foreach ($datos["datos"] as $dato) {
+            $filas .= "<tr>";
+            foreach ($dato as $key => $valor) {
+                $filas .= "<td>{$valor}</td>";
+            }
+            $filas .= "</tr>";
+        }
+
+        $r = ["success" => true, "datos" => $filas];
+        echo json_encode($r);
+    }
+
+    public function ExcelReporteEncuestaPostventa()
+    {
+        $estilos = \PHPSpreadsheet::GetEstilosExcel();
+
+        $columnas = [
+            \PHPSpreadsheet::ColumnaExcel('A', 'CLIENTE', 'Cliente', $estilos['centrado']),
+            \PHPSpreadsheet::ColumnaExcel('B', 'CICLO', 'Ciclo', $estilos['centrado']),
+            \PHPSpreadsheet::ColumnaExcel('C', 'TELEFONO', 'Teléfono', $estilos['centrado']),
+            \PHPSpreadsheet::ColumnaExcel('D', 'FECHA', 'Fecha', $estilos['fecha_hora']),
+            \PHPSpreadsheet::ColumnaExcel('E', 'ASESOR', 'Asesor', $estilos['centrado']),
+            \PHPSpreadsheet::ColumnaExcel('F', 'ESTATUS', 'Estatus', $estilos['centrado']),
+            \PHPSpreadsheet::ColumnaExcel('G', 'MOTIVO_ABANDONO', 'Motivo', $estilos['centrado']),
+            \PHPSpreadsheet::ColumnaExcel('H', 'COMENTARIO_ASESOR', 'Comentario del asesor')
+        ];
+
+        $filas = CallCenterDao::GetReporteEncuestaPostventa($_POST);
+
+        \PHPSpreadsheet::GeneraExcel('Reporte encuestas Postventa', 'Reporte', 'Encuestas Postventa', $columnas, $filas['datos']);
     }
 }

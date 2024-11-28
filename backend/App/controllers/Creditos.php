@@ -818,7 +818,6 @@ html;
 
     public function generarExcel()
     {
-
         $credito = $_GET['Credito'];
         // $estilos = \PHPSpreadsheet::GetEstilosExcel();
 

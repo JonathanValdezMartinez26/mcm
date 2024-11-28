@@ -333,49 +333,12 @@ class Ahorro extends Controller
         })
     }';
     private $noSubmit = 'const noSUBMIT = (e) => e.preventDefault()';
-    private $configuraTabla = 'const configuraTabla = (id) => {
-        $("#" + id).tablesorter()
-        $("#" + id).DataTable({
-            lengthMenu: [
-                [10, 40, -1],
-                [10, 40, "Todos"]
-            ],
-            columnDefs: [
-                {
-                    orderable: false,
-                    targets: 0
-                }
-            ],
-            order: false,
-            language: {
-                emptyTable: "No hay datos disponibles",
-                paginate: {
-                    previous: "Anterior",
-                    next: "Siguiente",
-                }
-            }
-        })
-
-        $("#"  + id + " input[type=search]").keyup(() => {
-            $("#example")
-                .DataTable()
-                .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
-                .draw()
-        })
-    }';
     private $exportaExcel = 'const exportaExcel = (id, nombreArchivo, nombreHoja = "Reporte") => {
         const tabla = document.querySelector("#" + id)
         const wb = XLSX.utils.book_new()
         const ws = XLSX.utils.table_to_sheet(tabla)
         XLSX.utils.book_append_sheet(wb, ws, nombreHoja)
         XLSX.writeFile(wb, nombreArchivo + ".xlsx")
-    }';
-    private $validaFIF = 'const validaFIF = (idI, idF) => {
-        const fechaI = document.getElementById(idI).value
-        const fechaF = document.getElementById(idF).value
-        if (fechaI && fechaF && fechaI > fechaF) {
-            document.getElementById(idI).value = fechaF
-        }
     }';
     private $validaHorarioOperacion = 'const validaHorarioOperacion = (inicio, fin, sinMsj = false) => {
         if ("__PERFIL__" === "ADMIN" || "__USUARIO__" === "AMGM") return
