@@ -4529,7 +4529,7 @@ html;
 
                 socket.on("clienteAsignado", (asignacion) => {
                     if (!asignacion.success) {
-                        console.log("Error al asignar cliente:", asignacion.error)
+                        console.log("Error al asignar cliente:", asignacion)
                         return showError(asignacion.mensaje)
                     }
 
