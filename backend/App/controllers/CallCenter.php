@@ -4559,6 +4559,9 @@ html;
                         $(this).find("input:text").val("")
                         $(this).find(":radio").prop("checked", false)
                         $(this).find("textarea").val("")
+                    })
+                    
+                    if ($("#inicio").hasClass("active")) {
                         $("#guardaEncuesta").prop("disabled", true)
                         $("#nombre").text("")
                         $("#telefono").text("")
@@ -4568,7 +4571,7 @@ html;
                         $("#monto").text("")
                         $("#fotoCliente").attr("src", "/img/n.gif")
                         $("#inicio").prop("disabled", $("#nombre").text() === "")
-                    })
+                    }
                     vMotivo = null
                     vComentario = null
                 }
