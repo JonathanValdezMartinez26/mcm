@@ -5,11 +5,12 @@ namespace Core;
 defined("APPPATH") or die("Access denied");
 
 use \App\models\General as GeneralDao;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 
 class Controller
 {
     public $socket = '<script src="/libs/socket.io.min.js"></script>';
-    public $swal = '<script src="/libs/sweetalert2/sweetalert2.all.min.js"></script><link href="/libs/sweetalert2/sweetalert2-tema-bootstrap-4.css" rel="stylesheet" />';
+    public $swal2 = '<script src="/libs/sweetalert2/sweetalert2.all.min.js"></script><link href="/libs/sweetalert2/sweetalert2-tema-bootstrap-4.css" rel="stylesheet" />';
     public $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
     public $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
     public $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
@@ -17,6 +18,17 @@ class Controller
     public $showWait = 'const showWait = (mensaje) => swal({ text: mensaje, icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })';
     public $confirmarMovimiento = 'const confirmarMovimiento = async (titulo, mensaje, html = null) => {
         return await swal({ title: titulo, content: html, text: mensaje, icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
+    }';
+    public $conectaSocket = 'const conectaSocket = (url, modulo, datos = {}) => {
+        showWait("Conectando con el servidor...")
+        return io(url, {
+            query: {
+                servidor: window.location.origin,
+                sesionPHP: "sessionID",
+                modulo: modulo,
+                configuracion: JSON.stringify(datos)
+            }
+        })
     }';
     public $consultaServidor = 'const consultaServidor = (url, datos, fncOK, metodo = "POST", tipo = "JSON", tipoContenido = null) => {
         swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
@@ -135,6 +147,7 @@ class Controller
     public function __construct()
     {
         session_start();
+        $this->conectaSocket = str_replace('sessionID', session_id(), $this->conectaSocket);
         if ($_SESSION['usuario'] == '' || empty($_SESSION['usuario'])) {
             unset($_SESSION);
             session_unset();

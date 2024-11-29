@@ -4375,12 +4375,40 @@ html;
 
         $extraFooter = <<<HTML
             <script>
+                {$this->conectaSocket}
                 {$this->formatoMoneda}
                 {$this->showError}
                 {$this->showSuccess}
                 {$this->showWait}
+                {$this->showInfo}
                 {$this->confirmarMovimiento}
+
                 let motivos = null
+                let tiempo = null
+                let vMotivo = null
+                let vComentario = null
+                const datosEncuesta = {
+                    asesor: "{$this->__usuario}",
+                    cliente: null,
+                    ciclo: null,
+                    telefono: null,
+                    estatus: null,
+                    comentario_asesor: null,
+                    respuesta_1: null,
+                    comentario_1: null,
+                    respuesta_2: null,
+                    comentario_2: null,
+                    respuesta_3: null,
+                    comentario_3: null,
+                    respuesta_4: null,
+                    comentario_4: null,
+                    respuesta_5: null,
+                    comentario_5: null,
+                    comentario_general: null,
+                    duracion: 0,
+                    motivo: null
+                }
+
                 const solicitaComentario = (abandono = false) => {
                     const contenedor = document.createElement("div")
                     contenedor.setAttribute("style", "width: 100%; display: flex; flex-direction: column; align-items: center;")
@@ -4442,30 +4470,6 @@ html;
                                 closeOnEsc: false
                             })
                 }
-                let tiempo = null
-                let vMotivo = null
-                let vComentario = null
-                const datosEncuesta = {
-                    asesor: "{$this->__usuario}",
-                    cliente: null,
-                    ciclo: null,
-                    telefono: null,
-                    estatus: null,
-                    comentario_asesor: null,
-                    respuesta_1: null,
-                    comentario_1: null,
-                    respuesta_2: null,
-                    comentario_2: null,
-                    respuesta_3: null,
-                    comentario_3: null,
-                    respuesta_4: null,
-                    comentario_4: null,
-                    respuesta_5: null,
-                    comentario_5: null,
-                    comentario_general: null,
-                    duracion: 0,
-                    motivo: null
-                }
 
                 const abandono = document.createElement("span")
                 abandono.setAttribute("style", "width: 100%; font-size: 19px; text-align: center; margin-top: 20px; color: #000000a3;")
@@ -4498,15 +4502,9 @@ html;
                     })
                 })
 
-                showWait("Conectando con el servidor...")
-                const socket = io("{$this->configuracion['URL_SOCKETGRAL']}", {
-                    query: {
-                        modulo: "callcenter",
-                        asesor: datosEncuesta.asesor,
-                        sesionPHP: "$ids",
-                        servidor: window.location.origin,
-                        datosRequeridos: JSON.stringify(datosEncuesta)
-                    }
+                const socket = conectaSocket("{$this->configuracion['URL_SOCKETGRAL']}", "callcenter", {
+                    asesor: datosEncuesta.asesor,
+                    datosRequeridos: datosEncuesta
                 })
 
                 socket.on("conectado", (datos) => {
@@ -4519,8 +4517,13 @@ html;
                     showWait("Hay problemas con la conexión al servidor, reintentando...")
                 })
 
-                socket.on("logSocket", (datos) => {
-                    console.log("logSocket:", datos)
+                socket.on("mensajeSuper", (mensaje) => {
+                    swal({
+                        title: "Mensaje del supervisor",
+                        text: mensaje,
+                        icon: "info",
+                        button: "Aceptar"
+                    })
                 })
 
                 socket.on("asignando", () => {
@@ -4541,7 +4544,7 @@ html;
 
                     $("#inicio").prop("disabled", false)
                     $("#nombre").text(datos.NOMBRE)
-                    $("#telefono").text("Tel: " + datos.TELEFONO.replace(/(\d{2})(\d{4})(\d{4})/, "$1-$2-$3"))
+                    $("#telefono").text("Tel: " + datos.TELEFONO.replace(/(\d{2})(\d{4})(\d{4})/, "$1  $2  $3"))
                     $("#cliente").text(datos.CLIENTE)
                     $("#sucursal").text(datos.SUCURSAL + " - " + datos.NOMBRE_SUCURSAL)
                     $("#ciclo").text(datos.CICLO)
@@ -4554,7 +4557,6 @@ html;
                     $("#inicio").toggleClass("active")
                     $("#icono").toggleClass("fa-ban")
                     $("#icono").toggleClass("fa-phone")
-                    $("#textoAuxiliar").text($("#inicio").hasClass("active") ? "Abandonar" : "Iniciar")
                     $(".modal-content").slideToggle("slow", function () {
                         $(this).find("input:text").val("")
                         $(this).find(":radio").prop("checked", false)
@@ -4562,6 +4564,7 @@ html;
                     })
 
                     if (!$("#inicio").hasClass("active")) {
+                        $("#textoAuxiliar").text("Iniciar")
                         $("#guardaEncuesta").prop("disabled", true)
                         $("#nombre").text("")
                         $("#telefono").text("")
@@ -4571,9 +4574,13 @@ html;
                         $("#monto").text("")
                         $("#fotoCliente").attr("src", "/img/n.gif")
                         $("#inicio").prop("disabled", $("#nombre").text() === "")
+                    } else {
+                        $("#textoAuxiliar").text("Abandonar")
+                        socket.emit("cambiaEstatus", "En llamada")
                     }
                     vMotivo = null
                     vComentario = null
+
                 }
 
                 const guardaEncuesta = (stat, abandono = false, pregunta = confirmacion) => {
@@ -4581,6 +4588,7 @@ html;
                     .then((continuar) => {
                         if (!continuar) return
                         solicitaComentario(abandono).then((comentario) => {
+                            socket.emit("cambiaEstatus", "Finalizando")
                             datosEncuesta.comentario_asesor = vComentario
                             datosEncuesta.motivo = vMotivo
                             datosEncuesta.estatus = stat
@@ -4610,7 +4618,7 @@ html;
             </script>
         HTML;
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Postventa", [$this->socket, $this->swal])));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Postventa", [$this->socket])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::render("encuestaPostventa", $extraFooter);
     }
@@ -4683,7 +4691,7 @@ html;
             }
         }
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporte encuesta Postventa", [$this->socket, $this->swal])));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Reporte encuesta Postventa")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set("fecha", date("Y-m-d"));
         View::set("estatus", $optEstatus);
@@ -4732,5 +4740,211 @@ html;
         $filas = CallCenterDao::GetReporteEncuestaPostventa($_POST);
 
         \PHPSpreadsheet::GeneraExcel('Reporte encuestas Postventa', 'Reporte', 'Encuestas Postventa', $columnas, $filas['datos']);
+    }
+
+    public function SupervisionEncuestaPostventa()
+    {
+        $extraFooter = <<<HTML
+            <script>
+                {$this->conectaSocket}
+                {$this->showWait}
+
+                const actividad = []
+                const columnas = $("#tblActividad thead th").map((idx, th) => th.className).get()
+
+                $(document).ready(() => {
+                    $("#mensajeGrl").on("click", () => mensaje())
+                })
+
+                const socket = conectaSocket("{$this->configuracion['URL_SOCKETGRAL']}", "superCallcenter")
+
+                socket.on("connect_error", (error) => {
+                    console.log("Error al conectar con el socket:", error)
+                    showWait("Hay problemas con la conexión al servidor, reintentando...")
+                })
+
+                socket.on("supervisando", (datos) => {
+                    datos.forEach((sesion) => {
+                        actividad.push(sesion)
+                        crearFila(sesion)
+                    })
+                    actualizaActividad()
+                    swal.close()
+                })
+
+                socket.on("actInfoSesiones", (datos) => {
+                    const idx = actividad.findIndex((fila) => fila.asesor === datos.asesor)
+                    if (idx >= 0) actividad[idx] = datos
+                    actualizaTabla(datos)
+                    actualizaActividad()
+                })
+
+                socket.on("asesorIN", (datos) => {
+                    actividad.push(datos)
+                    crearFila(datos)
+                    actualizaActividad()
+                })
+
+                socket.on("asesorOUT", (datos) => {
+                    const idx = actividad.findIndex((fila) => fila.asesor === datos.asesor)
+                    if (idx >= 0) {
+                        actividad.splice(idx, 1)
+                        $("#" + datos.asesor).remove()
+                    }
+                    actualizaActividad()
+                })
+                
+                const actualizaActividad = () => {
+                    $("#noAsesores").text(actividad.length)
+                    let noAsignados = 0, noCompletados = 0, noAbandonados = 0
+                    actividad.forEach((fila) => {
+                        noAsignados += fila.conteos.asignados
+                        noCompletados += fila.conteos.completados
+                        noAbandonados += fila.conteos.abandonados
+                    })
+
+                    $("#noClientes").text(noAsignados)
+                    $("#noCompletados").text(noCompletados)
+                    $("#noAbandonados").text(noAbandonados)
+                    ultimaActualizacion()
+                }
+
+                const mensaje = (datos = {}) => {
+                    const para = datos.asesor ? datos.asesor : "los asesores"
+                    const emisor = datos.asesor ? "mensajeAsesor" : "mensajeGlobal"
+                    swal("Mensaje para " + para, {
+                        content: {
+                            element:"input",
+                            attributes: {
+                                placeholder: "Escriba aquí el mensaje",
+                                type: "text"
+                            }
+                        },
+                        buttons: {
+                            cancel: {
+                                text: "Cancelar",
+                                visible: true
+                            },
+                            confirm: {
+                                text: "Enviar"
+                            },
+                        }
+                    }).then((mensaje) => {
+                        if (!mensaje) return
+                        socket.emit(emisor, { mensaje, asesor: datos.asesor })
+                    })
+                }
+
+                const actualizaTabla = (datos) => {
+                   const fila = $("#" + datos.asesor)
+                   const estatus = $(".estatus", fila).text()
+                    columnas.forEach((columna) => {
+                        const celda = $("." + columna, fila)[0]
+                        switch (columna) {
+                            case "tiempo":
+                                celda.textContent = estatus !== datos.estatus ? "00:00:00" : celda.textContent
+                                break;
+                            case "asignados":
+                            case "completados":
+                            case "abandonados":
+                                celda.textContent = datos.conteos[columna]
+                                break;
+                            case "acciones":
+                                break;
+                            default:
+                                celda.textContent = datos[columna]
+                                break;
+                        }
+                    })
+                }
+
+                const ultimaActualizacion = () => $("#ultimaActualizacion").text(new Date().toLocaleString("es-MX"))
+
+                const crearFila = (datos) => {
+                    const fila = document.createElement("tr")
+                    fila.setAttribute("id", datos.asesor)
+                    columnas.forEach((columna) => {
+                        const celda = document.createElement("td")
+                        celda.setAttribute("style", "vertical-align: middle !important; text-align: center;")
+                        celda.setAttribute("class", columna)
+                        switch (columna) {
+                            case "tiempo":
+                                celda.textContent = calculaTiempo(datos.ultimoCambio)
+                                break;
+                            case "asignados":
+                            case "completados":
+                            case "abandonados":
+                                celda.textContent = datos.conteos[columna]
+                                break;
+                            case "acciones":
+                                const boton = document.createElement("button")
+                                boton.setAttribute("class", "btn btn-info")
+                                boton.textContent = "Enviar Mensaje"
+                                boton.addEventListener("click", () => mensaje(datos))
+                                celda.appendChild(boton)
+                                break;
+                            default:
+                                celda.textContent = datos[columna]
+                                break;
+                        }
+                        fila.appendChild(celda)
+                    })
+                    $("#bdTblActividad").append(fila)
+                }
+
+                const actualizaTiempoAsignacion = () => {
+                    $("#bdTblActividad").find("tr").each((idx, fila) => {
+                        if ($(".cliente", fila).text() === "") return
+                        let [h, m, s] = $(fila).find(".tiempo").text().split(":")
+                        s = parseInt(s) + 1
+                        if (s === 60) {
+                            s = 0
+                            m = parseInt(m) + 1
+                            if (m === 60) {
+                                m = 0
+                                h = parseInt(h) + 1
+                            }
+                        }
+                        indicadorTiempos(parseInt(h) * 60 + parseInt(m), fila)
+                        $(fila).find(".tiempo").text(h.toString().padStart(2, "0") + ":" + m.toString().padStart(2, "0") + ":" + s.toString().padStart(2, "0"))
+                    })
+                }
+
+                const indicadorTiempos = (minutos, fila) => {
+                    const tiempos = {
+                        Asignado: 5,
+                        "En llamada": 15,
+                    }
+
+                    const estatus = $(".estatus", fila).text()
+                    const porcentaje = (minutos / tiempos[estatus]) * 100
+                    $(".tiempo", fila).css("background", calcularColor(porcentaje))
+                }
+
+                const calcularColor = (porcentaje) => {
+                    if (porcentaje > 100) porcentaje = 100
+                    const r = porcentaje < 50 ? Math.floor((porcentaje / 50) * 255) : 255; // De verde a amarillo a rojo
+                    const g = porcentaje > 50 ? Math.floor((1 - (porcentaje - 50) / 50) * 255) : 255; // De verde a amarillo
+                    const b = 0;
+                    return "rgb(" + r + ", " + g + ", " + b + ")"
+                }
+
+                const calculaTiempo = (fecha) => {
+                    const ahora = new Date()
+                    const inicio = new Date(fecha)
+                    const diferencia = ahora.getTime() - inicio.getTime()
+                    const segundos = Math.floor(diferencia / 1000)
+                    const minutos = Math.floor(segundos / 60)
+                    const horas = Math.floor(minutos / 60)
+                    return horas.toString().padStart(2, "0") + ":" + (minutos % 60).toString().padStart(2, "0") + ":" + (segundos % 60).toString().padStart(2, "0")
+                }
+
+                setInterval(actualizaTiempoAsignacion, 1000);
+            </script>
+        HTML;
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader('Supervisión encuesta Postventa', [$this->socket])));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render('supervisionEncuestaPostventa', $extraFooter);
     }
 }

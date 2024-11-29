@@ -1671,7 +1671,7 @@ script;
         }
 
 
-        $opcOperaciones .= <<<html
+        $opcOperaciones = <<<html
             <option value="0" $sel_op0>TODAS LAS OPERACIONES CON EFECTIVO</option>
             
             
@@ -1696,7 +1696,7 @@ html;
         }
 
 
-        $opcProductos .= <<<html
+        $opcProductos = <<<html
             <option value="0" $sel_pro0>TODOS LOS PRODUCTOS QUE MANEJAN EFECTIVO</option>
             <option value="1" $sel_pro1>AHORRO CUENTA - CORRIENTE</option>
             <option value="2" $sel_pro2>AHORRO CUENTA - PEQUES</option>

@@ -65,37 +65,37 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td><span class="pregunta">¿Liquido el crédito anterior?</span></td>
-                                <td><input type="radio" name="respuesta_1" class="respuesta" value="1"></td>
-                                <td><input type="radio" name="respuesta_1" class="respuesta" value="0"></td>
-                                <td><input type="text" name="comentario_1" class="form-control comentario" maxlength="500"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><span class="pregunta">¿Liquido el crédito anterior?</span></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="radio" name="respuesta_1" class="respuesta" value="1"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="radio" name="respuesta_1" class="respuesta" value="0"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="text" name="comentario_1" class="form-control comentario" maxlength="500"></td>
                             </tr>
                             <tr>
-                                <td><span class="pregunta">¿Conserva la tarjeta del crédito?</span></td>
-                                <td><input type="radio" name="respuesta_2" class="respuesta" value="1"></td>
-                                <td><input type="radio" name="respuesta_2" class="respuesta" value="0"></td>
-                                <td><input type="text" name="comentario_2" class="form-control comentario" maxlength="500"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><span class="pregunta">¿Conserva la tarjeta del crédito?</span></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="radio" name="respuesta_2" class="respuesta" value="1"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="radio" name="respuesta_2" class="respuesta" value="0"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="text" name="comentario_2" class="form-control comentario" maxlength="500"></td>
                             </tr>
                             <tr>
-                                <td><span class="pregunta">¿Pago multas en el crédito anterior?</span></td>
-                                <td><input type="radio" name="respuesta_3" class="respuesta" value="1"></td>
-                                <td><input type="radio" name="respuesta_3" class="respuesta" value="0"></td>
-                                <td><input type="text" name="comentario_3" class="form-control comentario" maxlength="500"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><span class="pregunta">¿Pago multas en el crédito anterior?</span></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="radio" name="respuesta_3" class="respuesta" value="1"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="radio" name="respuesta_3" class="respuesta" value="0"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="text" name="comentario_3" class="form-control comentario" maxlength="500"></td>
                             </tr>
                             <tr>
-                                <td><span class="pregunta">¿Registraron las multas en su tarjeta?</span></td>
-                                <td><input type="radio" name="respuesta_4" class="respuesta" value="1"></td>
-                                <td><input type="radio" name="respuesta_4" class="respuesta" value="0"></td>
-                                <td><input type="text" name="comentario_4" class="form-control comentario" maxlength="500"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><span class="pregunta">¿Registraron las multas en su tarjeta?</span></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="radio" name="respuesta_4" class="respuesta" value="1"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="radio" name="respuesta_4" class="respuesta" value="0"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="text" name="comentario_4" class="form-control comentario" maxlength="500"></td>
                             </tr>
                             <tr>
-                                <td><span class="pregunta">¿Le gustaría hacer algún?</span></td>
-                                <td><input type="radio" name="respuesta_5" class="respuesta" value="1"></td>
-                                <td><input type="radio" name="respuesta_5" class="respuesta" value="0"></td>
-                                <td><input type="text" name="comentario_5" class="form-control comentario" maxlength="500"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><span class="pregunta">¿Le gustaría hacer algún?</span></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="radio" name="respuesta_5" class="respuesta" value="1"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="radio" name="respuesta_5" class="respuesta" value="0"></td>
+                                <td style="vertical-align: middle !important; text-align: center;"><input type="text" name="comentario_5" class="form-control comentario" maxlength="500"></td>
                             </tr>
                             <tr>
-                                <td colspan="4">
+                                <td colspan="4" style="vertical-align: middle !important; text-align: center;">
                                     <div class="form-group">
                                         <span>Comentarios finales del cliente</span>
                                         <textarea name="comentario_general" id="comentario_general" class="form-control" rows="5" style="resize: none;"></textarea>

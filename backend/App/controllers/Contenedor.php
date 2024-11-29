@@ -77,7 +77,7 @@ class Contenedor extends Controller
                                 </div>
                             </div>
                             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
-                                <div class="menu_section">
+                                <div class="menu_section" style="overflow: auto;">
         html;
 
         $menu = "";
@@ -242,6 +242,7 @@ html;
                    <li><a href="/CallCenter/Historico/">$mis Históricos $titulo</a></li>
                    <li><a href="/CallCenter/EncuestaPostventa/">Postventa</a></li>
                    <li><a href="/CallCenter/ReporteEncuestaPostventa/">Reporte Postventa</a></li>
+                   <li><a href="/CallCenter/SupervisionEncuestaPostventa/">Supervisión Postventa</a></li>
                    $opcion
                   </ul>
                 </li>
