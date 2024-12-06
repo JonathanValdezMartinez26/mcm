@@ -453,16 +453,25 @@ html;
            
     }
 
-    const mostrarAdvertencia = () => {
+    const mostrarAdvertencia = (aprobar = false) => {
+        const textos = {
+            mensajeOK: '"Sí, aprobar solicitud", dará inicio a el proceso de autorización del crédito.',
+            advertenciaOK: "¿estas segura de aprobar el crédito?",
+            botonOK: "Sí, aprobar solicitud",
+            mensajeCANCELAR: "El crédito se cancelara y se notificara al área correspondiente de la cancelación",
+            advertenciaCANCELAR: "¿Estas segura de cancelar la solicitud?",
+            botonCANCELAR: "Sí, cancelar solicitud"
+        }
+
         const contenedor = document.createElement("div")
         const mensaje = document.createElement("p")
         const advertencia = document.createElement("p")
 
-        mensaje.innerHTML = "Usted es el último filtro, su aprobación mediante el botón: <center><b>\"Sí, aprobar solicitud\"</b></center> dará inicio a un proceso automático que no puede detenerse."
+        mensaje.innerHTML = aprobar ? textos.mensajeOK : textos.mensajeCANCELAR 
         mensaje.style.fontSize = "15px"
         mensaje.style.color = "black"
 
-        advertencia.textContent = "⚠️ Tenga en cuenta que la responsabilidad en caso de cualquier error recaerá sobre usted. ⚠️"
+        advertencia.textContent = aprobar ? textos.advertenciaOK : textos.advertenciaCANCELAR 
         advertencia.style.color = "red"
         advertencia.style.fontWeight = "bold"
         advertencia.style.marginTop = "20px"
@@ -473,7 +482,7 @@ html;
 
         return new Promise((resolve) => {
             swal({
-                title: "Aprobación de solicitud de crédito",
+                title: (aprobar ? "Aprobación" : "Rechazo") + " de solicitud de crédito",
                 content: contenedor,
                 icon: "warning",
                 buttons: ["No, volver", "Lea con atención (10)"],
@@ -489,13 +498,11 @@ html;
             const intervalo = setInterval(() => {
                 tiempoRestante--;
 
-                if (tiempoRestante > 0) {
-                    botonConfirmar.textContent = "Lea con atención (" + tiempoRestante + ")"
-                } else {
-                    // Habilitar el botón y cambiar el texto
+                if (tiempoRestante > 0) botonConfirmar.textContent = "Lea con atención (" + tiempoRestante + ")"
+                else {
                     clearInterval(intervalo)
                     botonConfirmar.disabled = false
-                    botonConfirmar.textContent = "Sí, aprobar solicitud"
+                    botonConfirmar.textContent = aprobar ? textos.botonOK : textos.botonCANCELAR
                 }
             }, 1000)
         })
@@ -532,10 +539,8 @@ html;
                             icon: "warning"
                         })
                     } else {
-                        if (estatus_solicitud.toLowerCase().includes("lista")) {
-                            const continuar = await mostrarAdvertencia()
-                            if (!continuar) return
-                        }
+                        const continuar = await mostrarAdvertencia(estatus_solicitud.toLowerCase().includes("lista"))
+                        if (!continuar) return
 
                         const agregar_TS = document.getElementById("terminar_solicitud")
                         agregar_TS.disabled = true

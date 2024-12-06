@@ -26,7 +26,7 @@ class Model
         ];
 
         try {
-            $db = new Database();
+            $db = new Database('SERVIDOR-AWS');
             $res = $db->queryAll($qry, $prm);
             return self::Responde(true, 'Destinatarios obtenidos', $res);
         } catch (\Exception $e) {

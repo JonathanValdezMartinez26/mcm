@@ -10,8 +10,7 @@ use Core\Database;
 
 class JobsCredito extends Model
 {
-
-    // Metodos para las solicitudes de crédito
+    // Metodos para las solicitudes de crédito aprobadas
     public static function GetSolicitudesAprobadas()
     {
         $qry = <<<SQL
@@ -58,7 +57,7 @@ class JobsCredito extends Model
         SQL;
 
         try {
-            $db = new Database();
+            $db = new Database('SERVIDOR-AWS');
             $res = $db->queryAll($qry);
             return self::Responde(true, "Se obtuvieron las solicitudes de crédito",  $res ?? []);
         } catch (\Exception $e) {
@@ -66,24 +65,24 @@ class JobsCredito extends Model
         }
     }
 
-    public static function ProcesaSolicitud($credito)
+    public static function ProcesaSolicitudAprobada($credito)
     {
         $qrys = [];
         $parametros = [];
 
-        [$qrys[], $parametros[]] = self::Solicitud_Actualiza_SN($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_Actualiza_SC($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_Inserta_PRN($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_Inserta_PRC($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_Limpia_MPC($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_Limpia_JP($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_Limpia_MP($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_Inserta_MP($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_Inserta_JP($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_Inserta_MPC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_A_Actualiza_SN($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_A_Actualiza_SC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_A_Inserta_PRN($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_A_Inserta_PRC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_A_Limpia_MPC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_A_Limpia_JP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_A_Limpia_MP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_A_Inserta_MP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_A_Inserta_JP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_A_Inserta_MPC($credito);
 
         try {
-            $db = new Database();
+            $db = new Database('SERVIDOR-AWS');
             $db->insertaMultiple($qrys, $parametros);
             return self::Responde(true, "Solicitud actualizada correctamente");
         } catch (\Exception $e) {
@@ -91,7 +90,7 @@ class JobsCredito extends Model
         }
     }
 
-    public static function Solicitud_Actualiza_SN($datos)
+    public static function Solicitud_A_Actualiza_SN($datos)
     {
         $qry = <<<SQL
             UPDATE
@@ -100,7 +99,8 @@ class JobsCredito extends Model
                 CANTAUTOR = CANTSOLIC - 9999
                 , SITUACION = 'A'
             WHERE
-                CDGNS = :CDGNS
+                SITUACION = 'S'
+                AND CDGNS = :CDGNS
                 AND CICLO = :CICLO
                 AND SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
         SQL;
@@ -117,7 +117,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function Solicitud_Actualiza_SC($datos)
+    public static function Solicitud_A_Actualiza_SC($datos)
     {
         $qry = <<<SQL
             UPDATE
@@ -132,7 +132,8 @@ class JobsCredito extends Model
                                 ELSE 'A'
                             END
             WHERE
-                CDGNS = :CDGNS
+                SITUACION = 'S'
+                AND CDGNS = :CDGNS
                 AND CICLO = :CICLO
                 AND SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
         SQL;
@@ -149,7 +150,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function Solicitud_Inserta_PRN($datos)
+    public static function Solicitud_A_Inserta_PRN($datos)
     {
         $qry = <<<SQL
             INSERT INTO
@@ -249,7 +250,8 @@ class JobsCredito extends Model
             FROM
                 SN
             WHERE
-                SN.CDGNS = :CDGNS
+                SN.SITUACION = 'A'
+                AND SN.CDGNS = :CDGNS
                 AND SN.CICLO = :CICLO
                 AND SN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
         SQL;
@@ -267,7 +269,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function Solicitud_Inserta_PRC($datos)
+    public static function Solicitud_A_Inserta_PRC($datos)
     {
         $qry = <<<SQL
             INSERT INTO
@@ -320,9 +322,10 @@ class JobsCredito extends Model
                 SC.DOMICILIA
             FROM
                 PRN
-                JOIN SC ON PRN.CDGNS = SC.CDGNS AND PRN.CICLO = SC.CICLO AND PRN.SOLICITUD = SC.SOLICITUD AND SC.CANTSOLIC <> 9999
+                JOIN SC ON PRN.CDGNS = SC.CDGNS AND PRN.CICLO = SC.CICLO AND PRN.SOLICITUD = SC.SOLICITUD AND SC.SITUACION = 'A' AND SC.CANTSOLIC <> 9999
             WHERE
-                PRN.CDGNS = :CDGNS
+                PRN.SITUACION = 'E'
+                AND PRN.CDGNS = :CDGNS
                 AND PRN.CICLO = :CICLO
                 AND PRN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
         SQL;
@@ -339,7 +342,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function Solicitud_Limpia_MPC($datos)
+    public static function Solicitud_A_Limpia_MPC($datos)
     {
         $qry = <<<SQL
             DELETE FROM
@@ -364,7 +367,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function Solicitud_Limpia_JP($datos)
+    public static function Solicitud_A_Limpia_JP($datos)
     {
         $qry = <<<SQL
             DELETE FROM
@@ -389,7 +392,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function Solicitud_Limpia_MP($datos)
+    public static function Solicitud_A_Limpia_MP($datos)
     {
         $qry = <<<SQL
             DELETE FROM
@@ -414,7 +417,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function Solicitud_Inserta_MP($datos)
+    public static function Solicitud_A_Inserta_MP($datos)
     {
         $qry = <<<SQL
             INSERT INTO
@@ -497,7 +500,8 @@ class JobsCredito extends Model
                 PRN
                 JOIN PRC ON PRN.CDGNS = PRC.CDGNS AND PRN.CICLO = PRC.CICLO AND PRN.SOLICITUD = PRC.SOLICITUD
             WHERE
-                PRN.CDGNS = :CDGNS
+                PRN.SITUACION = 'E'
+                AND PRN.CDGNS = :CDGNS
                 AND PRN.CICLO = :CICLO
                 AND PRN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
         SQL;
@@ -515,7 +519,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function Solicitud_Inserta_JP($datos)
+    public static function Solicitud_A_Inserta_JP($datos)
     {
         $qry = <<<SQL
             INSERT INTO
@@ -594,7 +598,8 @@ class JobsCredito extends Model
                 PRN
                 JOIN PRC ON PRN.CDGNS = PRC.CDGNS AND PRN.CICLO = PRC.CICLO AND PRN.SOLICITUD = PRC.SOLICITUD
             WHERE
-                PRN.CDGNS = :CDGNS
+                PRN.SITUACION = 'E'
+                AND PRN.CDGNS = :CDGNS
                 AND PRN.CICLO = :CICLO
                 AND PRN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
         SQL;
@@ -611,7 +616,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function Solicitud_Inserta_MPC($datos)
+    public static function Solicitud_A_Inserta_MPC($datos)
     {
         $qry = <<<SQL
             INSERT INTO
@@ -658,7 +663,8 @@ class JobsCredito extends Model
                 PRN
                 JOIN PRC ON PRN.CDGNS = PRC.CDGNS AND PRN.CICLO = PRC.CICLO AND PRN.SOLICITUD = PRC.SOLICITUD
             WHERE
-                PRN.CDGNS = :CDGNS
+                PRN.SITUACION = 'E'
+                AND PRN.CDGNS = :CDGNS
                 AND PRN.CICLO = :CICLO
                 AND PRN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
         SQL;
@@ -673,6 +679,78 @@ class JobsCredito extends Model
             $qry,
             $parametros
         ];
+    }
+
+    // Metodos para las solicitudes de crédito rechazadas
+    public static function GetSolicitudesRechazadas()
+    {
+        $qry = <<<SQL
+            SELECT
+                SN.CDGNS,
+                SN.CICLO,
+                TO_CHAR(SN.SOLICITUD, 'DD/MM/YYYY HH24:MI:SS') AS SOLICITUD,
+                SCC.CDGPE,
+                CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS NOMBRE_PE,
+                SCC.ESTATUS AS ESTATUS,
+                CASE SCC.DIA_LLAMADA_2_CL
+                    WHEN NULL THEN 2
+                    ELSE 1
+                END AS NO_LLAMADAS,
+                TO_CHAR(SCC.DIA_LLAMADA_1_CL, 'DD/MM/YYYY HH24:MI:SS') AS PRIMERA_LLAMADA,
+                TO_CHAR(
+                    CASE
+                        WHEN SCC.DIA_LLAMADA_2_CL IS NULL THEN SCC.DIA_LLAMADA_1_CL
+                        ELSE SCC.DIA_LLAMADA_2_CL
+                    END
+                    , 'DD/MM/YYYY HH24:MI:SS') AS ULTIMA_LLAMADA,
+                SCC.NUMERO_INTENTOS_CL AS INTENTOS,
+                SCC.COMENTARIO_INICIAL,
+                SCC.COMENTARIO_FINAL,
+                CL.CODIGO AS CL,
+                CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE_CL,
+                CO.CODIGO AS CO,
+                CO.NOMBRE AS NOMBRE_CO,
+                RG.CODIGO AS RG,
+                RG.NOMBRE AS NOMBRE_RG
+            FROM
+                SN
+                RIGHT JOIN SOL_CALL_CENTER SCC ON SN.CDGNS = SCC.CDGNS AND SN.SOLICITUD = SCC.FECHA_SOL
+                RIGHT JOIN CO ON SN.CDGCO = CO.CODIGO
+                RIGHT JOIN RG ON CO.CDGRG = RG.CODIGO
+                RIGHT JOIN SC ON SN.CDGNS = SC.CDGNS AND SN.CICLO = SC.CICLO AND SN.SOLICITUD = SC.SOLICITUD AND SC.CANTSOLIC = 9999
+                RIGHT JOIN CL ON SC.CDGCL = CL.CODIGO
+                RIGHT JOIN PE ON SCC.CDGPE = PE.CODIGO
+            WHERE
+                SN.SITUACION = 'S'
+                AND NOT SCC.ESTATUS IN ('LISTA SIN INCIDENCIA', 'LISTA CON OBSERVACION', 'PENDIENTE')
+                AND SCC.FECHA_SOL > TO_DATE('01/06/2024 00:00:00', 'DD/MM/YYYY HH24:MI:SS')
+                --AND SCC.FECHA_SOL > TO_DATE('29/11/2024 12:31:49', 'DD/MM/YYYY HH24:MI:SS')
+        SQL;
+
+        try {
+            $db = new Database('SERVIDOR-AWS');
+            $res = $db->queryAll($qry);
+            return self::Responde(true, "Se obtuvieron las solicitudes de crédito rechazadas",  $res ?? []);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener las solicitudes de crédito rechazadas", null, $e->getMessage());
+        }
+    }
+
+    public static function ProcesaRechazo($credito)
+    {
+        $qrys = [];
+        $parametros = [];
+
+        [$qrys[], $parametros[]] = self::Rechazo_Actualiza_SN($credito);
+        [$qrys[], $parametros[]] = self::Rechazo_Actualiza_SC($credito);
+
+        try {
+            $db = new Database();
+            $db->insertaMultiple($qrys, $parametros);
+            return self::Responde(true, "Rechazo actualizado correctamente");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al actualizar el rechazo", null, $e->getMessage());
+        }
     }
 
     // Metodos para los cheques
