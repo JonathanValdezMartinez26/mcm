@@ -4,9 +4,6 @@ namespace Core;
 
 defined("APPPATH") or die("Access denied");
 
-use \App\models\General as GeneralDao;
-use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
-
 class Controller
 {
     public $socket = '<script src="/libs/socket.io.min.js"></script>';
@@ -63,8 +60,8 @@ class Controller
     }';
     public $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/[^0-9.-]/g, "")) || 0';
     public $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })';
-    public $configuraTabla = 'const configuraTabla = (id) => {
-        $("#" + id).DataTable({
+    public $configuraTabla = 'const configuraTabla = (id, {noRegXvista = true} = {}) => {
+        const configuracion = {
             lengthMenu: [
                 [10, 40, -1],
                 [10, 40, "Todos"]
@@ -82,7 +79,11 @@ class Controller
                 lengthMenu: "Mostrar _MENU_ registros por página",
                 search: "Buscar:",
             }
-        })
+        }
+
+        configuracion.lengthChange = noRegXvista
+
+        $("#" + id).DataTable(configuracion)
 
         $("#"  + id + " input[type=search]").keyup(() => {
             $("#example")

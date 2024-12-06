@@ -4,9 +4,10 @@ namespace App\models;
 
 defined("APPPATH") or die("Access denied");
 
-use \Core\Database;
+use Core\Database;
+use Core\Model;
 
-class Creditos
+class Creditos extends Model
 {
 
     public static function ConsultaGarantias($noCredito)
@@ -318,6 +319,222 @@ sql;
             return $res;
         } catch (\Exception $e) {
             return array();
+        }
+    }
+
+    public static function BuscaCURPListaNegra($datos)
+    {
+        $qry = <<<SQL
+            SELECT
+                *
+            FROM
+                CL_MARCA
+            WHERE
+                CURP = :curp
+        SQL;
+
+        $parametros = [
+            'curp' => $datos['curp']
+        ];
+
+        $res = [];
+
+        try {
+            $mcm = new Database();
+            $res1 = $mcm->queryOne($qry, $parametros);
+            $res[] = $res1 ?? [];
+
+            $cultiva = new Database('SERVIDOR-CULTIVA');
+            $res2 = $cultiva->queryOne($qry, $parametros);
+            $res[] = $res2 ?? [];
+
+            return self::Responde(true, 'CURP encontrada en lista negra', $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al buscar CURP en lista negra', null, $e->getMessage());
+        }
+    }
+
+    public static function GetParametrosCorreos()
+    {
+        $qry = <<<SQL
+            SELECT * FROM (
+                SELECT UNIQUE
+                    'AREA' AS TIPO,
+                    AREA AS VALOR,
+                    AREA AS MOSTRAR
+                FROM
+                    CORREO_DIRECTORIO
+                ORDER BY AREA
+            )
+            UNION
+            SELECT * FROM (
+                SELECT UNIQUE
+                    'SUCURSAL' AS TIPO,
+                    CD.SUCURSAL AS VALOR,
+                    CD.SUCURSAL || ' - ' || CO.NOMBRE AS MOSTRAR
+                FROM
+                    CORREO_DIRECTORIO CD
+                    JOIN CO ON CO.CODIGO = CD.SUCURSAL
+                ORDER BY TO_NUMBER(CD.SUCURSAL)
+            )
+            UNION
+            SELECT * FROM (
+                SELECT UNIQUE
+                    'GRUPO' AS TIPO,
+                    GRUPO AS VALOR,
+                    REPLACE(GRUPO, '_', ' ') AS MOSTRAR
+                FROM
+                    CORREO_DESTINATARIOS
+                ORDER BY GRUPO
+            )
+            UNION
+            SELECT * FROM (
+                SELECT UNIQUE
+                    'SUCURSALES' AS TIPO,
+                    CODIGO AS VALOR,
+                    CODIGO || ' - ' || NOMBRE AS MOSTRAR
+                FROM
+                    CO
+                ORDER BY TO_NUMBER(CODIGO)
+            )
+        SQL;
+
+        try {
+            $mcm = new Database();
+            $res = $mcm->queryAll($qry);
+            return self::Responde(true, 'Parámetros de correos encontrados', $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al buscar parámetros de correos', null, $e->getMessage());
+        }
+    }
+
+    public static function GetCorreos($datos)
+    {
+        $qry = <<<SQL
+            SELECT
+                NOMBRE,
+                CORREO,
+                AREA,
+                SUCURSAL
+            FROM
+                CORREO_DIRECTORIO
+        SQL;
+
+        if (count($datos) > 0) {
+            $qry .= ' WHERE ';
+            $pTmp = [];
+            foreach ($datos as $key => $value) {
+                $pTmp[] = "$key = :$key";
+            }
+            $qry .= implode(' AND ', $pTmp);
+        }
+
+        try {
+            $mcm = new Database();
+            $res = $mcm->queryAll($qry, $datos);
+            return self::Responde(true, 'Correos encontrados', $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al buscar correos', null, $e->getMessage());
+        }
+    }
+
+    public static function GetCorreosGrupo($datos)
+    {
+        $qry = <<<SQL
+            SELECT
+                CORREO,
+                EDITABLE
+            FROM
+                CORREO_DESTINATARIOS
+            WHERE
+                GRUPO = :grupo 
+        SQL;
+
+        try {
+            $mcm = new Database();
+            $res = $mcm->queryAll($qry, $datos);
+            return self::Responde(true, 'Correos de grupo encontrados', $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al buscar correos de grupo', null, $e->getMessage());
+        }
+    }
+
+    public static function AgregaCorreoGrupo($datos)
+    {
+        $qry = <<<SQL
+            INSERT INTO CORREO_DESTINATARIOS (GRUPO, CORREO, EDITABLE, REGISTRO)
+            VALUES (:grupo,:correo,1,:usuario)
+        SQL;
+
+        $qrys = [];
+        $parametros = [];
+        foreach ($datos['correos'] as $key => $value) {
+            $qrys[] = $qry;
+            $parametros[] = [
+                'grupo' => $datos['grupo'],
+                'correo' => $value,
+                'usuario' => $datos['usuario']
+            ];
+        }
+
+        try {
+            $mcm = new Database();
+            $mcm->insertaMultiple($qrys, $parametros);
+            return self::Responde(true, 'Correo agregado a grupo correctamente');
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al agregar correo a grupo', null, $e->getMessage());
+        }
+    }
+
+    public static function EliminaCorreoGrupo($datos)
+    {
+        $qry = <<<SQL
+            DELETE FROM CORREO_DESTINATARIOS
+            WHERE GRUPO = :grupo
+            AND CORREO = :correo
+        SQL;
+
+        $qrys = [];
+        $parametros = [];
+
+        foreach ($datos['correos'] as $key => $value) {
+            $qrys[] = $qry;
+            $parametros[] = [
+                'grupo' => $datos['grupo'],
+                'correo' => $value
+            ];
+        }
+
+        try {
+            $mcm = new Database();
+            $mcm->insertaMultiple($qrys, $parametros);
+            return self::Responde(true, 'Correo eliminado de grupo correctamente');
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al eliminar correo de grupo', null, $e->getMessage());
+        }
+    }
+
+    public static function RegistraCorreo($datos)
+    {
+        $qry = <<<SQL
+            INSERT INTO CORREO_DIRECTORIO (NOMBRE,CORREO,ESTADO,AREA,SUCURSAL,REGISTRO)
+            VALUES (:nombre,:correo,'A',:area,:sucursal,:registro)
+        SQL;
+
+        $parametros = [
+            'nombre' => $datos['nombre'],
+            'correo' => $datos['correo'],
+            'area' => $datos['area'],
+            'sucursal' => $datos['sucursal'],
+            'registro' => $datos['usuario']
+        ];
+
+        try {
+            $mcm = new Database();
+            $mcm->insertar($qry, $parametros);
+            return self::Responde(true, 'Correo registrado correctamente');
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al registrar correo', null, $e->getMessage());
         }
     }
 }

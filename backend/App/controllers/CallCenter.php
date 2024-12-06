@@ -452,88 +452,143 @@ html;
             
            
     }
-        function enviar_resumen_add(){	
-             cliente_encuesta = document.getElementById("cliente_encuesta").value; 
-             cliente_aval = document.getElementById("cliente_aval").value;
-             comentarios_iniciales = document.getElementById("comentarios_iniciales").value;
-             comentarios_finales = document.getElementById("comentarios_finales").value;
-             estatus_solicitud = document.getElementById("estatus_solicitud").value;
-             vobo_gerente = document.getElementById("vobo_gerente").value;
-            
-             
-             
-             cliente_id = document.getElementById("cliente_id").value; 
-             cdgco_res = getParameterByName('Suc');
-             ciclo_cl_res = getParameterByName('Ciclo');
-             
-             if(comentarios_iniciales == ''){
-                swal("Necesita ingresar los comentarios inicales para la solicitud del cliente", {icon: "warning",});
-             }
-            else
-                {
-                     if(comentarios_finales == '')
-                     {
-                        swal("Necesita ingresar los comentarios finales para la solicitud del cliente", {icon: "warning",});
-                     }
-                    else
-                    {
-                        if(cliente_encuesta == 'PENDIENTE'){
-                            swal("La encuesta del cliente no está marcada como validada", {icon: "danger",});
+
+    const mostrarAdvertencia = () => {
+        const contenedor = document.createElement("div")
+        const mensaje = document.createElement("p")
+        const advertencia = document.createElement("p")
+
+        mensaje.innerHTML = "Usted es el último filtro, su aprobación mediante el botón: <center><b>\"Sí, aprobar solicitud\"</b></center> dará inicio a un proceso automático que no puede detenerse."
+        mensaje.style.fontSize = "15px"
+        mensaje.style.color = "black"
+
+        advertencia.textContent = "⚠️ Tenga en cuenta que la responsabilidad en caso de cualquier error recaerá sobre usted. ⚠️"
+        advertencia.style.color = "red"
+        advertencia.style.fontWeight = "bold"
+        advertencia.style.marginTop = "20px"
+        advertencia.style.fontSize = "18px"
+
+        contenedor.appendChild(mensaje)
+        contenedor.appendChild(advertencia)
+
+        return new Promise((resolve) => {
+            swal({
+                title: "Aprobación de solicitud de crédito",
+                content: contenedor,
+                icon: "warning",
+                buttons: ["No, volver", "Lea con atención (10)"],
+                closeOnClickOutside: false,
+                dangerMode: true
+            }).then((continuar) => {
+                resolve(continuar)
+            })
+
+            let tiempoRestante = 10;
+            const botonConfirmar = document.querySelector(".swal-button--danger");
+            botonConfirmar.disabled = true
+            const intervalo = setInterval(() => {
+                tiempoRestante--;
+
+                if (tiempoRestante > 0) {
+                    botonConfirmar.textContent = "Lea con atención (" + tiempoRestante + ")"
+                } else {
+                    // Habilitar el botón y cambiar el texto
+                    clearInterval(intervalo)
+                    botonConfirmar.disabled = false
+                    botonConfirmar.textContent = "Sí, aprobar solicitud"
+                }
+            }, 1000)
+        })
+    }
+
+    const enviar_resumen_add = async () => {
+        estatus_solicitud = document.getElementById("estatus_solicitud").value
+        cliente_encuesta = document.getElementById("cliente_encuesta").value
+        cliente_aval = document.getElementById("cliente_aval").value
+        comentarios_iniciales = document.getElementById("comentarios_iniciales").value
+        comentarios_finales = document.getElementById("comentarios_finales").value
+        vobo_gerente = document.getElementById("vobo_gerente").value
+        cliente_id = document.getElementById("cliente_id").value
+        cdgco_res = getParameterByName("Suc")
+        ciclo_cl_res = getParameterByName("Ciclo")
+
+        if (comentarios_iniciales == "") {
+            swal("Necesita ingresar los comentarios iniciales para la solicitud del cliente", {
+                icon: "warning"
+            })
+        } else {
+            if (comentarios_finales == "") {
+                swal("Necesita ingresar los comentarios finales para la solicitud del cliente", {
+                    icon: "warning"
+                })
+            } else {
+                if (cliente_encuesta == "PENDIENTE") {
+                    swal("La encuesta del cliente no está marcada como validada", {
+                        icon: "danger"
+                    })
+                } else {
+                    if (estatus_solicitud == "") {
+                        swal("Necesita seleccionar el estatus final de la solicitud", {
+                            icon: "warning"
+                        })
+                    } else {
+                        if (estatus_solicitud.toLowerCase().includes("lista")) {
+                            const continuar = await mostrarAdvertencia()
+                            if (!continuar) return
                         }
-                        else
-                        {
-                            if(estatus_solicitud == '')
-                               {
-                                  swal("Necesita seleccionar el estatus final de la solicitud", {icon: "warning",});
-                               }
-                               else
-                                   {
-                                       const agregar_TS = document.getElementById('terminar_solicitud');
-                                       agregar_TS.disabled = true; 
-                
-                                        $.ajax({
-                                        type: 'POST',
-                                        url: '/CallCenter/ResumenEjecutivo/',
-                                        data: $('#Add_comentarios').serialize()+ "&cdgco_res="+cdgco_res+ "&ciclo_cl_res="+ciclo_cl_res+ "&cliente_id_res="+cliente_id+ "&comentarios_iniciales="+comentarios_iniciales+ "&comentarios_finales="+comentarios_finales+ "&estatus_solicitud="+estatus_solicitud+ "&vobo_gerente="+vobo_gerente ,
-                                        success: function(respuesta) 
-                                        {
-                                            if(respuesta=='1')
-                                            {               
-                                              swal("Se guardo correctamente la información.",
-                                              {
-                                              icon: "success",
-                                              buttons: {
-                                                catch: {
-                                                  text: "Aceptar",
-                                                  value: "catch",
-                                                }
-                                              },
-                                              
-                                            })
-                                            .then((value) => {
-                                              switch (value) {
-                                                case "catch":
-                                                 window.location.href = '/CallCenter/Pendientes/'; //Will take you to Google.
-                                                 break;
-                                              }
-                                            });
-                                            }
-                                            else 
-                                            {
-                                                $('#modal_encuesta_cliente').modal('hide')
-                                                swal(respuesta, {
-                                                icon: "error",
-                                                });
-                                                document.getElementById("monto").value = "";
+
+                        const agregar_TS = document.getElementById("terminar_solicitud")
+                        agregar_TS.disabled = true
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/CallCenter/ResumenEjecutivo/",
+                            data:
+                                $("#Add_comentarios").serialize() +
+                                "&cdgco_res=" +
+                                cdgco_res +
+                                "&ciclo_cl_res=" +
+                                ciclo_cl_res +
+                                "&cliente_id_res=" +
+                                cliente_id +
+                                "&comentarios_iniciales=" +
+                                comentarios_iniciales +
+                                "&comentarios_finales=" +
+                                comentarios_finales +
+                                "&estatus_solicitud=" +
+                                estatus_solicitud +
+                                "&vobo_gerente=" +
+                                vobo_gerente,
+                            success: function (respuesta) {
+                                if (respuesta == "1") {
+                                    swal("Se guardo correctamente la información.", {
+                                        icon: "success",
+                                        buttons: {
+                                            catch: {
+                                                text: "Aceptar",
+                                                value: "catch"
                                             }
                                         }
-                                       });
-                                    }                    
-                                
-                        }    
+                                    }).then((value) => {
+                                        switch (value) {
+                                            case "catch":
+                                                window.location.href = "/CallCenter/Pendientes/"
+                                                break
+                                        }
+                                    })
+                                } else {
+                                    $("#modal_encuesta_cliente").modal("hide")
+                                    swal(respuesta, {
+                                        icon: "error"
+                                    })
+                                    document.getElementById("monto").value = ""
+                                }
+                            }
+                        })
                     }
                 }
- 
+            }
+        }
     }
     
         function check_2610()
@@ -4620,7 +4675,7 @@ html;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Postventa", [$this->socket])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render("encuestaPostventa", $extraFooter);
+        View::render("callcenter_encuestaPostventa", $extraFooter);
     }
 
     public function AsignaClienteEncuestaPostventa()
@@ -4695,7 +4750,7 @@ html;
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set("fecha", date("Y-m-d"));
         View::set("estatus", $optEstatus);
-        View::render("reporteEncuestaPostventa", $extraFooter);
+        View::render("callcenter_reporteEncuestaPostventa", $extraFooter);
     }
 
     public function HTMLReporteEncuestaPostventa()
@@ -4945,6 +5000,6 @@ html;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader('Supervisión encuesta Postventa', [$this->socket])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render('supervisionEncuestaPostventa', $extraFooter);
+        View::render('callcenter_supervisionEncuestaPostventa', $extraFooter);
     }
 }

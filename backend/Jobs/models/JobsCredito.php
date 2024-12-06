@@ -10,71 +10,737 @@ use Core\Database;
 
 class JobsCredito extends Model
 {
-    public static function CreditosAutorizados()
+
+    // Metodos para las solicitudes de crédito
+    public static function GetSolicitudesAprobadas()
+    {
+        $qry = <<<SQL
+            SELECT
+                SN.CDGNS,
+                SN.CICLO,
+                TO_CHAR(SN.SOLICITUD, 'DD/MM/YYYY HH24:MI:SS') AS SOLICITUD,
+                SCC.CDGPE,
+                CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS NOMBRE_PE,
+                SCC.ESTATUS AS ESTATUS,
+                CASE SCC.DIA_LLAMADA_2_CL
+                    WHEN NULL THEN 2
+                    ELSE 1
+                END AS NO_LLAMADAS,
+                TO_CHAR(SCC.DIA_LLAMADA_1_CL, 'DD/MM/YYYY HH24:MI:SS') AS PRIMERA_LLAMADA,
+                TO_CHAR(
+                    CASE
+                        WHEN SCC.DIA_LLAMADA_2_CL IS NULL THEN SCC.DIA_LLAMADA_1_CL
+                        ELSE SCC.DIA_LLAMADA_2_CL
+                    END
+                    , 'DD/MM/YYYY HH24:MI:SS') AS ULTIMA_LLAMADA,
+                SCC.NUMERO_INTENTOS_CL AS INTENTOS,
+                SCC.COMENTARIO_INICIAL,
+                SCC.COMENTARIO_FINAL,
+                CL.CODIGO AS CL,
+                CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE_CL,
+                CO.CODIGO AS CO,
+                CO.NOMBRE AS NOMBRE_CO,
+                RG.CODIGO AS RG,
+                RG.NOMBRE AS NOMBRE_RG
+            FROM
+                SN
+                RIGHT JOIN SOL_CALL_CENTER SCC ON SN.CDGNS = SCC.CDGNS AND SN.SOLICITUD = SCC.FECHA_SOL
+                RIGHT JOIN CO ON SN.CDGCO = CO.CODIGO
+                RIGHT JOIN RG ON CO.CDGRG = RG.CODIGO
+                RIGHT JOIN SC ON SN.CDGNS = SC.CDGNS AND SN.CICLO = SC.CICLO AND SN.SOLICITUD = SC.SOLICITUD AND SC.CANTSOLIC <> 9999
+                RIGHT JOIN CL ON SC.CDGCL = CL.CODIGO
+                RIGHT JOIN PE ON SCC.CDGPE = PE.CODIGO
+            WHERE
+                SN.SITUACION = 'S'
+                AND SCC.ESTATUS IN ('LISTA SIN INCIDENCIA', 'LISTA CON OBSERVACION')
+                AND SCC.FECHA_SOL > TO_DATE('01/06/2024 00:00:00', 'DD/MM/YYYY HH24:MI:SS')
+                --AND SCC.FECHA_SOL > TO_DATE('29/11/2024 12:31:49', 'DD/MM/YYYY HH24:MI:SS')
+        SQL;
+
+        try {
+            $db = new Database();
+            $res = $db->queryAll($qry);
+            return self::Responde(true, "Se obtuvieron las solicitudes de crédito",  $res ?? []);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener las solicitudes de crédito", null, $e->getMessage());
+        }
+    }
+
+    public static function ProcesaSolicitud($credito)
+    {
+        $qrys = [];
+        $parametros = [];
+
+        [$qrys[], $parametros[]] = self::Solicitud_Actualiza_SN($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_Actualiza_SC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_Inserta_PRN($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_Inserta_PRC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_Limpia_MPC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_Limpia_JP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_Limpia_MP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_Inserta_MP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_Inserta_JP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_Inserta_MPC($credito);
+
+        try {
+            $db = new Database();
+            $db->insertaMultiple($qrys, $parametros);
+            return self::Responde(true, "Solicitud actualizada correctamente");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al actualizar la solicitud", null, $e->getMessage());
+        }
+    }
+
+    public static function Solicitud_Actualiza_SN($datos)
+    {
+        $qry = <<<SQL
+            UPDATE
+                SN
+            SET
+                CANTAUTOR = CANTSOLIC - 9999
+                , SITUACION = 'A'
+            WHERE
+                CDGNS = :CDGNS
+                AND CICLO = :CICLO
+                AND SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+        SQL;
+
+        $parametros = [
+            "CDGNS" => $datos["CDGNS"],
+            "CICLO" => $datos["CICLO"],
+            "SOLICITUD" => $datos["SOLICITUD"]
+        ];
+
+        return [
+            $qry,
+            $parametros
+        ];
+    }
+
+    public static function Solicitud_Actualiza_SC($datos)
+    {
+        $qry = <<<SQL
+            UPDATE
+                SC
+            SET
+                CANTAUTOR = CASE
+                                WHEN CANTSOLIC = 9999 THEN 0
+                                ELSE CANTSOLIC
+                            END,
+                SITUACION = CASE
+                                WHEN CANTSOLIC = 9999 THEN 'R'
+                                ELSE 'A'
+                            END
+            WHERE
+                CDGNS = :CDGNS
+                AND CICLO = :CICLO
+                AND SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+        SQL;
+
+        $parametros = [
+            "CDGNS" => $datos["CDGNS"],
+            "CICLO" => $datos["CICLO"],
+            "SOLICITUD" => $datos["SOLICITUD"]
+        ];
+
+        return [
+            $qry,
+            $parametros
+        ];
+    }
+
+    public static function Solicitud_Inserta_PRN($datos)
+    {
+        $qry = <<<SQL
+            INSERT INTO
+                PRN (
+                    CDGEM,
+                    CDGNS,
+                    CICLO,
+                    CDGCO,
+                    CDGOCPE,
+                    SOLICITUD,
+                    INICIO,
+                    PERIODICIDAD,
+                    CANTAUTOR,
+                    CANTENTRE,
+                    DIAJUNTA,
+                    HORARIO,
+                    DESFASEPAGO,
+                    TASAINI,
+                    DURACINI,
+                    TASAFIN,
+                    DURACFIN,
+                    PERIGRCAP,
+                    PERIGRINT,
+                    CDGMCI,
+                    CDGFDI,
+                    DEPOSITA,
+                    SITUACION,
+                    REPORTE,
+                    CONCILIADO,
+                    PRESIDENTE,
+                    TESORERO,
+                    SECRETARIO,
+                    ACTUALIZAENPE,
+                    MODOAPLIRECA,
+                    FCOMITE,
+                    NOCHEQUE,
+                    ACTUALIZACHPE,
+                    FEXP,
+                    CDGCB,
+                    FORMAENTREGA,
+                    CDGTPC,
+                    CDGPCR,
+                    TASA,
+                    PLAZO,
+                    CDGMO,
+                    CDGPRPE,
+                    ACTUALIZACPE,
+                    NOACUERDO,
+                    MULTPER
+                )
+            SELECT
+                SN.CDGEM,
+                SN.CDGNS,
+                SN.CICLO,
+                SN.CDGCO,
+                SN.CDGOCPE,
+                SN.SOLICITUD,
+                SN.INICIO,
+                SN.PERIODICIDAD,
+                SN.CANTAUTOR,
+                SN.CANTAUTOR,
+                SN.DIAJUNTA,
+                SN.HORARIO,
+                SN.DESFASEPAGO,
+                SN.TASA,
+                SN.DURACION,
+                SN.TASA,
+                SN.DURACION,
+                SN.PERIGRCAP,
+                SN.PERIGRINT,
+                SN.CDGMCI,
+                SN.CDGFDI,
+                SN.DEPOSITA,
+                'E',
+                '   C',
+                'C',
+                SN.PRESIDENTE,
+                SN.TESORERO,
+                SN.SECRETARIO,
+                :USUARIO,
+                SN.MODOAPLIRECA,
+                SYSDATE,
+                GET_CHQ(SN.CDGCO),
+                :USUARIO,
+                SYSDATE,
+                GET_CDGCB(SN.CDGCO),
+                'I',
+                SN.CDGTPC,
+                SN.CDGPCR,
+                SN.TASA,
+                SN.DURACION,
+                SN.CDGMO,
+                SN.CDGPRPE,
+                :USUARIO,
+                SN.NOACUERDO,
+                SN.MULTPER
+            FROM
+                SN
+            WHERE
+                SN.CDGNS = :CDGNS
+                AND SN.CICLO = :CICLO
+                AND SN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+        SQL;
+
+        $parametros = [
+            'CDGNS' => $datos['CDGNS'],
+            'CICLO' => $datos['CICLO'],
+            'SOLICITUD' => $datos['SOLICITUD'],
+            'USUARIO' => 'AMGM'
+        ];
+
+        return [
+            $qry,
+            $parametros
+        ];
+    }
+
+    public static function Solicitud_Inserta_PRC($datos)
+    {
+        $qry = <<<SQL
+            INSERT INTO
+                PRC (
+                    CDGEM,
+                    CDGCL,
+                    CICLO,
+                    CDGNS,
+                    SOLICITUD,
+                    CANTAUTOR,
+                    CANTENTRE,
+                    CDGORF,
+                    CDGLC,
+                    REPORTE,
+                    NOCHEQUE,
+                    FEXPCHEQUE,
+                    SITUACION,
+                    CONCILIADO,
+                    ACTUALIZACHPE,
+                    CLNS,
+                    FEXP,
+                    CDGCB,
+                    FORMAENTREGA,
+                    CDGCLNS,
+                    ENTRREAL,
+                    DOMICILIA
+                )
+            SELECT
+                PRN.CDGEM,
+                SC.CDGCL,
+                PRN.CICLO,
+                PRN.CDGNS,
+                PRN.SOLICITUD,
+                PRN.CANTAUTOR,
+                PRN.CANTENTRE,
+                '0001',
+                '001',
+                PRN.REPORTE,
+                PRN.NOCHEQUE,
+                SYSDATE,
+                PRN.SITUACION,
+                PRN.CONCILIADO,
+                PRN.ACTUALIZACHPE,
+                SC.CLNS,
+                PRN.FEXP,
+                PRN.CDGCB,
+                PRN.FORMAENTREGA,
+                SC.CDGNS,
+                PRN.CANTENTRE,
+                SC.DOMICILIA
+            FROM
+                PRN
+                JOIN SC ON PRN.CDGNS = SC.CDGNS AND PRN.CICLO = SC.CICLO AND PRN.SOLICITUD = SC.SOLICITUD AND SC.CANTSOLIC <> 9999
+            WHERE
+                PRN.CDGNS = :CDGNS
+                AND PRN.CICLO = :CICLO
+                AND PRN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+        SQL;
+
+        $parametros = [
+            'CDGNS' => $datos['CDGNS'],
+            'CICLO' => $datos['CICLO'],
+            'SOLICITUD' => $datos['SOLICITUD']
+        ];
+
+        return [
+            $qry,
+            $parametros
+        ];
+    }
+
+    public static function Solicitud_Limpia_MPC($datos)
+    {
+        $qry = <<<SQL
+            DELETE FROM
+                MPC
+            WHERE
+                CDGEM = 'EMPFIN'
+                AND CDGNS = :CDGNS
+                AND CICLO = :CICLO
+                AND CLNS = 'G'
+                AND TIPO IN ('IN', 'GR', 'Co', 'GA')
+                AND PERIODO = 0
+        SQL;
+
+        $parametros = [
+            "CDGNS" => $datos["CDGNS"],
+            "CICLO" => $datos["CICLO"]
+        ];
+
+        return [
+            $qry,
+            $parametros
+        ];
+    }
+
+    public static function Solicitud_Limpia_JP($datos)
+    {
+        $qry = <<<SQL
+            DELETE FROM
+                JP
+            WHERE
+                CDGEM = 'EMPFIN'
+                AND CDGNS = :CDGNS
+                AND CICLO = :CICLO
+                AND CLNS = 'G'
+                AND TIPO in ('IN', 'GR', 'Co', 'GA')
+                AND PERIODO = 0
+        SQL;
+
+        $parametros = [
+            "CDGNS" => $datos["CDGNS"],
+            "CICLO" => $datos["CICLO"]
+        ];
+
+        return [
+            $qry,
+            $parametros
+        ];
+    }
+
+    public static function Solicitud_Limpia_MP($datos)
+    {
+        $qry = <<<SQL
+            DELETE FROM
+                MP
+            WHERE
+                CDGEM = 'EMPFIN'
+                AND CDGNS = :CDGNS
+                AND CICLO = :CICLO
+                AND CLNS = 'G'
+                AND TIPO IN ('IN', 'GR', 'Co', 'GA')
+                AND PERIODO = 0
+        SQL;
+
+        $parametros = [
+            "CDGNS" => $datos["CDGNS"],
+            "CICLO" => $datos["CICLO"],
+        ];
+
+        return [
+            $qry,
+            $parametros
+        ];
+    }
+
+    public static function Solicitud_Inserta_MP($datos)
+    {
+        $qry = <<<SQL
+            INSERT INTO
+                MP (
+                    CDGEM,
+                    CDGCLNS,
+                    CLNS,
+                    CDGNS,
+                    CICLO,
+                    PERIODO,
+                    SECUENCIA,
+                    REFERENCIA,
+                    REFCIE,
+                    TIPO,
+                    FDEPOSITO,
+                    FREALDEP,
+                    CANTIDAD,
+                    MODO,
+                    CONCILIADO,
+                    ESTATUS,
+                    ACTUALIZARPE,
+                    PAGADOCAP,
+                    PAGADOINT,
+                    PAGADOREC
+                )
+            SELECT
+                PRN.CDGEM,
+                PRC.CDGCLNS,
+                PRC.CLNS,
+                PRN.CDGNS,
+                PRN.CICLO,
+                0,
+                '01',
+                :ETIQUETA,
+                :ETIQUETA,
+                'IN',
+                PRN.INICIO,
+                PRN.INICIO,
+                -APagarInteresPrN(
+                    PRN.CDGEM,
+                    PRN.CDGNS,
+                    PRN.CICLO,
+                    NVL(PRN.CANTENTRE, PRN.CANTAUTOR),
+                    PRN.TASA,
+                    PRN.PLAZO,
+                    PRN.PERIODICIDAD,
+                    PRN.CDGMCI,
+                    PRN.INICIO,
+                    PRN.DIAJUNTA,
+                    PRN.MULTPER,
+                    PRN.PERIGRCAP,
+                    PRN.PERIGRINT,
+                    PRN.DESFASEPAGO,
+                    PRN.CDGTI
+                ),
+                'G',
+                'D',
+                'B',
+                'AMGM',
+                0,
+                -APagarInteresPrN(
+                    PRN.CDGEM,
+                    PRN.CDGNS,
+                    PRN.CICLO,
+                    NVL(PRN.CANTENTRE, PRN.CANTAUTOR),
+                    PRN.TASA,
+                    PRN.PLAZO,
+                    PRN.PERIODICIDAD,
+                    PRN.CDGMCI,
+                    PRN.INICIO,
+                    PRN.DIAJUNTA,
+                    PRN.MULTPER,
+                    PRN.PERIGRCAP,
+                    PRN.PERIGRINT,
+                    PRN.DESFASEPAGO,
+                    PRN.CDGTI
+                ),
+                0
+            FROM
+                PRN
+                JOIN PRC ON PRN.CDGNS = PRC.CDGNS AND PRN.CICLO = PRC.CICLO AND PRN.SOLICITUD = PRC.SOLICITUD
+            WHERE
+                PRN.CDGNS = :CDGNS
+                AND PRN.CICLO = :CICLO
+                AND PRN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+        SQL;
+
+        $parametros = [
+            "CDGNS" => $datos["CDGNS"],
+            "CICLO" => $datos["CICLO"],
+            "SOLICITUD" => $datos["SOLICITUD"],
+            "ETIQUETA" => "Interés total del préstamo",
+        ];
+
+        return [
+            $qry,
+            $parametros
+        ];
+    }
+
+    public static function Solicitud_Inserta_JP($datos)
+    {
+        $qry = <<<SQL
+            INSERT INTO
+                JP (
+                    CDGEM,
+                    CDGCLNS,
+                    CLNS,
+                    CDGNS,
+                    CICLO,
+                    PERIODO,
+                    TEXTO,
+                    FECHA,
+                    PAGOINFORME,
+                    PAGOFICHA,
+                    AHORRO,
+                    RETIRO,
+                    CONCBANINF,
+                    CONCBANFI,
+                    COINCIDEPAG,
+                    TIPO,
+                    ACTUALIZARPE,
+                    CONCILIADO
+                )
+            SELECT
+                PRN.CDGEM,
+                PRC.CDGCLNS,
+                PRC.CLNS,
+                PRN.CDGNS,
+                PRN.CICLO,
+                0,
+                'Interés total del préstamo',
+                PRN.INICIO,
+                -APagarInteresPrN(
+                    PRN.CDGEM,
+                    PRN.CDGNS,
+                    PRN.CICLO,
+                    NVL(PRN.CANTENTRE, PRN.CANTAUTOR),
+                    PRN.Tasa,
+                    PRN.PLAZO,
+                    PRN.PERIODICIDAD,
+                    PRN.CDGMCI,
+                    PRN.INICIO,
+                    PRN.DIAJUNTA,
+                    PRN.MULTPER,
+                    PRN.PERIGRCAP,
+                    PRN.PERIGRINT,
+                    PRN.DESFASEPAGO,
+                    PRN.CDGTI
+                ),
+                -APagarInteresPrN(
+                    PRN.CDGEM,
+                    PRN.CDGNS,
+                    PRN.CICLO,
+                    NVL(PRN.CANTENTRE, PRN.CANTAUTOR),
+                    PRN.Tasa,
+                    PRN.PLAZO,
+                    PRN.PERIODICIDAD,
+                    PRN.CDGMCI,
+                    PRN.INICIO,
+                    PRN.DIAJUNTA,
+                    PRN.MULTPER,
+                    PRN.PERIGRCAP,
+                    PRN.PERIGRINT,
+                    PRN.DESFASEPAGO,
+                    PRN.CDGTI
+                ),
+                0,
+                0,
+                'S',
+                'S',
+                'S',
+                'IN',
+                'AMGM',
+                'C'
+            FROM
+                PRN
+                JOIN PRC ON PRN.CDGNS = PRC.CDGNS AND PRN.CICLO = PRC.CICLO AND PRN.SOLICITUD = PRC.SOLICITUD
+            WHERE
+                PRN.CDGNS = :CDGNS
+                AND PRN.CICLO = :CICLO
+                AND PRN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+        SQL;
+
+        $parametros = [
+            "CDGNS" => $datos["CDGNS"],
+            "CICLO" => $datos["CICLO"],
+            "SOLICITUD" => $datos["SOLICITUD"]
+        ];
+
+        return [
+            $qry,
+            $parametros
+        ];
+    }
+
+    public static function Solicitud_Inserta_MPC($datos)
+    {
+        $qry = <<<SQL
+            INSERT INTO
+                MPC (
+                    CDGEM,
+                    CDGCL,
+                    CICLO,
+                    PERIODO,
+                    TIPO,
+                    CDGNS,
+                    CANTIDAD,
+                    CLNS,
+                    FECHA,
+                    CDGCLNS
+                )
+            SELECT
+                PRN.CDGEM,
+                PRC.CDGCL,
+                PRN.CICLO,
+                0,
+                'IN',
+                PRN.CDGNS,
+                -APagarInteresPrN(
+                    PRN.CDGEM,
+                    PRN.CDGNS,
+                    PRN.CICLO,
+                    NVL(PRN.CANTENTRE, PRN.CANTAUTOR),
+                    PRN.Tasa,
+                    PRN.PLAZO,
+                    PRN.PERIODICIDAD,
+                    PRN.CDGMCI,
+                    PRN.INICIO,
+                    PRN.DIAJUNTA,
+                    PRN.MULTPER,
+                    PRN.PERIGRCAP,
+                    PRN.PERIGRINT,
+                    PRN.DESFASEPAGO,
+                    PRN.CDGTI
+                ),
+                PRC.CLNS,
+                PRN.INICIO,
+                PRC.CDGCLNS
+            FROM
+                PRN
+                JOIN PRC ON PRN.CDGNS = PRC.CDGNS AND PRN.CICLO = PRC.CICLO AND PRN.SOLICITUD = PRC.SOLICITUD
+            WHERE
+                PRN.CDGNS = :CDGNS
+                AND PRN.CICLO = :CICLO
+                AND PRN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+        SQL;
+
+        $parametros = [
+            "CDGNS" => $datos["CDGNS"],
+            "CICLO" => $datos["CICLO"],
+            "SOLICITUD" => $datos["SOLICITUD"]
+        ];
+
+        return [
+            $qry,
+            $parametros
+        ];
+    }
+
+    // Metodos para los cheques
+    public static function GetCreditosAutorizados()
     {
         $qry = <<<SQL
             SELECT
                 PRC.CDGCL,
-                PRNN.CDGNS,
-                PRNN.CICLO,
-                TO_CHAR(PRNN.INICIO, 'YYYY-MM-DD') AS INICIO,
-                PRNN.CDGCO,
-                PRNN.CANTAUTOR,
+                PRN.CDGNS,
+                PRN.CICLO,
+                TO_CHAR(PRN.INICIO, 'YYYY-MM-DD') AS INICIO,
+                PRN.CDGCO,
+                PRN.CANTAUTOR,
                 TRUNC(SYSDATE) AS FEXP,
                 (
                     APagarInteresPrN(
                         'EMPFIN',
-                        PRNN.CDGNS,
-                        PRNN.CICLO,
-                        NVL(PRNN.CANTENTRE, PRNN.CANTAUTOR),
-                        PRNN.Tasa,
-                        PRNN.PLAZO,
-                        PRNN.PERIODICIDAD,
-                        PRNN.CDGMCI,
-                        PRNN.INICIO,
-                        PRNN.DIAJUNTA,
-                        PRNN.MULTPER,
-                        PRNN.PERIGRCAP,
-                        PRNN.PERIGRINT,
-                        PRNN.DESFASEPAGO,
-                        PRNN.CDGTI
+                        PRN.CDGNS,
+                        PRN.CICLO,
+                        NVL(PRN.CANTENTRE, PRN.CANTAUTOR),
+                        PRN.Tasa,
+                        PRN.PLAZO,
+                        PRN.PERIODICIDAD,
+                        PRN.CDGMCI,
+                        PRN.INICIO,
+                        PRN.DIAJUNTA,
+                        PRN.MULTPER,
+                        PRN.PERIGRCAP,
+                        PRN.PERIGRINT,
+                        PRN.DESFASEPAGO,
+                        PRN.CDGTI
                     ) * -1
                 ) AS INTERES,
                 (
                     APagarInteresPrN(
                         'EMPFIN',
-                        PRNN.CDGNS,
-                        PRNN.CICLO,
-                        NVL(PRNN.CANTENTRE, PRNN.CANTAUTOR),
-                        PRNN.Tasa,
-                        PRNN.PLAZO,
-                        PRNN.PERIODICIDAD,
-                        PRNN.CDGMCI,
-                        PRNN.INICIO,
-                        PRNN.DIAJUNTA,
-                        PRNN.MULTPER,
-                        PRNN.PERIGRCAP,
-                        PRNN.PERIGRINT,
-                        PRNN.DESFASEPAGO,
-                        PRNN.CDGTI
+                        PRN.CDGNS,
+                        PRN.CICLO,
+                        NVL(PRN.CANTENTRE, PRN.CANTAUTOR),
+                        PRN.Tasa,
+                        PRN.PLAZO,
+                        PRN.PERIODICIDAD,
+                        PRN.CDGMCI,
+                        PRN.INICIO,
+                        PRN.DIAJUNTA,
+                        PRN.MULTPER,
+                        PRN.PERIGRCAP,
+                        PRN.PERIGRINT,
+                        PRN.DESFASEPAGO,
+                        PRN.CDGTI
                     ) * -1
                 ) AS PAGADOINT
             FROM
-                PRN PRNN,
+                PRN,
                 PRC
             WHERE
-                PRNN.INICIO > TIMESTAMP '2024-04-11 00:00:00.000000'
-                AND PRNN.SITUACION = 'T'
+                PRN.INICIO > TIMESTAMP '2024-04-11 00:00:00.000000'
+                AND PRN.SITUACION = 'T'
                 AND (
                     SELECT
                         COUNT(*)
                     FROM
-                        PRN
+                        PRN PRN2
                     WHERE
-                        PRN.SITUACION = 'E'
-                        AND PRN.CDGNS = PRNN.CDGNS
+                        PRN2.SITUACION = 'E'
+                        AND PRN2.CDGNS = PRN.CDGNS
                 ) = 0
-                AND PRC.CDGNS = PRNN.CDGNS
+                AND PRC.CDGNS = PRN.CDGNS
                 AND PRC.NOCHEQUE IS NULL
         SQL;
 
@@ -91,11 +757,7 @@ class JobsCredito extends Model
     {
         $qry = <<<SQL
             SELECT
-                CDGCB,
-                CDGCO,
-                CODIGO,
-                CHEQUEINICIAL,
-                CHEQUEFINAL
+                CDGCB
             FROM
                 CHEQUERA
             WHERE
@@ -142,14 +804,14 @@ class JobsCredito extends Model
         $qrys = [];
         $parametros = [];
 
-        [$qrys[], $parametros[]] = self::ActualizaPRC($datos);
-        [$qrys[], $parametros[]] = self::ActualizaPRN($datos);
-        [$qrys[], $parametros[]] = self::LimpiarMPC($datos);
-        [$qrys[], $parametros[]] = self::LimpiarJP($datos);
-        [$qrys[], $parametros[]] = self::LimpiarMP($datos);
-        [$qrys[], $parametros[]] = self::InsertarMP($datos);
-        [$qrys[], $parametros[]] = self::InsertarJP($datos);
-        [$qrys[], $parametros[]] = self::InsertarMPC($datos);
+        [$qrys[], $parametros[]] = self::GenCheques_Actualiza_PRC($datos);
+        [$qrys[], $parametros[]] = self::GenCheques_Actualiza_PRN($datos);
+        [$qrys[], $parametros[]] = self::GenCheques_Limpiar_MPC($datos);
+        [$qrys[], $parametros[]] = self::GenCheques_Limpiar_JP($datos);
+        [$qrys[], $parametros[]] = self::GenCheques_Limpiar_MP($datos);
+        [$qrys[], $parametros[]] = self::GenCheques_Insertar_MP($datos);
+        [$qrys[], $parametros[]] = self::GenCheques_Insertar_JP($datos);
+        [$qrys[], $parametros[]] = self::GenCheques_Insertar_MPC($datos);
 
         try {
             $db = new Database();
@@ -160,7 +822,7 @@ class JobsCredito extends Model
         }
     }
 
-    public static function ActualizaPRC($datos)
+    public static function GenCheques_Actualiza_PRC($datos)
     {
         $qry = <<<SQL
             UPDATE PRC SET
@@ -194,7 +856,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function ActualizaPRN($datos)
+    public static function GenCheques_Actualiza_PRN($datos)
     {
         $qry = <<<SQL
             UPDATE PRN SET
@@ -225,7 +887,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function LimpiarMPC($datos)
+    public static function GenCheques_Limpiar_MPC($datos)
     {
         $qry = <<<SQL
             DELETE FROM
@@ -252,7 +914,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function LimpiarJP($datos)
+    public static function GenCheques_Limpiar_JP($datos)
     {
         $qry = <<<SQL
             DELETE FROM
@@ -279,7 +941,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function LimpiarMP($datos)
+    public static function GenCheques_Limpiar_MP($datos)
     {
         $qry = <<<SQL
             DELETE FROM
@@ -305,7 +967,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function InsertarMP($datos)
+    public static function GenCheques_Insertar_MP($datos)
     {
         $qry = <<<SQL
             INSERT INTO
@@ -370,7 +1032,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function InsertarJP($datos)
+    public static function GenCheques_Insertar_JP($datos)
     {
         $qry = <<<SQL
             INSERT INTO
@@ -430,7 +1092,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function InsertarMPC($datos)
+    public static function GenCheques_Insertar_MPC($datos)
     {
         $qry = <<<SQL
             INSERT INTO

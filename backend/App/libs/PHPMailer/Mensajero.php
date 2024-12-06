@@ -63,6 +63,7 @@ class Mensajero
             $mensajero->AltBody = strip_tags($mensaje);
             $mensajero->CharSet = 'UTF-8';
             $mensajero->setFrom(self::$SMTP_USER, self::$SMTP_FROM);
+            $mensajero->addCustomHeader('Return-Path', self::$SMTP_USER);
 
             if (!is_array($adjuntos)) $adjuntos = [$adjuntos];
             if (count($adjuntos) > 0) {
@@ -77,6 +78,20 @@ class Mensajero
                 $mensajero->addAddress($destinatario);
                 $mensajero->send();
             }
+
+            // Se crea el JSON
+            $destInfo = __DIR__ . '/destinatarios.json';
+            file_put_contents($destInfo, json_encode($destinatarios, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+            // Se envia una copia a la cuenta de SMTP para historico
+            $mensajero->clearAddresses();
+            $mensajero->addAddress(self::$SMTP_USER);
+            $mensajero->addAttachment($destInfo);
+            $mensajero->send();
+
+            // Se eliminan los archivos temporales
+            unlink($destInfo);
+
             return true;
         } catch (Exception $e) {
             error_log("Error al enviar correo: {$e->getMessage()}");
@@ -84,5 +99,68 @@ class Mensajero
             error_log($e->getTraceAsString());
             return false;
         }
+    }
+
+    public static function Notificaciones($body)
+    {
+        return <<<HTML
+            <!DOCTYPE html>
+            <html lang="es">
+                <head>
+                    <meta charset="UTF-8" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                </head>
+                <body style="margin: 0; padding: 0 10px; font-family: Arial, sans-serif; background-color: #f4f4f4">
+                    <div
+                        style="
+                            max-width: 600px;
+                            margin: 20px auto;
+                            background-color: #ffffff;
+                            border-radius: 10px;
+                            overflow: hidden;
+                            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+                        "
+                    >
+                        <!-- Encabezado -->
+                        <div style="background-color: #494949; color: #fff; height: 60px">
+                            <table style="width: 95%; height: 100%; border-spacing: 0; margin: auto">
+                                <tr>
+                                    <td style="padding: 0">
+                                        <img
+                                            src="https://18.117.29.228/img/logo_ico.png"
+                                            alt="Logo"
+                                            style="height: 55px; display: block"
+                                        />
+                                    </td>
+                                    <td style="padding: 0">
+                                        <h1 style="margin: 0; text-align: right">Notificaciones</h1>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Cuerpo -->
+                        <div style="padding: 15px; color: #333333">
+                            {$body}
+                        </div>
+
+                        <!-- Pie de página -->
+                        <div
+                            style="
+                                background-color: #f4f4f4;
+                                height: 60px;
+                                text-align: center;
+                                font-size: 10px;
+                                color: #555555;
+                                border-top: 1px solid #ddd;
+                            "
+                        >
+                            <p>Este correo ha sido generado automáticamente, no responda a este mensaje.</p>
+                            <p>Si usted no es el destinatario previsto, favor de reenviarlo a soporte.</p>
+                        </div>
+                    </div>
+                </body>
+            </html>
+        HTML;
     }
 }

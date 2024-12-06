@@ -193,15 +193,17 @@ html;
             <li><a href="/Creditos/ActualizaCredito/">Actualización de Créditos</a></li>
             <li><a href="/Devengo/">Devengo Crédito</a></li>
             <li><a href="/Creditos/cierreDiario">Situación Cartera</a></li>
-html;
+            html;
         }
         if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CAMAG') {
             $menu .= <<<html
             <li><a href="/Creditos/CambioSucursal/">Cambio de Sucursal</a></li>
-html;
+            html;
         }
 
         $menu .= <<<html
+                <li><a href="/Creditos/SolicitudRetiroListaNegra">Solicitud retiro de lista negra</a></li>
+                <li><a href="/Creditos/AdminCorreos">Administración de Correos</a></li>
             </ul>
         </li>
 html;

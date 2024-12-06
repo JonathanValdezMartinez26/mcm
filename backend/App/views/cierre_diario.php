@@ -19,7 +19,7 @@
                         <span id="availability1" style="font-size:15px">Día</span>
                     </div>
                     <div class="col-md-4">
-                        <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle" onclick=descargaExcel()><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
+                        <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle" onclick=descarga()><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
                     </div>
                 </div>
             </div>
