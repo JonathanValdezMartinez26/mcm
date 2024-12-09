@@ -72,12 +72,13 @@ class JobsCredito extends Job
     {
         self::SaveLog('Inicio');
         $resumen = [];
-        $creditos = JobsDao::GetSolicitudesAprobadas();
+        $creditos = JobsDao::GetSolicitudes();
 
         if (!$creditos['success']) return self::SaveLog('Finalizado con error: ' . $creditos['mensaje'] . '->' . $creditos['error']);
-        if (count($creditos['datos']) == 0) return self::SaveLog('Finalizado: No hay solicitudes de crédito aprobadas');
+        if (count($creditos['datos']) == 0) return self::SaveLog('Finalizado: No hay solicitudes de crédito por procesar');
 
         $destinatarios = [];
+
         $dest = JobsDao::GetDestinatarios('Solicitudes_Aprobadas');
         if ($dest['success']) {
             foreach ($dest['datos'] as $key => $d) {
@@ -86,9 +87,12 @@ class JobsCredito extends Job
         }
 
         foreach ($creditos['datos'] as $key => $credito) {
+            if (!str_starts_with($credito["ESTATUS"], 'LISTA')) continue;
             $datos = [
                 "credito" => $credito["CDGNS"],
-                "ciclo" => $credito["CICLO"]
+                "ciclo" => $credito["CICLO"],
+                "solicitud" => $credito["SOLICITUD"],
+                "concluyo" => $credito["CDGPE"],
             ];
 
             $r = JobsDao::ProcesaSolicitudAprobada($credito);
@@ -117,13 +121,14 @@ class JobsCredito extends Job
     {
         self::SaveLog('Inicio');
         $resumen = [];
-        $creditos = JobsDao::GetSolicitudesRechazadas();
+        $creditos = JobsDao::GetSolicitudes();
 
         if (!$creditos['success']) return self::SaveLog('Finalizado con error: ' . $creditos['mensaje'] . '->' . $creditos['error']);
-        if (count($creditos['datos']) == 0) return self::SaveLog('Finalizado: No hay solicitudes de crédito rechazadas');
+        if (count($creditos['datos']) == 0) return self::SaveLog('Finalizado: No hay solicitudes de crédito por procesar');
 
         $destinatarios = [];
-        $dest = JobsDao::GetDestinatarios('Solicitudes_Rechazadas');
+
+        $dest = JobsDao::GetDestinatarios('Solicitudes_Aprobadas');
         if ($dest['success']) {
             foreach ($dest['datos'] as $key => $d) {
                 $destinatarios[] = $d['CORREO'];
@@ -131,25 +136,30 @@ class JobsCredito extends Job
         }
 
         foreach ($creditos['datos'] as $key => $credito) {
+            if (str_starts_with($credito["ESTATUS"], 'LISTA')) continue;
             $datos = [
                 "credito" => $credito["CDGNS"],
-                "ciclo" => $credito["CICLO"]
+                "ciclo" => $credito["CICLO"],
+                "solicitud" => $credito["SOLICITUD"],
+                "concluyo" => $credito["CDGPE"],
             ];
 
-            $r = JobsDao::ProcesaSolicitud($credito);
+            $r = JobsDao::ProcesaSolicitudAprobada($credito);
             $r['datos'] = $datos;
 
-            if (count($destinatarios) > 0) {
+            if ($r['success'] && count($destinatarios) > 0) {
                 $m = Mensajero::EnviarCorreo(
                     $destinatarios,
-                    'Rechazo de solicitud de crédito por Call Center',
-                    Mensajero::Notificaciones($this->RechazoCallCenter($credito))
+                    'Aprobación de solicitud de crédito por Call Center',
+                    Mensajero::Notificaciones($this->AprobacionCallCenter($credito))
                 );
 
                 $r['correo'] = $m;
             }
 
             $resumen[] = $r;
+            //genera solo 1 solicitud para pruebas
+            break;
         }
 
         self::SaveLog(json_encode($resumen));

@@ -1224,7 +1224,7 @@ class Ahorro extends Controller
 
     public function EngineHuellas($endpoint, $datos)
     {
-        $ci = curl_init($this->configuracion['URL_HUELLAS'] . $endpoint);
+        $ci = curl_init($this->configuracion['API_HUELLAS'] . $endpoint);
         curl_setopt($ci, CURLOPT_POST, true);
         curl_setopt($ci, CURLOPT_POSTFIELDS, http_build_query($datos));
         curl_setopt($ci, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));

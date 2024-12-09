@@ -4562,7 +4562,7 @@ html;
                     })
                 })
 
-                const socket = conectaSocket("{$this->configuracion['URL_SOCKETGRAL']}", "callcenter", {
+                const socket = conectaSocket("{$this->configuracion['API_SOCKETGRAL']}", "callcenter", {
                     asesor: datosEncuesta.asesor,
                     datosRequeridos: datosEncuesta
                 })
@@ -4816,7 +4816,7 @@ html;
                     $("#mensajeGrl").on("click", () => mensaje())
                 })
 
-                const socket = conectaSocket("{$this->configuracion['URL_SOCKETGRAL']}", "superCallcenter")
+                const socket = conectaSocket("{$this->configuracion['API_SOCKETGRAL']}", "superCallcenter")
 
                 socket.on("connect_error", (error) => {
                     console.log("Error al conectar con el socket:", error)
