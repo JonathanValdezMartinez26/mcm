@@ -7,7 +7,6 @@
             <h3> Generador de Layouts</h3>
             <div class="clearfix"></div>
         </div>
-
         <div class="card card-danger col-md-5" >
             <div class="card-header">
                 <h5 class="card-title">Seleccione el tipo de busqueda e ingrese el número de crédito </h5>
@@ -47,8 +46,6 @@
             </div>
         </div>
     </div>
-    </div>
-</div>
 </div>
 
 <?php echo $footer; ?>

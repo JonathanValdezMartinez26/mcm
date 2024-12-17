@@ -43,7 +43,6 @@ class Contenedor extends Controller
             
             <link rel="shortcut icon" href="/img/logo_ico.png">
             <link rel="stylesheet" type="text/css" href="/css/nprogress.css">
-            <link rel="stylesheet" type="text/css" href="/css/loader.css">
             <link rel="stylesheet" type="text/css" href="/css/tabla/sb-admin-2.css">
             <link rel="stylesheet" type="text/css" href="/css/bootstrap/datatables.bootstrap.css">
             <link rel="stylesheet" type="text/css" href="/css/bootstrap/bootstrap.css">
