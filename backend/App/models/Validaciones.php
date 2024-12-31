@@ -4,43 +4,34 @@ namespace App\models;
 
 defined("APPPATH") or die("Access denied");
 
-use \Core\Database;
+use Core\Database;
+use Core\Model;
 
-class Validaciones
+class Validaciones extends Model
 {
-
-    public static function Responde($respuesta, $mensaje, $datos = null, $error = null)
-    {
-        $res = array(
-            "success" => $respuesta,
-            "mensaje" => $mensaje
-        );
-
-        if ($datos != null) $res['datos'] = $datos;
-        if ($error != null) $res['error'] = $error;
-
-        return json_encode($res);
-    }
-
     public static function ConsultaClienteInvitado()
     {
-        $query = <<<sql
+        $query = <<<SQL
         SELECT
-            clpt.CDGNS_INVITA,
-            clpt.CICLO_INVITACION,
-            clpt.CL_INVITA,
-            (SELECT CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) FROM CL WHERE CL.CODIGO = clpt.CL_INVITA) AS NOMBRE_INVITA,
-            clpt.CL_INVITADO,
-            (SELECT CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) FROM CL WHERE CL.CODIGO = clpt.CL_INVITADO) AS NOMBRE_INVITADO,
-            clpt.FECHA_REGISTRO
+            CLPT.CDGNS_INVITA,
+            CLPT.CICLO_INVITACION,
+            CLPT.CL_INVITA,
+            (SELECT CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) FROM CL WHERE CL.CODIGO = CLPT.CL_INVITA) AS NOMBRE_INVITA,
+            CLPT.CL_INVITADO,
+            (SELECT CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) FROM CL WHERE CL.CODIGO = CLPT.CL_INVITADO) AS NOMBRE_INVITADO,
+            TO_CHAR(CLPT.FECHA_REGISTRO, 'YYYY-MM-DD HH24:MI:SS') AS FECHA_REGISTRO
         FROM
-            CL_PROMO_TELARANA clpt
-        sql;
+            CL_PROMO_TELARANA CLPT
+        ORDER BY
+            CLPT.FECHA_REGISTRO DESC
+        SQL;
+
         try {
-            $mysqli = new Database();
-            return $mysqli->queryAll($query);
+            $db = new Database();
+            $r = $db->queryAll($query);
+            return self::Responde(true, "Consulta exitosa.", $r);
         } catch (\Exception $e) {
-            return "";
+            return self::Responde(false, "Error interno al consultar los clientes invitados.");
         }
     }
 
