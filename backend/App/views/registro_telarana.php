@@ -47,77 +47,83 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="col-md-12">
-                                <span id="availability1">Buscar por:</span>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="radio" name="tipoAnfitrion" id="anfiXcred" checked>
-                                <label for="anfiXcred">Crédito</label>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="radio" name="tipoAnfitrion" id="anfiXcgdns">
-                                <label for="anfiXcgdns">Cliente</label>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="form-group">
-                                    <span id="availability1">Código:</span>
-                                    <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="Cliente" name="Cliente" value="" placeholder="000000" required>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <button type="button" class="btn btn-primary" id="btnAnfitrion">
-                                    <i class="fa fa-search"></i> Buscar
-                                </button>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <span id="availability1">Nombre de anfitrión:</span>
-                                    <input type="text" class="form-control" id="MuestraCliente" name="MuestraCliente" value="" readonly>
-                                </div>
-                            </div>
+                    <div class="col-md-6">
+                        <div class="col-md-12">
+                            <span id="availability1">Buscar por:</span>
                         </div>
-                        <div class="col-md-6">
-                            <div class="col-md-12">
-                                <span id="availability1">Buscar por:</span>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="radio" name="tipoInvitado" id="invXcred" checked>
-                                <label for="invXcred">Crédito</label>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="radio" name="tipoInvitado" id="invXcdgns">
-                                <label for="invXcdgns">Cliente</label>
-                            </div>
-                            <div class="col-md-12">
+                        <div class="col-md-4">
+                            <input type="radio" name="tipoAnfitrion" id="anfiXcred" checked>
+                            <label for="anfiXcred">Crédito</label>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="radio" name="tipoAnfitrion" id="anfiXcgdns">
+                            <label for="anfiXcgdns">Cliente</label>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="form-group">
                                 <span id="availability1">Código:</span>
-                            </div>
-                            <div class="col-md-7">
-                                <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="Invitado" name="Invitado" value="" placeholder="000000" disabled required>
-                            </div>
-                            <div class="col-md-3">
-                                <button type="button" class="btn btn-primary" id="btnInvitado" disabled>
-                                    <i class="fa fa-search"></i> Buscar
-                                </button>
-                            </div>
-                            <div>
-                                <span id="availability1">Ciclo de invitación:</span>
-                                <input type="text" class="form-control" id="Ciclo" name="Ciclo" value="" readonly>
+                                <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="Cliente" name="Cliente" value="" placeholder="000000" required>
                             </div>
                         </div>
-                        <div class="col-md-4 col-md-offset-4">
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-primary" id="btnAnfitrion">
+                                <i class="fa fa-search"></i> Buscar
+                            </button>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <span id="availability1">Nombre de anfitrión:</span>
+                                <input type="text" class="form-control" id="MuestraCliente" name="MuestraCliente" value="" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
                             <div class="form-group">
                                 <span id="availability1">Fecha de Registro:</span>
                                 <input type="date" class="form-control" id="Fecha" name="Fecha" value=<?= $fecha ?> min=<?= $fechaMin ?> max=<?= $fechaMax ?>>
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="col-md-12">
+                            <span id="availability1">Buscar por:</span>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="radio" name="tipoInvitado" id="invXcred" checked>
+                            <label for="invXcred">Crédito</label>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="radio" name="tipoInvitado" id="invXcdgns">
+                            <label for="invXcdgns">Cliente</label>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <span id="availability1">Código:</span>
+                                <input type="text" onkeypress=validarYbuscar(event) class="form-control" id="Invitado" name="Invitado" value="" placeholder="000000" disabled required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-primary" id="btnInvitado" disabled>
+                                <i class="fa fa-search"></i> Buscar
+                            </button>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <span id="availability1">Nombre de invitado:</span>
+                                <input type="text" class="form-control" id="MuestraInvitado" name="MuestraInvitado" value="" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <span id="availability1">Ciclo de invitación:</span>
+                                <input type="text" class="form-control" id="Ciclo" name="Ciclo" value="" readonly>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="submit" id="btnVincular" class="btn btn-primary" value="enviar" disabled><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnVincular" disabled><i class="glyphicon glyphicon-floppy-disk"></i> Guardar Registro</button>
             </div>
         </div>
     </div>

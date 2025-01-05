@@ -125,17 +125,14 @@ class Validaciones extends Controller
                     const invitado = document.querySelector("#MuestraInvitado")
                     const fecha = document.querySelector("#Fecha")
                     
-                    if (isNaN(new Date(fecha.value).getTime())) {
-                        showError("El campo fecha no puede estar vacío")
-                        return false
-                    }
-                    
+                    if (isNaN(new Date(fecha.value).getTime())) return showError("El campo fecha no puede estar vacío")
+
                     const datos = {
                         anfitrion: getCodigoCliente(cliente.value),
                         invitado: getCodigoCliente(invitado.value),
                         fecha: fecha.value
                     }
-                
+                    
                     consultaServidor("/Validaciones/VinculaInvitado", datos, (respuesta) => {
                         if (!respuesta.success) return showError(respuesta.mensaje)
                 
