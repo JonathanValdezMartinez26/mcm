@@ -181,7 +181,7 @@ class JobsCredito extends Model
                     REPORTE,
                     CONCILIADO,
                     AUTOCARPE,
-                    FAUTOCAR,
+                    FAUTCAR,
                     AUTTESPE,
                     FAUTTES,
                     PRESIDENTE,
