@@ -18,6 +18,8 @@ class Job
 
         $this->logPath = dirname(__DIR__) . "/Jobs/Logs/";
         $this->nombreJob = $nj;
+
+        $this->ValidaPathLog($this->logPath);
     }
 
     public function SaveLog($tdatos)
@@ -36,5 +38,10 @@ class Job
 
         fwrite($log, $infoReg . PHP_EOL);
         fclose($log);
+    }
+
+    public function ValidaPathLog($path)
+    {
+        if (!file_exists($path)) mkdir($path, 0777, true);
     }
 }
