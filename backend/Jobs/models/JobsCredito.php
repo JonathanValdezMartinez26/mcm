@@ -180,7 +180,7 @@ class JobsCredito extends Model
                     SITUACION,
                     REPORTE,
                     CONCILIADO,
-                    AUTOCARPE,
+                    AUTCARPE,
                     FAUTCAR,
                     AUTTESPE,
                     FAUTTES,
