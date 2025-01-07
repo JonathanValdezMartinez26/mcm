@@ -323,8 +323,8 @@ html;
                 $menu .= <<<html
                     <li><a href="/Reportes/UsuariosMCM/">Reporte Usuarios SICAFIN MCM</a></li>
                     <li><a href="/Reportes/UsuariosCultiva/">Reporte Usuarios SICAFIN Cultiva</a></li>
-                     <li><a href="/Creditos/cierreDiario">Situación Cartera</a></li>
-html;
+                    <li><a href="/Creditos/cierreDiario">Situación Cartera</a></li>
+                html;
             }
 
             $menu .= <<<html
@@ -332,6 +332,22 @@ html;
                 </li>
               </ul>
 html;
+        }
+
+        if ($this->__perfil == 'ADMIN') {
+            $menu .= <<<HTML
+                <li>
+                    <a>
+                        <i class="glyphicon glyphicon glyphicon-cog">&nbsp;</i>Indicadores
+                        <span class="fa fa-chevron-down"></span>
+                    </a>
+                    <ul class="nav child_menu">
+                        <li>
+                            <a href="/Indicadores/ProductividadOP/">Productividad Operaciones</a>
+                        </li>
+                    </ul>
+                </li>
+            HTML;
         }
 
         $menu .= <<<html
