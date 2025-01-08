@@ -56,9 +56,19 @@ class Indicadores extends Model
                 PD.CDGNS,
                 PD.CICLO,
                 PD.MONTO,
-                PD.TIPO
+                CASE 
+                    WHEN PD.ESTATUS = 'A' THEN 'MODIFICADO'
+                    WHEN PD.ESTATUS = 'E' THEN 'ELIMINADO'
+                    ELSE 'DESCONOCIDO'
+                END AS DESCRIPCION,
+                TIPO_OPERACION(PD.TIPO) AS TIPO,
+                RG.CODIGO || ' - ' || RG.NOMBRE AS REGION,
+                CO.CODIGO || ' - ' || CO.NOMBRE AS SUCURSAL
             FROM
                 PAGOSDIA PD
+                JOIN PRN ON PD.CDGNS = PRN.CDGNS AND PD.CICLO = PRN.CICLO
+                JOIN CO ON PRN.CDGCO = CO.CODIGO
+                JOIN RG ON CO.CDGRG = RG.CODIGO
             WHERE
                 PD.FREGISTRO BETWEEN TO_DATE(:fechaI, 'YYYY-MM-DD') AND TO_DATE(:fechaF, 'YYYY-MM-DD')
                 AND PD.CDGPE = :usuario

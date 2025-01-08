@@ -21,7 +21,7 @@
                 <hr>
                 <div class="row">
                     <div class="col-md-12" style="margin-bottom: 10px; text-align: center;">
-                        <h2>Detalle de incidencias</h2>
+                        <h2>Detalle de incidencias atendidas</h2>
                         <table id="tblIncidencias" class="table table-striped table-bordered">
                             <thead>
                                 <tr>
@@ -29,7 +29,7 @@
                                     <th>Mes</th>
                                     <th>Usuario</th>
                                     <th>Nombre</th>
-                                    <th>Incidencias</th>
+                                    <th>Atendidas</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -47,8 +47,8 @@
     <div class="modal-dialog" role="document" style=" height: 100%; width: 100%; display: flex; justify-content: center; align-items: center; margin: 0;">
         <div class="modal-content" style="width: 80%; height: 80%;">
             <div class="modal-header" style="text-align:center ;">
+                <label class="modal-title" id="ttlNombre"></label>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
-                <h4 class="modal-title" id="ttlNombre"></h4>
             </div>
             <div class="modal-body" style="height: 90%; overflow: auto;">
                 <div class="row">
@@ -71,7 +71,10 @@
                                     <th>Crédito</th>
                                     <th>Ciclo</th>
                                     <th>Monto</th>
+                                    <th>Descripción</th>
                                     <th>Tipo</th>
+                                    <th>Región</th>
+                                    <th>Sucursal</th>
                                 </tr>
                             </thead>
                             <tbody>

@@ -74,6 +74,7 @@ class Controller
                     [10, 40, "Todos"]
                 ],
                 order: [],
+                autoWidth: false,
                 language: {
                     emptyTable: "No hay datos disponibles",
                     paginate: {

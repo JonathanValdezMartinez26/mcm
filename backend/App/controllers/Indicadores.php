@@ -243,7 +243,7 @@ class Indicadores extends Controller
 
                 const verDetalle = (usuario, ano, mes, nombre) => {
                     const mesLetra = new Date(ano, mes - 1, 1).toLocaleString("default", { month: "long" })
-                    $("#ttlNombre").text("Detalle de incidencias de " + nombre + " de " + mesLetra + " del " + ano)
+                    $("#ttlNombre").html("<b>Total de incidencias atendidas por " + nombre + " en " + mesLetra + " de " + ano + "</b>")
                     $("#detalleUsuario").modal("show")
 
                     const datos = {
@@ -329,7 +329,10 @@ class Indicadores extends Controller
                         tr.appendChild(getTD(incidencia.CDGNS))
                         tr.appendChild(getTD(incidencia.CICLO))
                         tr.appendChild(getTD("$ " + formatoMoneda(incidencia.MONTO)))
+                        tr.appendChild(getTD(incidencia.DESCRIPCION))
                         tr.appendChild(getTD(incidencia.TIPO))
+                        tr.appendChild(getTD(incidencia.REGION))
+                        tr.appendChild(getTD(incidencia.SUCURSAL))
 
                         $("#tblUsuario tbody").append(tr)
                     })
