@@ -13,127 +13,141 @@ class Controller
     public $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
     public $showWarning = 'const showWarning = (mensaje) => swal({ text: mensaje, icon: "warning" })';
     public $showWait = 'const showWait = (mensaje) => swal({ text: mensaje, icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })';
-    public $confirmarMovimiento = 'const confirmarMovimiento = async (titulo, mensaje, html = null) => {
-        return await swal({ title: titulo, content: html, text: mensaje, icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
-    }';
-    public $conectaSocket = 'const conectaSocket = (url, modulo, datos = {}) => {
-        showWait("Conectando con el servidor...")
-        return io(url, {
-            query: {
-                servidor: window.location.origin,
-                sesionPHP: "sessionID",
-                modulo: modulo,
-                configuracion: JSON.stringify(datos)
-            }
-        })
-    }';
-    public $consultaServidor = 'const consultaServidor = (url, datos, fncOK, metodo = "POST", tipo = "JSON", tipoContenido = null) => {
-        swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
-        const configuracion = {
-            type: metodo,
-            url: url,
-            data: datos,
-            success: (res) => {
-                if (tipo === "JSON") {
-                    try {
-                        res = JSON.parse(res)
-                    } catch (error) {
-                        console.error(error)
-                        res =  {
-                            success: false,
-                            mensaje: "Ocurrió un error al procesar la respuesta del servidor."
+    public $confirmarMovimiento = <<<JAVASCRIPT
+        const confirmarMovimiento = async (titulo, mensaje, html = null) => {
+            return await swal({ title: titulo, content: html, text: mensaje, icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
+        }
+    JAVASCRIPT;
+    public $conectaSocket = <<<JAVASCRIPT
+        const conectaSocket = (url, modulo, datos = {}) => {
+            showWait("Conectando con el servidor...")
+            return io(url, {
+                query: {
+                    servidor: window.location.origin,
+                    sesionPHP: "sessionID",
+                    modulo: modulo,
+                    configuracion: JSON.stringify(datos)
+                }
+            })
+        }
+    JAVASCRIPT;
+    public $consultaServidor = <<<JAVASCRIPT
+        const consultaServidor = (url, datos, fncOK, metodo = "POST", tipo = "JSON", tipoContenido = null) => {
+            swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
+            const configuracion = {
+                type: metodo,
+                url: url,
+                data: datos,
+                success: (res) => {
+                    if (tipo === "JSON") {
+                        try {
+                            res = JSON.parse(res)
+                        } catch (error) {
+                            console.error(error)
+                            res =  {
+                                success: false,
+                                mensaje: "Ocurrió un error al procesar la respuesta del servidor."
+                            }
                         }
                     }
-                }
-                if (tipo === "blob") res = new Blob([res], { type: "application/pdf" })
+                    if (tipo === "blob") res = new Blob([res], { type: "application/pdf" })
 
-                swal.close()
-                fncOK(res)
-            },
-            error: (error) => {
-                console.error(error)
-                showError("Ocurrió un error al procesar la solicitud.")
+                    swal.close()
+                    fncOK(res)
+                },
+                error: (error) => {
+                    console.error(error)
+                    showError("Ocurrió un error al procesar la solicitud.")
+                }
             }
+            if (tipoContenido) configuracion.contentType = tipoContenido 
+            $.ajax(configuracion)
         }
-        if (tipoContenido) configuracion.contentType = tipoContenido 
-        $.ajax(configuracion)
-    }';
+    JAVASCRIPT;
     public $parseaNumero = 'const parseaNumero = (numero) => parseFloat(numero.replace(/[^0-9.-]/g, "")) || 0';
     public $formatoMoneda = 'const formatoMoneda = (numero) => parseFloat(numero).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })';
-    public $configuraTabla = 'const configuraTabla = (id, {noRegXvista = true} = {}) => {
-        const configuracion = {
-            lengthMenu: [
-                [10, 40, -1],
-                [10, 40, "Todos"]
-            ],
-            order: [],
-            language: {
-                emptyTable: "No hay datos disponibles",
-                paginate: {
-                    previous: "Anterior",
-                    next: "Siguiente",
-                },
-                info: "Mostrando de _START_ a _END_ de _TOTAL_ registros",
-                infoEmpty: "Sin registros para mostrar",
-                zeroRecords: "No se encontraron registros",
-                lengthMenu: "Mostrar _MENU_ registros por página",
-                search: "Buscar:",
+    public $configuraTabla = <<<JAVASCRIPT
+        const configuraTabla = (id, {noRegXvista = true} = {}) => {
+            const configuracion = {
+                lengthMenu: [
+                    [10, 40, -1],
+                    [10, 40, "Todos"]
+                ],
+                order: [],
+                language: {
+                    emptyTable: "No hay datos disponibles",
+                    paginate: {
+                        previous: "Anterior",
+                        next: "Siguiente",
+                    },
+                    info: "Mostrando de _START_ a _END_ de _TOTAL_ registros",
+                    infoEmpty: "Sin registros para mostrar",
+                    zeroRecords: "No se encontraron registros",
+                    lengthMenu: "Mostrar _MENU_ registros por página",
+                    search: "Buscar:",
+                }
+            }
+
+            configuracion.lengthChange = noRegXvista
+
+            $("#" + id).DataTable(configuracion)
+
+            $("#"  + id + " input[type=search]").keyup(() => {
+                $("#example")
+                    .DataTable()
+                    .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
+                    .draw()
+            })
+        }
+    JAVASCRIPT;
+    public $crearFilas = <<<JAVASCRIPT
+        const creaFilas = (datos) => {
+            const filas = document.createDocumentFragment()
+            datos.forEach((dato) => {
+                const fila = document.createElement("tr")
+                Object.keys(dato).forEach((key) => {
+                    const celda = document.createElement("td")
+                    celda.style.verticalAlign = "middle"
+                    celda.innerText = dato[key]
+                    fila.appendChild(celda)
+                })
+                filas.appendChild(fila)
+            })
+            return filas
+        }
+    JAVASCRIPT;
+    public $validaFIF = <<<JAVASCRIPT
+        const validaFIF = (idI, idF) => {
+            const fechaI = document.getElementById(idI).value
+            const fechaF = document.getElementById(idF).value
+            if (fechaI && fechaF && fechaI > fechaF) {
+                document.getElementById(idI).value = fechaF
             }
         }
+    JAVASCRIPT;
+    public $descargaExcel = <<<JAVASCRIPT
+        const descargaExcel = (url, parametros = {}) => {
+            const formDescarga = document.createElement("form")
+            formDescarga.action = url
+            formDescarga.method = "POST"
+            formDescarga.target = "_blank"
+            formDescarga.style.display = "none"
 
-        configuracion.lengthChange = noRegXvista
-
-        $("#" + id).DataTable(configuracion)
-
-        $("#"  + id + " input[type=search]").keyup(() => {
-            $("#example")
-                .DataTable()
-                .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
-                .draw()
-        })
-    }';
-    public $crearFilas = 'const creaFilas = (datos) => {
-        const filas = document.createDocumentFragment()
-        datos.forEach((dato) => {
-            const fila = document.createElement("tr")
-            Object.keys(dato).forEach((key) => {
-                const celda = document.createElement("td")
-                celda.style.verticalAlign = "middle"
-                celda.innerText = dato[key]
-                fila.appendChild(celda)
+            Object.entries(parametros).forEach(([clave, valor]) => {
+                const input = document.createElement("input")
+                input.name = clave
+                input.value = valor
+                formDescarga.appendChild(input)
             })
-            filas.appendChild(fila)
-        })
-        return filas
-    }';
-    public $validaFIF = 'const validaFIF = (idI, idF) => {
-        const fechaI = document.getElementById(idI).value
-        const fechaF = document.getElementById(idF).value
-        if (fechaI && fechaF && fechaI > fechaF) {
-            document.getElementById(idI).value = fechaF
+
+            document.body.appendChild(formDescarga)
+            formDescarga.submit()
+
+            document.body.removeChild(formDescarga)
+
+            showInfo("Generando el archivo, espere un momento...")
         }
-    }';
-    public $descargaExcel = 'const descargaExcel = (url, parametros = {}) => {
-        const formDescarga = document.createElement("form")
-        formDescarga.action = url
-        formDescarga.method = "POST"
-        formDescarga.target = "_blank"
-        formDescarga.style.display = "none"
-
-        Object.entries(parametros).forEach(([clave, valor]) => {
-            const input = document.createElement("input")
-            input.name = clave
-            input.value = valor
-            formDescarga.appendChild(input)
-        })
-
-        document.body.appendChild(formDescarga)
-        formDescarga.submit()
-
-        document.body.removeChild(formDescarga)
-
-        showInfo("Generando el archivo, espere un momento...")
-    }';
+    JAVASCRIPT;
 
     public $__usuario = '';
     public $__nombre = '';

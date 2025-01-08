@@ -333,13 +333,6 @@ class Ahorro extends Controller
         })
     }';
     private $noSubmit = 'const noSUBMIT = (e) => e.preventDefault()';
-    private $exportaExcel = 'const exportaExcel = (id, nombreArchivo, nombreHoja = "Reporte") => {
-        const tabla = document.querySelector("#" + id)
-        const wb = XLSX.utils.book_new()
-        const ws = XLSX.utils.table_to_sheet(tabla)
-        XLSX.utils.book_append_sheet(wb, ws, nombreHoja)
-        XLSX.writeFile(wb, nombreArchivo + ".xlsx")
-    }';
     private $validaHorarioOperacion = 'const validaHorarioOperacion = (inicio, fin, sinMsj = false) => {
         if ("__PERFIL__" === "ADMIN" || "__USUARIO__" === "AMGM") return
 
@@ -1737,7 +1730,6 @@ class Ahorro extends Controller
             {$this->confirmarMovimiento}
             {$this->consultaServidor}
             {$this->configuraTabla}
-            {$this->exportaExcel}
             {$this->imprimeTicket}
             {$this->muestraPDF}
             {$this->addParametro}
@@ -3297,7 +3289,6 @@ class Ahorro extends Controller
             {$this->confirmarMovimiento}
             {$this->consultaServidor}
             {$this->configuraTabla}
-            {$this->exportaExcel}
             {$this->imprimeTicket}
             {$this->muestraPDF}
             {$this->addParametro}
@@ -3488,7 +3479,6 @@ class Ahorro extends Controller
             {$this->consultaServidor}
             {$this->configuraTabla}
             {$this->muestraPDF}
-            {$this->exportaExcel}
             {$this->validaHorarioOperacion}
          
             $(document).ready(() => configuraTabla("tblArqueos"))
