@@ -51,8 +51,7 @@ class JobsCredito extends Model
             WHERE
                 SN.SITUACION = 'S'
                 AND SCC.ESTATUS <> 'PENDIENTE'
-                AND SCC.FECHA_SOL > TO_DATE('01/06/2024 00:00:00', 'DD/MM/YYYY HH24:MI:SS')
-                --AND SCC.FECHA_SOL > TO_DATE('29/11/2024 12:31:49', 'DD/MM/YYYY HH24:MI:SS')
+                AND SCC.FECHA_SOL > TO_DATE('01/01/2025 00:00:00', 'DD/MM/YYYY HH24:MI:SS')
         SQL;
 
         try {

@@ -124,7 +124,7 @@ class JobsCredito extends Job
 
             $resumen[] = $r;
             //genera solo 1 solicitud para pruebas
-            break;
+            //break;
         }
 
         self::SaveLog(json_encode($resumen));
