@@ -690,13 +690,13 @@ class JobsCredito extends Model
     }
 
     // Metodos para las solicitudes de crédito rechazadas
-    public static function ProcesaSolicitudRechazo($credito)
+    public static function ProcesaSolicitudRechazada($credito)
     {
         $qrys = [];
         $parametros = [];
 
-        [$qrys[], $parametros[]] = self::Rechazo_Actualiza_SN($credito);
-        [$qrys[], $parametros[]] = self::Rechazo_Actualiza_SC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_R_Actualiza_SN($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_R_Actualiza_SC($credito);
 
         try {
             $db = new Database();
@@ -707,7 +707,7 @@ class JobsCredito extends Model
         }
     }
 
-    public static function Rechazo_Actualiza_SN($datos)
+    public static function Solicitud_R_Actualiza_SN($datos)
     {
         $qry = <<<SQL
             UPDATE
@@ -746,7 +746,7 @@ class JobsCredito extends Model
         ];
     }
 
-    public static function Rechazo_Actualiza_SC($datos)
+    public static function Solicitud_R_Actualiza_SC($datos)
     {
         $qry = <<<SQL
             UPDATE

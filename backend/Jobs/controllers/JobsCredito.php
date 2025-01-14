@@ -4,7 +4,8 @@ namespace Jobs\controllers;
 
 include_once dirname(__DIR__) . '/../Core/Job.php';
 include_once dirname(__DIR__) . '/models/JobsCredito.php';
-include_once dirname(__DIR__) . "/../App/libs/PHPMailer/Mensajero.php";
+include_once dirname(__DIR__) . '/../App/libs/PHPMailer/Mensajero.php';
+include_once dirname(__DIR__) . '/../App/libs/PhpSpreadsheet/PhpSpreadsheet.php';
 
 use Core\Job;
 use Jobs\models\JobsCredito as JobsDao;
@@ -68,7 +69,7 @@ class JobsCredito extends Job
         self::SaveLog('Finalizado');
     }
 
-    public function SolicitudesAprobadas()
+    public function SolicitudesFinalizadas()
     {
         self::SaveLog('Inicio');
         $resumen = [];
@@ -77,35 +78,48 @@ class JobsCredito extends Job
         if (!$creditos['success']) return self::SaveLog('Finalizado con error: ' . $creditos['mensaje'] . '->' . $creditos['error']);
         if (count($creditos['datos']) == 0) return self::SaveLog('Finalizado: No hay solicitudes de crédito por procesar');
 
-        $destinatarios = [];
+        $destAprobadas = [];
+        $destRechazadas = [];
 
-        $dest = JobsDao::GetDestinatarios('Solicitudes_Aprobadas');
-        if ($dest['success']) {
-            foreach ($dest['datos'] as $key => $d) {
-                $destinatarios[] = $d['CORREO'];
+        $destA = JobsDao::GetDestinatarios('Solicitudes_Aprobadas');
+        $destR = JobsDao::GetDestinatarios('Solicitudes_Rechazadas');
+
+        if ($destA['success'] && count($destA['datos']) > 0) {
+            foreach ($destA['datos'] as $key => $d) {
+                $destAprobadas[] = $d['CORREO'];
+            }
+        }
+
+        if ($destR['success'] && count($destR['datos']) > 0) {
+            foreach ($destR['datos'] as $key => $d) {
+                $destRechazadas[] = $d['CORREO'];
             }
         }
 
         foreach ($creditos['datos'] as $key => $credito) {
-            if (!str_starts_with($credito["ESTATUS"], 'LISTA')) continue;
-            $datos = [
-                "credito" => $credito["CDGNS"],
-                "ciclo" => $credito["CICLO"],
-                "solicitud" => $credito["SOLICITUD"],
-                "concluyo" => $credito["CDGPE"],
+            $aprobada = str_starts_with($credito['ESTATUS'], 'LISTA');
+
+            $r = $aprobada ?
+                JobsDao::ProcesaSolicitudAprobada($credito) :
+                JobsDao::ProcesaSolicitudRechazada($credito);
+
+            $r['datos'] = [
+                'credito' => $credito['CDGNS'],
+                'ciclo' => $credito['CICLO'],
+                'fechaSolicitud' => $credito['SOLICITUD'],
+                'concluyo' => $credito['CDGPE']
             ];
 
-            $r = JobsDao::ProcesaSolicitudAprobada($credito);
-            $r['datos'] = $datos;
+            if ($r['success']) {
+                $dest = $aprobada ? $destAprobadas : $destRechazadas;
+                $plantilla = $this->Plantilla_mail_Solicitud_Finalizada($credito, $aprobada);
+                $tipo = $aprobada ? 'Aprobación' : 'Rechazo';
 
-            if ($r['success'] && count($destinatarios) > 0) {
-                $m = Mensajero::EnviarCorreo(
-                    $destinatarios,
-                    'Aprobación de solicitud de crédito por Call Center',
-                    Mensajero::Notificaciones($this->AprobacionCallCenter($credito))
+                Mensajero::EnviarCorreo(
+                    $dest,
+                    $tipo . ' de solicitud de crédito por Call Center',
+                    Mensajero::Notificaciones($plantilla)
                 );
-
-                $r['correo'] = $m;
             }
 
             $resumen[] = $r;
@@ -117,60 +131,54 @@ class JobsCredito extends Job
         self::SaveLog('Finalizado');
     }
 
-    public function SolicitudesRechazadas()
+    public function ResumenRechazadas()
     {
         self::SaveLog('Inicio');
-        $resumen = [];
-        $creditos = JobsDao::GetSolicitudes();
+        $procesadas = self::ReadLog('SolicitudesRechazadas');
 
-        if (!$creditos['success']) return self::SaveLog('Finalizado con error: ' . $creditos['mensaje'] . '->' . $creditos['error']);
-        if (count($creditos['datos']) == 0) return self::SaveLog('Finalizado: No hay solicitudes de crédito por procesar');
+        if (count($procesadas) == 0) return self::SaveLog('Finalizado: No se procesaron rechazos de crédito');
 
-        $destinatarios = [];
-
-        $dest = JobsDao::GetDestinatarios('Solicitudes_Aprobadas');
-        if ($dest['success']) {
-            foreach ($dest['datos'] as $key => $d) {
-                $destinatarios[] = $d['CORREO'];
-            }
+        $filas = [];
+        foreach ($procesadas as $key => $procesada) {
+            if ($procesada['success']) $filas[] = $procesada['datos'];
         }
 
-        foreach ($creditos['datos'] as $key => $credito) {
-            if (str_starts_with($credito["ESTATUS"], 'LISTA')) continue;
-            $datos = [
-                "credito" => $credito["CDGNS"],
-                "ciclo" => $credito["CICLO"],
-                "solicitud" => $credito["SOLICITUD"],
-                "concluyo" => $credito["CDGPE"],
-            ];
+        if (count($filas) == 0) return self::SaveLog('Finalizado: Los rechazos de crédito no se procesaron correctamente');
 
-            $r = JobsDao::ProcesaSolicitudAprobada($credito);
-            $r['datos'] = $datos;
+        $columnas = [
+            ['letra' => 'A', 'titulo' => 'Crédito', 'campo' => 'credito', 'estilo' => []],
+            ['letra' => 'B', 'titulo' => 'Ciclo', 'campo' => 'ciclo', 'estilo' => []],
+            ['letra' => 'C', 'titulo' => 'Solicitud', 'campo' => 'solicitud', 'estilo' => []],
+            ['letra' => 'D', 'titulo' => 'Concluyó', 'campo' => 'concluyo', 'estilo' => []],
+        ];
 
-            if ($r['success'] && count($destinatarios) > 0) {
-                $m = Mensajero::EnviarCorreo(
-                    $destinatarios,
-                    'Aprobación de solicitud de crédito por Call Center',
-                    Mensajero::Notificaciones($this->AprobacionCallCenter($credito))
-                );
 
-                $r['correo'] = $m;
-            }
-
-            $resumen[] = $r;
-            //genera solo 1 solicitud para pruebas
-            //break;
-        }
-
-        self::SaveLog(json_encode($resumen));
         self::SaveLog('Finalizado');
     }
 
-    private function AprobacionCallCenter($credito)
+    private function Plantilla_mail_Solicitud_Finalizada($credito, $aprobada)
     {
+        $pasosFinalesA = <<<HTML
+            <p style="text-align: center">
+                Para completar el proceso imprima la documentación legal correspondiente, si tiene alguna duda o inconveniente, comuníquese con {$credito['NOMBRE_PE']} ({$credito['CDGPE']}) o con el gerente de call center.
+            </p>
+            <p style="text-align: center">
+                <b>Asegúrese de seguir todos los protocolos establecidos para la correcta gestión y archivo de los documentos.</b>
+            </p>
+        HTML;
+
+        $pasosFinalesR = <<<HTML
+            <p style="text-align: center">
+                Si tiene alguna duda o inconveniente referente al rechazo de la solicitud, comuníquese con {$credito['NOMBRE_PE']} ({$credito['CDGPE']}) o con el gerente de call center.
+            </p>
+        HTML;
+
+        $titulo = $aprobada ? '✅ Solicitud de crédito APROBADA.' : '❌ Solicitud de crédito RECHAZADA.';
+        $pasosFinales = $aprobada ? $pasosFinalesA : $pasosFinalesR;
+
         return <<<HTML
             <!-- Encabezado -->
-            <h2 style="text-align: center">✅ Solicitud de crédito procesada.</h2>
+            <h2 style="text-align: center">$titulo</h2>
             <!-- Información General -->
             <div style="margin: 30px 0">
                 <h3 style="color: #007bff; border-bottom: 1px solid #ddd; padding-bottom: 5px">
@@ -213,33 +221,28 @@ class JobsCredito extends Job
 
             <!-- Próximos pasos -->
             <div style="padding-top: 14px">
-                <p style="text-align: center">
-                    Para completar el proceso imprima la documentación legal correspondiente, si tiene alguna duda o inconveniente, comuníquese con {$credito['NOMBRE_PE']} ({$credito['CDGPE']}) o con el gerente de call center.
-                </p>
-                <p style="text-align: center">
-                    <b>Asegúrese de seguir todos los protocolos establecidos para la correcta gestión y archivo de los documentos.</b>
-                </p>
+                $pasosFinales
             </div>
         HTML;
     }
 }
 
-$jobs = new JobsCredito();
-
 if (isset($argv[1])) {
+    $jobs = new JobsCredito();
+
     switch ($argv[1]) {
         case 'JobCheques':
             $jobs->JobCheques();
             break;
-        case 'SolicitudesAprobadas':
-            $jobs->SolicitudesAprobadas();
+        case 'SolicitudesFinalizadas':
+            $jobs->SolicitudesFinalizadas();
             break;
         case 'help':
-            echo "JobCheques: Actualiza los cheques de los créditos autorizados\n";
-            echo "SolicitudesCredito: Actualiza las solicitudes de crédito\n";
+            echo 'JobCheques: Actualiza los cheques de los créditos autorizados\n';
+            echo 'SolicitudesCredito: Actualiza las solicitudes de crédito\n';
             break;
         default:
-            echo "No se encontró el job solicitado.\nEjecute 'php JobsAhorro.php help' para ver los jobs disponibles.\n";
+            echo 'No se encontró el job solicitado.\nEjecute "php JobsAhorro.php help" para ver los jobs disponibles.\n';
             break;
     }
-} else echo "Debe especificar el job a ejecutar.\nEjecute 'php JobsAhorro.php help' para ver los jobs disponibles.\n";
+} else echo 'Debe especificar el job a ejecutar.\nEjecute "php JobsAhorro.php help" para ver los jobs disponibles.\n';

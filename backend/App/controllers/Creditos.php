@@ -834,7 +834,7 @@ html;
 
         $filas = CreditosDao::ConsultaGarantias($credito);
 
-        \PHPSpreadsheet::GeneraExcel('Layout Garantías Creditos', 'Reporte', 'Garantías', $columnas, $filas);
+        \PHPSpreadsheet::DescargaExcel('Layout Garantías Creditos', 'Reporte', 'Garantías', $columnas, $filas);
     }
 
     ////////////////////////////////////////////////////
@@ -915,7 +915,7 @@ html;
 
         $filas = CreditosDao::GetCierreDiario($fecha);
 
-        \PHPSpreadsheet::GeneraExcel('Situación Cartera MCM', 'Reporte', 'Situación Cartera MCM', $columnas, $filas);
+        \PHPSpreadsheet::DescargaExcel('Situación Cartera MCM', 'Reporte', 'Situación Cartera MCM', $columnas, $filas);
     }
 
     public function SolicitudRetiroListaNegra()

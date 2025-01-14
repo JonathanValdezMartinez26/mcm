@@ -22,6 +22,11 @@ class Job
         $this->ValidaPathLog($this->logPath);
     }
 
+    public function ValidaPathLog($path)
+    {
+        if (!file_exists($path)) mkdir($path, 0777, true);
+    }
+
     public function SaveLog($tdatos)
     {
         $archivo = $this->logPath . $this->nombreJob . ".log";
@@ -40,8 +45,36 @@ class Job
         fclose($log);
     }
 
-    public function ValidaPathLog($path)
+    public function ReadLog($metodoSolicitado)
     {
-        if (!file_exists($path)) mkdir($path, 0777, true);
+        $resultados = [];
+
+        if (!file_exists($this->logPath)) throw new \Exception("No se encontró el archivo de log");
+
+        $archivo = fopen($this->logPath, 'r');
+        while (($linea = fgets($archivo)) !== false) {
+            if (preg_match('/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}): ([^ ]+) -> (.+)$/', $linea, $matches)) {
+                list(, $fecha, $hora, $metodo, $informacion) = $matches;
+                $json = $this->esJson($informacion) ? json_decode($informacion, true) : null;
+
+                if ($metodo === $metodoSolicitado) {
+                    $resultados[] = [
+                        'fecha' => $fecha,
+                        'hora' => $hora,
+                        'metodo' => $metodo,
+                        'resultado' => $json,
+                    ];
+                }
+            }
+        }
+        fclose($archivo);
+
+        return $resultados;
+    }
+
+    private function esJson($texto)
+    {
+        json_decode($texto);
+        return (json_last_error() === JSON_ERROR_NONE);
     }
 }

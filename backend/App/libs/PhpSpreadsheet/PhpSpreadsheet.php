@@ -5,6 +5,7 @@ require __DIR__ . '/vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class PHPSpreadsheet
 {
@@ -68,6 +69,28 @@ class PHPSpreadsheet
         ];
     }
 
+    private static function getLetraColumna($indice)
+    {
+        $letra = '';
+        while ($indice >= 0) {
+            $letra = chr($indice % 26 + 65) . $letra;
+            $indice = intval($indice / 26) - 1;
+        }
+        return $letra;
+    }
+
+    private static function convierteFecha($formato, $fecha)
+    {
+        if (!$fecha || empty($fecha) || $fecha === '') return null;
+        $f = DateTime::createFromFormat($formato, $fecha);
+
+        if ($f === false) return null;
+        $f = Date::PHPToExcel($f);
+
+        if ($f === false) return null;
+        return $f;
+    }
+
     /**
      * Genera un archivo Excel con los datos proporcionados.
      *
@@ -81,9 +104,9 @@ class PHPSpreadsheet
      *                        - 'estilo': Un arreglo con los estilos a aplicar a la celda.
      * @param array $filas Un arreglo de arreglos asociativos que contiene los datos a mostrar en el reporte. Cada elemento debe ser un arreglo asociativo donde las claves son los nombres de los campos definidos en $columnas.
      *
-     * @return void
+     * @return Spreadsheet El objeto Spreadsheet con el reporte generado.
      */
-    public static function GeneraExcel($nombre_archivo, $nombre_hoja, $titulo_reporte, $columnas, $filas)
+    private static function GeneraExcel($nombre_hoja, $titulo_reporte, $columnas, $filas)
     {
         $filaInicio = 3;
         $spreadsheet = new Spreadsheet();
@@ -136,6 +159,13 @@ class PHPSpreadsheet
         $sheet->freezePane('A3');
         $sheet->setAutoFilter('A2:' . $columnas[count($columnas) - 1]['letra'] . '2');
 
+        return $spreadsheet;
+    }
+
+    public static function DescargaExcel($nombre_archivo, $nombre_hoja, $titulo_reporte, $columnas, $filas)
+    {
+        $spreadsheet = self::GeneraExcel($nombre_hoja, $titulo_reporte, $columnas, $filas);
+
         // Configuración de encabezados HTTP
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $nombre_archivo . '.xlsx"');
@@ -144,8 +174,16 @@ class PHPSpreadsheet
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
         header('Pragma: public');
 
-        // Guardar el archivo
+        // Envia el archivo
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
+    }
+
+    public static function GuardaExcel($nombre_archivo, $nombre_hoja, $titulo_reporte, $columnas, $filas)
+    {
+        $spreadsheet = self::GeneraExcel($nombre_hoja, $titulo_reporte, $columnas, $filas);
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save(__DIR__ . "/{$nombre_archivo}.xlsx");
     }
 }

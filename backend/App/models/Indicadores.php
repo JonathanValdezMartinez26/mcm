@@ -101,7 +101,7 @@ class Indicadores extends Model
                 TO_CHAR(MPR.FREGISTRO, 'DD/MM/YYYY HH24:MI:SS') AS FECHA,
                 MPR.CDGNS,
                 MPR.CICLO,
-                0,
+                0 AS MONTO,
                 'AJUSTES MANUALES' AS DESCRIPCION,
                 CMA.DESCRIPCION AS TIPO,
                 RG.CODIGO || ' - ' || RG.NOMBRE AS REGION,

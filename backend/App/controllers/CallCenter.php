@@ -4799,7 +4799,7 @@ html;
 
         $filas = CallCenterDao::GetReporteEncuestaPostventa($_POST);
 
-        \PHPSpreadsheet::GeneraExcel('Reporte encuestas Postventa', 'Reporte', 'Encuestas Postventa', $columnas, $filas['datos']);
+        \PHPSpreadsheet::DescargaExcel('Reporte encuestas Postventa', 'Reporte', 'Encuestas Postventa', $columnas, $filas['datos']);
     }
 
     public function SupervisionEncuestaPostventa()
