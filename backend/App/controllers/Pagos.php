@@ -4,13 +4,11 @@ namespace App\controllers;
 
 defined("APPPATH") or die("Access denied");
 
-use \Core\View;
-use \Core\MasterDom;
-use \Core\Controller;
-use \App\models\Pagos as PagosDao;
-use \App\models\CallCenter as CallCenterDao;
-
-
+use Core\View;
+use Core\MasterDom;
+use Core\Controller;
+use App\models\Pagos as PagosDao;
+use App\models\CallCenter as CallCenterDao;
 
 class Pagos extends Controller
 {
@@ -28,282 +26,224 @@ class Pagos extends Controller
 
     public function index()
     {
-        $extraHeader = self::getExtraHeader('Administración de Pagos');
-
         $extraFooter = <<<HTML
-        <script>
-            ponerElCursorAlFinal("Credito")
+            <script>
+                {$this->showError}
+                {$this->showSuccess}
+                {$this->showWarning}
+                {$this->showInfo}
+                {$this->configuraTabla}
+                {$this->confirmarMovimiento}
 
-            function getParameterByName(name) {
-                name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]")
-                var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-                    results = regex.exec(location.search)
-                return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "))
-            }
+                const Desactivado = () => showWarning("Usted no puede modificar este registro")
+                const InfoAdmin = () => showInfo("Este registro fue capturado por una administradora en caja")
+                const InfoPhone = () => showInfo("Este registro fue capturado por un ejecutivo en campo y procesado por una administradora")
 
-            $(document).ready(function () {
-                $("#muestra-cupones").tablesorter()
-                var oTable = $("#muestra-cupones").DataTable({
-                    columnDefs: [
-                        {
-                            orderable: false,
-                            targets: 0
-                        }
-                    ],
-                    order: false
-                })
-                // Remove accented character from search input as well
-                $("#muestra-cupones input[type=search]").keyup(function () {
-                    var table = $("#example").DataTable()
-                    table.search(jQuery.fn.DataTable.ext.type.search.html(this.value)).draw()
-                })
-                var checkAll = 0
-            })
-            function FunDelete_Pago(secuencia, fecha, usuario) {
-                credito = getParameterByName("Credito")
-                user = usuario
-                ////////////////////////////
-                swal({
-                    title: "¿Segúro que desea eliminar el registro seleccionado?",
-                    text: "",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true
-                }).then((willDelete) => {
-                    if (willDelete) {
+                const getParameterByName = (name) => {
+                    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]")
+                    let regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                        results = regex.exec(location.search)
+                    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "))
+                }
+
+                const FunDelete_Pago = (secuencia, fecha, usuario) => {
+                    credito = getParameterByName("Credito")
+                    user = usuario
+                    
+                    confirmarMovimiento("¿Segúro que desea eliminar el registro seleccionado?")
+                    .then((continuar) => {
+                        if (!continuar) return
                         $.ajax({
                             type: "POST",
                             url: "/Pagos/Delete/",
                             data: { cdgns: credito, fecha: fecha, secuencia: secuencia, usuario: user },
-                            success: function (response) {
-                                if (response == "1 Proceso realizado exitosamente") {
-                                    swal("Registro fue eliminado correctamente", {
-                                        icon: "success"
-                                    })
-                                    location.reload()
-                                } else {
-                                    swal(response, {
-                                        icon: "error"
-                                    })
-                                }
+                            success: (response) => {
+                                if (response !== "1 Proceso realizado exitosamente") showError(response)
+                                else showSuccess("Registro eliminado correctamente")
+                                location.reload()
                             }
                         })
-                        /////////////////
-                    } else {
-                        swal("No se pudo eliminar el registro")
-                    }
-                })
-            }
-            function enviar_add() {
-                monto = document.getElementById("monto").value
+                    })
+                }
 
-                if (monto == "") {
-                    if (monto == 0) {
-                        swal("Atención", "Ingrese un monto mayor a $0", "warning")
-                        document.getElementById("monto").focus()
+                const enviar_add = () => {
+                    monto = $("#monto").val()
+
+                    if (monto == "" || monto == 0) {
+                        showWarning("Ingrese un monto mayor a $0.00")
+                        $("#monto").focus()
+                        return
                     }
-                } else {
+                    
                     texto = $("#ejecutivo :selected").text()
-
                     $.ajax({
                         type: "POST",
                         url: "/Pagos/PagosAdd/",
                         data: $("#Add").serialize() + "&ejec=" + texto,
-                        success: function (respuesta) {
-                            if (respuesta == "1 Proceso realizado exitosamente") {
-                                document.getElementById("monto").value = ""
-
-                                swal("Registro guardado exitosamente", {
-                                    icon: "success"
-                                })
+                        success: (respuesta) => {
+                            if (respuesta === "1 Proceso realizado exitosamente") {
+                                $("#monto").val("")
+                                showSuccess("Registro guardado exitosamente")
                                 location.reload()
                             } else {
                                 $("#modal_agregar_pago").modal("hide")
-                                swal(respuesta, {
-                                    icon: "error"
-                                })
+                                showError(respuesta)
                             }
                         }
                     })
                 }
-            }
-            function enviar_edit() {
-                monto = document.getElementById("monto_e").value
 
-                if (monto == "") {
-                    if (monto == 0) {
-                        swal("Atención", "Ingrese un monto mayor a $0", "warning")
-                        document.getElementById("monto_e").focus()
+                const enviar_edit = () => {
+                    monto = $("#monto_e").val()
+
+                    if (monto == "" || monto == 0) {
+                        showWarning("Ingrese un monto mayor a $0.00")
+                        $("#monto_e").focus()
+                        return
                     }
-                } else {
+                    
                     texto = $("#ejecutivo_e :selected").text()
-
                     $.ajax({
                         type: "POST",
                         url: "/Pagos/PagosEdit/",
                         data: $("#Edit").serialize() + "&ejec_e=" + texto,
                         success: function (respuesta) {
-                            if (respuesta == "1 Proceso realizado exitosamente") {
-                                document.getElementById("monto_e").value = ""
-
-                                swal("Registro guardado exitosamente", {
-                                    icon: "success"
-                                })
+                            if (respuesta === "1 Proceso realizado exitosamente") {
+                                $("#monto_e").val("")
+                                showSuccess("Registro guardado exitosamente")
                                 location.reload()
                             } else {
                                 $("#modal_editar_pago").modal("hide")
-                                swal(respuesta, {
-                                    icon: "error"
-                                })
+                                showError(respuesta)
                             }
                         }
                     })
                 }
-            }
-            function Desactivado() {
-                swal("Atención", "Usted no puede modificar este registro", "warning")
-            }
-            function InfoAdmin() {
-                swal("Info", "Este registro fue capturado por una administradora en caja", "info")
-            }
-            function InfoPhone() {
-                swal(
-                    "Info",
-                    "Este registro fue capturado por un ejecutivo en campo y procesado por una administradora",
-                    "info"
-                )
-            }
 
-            function BotonPago(estatus) {
-                if (estatus == "LIQUIDADO") {
-                    select = $("#tipo")
-                    select.empty()
-                    select.append(
-                        $("<option>", {
-                            value: "M",
-                            text: "MULTA"
-                        }),
-                        $("<option>", {
-                            value: "Z",
-                            text: "MULTA GESTORES"
-                        }),
-                        $("<option>", {
-                            value: "Y",
-                            text: "PAGO EXCEDENTE"
-                        })
-                    )
+                const BotonPago = (estatus) => {
+                    if (estatus === "LIQUIDADO") {
+                        select = $("#tipo")
+                        select.empty()
+                        select.append(
+                            $("<option>", {
+                                value: "M",
+                                text: "MULTA"
+                            }),
+                            $("<option>", {
+                                value: "Z",
+                                text: "MULTA GESTORES"
+                            }),
+                            $("<option>", {
+                                value: "Y",
+                                text: "PAGO EXCEDENTE"
+                            })
+                        )
+                    }
                 }
-            }
-        </script>
+
+                const EditarPago = (fecha, cdgns, nombre, ciclo, tipo_pago, monto, ejecutivo, secuencia, estatus) => {
+                    $("#Fecha_e").val(fecha)
+                    $("#Fecha_e_r").val(fecha)
+                    $("#cdgns_e").val(cdgns)
+                    $("#nombre_e").val(nombre)
+                    $("#ciclo_e").val(ciclo)
+                    $("#monto_e").val(monto)
+                    $("#secuencia_e").val(secuencia)
+
+                    if (estatus == "LIQUIDADO") {
+                        select = $("#tipo_e")
+                        select.empty()
+                        select.append(
+                            $("<option>", {
+                                value: "Z",
+                                text: "MULTA GESTORES"
+                            })
+                        )
+                    }
+
+                    $("#tipo_e").val(tipo_pago)
+                    $("#ejecutivo_e").val(ejecutivo)
+                    $("#modal_editar_pago").modal("show")
+                }
+
+                $(document).ready(() => {
+                    configuraTabla("pagosRegistrados")
+                    $("#enviaAdd").click(enviar_add)
+                    $("#enviaEdit").click(enviar_edit)
+                })
+            </script>
         HTML;
 
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader('Administración de Pagos')));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
 
         $credito = $_GET['Credito'];
-        $tabla = '';
+        if ($credito == '') return View::render("pagos_admin_all");
+
+        $getStatus = '';
+        $status = PagosDao::ListaEjecutivosAdmin($credito);
+        foreach ($status[0] as $key => $val2) {
+            $select = $status[1] == $val2['ID_EJECUTIVO'] ? 'selected' : '';
+            $getStatus .= '<option value="' . $val2['ID_EJECUTIVO'] . '"' . $select . '>' . $val2['EJECUTIVO'] . '</option>';
+        }
+
+        $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__usuario);
+        $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
+        $situacion_credito = $AdministracionOne[0]['SITUACION_NOMBRE'];
+
+        if ($AdministracionOne[0]['NO_CREDITO'] == '') {
+            View::set('status', $getStatus);
+            View::set('credito', $credito);
+            View::set('usuario', $this->__usuario);
+            View::render('pagos_admin_busqueda_message');
+            return;
+        }
 
         $fechaActual = date("Y-m-d");
-        $horaActual = date("H:i:s");
+        $tabla = '';
+        $dias = date("N") == 1 ? '-3 days' : '-4 days';
+        $date_past = strtotime($dias, strtotime($fechaActual));
+        $date_past = date('Y-m-d', $date_past);
+        $inicio_f = $date_past;
+        $fin_f = $fechaActual;
+        $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $hora_cierre);
 
-        $dia = date("N");
-
-
-        if ($dia == 1) {
-            $date_past = strtotime('-3 days', strtotime($fechaActual));
-            $date_past = date('Y-m-d', $date_past);
-
-            $inicio_f = $date_past;
-            $fin_f = $fechaActual;
-        } else {
-
-            ///////agregar funcion para saber si es festivo
-            $date_past = strtotime('-4 days', strtotime($fechaActual)); /////Aqui se dan o se quoitan dias
-            $date_past = date('Y-m-d', $date_past);
-
-            $inicio_f = $date_past;
-            $fin_f = $fechaActual;
-        }
-
-        $status = PagosDao::ListaEjecutivosAdmin($credito);
-        $getStatus = '';
-
-
-
-        foreach ($status[0] as $key => $val2) {
-            if ($status[1] == $val2['ID_EJECUTIVO']) {
-                $select = 'selected';
+        foreach ($Administracion as $key => $value) {
+            if ($value['FIDENTIFICAPP'] ==  NULL) {
+                $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
+                $mensaje = 'InfoAdmin();';
             } else {
-                $select = '';
+                $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
+                $mensaje = 'InfoPhone();';
             }
 
-            $getStatus .= <<<html
-                <option $select value="{$val2['ID_EJECUTIVO']}">{$val2['EJECUTIVO']}</option>
-html;
-        }
-        if ($credito != '') {
-            $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__usuario);
-
-            $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'];
-            $situacion_credito = $AdministracionOne[0]['SITUACION_NOMBRE'];
-
-
-            if ($AdministracionOne[0]['NO_CREDITO'] == '') {
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::set('status', $getStatus);
-                View::set('credito', $credito);
-                View::set('usuario', $this->__usuario);
-                View::render("pagos_admin_busqueda_message");
+            if ($value['DESIGNATION_ADMIN'] == 'SI') {
+                $editar = <<<HTML
+                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                HTML;
             } else {
-                $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $hora_cierre);
-                foreach ($Administracion as $key => $value) {
+                $date_past = strtotime('-4 days', strtotime($fechaActual));
+                $date_past = date('Y-m-d', $date_past);
+                $fecha_base = strtotime($value['FECHA']);
+                $fecha_base = date('Y-m-d', $fecha_base);
+                $inicio_f = $date_past;
 
-                    if ($value['FIDENTIFICAPP'] ==  NULL) {
-                        $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
-                        $mensaje = 'InfoAdmin();';
-                    } else {
-                        $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
-                        $mensaje = 'InfoPhone();';
-                    }
+                if ($inicio_f == $fecha_base) {
+                    $editar = <<<HTML
+                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                    HTML;
+                } else {
+                    $editar = <<<HTML
+                        <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
+                    HTML;
+                }
+            }
 
-                    if ($value['DESIGNATION_ADMIN'] == 'SI') { /////
-                        /// /
-                        ///
-                        ///
-                        /// aqui poner que si los pagos son de app no se pueden modificar, consulte con operaciones
-                        ///
-                        ///['SITUACION_NOMBRE']
-                        ///
-                        $editar = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
-html;
-                    } else {
-                        $date_past = strtotime('-4 days', strtotime($fechaActual));
-                        $date_past = date('Y-m-d', $date_past);
-
-                        $fecha_base = strtotime($value['FECHA']);
-                        $fecha_base = date('Y-m-d', $fecha_base);
-
-                        $inicio_f = $date_past;
-
-
-
-
-                        if ($inicio_f == $fecha_base) {
-                            $editar = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
-html;
-                        } else {
-                            $editar = <<<html
-                    <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
-                    <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
-html;
-                        }
-                    }
-                    $monto = number_format($value['MONTO'], 2);
-
-                    $tabla .= <<<html
+            $monto = number_format($value['MONTO'], 2);
+            $tabla .= <<<HTML
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
                     <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
@@ -316,24 +256,17 @@ html;
                     <td style="padding: 0px !important;"><span class="fa fa-key"></span> {$value['NOMBRE_CDGPE']}</td>
                     <td style="padding: 0px !important;" class="center">{$editar}</td>
                 </tr>
-html;
-                }
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::set('tabla', $tabla);
-                View::set('Administracion', $AdministracionOne);
-                View::set('credito', $credito);
-                View::set('inicio_f', $inicio_f);
-                View::set('fin_f', $fin_f);
-                View::set('status', $getStatus);
-                View::set('usuario', $this->__usuario);
-                View::render("pagos_admin_busqueda");
-            }
-        } else {
-            View::set('header', $this->_contenedor->header($extraHeader));
-            View::set('footer', $this->_contenedor->footer($extraFooter));
-            View::render("pagos_admin_all");
+            HTML;
         }
+
+        View::set('tabla', $tabla);
+        View::set('Administracion', $AdministracionOne);
+        View::set('credito', $credito);
+        View::set('inicio_f', $inicio_f);
+        View::set('fin_f', $fin_f);
+        View::set('status', $getStatus);
+        View::set('usuario', $this->__usuario);
+        View::render('pagos_admin_busqueda');
     }
 
     public function AjusteHoraCierre()
@@ -1639,242 +1572,52 @@ html;
 
         $id = PagosDao::AddPagoApp($add_app, $barcode);
     }
+
     public function PagosRegistro()
     {
-        $extraHeader = self::GetExtraHeader('Registro de Pagos');
-
         $extraFooter = <<<HTML
-        <script>
-            ponerElCursorAlFinal("Credito")
+            <script>
+                {$this->showError}
+                {$this->showSuccess}
+                {$this->showWarning}
+                {$this->showInfo}
+                {$this->configuraTabla}
+                {$this->confirmarMovimiento}
 
-            function getParameterByName(name) {
-                name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]")
-                var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-                    results = regex.exec(location.search)
-                return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "))
-            }
-
-            $(document).ready(function () {
-                $("#muestra-cupones").tablesorter()
-                var oTable = $("#muestra-cupones").DataTable({
-                    columnDefs: [
-                        {
-                            orderable: false,
-                            targets: 0
-                        }
-                    ],
-                    order: false
-                })
-                // Remove accented character from search input as well
-                $("#muestra-cupones input[type=search]").keyup(function () {
-                    var table = $("#example").DataTable()
-                    table.search(jQuery.fn.DataTable.ext.type.search.html(this.value)).draw()
-                })
-                var checkAll = 0
-            })
-
-            function FunDelete_Pago(secuencia, fecha, usuario) {
-                credito = getParameterByName("Credito")
-                user = usuario
-                ////////////////////////////
-                swal({
-                    title: "¿Segúro que desea eliminar el registro seleccionado?",
-                    text: "",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        $.ajax({
-                            type: "POST",
-                            url: "/Pagos/Delete/",
-                            data: { cdgns: credito, fecha: fecha, secuencia: secuencia, usuario: user },
-                            success: function (response) {
-                                if (response == "1 Proceso realizado exitosamente") {
-                                    swal("Registro fue eliminado correctamente", {
-                                        icon: "success"
-                                    })
-                                    location.reload()
-                                } else {
-                                    swal(response, {
-                                        icon: "error"
-                                    })
-                                }
-                            }
-                        })
-                        /////////////////
-                    } else {
-                        swal("No se pudo eliminar el registro")
-                    }
-                })
-            }
-
-            function enviar_add() {
-                monto = document.getElementById("monto").value
-
-                if (monto == "") {
-                    if (monto == 0) {
-                        swal("Atención", "Ingrese un monto mayor a $0", "warning")
-                        document.getElementById("monto").focus()
-                    }
-                } else {
-                    texto = $("#ejecutivo :selected").text()
-
-                    $.ajax({
-                        type: "POST",
-                        url: "/Pagos/PagosAdd/",
-                        data: $("#Add").serialize() + "&ejec=" + texto,
-                        success: function (respuesta) {
-                            if (respuesta == "1 Proceso realizado exitosamente") {
-                                document.getElementById("monto").value = ""
-
-                                swal("Registro guardado exitosamente", {
-                                    icon: "success"
-                                })
-                                location.reload()
-                            } else {
-                                $("#modal_agregar_pago").modal("hide")
-                                swal(respuesta, {
-                                    icon: "error"
-                                })
-                                document.getElementById("monto").value = ""
-                            }
-                        }
-                    })
-                }
-            }
-
-            function enviar_edit() {
-                monto = document.getElementById("monto_e").value
-
-                if (monto == "") {
-                    if (monto == 0) {
-                        swal("Atención", "Ingrese un monto mayor a $0", "warning")
-                    }
-                } else {
-                    texto = $("#ejecutivo_e :selected").text()
-
-                    $.ajax({
-                        type: "POST",
-                        url: "/Pagos/PagosEdit/",
-                        data: $("#Edit").serialize() + "&ejec_e=" + texto,
-                        success: function (respuesta) {
-                            if (respuesta == "1 Proceso realizado exitosamente") {
-                                document.getElementById("monto_e").value = ""
-
-                                swal("Registro guardado exitosamente", {
-                                    icon: "success"
-                                })
-                                location.reload()
-                            } else {
-                                $("#modal_editar_pago").modal("hide")
-                                swal(respuesta, {
-                                    icon: "error"
-                                })
-                            }
-                        }
-                    })
-                }
-            }
-
-            function Desactivado() {
-                swal("Atención", "Usted no puede modificar este registro", "warning")
-            }
-
-            function InfoAdmin() {
-                swal("Info", "Este registro fue capturado por una administradora en caja", "info")
-            }
-
-            function InfoPhone() {
-                swal(
-                    "Info",
-                    "Este registro fue capturado por un ejecutivo en campo y procesado por una administradora",
-                    "info"
-                )
-            }
-
-            function BotonPago(estatus, ciclo) {
-                if (estatus === "LIQUIDADO") {
-                    let ciclo_anterior = ciclo >= 10 ? ciclo - 1 : "0" + (ciclo - 1);
-
-                    var txt_ciclo = document.getElementById("ciclo")
-                    var option = document.createElement("option")
-                    var option1 = document.createElement("option")
-
-                    select = $("#tipo")
-                    select.empty()
-                    select.append(
-                        $("<option>", {
-                            value: "M",
-                            text: "MULTA"
-                        }),
-                        $("<option>", {
-                            value: "Z",
-                            text: "MULTA GESTORES"
-                        }),
-                        $("<option>", {
-                            value: "Y",
-                            text: "PAGO EXCEDENTE"
-                        })
-                    )
-
-                    if (ciclo != "01") {
-                        $("#ciclo").empty()
-
-                        option.text = ciclo
-                        option.value = ciclo
-                        txt_ciclo.add(option)
-
-                        option1.text = ciclo_anterior
-                        option1.value = ciclo_anterior
-                        txt_ciclo.add(option1)
-                    }
-                }
-            }
-
-            function MultaCiclo(op, ciclo) {
-                var value = op.value
-                var txt_ciclo = document.getElementById("ciclo")
-                var option = document.createElement("option")
-                let ciclo_anterior = ""
-
-                if (ciclo >= 10) {
-                    ciclo_anterior = ciclo - 1
-                } else {
-                    ciclo_anterior = "0" + (ciclo - 1)
-                }
-
-                if (value == "M") {
-                    if (ciclo != "01") {
-                        option.text = ciclo_anterior
-                        option.value = ciclo_anterior
-                        txt_ciclo.add(option)
-                    }
-                } else {
-                    $("#ciclo").empty()
-                    option.text = ciclo
-                    option.value = ciclo
-                    txt_ciclo.add(option)
-                }
-            }
-        </script>
+            </script>
         HTML;
 
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader('Registro de Pagos')));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+
         $credito = $_GET['Credito'];
-        $tabla = '';
+        if ($credito == '') return View::render("pagos_registro_all");
 
-        $fechaActual = date("Y-m-d");
-        $horaActual = date("H:i:s");
-
-        $dia = date("N");
-
-        //$dia = 2;
+        $status = PagosDao::ListaEjecutivosAdmin($credito);
+        $getStatus = '';
+        foreach ($status[0] as $key => $val2) {
+            $select = ($status[1] == $val2['ID_EJECUTIVO']) ? 'selected' : '';
+            $getStatus .= '<option value="' . $val2['ID_EJECUTIVO'] . '" ' .  $select  . '>' . $val2['EJECUTIVO'] . '</option>';
+        }
 
         $AdministracionOne = PagosDao::ConsultarPagosAdministracionOne($credito, $this->__perfil, $this->__usuario);
-        $situacion_credito = $AdministracionOne[0]['SITUACION_NOMBRE'];
+        if ($AdministracionOne[0]['NO_CREDITO'] == '') {
 
+            View::set('status', $getStatus);
+            View::set('credito', $credito);
+            View::set('usuario', $this->__usuario);
+            return View::render("pagos_registro_busqueda_message");
+        }
+
+        $tabla = '';
+        $fechaActual = date("Y-m-d");
+        $horaActual = date("H:i:s");
+        $dia = date("N");
+        $situacion_credito = $AdministracionOne[0]['SITUACION_NOMBRE'];
         $fue_dia_festivo = $AdministracionOne[2]['TOT'];
         $hora_cierre = $AdministracionOne[1]['HORA_CIERRE'] ?? '10:00:00';
+        $fin_f = $fechaActual;
+        $inicio_f = $fechaActual;
 
         if ($horaActual <= $hora_cierre) {
             if ($dia == 1) {
@@ -1908,134 +1651,92 @@ html;
             }
 
             $inicio_f = $date_past;
-            $fin_f = $fechaActual;
-
-            //$fin_f = $date_past;
-        } else {
-            $inicio_f = $fechaActual;
-            $fin_f = $fechaActual;
         }
 
-
-        $status = PagosDao::ListaEjecutivosAdmin($credito);
-        $getStatus = '';
-        foreach ($status[0] as $key => $val2) {
-            $select = ($status[1] == $val2['ID_EJECUTIVO']) ? 'selected' : '';
-
-            $getStatus .= '<option value="' . $val2['ID_EJECUTIVO'] . '" ' .  $select  . '>' . $val2['EJECUTIVO'] . '</option>';
-        }
-        if ($credito != '') {
-            if ($AdministracionOne[0]['NO_CREDITO'] == '') {
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::set('status', $getStatus);
-                View::set('credito', $credito);
-                View::set('usuario', $this->__usuario);
-                View::render("pagos_registro_busqueda_message");
+        $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $hora_cierre);
+        foreach ($Administracion as $key => $value) {
+            if ($value['FIDENTIFICAPP'] ==  NULL) {
+                $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
+                $mensaje = 'InfoAdmin();';
             } else {
-                $Administracion = PagosDao::ConsultarPagosAdministracion($credito, $hora_cierre);
-                foreach ($Administracion as $key => $value) {
+                $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
+                $mensaje = 'InfoPhone();';
+            }
 
-                    if ($value['FIDENTIFICAPP'] ==  NULL) {
-                        $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
-                        $mensaje = 'InfoAdmin();';
-                    } else {
-                        $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
-                        $mensaje = 'InfoPhone();';
-                    }
-
-                    if ($value['DESIGNATION'] == 'SI') {
-                        /////
-                        /// /
-                        ///
-                        ///
-                        /// aqui poner que si los pagos son de app no se pueden modificar, consulte con operaciones
-                        ///
-                        ///
-                        ///
-                        $editar = <<<HTML
-                        <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
-                        HTML;
-                    } else {
-                        if ($fue_dia_festivo == 4) {
-                            $date_past_b = strtotime('-6 days', strtotime($fechaActual));
-                            $date_past_b = date('Y-m-d', $date_past_b);
-                        } else if ($fue_dia_festivo == 3) {
-                            $date_past_b = strtotime('-5 days', strtotime($fechaActual));
-                            $date_past_b = date('Y-m-d', $date_past_b);
-                        } else if ($fue_dia_festivo == 2) {
-                            $date_past_b = strtotime('-4 days', strtotime($fechaActual));
-                            $date_past_b = date('Y-m-d', $date_past_b);
-                        } else if ($fue_dia_festivo == 1) {
-                            $date_past_b = strtotime('-3 days', strtotime($fechaActual));
-                            $date_past_b = date('Y-m-d', $date_past_b);
-                        } else {
-                            $date_past_b = strtotime('-3 days', strtotime($fechaActual));
-                            $date_past_b = date('Y-m-d', $date_past_b);
-                        }
-
-                        $fecha_base = strtotime($value['FECHA']);
-                        $fecha_base = date('Y-m-d', $fecha_base);
-
-                        $inicio_b = $date_past_b;
-
-                        ///////////////////////////////////////////////////////////////////////////////////////////////////
-                        if (($inicio_b == $fecha_base) ||  $fecha_base >= $date_past_b && $AdministracionOne[2]['FECHA_CAPTURA'] <= $AdministracionOne[2]['FECHA_CAPTURA']) // aqui poner el dia en que se estaran capturando
-                        {
-                            if ($horaActual <= $hora_cierre) {
-                                $editar = <<<HTML
-                                <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
-                                <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
-                                HTML;
-                            } else {
-                                $editar = <<<HTML
-                                <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
-                                <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
-                                HTML;
-                            }
-                        } else {
-                            $editar = <<<HTML
-                            <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
-                            <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
-                            HTML;
-                        }
-                    }
-
-                    $monto = number_format($value['MONTO'], 2);
-                    $tabla .= <<<HTML
-                    <tr style="padding: 0px !important;">
-                        <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
-                        <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
-                        <td style="padding: 0px !important;">{$value['CDGNS']}</td>
-                        <td style="padding: 0px !important;">{$value['FECHA']}</td>
-                        <td style="padding: 0px !important;">{$value['CICLO']}</td>
-                        <td style="padding: 0px !important;">$ {$monto}</td>
-                        <td style="padding: 0px !important;">{$value['TIPO']}</td>
-                        <td style="padding: 0px !important;">{$value['EJECUTIVO']}</td>
-                        <td style="padding: 0px !important;" class="center">{$editar}</td>
-                    </tr>
-                    HTML;
+            if ($value['DESIGNATION'] == 'SI') {
+                $editar = <<<HTML
+                    <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
+                    <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                HTML;
+            } else {
+                if ($fue_dia_festivo == 4) {
+                    $date_past_b = strtotime('-6 days', strtotime($fechaActual));
+                    $date_past_b = date('Y-m-d', $date_past_b);
+                } else if ($fue_dia_festivo == 3) {
+                    $date_past_b = strtotime('-5 days', strtotime($fechaActual));
+                    $date_past_b = date('Y-m-d', $date_past_b);
+                } else if ($fue_dia_festivo == 2) {
+                    $date_past_b = strtotime('-4 days', strtotime($fechaActual));
+                    $date_past_b = date('Y-m-d', $date_past_b);
+                } else if ($fue_dia_festivo == 1) {
+                    $date_past_b = strtotime('-3 days', strtotime($fechaActual));
+                    $date_past_b = date('Y-m-d', $date_past_b);
+                } else {
+                    $date_past_b = strtotime('-3 days', strtotime($fechaActual));
+                    $date_past_b = date('Y-m-d', $date_past_b);
                 }
 
-                View::set('tabla', $tabla);
-                View::set('Administracion', $AdministracionOne);
-                View::set('credito', $credito);
-                View::set('inicio_f', $inicio_f);
-                View::set('fin_f', $fin_f);
-                View::set('fechaActual', $fechaActual);
-                View::set('status', $getStatus);
-                View::set('usuario', $this->__usuario);
-                View::set('cdgco', $this->__cdgco);
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::render("pagos_registro_busqueda");
+                $fecha_base = strtotime($value['FECHA']);
+                $fecha_base = date('Y-m-d', $fecha_base);
+                $inicio_b = $date_past_b;
+
+                if (($inicio_b == $fecha_base) ||  $fecha_base >= $date_past_b && $AdministracionOne[2]['FECHA_CAPTURA'] <= $AdministracionOne[2]['FECHA_CAPTURA']) // aqui poner el dia en que se estaran capturando
+                {
+                    if ($horaActual <= $hora_cierre) {
+                        $editar = <<<HTML
+                            <button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
+                            <button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
+                        HTML;
+                    } else {
+                        $editar = <<<HTML
+                            <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
+                            <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
+                        HTML;
+                    }
+                } else {
+                    $editar = <<<HTML
+                        <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
+                    HTML;
+                }
             }
-        } else {
-            View::set('header', $this->_contenedor->header($extraHeader));
-            View::set('footer', $this->_contenedor->footer($extraFooter));
-            View::render("pagos_registro_all");
+
+            $monto = number_format($value['MONTO'], 2);
+            $tabla .= <<<HTML
+                <tr style="padding: 0px !important;">
+                    <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
+                    <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
+                    <td style="padding: 0px !important;">{$value['CDGNS']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA']}</td>
+                    <td style="padding: 0px !important;">{$value['CICLO']}</td>
+                    <td style="padding: 0px !important;">$ {$monto}</td>
+                    <td style="padding: 0px !important;">{$value['TIPO']}</td>
+                    <td style="padding: 0px !important;">{$value['EJECUTIVO']}</td>
+                    <td style="padding: 0px !important;" class="center">{$editar}</td>
+                </tr>
+            HTML;
         }
+
+        View::set('tabla', $tabla);
+        View::set('Administracion', $AdministracionOne);
+        View::set('credito', $credito);
+        View::set('inicio_f', $inicio_f);
+        View::set('fin_f', $fin_f);
+        View::set('fechaActual', $fechaActual);
+        View::set('status', $getStatus);
+        View::set('usuario', $this->__usuario);
+        View::set('cdgco', $this->__cdgco);
+        View::render("pagos_registro_busqueda");
     }
 
     public function PagosConsultaUsuarios()

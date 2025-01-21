@@ -123,6 +123,7 @@ html;
         if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario == 'MGJC') {
             $menu .= <<<html
             <li><a href="/Pagos/">Administración Pagos</a></li>
+            <li><a href="/CancelaRef/">Cancelación de Ref</a></li>
 html;
         }
 

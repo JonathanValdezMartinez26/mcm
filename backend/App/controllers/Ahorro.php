@@ -458,613 +458,613 @@ class Ahorro extends Controller
         $costoInscripcion = 200;
         $mensajeCaptura = "Capture las huellas del cliente haciendo clic sobre una imagen.";
 
-        $extraFooter = <<<html
-        <script>
-            const saldoMinimoApertura = $saldoMinimoApertura
-            const costoInscripcion = $costoInscripcion
-            const montoMaximo = 1000000
-            const txtGuardaContrato = "GUARDAR DATOS Y PROCEDER AL COBRO"
-            const txtGuardaPago = "REGISTRAR DEPÓSITO DE APERTURA"
-            let valKD = false
-            let manoIzquierda
-            let manoDerecha
-         
-            window.onload = () => {
-                const lector = new LectorHuellas(
-                {
-                    notificacion: (mensaje, error = false) => {
-                        const huella = document.querySelector("#mensajeHuella")
-                        huella.style.color = error ? "red": ""
-         
-                        huella.innerText = mensaje
-                    }
-                })
+        $extraFooter = <<<HTML
+            <script>
+                const saldoMinimoApertura = $saldoMinimoApertura
+                const costoInscripcion = $costoInscripcion
+                const montoMaximo = 1000000
+                const txtGuardaContrato = "GUARDAR DATOS Y PROCEDER AL COBRO"
+                const txtGuardaPago = "REGISTRAR DEPÓSITO DE APERTURA"
+                let valKD = false
+                let manoIzquierda
+                let manoDerecha
+            
+                window.onload = () => {
+                    const lector = new LectorHuellas(
+                    {
+                        notificacion: (mensaje, error = false) => {
+                            const huella = document.querySelector("#mensajeHuella")
+                            huella.style.color = error ? "red": ""
+            
+                            huella.innerText = mensaje
+                        }
+                    })
+                        
+                    manoIzquierda = new Mano("izquierda", lector, document.querySelector("#manoizquierda"))
+                    manoDerecha = new Mano("derecha", lector, document.querySelector("#manoderecha"))
+            
+                    document.querySelector("#manoizquierda").addEventListener("muestraObtenida", huellasCompletas)
+                    document.querySelector("#manoderecha").addEventListener("muestraObtenida", huellasCompletas)
+
+                    document.querySelector("#manoderecha").addEventListener("validaHuella", validaHuella)
+                    document.querySelector("#manoizquierda").addEventListener("validaHuella", validaHuella)
+
+                    document.querySelector("#manoderecha").addEventListener("actualizaHuella", actualizaHuella)
+                    document.querySelector("#manoizquierda").addEventListener("actualizaHuella", actualizaHuella)
                     
-                manoIzquierda = new Mano("izquierda", lector, document.querySelector("#manoizquierda"))
-                manoDerecha = new Mano("derecha", lector, document.querySelector("#manoderecha"))
-         
-                document.querySelector("#manoizquierda").addEventListener("muestraObtenida", huellasCompletas)
-                document.querySelector("#manoderecha").addEventListener("muestraObtenida", huellasCompletas)
-
-                document.querySelector("#manoderecha").addEventListener("validaHuella", validaHuella)
-                document.querySelector("#manoizquierda").addEventListener("validaHuella", validaHuella)
-
-                document.querySelector("#manoderecha").addEventListener("actualizaHuella", actualizaHuella)
-                document.querySelector("#manoizquierda").addEventListener("actualizaHuella", actualizaHuella)
-                
-                if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
-            }
-         
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
-            {$this->confirmarMovimiento}
-            {$this->validarYbuscar}
-            {$this->getHoy}
-            {$this->soloNumeros}
-            {$this->numeroLetras}
-            {$this->primeraMayuscula}
-            {$this->muestraPDF}
-            {$this->imprimeTicket}
-            {$this->imprimeContrato}
-            {$this->addParametro}
-            {$this->consultaServidor}
-            {$this->parseaNumero}
-            {$this->formatoMoneda}
-            {$this->limpiaMontos}
-            {$this->valida_MCM_Complementos}
-             
-            const buscaCliente = () => {
-                if (document.querySelector("#sucursal").value === "") {
-                    showError("Usted no tiene una sucursal asignada.\\n\\nNo es posible continuar con la operación, consulte a su administrador.")
-                    return
+                    if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
                 }
-                 
-                const noCliente = document.querySelector("#clienteBuscado").value
-                limpiaDatosCliente()
-                 
-                if (!noCliente) return showError("Ingrese un número de cliente a buscar.")
-                 
-                consultaServidor("/Ahorro/BuscaCliente/", { cliente: noCliente }, async (respuesta) => {
-                    document.querySelector("#lnkContrato").innerText = "Creación del contrato"
-                    if (!respuesta.success) {
-                        if (!respuesta.datos) {
-                            limpiaDatosCliente()
-                            return showError(respuesta.mensaje)
-                        }
-                         
-                        const datosCliente = respuesta.datos
-                        document.querySelector("#btnGeneraContrato").style.display = "none"
-                        document.querySelector("#contratoOK").value = datosCliente.CONTRATO
-                        document.querySelector("#fecha").value = datosCliente.FECHA_CONTRATO
-                        document.querySelector("#lnkContrato").innerText = "Creación del contrato (" + datosCliente.FECHA_CONTRATO.split(" ")[0] + ")"
-                        if (Array.from(document.querySelector("#ejecutivo_comision").options).some(option => option.value === datosCliente.EJECUTIVO_COMISIONA)) {
-                            document.querySelector("#ejecutivo_comision").value = datosCliente.EJECUTIVO_COMISIONA
-                        } else {
-                            document.querySelector("#ejecutivo_comision").appendChild(new Option(datosCliente.NOMBRE_EJECUTIVO_COMISIONA, "tmp", true, true))
-                        }
-                         
-                        if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 0) {
-                            await showInfo("La apertura del contrato no ha concluido, realice el depósito de apertura.")
-                            document.querySelector("#fecha_pago").value = getHoy()
-                            document.querySelector("#contrato").value = datosCliente.CONTRATO
-                            document.querySelector("#codigo_cl").value = datosCliente.CDGCL
-                            document.querySelector("#nombre_cliente").value = datosCliente.NOMBRE
-                            document.querySelector("#mdlCurp").value = datosCliente.CURP
-                            $("#modal_agregar_pago").modal("show")
-                            document.querySelector("#chkCreacionContrato").classList.add("green")
-                            document.querySelector("#chkCreacionContrato").classList.add("fa-check")
-                            document.querySelector("#chkCreacionContrato").classList.remove("red")
-                            document.querySelector("#chkCreacionContrato").classList.remove("fa-times")
-                            document.querySelector("#lnkContrato").style.cursor = "pointer"
-                            document.querySelector("#chkPagoApertura").classList.remove("green")
-                            document.querySelector("#chkPagoApertura").classList.remove("fa-check")
-                            document.querySelector("#chkPagoApertura").classList.add("fa-times")
-                            document.querySelector("#chkPagoApertura").classList.add("red")
-                            document.querySelector("#btnGuardar").innerText = txtGuardaPago
-                            document.querySelector("#btnGeneraContrato").style.display = "block"
-                        }
-                         
-                        if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 1) {
-                            await showInfo("El cliente " + datosCliente.CDGCL + " ya cuenta con un contrato de ahorro corriente aperturada el " + datosCliente.FECHA_CONTRATO + ".")
-                            document.querySelector("#chkCreacionContrato").classList.remove("red")
-                            document.querySelector("#chkCreacionContrato").classList.remove("fa-times")
-                            document.querySelector("#chkCreacionContrato").classList.add("green")
-                            document.querySelector("#chkCreacionContrato").classList.add("fa-check")
-                            document.querySelector("#lnkContrato").style.cursor = "pointer"
-                            document.querySelector("#chkPagoApertura").classList.remove("red")
-                            document.querySelector("#chkPagoApertura").classList.remove("fa-times")
-                            document.querySelector("#chkPagoApertura").classList.add("green")
-                            document.querySelector("#chkPagoApertura").classList.add("fa-check")
-                        }
-                         
-                        consultaServidor("/Ahorro/GetBeneficiarios/", { contrato: datosCliente.CONTRATO }, (respuesta) => {
-                            if (!respuesta.success) return showError(respuesta.mensaje)
-                             
-                            const beneficiarios = respuesta.datos
-                            for (let i = 0; i < beneficiarios.length; i++) {
-                                document.querySelector("#beneficiario_" + (i + 1)).value = beneficiarios[i].NOMBRE
-                                document.querySelector("#parentesco_" + (i + 1)).value = beneficiarios[i].CDGCT_PARENTESCO
-                                document.querySelector("#porcentaje_" + (i + 1)).value = beneficiarios[i].PORCENTAJE
-                                document.querySelector("#btnBen" + (i + 1)).disabled = true
-                                document.querySelector("#parentesco_" + (i + 1)).disabled = true
-                                document.querySelector("#porcentaje_" + (i + 1)).disabled = true
-                                document.querySelector("#ben" + (i + 1)).style.opacity = "1"
+            
+                {$this->showError}
+                {$this->showSuccess}
+                {$this->showInfo}
+                {$this->confirmarMovimiento}
+                {$this->validarYbuscar}
+                {$this->getHoy}
+                {$this->soloNumeros}
+                {$this->numeroLetras}
+                {$this->primeraMayuscula}
+                {$this->muestraPDF}
+                {$this->imprimeTicket}
+                {$this->imprimeContrato}
+                {$this->addParametro}
+                {$this->consultaServidor}
+                {$this->parseaNumero}
+                {$this->formatoMoneda}
+                {$this->limpiaMontos}
+                {$this->valida_MCM_Complementos}
+                
+                const buscaCliente = () => {
+                    if (document.querySelector("#sucursal").value === "") {
+                        showError("Usted no tiene una sucursal asignada.\\n\\nNo es posible continuar con la operación, consulte a su administrador.")
+                        return
+                    }
+                    
+                    const noCliente = document.querySelector("#clienteBuscado").value
+                    limpiaDatosCliente()
+                    
+                    if (!noCliente) return showError("Ingrese un número de cliente a buscar.")
+                    
+                    consultaServidor("/Ahorro/BuscaCliente/", { cliente: noCliente }, async (respuesta) => {
+                        document.querySelector("#lnkContrato").innerText = "Creación del contrato"
+                        if (!respuesta.success) {
+                            if (!respuesta.datos) {
+                                limpiaDatosCliente()
+                                return showError(respuesta.mensaje)
                             }
-                        })
+                            
+                            const datosCliente = respuesta.datos
+                            document.querySelector("#btnGeneraContrato").style.display = "none"
+                            document.querySelector("#contratoOK").value = datosCliente.CONTRATO
+                            document.querySelector("#fecha").value = datosCliente.FECHA_CONTRATO
+                            document.querySelector("#lnkContrato").innerText = "Creación del contrato (" + datosCliente.FECHA_CONTRATO.split(" ")[0] + ")"
+                            if (Array.from(document.querySelector("#ejecutivo_comision").options).some(option => option.value === datosCliente.EJECUTIVO_COMISIONA)) {
+                                document.querySelector("#ejecutivo_comision").value = datosCliente.EJECUTIVO_COMISIONA
+                            } else {
+                                document.querySelector("#ejecutivo_comision").appendChild(new Option(datosCliente.NOMBRE_EJECUTIVO_COMISIONA, "tmp", true, true))
+                            }
+                            
+                            if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 0) {
+                                await showInfo("La apertura del contrato no ha concluido, realice el depósito de apertura.")
+                                document.querySelector("#fecha_pago").value = getHoy()
+                                document.querySelector("#contrato").value = datosCliente.CONTRATO
+                                document.querySelector("#codigo_cl").value = datosCliente.CDGCL
+                                document.querySelector("#nombre_cliente").value = datosCliente.NOMBRE
+                                document.querySelector("#mdlCurp").value = datosCliente.CURP
+                                $("#modal_agregar_pago").modal("show")
+                                document.querySelector("#chkCreacionContrato").classList.add("green")
+                                document.querySelector("#chkCreacionContrato").classList.add("fa-check")
+                                document.querySelector("#chkCreacionContrato").classList.remove("red")
+                                document.querySelector("#chkCreacionContrato").classList.remove("fa-times")
+                                document.querySelector("#lnkContrato").style.cursor = "pointer"
+                                document.querySelector("#chkPagoApertura").classList.remove("green")
+                                document.querySelector("#chkPagoApertura").classList.remove("fa-check")
+                                document.querySelector("#chkPagoApertura").classList.add("fa-times")
+                                document.querySelector("#chkPagoApertura").classList.add("red")
+                                document.querySelector("#btnGuardar").innerText = txtGuardaPago
+                                document.querySelector("#btnGeneraContrato").style.display = "block"
+                            }
+                            
+                            if (datosCliente['NO_CONTRATOS'] >= 0 && datosCliente.CONTRATO_COMPLETO == 1) {
+                                await showInfo("El cliente " + datosCliente.CDGCL + " ya cuenta con un contrato de ahorro corriente aperturada el " + datosCliente.FECHA_CONTRATO + ".")
+                                document.querySelector("#chkCreacionContrato").classList.remove("red")
+                                document.querySelector("#chkCreacionContrato").classList.remove("fa-times")
+                                document.querySelector("#chkCreacionContrato").classList.add("green")
+                                document.querySelector("#chkCreacionContrato").classList.add("fa-check")
+                                document.querySelector("#lnkContrato").style.cursor = "pointer"
+                                document.querySelector("#chkPagoApertura").classList.remove("red")
+                                document.querySelector("#chkPagoApertura").classList.remove("fa-times")
+                                document.querySelector("#chkPagoApertura").classList.add("green")
+                                document.querySelector("#chkPagoApertura").classList.add("fa-check")
+                            }
+                            
+                            consultaServidor("/Ahorro/GetBeneficiarios/", { contrato: datosCliente.CONTRATO }, (respuesta) => {
+                                if (!respuesta.success) return showError(respuesta.mensaje)
+                                
+                                const beneficiarios = respuesta.datos
+                                for (let i = 0; i < beneficiarios.length; i++) {
+                                    document.querySelector("#beneficiario_" + (i + 1)).value = beneficiarios[i].NOMBRE
+                                    document.querySelector("#parentesco_" + (i + 1)).value = beneficiarios[i].CDGCT_PARENTESCO
+                                    document.querySelector("#porcentaje_" + (i + 1)).value = beneficiarios[i].PORCENTAJE
+                                    document.querySelector("#btnBen" + (i + 1)).disabled = true
+                                    document.querySelector("#parentesco_" + (i + 1)).disabled = true
+                                    document.querySelector("#porcentaje_" + (i + 1)).disabled = true
+                                    document.querySelector("#ben" + (i + 1)).style.opacity = "1"
+                                }
+                            })
 
-                        consultaServidor("/Ahorro/ValidaRegistroHuellas", { cliente: datosCliente.CDGCL }, (respuesta) => {
+                            consultaServidor("/Ahorro/ValidaRegistroHuellas", { cliente: datosCliente.CDGCL }, (respuesta) => {
+                                if (!respuesta.success) {
+                                    console.error(respuesta.error)
+                                    return showError(respuesta.mensaje)
+                                }
+                                
+                                if (respuesta.datos.HUELLAS == 1) {
+                                    document.querySelector("#chkRegistroHuellas").classList.remove("red")
+                                    document.querySelector("#chkRegistroHuellas").classList.remove("fa-times")
+                                    document.querySelector("#chkRegistroHuellas").classList.add("green")
+                                    document.querySelector("#chkRegistroHuellas").classList.add("fa-check")
+                                    document.querySelector("#lnkHuellas").style.cursor = "default"
+                                }
+                                
+                                if (respuesta.datos.HUELLAS == 0) {
+                                    document.querySelector("#chkRegistroHuellas").classList.remove("green")
+                                    document.querySelector("#chkRegistroHuellas").classList.remove("fa-check")
+                                    document.querySelector("#chkRegistroHuellas").classList.add("red")
+                                    document.querySelector("#chkRegistroHuellas").classList.add("fa-times")
+                                    document.querySelector("#lnkHuellas").style.cursor = "pointer"
+                                }
+                            })
+                        }
+                        
+                        const datosCL = respuesta.datos
+                        
+                        document.querySelector("#fechaRegistro").value = datosCL.FECHA_REGISTRO
+                        document.querySelector("#noCliente").value = noCliente
+                        document.querySelector("#nombre").value = datosCL.NOMBRE
+                        document.querySelector("#curp").value = datosCL.CURP
+                        document.querySelector("#edad").value = datosCL.EDAD
+                        document.querySelector("#direccion").value = datosCL.DIRECCION
+                        document.querySelector("#marcadores").style.opacity = "1"
+                        document.querySelector("#codigo_cl_huellas").value = noCliente
+                        document.querySelector("#nombre_cliente_huellas").value = datosCL.NOMBRE
+                        noCliente.value = ""
+                        manoIzquierda.limpiarMano()
+                        manoDerecha.limpiarMano()
+                        if (respuesta.success) habilitaBeneficiario(1, true)
+                    })
+                }
+                
+                const habilitaBeneficiario = (numBeneficiario, habilitar) => {
+                    document.querySelector("#beneficiario_" + numBeneficiario).disabled = !habilitar
+                    document.querySelector("#tasa").disabled = false
+                    document.querySelector("#sucursal").disabled = false
+                }
+                
+                const limpiaDatosCliente = () => {
+                    manoIzquierda.modoCaptura()
+                    manoDerecha.modoCaptura()
+                    document.querySelector("#AddPagoApertura").reset()
+                    document.querySelector("#registroInicialAhorro").reset()
+                    document.querySelector("#chkCreacionContrato").classList.remove("green")
+                    document.querySelector("#chkCreacionContrato").classList.remove("fa-check")
+                    document.querySelector("#chkCreacionContrato").classList.add("red")
+                    document.querySelector("#chkCreacionContrato").classList.add("fa-times")
+                    document.querySelector("#lnkContrato").style.cursor = "default"
+                    document.querySelector("#chkPagoApertura").classList.remove("green")
+                    document.querySelector("#chkPagoApertura").classList.remove("fa-check")
+                    document.querySelector("#chkPagoApertura").classList.add("red")
+                    document.querySelector("#chkPagoApertura").classList.add("fa-times")
+                    document.querySelector("#chkRegistroHuellas").classList.remove("green")
+                    document.querySelector("#chkRegistroHuellas").classList.remove("fa-check")
+                    document.querySelector("#chkRegistroHuellas").classList.add("red")
+                    document.querySelector("#chkRegistroHuellas").classList.add("fa-times")
+                    document.querySelector("#lnkHuellas").style.cursor = "pointer"
+                    document.querySelector("#fechaRegistro").value = ""
+                    document.querySelector("#noCliente").value = ""
+                    document.querySelector("#nombre").value = ""
+                    document.querySelector("#curp").value = ""
+                    document.querySelector("#edad").value = ""
+                    document.querySelector("#direccion").value = ""
+                    habilitaBeneficiario(1, false)
+                    document.querySelector("#ben2").style.opacity = "0"
+                    document.querySelector("#ben3").style.opacity = "0"
+                    document.querySelector("#btnGeneraContrato").style.display = "none"
+                    document.querySelector("#btnGuardar").innerText = txtGuardaContrato
+                    document.querySelector("#marcadores").style.opacity = "0"
+                    document.querySelector("#tasa").disabled = true
+                    document.querySelector("#sucursal").disabled = true
+                    document.querySelector("#contratoOK").value = ""
+                    document.querySelector("#ejecutivo_comision").childNodes.forEach((option) => {
+                        if (option.value === "tmp") option.remove()
+                    })
+                }
+                
+                const generaContrato = async (e) => {
+                    e.preventDefault()
+                    const btnGuardar = document.querySelector("#btnGuardar")
+                    if (btnGuardar.innerText === txtGuardaPago) return $("#modal_agregar_pago").modal("show")
+                    
+                    document.querySelector("#fecha_pago").value = getHoy()
+                    document.querySelector("#contrato").value = ""
+                    document.querySelector("#codigo_cl").value = document.querySelector("#noCliente").value
+                    document.querySelector("#nombre_cliente").value = document.querySelector("#nombre").value
+                    document.querySelector("#mdlCurp").value = document.querySelector("#curp").value
+                        
+                    await showInfo("Debe registrar el depósito por apertura de cuenta.")
+                    btnGuardar.innerText = txtGuardaPago
+                    $("#modal_agregar_pago").modal("show")
+                }
+                            
+                const pagoApertura = async (e) => {
+                    if (!await valida_MCM_Complementos()) return
+                    
+                    e.preventDefault()
+                    if (parseaNumero(document.querySelector("#deposito").value) < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a " + saldoMinimoApertura.toLocaleString("es-MX", {style:"currency", currency:"MXN"}) + ".")
+                    
+                    confirmarMovimiento(
+                        "Cuenta de ahorro corriente",
+                        "¿Está segura de continuar con la apertura de la cuenta de ahorro del cliente: " +
+                            document.querySelector("#nombre").value +
+                            "?"
+                    ).then((continuar) => {
+                        if (!continuar) return
+                    
+                        const noCredito = document.querySelector("#noCliente").value
+                        const datosContrato = $("#registroInicialAhorro").serializeArray()
+                        addParametro(datosContrato, "credito", noCredito)
+                        addParametro(datosContrato, "ejecutivo", "{$_SESSION['usuario']}")
+                        
+                        if (document.querySelector("#contrato").value !== "") return regPago(document.querySelector("#contrato").value)
+                        
+                        consultaServidor("/Ahorro/AgregaContratoAhorro/", $.param(datosContrato), (respuesta) => {
                             if (!respuesta.success) {
                                 console.error(respuesta.error)
                                 return showError(respuesta.mensaje)
                             }
-                             
-                            if (respuesta.datos.HUELLAS == 1) {
+                            
+                            regPago(respuesta.datos.contrato)
+                        })
+                    })
+                }
+                
+                const regPago = (contrato) => {
+                    const datos = $("#AddPagoApertura").serializeArray()
+                    limpiaMontos(datos, ["deposito", "inscripcion", "saldo_inicial"])
+                    addParametro(datos, "sucursal", "{$_SESSION['cdgco_ahorro']}")
+                    addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
+                    addParametro(datos, "contrato", contrato)
+                    
+                    consultaServidor("/Ahorro/PagoApertura/", $.param(datos), (respuesta) => {
+                        if (!respuesta.success) return showError(respuesta.mensaje)
+                    
+                        showSuccess(respuesta.mensaje)
+                        .then(() => {
+                            document.querySelector("#registroInicialAhorro").reset()
+                            document.querySelector("#AddPagoApertura").reset()
+                            $("#modal_agregar_pago").modal("hide")
+                            limpiaDatosCliente()
+                            
+                            showSuccess("Se ha generado el contrato: " + contrato + ".")
+                            .then(() => {
+                                imprimeContrato(contrato, 1)
+                                imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}")
+                            })
+                        })
+                    })
+                }
+                
+                const validaDeposito = (e) => {
+                    if (!valKD) return
+                    
+                    let monto = parseaNumero(e.target.value)
+                    if (monto <= 0) {
+                        e.preventDefault()
+                        e.target.value = ""
+                        showError("El monto a depositar debe ser mayor a 0.")
+                    }
+                    
+                    if (monto > montoMaximo) {
+                        e.preventDefault()
+                        monto = montoMaximo
+                        e.target.value = monto
+                    }
+                    
+                    const valor = e.target.value.split(".")
+                    if (valor[1] && valor[1].length > 2) {
+                        e.preventDefault()
+                        e.target.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
+                    }
+                    
+                    document.querySelector("#monto_letra").value = numeroLetras(parseFloat(e.target.value))
+                    calculaSaldoFinal(e)
+                }
+                
+                const calculaSaldoFinal = (e) => {
+                    const monto = parseaNumero(e.target.value)
+                    document.querySelector("#deposito").value = formatoMoneda(monto)
+                    const saldoInicial = (monto - parseaNumero(document.querySelector("#inscripcion").value))
+                    document.querySelector("#saldo_inicial").value = formatoMoneda(saldoInicial > 0 ? saldoInicial : 0)
+                    document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
+                        
+                    if (saldoInicial < (saldoMinimoApertura - costoInscripcion)) {
+                        document.querySelector("#saldo_inicial").setAttribute("style", "color: red")
+                        document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
+                        document.querySelector("#registraDepositoInicial").disabled = true
+                    } else {
+                        document.querySelector("#saldo_inicial").removeAttribute("style")
+                        document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
+                        document.querySelector("#registraDepositoInicial").disabled = false
+                    }
+                }
+                
+                const camposLlenos = (e) => {
+                    if (document.querySelector("#sucursal").value === "") return
+                    const val = () => {
+                        let porcentaje = 0
+                        for (let i = 1; i <= 3; i++) {
+                            document.querySelector("#beneficiario_" + i).value = document.querySelector("#beneficiario_" + i).value.toUpperCase()
+                            porcentaje += parseFloat(document.querySelector("#porcentaje_" + i).value) || 0
+                            if (document.querySelector("#ben" + i).style.opacity === "1") {
+                                if (!document.querySelector("#beneficiario_" + i).value) {
+                                    document.querySelector("#parentesco_" + i).disabled = true
+                                    document.querySelector("#porcentaje_" + i).disabled = true
+                                    document.querySelector("#btnBen" + i).disabled = true
+                                    return false
+                                }
+                                document.querySelector("#parentesco_" + i).disabled = false
+                                
+                                if (document.querySelector("#parentesco_" + i).selectedIndex === 0) {
+                                    document.querySelector("#porcentaje_" + i).disabled = true
+                                    document.querySelector("#btnBen" + i).disabled = true
+                                    return false
+                                }
+                                document.querySelector("#porcentaje_" + i).disabled = false
+                                
+                                if (!document.querySelector("#porcentaje_" + i).value) {
+                                    document.querySelector("#btnBen" + i).disabled = true
+                                    return false
+                                }
+                                document.querySelector("#btnBen" + i).disabled = porcentaje >= 100 && document.querySelector("#btnBen1").querySelector("i").classList.contains("fa-plus")
+                            }
+                        }
+                        
+                        if (porcentaje > 100) {
+                            e.preventDefault()
+                            e.target.value = ""
+                            showError("La suma de los porcentajes no puede ser mayor a 100%.")
+                        }
+                        
+                        return porcentaje === 100
+                    }
+                    
+                    if (e.target.tagName === "SELECT") actualizarOpciones(e.target)
+                    
+                    document.querySelector("#btnGeneraContrato").style.display = !val() ? "none" : "block"
+                }
+                
+                const validaPorcentaje = (e) => {
+                    let porcentaje = 0
+                    for (let i = 1; i <= 3; i++) {
+                        if (i == 1 || document.querySelector("#ben" + i).style.opacity === "1") {
+                            const porcentajeBeneficiario = parseFloat(document.querySelector("#porcentaje_" + i).value) || 0
+                            porcentaje += porcentajeBeneficiario
+                        }
+                    }
+                    if (porcentaje > 100) {
+                        e.preventDefault()
+                        e.target.value = ""
+                        return showError("La suma de los porcentajes no puede ser mayor a 100%")
+                    }
+                    
+                    document.querySelector("#btnGeneraContrato").style.display = porcentaje !== 100 ? "none" : "block"
+                }
+                
+                const toggleBeneficiario = (numBeneficiario) => {
+                    const ben = document.getElementById(`ben` + numBeneficiario)
+                    ben.style.opacity = ben.style.opacity === "0" ? "1" : "0"
+                }
+                
+                const toggleButtonIcon = (btnId, show) => {
+                    const btn = document.getElementById("btnBen" + btnId)
+                    btn.innerHTML = show ? '<i class="fa fa-minus"></i>' : '<i class="fa fa-plus"></i>'
+                }
+                
+                const addBeneficiario = (event) => {
+                    const btn = event.target === event.currentTarget ? event.target : event.target.parentElement
+                    
+                    if (btn.innerHTML.trim() === '<i class="fa fa-plus"></i>') {
+                        const noID = parseInt(btn.id.split("btnBen")[1])
+                        habilitaBeneficiario(noID+1, true)
+                        toggleBeneficiario(noID+1)
+                        toggleButtonIcon(noID, true)
+                    } else {
+                        const noID = parseInt(btn.id.split("btnBen")[1])
+                        for (let j = noID; j < 3; j++) {
+                            moveData(j+1, j)
+                        }
+                        for (let i = 3; i > 0; i--) {
+                            if (document.getElementById(`ben` + i).style.opacity === "1") {
+                                habilitaBeneficiario(i, false)
+                                toggleButtonIcon(i-1, false)
+                                toggleBeneficiario(i)
+                                break
+                            }
+                        }
+                    }
+                    camposLlenos(event)
+                }
+                
+                const moveData = (from, to) => {
+                    const beneficiarioFrom = document.getElementById(`beneficiario_` + from)
+                    const parentescoFrom = document.getElementById(`parentesco_` + from)
+                    const porcentajeFrom = document.getElementById(`porcentaje_` + from)
+                    
+                    const beneficiarioTo = document.getElementById(`beneficiario_` + to)
+                    const parentescoTo = document.getElementById(`parentesco_` + to)
+                    const porcentajeTo = document.getElementById(`porcentaje_` + to)
+                    
+                    beneficiarioTo.value = beneficiarioFrom.value
+                    parentescoTo.value = parentescoFrom.value
+                    porcentajeTo.value = porcentajeFrom.value
+                    
+                    beneficiarioFrom.value = ""
+                    parentescoFrom.value = ""
+                    porcentajeFrom.value = ""
+                }
+                
+                const actualizarOpciones = (select) => {
+                    const valoresUnicos = [
+                        "CÓNYUGE",
+                        "PADRE",
+                        "MADRE",
+                    ]
+                        
+                    const valorSeleccionado = select.value
+                    const selects = document.querySelectorAll("#parentesco_1, #parentesco_2, #parentesco_3")
+                    const valoresSeleccionados = [
+                        document.querySelector("#parentesco_1").value,
+                        document.querySelector("#parentesco_2").value,
+                        document.querySelector("#parentesco_3").value
+                    ]     
+                    
+                    selects.forEach(element => {
+                        if (element !== select) {
+                            element.querySelectorAll("option").forEach(opcion => {
+                                if (!valoresUnicos.includes(opcion.text)) return
+                                if (valoresUnicos.includes(opcion.text) &&
+                                valoresSeleccionados.includes(opcion.value)) return opcion.style.display = "none"
+                                opcion.style.display = opcion.value === valorSeleccionado ? "none" : "block"
+                            })
+                        }
+                    })
+                }
+                
+                const reImprimeContrato = (e) => {
+                    const c = document.querySelector('#contratoOK').value
+                    if (!c) {
+                        e.preventDefault()
+                        return
+                    }
+                    
+                    imprimeContrato(c)
+                }
+
+                const mostrarModalHuellas = () => {
+                    const valContrato = document.querySelector("#chkCreacionContrato").classList.contains("red")
+                    const valPago = document.querySelector("#chkPagoApertura").classList.contains("red")
+                    const valHuellas = document.querySelector("#chkRegistroHuellas").classList.contains("green")
+
+                    if (valHuellas) return
+                    if (valContrato) return showError("Debe completar el proceso de creación del contrato.")
+                    if (valPago) return showError("Debe completar el proceso de pago de apertura.")
+
+                    $("#modal_registra_huellas").modal("show")
+                }
+            
+                const huellasCompletas = (e) => {
+                    if (e.detail.modo === "captura") {
+                        if (manoDerecha.manoLista() && manoIzquierda.manoLista()) {
+                            document.querySelector("#registraHuellas").disabled = false
+                            document.querySelector("#mensajeHuella").innerText = "Huellas capturadas correctamente."
+                            return
+                        }
+                
+                        document.querySelector("#registraHuellas").disabled = true
+                        document.querySelector("#mensajeHuella").innerText = "$mensajeCaptura"
+                    }
+
+                    if (e.detail.modo === "actualizacion" && e.detail.muestrasOK) {
+                        e.detail.evento()
+                    }
+                }
+            
+                const guardarHuellas = async () => {
+                    if (!manoDerecha.manoLista() || !manoIzquierda.manoLista()) return showError("Debe capturar las muestras necesarias para ambas manos.")
+                    
+                    const manos = {}
+                    Object.assign(manos, manoIzquierda.getMano())
+                    Object.assign(manos, manoDerecha.getMano())
+            
+                    const datos = {
+                        cliente: document.querySelector("#noCliente").value,
+                        ejecutivo: "{$_SESSION['usuario']}",
+                        manos: JSON.stringify(manos)
+                    }
+            
+                    consultaServidor("/Ahorro/RegistraHuellas/", datos, (respuesta) => {
+                        if (!respuesta.success) return showError(respuesta.mensaje)
+                        showSuccess(respuesta.mensaje)
+                        .then(() => {
+                            manoIzquierda.modoValidacion()
+                            manoDerecha.modoValidacion()
+                            document.querySelector("#mensajeHuella").innerText = "Huellas registradas correctamente, valide y confirme."
+                            document.querySelector("#registraHuellas").style.display = "none"
+                            document.querySelector("#cerrar_modal").style.display = "none"
+                        })
+                    })
+                }
+
+                const validaHuella = (e) => {         
+                    const datos = {
+                        cliente: document.querySelector("#noCliente").value,
+                        dedo: e.detail.dedo,
+                        muestra: e.detail.muestra
+                    }
+            
+                    consultaServidor("/Ahorro/ValidaHuella/", datos, (respuesta) => {
+                        e.detail.colorImagen(respuesta.success ? "green" : "red")
+                        if (!respuesta.success) {
+                            e.detail.conteoErrores()
+                            return showError(respuesta.mensaje)
+                        }
+            
+                        e.detail.conteoErrores(0)
+                        e.detail.boton.style.display = "none"
+            
+                        showSuccess(respuesta.mensaje).then(() => {
+                            const botones = document.querySelectorAll(".btnHuella")
+                            if (Array.from(botones).every(boton => boton.style.display === "none")) {
+                                manoIzquierda.limpiarMano()
+                                manoDerecha.limpiarMano()
+                                document.querySelector("#registraHuellas").style.display = null
+                                document.querySelector("#mensajeHuella").innerText = "Huellas registradas correctamente."
                                 document.querySelector("#chkRegistroHuellas").classList.remove("red")
                                 document.querySelector("#chkRegistroHuellas").classList.remove("fa-times")
                                 document.querySelector("#chkRegistroHuellas").classList.add("green")
                                 document.querySelector("#chkRegistroHuellas").classList.add("fa-check")
                                 document.querySelector("#lnkHuellas").style.cursor = "default"
-                            }
-                            
-                            if (respuesta.datos.HUELLAS == 0) {
-                                document.querySelector("#chkRegistroHuellas").classList.remove("green")
-                                document.querySelector("#chkRegistroHuellas").classList.remove("fa-check")
-                                document.querySelector("#chkRegistroHuellas").classList.add("red")
-                                document.querySelector("#chkRegistroHuellas").classList.add("fa-times")
-                                document.querySelector("#lnkHuellas").style.cursor = "pointer"
+                                document.querySelector("#cerrar_modal").style.display = null
+                                showSuccess("Huellas validadas correctamente.").then(() => {
+                                    $("#modal_registra_huellas").modal("hide")
+                                })
                             }
                         })
+                    })
+                }
+
+                const actualizaHuella = (e) => {
+                    const manos = {}
+                    manos[e.detail.mano] = {}
+                    manos[e.detail.mano][e.detail.dedo] = e.detail.muestras
+
+                    const datos = {
+                        cliente: document.querySelector("#noCliente").value,
+                        manos: JSON.stringify(manos)
                     }
-                     
-                    const datosCL = respuesta.datos
-                     
-                    document.querySelector("#fechaRegistro").value = datosCL.FECHA_REGISTRO
-                    document.querySelector("#noCliente").value = noCliente
-                    document.querySelector("#nombre").value = datosCL.NOMBRE
-                    document.querySelector("#curp").value = datosCL.CURP
-                    document.querySelector("#edad").value = datosCL.EDAD
-                    document.querySelector("#direccion").value = datosCL.DIRECCION
-                    document.querySelector("#marcadores").style.opacity = "1"
-                    document.querySelector("#codigo_cl_huellas").value = noCliente
-                    document.querySelector("#nombre_cliente_huellas").value = datosCL.NOMBRE
-                    noCliente.value = ""
-                    manoIzquierda.limpiarMano()
-                    manoDerecha.limpiarMano()
-                    if (respuesta.success) habilitaBeneficiario(1, true)
-                })
-            }
-             
-            const habilitaBeneficiario = (numBeneficiario, habilitar) => {
-                document.querySelector("#beneficiario_" + numBeneficiario).disabled = !habilitar
-                document.querySelector("#tasa").disabled = false
-                document.querySelector("#sucursal").disabled = false
-            }
-             
-            const limpiaDatosCliente = () => {
-                manoIzquierda.modoCaptura()
-                manoDerecha.modoCaptura()
-                document.querySelector("#AddPagoApertura").reset()
-                document.querySelector("#registroInicialAhorro").reset()
-                document.querySelector("#chkCreacionContrato").classList.remove("green")
-                document.querySelector("#chkCreacionContrato").classList.remove("fa-check")
-                document.querySelector("#chkCreacionContrato").classList.add("red")
-                document.querySelector("#chkCreacionContrato").classList.add("fa-times")
-                document.querySelector("#lnkContrato").style.cursor = "default"
-                document.querySelector("#chkPagoApertura").classList.remove("green")
-                document.querySelector("#chkPagoApertura").classList.remove("fa-check")
-                document.querySelector("#chkPagoApertura").classList.add("red")
-                document.querySelector("#chkPagoApertura").classList.add("fa-times")
-                document.querySelector("#chkRegistroHuellas").classList.remove("green")
-                document.querySelector("#chkRegistroHuellas").classList.remove("fa-check")
-                document.querySelector("#chkRegistroHuellas").classList.add("red")
-                document.querySelector("#chkRegistroHuellas").classList.add("fa-times")
-                document.querySelector("#lnkHuellas").style.cursor = "pointer"
-                document.querySelector("#fechaRegistro").value = ""
-                document.querySelector("#noCliente").value = ""
-                document.querySelector("#nombre").value = ""
-                document.querySelector("#curp").value = ""
-                document.querySelector("#edad").value = ""
-                document.querySelector("#direccion").value = ""
-                habilitaBeneficiario(1, false)
-                document.querySelector("#ben2").style.opacity = "0"
-                document.querySelector("#ben3").style.opacity = "0"
-                document.querySelector("#btnGeneraContrato").style.display = "none"
-                document.querySelector("#btnGuardar").innerText = txtGuardaContrato
-                document.querySelector("#marcadores").style.opacity = "0"
-                document.querySelector("#tasa").disabled = true
-                document.querySelector("#sucursal").disabled = true
-                document.querySelector("#contratoOK").value = ""
-                document.querySelector("#ejecutivo_comision").childNodes.forEach((option) => {
-                    if (option.value === "tmp") option.remove()
-                })
-            }
-            
-            const generaContrato = async (e) => {
-                e.preventDefault()
-                const btnGuardar = document.querySelector("#btnGuardar")
-                if (btnGuardar.innerText === txtGuardaPago) return $("#modal_agregar_pago").modal("show")
-                 
-                document.querySelector("#fecha_pago").value = getHoy()
-                document.querySelector("#contrato").value = ""
-                document.querySelector("#codigo_cl").value = document.querySelector("#noCliente").value
-                document.querySelector("#nombre_cliente").value = document.querySelector("#nombre").value
-                document.querySelector("#mdlCurp").value = document.querySelector("#curp").value
-                    
-                await showInfo("Debe registrar el depósito por apertura de cuenta.")
-                btnGuardar.innerText = txtGuardaPago
-                $("#modal_agregar_pago").modal("show")
-            }
-                        
-            const pagoApertura = async (e) => {
-                if (!await valida_MCM_Complementos()) return
-                 
-                e.preventDefault()
-                if (parseaNumero(document.querySelector("#deposito").value) < saldoMinimoApertura) return showError("El saldo inicial no puede ser menor a " + saldoMinimoApertura.toLocaleString("es-MX", {style:"currency", currency:"MXN"}) + ".")
-                 
-                confirmarMovimiento(
-                    "Cuenta de ahorro corriente",
-                    "¿Está segura de continuar con la apertura de la cuenta de ahorro del cliente: " +
-                        document.querySelector("#nombre").value +
-                        "?"
-                ).then((continuar) => {
-                    if (!continuar) return
-                
-                    const noCredito = document.querySelector("#noCliente").value
-                    const datosContrato = $("#registroInicialAhorro").serializeArray()
-                    addParametro(datosContrato, "credito", noCredito)
-                    addParametro(datosContrato, "ejecutivo", "{$_SESSION['usuario']}")
-                     
-                    if (document.querySelector("#contrato").value !== "") return regPago(document.querySelector("#contrato").value)
-                     
-                    consultaServidor("/Ahorro/AgregaContratoAhorro/", $.param(datosContrato), (respuesta) => {
+
+                    consultaServidor("/Ahorro/ActualizaHuella/", datos, (respuesta) => {
                         if (!respuesta.success) {
-                            console.error(respuesta.error)
+                            e.detail.limpiar()
+                            e.detail.mensajeLector("Haz clic en la imagen para intentar nuevamente.")
                             return showError(respuesta.mensaje)
                         }
-                         
-                        regPago(respuesta.datos.contrato)
-                    })
-                })
-            }
-             
-            const regPago = (contrato) => {
-                const datos = $("#AddPagoApertura").serializeArray()
-                limpiaMontos(datos, ["deposito", "inscripcion", "saldo_inicial"])
-                addParametro(datos, "sucursal", "{$_SESSION['cdgco_ahorro']}")
-                addParametro(datos, "ejecutivo", "{$_SESSION['usuario']}")
-                addParametro(datos, "contrato", contrato)
-                 
-                consultaServidor("/Ahorro/PagoApertura/", $.param(datos), (respuesta) => {
-                    if (!respuesta.success) return showError(respuesta.mensaje)
-                
-                    showSuccess(respuesta.mensaje)
-                    .then(() => {
-                        document.querySelector("#registroInicialAhorro").reset()
-                        document.querySelector("#AddPagoApertura").reset()
-                        $("#modal_agregar_pago").modal("hide")
-                        limpiaDatosCliente()
-                        
-                        showSuccess("Se ha generado el contrato: " + contrato + ".")
-                        .then(() => {
-                            imprimeContrato(contrato, 1)
-                            imprimeTicket(respuesta.datos.ticket, "{$_SESSION['cdgco_ahorro']}")
-                        })
-                    })
-                })
-            }
-             
-            const validaDeposito = (e) => {
-                if (!valKD) return
-                 
-                let monto = parseaNumero(e.target.value)
-                if (monto <= 0) {
-                    e.preventDefault()
-                    e.target.value = ""
-                    showError("El monto a depositar debe ser mayor a 0.")
-                }
-                 
-                if (monto > montoMaximo) {
-                    e.preventDefault()
-                    monto = montoMaximo
-                    e.target.value = monto
-                }
-                 
-                const valor = e.target.value.split(".")
-                if (valor[1] && valor[1].length > 2) {
-                    e.preventDefault()
-                    e.target.value = parseFloat(valor[0] + "." + valor[1].substring(0, 2))
-                }
-                
-                document.querySelector("#monto_letra").value = numeroLetras(parseFloat(e.target.value))
-                calculaSaldoFinal(e)
-            }
-             
-            const calculaSaldoFinal = (e) => {
-                const monto = parseaNumero(e.target.value)
-                document.querySelector("#deposito").value = formatoMoneda(monto)
-                const saldoInicial = (monto - parseaNumero(document.querySelector("#inscripcion").value))
-                document.querySelector("#saldo_inicial").value = formatoMoneda(saldoInicial > 0 ? saldoInicial : 0)
-                document.querySelector("#monto_letra").value = primeraMayuscula(numeroLetras(monto))
-                    
-                if (saldoInicial < (saldoMinimoApertura - costoInscripcion)) {
-                    document.querySelector("#saldo_inicial").setAttribute("style", "color: red")
-                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 100%;")
-                    document.querySelector("#registraDepositoInicial").disabled = true
-                } else {
-                    document.querySelector("#saldo_inicial").removeAttribute("style")
-                    document.querySelector("#tipSaldo").setAttribute("style", "opacity: 0%;")
-                    document.querySelector("#registraDepositoInicial").disabled = false
-                }
-            }
-             
-            const camposLlenos = (e) => {
-                if (document.querySelector("#sucursal").value === "") return
-                const val = () => {
-                    let porcentaje = 0
-                    for (let i = 1; i <= 3; i++) {
-                        document.querySelector("#beneficiario_" + i).value = document.querySelector("#beneficiario_" + i).value.toUpperCase()
-                        porcentaje += parseFloat(document.querySelector("#porcentaje_" + i).value) || 0
-                        if (document.querySelector("#ben" + i).style.opacity === "1") {
-                            if (!document.querySelector("#beneficiario_" + i).value) {
-                                document.querySelector("#parentesco_" + i).disabled = true
-                                document.querySelector("#porcentaje_" + i).disabled = true
-                                document.querySelector("#btnBen" + i).disabled = true
-                                return false
-                            }
-                            document.querySelector("#parentesco_" + i).disabled = false
-                             
-                            if (document.querySelector("#parentesco_" + i).selectedIndex === 0) {
-                                document.querySelector("#porcentaje_" + i).disabled = true
-                                document.querySelector("#btnBen" + i).disabled = true
-                                return false
-                            }
-                            document.querySelector("#porcentaje_" + i).disabled = false
-                             
-                            if (!document.querySelector("#porcentaje_" + i).value) {
-                                document.querySelector("#btnBen" + i).disabled = true
-                                return false
-                            }
-                            document.querySelector("#btnBen" + i).disabled = porcentaje >= 100 && document.querySelector("#btnBen1").querySelector("i").classList.contains("fa-plus")
-                        }
-                    }
-                    
-                    if (porcentaje > 100) {
-                        e.preventDefault()
-                        e.target.value = ""
-                        showError("La suma de los porcentajes no puede ser mayor a 100%.")
-                    }
-                     
-                    return porcentaje === 100
-                }
-                 
-                if (e.target.tagName === "SELECT") actualizarOpciones(e.target)
-                 
-                document.querySelector("#btnGeneraContrato").style.display = !val() ? "none" : "block"
-            }
-             
-            const validaPorcentaje = (e) => {
-                let porcentaje = 0
-                for (let i = 1; i <= 3; i++) {
-                    if (i == 1 || document.querySelector("#ben" + i).style.opacity === "1") {
-                        const porcentajeBeneficiario = parseFloat(document.querySelector("#porcentaje_" + i).value) || 0
-                        porcentaje += porcentajeBeneficiario
-                    }
-                }
-                if (porcentaje > 100) {
-                    e.preventDefault()
-                    e.target.value = ""
-                    return showError("La suma de los porcentajes no puede ser mayor a 100%")
-                }
-                 
-                document.querySelector("#btnGeneraContrato").style.display = porcentaje !== 100 ? "none" : "block"
-            }
-             
-            const toggleBeneficiario = (numBeneficiario) => {
-                const ben = document.getElementById(`ben` + numBeneficiario)
-                ben.style.opacity = ben.style.opacity === "0" ? "1" : "0"
-            }
-             
-            const toggleButtonIcon = (btnId, show) => {
-                const btn = document.getElementById("btnBen" + btnId)
-                btn.innerHTML = show ? '<i class="fa fa-minus"></i>' : '<i class="fa fa-plus"></i>'
-            }
-             
-            const addBeneficiario = (event) => {
-                const btn = event.target === event.currentTarget ? event.target : event.target.parentElement
-                 
-                if (btn.innerHTML.trim() === '<i class="fa fa-plus"></i>') {
-                    const noID = parseInt(btn.id.split("btnBen")[1])
-                    habilitaBeneficiario(noID+1, true)
-                    toggleBeneficiario(noID+1)
-                    toggleButtonIcon(noID, true)
-                } else {
-                    const noID = parseInt(btn.id.split("btnBen")[1])
-                    for (let j = noID; j < 3; j++) {
-                        moveData(j+1, j)
-                    }
-                    for (let i = 3; i > 0; i--) {
-                        if (document.getElementById(`ben` + i).style.opacity === "1") {
-                            habilitaBeneficiario(i, false)
-                            toggleButtonIcon(i-1, false)
-                            toggleBeneficiario(i)
-                            break
-                        }
-                    }
-                }
-                camposLlenos(event)
-            }
-             
-            const moveData = (from, to) => {
-                const beneficiarioFrom = document.getElementById(`beneficiario_` + from)
-                const parentescoFrom = document.getElementById(`parentesco_` + from)
-                const porcentajeFrom = document.getElementById(`porcentaje_` + from)
-                 
-                const beneficiarioTo = document.getElementById(`beneficiario_` + to)
-                const parentescoTo = document.getElementById(`parentesco_` + to)
-                const porcentajeTo = document.getElementById(`porcentaje_` + to)
-                 
-                beneficiarioTo.value = beneficiarioFrom.value
-                parentescoTo.value = parentescoFrom.value
-                porcentajeTo.value = porcentajeFrom.value
-                 
-                beneficiarioFrom.value = ""
-                parentescoFrom.value = ""
-                porcentajeFrom.value = ""
-            }
-             
-            const actualizarOpciones = (select) => {
-                const valoresUnicos = [
-                    "CÓNYUGE",
-                    "PADRE",
-                    "MADRE",
-                ]
-                     
-                const valorSeleccionado = select.value
-                const selects = document.querySelectorAll("#parentesco_1, #parentesco_2, #parentesco_3")
-                const valoresSeleccionados = [
-                    document.querySelector("#parentesco_1").value,
-                    document.querySelector("#parentesco_2").value,
-                    document.querySelector("#parentesco_3").value
-                ]     
-                 
-                selects.forEach(element => {
-                    if (element !== select) {
-                        element.querySelectorAll("option").forEach(opcion => {
-                            if (!valoresUnicos.includes(opcion.text)) return
-                            if (valoresUnicos.includes(opcion.text) &&
-                            valoresSeleccionados.includes(opcion.value)) return opcion.style.display = "none"
-                            opcion.style.display = opcion.value === valorSeleccionado ? "none" : "block"
-                        })
-                    }
-                })
-            }
-             
-            const reImprimeContrato = (e) => {
-                const c = document.querySelector('#contratoOK').value
-                if (!c) {
-                    e.preventDefault()
-                    return
-                }
-                 
-                imprimeContrato(c)
-            }
-
-            const mostrarModalHuellas = () => {
-                const valContrato = document.querySelector("#chkCreacionContrato").classList.contains("red")
-                const valPago = document.querySelector("#chkPagoApertura").classList.contains("red")
-                const valHuellas = document.querySelector("#chkRegistroHuellas").classList.contains("green")
-
-                if (valHuellas) return
-                if (valContrato) return showError("Debe completar el proceso de creación del contrato.")
-                if (valPago) return showError("Debe completar el proceso de pago de apertura.")
-
-                $("#modal_registra_huellas").modal("show")
-            }
-         
-            const huellasCompletas = (e) => {
-                if (e.detail.modo === "captura") {
-                    if (manoDerecha.manoLista() && manoIzquierda.manoLista()) {
-                        document.querySelector("#registraHuellas").disabled = false
-                        document.querySelector("#mensajeHuella").innerText = "Huellas capturadas correctamente."
-                        return
-                    }
             
-                    document.querySelector("#registraHuellas").disabled = true
-                    document.querySelector("#mensajeHuella").innerText = "$mensajeCaptura"
-                }
-
-                if (e.detail.modo === "actualizacion" && e.detail.muestrasOK) {
-                    e.detail.evento()
-                }
-            }
-         
-            const guardarHuellas = async () => {
-                if (!manoDerecha.manoLista() || !manoIzquierda.manoLista()) return showError("Debe capturar las muestras necesarias para ambas manos.")
-                
-                const manos = {}
-                Object.assign(manos, manoIzquierda.getMano())
-                Object.assign(manos, manoDerecha.getMano())
-         
-                const datos = {
-                    cliente: document.querySelector("#noCliente").value,
-                    ejecutivo: "{$_SESSION['usuario']}",
-                    manos: JSON.stringify(manos)
-                }
-         
-                consultaServidor("/Ahorro/RegistraHuellas/", datos, (respuesta) => {
-                    if (!respuesta.success) return showError(respuesta.mensaje)
-                    showSuccess(respuesta.mensaje)
-                    .then(() => {
-                        manoIzquierda.modoValidacion()
-                        manoDerecha.modoValidacion()
-                        document.querySelector("#mensajeHuella").innerText = "Huellas registradas correctamente, valide y confirme."
-                        document.querySelector("#registraHuellas").style.display = "none"
-                        document.querySelector("#cerrar_modal").style.display = "none"
+                        e.detail.valida()
                     })
-                })
-            }
-
-            const validaHuella = (e) => {         
-                const datos = {
-                    cliente: document.querySelector("#noCliente").value,
-                    dedo: e.detail.dedo,
-                    muestra: e.detail.muestra
                 }
-         
-                consultaServidor("/Ahorro/ValidaHuella/", datos, (respuesta) => {
-                    e.detail.colorImagen(respuesta.success ? "green" : "red")
-                    if (!respuesta.success) {
-                        e.detail.conteoErrores()
-                        return showError(respuesta.mensaje)
-                    }
-         
-                    e.detail.conteoErrores(0)
-                    e.detail.boton.style.display = "none"
-         
-                    showSuccess(respuesta.mensaje).then(() => {
-                        const botones = document.querySelectorAll(".btnHuella")
-                        if (Array.from(botones).every(boton => boton.style.display === "none")) {
-                            manoIzquierda.limpiarMano()
-                            manoDerecha.limpiarMano()
-                            document.querySelector("#registraHuellas").style.display = null
-                            document.querySelector("#mensajeHuella").innerText = "Huellas registradas correctamente."
-                            document.querySelector("#chkRegistroHuellas").classList.remove("red")
-                            document.querySelector("#chkRegistroHuellas").classList.remove("fa-times")
-                            document.querySelector("#chkRegistroHuellas").classList.add("green")
-                            document.querySelector("#chkRegistroHuellas").classList.add("fa-check")
-                            document.querySelector("#lnkHuellas").style.cursor = "default"
-                            document.querySelector("#cerrar_modal").style.display = null
-                            showSuccess("Huellas validadas correctamente.").then(() => {
-                                $("#modal_registra_huellas").modal("hide")
-                            })
-                        }
-                    })
-                })
-            }
-
-            const actualizaHuella = (e) => {
-                const manos = {}
-                manos[e.detail.mano] = {}
-                manos[e.detail.mano][e.detail.dedo] = e.detail.muestras
-
-                const datos = {
-                    cliente: document.querySelector("#noCliente").value,
-                    manos: JSON.stringify(manos)
-                }
-
-                consultaServidor("/Ahorro/ActualizaHuella/", datos, (respuesta) => {
-                    if (!respuesta.success) {
-                        e.detail.limpiar()
-                        e.detail.mensajeLector("Haz clic en la imagen para intentar nuevamente.")
-                        return showError(respuesta.mensaje)
-                    }
-         
-                    e.detail.valida()
-                })
-            }
-        </script>
-        html;
+            </script>
+        HTML;
 
         $sucursales = CajaAhorroDao::GetSucursalAsignadaCajeraAhorro($this->__usuario);
         $opcSucursales = "";

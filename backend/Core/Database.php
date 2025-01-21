@@ -35,6 +35,31 @@ class Database
         }
     }
 
+    public function AutoCommitOff()
+    {
+        $this->db_activa->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
+    }
+
+    public function AutoCommitOn()
+    {
+        $this->db_activa->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
+    }
+
+    public function IniciaTransaccion()
+    {
+        $this->db_activa->beginTransaction();
+    }
+
+    public function CancelaTransaccion()
+    {
+        $this->db_activa->rollBack();
+    }
+
+    public function ConfirmaTransaccion()
+    {
+        $this->db_activa->commit();
+    }
+
     private function muestraError($e, $sql = null, $parametros = null)
     {
         $error = "Error en DB: " . $e->getMessage();
@@ -67,6 +92,8 @@ class Database
             }
         } catch (\PDOException $e) {
             throw new \Exception("Error en insertar: " . $e->getMessage() . "\nSql : $sql \nDatos : " . print_r($datos, 1));
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
         }
     }
 
@@ -120,20 +147,21 @@ class Database
     {
         try {
             $stmt = $this->db_activa->prepare($sp);
-            $outParam = 'OK';
-            foreach ($parametros as $parametro => $valor) {
-                if ($valor === "__RETURN__") {
-                    $stmt->bindParam($parametro, $outParam, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT, 4000);
-                } else {
-                    $stmt->bindParam($parametro, $valor);
-                }
+
+            foreach ($parametros as $key => $value) {
+                $stmt->bindValue(":$key", $value);
             }
+
+            $output = '';
+            $stmt->bindParam(':output', $output, \PDO::PARAM_STR | \PDO::PARAM_INPUT_OUTPUT, 4000);
             $stmt->execute();
-            return $outParam;
+
+            return $output;
         } catch (\PDOException $e) {
-            return $e->getMessage();
+            throw new \Exception("Error en EjecutaSP: " . $e->getMessage() . "\nSP: $sp \nDatos: " . print_r($parametros, 1));
         }
     }
+
 
     public function eliminar($sql)
     {
