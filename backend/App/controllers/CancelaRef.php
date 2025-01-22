@@ -30,11 +30,7 @@ class CancelaRef extends Controller
             <script>
                 {$this->configuraTabla}
                 {$this->consultaServidor}
-                {$this->showError}
-                {$this->showSuccess}
-                {$this->showInfo}
-                {$this->showWarning}
-                {$this->showWait}
+                {$this->mensajes}
                 {$this->confirmarMovimiento}
                 {$this->formatoMoneda}
 

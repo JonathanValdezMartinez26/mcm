@@ -30,8 +30,7 @@ class Validaciones extends Controller
 
         $extraFooter = <<<HTML
             <script>
-                {$this->showError}
-                {$this->showSuccess}
+                {$this->mensajes}
                 {$this->consultaServidor}
                 {$this->configuraTabla}
                 

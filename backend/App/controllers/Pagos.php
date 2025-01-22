@@ -28,10 +28,7 @@ class Pagos extends Controller
     {
         $extraFooter = <<<HTML
             <script>
-                {$this->showError}
-                {$this->showSuccess}
-                {$this->showWarning}
-                {$this->showInfo}
+                {$this->mensajes}
                 {$this->configuraTabla}
                 {$this->confirmarMovimiento}
 
@@ -82,11 +79,11 @@ class Pagos extends Controller
                         data: $("#Add").serialize() + "&ejec=" + texto,
                         success: (respuesta) => {
                             if (respuesta === "1 Proceso realizado exitosamente") {
-                                $("#monto").val("")
                                 showSuccess("Registro guardado exitosamente")
                                 location.reload()
                             } else {
                                 $("#modal_agregar_pago").modal("hide")
+                                $("#monto").val("")
                                 showError(respuesta)
                             }
                         }
@@ -109,11 +106,11 @@ class Pagos extends Controller
                         data: $("#Edit").serialize() + "&ejec_e=" + texto,
                         success: function (respuesta) {
                             if (respuesta === "1 Proceso realizado exitosamente") {
-                                $("#monto_e").val("")
                                 showSuccess("Registro guardado exitosamente")
                                 location.reload()
                             } else {
                                 $("#modal_editar_pago").modal("hide")
+                                $("#monto_e").val("")
                                 showError(respuesta)
                             }
                         }
@@ -1577,13 +1574,262 @@ html;
     {
         $extraFooter = <<<HTML
             <script>
-                {$this->showError}
-                {$this->showSuccess}
-                {$this->showWarning}
-                {$this->showInfo}
+                {$this->mensajes}
                 {$this->configuraTabla}
                 {$this->confirmarMovimiento}
+                {$this->parseaNumero}
 
+                const Desactivado = () => showWarning("Usted no puede modificar este registro")
+                const InfoAdmin = () => showInfo("Este registro fue capturado por una administradora en caja")
+                const InfoPhone = () => showInfo("Este registro fue capturado por un ejecutivo en campo y procesado por una administradora")
+
+                const getParameterByName = (name) => {
+                    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]")
+                    let regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                        results = regex.exec(location.search)
+                    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "))
+                }
+
+                const FunDelete_Pago = (secuencia, fecha, usuario) => {
+                    credito = getParameterByName("Credito")
+                    user = usuario
+
+                    confirmarMovimiento("¿Segúro que desea eliminar el registro seleccionado?").then((continuar) => {
+                        if (!continuar) return
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/Pagos/Delete/",
+                            data: { cdgns: credito, fecha: fecha, secuencia: secuencia, usuario: user },
+                            success: (response) => {
+                                if (response !== "1 Proceso realizado exitosamente") showError(response)
+                                else showSuccess("Registro eliminado correctamente")
+                                location.reload()
+                            }
+                        })
+                    })
+                }
+
+                const enviar_add = () => {
+                    monto = $("#monto").val()
+
+                    if (monto == "" || monto == 0) {
+                        showWarning("Ingrese un monto mayor a $0.00")
+                        $("#monto").focus()
+                        return
+                    }
+
+                    if ($("#tipo").val() === "M") {
+                        const parcialidad = parseaNumero($("#parcialidad").text())
+                        const multaEsperada = parcialidad * 0.1
+
+                        if (monto > multaEsperada) {
+                            confirmarMovimiento(
+                                "Exceso de Multa",
+                                null,
+                                getMensajeMultaExcedente(multaEsperada)
+                            ).then((continuar) => {
+                                if (continuar) agregarPago()
+                            })
+                        }
+                        return
+                    }
+
+                    agregarPago()
+                }
+
+                const agregarPago = () => {
+                    texto = $("#ejecutivo :selected").text()
+                    $.ajax({
+                        type: "POST",
+                        url: "/Pagos/PagosAdd/",
+                        data: $("#Add").serialize() + "&ejec=" + texto,
+                        success: (respuesta) => {
+                            if (respuesta === "1 Proceso realizado exitosamente") {
+                                showSuccess("Registro guardado exitosamente")
+                                location.reload()
+                            } else {
+                                $("#modal_agregar_pago").modal("hide")
+                                $("#monto").val("")
+                                showError(respuesta)
+                            }
+                        }
+                    })
+                }
+
+                const enviar_edit = () => {
+                    monto = $("#monto_e").val()
+
+                    if (monto == "" || monto == 0) {
+                        showWarning("Ingrese un monto mayor a $0.00")
+                        $("#monto_e").focus()
+                        return
+                    }
+
+                    texto = $("#ejecutivo_e :selected").text()
+                    $.ajax({
+                        type: "POST",
+                        url: "/Pagos/PagosEdit/",
+                        data: $("#Edit").serialize() + "&ejec_e=" + texto,
+                        success: function (respuesta) {
+                            if (respuesta === "1 Proceso realizado exitosamente") {
+                                showSuccess("Registro guardado exitosamente")
+                                location.reload()
+                            } else {
+                                $("#modal_editar_pago").modal("hide")
+                                $("#monto_e").val("")
+                                showError(respuesta)
+                            }
+                        }
+                    })
+                }
+
+                const BotonPago = (estatus, ciclo) => {
+                    if (estatus === "LIQUIDADO") {
+                        const ciclo_anterior = (ciclo - 1).toString().padStart(2, "0")
+
+                        select = $("#tipo")
+                        select.empty()
+                        select.append(
+                            $("<option>", {
+                                value: "M",
+                                text: "MULTA"
+                            }),
+                            $("<option>", {
+                                value: "Z",
+                                text: "MULTA GESTORES"
+                            }),
+                            $("<option>", {
+                                value: "Y",
+                                text: "PAGO EXCEDENTE"
+                            })
+                        )
+
+                        if (ciclo != "01") {
+                            $("#ciclo").empty()
+                            $("#ciclo").append($("<option>", { value: ciclo, text: ciclo }))
+                            $("#ciclo").append($("<option>", { value: ciclo_anterior, text: ciclo_anterior }))
+                        }
+                    }
+                }
+
+                const EditarPago = (fecha, cdgns, nombre, ciclo, tipo_pago, monto, ejecutivo, secuencia, estatus) => {
+                    $("#Fecha_e").val(fecha)
+                    $("#Fecha_e_r").val(fecha)
+                    $("#cdgns_e").val(cdgns)
+                    $("#nombre_e").val(nombre)
+                    $("#ciclo_e").val(ciclo)
+                    $("#monto_e").val(monto)
+                    $("#secuencia_e").val(secuencia)
+
+                    if (estatus == "LIQUIDADO") {
+                        select = $("#tipo_e")
+                        select.empty()
+                        select.append(
+                            $("<option>", {
+                                value: "Z",
+                                text: "MULTA GESTORES"
+                            })
+                        )
+                    }
+
+                    $("#tipo_e").val(tipo_pago)
+                    $("#ejecutivo_e").val(ejecutivo)
+                    $("#modal_editar_pago").modal("show")
+                }
+
+                const CambioOperacion = (operacion, ciclo) => {
+                    const ciclo_anterior = (ciclo - 1).toString().padStart(2, "0")
+
+                    $("#monto").prop("readonly", false)
+                    $("#infoTipoOp").css("display", "none")
+                    $("#monto").val("")
+
+                    if (operacion.value == "M") {
+                        if (ciclo != "01") $("#ciclo").append($("<option>", { value: ciclo_anterior, text: ciclo_anterior }))
+                        $("#infoTipoOp").css("display", "block")
+                    } else if (operacion.value === "S") {
+                        const monto = parseaNumero($("#prestamo").text())
+                        $("#monto").val(monto < 10000 ? "250.00" : "300.00").prop("readonly", true)
+                        $("#infoTipoOp").css("display", "block")
+                    } else {
+                        $("#ciclo").empty()
+                        $("#ciclo").append($("<option>", { value: ciclo, text: ciclo }))
+                    }
+                }
+
+                const muestraInfoOp = () => {
+                    const tipoSel = $("#tipo").val()
+                    if (tipoSel === "M") showInfo(infoMulta())
+                    if (tipoSel === "S") showInfo(infoSeguro())
+                }
+
+                const infoMulta = () => {
+                    const div = document.createElement("div")
+                    const titulo = document.createElement("h2")
+                    const descripcion = document.createElement("p")
+                    const politica = document.createElement("p")
+
+                    titulo.innerHTML = "<b>Multa</b>"
+                    descripcion.textContent = "Este tipo de pago se aplica cuando el cliente no realizó su pago en la fecha establecida, se le cobra una multa por retraso."
+                    politica.innerHTML = "<b>La multa es del 10% sobre el monto de la parcialidad a pagar.</b>"
+
+                    div.appendChild(titulo)
+                    div.appendChild(descripcion)
+                    div.appendChild(politica)
+
+                    return div
+                }
+
+                const infoSeguro = () => {
+                    const div = document.createElement("div")
+                    const titulo = document.createElement("h2")
+                    const descripcion = document.createElement("p")
+                    const politicas = document.createElement("ul")
+
+                    titulo.innerHTML = "<b>Seguro</b>"
+                    descripcion.textContent = "Pago para el apoyo de protección familiar."
+                    politicas.innerHTML = "<li>Si el monto del credito es menor a $10,000.00, el costo del seguro es de $250.00</li>"
+                    politicas.innerHTML += "<li>Si el monto del credito es mayor a $10,000.00, el costo del seguro es de $300.00</li>"
+
+                    div.appendChild(titulo)
+                    div.appendChild(descripcion)
+                    div.appendChild(politicas)
+
+                    return div
+                }
+
+                const getMensajeMultaExcedente = (multaEsperada) => {
+                    const div = document.createElement("div")
+                    const descripcion = document.createElement("p")
+                    const confirmacion = document.createElement("p")
+
+                    descripcion.innerHTML = "El monto ingresado es mayor al 10% de la multa por retraso.<br>La multa esperada es de: $" + multaEsperada.toFixed(2)
+                    confirmacion.innerHTML = "<b>¿Desea continuar?</b>"
+
+                    div.appendChild(descripcion)
+                    div.appendChild(confirmacion)
+
+                    return div
+                }
+
+                const validaSeguro = () =>{
+                    const cicloActual = $("#cicloActual").text()
+                    const filas = $("#pagosRegistrados").DataTable().data()
+                    const seguro = filas.filter(fila => fila[4] === cicloActual && fila[6] === "SEGURO").length === 0
+
+                    const muestraS = seguro ? "block" : "none"
+                    $("#tipo option[value='S']").css("display", muestraS)
+                    $("#tipo_e option[value='S']").css("display", muestraS)
+                }
+
+                $(document).ready(() => {
+                    configuraTabla("pagosRegistrados")
+                    $("#enviaAdd").click(enviar_add)
+                    $("#enviaEdit").click(enviar_edit) 
+                    $("#infoTipoOp").click(muestraInfoOp)
+                    validaSeguro()
+                })
             </script>
         HTML;
 
@@ -1717,7 +1963,7 @@ html;
                     <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
                     <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
                     <td style="padding: 0px !important;">{$value['CDGNS']}</td>
-                    <td style="padding: 0px !important;">{$value['FECHA']}</td>
+                    <td style="padding: 0px !important;">{$value['FECHA_TABLA']}</td>
                     <td style="padding: 0px !important;">{$value['CICLO']}</td>
                     <td style="padding: 0px !important;">$ {$monto}</td>
                     <td style="padding: 0px !important;">{$value['TIPO']}</td>

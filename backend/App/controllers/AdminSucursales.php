@@ -252,12 +252,11 @@ class AdminSucursales extends Controller
     {
         $extraFooter = <<<script
         <script>
+            {$this->mensajes}
             {$this->configuraTabla}
             {$this->exportaExcel}
             {$this->consultaServidor}
             {$this->validaFIF}
-            {$this->showError}
-            {$this->showSuccess}
             {$this->addParametro}
          
             $(document).ready(() => {
@@ -356,9 +355,7 @@ class AdminSucursales extends Controller
             let montoMinimo = 0
             let valKD = false
             let codigoSEA = 0
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->noSubmit}
             {$this->soloNumeros}
             {$this->validarYbuscar}
@@ -483,9 +480,7 @@ class AdminSucursales extends Controller
             let montoMinimo = 0
             let valKD = false
             let codigoSEA = 0
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->noSubmit}
             {$this->soloNumeros}
             {$this->validarYbuscar}
@@ -613,9 +608,7 @@ class AdminSucursales extends Controller
     {
         $extraFooter = <<<script
         <script>
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->crearFilas}
          
             const getLog = () => {
@@ -718,9 +711,7 @@ class AdminSucursales extends Controller
     {
         $extraFooter = <<<script
         <script>
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->noSubmit}
             {$this->soloNumeros}
             {$this->consultaServidor}
@@ -934,9 +925,7 @@ class AdminSucursales extends Controller
             let infoCliente = {}
             let vistaActiva = ""
          
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->noSubmit}
             {$this->soloNumeros}
             {$this->consultaServidor}
@@ -1797,9 +1786,7 @@ html;
     {
         $extraFooter = <<<script
         <script>
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->noSubmit}
             {$this->soloNumeros}
             {$this->consultaServidor}
@@ -2121,9 +2108,7 @@ html;
         
         
         
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->noSubmit}
             {$this->soloNumeros}
             {$this->consultaServidor}
@@ -2186,9 +2171,7 @@ html;
 
         $extraFooter = <<<script
         <script>         
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->confirmarMovimiento}
             {$this->consultaServidor}
             {$this->configuraTabla}
@@ -2428,9 +2411,7 @@ html;
     {
         $extraFooter = <<<script
         <script>
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->confirmarMovimiento}
             {$this->consultaServidor}
             {$this->configuraTabla}
@@ -2706,9 +2687,7 @@ html;
         
         });
         
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->noSubmit}
             {$this->soloNumeros}
             {$this->consultaServidor}
@@ -2872,9 +2851,7 @@ script;
     {
         $extraFooter = <<<script
         <script>
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->confirmarMovimiento}
             {$this->consultaServidor}
             {$this->configuraTabla}
@@ -2959,9 +2936,7 @@ script;
     {
         $extraFooter = <<<script
         <script>
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->confirmarMovimiento}
             {$this->consultaServidor}
             {$this->configuraTabla}
@@ -3050,9 +3025,7 @@ script;
     {
         $extraFooter = <<<script
         <script>
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->crearFilas}
          
             const getLog = () => {

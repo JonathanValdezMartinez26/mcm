@@ -4437,10 +4437,7 @@ html;
             <script>
                 {$this->conectaSocket}
                 {$this->formatoMoneda}
-                {$this->showError}
-                {$this->showSuccess}
-                {$this->showWait}
-                {$this->showInfo}
+                {$this->mensajes}
                 {$this->confirmarMovimiento}
 
                 let motivos = null
@@ -4705,8 +4702,7 @@ html;
     {
         $extraFooter = <<<HTML
             <script>
-                {$this->showError}
-                {$this->showInfo}
+                {$this->mensajes}
                 {$this->configuraTabla}
                 {$this->descargaExcel}
                 {$this->consultaServidor}
@@ -4807,7 +4803,7 @@ html;
         $extraFooter = <<<HTML
             <script>
                 {$this->conectaSocket}
-                {$this->showWait}
+                {$this->mensajes}
 
                 const actividad = []
                 const columnas = $("#tblActividad thead th").map((idx, th) => th.className).get()

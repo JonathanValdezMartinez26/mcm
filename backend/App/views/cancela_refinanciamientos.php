@@ -52,29 +52,4 @@
     </div>
 </div>
 
-<style>
-    .resultado {
-        padding: 0 20px;
-        overflow: hidden;
-        max-height: 0;
-        opacity: 0;
-        transition: max-height 1s ease-in-out, opacity 1s ease-in-out .3s;
-    }
-
-    .resultado.conDatos {
-        max-height: 1000px;
-        opacity: 1;
-        transition: max-height 1s, opacity 1s;
-
-        @starting-style {
-            max-height: 0;
-            opacity: 0;
-        }
-    }
-
-    .incorrecto {
-        border-color: red;
-    }
-</style>
-
 <?= $footer; ?>

@@ -495,9 +495,7 @@ class Ahorro extends Controller
                     if(document.querySelector("#clienteBuscado").value !== "") buscaCliente()
                 }
             
-                {$this->showError}
-                {$this->showSuccess}
-                {$this->showInfo}
+                {$this->mensajes}
                 {$this->confirmarMovimiento}
                 {$this->validarYbuscar}
                 {$this->getHoy}
@@ -1256,10 +1254,7 @@ class Ahorro extends Controller
             let retiroDispobible = maximoRetiroDia
             let mano
 
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
-            {$this->showWarning}
+            {$this->mensajes}
             {$this->confirmarMovimiento}
             {$this->validarYbuscar}
             {$this->buscaCliente}
@@ -1511,9 +1506,7 @@ class Ahorro extends Controller
             let valKD = false
             let huellas = 0
          
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->confirmarMovimiento}
             {$this->validarYbuscar}
             {$this->buscaCliente}
@@ -1724,9 +1717,7 @@ class Ahorro extends Controller
     {
         $extraFooter = <<<html
         <script>
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->confirmarMovimiento}
             {$this->consultaServidor}
             {$this->configuraTabla}
@@ -1975,9 +1966,7 @@ class Ahorro extends Controller
             }
             let valKD = false
          
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->confirmarMovimiento}
             {$this->validarYbuscar}
             {$this->buscaCliente}
@@ -2212,9 +2201,7 @@ class Ahorro extends Controller
         <script>
             const noSucursal = "{$_SESSION['cdgco_ahorro']}"
          
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->sinContrato}
             {$this->validarYbuscar}
             {$this->buscaCliente}
@@ -2307,9 +2294,7 @@ class Ahorro extends Controller
             const noSucursal = "{$_SESSION['cdgco_ahorro']}"
             let valKD = false
              
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->confirmarMovimiento}
             {$this->validarYbuscar}
             {$this->getHoy}
@@ -2644,10 +2629,7 @@ class Ahorro extends Controller
             let huellas = 0
             let mano
          
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
-            {$this->showWarning}
+            {$this->mensajes}
             {$this->confirmarMovimiento}
             {$this->validarYbuscar}
             {$this->getHoy}
@@ -2988,9 +2970,7 @@ class Ahorro extends Controller
             let huellas = 0
             let mano
          
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->confirmarMovimiento}
             {$this->validarYbuscar}
             {$this->soloNumeros}
@@ -3283,9 +3263,7 @@ class Ahorro extends Controller
     {
         $extraFooter = <<<html
         <script>
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->confirmarMovimiento}
             {$this->consultaServidor}
             {$this->configuraTabla}
@@ -3464,9 +3442,7 @@ class Ahorro extends Controller
         $extraFooter = <<<html
         <script>
             {$this->noSubmit}
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->confirmarMovimiento}
             {$this->getHoy}
             {$this->soloNumeros}
@@ -3807,9 +3783,7 @@ class Ahorro extends Controller
         <script>
             const mEdoCta = true
             let datosCliente = {}
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->validarYbuscar}
             {$this->buscaCliente}
             {$this->sinContrato}
@@ -3887,9 +3861,7 @@ class Ahorro extends Controller
 
         $extraFooter = <<<html
         <script>
-            {$this->showError}
-            {$this->showSuccess}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->confirmarMovimiento}
             {$this->configuraTabla}
             {$this->consultaServidor}
@@ -5485,7 +5457,7 @@ html;
     {
         $extraFooter = <<<html
         <script>
-            {$this->showError}
+            {$this->mensajes}
             {$this->configuraTabla}
             {$this->muestraPDF}
             {$this->imprimeTicket}

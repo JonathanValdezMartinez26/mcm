@@ -843,10 +843,7 @@ html;
     {
         $extraFooter = <<<HTML
         <script>
-            {$this->showSuccess}
-            {$this->showError}
-            {$this->showWarning}
-            {$this->showInfo}
+            {$this->mensajes}
             {$this->descargaExcel}
 
             const descarga = () => {
@@ -922,8 +919,7 @@ html;
     {
         $extraFooter = <<<HTML
             <script>
-                {$this->showSuccess}
-                {$this->showError}
+                {$this->mensajes}
                 {$this->consultaServidor}
 
                 $(document).on("ready", () => {
@@ -963,8 +959,7 @@ html;
     {
         $extraFooter = <<<HTML
             <script>
-                {$this->showSuccess}
-                {$this->showError}
+                {$this->mensajes}
                 {$this->consultaServidor}
                 {$this->configuraTabla}
 

@@ -6,7 +6,6 @@
             <label style="font-size: large;"> Registro de Pagos</label>
             <div class="clearfix"></div>
         </div>
-
         <div class="card card-danger col-md-5">
             <div class="card-header">
                 <h5 class="card-title">Seleccione el tipo de búsqueda e ingrese el número de crédito </h5>
@@ -60,26 +59,26 @@
                     </div>
                     <div class="col-md-1 col-sm-4  tile_stats_count">
                         <span class="count_top" style="font-size: 15px"><i class="fa fa-clock-o"></i> Ciclo</span>
-                        <div class="count" style="font-size: 14px"><?= $Administracion[0]['CICLO']; ?> </div>
+                        <div class="count" style="font-size: 14px" id="cicloActual"><?= $Administracion[0]['CICLO']; ?> </div>
                     </div>
                     <div class="col-md-1 col-sm-4  tile_stats_count">
-                        <span class="count_top" style="font-size: 15px"><i></i> Prestamo</span>
-                        <div class="count" style="font-size: 14px"> $ <?= number_format($Administracion[0]['MONTO']); ?></div>
+                        <span class="count_top" style="font-size: 15px">Prestamo</span>
+                        <div class="count" style="font-size: 14px" id="prestamo"> $ <?= number_format($Administracion[0]['MONTO']); ?></div>
                     </div>
                     <div class="col-md-1 col-sm-4  tile_stats_count">
-                        <span class="count_top" style="font-size: 15px"><i></i> Día de Pago</span>
+                        <span class="count_top" style="font-size: 15px">Día de Pago</span>
                         <div class="count" style="font-size: 14px"><?= $Administracion[0]['DIA_PAGO']; ?></div>
                     </div>
                     <div class="col-md-1 col-sm-4  tile_stats_count">
-                        <span class="count_top" style="font-size: 15px"><i></i> Parcialidad</span>
-                        <div class="count" style="font-size: 14px">$ <?= number_format($Administracion[0]['PARCIALIDAD']); ?></div>
+                        <span class="count_top" style="font-size: 15px">Parcialidad</span>
+                        <div class="count" style="font-size: 14px" id="parcialidad">$ <?= number_format($Administracion[0]['PARCIALIDAD']); ?></div>
                     </div>
                     <div class="col-md-2 col-sm-4  tile_stats_count">
-                        <span class="count_top" style="font-size: 15px"><i></i> Sucursal</span>
+                        <span class="count_top" style="font-size: 15px">Sucursal</span>
                         <div class="count" style="font-size: 14px"><?= $Administracion[0]['SUCURSAL']; ?></div>
                     </div>
                     <div class="col-md-2 col-sm-4  tile_stats_count">
-                        <span class="count_top" style="font-size: 15px"><i></i> Ejecutivo de cuenta</span>
+                        <span class="count_top" style="font-size: 15px">Ejecutivo de cuenta</span>
                         <div class="count" style="font-size: 14px"><?= $Administracion[0]['EJECUTIVO']; ?> </div>
                     </div>
                 </div>
@@ -128,13 +127,6 @@
                                     <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
                                 </div>
                             </div>
-
-                            <div class="col-md-4" style="display: none">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" id="usuario" name="usuario" value="<?= $usuario; ?>">
-                                </div>
-                            </div>
-
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="movil">Medio de Registro</label>
@@ -142,7 +134,6 @@
                                     <small id="emailHelp" class="form-text text-muted">Medio de registro del pago.</small>
                                 </div>
                             </div>
-
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="cdgns">CDGNS</label>
@@ -150,14 +141,14 @@
                                     <small id="emailHelp" class="form-text text-muted">Número del crédito.</small>
                                 </div>
                             </div>
-
+                        </div>
+                        <div class="row">
                             <div class="col-md-10">
                                 <div class="form-group">
                                     <label for="nombre">Nombre del Cliente</label>
                                     <input type="text" class="form-control" id="nombre" name="nombre" readonly value="<?= $Administracion[0]['CLIENTE']; ?>">
                                 </div>
                             </div>
-
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="ciclo">Ciclo</label>
@@ -166,11 +157,13 @@
                                     </select>
                                 </div>
                             </div>
-
+                            <input type="hidden" class="form-control" id="usuario" name="usuario" value="<?= $usuario; ?>">
+                        </div>
+                        <div class="row">
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="tipo">Tipo de Operación</label>
-                                    <select class="form-control mr-sm-3" autofocus type="select" id="tipo" name="tipo" onchange="MultaCiclo(this,'<?= $Administracion[0]['CICLO']; ?>');">
+                                    <select class="form-control mr-sm-3" autofocus type="select" id="tipo" name="tipo" onchange="CambioOperacion(this,'<?= $Administracion[0]['CICLO']; ?>');">
                                         <option value="P">PAGO</option>
                                         <option value="X">PAGO ELECTRÓNICO</option>
                                         <option value="Y">PAGO EXCEDENTE</option>
@@ -186,15 +179,10 @@
                                             $cdgco == '020' ||
                                             $cdgco == '025' ||
                                             $cdgco == '026' ||
-                                            $cdgco == '027'
-
-
-                                            || $usuario == 'AMGM' || $usuario == 'GASC'
-                                        ) {
-                                            $imp = '<option value="D">DESCUENTO DE CAMPAÑA POR LEALTAD</option>';
-
-                                            echo $imp;
-                                        }
+                                            $cdgco == '027' ||
+                                            $usuario == 'AMGM' ||
+                                            $usuario == 'GASC'
+                                        ) echo '<option value="D">DESCUENTO DE CAMPAÑA POR LEALTAD</option>';
                                         ?>
 
                                         <option value="R">REFINANCIAMIENTO</option>
@@ -202,14 +190,19 @@
                                     </select>
                                 </div>
                             </div>
-
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="monto">Monto *</label>
                                     <input autofocus type="text" class="form-control" id="monto" name="monto" autocomplete="off" max="10000">
                                 </div>
                             </div>
-
+                            <div class="col-md-4">
+                                <button type="button" class="btn btn-info" id="infoTipoOp" style="display: none;">
+                                    <i class="fa fa-info"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="ejecutivo">Nombre del Ejecutivo</label>
@@ -225,7 +218,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
+                <button type="button" class="btn btn-primary" id="enviaAdd"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
             </div>
         </div>
     </div>
@@ -335,7 +328,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
+                <button type="button" class="btn btn-primary" id="enviaEdit"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar Registro</button>
             </div>
         </div>
     </div>

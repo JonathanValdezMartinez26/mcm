@@ -8,11 +8,27 @@ class Controller
 {
     public $socket = '<script src="/libs/socket.io.min.js"></script>';
     public $swal2 = '<script src="/libs/sweetalert2/sweetalert2.all.min.js"></script><link href="/libs/sweetalert2/sweetalert2-tema-bootstrap-4.css" rel="stylesheet" />';
-    public $showError = 'const showError = (mensaje) => swal({ text: mensaje, icon: "error" })';
-    public $showSuccess = 'const showSuccess = (mensaje) => swal({ text: mensaje, icon: "success" })';
-    public $showInfo = 'const showInfo = (mensaje) => swal({ text: mensaje, icon: "info" })';
-    public $showWarning = 'const showWarning = (mensaje) => swal({ text: mensaje, icon: "warning" })';
-    public $showWait = 'const showWait = (mensaje) => swal({ text: mensaje, icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })';
+    public $mensajes = <<<JAVASCRIPT
+        const tipoMensaje = (mensaje, icono, config = null) => {
+            let configMensaje = (typeof mensaje === "object") ? { content: mensaje } : { text: mensaje }
+            configMensaje.icon = icono
+            if (config) Object.assign(configMensaje, config)
+            return swal(configMensaje)
+        }
+
+        const showError = (mensaje) =>  tipoMensaje(mensaje, "error")
+        const showSuccess = (mensaje) => tipoMensaje(mensaje, "success")
+        const showInfo = (mensaje) => tipoMensaje(mensaje, "info")
+        const showWarning = (mensaje) => tipoMensaje(mensaje, "warning")
+        const showWait = (mensaje) => {
+            const config = {
+                button: false,
+                closeOnClickOutside: false,
+                closeOnEsc: false
+            }
+            return tipoMensaje(mensaje, "/img/wait.gif", config)
+        }
+    JAVASCRIPT;
     public $confirmarMovimiento = <<<JAVASCRIPT
         const confirmarMovimiento = async (titulo, mensaje, html = null) => {
             return await swal({ title: titulo, content: html, text: mensaje, icon: "warning", buttons: ["No", "Si, continuar"], dangerMode: true })
