@@ -97,6 +97,24 @@ class Database
         }
     }
 
+    public function insertarBlob($sql, $datos, $blob = [])
+    {
+        try {
+            $stmt = $this->db_activa->prepare($sql);
+
+            foreach ($datos as $key => $value) {
+                if (in_array($key, $blob)) $stmt->bindValue(":$key", $value, PDO::PARAM_LOB);
+                else $stmt->bindValue(":$key", $value);
+            }
+
+            if (!$stmt->execute()) throw new \Exception("Error en insertarBlob: " . print_r($this->db_activa->errorInfo(), 1) . "\nSql : $sql \nDatos : " . print_r($datos, 1));
+        } catch (\PDOException $e) {
+            throw new \Exception("Error en insertarBlob: " . $e->getMessage() . "\nSql : $sql \nDatos : " . print_r($datos, 1));
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+    }
+
     public function insertCheques($sql, $parametros)
     {
         $stmt = $this->db_activa->prepare($sql);
@@ -285,6 +303,7 @@ class Database
 
         if ($result) {
             echo $resultado;
+            return $resultado;
         } else {
             echo "\nPDOStatement::errorInfo():\n";
             $arr = $stmt->errorInfo();
@@ -338,6 +357,7 @@ class Database
 
         if ($result) {
             echo $resultado;
+            return $resultado;
         } else {
             echo "\nPDOStatement::errorInfo():\n";
             $arr = $stmt->errorInfo();

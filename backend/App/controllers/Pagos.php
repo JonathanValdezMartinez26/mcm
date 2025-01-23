@@ -31,6 +31,8 @@ class Pagos extends Controller
                 {$this->mensajes}
                 {$this->configuraTabla}
                 {$this->confirmarMovimiento}
+                {$this->parseaNumero}
+                {$this->consultaServidor}
 
                 const Desactivado = () => showWarning("Usted no puede modificar este registro")
                 const InfoAdmin = () => showInfo("Este registro fue capturado por una administradora en caja")
@@ -163,10 +165,94 @@ class Pagos extends Controller
                     $("#modal_editar_pago").modal("show")
                 }
 
+                const muestraAdmin = (e) => {
+                    const tr = e.target.tagName === "I" ? e.target.parentElement.parentElement.parentElement : e.target.parentElement.parentElement
+
+                    const [, secuencia, cdgns, fecha_tabla, ciclo, monto, tipo, ejecutivo] = tr.children
+                    const fecha = new Date(fecha_tabla.innerText.split("/").reverse().join("-"))
+                    const fechaMin = new Date(fecha)
+                    fechaMin.setDate(fecha.getDate() - 20)
+                    
+                    $("#nombre_admin").val($("#nombreCliente").text())
+                    $("#secuencia_admin").val(secuencia.innerText)
+                    $("#cdgns_admin").val(cdgns.innerText)
+                    $("#Fecha_admin_r").val(fecha.toISOString().split("T")[0])
+                    $("#Fecha_admin").val(fecha.toISOString().split("T")[0])
+                    $("#Fecha_admin").attr("max", fecha.toISOString().split("T")[0])
+                    $("#Fecha_admin").attr("min", fechaMin.toISOString().split("T")[0])
+                    $("#ciclo_admin").val(ciclo.innerText)
+                    $("#monto_admin").val(parseaNumero(monto.innerText))
+                    $("#tipo_admin").val(tipo.innerText.charAt(0))
+                    $("#ejecutivo_admin").val($("#ejecutivo_admin option").filter((i, e) => e.text === ejecutivo.innerText).val())
+
+                    $("#modal_admin").modal("show")
+                }
+
+                const justificacion = (tipo) => {
+                    $("#tituloJustificacion").text(tipo === 0 ? "Editar Pago" : "Eliminar Pago")
+                    $("#tipoMovAdmin").val(tipo)
+                    $("#modal_justificacion").modal("show")
+                }
+
+                const enviarCambios = () => {
+                    const tipo = $("#tipoMovAdmin").val()
+                    const datos = new FormData();
+                    let url
+
+                    if (tipo == 0) {
+                        url = "/Pagos/PagosEditAdmin/"
+                        datos.append("_secuencia", $("#secuencia_admin").val())
+                        datos.append("_credito", $("#cdgns_admin").val())
+                        datos.append("_ciclo", $("#ciclo_admin").val())
+                        datos.append("_fecha", $("#Fecha_admin").val())
+                        datos.append("_fecha_aux", $("#Fecha_admin_r").val())
+                        datos.append("_monto", $("#monto_admin").val())
+                        datos.append("_tipo", $("#tipo_admin").val())
+                        datos.append("_nombre", $("#nombre_admin").val())
+                        datos.append("_usuario", "$this->__usuario")
+                        datos.append("_ejecutivo", $("#ejecutivo_admin").val())
+                        datos.append("_ejecutivo_nombre", $("#ejecutivo_admin option:selected").text())
+                    } else {
+                        url = "/Pagos/DeleteAdmin/"
+                        datos.append("cdgns", $("#cdgns_admin").val())
+                        datos.append("secuencia", $("#secuencia_admin").val())
+                        datos.append("fecha", $("#Fecha_admin_r").val())
+                        datos.append("usuario", "$this->__usuario")
+                    }
+
+                    datos.append("justificacion", $("#justificacion").val())
+
+                    const archivo = $("#archivo")[0].files[0]
+
+                    if (archivo) {
+                        const tiposPermitidos = ['image/jpeg', 'image/png', 'application/pdf'];
+                        const tamPermitido = 2 * 1024 * 1024
+
+                        if (archivo.size > tamPermitido) return showWarning("El archivo excede el tamaño permitido (2MB).")
+                        if (!tiposPermitidos.includes(archivo.type)) return showWarning("Tipo de archivo no valido, solo se permiten JPG, PNG o PDF.")
+                        datos.append("archivo", archivo)
+                    }
+
+                    consultaServidor(url, datos, (respuesta) => {
+                        if (respuesta === "1 Proceso realizado exitosamente") {
+                            const texTipo = tipo == 0 ? "editado" : "eliminado"
+                            showWait("Registro " + texTipo + " exitosamente, espere un momento se recargará la página.")
+                            location.reload()
+                        } else {
+                            showError(respuesta)
+                            $("#modal_justificacion").modal("hide")
+                        }
+                    }, "POST", "TEXT", false, false)
+                }
+
                 $(document).ready(() => {
                     configuraTabla("pagosRegistrados")
                     $("#enviaAdd").click(enviar_add)
                     $("#enviaEdit").click(enviar_edit)
+                    $(".$this->__usuario").click(muestraAdmin)
+                    $("#editAdmin").click(() => justificacion(0))
+                    $("#deleteAdmin").click(() => justificacion(1))
+                    $("#enviaJustificacion").click(enviarCambios)
                 })
             </script>
         HTML;
@@ -238,6 +324,13 @@ class Pagos extends Controller
                     HTML;
                 }
             }
+
+            $lista_SU = ['MCDP', 'AMGM'];
+
+
+            if (in_array($this->__usuario, $lista_SU) && $inicio_f != $fecha_base && $value['DESIGNATION_ADMIN'] != 'SI') $editar .= <<<HTML
+                <button type="button" class="btn btn-warning btn-circle $this->__usuario"><i class="fa fa-key"></i></button>
+            HTML;
 
             $monto = number_format($value['MONTO'], 2);
             $tabla .= <<<HTML
@@ -1532,6 +1625,24 @@ html;
         return $id;
     }
 
+    public function PagosEditAdmin()
+    {
+        $bitacora = self::RegistraBitacora($_POST);
+        if ($bitacora === false) return "No se pudo recuperar el registro original";
+
+        $post = new \ArrayObject($_POST, \ArrayObject::ARRAY_AS_PROPS);
+        $resultado = PagosDao::EditProcedure($post);
+        if ($resultado == '1 Proceso realizado exitosamente') {
+            unset($_POST['_secuencia']);
+            $registro = PagosDao::GetRegistroPagosDia($_POST);
+            $_POST['modificado'] = json_encode($registro);
+            PagosDao::ActualizaBitacoraAdmin($_POST);
+        } else {
+            PagosDao::EliminaBitacoraAdmin($_POST);
+        }
+        return $resultado;
+    }
+
     public function Delete()
     {
 
@@ -1543,6 +1654,35 @@ html;
         $id = PagosDao::DeleteProcedure($cdgns, $fecha, $usuario, $secuencia);
         return $id;
     }
+
+    public function DeleteAdmin()
+    {
+        $bitacora = self::RegistraBitacora($_POST);
+        if ($bitacora === false) return "No se pudo recuperar el registro original";
+
+        $resultado = PagosDao::DeleteProcedure($_POST['cdgns'], $_POST['fecha'], $_POST['usuario'], $_POST['secuencia']);
+        if ($resultado !== '1 Proceso realizado exitosamente') PagosDao::EliminaBitacoraAdmin($_POST);
+        return $resultado;
+    }
+
+    public function RegistraBitacora(&$datos)
+    {
+        $registro = PagosDao::GetRegistroPagosDia($datos);
+        if (count($registro) == 0) return false;
+        $datos['original'] = json_encode($registro);
+
+        if (isset($_FILES['archivo']) && $_FILES['archivo']['error'] === UPLOAD_ERR_OK) {
+            $archivoTmp = $_FILES['archivo']['tmp_name'];
+            $datos['soporte'] = fopen($archivoTmp, 'rb');
+            $datos['nombre_soporte'] = $_FILES['archivo']['name'];
+            $datos['tipo_soporte'] = $_FILES['archivo']['type'];
+        }
+
+        PagosDao::RegistroBitacoraAdmin($datos);
+        if ($datos['soporte']) fclose($datos['soporte']);
+        return true;
+    }
+
     public function PagosEditApp()
     {
 
@@ -1826,7 +1966,7 @@ html;
                 $(document).ready(() => {
                     configuraTabla("pagosRegistrados")
                     $("#enviaAdd").click(enviar_add)
-                    $("#enviaEdit").click(enviar_edit) 
+                    $("#enviaEdit").click(enviar_edit)
                     $("#infoTipoOp").click(muestraInfoOp)
                     validaSeguro()
                 })
@@ -2922,5 +3062,20 @@ html;
 
         if ($_POST) echo $tabla;
         else return $tabla;
+    }
+
+    public function descargarArchivo()
+    {
+        $archivo = PagosDao::RecuperaSoporte($_GET);
+
+        if (count($archivo) == 0) {
+            echo "No se encontró el archivo solicitado.";
+            return;
+        }
+
+        header("Content-Type: $archivo[TIPO_SOPORTE]");
+        header("Content-Disposition: attachment; filename=\"$archivo[NOMBRE_SOPORTE]\"");
+        header("Content-Length: strlen($archivo[SOPORTE])");
+        echo $archivo['SOPORTE'];
     }
 }

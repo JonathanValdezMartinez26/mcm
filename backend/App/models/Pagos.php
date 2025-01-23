@@ -867,7 +867,6 @@ sql;
         $tipo_procedure_ = 2;
         $fecha_aux = $pago->_fecha_aux;
 
-
         $mysqli = new Database();
 
         return $mysqli->queryProcedurePago($credito_i, $ciclo_i, $monto_i, $tipo_i, $nombre_i, $user_i,  $ejecutivo_i, $ejecutivo_nombre_i, $tipo_procedure_, $fecha_aux, $secuencia_i, $fecha);
@@ -1009,5 +1008,142 @@ sql;
     {
         $mysqli = new Database();
         return $mysqli->queryProcedureDeletePago($cdgns, $fecha, $user, $secuencia);
+    }
+
+    public static function GetRegistroPagosDia($datos)
+    {
+        $qry = <<<SQL
+            SELECT
+                *
+            FROM
+                PAGOSDIA
+            WHERE
+                CDGNS = :cdgns
+        SQL;
+
+        $param = [
+            'cdgns' => $datos['_credito'] ?? $datos['cdgns'] ?? null
+        ];
+
+        if ($datos['_secuencia'] || $datos['secuencia']) {
+            $qry .= " AND SECUENCIA = :secuencia AND FECHA = TO_DATE(:fecha, 'YYYY-MM-DD')";
+            $param['secuencia'] = $datos['_secuencia'] ?? $datos['secuencia'] ?? null;
+            $param['fecha'] = $datos['_fecha_aux'] ?? $datos['fecha'] ?? null;
+        } else {
+            $qry .= " AND FACTUALIZA = (SELECT MAX(FACTUALIZA) FROM PAGOSDIA WHERE CDGNS = :cdgns)";
+        }
+
+        try {
+            $db = new Database();
+            return $db->queryOne($qry, $param) ?? [];
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    public static function RegistroBitacoraAdmin($datos)
+    {
+        $qry = <<<SQL
+            INSERT INTO PAGOSDIA_BITACORA_ADMIN
+                (USUARIO, ORIGINAL, JUSTIFICACION, SOPORTE, NOMBRE_SOPORTE, TIPO_SOPORTE)
+            VALUES
+                (:usuario, :original, :justificacion, :soporte, :nombre_soporte, :tipo_soporte)
+        SQL;
+
+        $param = [
+            'usuario' => $datos['usuario'] ?? $datos['_usuario'] ?? null,
+            'original' => $datos['original'],
+            'justificacion' => $datos['justificacion'],
+            'soporte' => $datos['soporte'] ?? null,
+            'nombre_soporte' => $datos['nombre_soporte'] ?? null,
+            'tipo_soporte' => $datos['tipo_soporte'] ?? null
+        ];
+
+        try {
+            $db = new Database();
+            $db->insertarBlob($qry, $param, ['soporte']);
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public static function ActualizaBitacoraAdmin($datos)
+    {
+        $qry = <<<SQL
+            UPDATE
+                PAGOSDIA_BITACORA_ADMIN
+            SET
+                MODIFICADO = :modificado
+            WHERE
+                USUARIO = :usuario
+                AND ORIGINAL = :original
+        SQL;
+
+        $param = [
+            'usuario' => $datos['usuario'] ?? $datos['_usuario'] ?? null,
+            'original' => $datos['original'],
+            'modificado' => $datos['modificado'],
+        ];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $param);
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public static function EliminaBitacoraAdmin($datos)
+    {
+        $qry = <<<SQL
+            DELETE FROM
+                PAGOSDIA_BITACORA_ADMIN
+            WHERE
+                USUARIO = :usuario
+                AND ORIGINAL = :original
+        SQL;
+
+        $param = [
+            'usuario' => $datos['usuario'],
+            'original' => $datos['original'],
+        ];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $param);
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public static function RecuperaSoporte($datos)
+    {
+        $qry = <<<SQL
+            SELECT
+                SOPORTE,
+                NOMBRE_SOPORTE,
+                TIPO_SOPORTE
+            FROM
+                PAGOSDIA_BITACORA_ADMIN
+            WHERE
+                USUARIO = :usuario
+            ORDER BY
+                FECHA DESC
+            FETCH FIRST 1 ROWS ONLY
+        SQL;
+
+        $param = [
+            'usuario' => $datos['usuario'],
+        ];
+
+        try {
+            $db = new Database();
+            return $db->queryOne($qry, $param) ?? [];
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 }

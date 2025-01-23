@@ -43,7 +43,7 @@
                     <div class="col-md-3 col-sm-4  tile_stats_count">
                         <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Cliente</span>
 
-                        <div class="count" style="font-size: 14px"><?= $Administracion[0]['CLIENTE']; ?></div>
+                        <div class="count" style="font-size: 14px" id="nombreCliente"><?= $Administracion[0]['CLIENTE']; ?></div>
                         <span class="count_top badge" style="padding: 1px 1px; background: <?= $Administracion[0]['COLOR']; ?>">
                             <h5><b><i class="">SITUACIÓN: <?= $Administracion[0]['SITUACION_NOMBRE']; ?></i></b></h5>
                         </span>
@@ -327,5 +327,154 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modal_admin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <center>
+                    <h4 class="modal-title" id="myModalLabel">Editar registro de pago (Super Usuario)</h4>
+                </center>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form onsubmit="enviar_edit(); return false" id="AdminInfoPAgo">
+                        <div class="row">
+                            <div class="col-md-4" style="display: none">
+                                <div class="form-group">
+                                    <label for="Fecha_admin_r">Fecha</label>
+                                    <input onkeydown="return false" type="date" class="form-control" id="Fecha_admin_r" name="Fecha_admin_r" readonly>
+                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="Fecha_admin">Fecha</label>
+                                    <input onkeydown="return false" type="date" class="form-control" id="Fecha_admin" name="Fecha_admin">
+                                    <small id="emailHelp" class="form-text text-muted">Fecha de registro en sistema.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="movil_admin">Medio de Registro</label>
+                                    <input type="text" class="form-control" id="movil_admin" aria-describedby="movil_admin" disabled placeholder="" value="CAJERA">
+                                    <small id="emailHelp" class="form-text text-muted">Medio de registro del pago.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="cdgns_admin">CDGNS</label>
+                                    <input type="number" class="form-control" id="cdgns_admin" name="cdgns_admin" readonly>
+                                    <small id="emailHelp" class="form-text text-muted">Número del crédito.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-10">
+                                <div class="form-group">
+                                    <label for="nombre_admin">Nombre del Cliente</label>
+                                    <input type="text" class="form-control" id="nombre_admin" name="nombre_admin" readonly>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="secuencia_admin">Secuencia</label>
+                                    <input type="number" class="form-control" id="secuencia_admin" name="secuencia_admin" readonly>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="ciclo_admin">Ciclo</label>
+                                    <input type="number" class="form-control" id="ciclo_admin" name="ciclo_admin" readonly>
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="tipo_admin">Tipo de Operación</label>
+                                    <select class="form-control mr-sm-3" autofocus type="select" id="tipo_admin" name="tipo_admin">
+                                        <option value="P">PAGO</option>
+                                        <option value="X">PAGO ELECTRÓNICO</option>
+                                        <option value="Y">PAGO EXCEDENTE</option>
+                                        <option value="M">MULTA</option>
+                                        <option value="Z">MULTA GESTORES</option>
+                                        <option value="G">GARANTÍA</option>
+                                        <option value="D">DESCUENTO</option>
+                                        <option value="R">REFINANCIAMIENTO</option>
+                                        <option value="S">SEGURO</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="monto_admin">Monto *</label>
+                                    <input type="text" class="form-control" id="monto_admin" name="monto_admin">
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="ejecutivo_admin">Nombre del Ejecutivo</label>
+                                    <select class="form-control mr-sm-3" autofocus type="select" id="ejecutivo_admin" name="ejecutivo_admin">
+                                        <?= $status; ?>
+                                    </select>
+                                    <small id="emailHelp" class="form-text text-muted">Nombre del ejecutivo que entrega el pago.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
+                <button type="button" class="btn btn-primary" id="editAdmin"><span class="glyphicon glyphicon-floppy-disk"></span> Guardar cambios</button>
+                <button type="button" class="btn btn-danger" id="deleteAdmin"><span class="glyphicon glyphicon-trash"></span> Eliminar registro</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_justificacion" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <center>
+                    <h4 class="modal-title" id="tituloJustificacion"></h4>
+                </center>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="justificacion">Justificación *</label>
+                                <textarea class="form-control" id="justificacion" rows="10" style="resize: none;" required></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="archivo">Si lo considera necesario, adjunte un archivo de soporte para su justificación</label>
+                                <input type="file" class="form-control" id="archivo" accept=".pdf, .jpg, .png">
+                                <small class="form-text text-muted">Solo se permiten archivos en formato PDF, JPG o PNG con un tamaño máximo de 2MB.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="tipoMovAdmin" name="cdgns_justificacion">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-arrow-left"></i> Regresar</button>
+                <button type="button" class="btn btn-primary" id="enviaJustificacion"><i class="glyphicon glyphicon-send"></i> Continuar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <?= $footer; ?>

@@ -322,38 +322,6 @@ sql;
         }
     }
 
-    public static function BuscaCURPListaNegra($datos)
-    {
-        $qry = <<<SQL
-            SELECT
-                *
-            FROM
-                CL_MARCA
-            WHERE
-                CURP = :curp
-        SQL;
-
-        $parametros = [
-            'curp' => $datos['curp']
-        ];
-
-        $res = [];
-
-        try {
-            $mcm = new Database();
-            $res1 = $mcm->queryOne($qry, $parametros);
-            $res[] = $res1 ?? [];
-
-            $cultiva = new Database('SERVIDOR-CULTIVA');
-            $res2 = $cultiva->queryOne($qry, $parametros);
-            $res[] = $res2 ?? [];
-
-            return self::Responde(true, 'CURP encontrada en lista negra', $res);
-        } catch (\Exception $e) {
-            return self::Responde(false, 'Error al buscar CURP en lista negra', null, $e->getMessage());
-        }
-    }
-
     public static function GetParametrosCorreos()
     {
         $qry = <<<SQL

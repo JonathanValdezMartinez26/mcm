@@ -915,46 +915,6 @@ html;
         \PHPSpreadsheet::DescargaExcel('Situación Cartera MCM', 'Reporte', 'Situación Cartera MCM', $columnas, $filas);
     }
 
-    public function SolicitudRetiroListaNegra()
-    {
-        $extraFooter = <<<HTML
-            <script>
-                {$this->mensajes}
-                {$this->consultaServidor}
-
-                $(document).on("ready", () => {
-                    $("#buscar").on("click", () => {
-                        const curp = $("#curp").val()
-                        if (!curp) return showError("Ingrese una CURP a buscar.")
-                        if (!validaCURP(curp)) return showError("La CURP ingresada no es válida.")
-
-                        consultaServidor("/Creditos/BuscaCURPListaNegra", { curp }, (respuesta) => {
-                            if (!respuesta.success) return showError("Ocurrio un error al buscar la CURP.")
-                            if (respuesta.datos.length === 0) return showError("No se encontraron registros con la CURP proporcionada.")
-
-                            console.log(respuesta)
-                        })
-                    })
-                })
-
-                const validaCURP = (curp) => {
-                    const regexCURP = /^[A-ZÑ]{4}\d{6}[HM][A-Z]{2}[A-ZÑ]{3}[0-9A-Z]\d$/i;
-                    return (!curp || curp.length !== 18 || !regexCURP.test(curp)) ? false : true;
-                }
-            </script>
-        HTML;
-
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Retiro lista negra")));
-        View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render('creditos_solicitudRetiroListaNegra');
-    }
-
-    public function BuscaCURPListaNegra()
-    {
-        $r = CreditosDao::BuscaCURPListaNegra($_POST);
-        echo json_encode($r);
-    }
-
     public function AdminCorreos()
     {
         $extraFooter = <<<HTML

@@ -123,18 +123,21 @@ class CancelaRef extends Controller
                 }
 
                 const cancelarRefinanciamiento = (credito, ciclo, secuencia) => {
-                    confirmarMovimiento("Cancelación de refinanciamiento", "¿Está seguro de cancelar el refinanciamiento del crédito " + credito + " para el ciclo " + ciclo + "?")
-                        .then((continuar) => {
-                            if (!continuar) return
+                    const advertencia = document.createElement("p")
+                    advertencia.innerHTML = "Se ajustara el devengo del periodo y se reactivara el crédito.<br><b>¿Está seguro de continuar con la cancelación del refinanciamiento del crédito " + credito + " para el ciclo " + ciclo + "?</b>"
 
-                            consultaServidor("/cancelaRef/CancelaRefinanciamiento", { credito, ciclo, secuencia }, (resultado) => {
-                                if (!resultado.success) return showError(resultado.mensaje)
+                    confirmarMovimiento("Cancelación de refinanciamiento", null, advertencia)
+                    .then((continuar) => {
+                        if (!continuar) return
 
-                                showSuccess(resultado.mensaje).then(() => {
-                                    $("#buscarRef").click()
-                                })
+                        consultaServidor("/cancelaRef/CancelaRefinanciamiento", { credito, ciclo, secuencia }, (resultado) => {
+                            if (!resultado.success) return showError(resultado.mensaje)
+
+                            showSuccess(resultado.mensaje).then(() => {
+                                $("#buscarRef").click()
                             })
                         })
+                    })
                 }
 
                 $(document).ready(() => {

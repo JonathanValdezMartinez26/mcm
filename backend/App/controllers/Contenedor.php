@@ -120,10 +120,9 @@ html;
 html;
         }
 
-        if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario == 'MGJC') {
+        if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario == 'MGJC' || $this->__usuario == 'MCDP') {
             $menu .= <<<html
             <li><a href="/Pagos/">Administración Pagos</a></li>
-            <li><a href="/CancelaRef/">Cancelación de Ref</a></li>
 html;
         }
 
@@ -174,32 +173,33 @@ html;
             </li>
 html;
 
-        if ($this->__perfil == 'ADMIN' || $this->__perfil == 'GARAN' || $this->__perfil == 'CAMAG') {
+        $presmisosCajas = ['ADMIN', 'GARAN', 'CAMAG', 'ORHM', 'HTMP'];
+        if (in_array($this->__perfil, $presmisosCajas) || in_array($this->__usuario, $presmisosCajas)) {
             $menu .= <<<html
             <li><a><i class="fa fa-users"> </i>&nbsp; Créditos <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">
 html;
         }
-        if ($this->__perfil == 'ADMIN' || $this->__perfil == 'GARAN') {
+        if ((in_array($this->__perfil, $presmisosCajas) || in_array($this->__usuario, $presmisosCajas)) && !$this->__perfil != 'CAMAG') {
             $menu .= <<<html
             <li><a href="/Creditos/ControlGarantias/">Control de Garantías</a></li>
 html;
         }
 
-        if ($this->__perfil == 'ADMIN') {
+        $exclusiones = ['GARAN', 'CAMAG'];
+        if ((in_array($this->__perfil, $presmisosCajas) || in_array($this->__usuario, $presmisosCajas)) && !in_array($this->__perfil, $exclusiones)) {
             $menu .= <<<html
             <li><a href="/Promociones/Telarana/">Calculo Descuento Telaraña</a></li>
             <li><a href="/Validaciones/RegistroTelarana/">Registro Telaraña</a></li>
             <li><a href="/Creditos/ActualizaCredito/">Actualización de Créditos</a></li>
-            <li><a href="/Devengo/">Devengo Crédito</a></li>
             <li><a href="/Creditos/cierreDiario">Situación Cartera</a></li>
             html;
         }
-        if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CAMAG') {
+
+        if ((in_array($this->__perfil, $presmisosCajas) || in_array($this->__usuario, $presmisosCajas)) && !$this->__perfil != 'GARAN') {
             $menu .= <<<html
             <li><a href="/Creditos/CambioSucursal/">Cambio de Sucursal</a></li>
-            <li><a href="/Creditos/SolicitudRetiroListaNegra">Solicitud retiro de lista negra</a></li>
-            <li><a href="/Creditos/AdminCorreos">Administración de Correos</a></li>
+            <li><a href="/CancelaRef/">Cancelación de Ref</a></li>
             html;
         }
 
@@ -325,6 +325,7 @@ html;
                     <li><a href="/Reportes/UsuariosMCM/">Reporte Usuarios SICAFIN MCM</a></li>
                     <li><a href="/Reportes/UsuariosCultiva/">Reporte Usuarios SICAFIN Cultiva</a></li>
                     <li><a href="/Creditos/cierreDiario">Situación Cartera</a></li>
+                    <li><a href="/Creditos/AdminCorreos">Administración de Correos</a></li>
                 html;
             }
 

@@ -48,7 +48,7 @@ class Controller
         }
     JAVASCRIPT;
     public $consultaServidor = <<<JAVASCRIPT
-        const consultaServidor = (url, datos, fncOK, metodo = "POST", tipo = "JSON", tipoContenido = null) => {
+        const consultaServidor = (url, datos, fncOK, metodo = "POST", tipo = "JSON", tipoContenido = null, procesar = null) => {
             swal({ text: "Procesando la solicitud, espere un momento...", icon: "/img/wait.gif", button: false, closeOnClickOutside: false, closeOnEsc: false })
             const configuracion = {
                 type: metodo,
@@ -76,7 +76,10 @@ class Controller
                     showError("Ocurrió un error al procesar la solicitud.")
                 }
             }
-            if (tipoContenido) configuracion.contentType = tipoContenido 
+
+            if (tipoContenido != null) configuracion.contentType = tipoContenido 
+            if (procesar != null) configuracion.processData = procesar
+
             $.ajax(configuracion)
         }
     JAVASCRIPT;
