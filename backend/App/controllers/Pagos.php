@@ -1890,7 +1890,7 @@ html;
                         $("#infoTipoOp").css("display", "block")
                     } else if (operacion.value === "S") {
                         const monto = parseaNumero($("#prestamo").text())
-                        $("#monto").val(monto < 10000 ? "250.00" : "300.00").prop("readonly", true)
+                        $("#monto").val(monto < 10001 ? "250.00" : "300.00").prop("readonly", true)
                         $("#infoTipoOp").css("display", "block")
                     } else {
                         $("#ciclo").empty()
