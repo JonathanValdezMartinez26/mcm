@@ -1763,9 +1763,9 @@ html;
                         const parcialidad = parseaNumero($("#parcialidad").text())
                         const multaEsperada = parcialidad * 0.1
 
-                        if (monto > multaEsperada) {
+                        if (monto != multaEsperada) {
                             confirmarMovimiento(
-                                "Exceso de Multa",
+                                "Diferencia de Multa",
                                 null,
                                 getMensajeMultaExcedente(multaEsperada)
                             ).then((continuar) => {
@@ -1944,8 +1944,8 @@ html;
                     const descripcion = document.createElement("p")
                     const confirmacion = document.createElement("p")
 
-                    descripcion.innerHTML = "El monto ingresado es mayor al 10% de la multa por retraso.<br>La multa esperada es de: $" + multaEsperada.toFixed(2)
-                    confirmacion.innerHTML = "<b>¿Desea continuar?</b>"
+                    descripcion.innerHTML = "El monto ingresado es diferente al 10% de la multa por retraso, la multa esperada es de: $" + multaEsperada.toFixed(2)
+                    confirmacion.innerHTML = "<br><b>Valide que el monto ingresado corresponde con el monto capturado en la tarjeta del ejecutivo.</b>"
 
                     div.appendChild(descripcion)
                     div.appendChild(confirmacion)
@@ -1954,7 +1954,7 @@ html;
                 }
 
                 const validaSeguro = () =>{
-                    const cicloActual = $("#cicloActual").text()
+                    const cicloActual = $("#cicloActual").text().trim()
                     const filas = $("#pagosRegistrados").DataTable().data()
                     const seguro = filas.filter(fila => fila[4] === cicloActual && fila[6] === "SEGURO").length === 0
 
@@ -3072,6 +3072,8 @@ html;
             echo "No se encontró el archivo solicitado.";
             return;
         }
+
+
 
         header("Content-Type: $archivo[TIPO_SOPORTE]");
         header("Content-Disposition: attachment; filename=\"$archivo[NOMBRE_SOPORTE]\"");

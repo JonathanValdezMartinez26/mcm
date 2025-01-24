@@ -59,7 +59,7 @@
                     </div>
                     <div class="col-md-1 col-sm-4  tile_stats_count">
                         <span class="count_top" style="font-size: 15px"><i class="fa fa-clock-o"></i> Ciclo</span>
-                        <div class="count" style="font-size: 14px" id="cicloActual"><?= $Administracion[0]['CICLO']; ?> </div>
+                        <div class="count" style="font-size: 14px" id="cicloActual"><?= $Administracion[0]['CICLO']; ?></div>
                     </div>
                     <div class="col-md-1 col-sm-4  tile_stats_count">
                         <span class="count_top" style="font-size: 15px">Prestamo</span>
