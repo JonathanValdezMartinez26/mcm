@@ -1672,8 +1672,7 @@ html;
         $datos['original'] = json_encode($registro);
 
         if (isset($_FILES['archivo']) && $_FILES['archivo']['error'] === UPLOAD_ERR_OK) {
-            $archivoTmp = $_FILES['archivo']['tmp_name'];
-            $datos['soporte'] = fopen($archivoTmp, 'rb');
+            $datos['soporte'] = fopen($_FILES['archivo']['tmp_name'], 'rb');
             $datos['nombre_soporte'] = $_FILES['archivo']['name'];
             $datos['tipo_soporte'] = $_FILES['archivo']['type'];
         }
@@ -2932,11 +2931,19 @@ html;
             return;
         }
 
+        // Obtener los datos binarios del archivo correctamente
+        $contenido = is_resource($archivo['SOPORTE']) ? stream_get_contents($archivo['SOPORTE']) : $archivo['SOPORTE'];
 
+        // Enviar las cabeceras para la descarga
+        header("Content-Type: " . $archivo['TIPO_SOPORTE']);
+        header("Content-Disposition: attachment; filename=\"" . $archivo['NOMBRE_SOPORTE'] . "\"");
+        header("Content-Length: " . strlen($contenido));
 
-        header("Content-Type: $archivo[TIPO_SOPORTE]");
-        header("Content-Disposition: attachment; filename=\"$archivo[NOMBRE_SOPORTE]\"");
-        header("Content-Length: strlen($archivo[SOPORTE])");
-        echo $archivo['SOPORTE'];
+        // Limpiar el búfer de salida antes de imprimir el archivo
+        ob_clean();
+        flush();
+
+        echo $contenido;
+        exit; // Asegurar que el script se detiene después de enviar el archivo
     }
 }

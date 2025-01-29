@@ -87,9 +87,8 @@ class Database
     public function insertar($sql, $datos)
     {
         try {
-            if (!$this->db_activa->prepare($sql)->execute($datos)) {
+            if (!$this->db_activa->prepare($sql)->execute($datos))
                 throw new \Exception("Error en insertar: " . print_r($this->db_activa->errorInfo(), 1) . "\nSql : $sql \nDatos : " . print_r($datos, 1));
-            }
         } catch (\PDOException $e) {
             throw new \Exception("Error en insertar: " . $e->getMessage() . "\nSql : $sql \nDatos : " . print_r($datos, 1));
         } catch (\Exception $e) {
@@ -100,6 +99,7 @@ class Database
     public function insertarBlob($sql, $datos, $blob = [])
     {
         try {
+            $this->db_activa->beginTransaction();
             $stmt = $this->db_activa->prepare($sql);
 
             foreach ($datos as $key => $value) {
@@ -108,6 +108,7 @@ class Database
             }
 
             if (!$stmt->execute()) throw new \Exception("Error en insertarBlob: " . print_r($this->db_activa->errorInfo(), 1) . "\nSql : $sql \nDatos : " . print_r($datos, 1));
+            $this->db_activa->commit();
         } catch (\PDOException $e) {
             throw new \Exception("Error en insertarBlob: " . $e->getMessage() . "\nSql : $sql \nDatos : " . print_r($datos, 1));
         } catch (\Exception $e) {
