@@ -818,20 +818,18 @@ html;
 
     public function generarExcel()
     {
-        $credito = $_GET['Credito'];
-        // $estilos = \PHPSpreadsheet::GetEstilosExcel();
-
         $columnas = [
-            \PHPSpreadsheet::ColumnaExcel('A', 'SECUENCIA', 'Secuencia'),
-            \PHPSpreadsheet::ColumnaExcel('B', 'ARTICULO', 'Articulo'),
-            \PHPSpreadsheet::ColumnaExcel('C', 'MARCA', 'Marca'),
-            \PHPSpreadsheet::ColumnaExcel('D', 'MODELO', 'Modelo'),
-            \PHPSpreadsheet::ColumnaExcel('E', 'NO_SERIE', 'Numero de Serie'),
-            \PHPSpreadsheet::ColumnaExcel('F', 'MONTO', 'Monto'),
-            \PHPSpreadsheet::ColumnaExcel('G', 'FACTURA', 'Factura'),
-            \PHPSpreadsheet::ColumnaExcel('H', 'FECREGISTRO', 'Registro')
+            \PHPSpreadsheet::ColumnaExcel('SECUENCIA', 'Secuencia'),
+            \PHPSpreadsheet::ColumnaExcel('ARTICULO', 'Articulo'),
+            \PHPSpreadsheet::ColumnaExcel('MARCA', 'Marca'),
+            \PHPSpreadsheet::ColumnaExcel('MODELO', 'Modelo'),
+            \PHPSpreadsheet::ColumnaExcel('NO_SERIE', 'Numero de Serie'),
+            \PHPSpreadsheet::ColumnaExcel('MONTO', 'Monto'),
+            \PHPSpreadsheet::ColumnaExcel('FACTURA', 'Factura'),
+            \PHPSpreadsheet::ColumnaExcel('FECREGISTRO', 'Registro')
         ];
 
+        $credito = $_GET['Credito'];
         $filas = CreditosDao::ConsultaGarantias($credito);
 
         \PHPSpreadsheet::DescargaExcel('Layout Garantías Creditos', 'Reporte', 'Garantías', $columnas, $filas);
@@ -889,27 +887,28 @@ html;
 
     public function excelCierreDiario()
     {
-        $fecha = $_POST['fecha'];
         $estilos = \PHPSpreadsheet::GetEstilosExcel();
+        $centrado = ['estilo' => $estilos['centrado']];
 
         $columnas = [
-            \PHPSpreadsheet::ColumnaExcel('A', 'SUCURSAL', 'SUCURSAL'),
-            \PHPSpreadsheet::ColumnaExcel('B', 'NOMBRE_ASESOR', 'NOMBRE ASESOR'),
-            \PHPSpreadsheet::ColumnaExcel('C', 'CODIGO_GRUPO', 'CODIGO GRUPO', $estilos['centrado']),
-            \PHPSpreadsheet::ColumnaExcel('D', 'CODIGO_CLIENTE', 'CODIGO CLIENTE', $estilos['centrado']),
-            \PHPSpreadsheet::ColumnaExcel('E', 'CURP_CLIENTE', 'CURP CLIENTE', $estilos['centrado']),
-            \PHPSpreadsheet::ColumnaExcel('F', 'NOMBRE_COMPLETO_CLIENTE', 'NOMBRE CLIENTE'),
-            \PHPSpreadsheet::ColumnaExcel('G', 'CODIGO_AVAL', 'CODIGO AVAL', $estilos['centrado']),
-            \PHPSpreadsheet::ColumnaExcel('H', 'CURP_AVAL', 'CURP AVAL', $estilos['centrado']),
-            \PHPSpreadsheet::ColumnaExcel('I', 'NOMBRE_COMPLETO_AVAL', 'NOMBRE AVAL'),
-            \PHPSpreadsheet::ColumnaExcel('J', 'CICLO', 'CICLO', $estilos['centrado']),
-            \PHPSpreadsheet::ColumnaExcel('K', 'FECHA_INICIO', 'FECHA INICIO', $estilos['fecha']),
-            \PHPSpreadsheet::ColumnaExcel('L', 'SALDO_TOTAL', 'SALDO TOTAL', $estilos['moneda']),
-            \PHPSpreadsheet::ColumnaExcel('M', 'MORA_TOTAL', 'MORA TOTAL', $estilos['moneda']),
-            \PHPSpreadsheet::ColumnaExcel('N', 'DIAS_MORA', 'DIAS MORA', $estilos['centrado']),
-            \PHPSpreadsheet::ColumnaExcel('O', 'TIPO_CARTERA', 'TIPO CARTERA', $estilos['centrado'])
+            \PHPSpreadsheet::ColumnaExcel('SUCURSAL', 'SUCURSAL'),
+            \PHPSpreadsheet::ColumnaExcel('NOMBRE_ASESOR', 'NOMBRE ASESOR'),
+            \PHPSpreadsheet::ColumnaExcel('CODIGO_GRUPO', 'CODIGO GRUPO', $centrado),
+            \PHPSpreadsheet::ColumnaExcel('CODIGO_CLIENTE', 'CODIGO CLIENTE', $centrado),
+            \PHPSpreadsheet::ColumnaExcel('CURP_CLIENTE', 'CURP CLIENTE', $centrado),
+            \PHPSpreadsheet::ColumnaExcel('NOMBRE_COMPLETO_CLIENTE', 'NOMBRE CLIENTE'),
+            \PHPSpreadsheet::ColumnaExcel('CODIGO_AVAL', 'CODIGO AVAL', $centrado),
+            \PHPSpreadsheet::ColumnaExcel('CURP_AVAL', 'CURP AVAL', $centrado),
+            \PHPSpreadsheet::ColumnaExcel('NOMBRE_COMPLETO_AVAL', 'NOMBRE AVAL'),
+            \PHPSpreadsheet::ColumnaExcel('CICLO', 'CICLO', $centrado),
+            \PHPSpreadsheet::ColumnaExcel('FECHA_INICIO', 'FECHA INICIO', ['estilo' => $estilos['fecha']]),
+            \PHPSpreadsheet::ColumnaExcel('SALDO_TOTAL', 'SALDO TOTAL', ['estilo' => $estilos['moneda']]),
+            \PHPSpreadsheet::ColumnaExcel('MORA_TOTAL', 'MORA TOTAL', ['estilo' => $estilos['moneda']]),
+            \PHPSpreadsheet::ColumnaExcel('DIAS_MORA', 'DIAS MORA', $centrado),
+            \PHPSpreadsheet::ColumnaExcel('TIPO_CARTERA', 'TIPO CARTERA', $centrado)
         ];
 
+        $fecha = $_POST['fecha'];
         $filas = CreditosDao::GetCierreDiario($fecha);
 
         \PHPSpreadsheet::DescargaExcel('Situación Cartera MCM', 'Reporte', 'Situación Cartera MCM', $columnas, $filas);

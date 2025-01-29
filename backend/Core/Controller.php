@@ -105,19 +105,15 @@ class Controller
                     zeroRecords: "No se encontraron registros",
                     lengthMenu: "Mostrar _MENU_ registros por página",
                     search: "Buscar:",
+                },
+                createdRow: (row) => {
+                    $(row).find('td').css('vertical-align', 'middle');
                 }
             }
 
             configuracion.lengthChange = noRegXvista
 
             $("#" + id).DataTable(configuracion)
-
-            $("#"  + id + " input[type=search]").keyup(() => {
-                $("#example")
-                    .DataTable()
-                    .search(jQuery.fn.DataTable.ext.type.search.html(this.value))
-                    .draw()
-            })
         }
     JAVASCRIPT;
     public $crearFilas = <<<JAVASCRIPT
@@ -146,26 +142,17 @@ class Controller
         }
     JAVASCRIPT;
     public $descargaExcel = <<<JAVASCRIPT
-        const descargaExcel = (url, parametros = {}) => {
-            const formDescarga = document.createElement("form")
-            formDescarga.action = url
-            formDescarga.method = "POST"
-            formDescarga.target = "_blank"
-            formDescarga.style.display = "none"
+        const descargaExcel = (url) => {
+            swal({ text: "Generando archivo, espere un momento...", icon: "/img/wait.gif", closeOnClickOutside: false, closeOnEsc: false })
+            const ventana = window.open(url, "_blank")
+            const intervalo = setInterval(() => {
+                if (ventana.closed) {
+                    clearInterval(intervalo)
+                    swal.close()
+                }
+            }, 1000)
 
-            Object.entries(parametros).forEach(([clave, valor]) => {
-                const input = document.createElement("input")
-                input.name = clave
-                input.value = valor
-                formDescarga.appendChild(input)
-            })
-
-            document.body.appendChild(formDescarga)
-            formDescarga.submit()
-
-            document.body.removeChild(formDescarga)
-
-            showInfo("Generando el archivo, espere un momento...")
+            window.focus()
         }
     JAVASCRIPT;
 

@@ -1,11 +1,13 @@
 <?php
+
 namespace App\controllers;
-defined("APPPATH") OR die("Access denied");
+
+defined("APPPATH") or die("Access denied");
 
 use \Core\View;
 use \Core\Controller;
 use \Core\MasterDom;
-use \App\models\Operaciones AS OperacionesDao;
+use \App\models\Operaciones as OperacionesDao;
 
 class Cultiva extends Controller
 {
@@ -17,112 +19,24 @@ class Cultiva extends Controller
         $this->_contenedor = new Contenedor;
         View::set('header', $this->_contenedor->header());
         View::set('footer', $this->_contenedor->footer());
-
     }
 
-    public function generarExcel(){
+    public function generarExcel()
+    {
+        $columnas = [
+            \PHPSpreadsheet::ColumnaExcel('SUCURSAL', 'Secuencia'),
+            \PHPSpreadsheet::ColumnaExcel('NOMBRE_GRUPO', 'Grupo'),
+            \PHPSpreadsheet::ColumnaExcel('CLIENTE', 'Cliente'),
+            \PHPSpreadsheet::ColumnaExcel('DOMICILIO', 'Domicilio'),
+        ];
 
-        $Fecha = $_GET['Inicial'];
-        $Fecha2 = $_GET['Final'];
+        $fecha = date('Y-m-d');
+        $fecha1 = $_GET['Inicial'];
+        $fecha2 = $_GET['Final'];
+        if ($fecha1 != '') $filas = OperacionesDao::ConsultaGruposCultiva($fecha1, $fecha2);
+        else $filas = OperacionesDao::ConsultaGruposCultiva($fecha, $fecha);
 
-        $objPHPExcel = new \PHPExcel();
-        $objPHPExcel->getProperties()->setCreator("jma");
-        $objPHPExcel->getProperties()->setLastModifiedBy("jma");
-        $objPHPExcel->getProperties()->setTitle("Reporte");
-        $objPHPExcel->getProperties()->setSubject("Reporte");
-        $objPHPExcel->getProperties()->setDescription("Descripcion");
-        $objPHPExcel->setActiveSheetIndex(0);
-
-
-
-        $estilo_titulo = array(
-            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
-            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
-            'type' => \PHPExcel_Style_Fill::FILL_SOLID
-        );
-
-        $estilo_encabezado = array(
-            'font' => array('bold' => true,'name'=>'Calibri','size'=>11, 'color' => array('rgb' => '060606')),
-            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
-            'type' => \PHPExcel_Style_Fill::FILL_SOLID
-        );
-
-        $estilo_celda = array(
-            'font' => array('bold' => false,'name'=>'Calibri','size'=>11,'color' => array('rgb' => '060606')),
-            'alignment' => array('horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER),
-            'type' => \PHPExcel_Style_Fill::FILL_SOLID
-
-        );
-
-
-        $fila = 1;
-        $adaptarTexto = true;
-
-        $controlador = "Operaciones";
-        $columna = array('A','B','C','D');
-        $nombreColumna = array( 'SUCURSAL', 'NOMBRE_GRUPO', 'CLIENTE', 'DOMICILIO');
-        $nombreCampo = array('SUCURSAL','NOMBRE_GRUPO','CLIENTE','DOMICILIO'
-        );
-
-
-        $objPHPExcel->getActiveSheet()->SetCellValue('A'.$fila, 'Consulta de Solicitudes Cultiva');
-        $objPHPExcel->getActiveSheet()->mergeCells('A'.$fila.':'.$columna[count($nombreColumna)-1].$fila);
-        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->applyFromArray($estilo_titulo);
-        $objPHPExcel->getActiveSheet()->getStyle('A'.$fila)->getAlignment()->setWrapText($adaptarTexto);
-
-        $fila +=1;
-
-        /*COLUMNAS DE LOS DATOS DEL ARCHIVO EXCEL*/
-        foreach ($nombreColumna as $key => $value) {
-            $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, $value);
-            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_encabezado);
-            $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
-            $objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($key)->setAutoSize(true);
-        }
-        $fila +=1; //fila donde comenzaran a escribirse los datos
-
-        /* FILAS DEL ARCHIVO EXCEL */
-
-        if($Fecha != '')
-        {
-            $Layoutt = OperacionesDao::ConsultaGruposCultiva($Fecha, $Fecha2);
-        }
-        else
-        {
-            $fechaActual = date('Y-m-d');
-            $Layoutt = OperacionesDao::ConsultaGruposCultiva($fechaActual, $fechaActual);
-        }
-
-        foreach ($Layoutt as $key => $value) {
-            foreach ($nombreCampo as $key => $campo) {
-                $objPHPExcel->getActiveSheet()->SetCellValue($columna[$key].$fila, html_entity_decode($value[$campo], ENT_QUOTES, "UTF-8"));
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->applyFromArray($estilo_celda);
-                $objPHPExcel->getActiveSheet()->getStyle($columna[$key].$fila)->getAlignment()->setWrapText($adaptarTexto);
-            }
-            $fila +=1;
-        }
-
-
-        $objPHPExcel->getActiveSheet()->getStyle('A1:'.$columna[count($columna)-1].$fila)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-        for ($i=0; $i <$fila ; $i++) {
-            $objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(20);
-        }
-
-
-        $objPHPExcel->getActiveSheet()->setTitle('Reporte');
-
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="Cultiva Reporte Clientes'.'.xlsx"');
-        header('Cache-Control: max-age=0');
-        header('Cache-Control: max-age=1');
-        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-        header ('Cache-Control: cache, must-revalidate');
-        header ('Pragma: public');
-
-        \PHPExcel_Settings::setZipClass(\PHPExcel_Settings::PCLZIP);
-        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save('php://output');
+        \PHPSpreadsheet::DescargaExcel('Cultiva Reporte Clientes', 'Reporte', 'Solicitudes Cultiva', $columnas, $filas);
     }
 
     public function index()
@@ -187,6 +101,7 @@ html;
 
         if ($Fecha != '') {
             $Consulta = OperacionesDao::ConsultaGruposCultiva($Fecha, $FechaFinal);
+            $tabla = '';
 
             foreach ($Consulta as $key => $value) {
 
@@ -203,11 +118,10 @@ html;
 html;
                 View::set('Inicial', $Fecha);
                 View::set('Final', $FechaFinal);
-
             }
-
         } else {
             $Consulta = OperacionesDao::ConsultaGruposCultiva($fechaActual, $fechaActual);
+            $tabla = '';
 
             foreach ($Consulta as $key => $value) {
 
@@ -230,8 +144,6 @@ html;
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('tabla', $tabla);
         View::render("zz_cultiva_consulta_clientes");
-
-
     }
 
     public function ReingresarClientesCredito()
@@ -305,6 +217,7 @@ html;
         if ($credito != '') {
 
             $Clientes = OperacionesDao::ReingresarClientesCredito($credito);
+            $tabla = '';
 
             foreach ($Clientes[0] as $key => $value) {
 
@@ -324,7 +237,6 @@ html;
             View::set('tabla', $tabla);
             View::set('Nombre', $Clientes[1]['NOMBRE']);
             View::render("reingresar_clientes_cultiva_sec");
-
         } else {
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -340,7 +252,7 @@ html;
         $cliente->_cdgcl = $cdgcl;
 
 
-        $id = OperacionesDao::updateCliente($cliente);
-        return $id;
+        // $id = OperacionesDao::updateCliente($cliente);
+        // return $id;
     }
 }
