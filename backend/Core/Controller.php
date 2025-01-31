@@ -116,6 +116,16 @@ class Controller
             $("#" + id).DataTable(configuracion)
         }
     JAVASCRIPT;
+    public $actualizaDatosTabla = <<<JAVASCRIPT
+        const actualizaDatosTabla = (id, datos) => {
+            const tabla = $("#" + id).DataTable()
+            tabla.clear().draw()
+            datos.forEach((item) => {
+                if (Array.isArray(item)) tabla.row.add(item)
+                else tabla.row.add(Object.values(item))
+            })
+        }
+    JAVASCRIPT;
     public $crearFilas = <<<JAVASCRIPT
         const creaFilas = (datos) => {
             const filas = document.createDocumentFragment()

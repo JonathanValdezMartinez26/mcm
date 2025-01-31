@@ -24,7 +24,7 @@ class Cultiva extends Controller
     public function generarExcel()
     {
         $columnas = [
-            \PHPSpreadsheet::ColumnaExcel('SUCURSAL', 'Secuencia'),
+            \PHPSpreadsheet::ColumnaExcel('SUCURSAL', 'Sucursal'),
             \PHPSpreadsheet::ColumnaExcel('NOMBRE_GRUPO', 'Grupo'),
             \PHPSpreadsheet::ColumnaExcel('CLIENTE', 'Cliente'),
             \PHPSpreadsheet::ColumnaExcel('DOMICILIO', 'Domicilio'),
