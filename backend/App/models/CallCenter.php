@@ -355,9 +355,9 @@ sql;
 
         $string_from_array = implode(', ', $cdgco);
         if ($suc == '000') {
-            $var = 'SPR.CDGCO IN(' . $string_from_array . ') AND ';
+            $var = "SPR.CDGCO IN ('033', '025', '032', '040', '049', '028', '029', '036', '043', '044', '027', '030', '031', '037', '042', '039', '038', '050', '034', '035', '041', '045', '046', '047', '048', '012', '016', '018', '007', '008', '011', '017', '014', '013', '001', '002', '003', '004', '005', '006', '009', '010', '015', '019', '020') AND ";
         } else {
-            $var = 'SPR.CDGCO IN(' . $suc . ') AND ';
+            $var = 'SPR.CDGCO IN (' . $suc . ') AND ';
         }
 
 
@@ -444,7 +444,7 @@ sql;
              
                  FROM  SOLICITUDES_PROCESADAS SPR
                  INNER JOIN PE ON PE.CODIGO = SPR.CDGPE 
-                 WHERE $var SPR.FECHA_SOL BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
+                 WHERE $var TO_DATE(SPR.FECHA_SOL, 'DD/MM/YYYY HH24:MI:SS') BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000'
                  AND SEMAFORO = '1' 
                 $var_
                  
@@ -522,7 +522,7 @@ sql;
                  '' AS BD
              
                  FROM  SOLICITUDES_PENDIENTES SPR
-                 WHERE $var SPR.FECHA_SOL BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000') ORDER BY D DESC
+                 WHERE $var TO_DATE(SPR.FECHA_SOL, 'DD/MM/YYYY HH24:MI:SS') BETWEEN TIMESTAMP '$fecha_inicio 00:00:00.000000' AND TIMESTAMP '$fecha_fin 23:59:59.000000') ORDER BY D DESC
                  
                  
 sql;

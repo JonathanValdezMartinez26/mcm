@@ -173,7 +173,7 @@ html;
             </li>
 html;
 
-        $presmisosCajas = ['ADMIN', 'GARAN', 'CAMAG', 'ORHM', 'HTMP'];
+        $presmisosCajas = ['ADMIN', 'GARAN', 'CAMAG', 'ORHM', 'MAPH'];
         if (in_array($this->__perfil, $presmisosCajas) || in_array($this->__usuario, $presmisosCajas)) {
             $menu .= <<<html
             <li><a><i class="fa fa-users"> </i>&nbsp; Créditos <span class="fa fa-chevron-down"></span></a>

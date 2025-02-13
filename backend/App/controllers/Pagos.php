@@ -1771,8 +1771,8 @@ html;
                             ).then((continuar) => {
                                 if (continuar) agregarPago()
                             })
+                            return
                         }
-                        return
                     }
 
                     agregarPago()
