@@ -325,7 +325,7 @@ class Pagos extends Controller
                 }
             }
 
-            $lista_SU = ['MCDP', 'AMGM'];
+            $lista_SU = ['MCDP', 'AMGM', 'LVGA'];
 
             if (in_array($this->__usuario, $lista_SU) && $inicio_f != $fecha_base && $value['DESIGNATION_ADMIN'] != 'SI') $editar .= <<<HTML
                 <button type="button" class="btn btn-warning btn-circle $this->__usuario"><i class="fa fa-key"></i></button>
