@@ -1047,7 +1047,8 @@ sql;
             INSERT INTO PAGOSDIA_BITACORA_ADMIN
                 (USUARIO, ORIGINAL, JUSTIFICACION, SOPORTE, NOMBRE_SOPORTE, TIPO_SOPORTE)
             VALUES
-                (:usuario, :original, :justificacion, :soporte, :nombre_soporte, :tipo_soporte)
+                (:usuario, :original, :justificacion, EMPTY_BLOB(), :nombre_soporte, :tipo_soporte)
+            RETURNING SOPORTE INTO :soporte
         SQL;
 
         $param = [
@@ -1135,13 +1136,11 @@ sql;
             FETCH FIRST 1 ROWS ONLY
         SQL;
 
-        $param = [
-            'usuario' => $datos['usuario'],
-        ];
+        $param = ['usuario' => $datos['usuario']];
 
         try {
             $db = new Database();
-            return $db->queryOne($qry, $param) ?? [];
+            return $db->queryOne($qry, $param);
         } catch (\Exception $e) {
             return [];
         }

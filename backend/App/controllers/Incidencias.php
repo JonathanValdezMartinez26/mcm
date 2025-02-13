@@ -1,10 +1,13 @@
 <?php
-namespace App\controllers;
-defined("APPPATH") OR die("Access denied");
 
-use \Core\View;
-use \Core\Controller;
-use \App\models\Incidencias AS IncidenciasDao;
+namespace App\controllers;
+
+defined("APPPATH") or die("Access denied");
+
+use Core\View;
+use Core\Controller;
+use App\models\Incidencias as IncidenciasDao;
+use App\models\Operaciones as OperacionesDao;
 
 class Incidencias extends Controller
 {
@@ -19,7 +22,6 @@ class Incidencias extends Controller
 
         View::set('header', $this->_contenedor->header());
         View::set('footer', $this->_contenedor->footer());
-
     }
 
 
@@ -82,6 +84,7 @@ html;
         $fechaActual = date('Y-m-d');
         $Fecha = $_GET['Inicial'];
         $FechaFinal = $_GET['Final'];
+        $tabla = '';
 
         if ($Fecha != '') {
             $Consulta = OperacionesDao::ConsultaGruposCultiva($Fecha, $FechaFinal);
@@ -101,9 +104,7 @@ html;
 html;
                 View::set('Inicial', $Fecha);
                 View::set('Final', $FechaFinal);
-
             }
-
         } else {
             $Consulta = OperacionesDao::ConsultaGruposCultiva($fechaActual, $fechaActual);
 
@@ -128,8 +129,6 @@ html;
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::set('tabla', $tabla);
         View::render("zz_cultiva_consulta_clientes");
-
-
     }
 
     public function CancelarRefinanciamiento()
@@ -206,36 +205,26 @@ html;
         $Proceso = IncidenciasDao::ProcesoCancelarRefinanciamiento('030195');
 
         var_dump($Proceso[0]['EXISTE']);
-        if($Proceso[0]['EXISTE'] >= 1)
-        {
+        if ($Proceso[0]['EXISTE'] >= 1) {
             echo "El cliente tiene una solicitud activa, solicite borrarla";
         }
 
 
         //////////////////
-        if($Proceso[1]['DEVENGO_DIARIO'] >= 2500)
-        {
+        if ($Proceso[1]['DEVENGO_DIARIO'] >= 2500) {
             echo "<br>El cierre del dia de hoy ya se realizo";
-        }
-        else
-        {
+        } else {
             echo "<br>El cierre no se ha realizado";
         }
         //////////////////
-        if($Proceso[1]['DEVENGO_DIARIO'] >= 2500)
-        {
+        if ($Proceso[1]['DEVENGO_DIARIO'] >= 2500) {
             echo "<br>El cierre del dia de hoy ya se realizo";
-        }
-        else
-        {
+        } else {
             echo "<br>El cierre no se ha realizado";
         }
 
 
         View::set('header', $this->_contenedor->header($extraHeader));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-
     }
-
-
 }
