@@ -1044,10 +1044,10 @@ sql;
     public static function RegistroBitacoraAdmin($datos)
     {
         $qry = <<<SQL
-            INSERT INTO PAGOSDIA_BITACORA_ADMIN
+            INSERT INTO PAGOSDIA_BITACORA_ADMIN 
                 (USUARIO, ORIGINAL, JUSTIFICACION, SOPORTE, NOMBRE_SOPORTE, TIPO_SOPORTE)
-            VALUES
-                (:usuario, :original, :justificacion, EMPTY_BLOB(), :nombre_soporte, :tipo_soporte)
+            VALUES 
+                (:usuario, :original, :justificacion, EMPTY_BLOB(), :nombre_soporte, :tipo_soporte) 
             RETURNING SOPORTE INTO :soporte
         SQL;
 

@@ -327,7 +327,6 @@ class Pagos extends Controller
 
             $lista_SU = ['MCDP', 'AMGM'];
 
-
             if (in_array($this->__usuario, $lista_SU) && $inicio_f != $fecha_base && $value['DESIGNATION_ADMIN'] != 'SI') $editar .= <<<HTML
                 <button type="button" class="btn btn-warning btn-circle $this->__usuario"><i class="fa fa-key"></i></button>
             HTML;
@@ -1770,8 +1769,8 @@ html;
                             ).then((continuar) => {
                                 if (continuar) agregarPago()
                             })
+                            return
                         }
-                        return
                     }
 
                     agregarPago()
