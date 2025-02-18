@@ -597,7 +597,7 @@ html;
                         $('#modal_cambio_sucursal').modal('hide')
                         alertify.error("Error en la actualización");
                     }
-                }cccccccccccccccccc
+                }
                 
             });
     }
