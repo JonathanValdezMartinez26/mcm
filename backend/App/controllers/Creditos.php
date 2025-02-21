@@ -847,8 +847,8 @@ html;
             const descarga = () => {
                 const fecha = document.getElementById('fecha').value
                 if (!fecha) return showError("Ingrese una fecha a buscar.")
-
-                descargaExcel("/Creditos/excelCierreDiario", { fecha })
+                
+                descargaExcel("/Creditos/excelCierreDiario/?" + $.param({ fecha }))
             }
         </script>
         HTML;
@@ -908,7 +908,7 @@ html;
             \PHPSpreadsheet::ColumnaExcel('TIPO_CARTERA', 'TIPO CARTERA', $centrado)
         ];
 
-        $fecha = $_POST['fecha'];
+        $fecha = $_GET['fecha'];
         $filas = CreditosDao::GetCierreDiario($fecha);
 
         \PHPSpreadsheet::DescargaExcel('Situación Cartera MCM', 'Reporte', 'Situación Cartera MCM', $columnas, $filas);

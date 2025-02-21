@@ -191,7 +191,7 @@ html;
             <li><a href="/Promociones/Telarana/">Calculo Descuento Telaraña</a></li>
             <li><a href="/Validaciones/RegistroTelarana/">Registro Telaraña</a></li>
             <li><a href="/Creditos/ActualizaCredito/">Actualización de Créditos</a></li>
-            <li><a href="/Creditos/cierreDiario">Situación Cartera</a></li>
+            <!-- <li><a href="/Creditos/cierreDiario">Situación Cartera</a></li> -->
             html;
         }
 
@@ -199,6 +199,7 @@ html;
             $menu .= <<<html
             <li><a href="/Creditos/CambioSucursal/">Cambio de Sucursal</a></li>
             <li><a href="/CancelaRef/">Cancelación de Ref</a></li>
+            <li><a href="/CorreccionAjustes/cierreDiario">Corrección Mov Ajustes</a></li>
             html;
         }
 
