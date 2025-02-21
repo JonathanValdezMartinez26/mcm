@@ -866,6 +866,7 @@ html;
     {
         $fecha = $_POST['fecha'] ?? $f;
         $datos = CreditosDao::GetCierreDiario($fecha);
+        $datos = $datos['success'] ? $datos['datos'] : [];
 
         $tabla = "";
         foreach ($datos as $key => $dato) {
@@ -910,6 +911,7 @@ html;
 
         $fecha = $_GET['fecha'];
         $filas = CreditosDao::GetCierreDiario($fecha);
+        $filas = $filas['success'] ? $filas['datos'] : [];
 
         \PHPSpreadsheet::DescargaExcel('Situación Cartera MCM', 'Reporte', 'Situación Cartera MCM', $columnas, $filas);
     }

@@ -316,9 +316,9 @@ sql;
         try {
             $mysqli = new Database();
             $res = $mysqli->queryAll($qry);
-            return $res;
+            return self::Responde(true, 'Cierre diario generado con éxito.', $res, $qry);
         } catch (\Exception $e) {
-            return array();
+            return self::Responde(false, 'Error al generar el cierre diario.', null, $e->getMessage());
         }
     }
 

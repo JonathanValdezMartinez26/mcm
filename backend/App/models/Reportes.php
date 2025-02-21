@@ -34,7 +34,7 @@ class Reportes
                     END AS ACTIVO,
                     (
 						SELECT
-							LISTAGG(TUS.NOMBRE, ',<br>')
+							LISTAGG(TUS.NOMBRE, ',<br>') WITHIN GROUP (ORDER BY TUS.NOMBRE)
 						FROM
 							TUS,
 							UT
@@ -66,7 +66,7 @@ class Reportes
                     END AS ACTIVO,
                     (
 						SELECT
-							LISTAGG(TUS.NOMBRE, ',<br>')
+							LISTAGG(TUS.NOMBRE, ',<br>') WITHIN GROUP (ORDER BY TUS.NOMBRE)
 						FROM
 							TUS,
 							UT
@@ -112,7 +112,7 @@ sql;
                 END AS ACTIVO,
                 (
                     SELECT
-                        LISTAGG(TUS.NOMBRE, ',<br>')
+                        LISTAGG(TUS.NOMBRE, ',<br>') WITHIN GROUP (ORDER BY TUS.NOMBRE)
                     FROM
                         TUS,
                         UT
@@ -144,7 +144,7 @@ sql;
                 END AS ACTIVO,
                 (
                     SELECT
-                        LISTAGG(TUS.NOMBRE, ',<br>')
+                        LISTAGG(TUS.NOMBRE, ',<br>') WITHIN GROUP (ORDER BY TUS.NOMBRE)
                     FROM
                         TUS,
                         UT
