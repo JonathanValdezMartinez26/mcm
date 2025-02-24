@@ -6,7 +6,7 @@ defined("APPPATH") or die("Access denied");
 
 use Core\View;
 use Core\Controller;
-use App\models\CancelaRef as CancelaRefDao;
+use App\models\CorreccionAjustes as CorreccionAjustesDao;
 
 
 
@@ -29,112 +29,120 @@ class CorreccionAjustes extends Controller
         $extraFooter = <<<HTML
             <script>
                 {$this->configuraTabla}
+                {$this->actualizaDatosTabla}
                 {$this->consultaServidor}
                 {$this->mensajes}
                 {$this->confirmarMovimiento}
                 {$this->formatoMoneda}
 
-                const crearTD = (contenido) => {
-                    const td = document.createElement("td")
+                const idTabla = "refinanciamientos"
 
-                    if (typeof contenido === "object") td.appendChild(contenido)
-                    else td.textContent = contenido
-
-                    return td
+                const buscarEnter = (e) => {
+                    if (e.key === "Enter") buscarAjustes()
                 }
 
-                const getBotonCanelar = (credito, ciclo, secuencia) => {
-                    const btnCancelar = document.createElement("button")
-
-                    btnCancelar.classList.add("btn", "btn-danger")
-                    btnCancelar.textContent = "Cancelar"
-                    btnCancelar.addEventListener("click", () => {
-                        cancelarRefinanciamiento(credito, ciclo, secuencia)
-                    })
-
-                    return btnCancelar
-                }
-
-                const inputError = (mensaje) => {
-                    $("#noCredito").toggleClass("incorrecto", true)
+                const inputError = (id, mensaje) => {
+                    $("#" + id).toggleClass("incorrecto", true)
+                    $("#" + id).focus()
                     resultadoError(mensaje)
                 }
 
                 const resultadoError = (mensaje) => {
                     $(".resultado").toggleClass("conDatos", false)
-                    
-                    showError(mensaje).then(() => {
-                        $("#refinanciamientos").DataTable().destroy()
-                        $("#refinanciamientos tbody").empty()
-                        configuraTabla("refinanciamientos")
-                    })
+                    showError(mensaje).then(() => actualizaDatosTabla(idTabla, []))
                 }
 
                 const resultadoOK = (datos) => {
-                    const situaciones = {
-                        "L": "Liquidado",
-                        "E": "Entregado"
+                    const datosEdit = {
+                        credito: datos[0].CREDITO,
+                        ciclo: datos[0].CICLO,
+                        periodos: [],
+                        secuencias: [],
+                        razon: datos[0].RAZON,
+                        descripcion: datos[0].RAZON_DESC,
+                        fecha: datos[0].FECHA,
+                        monto: 0
                     }
 
-                    $("#refinanciamientos").DataTable().destroy()
-                    $("#refinanciamientos tbody").empty()
+                    datos = datos.map((dato, fila) => {
+                        datosEdit.monto += parseFloat(dato.CANTIDAD)
+                        datosEdit.periodos.push(dato.PERIODO)
+                        datosEdit.secuencias.push(dato.SECUENCIA)
 
-                    datos.forEach((dato) => {
-                        const { CLIENTE, CREDITO, CICLO, SITUACION, SALDO_TOTAL, FECHA, NOMBRE, EJECUTIVO, MONTO, OPERACION, REGISTRO, SECUENCIA, ESTATUS, ULTIMO_CICLO } = dato
-
-                        const tr = document.createElement("tr")
-                        tr.appendChild(crearTD(CLIENTE))
-                        tr.appendChild(crearTD(NOMBRE))
-                        tr.appendChild(crearTD(CREDITO))
-                        tr.appendChild(crearTD(CICLO))
-                        tr.appendChild(crearTD(situaciones[SITUACION]))
-                        tr.appendChild(crearTD("$ " + formatoMoneda(SALDO_TOTAL)))
-                        tr.appendChild(crearTD(OPERACION))
-                        tr.appendChild(crearTD(FECHA))
-                        tr.appendChild(crearTD("$ " + formatoMoneda(MONTO)))
-                        tr.appendChild(crearTD(EJECUTIVO))
-                        tr.appendChild(crearTD(REGISTRO))
-                        const btn = (ESTATUS === "A" && SITUACION === "L" && CICLO === ULTIMO_CICLO && SALDO_TOTAL > 0) ? getBotonCanelar(CREDITO, CICLO, SECUENCIA) : document.createTextNode("")
-                        tr.appendChild(crearTD(btn))
+                        const nuevo = [
+                            dato.CREDITO,
+                            dato.CICLO,
+                            dato.RAZON_DESC,
+                            dato.OBSERVACIONES,
+                            dato.FECHA,
+                            "$ " + formatoMoneda(dato.CANTIDAD),
+                            dato.REFERENCIA
+                        ]
                         
-                        $("#refinanciamientos tbody").append(tr)
+                        return nuevo
                     })
 
-                    configuraTabla("refinanciamientos")
-
+                    $("#datosEdit").val(JSON.stringify(datosEdit))
+                    actualizaDatosTabla(idTabla, datos)
                     $(".resultado").toggleClass("conDatos", true)
                 }
 
-                const buscarRefinanciemientos = () => {
-                    $("#noCredito").toggleClass("incorrecto", false)
-                    const credito = $("#noCredito").val()
+                const buscarAjustes = () => {
+                    $("#muestraDatos").css("display", "none")
 
-                    if (credito === "") return inputError("Debe ingresar un número de crédito.")
-                    if (credito.length !== 6) return inputError("El número de crédito debe tener 6 dígitos.")
+                    $("#creditoBuscar").toggleClass("incorrecto", false)
+                    $("#cicloBuscar").toggleClass("incorrecto", false)
+                    const credito = $("#creditoBuscar").val()
+                    const ciclo = $("#cicloBuscar").val()
 
-                    consultaServidor("/cancelaRef/GetRefinanciamientos", { credito }, (resultado) => {
+                    if (credito === "") return inputError("creditoBuscar", "Debe ingresar un número de crédito.")
+                    if (isNaN(credito)) return inputError("creditoBuscar", "El número de crédito solo debe contener números.")
+                    if (credito.length !== 6) return inputError("creditoBuscar", "El número de crédito debe tener 6 dígitos.")
+
+                    if (ciclo === "") return inputError("cicloBuscar", "Debe ingresar un ciclo.")
+                    if (isNaN(ciclo)) return inputError("cicloBuscar", "El ciclo debe ser numérico.")
+                    if (ciclo.length !== 2) return inputError("cicloBuscar", "El ciclo debe tener 2 dígitos.")
+
+                    consultaServidor("/CorreccionAjustes/GetAjustes", { credito, ciclo }, (resultado) => {
                         if (!resultado.success) return resultadoError(resultado.mensaje)
                         
                         const { datos } = resultado
-                        if (datos.length === 0) return resultadoError("No se encontraron refinanciamientos para el crédito " + credito + ".")
+                        if (datos.length === 0) return resultadoError("No se encontraron ajustes para el crédito " + credito + ".")
 
                         resultadoOK(datos)
+                        $("#muestraDatos").css("display", "block")
                     })
                 }
 
-                const cancelarRefinanciamiento = (credito, ciclo, secuencia) => {
-                    const advertencia = document.createElement("p")
-                    advertencia.innerHTML = "Se ajustara el devengo del periodo y se reactivara el crédito.<br><b>¿Está seguro de continuar con la cancelación del refinanciamiento del crédito " + credito + " para el ciclo " + ciclo + "?</b>"
+                const muestraModal = () => {
+                    const datos = JSON.parse($("#datosEdit").val())
 
-                    confirmarMovimiento("Cancelación de refinanciamiento", null, advertencia)
+                    $("#credito").val(datos.credito)
+                    $("#ciclo").val(datos.ciclo)
+                    $("#monto").val("$ " + formatoMoneda(datos.monto))
+                    $("#fecha").val(datos.fecha)
+                    $("#razonActual").val(datos.descripcion)
+                    $("#razon").val(datos.razon)
+
+                    $("#modalRazones").modal("show")
+                }
+
+                const modificaRazon = () => {
+                    const datos = JSON.parse($("#datosEdit").val())
+
+                    if (datos.razon === $("#razon").val()) return showInfo("Se debe seleccionar una razón diferente.")
+
+                    confirmarMovimiento("Corrección de ajuste", "¿Seguro desea cambiar la razón de este ajuste?")
                     .then((continuar) => {
                         if (!continuar) return
+                        datos.razon = $("#razon").val()
 
-                        consultaServidor("/cancelaRef/CancelaRefinanciamiento", { credito, ciclo, secuencia }, (resultado) => {
+                        consultaServidor("/CorreccionAjustes/ActualizaRazon", datos, (resultado) => {
                             if (!resultado.success) return showError(resultado.mensaje)
+                            $("#modalRazones").modal("hide")
 
                             showSuccess(resultado.mensaje).then(() => {
-                                $("#buscarRef").click()
+                                buscarAjustes(credito, ciclo)
                             })
                         })
                     })
@@ -143,11 +151,11 @@ class CorreccionAjustes extends Controller
                 $(document).ready(() => {
                     configuraTabla("refinanciamientos")
 
-                    $("#noCredito").on("keypress", (e) => {
-                        if (e.key < "0" || e.key > "9") e.preventDefault()
-                        if (e.key === "Enter") buscarRefinanciemientos()
-                    })
-                    $("#buscarRef").on("click", buscarRefinanciemientos)
+                    $("#creditoBuscar").on("keypress", buscarEnter)
+                    $("#cicloBuscar").on("keypress", buscarEnter)
+                    $("#buscar").on("click", buscarAjustes)
+                    $("#muestraDatos").on("click", muestraModal)
+                    $("#modificar").on("click", modificaRazon)
                 })
             </script>
         HTML;
@@ -155,16 +163,30 @@ class CorreccionAjustes extends Controller
 
         View::set('header', $this->_contenedor->header($this->GetExtraHeader('Cancelación de Refinanciamientos')));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render("cancela_refinanciamientos");
+        View::set("razones", $this->GetRazones());
+        View::render("correccion_ajustes");
     }
 
-    public function GetRefinanciamientos()
+    public function GetRazones()
     {
-        echo json_encode(CancelaRefDao::GetRefinanciamientos($_POST));
+        $razones = CorreccionAjustesDao::GetRazones();
+        if (!$razones['success']) return "";
+
+        $opciones = "";
+        foreach ($razones['datos'] as $razon) {
+            $opciones .= "<option value='{$razon['CODIGO']}'>{$razon['DESCRIPCION']}</option>";
+        }
+
+        return $opciones;
     }
 
-    public function CancelaRefinanciamiento()
+    public function GetAjustes()
     {
-        echo json_encode(CancelaRefDao::CancelaRefinanciamiento($_POST));
+        echo json_encode(CorreccionAjustesDao::GetAjustes($_POST));
+    }
+
+    public function ActualizaRazon()
+    {
+        echo json_encode(CorreccionAjustesDao::ActualizaRazon($_POST));
     }
 }
