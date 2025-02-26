@@ -30,14 +30,14 @@ class Database
         try {
             $this->db_activa =  new PDO($host, $usuario, $password);
         } catch (\PDOException $e) {
-            echo self::baseNoDisponible($e);
+            echo self::baseNoDisponible(self::muestraError($e));
             $this->db_activa =  null;
         }
     }
 
-    private function baseNoDisponible()
+    private function baseNoDisponible($mensaje)
     {
-        http_response_code(503); // Código 503: Servicio no disponible
+        http_response_code(503);
         echo <<<HTML
             <!DOCTYPE html>
             <html lang="es">
@@ -77,7 +77,13 @@ class Database
                     <h1>Sistema fuera de línea</h1>
                     <p>Estamos trabajando para resolver la situación. Por favor, vuelva a intentarlo más tarde.</p>
                 </div>
+                <input type="hidden" id="baseNoDisponible" value="$mensaje">
             </body>
+            <script>
+                window.onload = () => {
+                    console.log(document.getElementById('baseNoDisponible').value)
+                }
+            </script>
             </html>
         HTML;
         exit();
@@ -114,7 +120,7 @@ class Database
 
         if ($sql != null) $error .= "\nSql: " . $sql;
         if ($parametros != null) $error .= "\nDatos: " . print_r($parametros, 1);
-        echo $error . "\n";
+        //echo $error . "\n";
         return $error;
     }
 
