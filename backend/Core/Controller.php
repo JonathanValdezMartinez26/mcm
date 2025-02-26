@@ -120,10 +120,12 @@ class Controller
         const actualizaDatosTabla = (id, datos) => {
             const tabla = $("#" + id).DataTable()
             tabla.clear()
-            datos.forEach((item) => {
-                if (Array.isArray(item)) tabla.row.add(item).draw(false)
-                else tabla.row.add(Object.values(item)).draw(false)
-            })
+            if (Array.isArray(datos)) {
+                datos.forEach((item) => {
+                    if (Array.isArray(item)) tabla.row.add(item).draw(false)
+                    else tabla.row.add(Object.values(item)).draw(false)
+                })
+            }
             tabla.draw()
         }
     JAVASCRIPT;

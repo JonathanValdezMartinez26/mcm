@@ -182,10 +182,10 @@ class Database
     }
 
 
-    public function eliminar($sql)
+    public function eliminar($sql, $prm = null)
     {
         try {
-            return $this->db_activa->prepare($sql)->execute();
+            return $this->db_activa->prepare($sql)->execute($prm);
         } catch (\PDOException $e) {
             throw new \Exception("Error en eliminar: " . $e->getMessage() . "\nSql : $sql");
         }

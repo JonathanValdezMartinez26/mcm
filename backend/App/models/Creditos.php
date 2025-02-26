@@ -324,52 +324,76 @@ sql;
 
     public static function GetParametrosCorreos()
     {
-        $qry = <<<SQL
-            SELECT * FROM (
-                SELECT UNIQUE
-                    'AREA' AS TIPO,
-                    AREA AS VALOR,
-                    AREA AS MOSTRAR
-                FROM
-                    CORREO_DIRECTORIO
-                ORDER BY AREA
-            )
-            UNION
-            SELECT * FROM (
-                SELECT UNIQUE
-                    'SUCURSAL' AS TIPO,
-                    CD.SUCURSAL AS VALOR,
-                    CD.SUCURSAL || ' - ' || CO.NOMBRE AS MOSTRAR
-                FROM
-                    CORREO_DIRECTORIO CD
-                    JOIN CO ON CO.CODIGO = CD.SUCURSAL
-                ORDER BY TO_NUMBER(CD.SUCURSAL)
-            )
-            UNION
-            SELECT * FROM (
-                SELECT UNIQUE
-                    'GRUPO' AS TIPO,
-                    GRUPO AS VALOR,
-                    REPLACE(GRUPO, '_', ' ') AS MOSTRAR
-                FROM
-                    CORREO_DESTINATARIOS
-                ORDER BY GRUPO
-            )
-            UNION
-            SELECT * FROM (
-                SELECT UNIQUE
-                    'SUCURSALES' AS TIPO,
-                    CODIGO AS VALOR,
-                    CODIGO || ' - ' || NOMBRE AS MOSTRAR
-                FROM
-                    CO
-                ORDER BY TO_NUMBER(CODIGO)
-            )
+        $qry1 = <<<SQL
+            SELECT DISTINCT
+                'AREA' AS TIPO,
+                AREA AS VALOR,
+                AREA AS MOSTRAR
+            FROM
+                CORREO_DIRECTORIO
+            WHERE
+                ESTATUS = 'A'
+            ORDER BY
+                AREA
+        SQL;
+
+        $qry2 = <<<SQL
+            SELECT UNIQUE
+                'SUCURSAL' AS TIPO,
+                CD.SUCURSAL AS VALOR,
+                CD.SUCURSAL || ' - ' || CO.NOMBRE AS MOSTRAR,
+                CO.NOMBRE
+            FROM
+                CORREO_DIRECTORIO CD
+                JOIN CO ON CO.CODIGO = CD.SUCURSAL
+            WHERE
+                CD.ESTATUS = 'A'
+            ORDER BY
+                CO.NOMBRE
+        SQL;
+
+        $qry3 = <<<SQL
+            SELECT
+                'GRUPO' AS TIPO
+                , TO_CHAR(CG.ID) AS VALOR
+                , CG.GRUPO AS MOSTRAR
+                , NVL(USUARIOS, 0) AS USUARIOS
+            FROM
+                CORREO_GRUPO CG
+                LEFT JOIN (
+                    SELECT
+                        ID_GRUPO
+                        , COUNT(ID_CORREO) AS USUARIOS
+                    FROM
+                        CORREO_DIRECTORIO_GRUPO
+                    GROUP BY
+                        ID_GRUPO
+                ) CDG ON CDG.ID_GRUPO = CG.ID
+            WHERE
+                CG.ESTATUS = 'A'
+            ORDER BY
+                CG.GRUPO
+        SQL;
+
+        $qry4 = <<<SQL
+            SELECT
+                'SUCURSALES' AS TIPO,
+                CODIGO AS VALOR,
+                CODIGO || ' - ' || NOMBRE AS MOSTRAR
+            FROM
+                CO
+            ORDER BY
+                NOMBRE
         SQL;
 
         try {
-            $mcm = new Database();
-            $res = $mcm->queryAll($qry);
+            $db = new Database();
+            $res1 = $db->queryAll($qry1);
+            $res2 = $db->queryAll($qry2);
+            $res3 = $db->queryAll($qry3);
+            $res4 = $db->queryAll($qry4);
+
+            $res = array_merge($res1, $res2, $res3, $res4);
             return self::Responde(true, 'Parámetros de correos encontrados', $res);
         } catch (\Exception $e) {
             return self::Responde(false, 'Error al buscar parámetros de correos', null, $e->getMessage());
@@ -380,6 +404,7 @@ sql;
     {
         $qry = <<<SQL
             SELECT
+                ID,
                 NOMBRE,
                 CORREO,
                 AREA,
@@ -388,18 +413,24 @@ sql;
                 CORREO_DIRECTORIO
         SQL;
 
-        if (count($datos) > 0) {
-            $qry .= ' WHERE ';
-            $pTmp = [];
-            foreach ($datos as $key => $value) {
-                $pTmp[] = "$key = :$key";
-            }
-            $qry .= implode(' AND ', $pTmp);
+        $filtros = [];
+        $prm = [];
+
+        if (isset($datos['area'])) {
+            $filtros[] = 'AREA = :area';
+            $prm['area'] = $datos['area'];
         }
 
+        if (isset($datos['sucursal'])) {
+            $filtros[] = 'SUCURSAL = :sucursal';
+            $prm['sucursal'] = $datos['sucursal'];
+        }
+
+        if (count($filtros) > 0) $qry .= ' WHERE ' . implode(' AND ', $filtros);
+
         try {
-            $mcm = new Database();
-            $res = $mcm->queryAll($qry, $datos);
+            $db = new Database();
+            $res = $db->queryAll($qry, $prm);
             return self::Responde(true, 'Correos encontrados', $res);
         } catch (\Exception $e) {
             return self::Responde(false, 'Error al buscar correos', null, $e->getMessage());
@@ -410,17 +441,24 @@ sql;
     {
         $qry = <<<SQL
             SELECT
-                CORREO,
-                EDITABLE
+                CDG.ID_CORREO,
+                CD.CORREO,
+                CDG.EDITABLE
             FROM
-                CORREO_DESTINATARIOS
+                CORREO_DIRECTORIO_GRUPO CDG
+                LEFT JOIN CORREO_DIRECTORIO CD ON CD.ID = CDG.ID_CORREO
+                LEFT JOIN CORREO_GRUPO CG ON CG.ID = CDG.ID_GRUPO
             WHERE
-                GRUPO = :grupo 
+                CDG.ID_GRUPO = :grupo 
         SQL;
 
+        $prm = [
+            'grupo' => $datos['grupo']
+        ];
+
         try {
-            $mcm = new Database();
-            $res = $mcm->queryAll($qry, $datos);
+            $db = new Database();
+            $res = $db->queryAll($qry, $prm);
             return self::Responde(true, 'Correos de grupo encontrados', $res);
         } catch (\Exception $e) {
             return self::Responde(false, 'Error al buscar correos de grupo', null, $e->getMessage());
@@ -430,15 +468,15 @@ sql;
     public static function AgregaCorreoGrupo($datos)
     {
         $qry = <<<SQL
-            INSERT INTO CORREO_DESTINATARIOS (GRUPO, CORREO, EDITABLE, REGISTRO)
-            VALUES (:grupo,:correo,1,:usuario)
+            INSERT INTO CORREO_DIRECTORIO_GRUPO (ID_GRUPO, ID_CORREO, EDITABLE, USUARIO_CREACION, USUARIO_MODIFICACION)
+            VALUES (:grupo, :correo, 1, :usuario, :usuario)
         SQL;
 
         $qrys = [];
-        $parametros = [];
+        $prm = [];
         foreach ($datos['correos'] as $key => $value) {
             $qrys[] = $qry;
-            $parametros[] = [
+            $prm[] = [
                 'grupo' => $datos['grupo'],
                 'correo' => $value,
                 'usuario' => $datos['usuario']
@@ -446,8 +484,8 @@ sql;
         }
 
         try {
-            $mcm = new Database();
-            $mcm->insertaMultiple($qrys, $parametros);
+            $db = new Database();
+            $db->insertaMultiple($qrys, $prm);
             return self::Responde(true, 'Correo agregado a grupo correctamente');
         } catch (\Exception $e) {
             return self::Responde(false, 'Error al agregar correo a grupo', null, $e->getMessage());
@@ -457,9 +495,9 @@ sql;
     public static function EliminaCorreoGrupo($datos)
     {
         $qry = <<<SQL
-            DELETE FROM CORREO_DESTINATARIOS
-            WHERE GRUPO = :grupo
-            AND CORREO = :correo
+            DELETE FROM CORREO_DIRECTORIO_GRUPO
+            WHERE ID_GRUPO = :grupo
+            AND ID_CORREO = :correo
         SQL;
 
         $qrys = [];
@@ -474,35 +512,76 @@ sql;
         }
 
         try {
-            $mcm = new Database();
-            $mcm->insertaMultiple($qrys, $parametros);
-            return self::Responde(true, 'Correo eliminado de grupo correctamente');
+            $db = new Database();
+            $db->insertaMultiple($qrys, $parametros);
+            return self::Responde(true, 'Correo eliminado del grupo correctamente');
         } catch (\Exception $e) {
             return self::Responde(false, 'Error al eliminar correo de grupo', null, $e->getMessage());
         }
     }
 
-    public static function RegistraCorreo($datos)
+    public static function AgregaCorreo($datos)
     {
         $qry = <<<SQL
-            INSERT INTO CORREO_DIRECTORIO (NOMBRE,CORREO,ESTADO,AREA,SUCURSAL,REGISTRO)
-            VALUES (:nombre,:correo,'A',:area,:sucursal,:registro)
+            INSERT INTO CORREO_DIRECTORIO (CORREO, NOMBRE, AREA, SUCURSAL, ESTATUS, USUARIO_CREACION, USUARIO_MODIFICACION)
+            VALUES (:correo, :nombre, :area, :sucursal, 'A', :usuario, :usuario)
         SQL;
 
         $parametros = [
-            'nombre' => $datos['nombre'],
             'correo' => $datos['correo'],
+            'nombre' => $datos['nombre'],
             'area' => $datos['area'],
             'sucursal' => $datos['sucursal'],
-            'registro' => $datos['usuario']
+            'usuario' => $datos['usuario']
         ];
 
         try {
-            $mcm = new Database();
-            $mcm->insertar($qry, $parametros);
+            $db = new Database();
+            $db->insertar($qry, $parametros);
             return self::Responde(true, 'Correo registrado correctamente');
         } catch (\Exception $e) {
             return self::Responde(false, 'Error al registrar correo', null, $e->getMessage());
+        }
+    }
+
+    public static function AgregaGrupo($datos)
+    {
+        $qry = <<<SQL
+            INSERT INTO CORREO_GRUPO (GRUPO, ESTATUS, USUARIO_CREACION, USUARIO_MODIFICACION)
+            VALUES (:grupo, 'A', :usuario, :usuario)
+        SQL;
+
+        $prm = [
+            'grupo' => $datos['grupo'],
+            'usuario' => $datos['usuario']
+        ];
+
+        try {
+            $db = new Database();
+            $res = $db->insertar($qry, $prm);
+            return self::Responde(true, 'Grupo registrado correctamente');
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al registrar grupo', null, $e->getMessage());
+        }
+    }
+
+    public static function EliminaGrupo($datos)
+    {
+        $qry = <<<SQL
+            DELETE FROM CORREO_GRUPO
+            WHERE ID = :grupo
+        SQL;
+
+        $prm = [
+            'grupo' => $datos['grupo']
+        ];
+
+        try {
+            $db = new Database();
+            $db->eliminar($qry, $prm);
+            return self::Responde(true, 'Grupo eliminado correctamente');
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al eliminar grupo', null, $e->getMessage());
         }
     }
 }
