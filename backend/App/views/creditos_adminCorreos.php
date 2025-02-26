@@ -28,7 +28,7 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="areaFiltro">Área</label>
+                                            <label for="areaFiltro">Área/Puesto</label>
                                             <select class="form-control" id="areaFiltro">
                                                 <?= $opcArea ?>
                                             </select>
@@ -49,7 +49,7 @@
                                                     <th></th>
                                                     <th>Nombre</th>
                                                     <th>Correo</th>
-                                                    <th>Área</th>
+                                                    <th>Área/Puesto</th>
                                                     <th>Sucursal</th>
                                                 </tr>
                                             </thead>
@@ -87,11 +87,13 @@
                                                     <span class="glyphicon glyphicon-menu-down"></span>
                                                 </button>
                                                 <input type="hidden" id="idGrupoSeleccionado">
-                                                <ul id="grupoFiltro" class="dropdown-menu" aria-labelledby="menuGrupos" style="width: 100%; font-size: medium;">
+                                                <div class="dropdown-menu" aria-labelledby="menuGrupos" style="width: 100%; font-size: medium;">
                                                     <input type="search" class="form-control" id="buscarGrupo" placeholder="Buscar" autofocus="autofocus" style="width: 90%; margin: 5px auto;">
                                                     <div id="sinResultados" class="dropdown-header" style="display: none; font-size: medium;">Sin coincidencias</div>
-                                                    <?= $opcGrupo ?>
-                                                </ul>
+                                                    <ul id="grupoFiltro" style="list-style-type:none;">
+                                                        <?= $opcGrupo ?>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -141,7 +143,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="empresa">Área</label>
+                            <label for="empresa">Área/Puesto</label>
                             <select class="form-control" id="area">
                                 <option value="">Selecciona una opción</option>
                                 <option value="Gerente Sucursal">Gerente Sucursal</option>

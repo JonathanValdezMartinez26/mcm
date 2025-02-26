@@ -81,8 +81,8 @@ class JobsCredito extends Job
         $destAprobadas = [];
         $destRechazadas = [];
 
-        $destA = JobsDao::GetDestinatarios('Solicitudes_Aprobadas');
-        $destR = JobsDao::GetDestinatarios('Solicitudes_Rechazadas');
+        $destA = JobsDao::GetDestinatarios('SolicitudesAprobadas');
+        $destR = JobsDao::GetDestinatarios('SolicitudesRechazadas');
 
         if ($destA['success'] && count($destA['datos']) > 0) {
             foreach ($destA['datos'] as $key => $d) {

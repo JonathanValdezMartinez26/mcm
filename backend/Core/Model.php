@@ -17,12 +17,12 @@ class Model
         return $res;
     }
 
-    public static function GetDestinatarios($modulo)
+    public static function GetDestinatarios($aplicacion)
     {
-        $qry = 'SELECT CORREO FROM CORREO_DESTINATARIOS WHERE GRUPO = :modulo';
+        $qry = 'SELECT CORREO FROM CORREO_DESTINATARIOS WHERE GRUPO = :aplicacion';
 
         $prm = [
-            'modulo' => $modulo
+            'aplicacion' => $aplicacion
         ];
 
         try {

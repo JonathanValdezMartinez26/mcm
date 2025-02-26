@@ -30,9 +30,57 @@ class Database
         try {
             $this->db_activa =  new PDO($host, $usuario, $password);
         } catch (\PDOException $e) {
-            echo self::muestraError($e);
+            echo self::baseNoDisponible($e);
             $this->db_activa =  null;
         }
+    }
+
+    private function baseNoDisponible()
+    {
+        http_response_code(503); // Código 503: Servicio no disponible
+        echo <<<HTML
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Sistema fuera de línea</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        text-align: center;
+                        background-color: #f4f4f4;
+                        color: #333;
+                        margin: 0;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                    }
+                    .container {
+                        background-color: #fff;
+                        padding: 20px;
+                        border-radius: 10px;
+                        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                    }
+                    h1 {
+                        font-size: 2em;
+                        color: #d9534f;
+                    }
+                    p {
+                        font-size: 1.2em;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>Sistema fuera de línea</h1>
+                    <p>Estamos trabajando para resolver la situación. Por favor, vuelva a intentarlo más tarde.</p>
+                </div>
+            </body>
+            </html>
+        HTML;
+        exit();
     }
 
     public function AutoCommitOff()
