@@ -88,7 +88,7 @@
                                                 </button>
                                                 <input type="hidden" id="idGrupoSeleccionado">
                                                 <div class="dropdown-menu" aria-labelledby="menuGrupos" style="width: 100%; font-size: medium;">
-                                                    <input type="search" class="form-control" id="buscarGrupo" placeholder="Buscar" autofocus="autofocus" style="width: 90%; margin: 5px auto;">
+                                                    <input type="search" class="form-control" id="buscarGrupo" placeholder="Buscar" autofocus="autofocus" style="width: 90%; margin: 5px auto; max-height: 260px; overflow: auto;">
                                                     <div id="sinResultados" class="dropdown-header" style="display: none; font-size: medium;">Sin coincidencias</div>
                                                     <ul id="grupoFiltro" style="list-style-type:none;">
                                                         <?= $opcGrupo ?>

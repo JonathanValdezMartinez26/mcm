@@ -30,7 +30,7 @@ class Database
         try {
             $this->db_activa =  new PDO($host, $usuario, $password);
         } catch (\PDOException $e) {
-            echo self::baseNoDisponible(self::muestraError($e));
+            self::baseNoDisponible($e->getMessage());
             $this->db_activa =  null;
         }
     }
@@ -120,7 +120,7 @@ class Database
 
         if ($sql != null) $error .= "\nSql: " . $sql;
         if ($parametros != null) $error .= "\nDatos: " . print_r($parametros, 1);
-        //echo $error . "\n";
+        echo $error . "\n";
         return $error;
     }
 

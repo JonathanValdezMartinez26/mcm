@@ -933,7 +933,6 @@ html;
 
                     $("#areaFiltro").on("change", getCorreos)
                     $("#sucursalFiltro").on("change", getCorreos)
-                    // $("#grupoFiltro").on("change", getCorreoGrupo)
                     $("#btnAgregar").on("click", addCorreoGrupo)
                     $("#btnQuitar").on("click", eliminarCorreoGrupo)
                     $("#nombre").on("change", validaCampos)
