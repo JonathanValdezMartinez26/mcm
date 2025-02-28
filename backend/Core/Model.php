@@ -19,7 +19,16 @@ class Model
 
     public static function GetDestinatarios($aplicacion)
     {
-        $qry = 'SELECT CORREO FROM CORREO_DESTINATARIOS WHERE GRUPO = :aplicacion';
+        $qry = <<<SQL
+            SELECT
+            	CD.CORREO
+            FROM
+            	CORREO_APLICACION_GRUPO CAG
+            	JOIN CORREO_DIRECTORIO_GRUPO CDG ON CAG.ID_GRUPO = CDG.ID_GRUPO
+            	JOIN CORREO_DIRECTORIO CD ON CD.ID = CDG.ID_CORREO
+            WHERE
+            	CAG.ID_APLICACION = :aplicacion
+        SQL;
 
         $prm = [
             'aplicacion' => $aplicacion
