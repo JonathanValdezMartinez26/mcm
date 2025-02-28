@@ -4,8 +4,8 @@ namespace Jobs\controllers;
 
 include_once dirname(__DIR__) . '/../Core/Job.php';
 include_once dirname(__DIR__) . '/models/JobsCredito.php';
-include_once dirname(__DIR__) . '/../App/libs/PHPMailer/Mensajero.php';
-include_once dirname(__DIR__) . '/../App/libs/PhpSpreadsheet/PhpSpreadsheet.php';
+include_once dirname(__DIR__) . '/../libs/PHPMailer/Mensajero.php';
+include_once dirname(__DIR__) . '/../libs/PhpSpreadsheet/PhpSpreadsheet.php';
 
 use Core\Job;
 use Jobs\models\JobsCredito as JobsDao;

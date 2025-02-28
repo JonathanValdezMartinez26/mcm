@@ -25,7 +25,7 @@ class Mensajero
      */
     public static function configura($server = null, $port = null, $user = null, $pass = null, $from = null)
     {
-        $config = parse_ini_file(dirname(__DIR__) . '/../config/configuracion.ini');
+        $config = parse_ini_file(dirname(__DIR__) . '/../app/config/configuracion.ini');
         self::$SMTP_SERVER = $server ?? $config['SMTP_SERVER'];
         self::$SMTP_PORT = $port ?? $config['SMTP_PORT'];
         self::$SMTP_USER = $user ?? $config['SMTP_USER'];
