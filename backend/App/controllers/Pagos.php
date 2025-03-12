@@ -133,6 +133,10 @@ class Pagos extends Controller
                                 text: "MULTA GESTORES"
                             }),
                             $("<option>", {
+                                value: "L",
+                                text: "MULTA ELECTRÓNICA"
+                            }),
+                            $("<option>", {
                                 value: "Y",
                                 text: "PAGO EXCEDENTE"
                             })
@@ -1836,6 +1840,10 @@ html;
                             $("<option>", {
                                 value: "Z",
                                 text: "MULTA GESTORES"
+                            }),
+                            $("<option>", {
+                                value: "L",
+                                text: "MULTA ELECTRÓNICA"
                             }),
                             $("<option>", {
                                 value: "Y",
