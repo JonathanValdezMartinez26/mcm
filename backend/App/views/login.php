@@ -25,6 +25,7 @@ $anio = date('Y');
     <!-- Custom Theme Style -->
     <link href="../build/css/custom.min.css" rel="stylesheet">
 </head>
+
 <div class="login_wrapper" style="margin-top: 0%;">
     <div class="animate form login_form">
         <section class="login_content" style="padding: 100px 0 0;">

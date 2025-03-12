@@ -21,13 +21,13 @@ class Model
     {
         $qry = <<<SQL
             SELECT
-            	CD.CORREO
+                CD.CORREO
             FROM
-            	CORREO_APLICACION_GRUPO CAG
-            	JOIN CORREO_DIRECTORIO_GRUPO CDG ON CAG.ID_GRUPO = CDG.ID_GRUPO
-            	JOIN CORREO_DIRECTORIO CD ON CD.ID = CDG.ID_CORREO
+                CORREO_APLICACION_GRUPO CAG
+                JOIN CORREO_DIRECTORIO_GRUPO CDG ON CAG.ID_GRUPO = CDG.ID_GRUPO
+                JOIN CORREO_DIRECTORIO CD ON CD.ID = CDG.ID_CORREO
             WHERE
-            	CAG.ID_APLICACION = :aplicacion
+                CAG.ID_APLICACION = :aplicacion
         SQL;
 
         $prm = [

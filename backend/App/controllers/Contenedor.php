@@ -29,311 +29,276 @@ class Contenedor extends Controller
         $perfil = $this->__perfil;
         $permiso_ahorro = $this->__ahorro;
 
-        $header = <<<html
-        <!DOCTYPE html>
-        <html lang="es">
-        <head>
-            <meta http-equiv="Expires" content="0">
-            <meta http-equiv="Last-Modified" content="0">
-            <meta http-equiv="Cache-Control" content="no-cache, mustrevalidate">
-            <meta http-equiv="Pragma" content="no-cache">
-            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-            <meta charset="utf-8">
-            
-            <link rel="shortcut icon" href="/img/logo_ico.png">
-            <link rel="stylesheet" type="text/css" href="/css/nprogress.css">
-            <link rel="stylesheet" type="text/css" href="/css/tabla/sb-admin-2.css">
-            <link rel="stylesheet" type="text/css" href="/css/bootstrap/datatables.bootstrap.css">
-            <link rel="stylesheet" type="text/css" href="/css/bootstrap/bootstrap.css">
-            <link rel="stylesheet" type="text/css" href="/css/bootstrap/bootstrap-switch.css">
-            <link rel="stylesheet" type="text/css" href="/css/validate/screen.css">
-            <link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css">
-            <link rel="stylesheet" type="text/css" href="/css/green.css">
-            <link rel="stylesheet" type="text/css" href="/css/custom.min.css">
-            $extra 
-        </head>
-        <body class="nav-md">
-            <div class="container body" >
-                <div class="main_container" style="background: #ffffff">
-                    <div class="col-md-3 left_col">
-                        <div class="left_col scroll-view">
-                            <div class="navbar nav_title" style="border: 0;"> 
-                                <a href="/Principal/" class="site_title" style="display: flex; align-items: center; justify-content: center; padding: 0; margin: 0;">
-                                    <img src="/img/logo_ico.png" alt="Inicio" width="50px" id="ico_home" style="display: none;">
-                                    <img src="/img/logo_nombre.png" alt="Inicio" width="210px" id="img_home">
-                                </a>
-                            </div>
-                            <div class="clearfix"></div>
-                            <div class="profile clearfix">
-                                <div class="profile_pic">
-                                    <img src="/img/profile_default.png" alt="..." class="img-circle profile_img">
+        $header = <<<HTML
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta http-equiv="Expires" content="0">
+                <meta http-equiv="Last-Modified" content="0">
+                <meta http-equiv="Cache-Control" content="no-cache, mustrevalidate">
+                <meta http-equiv="Pragma" content="no-cache">
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+                <meta charset="utf-8">
+                
+                <link rel="shortcut icon" href="/img/logo_ico.png">
+                <link rel="stylesheet" type="text/css" href="/css/nprogress.css">
+                <link rel="stylesheet" type="text/css" href="/css/tabla/sb-admin-2.css">
+                <link rel="stylesheet" type="text/css" href="/css/bootstrap/datatables.bootstrap.css">
+                <link rel="stylesheet" type="text/css" href="/css/bootstrap/bootstrap.css">
+                <link rel="stylesheet" type="text/css" href="/css/bootstrap/bootstrap-switch.css">
+                <link rel="stylesheet" type="text/css" href="/css/validate/screen.css">
+                <link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css">
+                <link rel="stylesheet" type="text/css" href="/css/green.css">
+                <link rel="stylesheet" type="text/css" href="/css/custom.min.css">
+                $extra 
+            </head>
+            <body class="nav-md">
+                <div class="container body" >
+                    <div class="main_container" style="background: #ffffff">
+                        <div class="col-md-3 left_col">
+                            <div class="left_col scroll-view">
+                                <div class="navbar nav_title" style="border: 0;"> 
+                                    <a href="/Principal/" class="site_title" style="display: flex; align-items: center; justify-content: center; padding: 0; margin: 0;">
+                                        <img src="/img/logo_ico.png" alt="Inicio" width="50px" id="ico_home" style="display: none;">
+                                        <img src="/img/logo_nombre.png" alt="Inicio" width="210px" id="img_home">
+                                    </a>
                                 </div>
-                                <div class="profile_info">
-                                    <span><b>USUARIO: </b>{$usuario}</span>
-                                    <br>
-                                    <span><b>PERFIL: </b><span class="fa fa-key"></span>{$perfil}</span>
+                                <div class="clearfix"></div>
+                                <div class="profile clearfix">
+                                    <div class="profile_pic">
+                                        <img src="/img/profile_default.png" alt="..." class="img-circle profile_img">
+                                    </div>
+                                    <div class="profile_info">
+                                        <span><b>USUARIO: </b>{$usuario}</span>
+                                        <br>
+                                        <span><b>PERFIL: </b><span class="fa fa-key"></span>{$perfil}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
-                                <div class="menu_section" style="overflow: auto;">
-        html;
+                                <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                                    <div class="menu_section" style="overflow: auto;">
+        HTML;
 
         $menu = "";
 
+        $permisos = ['LGFR', 'PAES', 'PMAB', 'AMGM', 'DCRI', 'GUGJ', 'JUSA', 'HEDC', 'PHEE'];
+        if ($permiso_ahorro == '1' || $this->ValidaPermiso($permisos)) {
 
-        if ($permiso_ahorro == '1' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'AMGM' || $this->__usuario == 'DCRI' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC' || $this->__usuario == 'PHEE') {
-
-            $menu .= <<<html
+            $menu .= <<<HTML
             <hr>
             <h3>General WEB AHORRO</h3>
             <ul class="nav side-menu">     
-html;
+            HTML;
         }
 
 
         if ($permiso_ahorro == '1' || $this->__usuario == 'AMGM') {
-            $menu .= <<<html
-                <li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>
-html;
+            $menu .= '<li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>';
         }
 
-
-        if ($this->__usuario == 'AMGM' || $this->__usuario == 'LGFR' || $this->__usuario == 'PAES' || $this->__usuario == 'PMAB' || $this->__usuario == 'DCRI' || $this->__usuario == 'GUGJ' || $this->__usuario == 'JUSA' || $this->__usuario == 'HEDC' || $this->__usuario == 'PHEE') {
-            $menu .= <<<html
-                <li><a href="/AdminSucursales/SaldosDiarios/"><i class="glyphicon glyphicon-paste"> </i>&nbsp; Admin Sucursales </a> </li>
-             </ul>
-html;
+        $permisos = ['AMGM', 'LGFR', 'PAES', 'PMAB', 'DCRI', 'GUGJ', 'JUSA', 'HEDC', 'PHEE'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= <<<HTML
+            <li><a href="/AdminSucursales/SaldosDiarios/"><i class="glyphicon glyphicon-paste"> </i>&nbsp; Admin Sucursales </a> </li>
+            </ul>
+            HTML;
         }
 
-        $menu .= <<<html
-              <hr>
-              <h3>GENERAL </h3>
-              <ul class="nav side-menu">       
-html;
+        $menu .= <<<HTML
+        <hr>
+        <h3>GENERAL </h3>
+        <ul class="nav side-menu">       
+        HTML;
 
-        if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil == 'GTOCA' || $this->__perfil == 'AMOCA' || $this->__perfil == 'OCOF' || $this->__perfil == 'CPAGO' || $this->__perfil == 'ACALL' || $this->__perfil == 'LAYOU' || $this->__usuario == 'TESP' || $this->__usuario == 'MGJC') {
-
-            $menu .= <<<html
-                <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
-                  <ul class="nav child_menu">
-html;
+        $permisos = ['ADMIN', 'CAJA', 'GTOCA', 'AMOCA', 'OCOF', 'CPAGO', 'ACALL', 'LAYOU', 'TESP', 'MGJC'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= <<<HTML
+            <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+            HTML;
         }
 
-        if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR' || $this->__usuario == 'MGJC' || $this->__usuario == 'MCDP') {
-            $menu .= <<<html
-            <li><a href="/Pagos/">Administración Pagos</a></li>
-html;
+        $permisos = ['ADMIN', 'LGFR', 'MGJC', 'MCDP'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= '<li><a href="/Pagos/">Administración Pagos</a></li>';
         }
 
         if ($this->__perfil == 'ADMIN') {
-            $menu .= <<<html
+            $menu .= <<<HTML
             <li><a href="/Pagos/CorteEjecutivo/">Recepción Pagos App</a></li> 
             <li><a href="/Pagos/CorteEjecutivoReimprimir/">Reimprimir Recibos App</a></li> 
-html;
+            HTML;
         }
 
-        if ($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL' || $this->__perfil == 'LAYOU') {
-            $menu .= <<<html
-            <li><a href="/Pagos/Layout/">Layout Contable</a></li> 
-html;
+        $permisos = ['ADMIN', 'ACALL', 'LAYOU'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= '<li><a href="/Pagos/Layout/">Layout Contable</a></li>';
         }
 
-        if (
-            $this->__perfil == 'ADMIN' || $this->__perfil == 'CAJA' || $this->__usuario == 'LGFR'
-            || $this->__usuario == 'PLMV'
-            || $this->__usuario == 'PMAB' || $this->__usuario == 'MGJC'
-            || $this->__usuario == 'AVGA' //USUARIO DE ANGELES - TOLUCA
-            || $this->__usuario == 'FLCR' //USUARIO DE REBECA - VILLA VICTORIA
-            || $this->__usuario == 'COCS' //USUARIO DE SELENE - ESTADO DE MEXICO
-            || $this->__usuario == 'GOIY' //USUARIO DE SELENE - Huamantla, Santa Ana, Apizaco y Tlaxcala
-            || $this->__usuario == 'DAGC' //DANIELA
-            || $this->__usuario == 'COVG' //USUARIO GABRIELA VELAZQUEZ
-            || $this->__usuario == 'TESP'
-        ) {
-            $menu .= <<<html
-                <li><a href="/Pagos/PagosRegistro/">Registro de Pagos Caja</a></li>
-html;
+        $permisos = ['ADMIN', 'CAJA', 'LGFR', 'PLMV', 'PMAB', 'MGJC', 'AVGA', 'FLCR', 'COCS', 'GOIY', 'DAGC', 'COVG', 'TESP'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= '<li><a href="/Pagos/PagosRegistro/">Registro de Pagos Caja</a></li>';
         }
 
         if ($this->__perfil == 'ACALL') {
-            $menu .= <<<html
-                <li><a href="/Pagos/PagosConsultaUsuarios/">Consulta de Pagos Cliente</a></li>
-html;
+            $menu .= '<li><a href="/Pagos/PagosConsultaUsuarios/">Consulta de Pagos Cliente</a></li>';
         }
 
-        if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CAJA' || $this->__perfil == 'GTOCA' || $this->__perfil == 'AMOCA' || $this->__perfil == 'OCOF' || $this->__perfil == 'CPAGO' || $this->__perfil == 'ACALL') {
-            $menu .= <<<html
-                <li><a href="/Pagos/PagosConsulta/">Consultar Pagos</a></li>
-html;
+        $permisos = ['ADMIN', 'CAJA', 'GTOCA', 'AMOCA', 'OCOF', 'CPAGO', 'ACALL'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= '<li><a href="/Pagos/PagosConsulta/">Consultar Pagos</a></li>';
         }
 
-        $menu .= <<<html
-                </ul>
-            </li>
-html;
+        $menu .= '</ul></li>';
 
-        $presmisosCajas = ['ADMIN', 'GARAN', 'CAMAG', 'ORHM', 'MAPH'];
-        if (in_array($this->__perfil, $presmisosCajas) || in_array($this->__usuario, $presmisosCajas)) {
-            $menu .= <<<html
+        $persmisos = ['ADMIN', 'GARAN', 'CAMAG', 'ORHM', 'MAPH'];
+        if ($this->ValidaPermiso($persmisos)) {
+            $menu .= <<<HTML
             <li><a><i class="fa fa-users"> </i>&nbsp; Créditos <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">
-html;
-        }
-        if ((in_array($this->__perfil, $presmisosCajas) || in_array($this->__usuario, $presmisosCajas)) && !$this->__perfil != 'CAMAG') {
-            $menu .= <<<html
-            <li><a href="/Creditos/ControlGarantias/">Control de Garantías</a></li>
-html;
+            HTML;
         }
 
-        $exclusiones = ['GARAN', 'CAMAG'];
-        if ((in_array($this->__perfil, $presmisosCajas) || in_array($this->__usuario, $presmisosCajas)) && !in_array($this->__perfil, $exclusiones)) {
-            $menu .= <<<html
+        $persmisos = ['ADMIN', 'GARAN', 'ORHM', 'MAPH', 'AMOCA'];
+        if ($this->ValidaPermiso($persmisos)) {
+            $menu .= '<li><a href="/Creditos/ControlGarantias/">Control de Garantías</a></li>';
+        }
+
+
+        $persmisos = ['ADMIN', 'ORHM', 'MAPH'];
+        if ($this->ValidaPermiso($persmisos)) {
+            $menu .= <<<HTML
             <li><a href="/Promociones/Telarana/">Calculo Descuento Telaraña</a></li>
             <li><a href="/Validaciones/RegistroTelarana/">Registro Telaraña</a></li>
             <li><a href="/Creditos/ActualizaCredito/">Actualización de Créditos</a></li>
             <!-- <li><a href="/Creditos/cierreDiario">Situación Cartera</a></li> -->
-            html;
+            HTML;
         }
 
-        if ((in_array($this->__perfil, $presmisosCajas) || in_array($this->__usuario, $presmisosCajas)) && !$this->__perfil != 'GARAN') {
-            $menu .= <<<html
+        $persmisos = ['ADMIN', 'CAMAG', 'ORHM', 'MAPH'];
+        if ($this->ValidaPermiso($persmisos)) {
+            $menu .= <<<HTML
             <li><a href="/Creditos/CambioSucursal/">Cambio de Sucursal</a></li>
             <li><a href="/CancelaRef/">Cancelación de Ref</a></li>
             <li><a href="/CorreccionAjustes/">Corrección Mov Ajustes</a></li>
-            html;
+            HTML;
         }
 
-        $menu .= <<<html
-            </ul>
-        </li>
-html;
+        $menu .= '</ul></li>';
 
-        if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CALLC'  || $this->__perfil == 'ACALL') {
-            $menu .= <<<html
-              <ul class="nav side-menu">
+        $permisos = ['ADMIN', 'CALLC', 'ACALL'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= <<<HTML
+            <ul class="nav side-menu">
                 <li><a><i class="glyphicon glyphicon glyphicon-phone-alt"> </i>&nbsp; Call Center <span class="fa fa-chevron-down"></span></a>
-                 <ul class="nav child_menu">
-html;
+            <ul class="nav child_menu">
+            HTML;
         }
 
-        if ($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL' || $this->__usuario == 'ESMM' || $this->__usuario == 'HSEJ') {
-            $menu .= <<<html
-                    <li><a href="/CallCenter/Administracion/">Asignar Sucursales</a></li>
-                    <li><a href="/CallCenter/Prorroga/">Solicitudes de Prorroga</a></li>
-                    <li><a href="/CallCenter/Reactivar/">Reactivar Solicitudes</a></li>
-                    <li><a href="/CallCenter/Busqueda/">Búsqueda Rápida</a></li>
-html;
+        $permisos = ['ADMIN', 'ACALL', 'ESMM', 'HSEJ'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= <<<HTML
+            <li><a href="/CallCenter/Administracion/">Asignar Sucursales</a></li>
+            <li><a href="/CallCenter/Prorroga/">Solicitudes de Prorroga</a></li>
+            <li><a href="/CallCenter/Reactivar/">Reactivar Solicitudes</a></li>
+            <li><a href="/CallCenter/Busqueda/">Búsqueda Rápida</a></li>
+            HTML;
         }
 
-        if ($this->__perfil == 'ADMIN' || $this->__perfil == 'CALLC' || $this->__perfil == 'ACALL' || $this->__usuario == 'HSEJ') {
+        $permisos = ['ADMIN', 'CALLC', 'ACALL', 'HSEJ'];
+        if ($this->ValidaPermiso($permisos)) {
             if ($this->__perfil == 'ADMIN' || $this->__usuario == 'HSEJ') {
                 $titulo = "(Analistas)";
             } else {
                 $mis = 'Mis';
-
                 if ($this->__usuario == 'ESMM' || $this->__usuario == 'MAPH') {
-
-
                     $opcion = '<li><a href="/CallCenter/HistoricoAnalistas/">Histórico Analistas</a></li>';
                 }
-
                 $opcion .= '<li><a href="/CallCenter/Global/">Todos los Pendientes</a></li>';
             }
-            $menu .= <<<html
-                   <li><a href="/CallCenter/Pendientes/">$mis Pendientes $titulo</a></li>
-                   <li><a href="/CallCenter/Historico/">$mis Históricos $titulo</a></li>
-                   <li><a href="/CallCenter/EncuestaPostventa/">Postventa</a></li>
-                   <li><a href="/CallCenter/ReporteEncuestaPostventa/">Reporte Postventa</a></li>
-                   <li><a href="/CallCenter/SupervisionEncuestaPostventa/">Supervisión Postventa</a></li>
-                   $opcion
-                  </ul>
-                </li>
-              </ul>
-html;
+
+            $menu .= <<<HTML
+                        <li><a href="/CallCenter/Pendientes/">$mis Pendientes $titulo</a></li>
+                        <li><a href="/CallCenter/Historico/">$mis Históricos $titulo</a></li>
+                        <li><a href="/CallCenter/EncuestaPostventa/">Postventa</a></li>
+                        <li><a href="/CallCenter/ReporteEncuestaPostventa/">Reporte Postventa</a></li>
+                        <li><a href="/CallCenter/SupervisionEncuestaPostventa/">Supervisión Postventa</a></li>
+                        $opcion
+                        </ul>
+                    </li>
+                </ul>
+            HTML;
         }
 
-        if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLMV' || $this->__usuario == 'MCDP') {
-            $menu .= <<<html
-        <ul class="nav side-menu">
-                <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
-                </i>&nbsp;Cultiva<span class="fa fa-chevron-down"></span></a>
-                  <ul class="nav child_menu">
-                        <li><a href="/Cultiva/">Consulta Clientes Solicitudes</a></li>
-html;
+        $permisos = ['ADMIN', 'PLMV', 'MCDP'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= <<<HTML
+                <ul class="nav side-menu">
+                    <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
+                    </i>&nbsp;Cultiva<span class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            <li><a href="/Cultiva/">Consulta Clientes Solicitudes</a></li>
+            HTML;
         }
 
-        if ($this->__perfil == 'ADMIN'  || $this->__usuario == 'MCDP') {
-            $menu .= <<<html
-            <li><a href="/Cultiva/ReingresarClientesCredito/">Reingresar Clientes a Grupo</a></li>
-html;
+        $permisos = ['ADMIN', 'MCDP'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= '<li><a href="/Cultiva/ReingresarClientesCredito/">Reingresar Clientes a Grupo</a></li>';
         }
 
-        if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLMV' || $this->__usuario == 'MCDP') {
-            $menu .= <<<html
-                    </ul>
-                </li>
-            </ul>
-html;
+        $permisos = ['ADMIN', 'PLMV', 'MCDP'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= '</ul></li></ul>';
         }
 
-        if ($this->__perfil == 'ADMIN' || $this->__usuario == 'PLMV' || $this->__usuario == 'PHEE') {
-            $menu .= <<<html
-            <ul class="nav side-menu">
-                <li>
-                    <a><i class="glyphicon glyphicon glyphicon-cog"> 
-                </i>&nbsp;Incidencias MCM<span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                        <li><a href="/Incidencias/AutorizaRechazaSolicitud/">Error Autorizar y/o Rechazar Solicitud</a></li>
-                        <li><a href="/Incidencias/CalculoDevengo/">Calculo de Devengos</a></li>
-                        <li><a href="/Incidencias/CancelarRefinanciamiento/">Cancelar Refinanciamiento</a></li>
-                        <li><a href="/Incidencias/ActualizarFechaPagosNoConciliados/">Cambio de Fecha para Pagos No conciliados del día</a></li>
-                        <li><a href="/Incidencias/ActualizarFechaPagosNoConciliados/">Telaraña agregar referencias</a></li>
-                    </ul>
-                </li>
-            </ul>
-html;
+        $permisos = ['ADMIN', 'PLMV', 'PHEE'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= <<<HTML
+                <ul class="nav side-menu">
+                    <li>
+                        <a><i class="glyphicon glyphicon glyphicon-cog"> 
+                    </i>&nbsp;Incidencias MCM<span class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            <li><a href="/Incidencias/AutorizaRechazaSolicitud/">Error Autorizar y/o Rechazar Solicitud</a></li>
+                            <li><a href="/Incidencias/CalculoDevengo/">Calculo de Devengos</a></li>
+                            <li><a href="/Incidencias/CancelarRefinanciamiento/">Cancelar Refinanciamiento</a></li>
+                            <li><a href="/Incidencias/ActualizarFechaPagosNoConciliados/">Cambio de Fecha para Pagos No conciliados del día</a></li>
+                            <li><a href="/Incidencias/ActualizarFechaPagosNoConciliados/">Telaraña agregar referencias</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            HTML;
         }
 
-        if ($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ' || $this->__usuario == 'ORHM' || $this->__usuario == 'LGFR') {
-            $menu .= <<<html
-              <ul class="nav side-menu">
-html;
+        $permisos = ['ADMIN', 'MAPH', 'HSEJ', 'ORHM', 'LGFR'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= '<ul class="nav side-menu">';
 
-            if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR') {
-                $menu .= <<<html
-                <li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>
-html;
+            if ($this->ValidaPermiso(['ADMIN', 'LGFR'])) {
+                $menu .= '<li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>';
             } else {
-                $menu .= <<<html
-                <li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Usuarios SICAFIN <span class="fa fa-chevron-down"></span></a>
-html;
+                $menu .= '<li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Usuarios SICAFIN <span class="fa fa-chevron-down"></span></a>';
             }
 
-            $menu .= <<<html
-                  <ul class="nav child_menu">
-html;
+            $menu .= '<ul class="nav child_menu">';
 
-            if ($this->__perfil == 'ADMIN' || $this->__usuario == 'LGFR') {
-                $menu .= <<<html
+            if ($this->ValidaPermiso(['ADMIN', 'LGFR'])) {
+                $menu .= <<<HTML
                    <li><a href="/Pagos/AjusteHoraCierre/">Ajustar Hora de Cierre</a></li>
                    <li><a href="/Pagos/DiasFestivos/">Asignación Días Festivos</a></li>
-html;
+                HTML;
             }
 
-            if ($this->__perfil == 'ADMIN' || $this->__usuario == 'MAPH' || $this->__usuario == 'HSEJ' || $this->__usuario == 'PHEE' || $this->__usuario == 'ORHM') {
-                $menu .= <<<html
+            $permisos = ['ADMIN', 'MAPH', 'HSEJ', 'PHEE', 'ORHM'];
+            if ($this->ValidaPermiso($permisos)) {
+                $menu .= <<<HTML
                     <li><a href="/Reportes/UsuariosMCM/">Reporte Usuarios SICAFIN MCM</a></li>
                     <li><a href="/Reportes/UsuariosCultiva/">Reporte Usuarios SICAFIN Cultiva</a></li>
                     <li><a href="/Creditos/cierreDiario">Situación Cartera</a></li>
                     <li><a href="/Creditos/AdminCorreos">Administración de Correos</a></li>
-                html;
+                HTML;
             }
 
-            $menu .= <<<html
-                  </ul>
-                </li>
-              </ul>
-html;
+            $menu .= '</ul></li></ul>';
         }
 
         if ($this->__perfil == 'ADMIN') {
@@ -352,7 +317,7 @@ html;
             HTML;
         }
 
-        $menu .= <<<html
+        $menu .= <<<HTML
                         </div>
                     </div>
                 </div>
@@ -378,7 +343,7 @@ html;
                 </div>
             </div>
         </div>
-        html;
+        HTML;
 
         return $header . $menu;
     }
@@ -409,5 +374,10 @@ html;
         </html>
         HTML;
         return $footer;
+    }
+
+    public function ValidaPermiso($permisos)
+    {
+        return in_array($this->__perfil, $permisos) || in_array($this->__usuario, $permisos);
     }
 }
