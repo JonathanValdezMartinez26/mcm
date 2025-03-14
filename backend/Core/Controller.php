@@ -115,8 +115,7 @@ class Controller
 
             $("#" + id).DataTable(configuracion)
         }
-    JAVASCRIPT;
-    public $actualizaDatosTabla = <<<JAVASCRIPT
+
         const actualizaDatosTabla = (id, datos) => {
             const tabla = $("#" + id).DataTable()
             tabla.clear()
@@ -127,6 +126,11 @@ class Controller
                 })
             }
             tabla.draw()
+        }
+
+        const buscarEnTabla = (id, columna, texto) => {
+            const tabla = $("#" + id).DataTable()
+            return tabla.rows().data().toArray().filter((dato) => dato[columna] == texto)
         }
     JAVASCRIPT;
     public $crearFilas = <<<JAVASCRIPT

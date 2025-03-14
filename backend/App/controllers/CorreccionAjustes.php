@@ -29,7 +29,6 @@ class CorreccionAjustes extends Controller
         $extraFooter = <<<HTML
             <script>
                 {$this->configuraTabla}
-                {$this->actualizaDatosTabla}
                 {$this->consultaServidor}
                 {$this->mensajes}
                 {$this->confirmarMovimiento}

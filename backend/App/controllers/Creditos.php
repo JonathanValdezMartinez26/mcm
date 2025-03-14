@@ -31,341 +31,201 @@ class Creditos extends Controller
 
     public function ControlGarantias()
     {
-        $extraHeader = <<<html
-        <title>Control de Garantías</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-        $extraFooter = <<<html
-      <script>
-     
-        
-        function getParameterByName(name) {
-            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(location.search);
-            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-        }
-      
-       
-        $(document).ready(function(){
-            $("#muestra-cupones").tablesorter();
-          var oTable = $('#muestra-cupones').DataTable({
-                "columnDefs": [{
-                    "orderable": false,
-                    "targets": 0
-                }],
-                 "order": false
-            });
-            // Remove accented character from search input as well
-            $('#muestra-cupones input[type=search]').keyup( function () {
-                var table = $('#example').DataTable();
-                table.search(
-                    jQuery.fn.DataTable.ext.type.search.html(this.value)
-                ).draw();
-            });
-            var checkAll = 0;
-            
-            $("#export_excel").click(function(){
-               
-              Credito = getParameterByName('Credito');
-              
-              $('#all').attr('action', '/Creditos/generarExcel/?Credito='+Credito);
-              $('#all').attr('target', '_blank');
-              $("#all").submit();
-            });
-            
-        });
-        
-         
-        
-        function enviar_add(){
-             
-             articulo = document.getElementById("articulo").value;
-             marca = document.getElementById("marca").value;
-             modelo = document.getElementById("modelo").value;
-             serie = document.getElementById("serie").value;
-             valor = document.getElementById("valor").value;
-             factura = document.getElementById("factura").value;
-             
-             if(articulo != '')
-                 {
-                      if(marca != '')
-                         {
-                              if(modelo != '')
-                                 {
-                                      if(serie != '')
-                                         {
-                                              if(valor != '')
-                                                 {
-                                                      if(factura != '')
-                                                         {
-                                                             $.ajax({
-                                                                type: 'POST',
-                                                                url: '/Creditos/InsertGarantia/',
-                                                                data: $('#Add').serialize(),
-                                                                success: function(respuesta) {
-                                                                    if(respuesta != '0'){
-                                                                    swal("Registro guardado exitosamente", {
-                                                                      icon: "success",
-                                                                    });
-                                                                    location.reload();
-                                                                    }
-                                                                    else {
-                                                                         swal(respuesta, {
-                                                                          icon: "error",
-                                                                        });
-                                                                    }
-                                                                }
-                                                                });
-                                                         }
-                                                      else
-                                                          {
-                                                               swal("Atención", "Ingrese la serie de la factura", "warning");
-                                                          }
-                                                 }
-                                              else
-                                                  {
-                                                       swal("Atención", "Ingrese el valor del artículo", "warning");
-                                                  }
-                                         }
-                                      else
-                                          {
-                                               swal("Atención", "Ingrese el número de serie", "warning");
-                                          }
-                                 }
-                              else
-                                  {
-                                       swal("Atención", "Ingrese el modelo", "warning");
-                                  }
-                         }
-                      else
-                          {
-                               swal("Atención", "Ingrese el nombre de la marca", "warning");
-                          }
-                 }
-             else
-                 {
-                       swal("Atención", "Ingrese el nombre del articulo", "warning");
-                 }
-             
-    }
-    
-        function enviar_add_update(){
-                 credito = getParameterByName('Credito');
-                 
-                 $('#credito_e').val(credito);
-                 articulo = document.getElementById("articulo_e").value;
-                 marca = document.getElementById("marca_e").value;
-                 modelo = document.getElementById("modelo_e").value;
-                 serie = document.getElementById("serie_e").value;
-                 valor = document.getElementById("valor_e").value;
-                 factura = document.getElementById("factura_e").value;
-                 
-                 if(articulo != '')
-                     {
-                          if(marca != '')
-                             {
-                                  if(modelo != '')
-                                     {
-                                          if(serie != '')
-                                             {
-                                                  if(valor != '')
-                                                     {
-                                                          if(factura != '')
-                                                             {
-                                                                 $.ajax({
-                                                                    type: 'POST',
-                                                                    url: '/Creditos/UpdateGarantia/',
-                                                                    data: $('#AddUpdate').serialize(),
-                                                                    success: function(respuesta) {
-                                                                        if(respuesta != '0'){
-                                                                        alertify.success('Registro Guardado con Exito');
-                                                                        location.reload();
-                                                                        }
-                                                                        else {
-                                                                             swal(respuesta, {
-                                                                              icon: "error",
-                                                                            });
-                                                                        }
-                                                                    }
-                                                                    });
-                                                             }
-                                                          else
-                                                              {
-                                                                   alert("Ingrese la serie de la factura")
-                                                              }
-                                                     }
-                                                  else
-                                                      {
-                                                           alert("Ingrese el valor del artículo")
-                                                      }
-                                             }
-                                          else
-                                              {
-                                                   alert("Ingrese el número de serie")
-                                              }
-                                     }
-                                  else
-                                      {
-                                           alert("Ingrese el modelo")
-                                      }
-                             }
-                          else
-                              {
-                                   swal("Atención", "Ingrese el nombre de la marca", "warning");
-                              }
-                     }
-                 else
-                     {
-                         swal("Atención", "Ingrese el nombre del articulo", "warning");
-                     }
-                 
-                 
-                 
-        }
-        
-        function Delete_Garantias(secuencia) {
-            credito = getParameterByName('Credito');
-            secuencias = secuencia;
-   
-              swal({
-              title: "¿Segúro que desea eliminar el registro seleccionado?",
-              text: "",
-              icon: "warning",
-              buttons: true,
-              dangerMode: true,
-            })
-            .then((willDelete) => {
-              if (willDelete) {
-                  
-                    $.ajax({
-                        type: "POST",
-                        url: "/Creditos/DeleteGarantia/",
-                        data: {"credito" : credito, "secuencia" : secuencias},
-                        success: function(response){
-                            //alert(response);
-                            if(response != '0')
-                            {
-                               swal("Registro fue eliminado correctamente", {
-                                      icon: "success",
-                                    });
-                                    location.reload();
-                            }
-                            else
-                            {
-                                 swal(response, {
-                                      icon: "error",
-                                    });
-                            }
-                        }
-                    });
+        $extraFooter = <<<HTML
+            <script>
+                {$this->mensajes}
+                {$this->consultaServidor}
+                {$this->confirmarMovimiento}
+                {$this->configuraTabla}
+                {$this->descargaExcel}
+                {$this->parseaNumero}
+                {$this->formatoMoneda}
+
+                const idTabla = "garantias"
+                let credito = ""
+
+                const consultaGarantias = () => {
+                    credito = $("#creditoBuscar").val()
+                    if (credito === "") return inputError("creditoBuscar", "Debe ingresar un número de crédito.")
+
+                    consultaServidor("/Creditos/ConsultaGarantias/", { credito }, (resultado) => {
+                        if (!resultado.success) return resultadoError(resultado.mensaje)
+                        resultadoOK(resultado.datos)
+                    })
+                }
+
+                const buscarEnter = (e) => {
+                    if (e.key === "Enter") consultaGarantias()
+                }
+
+                const inputError = (id, mensaje) => {
+                    $("#" + id).toggleClass("incorrecto", true)
+                    $("#" + id).focus()
+                    resultadoError(mensaje)
+                }
+
+                const resultadoError = (mensaje) => {
+                    $(".resultado").toggleClass("conDatos", false)
+                    showError(mensaje).then(() => actualizaDatosTabla(idTabla, []))
+                }
+
+                const resultadoOK = (datos) => {
+                    datos = datos.map((dato) => {
+                        dato.MONTO = formatoMoneda(dato.MONTO)
+                        const botones = $("<div>")
+                            .append($("<button>").addClass("btn btn-success btn-circle").attr("onclick", "mostrarModal(" + dato.SECUENCIA + ", 'edit')").append($("<i>").addClass("glyphicon glyphicon-edit")))
+                            .append($("<button>").addClass("btn btn-danger btn-circle").attr("onclick", "mostrarModal(" + dato.SECUENCIA + ", 'delete')").append($("<i>").addClass("glyphicon glyphicon-trash")))
+                            .css("display", "flex")
+                            .css("justify-content", "space-around")
+                            .css("width", "100%")
+                            .prop("outerHTML")
+
+                        return [
+                            dato.SECUENCIA,
+                            dato.FECHA,
+                            dato.ARTICULO,
+                            dato.MARCA,
+                            dato.MODELO,
+                            dato.NO_SERIE,
+                            dato.MONTO,
+                            dato.FACTURA,
+                            botones
+                        ]
+                    })
+
+
+                    actualizaDatosTabla(idTabla, datos)
+                    $(".resultado").toggleClass("conDatos", true)
+                }
+
+                const validaCampos = (edicion = false) => {
+                    if ($("#articulo").val() == "") return showWarning("Ingrese el nombre del articulo")
+                    if ($("#marca").val() == "") return showWarning("Ingrese el nombre de la marca")
+                    if ($("#modelo").val() == "") return showWarning("Ingrese el modelo")
+                    if ($("#serie").val() == "") return showWarning("Ingrese el número de serie")
+                    if ($("#valor").val() == "") return showWarning("Ingrese el valor del artículo")
+                    if ($("#factura").val() == "") return showWarning("Ingrese la serie de la factura")
+                
+                    return true
+                }
+
+                const getParametros = () => {
+                    const modal = $("#articuloGarantia")
+
+                    const valor = parseaNumero(modal.find("#valor").val())
+                    return {
+                        credito: modal.find("#credito").val(),
+                        secuencia: modal.find("#secuencia").val(),
+                        articulo: modal.find("#articulo").val(),
+                        marca: modal.find("#marca").val(),
+                        modelo: modal.find("#modelo").val(),
+                        serie: modal.find("#serie").val(),
+                        valor: modal.find("#valor").val(),
+                    }
+                }
+
+                const addGarantia = () => {
+                    if (validaCampos() !== true) return
+
+                    consultaServidor("/Creditos/InsertGarantia/", getParametros(), (resultado) => {
+                        if (resultado.startsWith("0")) return showError("Error al guardar el registro")
+                        showSuccess("Registro guardado exitosamente")
+                        location.reload()
+                    }, "POST", "texto")
+                }
+
+                const updateGarantia = () => {
+                    if (validaCampos(true) !== true) return
+
+                    confirmarMovimiento("¿Seguro desea actualizar el registro seleccionado?")
+                    .then((continuar) => {
+                        if (!continuar) return
+                        $("#credito_e").val(getParameterByName("Credito"))
+                        consultaServidor("/Creditos/UpdateGarantia/", getParametros(), (resultado) => {
+                            if (resultado.startsWith("0")) return showError("Error al guardar el registro")
+                            showSuccess("Registro guardado exitosamente")
+                            location.reload()
+                        }, "POST", "texto")
+                    })
+                }
+
+                const deleteGarantia = () => {
+                    confirmarMovimiento("¿Seguro desea eliminar el registro seleccionado?")
+                    .then((continuar) => {
+                        if (!continuar) return
+                            consultaServidor("/Creditos/DeleteGarantia/", getParametros(), (resultado) => {
+                                if (resultado.startsWith("0")) return showError(resultado)
+
+                                showSuccess("Registro eliminado exitosamente")
+                                location.reload()
+                            }, "POST", "texto")
+                    })
+                }
+
+                const mostrarBotonModal = (btn) => {
+                    const botones = $("#articuloGarantia").find(".modal-footer").find("button")
+                    botones.each((index, boton) => {
+                        if (boton.className.includes("btn-secondary")) return
+                        if (boton.id === btn) $(boton).css("display", "inline")
+                        else $(boton).css("display", "none")
+                    })
+                }
+
+                const mostrarModal = (secuencia = null, tipo = null) => {
+                    const modal = $("#articuloGarantia")
+                    let informacion = []
+                    
+                    modal.find("#credito").val(credito)
+                    modal.find("#secuencia").val(secuencia)
+
+                    if (secuencia) {
+                        modal.find("#secuencia").parent().css("display", "block")
+                        informacion = buscarEnTabla(idTabla, 0, secuencia)
+                        informacion = informacion.length ? informacion[0] : []
                     } else {
-                swal("No se pudo eliminar el registro");
-              }
-            });
-    
-    
-    
-        }
-        function Edit_Garantias(articulo_p, marca_p, modelo_p, no_serie_p, monto_p, factura_p, secuencia_p) {
-    
-            $('#articulo_e').val(articulo_p);
-            $('#marca_e').val(marca_p);
-            $('#modelo_e').val(modelo_p);
-            $('#serie_e').val(no_serie_p);
-            $('#valor_e').val(monto_p);
-            $('#factura_e').val(factura_p);
-            $('#secuencia_e').val(secuencia_p);
-    
-            $('#modal_editar_articulo').modal('show');
-    
-        }
-        function Update_Garantias(secuencia) {
-    
-            secuencias = secuencia;
-    
-            alertify.confirm('¿Segúro que desea eliminar lo seleccionado?', function(response){
-                if(response){
-    
-                    $.ajax({
-                        type: "POST",
-                        url: "/Creditos/DeleteGarantia/",
-                        data: {"credito" : credito, "secuencia" : secuencias},
-                        success: function(respuesta){
-                            //alert(response);
-                            if(respuesta != '0')
-                            {
-                                  swal("Registro fue eliminado correctamente", {
-                                      icon: "success",
-                                    });
-                                    location.reload();
-    
-                            }
-                            else
-                            {
-                                swal(respuesta, {
-                                    icon: "error",
-                                });
-                            }
-                        }
-                    });
-    
-    
-                }
-            });
-    
-        }
-        
-      </script>
-html;
+                        modal.find("#secuencia").parent().css("display", "none")
+                    }
 
-        $credito = $_GET['Credito'];
+                    modal.find("#articulo").val(informacion[2] || "")
+                    modal.find("#marca").val(informacion[3] || "")
+                    modal.find("#modelo").val(informacion[4] || "")
+                    modal.find("#serie").val(informacion[5] || "")
+                    modal.find("#valor").val(informacion[6] || "")
+                    modal.find("#factura").val(informacion[7] || "")
 
-        if ($credito != '') {
-            $Garantias = CreditosDao::ConsultaGarantias($credito);
-            $tabla = '';
-            foreach ($Garantias as $key => $value) {
-                $monto = number_format($value['MONTO']);
-                if ($value['FACTURA'] == '') {
-                    $factura = '-';
-                } else {
-                    $factura = $value['FACTURA'];
+                    if (tipo === null) mostrarBotonModal("agregarGarantia")
+                    if (tipo === "edit") mostrarBotonModal("editarGarantia")
+                    if (tipo === "delete") mostrarBotonModal("eliminarGarantia")
+
+                    modal.modal("show")
                 }
-                $fecha = strval($value['FECREGISTRO']);
-                $tabla .= <<<html
-                <tr>
-                    <td>{$fecha}</td>
-                    <td>{$value['SECUENCIA']}</td>
-                    <td>{$value['ARTICULO']}</td>
-                    <td>{$value['MARCA']}</td>
-                    <td>{$value['MODELO']}</td>
-                    <td>{$value['NO_SERIE']}</td>
-                    <td>$ {$monto}</td>
-                    <td>{$factura}</td>
-                    <td class="center" >
-                         <button type="button" class="btn btn-success btn-circle" onclick="Edit_Garantias('{$value['ARTICULO']}','{$value['MARCA']}','{$value['MODELO']}','{$value['NO_SERIE']}', '{$value['MONTO']}', '{$value['FACTURA']}', '{$value['SECUENCIA']}');"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-circle" onclick="Delete_Garantias({$value['SECUENCIA']});"><i class="fa fa-trash"></i></button>
-                    </td>
-                </tr>
-html;
-            }
-            if ($Garantias[0] != '') {
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::set('tabla', $tabla);
-                View::set('credito', $credito);
-                View::render("contrrolgarantias_busqueda_all");
-            } else {
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::set('credito', $credito);
-                View::render("controlgarantias_busqueda_message");
-            }
-        } else {
-            View::set('header', $this->_contenedor->header($extraHeader));
-            View::set('footer', $this->_contenedor->footer($extraFooter));
-            View::render("controlgarantias_all");
-        }
+
+                const getExcel = () => {
+                    descargaExcel("/Creditos/generarExcel/?" + $.param({ credito }))
+                }
+
+                $(document).ready(() => {
+                    $("#buscar").click(consultaGarantias)
+                    $("#creditoBuscar").on("keypress", buscarEnter)
+                    $("#agregar").click(() => mostrarModal())
+                    $("#excel").click(getExcel)
+                    $("#agregarGarantia").click(addGarantia)
+                    $("#editarGarantia").click(updateGarantia)
+                    $("#eliminarGarantia").click(deleteGarantia)
+
+                    configuraTabla(idTabla)
+                })
+            </script>
+        HTML;
+
+        View::set('header', $this->_contenedor->header($this->getExtraHeader("Control de Garantías")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render('controlgarantias_busqueda');
+    }
+
+    public function ConsultaGarantias()
+    {
+        echo json_encode(CreditosDao::ConsultaGarantias($_POST));
     }
 
     public function ActualizaCredito()
@@ -829,8 +689,9 @@ html;
             \PHPSpreadsheet::ColumnaExcel('FECREGISTRO', 'Registro')
         ];
 
-        $credito = $_GET['Credito'];
+        $credito = $_GET['credito'];
         $filas = CreditosDao::ConsultaGarantias($credito);
+        $filas = $filas['success'] ? $filas['datos'] : [];
 
         \PHPSpreadsheet::DescargaExcel('Layout Garantías Creditos', 'Reporte', 'Garantías', $columnas, $filas);
     }
@@ -923,7 +784,6 @@ html;
                 {$this->mensajes}
                 {$this->consultaServidor}
                 {$this->configuraTabla}
-                {$this->actualizaDatosTabla}
                 {$this->confirmarMovimiento}
 
                 $(document).on("ready", () => {

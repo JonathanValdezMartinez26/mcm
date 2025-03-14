@@ -9,30 +9,51 @@ use Core\Model;
 
 class Creditos extends Model
 {
-
-    public static function ConsultaGarantias($noCredito)
+    public static function ConsultaGarantias($datos)
     {
-        $mysqli = new Database();
-        $query = <<<sql
-SELECT
-    GARPREN.SECUENCIA,
-    GARPREN.ARTICULO,
-    GARPREN.MARCA,
-    GARPREN.MODELO,
-    GARPREN.SERIE NO_SERIE,
-    GARPREN.MONTO,
-    GARPREN.FACTURA,
-     TO_CHAR(GARPREN.FECREGISTRO ,'DD/MM/YYYY HH24:MI:SS') AS FECREGISTRO
-FROM
-    GARPREN
-WHERE 
-	GARPREN.CDGEM = 'EMPFIN'
-	AND GARPREN.ESTATUS = 'A'
-	AND GARPREN.CDGNS = '$noCredito'
+        $qryVal = <<<SQL
+            SELECT
+                PRC.CDGNS NO_CREDITO
+            FROM
+                PRC
+            WHERE
+                PRC.CDGEM = 'EMPFIN'
+                AND PRC.CDGNS = :credito
+        SQL;
 
-sql;
+        $qry = <<<SQL
+            SELECT
+                SECUENCIA,
+                ARTICULO,
+                MARCA,
+                MODELO,
+                SERIE NO_SERIE,
+                MONTO,
+                FACTURA,
+                TO_CHAR(FECREGISTRO ,'DD/MM/YYYY') AS FECHA
+            FROM
+                GARPREN
+            WHERE 
+                CDGEM = 'EMPFIN'
+                AND ESTATUS = 'A'
+                AND CDGNS = :credito
+        SQL;
 
-        return $mysqli->queryAll($query);
+        $prm = [
+            'credito' => $datos['credito']
+        ];
+
+        try {
+            $db = new Database();
+            $val = $db->queryOne($qryVal, $prm);
+
+            if (!$val) return self::Responde(false, 'Crédito no encontrado', null, 'Crédito no encontrado');
+
+            $res = $db->queryAll($qry, $prm);
+            return self::Responde(true, 'Garantías encontradas', $res, $val);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al buscar garantías', null, $e->getMessage());
+        }
     }
 
     public static function ActualizacionCredito($noCredito)
