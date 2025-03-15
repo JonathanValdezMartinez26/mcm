@@ -468,12 +468,8 @@ class Database
         $valor = $valor_p;
         $tipo_transaccion = '1';
         $resultado = "";
+        $query_text = "CALL ESIACOM.SPACCIONGARPREN(?,?,?,?,?,?,?,?,?,?,?,?)";
 
-
-        //CALL ESIACOM.SPACCIONGARPREN('EMPFIN','001130','10','Articulo','Marca','Modelo','Serie','2652','Factura','DGNV','1',?)
-
-        $query_text = "CALL ESIACOM.SPACCIONGARPREN(?,?,?,?,?,?,?,?,?,?,?,?)
-";
         $stmt = $this->db_activa->prepare($query_text);
         $stmt->bindParam(1, $empresa, PDO::PARAM_STR);
         $stmt->bindParam(2, $no_credito, PDO::PARAM_STR);
@@ -491,19 +487,15 @@ class Database
         $result = $stmt->execute();
 
         if ($result) {
-            //print_r($stmt->fetchAll(PDO::FETCH_ASSOC));
-            return $resultado;
-            //var_dump($resultado);
-
         } else {
             echo "\nPDOStatement::errorInfo():\n";
             $arr = $stmt->errorInfo();
             print_r($arr);
+            return "0";
         }
     }
     public function queryProcedureDeleteGarantias($n_credito_p, $secuencia, $tipo_transaccion)
     {
-
         $empresa = "EMPFIN";
         $no_credito = $n_credito_p;
         $ciclo = $secuencia;
@@ -516,10 +508,6 @@ class Database
         $valor = "";
         $tipo_transaccion = $tipo_transaccion;
         $resultado = "";
-
-
-        //CALL ESIACOM.SPACCIONGARPREN('EMPFIN','001130','10','Articulo','Marca','Modelo','Serie','2652','Factura','DGNV','1',?)
-
         $query_text = "CALL ESIACOM.SPACCIONGARPREN(?,?,?,?,?,?,?,?,?,?,?,?)
 ";
         $stmt = $this->db_activa->prepare($query_text);
@@ -539,18 +527,17 @@ class Database
         $result = $stmt->execute();
 
         if ($result) {
-            //print_r($stmt->fetchAll(PDO::FETCH_ASSOC));
             return $resultado;
         } else {
             echo "\nPDOStatement::errorInfo():\n";
             $arr = $stmt->errorInfo();
             print_r($arr);
+            return "0";
         }
     }
+
     public function queryProcedureUpdatesGarantias($n_credito_p, $articulo_p, $marca_p, $modelo_p, $serie_p, $factura_p, $usuario_p, $valor_p, $secuencia_p)
     {
-
-
         $empresa = "EMPFIN";
         $no_credito = $n_credito_p;
         $secuencia = $secuencia_p;
@@ -564,11 +551,7 @@ class Database
         $tipo_transaccion = '2';
         $resultado = "";
 
-
-        //CALL ESIACOM.SPACCIONGARPREN('EMPFIN','001130','10','Articulo','Marca','Modelo','Serie','2652','Factura','DGNV','1',?)
-
-        $query_text = "CALL ESIACOM.SPACCIONGARPREN(?,?,?,?,?,?,?,?,?,?,?,?)
-";
+        $query_text = "CALL ESIACOM.SPACCIONGARPREN(?,?,?,?,?,?,?,?,?,?,?,?)";
         $stmt = $this->db_activa->prepare($query_text);
         $stmt->bindParam(1, $empresa, PDO::PARAM_STR);
         $stmt->bindParam(2, $no_credito, PDO::PARAM_STR);
@@ -586,13 +569,12 @@ class Database
         $result = $stmt->execute();
 
         if ($result) {
-            //print_r($stmt->fetchAll(PDO::FETCH_ASSOC));
-            //return $resultado;
-            var_dump($resultado);
+            return $resultado;
         } else {
             echo "\nPDOStatement::errorInfo():\n";
             $arr = $stmt->errorInfo();
             print_r($arr);
+            return "0";
         }
     }
 
@@ -605,7 +587,6 @@ class Database
         $credito_nuevo = $credito_n;
         $resultado_s = "";
 
-
         $query_text = "CALL SPACTUALIZACODIGOGPO(?,?,?,?)";
 
         $stmt = $this->db_activa->prepare($query_text);
@@ -617,13 +598,12 @@ class Database
         $result = $stmt->execute();
 
         if ($result) {
-            //print_r($stmt->fetchAll(PDO::FETCH_ASSOC));
             var_dump($resultado_s);
-            //return $resultado_s;
         } else {
             echo "\nPDOStatement::errorInfo():\n";
             $arr = $stmt->errorInfo();
             print_r($arr);
+            return "0";
         }
     }
     public function queryProcedureActualizaNumCreditoCiclo($credito_a, $ciclo_n)

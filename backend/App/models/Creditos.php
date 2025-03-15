@@ -56,6 +56,56 @@ class Creditos extends Model
         }
     }
 
+    public static function ProcedureGarantias($datos)
+    {
+        $credito = $datos['credito'];
+        $articulo = $datos['articulo'];
+        $marca = $datos['marca'];
+        $modelo = $datos['modelo'];
+        $serie = $datos['serie'];
+        $factura = $datos['factura'];
+        $usuario = $datos['usuario'];
+        $valor = $datos['valor'];
+
+        $db = new Database();
+        $res = $db->queryProcedureInsertGarantias($credito, $articulo, $marca, $modelo, $serie, $factura, $usuario, $valor, 1);
+
+        if (substr($res, 0, 1) == 0) return self::Responde(false, 'Error al insertar garantía', null, $res);
+        else return self::Responde(true, 'Garantía insertada correctamente', $res);
+    }
+
+    public static function ProcedureGarantiasUpdate($datos)
+    {
+        $credito = $datos['credito'];
+        $articulo = $datos['articulo'];
+        $marca = $datos['marca'];
+        $modelo = $datos['modelo'];
+        $serie = $datos['serie'];
+        $factura = $datos['factura'];
+        $usuario = $datos['usuario'];
+        $valor = $datos['valor'];
+        $secuencia = $datos['secuencia'];
+
+        $db = new Database();
+        $res = $db->queryProcedureUpdatesGarantias($credito, $articulo, $marca, $modelo, $serie, $factura, $usuario, $valor, $secuencia);
+
+        if (substr($res, 0, 1) == 0) return self::Responde(false, 'Error al actualizar garantía', null, $res);
+        else return self::Responde(true, 'Garantía actualizada correctamente', $res);
+    }
+
+    public static function ProcedureGarantiasDelete($datos)
+    {
+
+        $credito = $datos['credito'];
+        $secuencia = $datos['secuencia'];
+
+        $mysqli = new Database();
+        $res = $mysqli->queryProcedureDeleteGarantias($credito, $secuencia, 3);
+
+        if (substr($res, 0, 1) == 0) return self::Responde(false, 'Error al eliminar garantía', null, $res);
+        else return self::Responde(true, 'Garantía eliminada correctamente', $res);
+    }
+
     public static function ActualizacionCredito($noCredito)
     {
         $mysqli = new Database();
@@ -158,49 +208,6 @@ sql;
 
         $mysqli = new Database();
         return $mysqli->queryProcedureActualizaSucursal($credito, $ciclo, $nueva_sucursal);
-    }
-
-    public static function ProcedureGarantias($garantias_c)
-    {
-        $credito = $garantias_c->_credito;
-        $articulo = $garantias_c->_articulo;
-        $marca = $garantias_c->_marca;
-        $modelo = $garantias_c->_modelo;
-        $serie = $garantias_c->_serie;
-        $factura = $garantias_c->_factura;
-        $usuario = $garantias_c->_usuario;
-        $valor = $garantias_c->_valor;
-
-        $mysqli = new Database();
-        return $mysqli->queryProcedureInsertGarantias($credito, $articulo, $marca, $modelo, $serie, $factura, $usuario, $valor, 1);
-    }
-
-    public static function ProcedureGarantiasDelete($id, $secu)
-    {
-
-        $credito = $id;
-        $secuencia = $secu;
-
-        $mysqli = new Database();
-        return $mysqli->queryProcedureDeleteGarantias($credito, $secuencia, 3);
-    }
-
-    public static function ProcedureGarantiasUpdate($garantias_c)
-    {
-        $credito = $garantias_c->_credito;
-        $articulo = $garantias_c->_articulo;
-        $marca = $garantias_c->_marca;
-        $modelo = $garantias_c->_modelo;
-        $serie = $garantias_c->_serie;
-        $factura = $garantias_c->_factura;
-        $usuario = $garantias_c->_usuario;
-        $valor = $garantias_c->_valor;
-        $secuencia = $garantias_c->_secuencia;
-
-
-
-        $mysqli = new Database();
-        return $mysqli->queryProcedureUpdatesGarantias($credito, $articulo, $marca, $modelo, $serie, $factura, $usuario, $valor, $secuencia);
     }
 
     public static function ConsultarPagosAdministracionOne($noCredito)

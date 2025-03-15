@@ -44,8 +44,8 @@ class Creditos extends Controller
                 const idTabla = "garantias"
                 let credito = ""
 
-                const consultaGarantias = () => {
-                    credito = $("#creditoBuscar").val()
+                const consultaGarantias = (cr = null) => {
+                    credito = cr || $("#creditoBuscar").val()
                     if (credito === "") return inputError("creditoBuscar", "Debe ingresar un número de crédito.")
 
                     consultaServidor("/Creditos/ConsultaGarantias/", { credito }, (resultado) => {
@@ -103,35 +103,22 @@ class Creditos extends Controller
                     if ($("#marca").val() == "") return showWarning("Ingrese el nombre de la marca")
                     if ($("#modelo").val() == "") return showWarning("Ingrese el modelo")
                     if ($("#serie").val() == "") return showWarning("Ingrese el número de serie")
-                    if ($("#valor").val() == "") return showWarning("Ingrese el valor del artículo")
+                    if ($("#valor").val() == "" || $("#valor").val() < 1) return showWarning("Ingrese el valor del artículo")
                     if ($("#factura").val() == "") return showWarning("Ingrese la serie de la factura")
                 
                     return true
-                }
-
-                const getParametros = () => {
-                    const modal = $("#articuloGarantia")
-
-                    const valor = parseaNumero(modal.find("#valor").val())
-                    return {
-                        credito: modal.find("#credito").val(),
-                        secuencia: modal.find("#secuencia").val(),
-                        articulo: modal.find("#articulo").val(),
-                        marca: modal.find("#marca").val(),
-                        modelo: modal.find("#modelo").val(),
-                        serie: modal.find("#serie").val(),
-                        valor: modal.find("#valor").val(),
-                    }
                 }
 
                 const addGarantia = () => {
                     if (validaCampos() !== true) return
 
                     consultaServidor("/Creditos/InsertGarantia/", getParametros(), (resultado) => {
-                        if (resultado.startsWith("0")) return showError("Error al guardar el registro")
+                        if (!resultado.success) return showError(resultado.mensaje)
+                        $("#articuloGarantia").modal("hide")
                         showSuccess("Registro guardado exitosamente")
-                        location.reload()
-                    }, "POST", "texto")
+                        .then(() => consultaGarantias(credito))
+                        
+                    })
                 }
 
                 const updateGarantia = () => {
@@ -140,12 +127,12 @@ class Creditos extends Controller
                     confirmarMovimiento("¿Seguro desea actualizar el registro seleccionado?")
                     .then((continuar) => {
                         if (!continuar) return
-                        $("#credito_e").val(getParameterByName("Credito"))
                         consultaServidor("/Creditos/UpdateGarantia/", getParametros(), (resultado) => {
-                            if (resultado.startsWith("0")) return showError("Error al guardar el registro")
+                            if (!resultado.success) return showError(resultado.mensaje)
+                            $("#articuloGarantia").modal("hide")
                             showSuccess("Registro guardado exitosamente")
-                            location.reload()
-                        }, "POST", "texto")
+                            .then(() => consultaGarantias(credito))
+                        })
                     })
                 }
 
@@ -154,12 +141,28 @@ class Creditos extends Controller
                     .then((continuar) => {
                         if (!continuar) return
                             consultaServidor("/Creditos/DeleteGarantia/", getParametros(), (resultado) => {
-                                if (resultado.startsWith("0")) return showError(resultado)
-
+                                if (!resultado.success) return showError(resultado.mensaje)
+                                $("#articuloGarantia").modal("hide")
                                 showSuccess("Registro eliminado exitosamente")
-                                location.reload()
-                            }, "POST", "texto")
+                                .then(() => consultaGarantias(credito))
+                            })
                     })
+                }
+
+                const getParametros = () => {
+                    const modal = $("#articuloGarantia")
+
+                    return {
+                        usuario: "{$this->__usuario}",
+                        credito: modal.find("#credito").val(),
+                        secuencia: modal.find("#secuencia").val(),
+                        articulo: modal.find("#articulo").val(),
+                        marca: modal.find("#marca").val(),
+                        modelo: modal.find("#modelo").val(),
+                        serie: modal.find("#serie").val(),
+                        valor: modal.find("#valor").val(),
+                        factura: modal.find("#factura").val()
+                    }
                 }
 
                 const mostrarBotonModal = (btn) => {
@@ -190,7 +193,7 @@ class Creditos extends Controller
                     modal.find("#marca").val(informacion[3] || "")
                     modal.find("#modelo").val(informacion[4] || "")
                     modal.find("#serie").val(informacion[5] || "")
-                    modal.find("#valor").val(informacion[6] || "")
+                    modal.find("#valor").val(parseaNumero(informacion[6] || ""))
                     modal.find("#factura").val(informacion[7] || "")
 
                     if (tipo === null) mostrarBotonModal("agregarGarantia")
@@ -198,6 +201,10 @@ class Creditos extends Controller
                     if (tipo === "delete") mostrarBotonModal("eliminarGarantia")
 
                     modal.modal("show")
+                }
+
+                const mayusculas = (elemento) => {
+                    elemento.value = elemento.value.toUpperCase()
                 }
 
                 const getExcel = () => {
@@ -226,6 +233,22 @@ class Creditos extends Controller
     public function ConsultaGarantias()
     {
         echo json_encode(CreditosDao::ConsultaGarantias($_POST));
+    }
+
+
+    public function InsertGarantia()
+    {
+        echo json_encode(CreditosDao::ProcedureGarantias($_POST));
+    }
+
+    public function UpdateGarantia()
+    {
+        echo json_encode(CreditosDao::ProcedureGarantiasUpdate($_POST));
+    }
+
+    public function DeleteGarantia()
+    {
+        echo json_encode(CreditosDao::ProcedureGarantiasDelete($_POST));
     }
 
     public function ActualizaCredito()
@@ -526,101 +549,6 @@ html;
             return '0';
         }
     }
-    public function InsertGarantia()
-    {
-        $usuario = $this->__usuario;
-
-        $garantia = new \stdClass();
-
-        $credito = MasterDom::getDataAll('credito');
-        $garantia->_credito = $credito;
-
-        $articulo = MasterDom::getDataAll('articulo');
-        $garantia->_articulo = $articulo;
-
-        $marca = MasterDom::getDataAll('marca');
-        $garantia->_marca = $marca;
-
-        $modelo = MasterDom::getDataAll('modelo');
-        $garantia->_modelo = $modelo;
-
-        $serie = MasterDom::getDataAll('serie');
-        $garantia->_serie = $serie;
-
-        $factura = MasterDom::getDataAll('factura');
-        $garantia->_factura = $factura;
-
-        $garantia->_usuario = $usuario;
-
-        $valor = MasterDom::getDataAll('valor');
-        $garantia->_valor = $valor;
-
-        $id = CreditosDao::ProcedureGarantias($garantia);
-
-        if ($id >= 1) {
-            return $id['VMENSAJE'];
-        } else {
-            return '0';
-        }
-    }
-    public function UpdateGarantia()
-    {
-        $usuario = $this->__usuario;
-
-        $garantia = new \stdClass();
-
-        $credito = MasterDom::getDataAll('credito_e');
-        $garantia->_credito = $credito;
-
-        $articulo = MasterDom::getDataAll('articulo_e');
-        $garantia->_articulo = $articulo;
-
-        $marca = MasterDom::getDataAll('marca_e');
-        $garantia->_marca = $marca;
-
-        $modelo = MasterDom::getDataAll('modelo_e');
-        $garantia->_modelo = $modelo;
-
-        $serie = MasterDom::getDataAll('serie_e');
-        $garantia->_serie = $serie;
-
-        $factura = MasterDom::getDataAll('factura_e');
-        $garantia->_factura = $factura;
-
-        $secuencia = MasterDom::getDataAll('secuencia_e');
-        $garantia->_secuencia = $secuencia;
-
-        $garantia->_usuario = $usuario;
-
-        $valor = MasterDom::getDataAll('valor_e');
-        $garantia->_valor = $valor;
-
-        $id = CreditosDao::ProcedureGarantiasUpdate($garantia);
-
-
-        if ($id >= 1) {
-            return $id['VMENSAJE'];
-        } else {
-            return '0';
-        }
-    }
-    public function DeleteGarantia()
-    {
-
-        $id = $_POST['credito'];
-        $secuencia = $_POST['secuencia'];
-        $id = CreditosDao::ProcedureGarantiasDelete($id, $secuencia);
-
-        var_dump($id);
-        var_dump($secuencia);
-
-        if ($id >= 1) {
-            var_dump($id['VMENSAJE']);
-            return $id['VMENSAJE'];
-        } else {
-            return '0';
-        }
-    }
     ////////////////////////////////////////////////////
     public function UpdateCredito()
     {
@@ -678,19 +606,20 @@ html;
 
     public function generarExcel()
     {
+        $estilos = \PHPSpreadsheet::GetEstilosExcel();
+
         $columnas = [
-            \PHPSpreadsheet::ColumnaExcel('SECUENCIA', 'Secuencia'),
+            \PHPSpreadsheet::ColumnaExcel('SECUENCIA', 'Secuencia', ['estilo' => $estilos['centrado']]),
+            \PHPSpreadsheet::ColumnaExcel('FECHA', 'Fecha', ['estilo' => $estilos['fecha']]),
             \PHPSpreadsheet::ColumnaExcel('ARTICULO', 'Articulo'),
             \PHPSpreadsheet::ColumnaExcel('MARCA', 'Marca'),
             \PHPSpreadsheet::ColumnaExcel('MODELO', 'Modelo'),
             \PHPSpreadsheet::ColumnaExcel('NO_SERIE', 'Numero de Serie'),
-            \PHPSpreadsheet::ColumnaExcel('MONTO', 'Monto'),
+            \PHPSpreadsheet::ColumnaExcel('MONTO', 'Monto', ['estilo' => $estilos['moneda']]),
             \PHPSpreadsheet::ColumnaExcel('FACTURA', 'Factura'),
-            \PHPSpreadsheet::ColumnaExcel('FECREGISTRO', 'Registro')
         ];
 
-        $credito = $_GET['credito'];
-        $filas = CreditosDao::ConsultaGarantias($credito);
+        $filas = CreditosDao::ConsultaGarantias($_GET);
         $filas = $filas['success'] ? $filas['datos'] : [];
 
         \PHPSpreadsheet::DescargaExcel('Layout Garantías Creditos', 'Reporte', 'Garantías', $columnas, $filas);
