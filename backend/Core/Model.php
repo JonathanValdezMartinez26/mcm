@@ -20,7 +20,7 @@ class Model
     public static function GetDestinatarios($aplicacion)
     {
         $qry = <<<SQL
-            SELECT
+            SELECT DISTINCT
                 CD.CORREO
             FROM
                 CORREO_APLICACION_GRUPO CAG
@@ -35,7 +35,7 @@ class Model
         ];
 
         try {
-            $db = new Database('SERVIDOR-AWS');
+            $db = new Database();
             $res = $db->queryAll($qry, $prm);
             return self::Responde(true, 'Destinatarios obtenidos', $res);
         } catch (\Exception $e) {

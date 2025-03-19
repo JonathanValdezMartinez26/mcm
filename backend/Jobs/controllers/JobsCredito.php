@@ -81,7 +81,7 @@ class JobsCredito extends Job
         $destAprobadas = [];
         $destRechazadas = [];
 
-        $destA = JobsDao::GetDestinatarios('1');
+        $destA = JobsDao::GetDestinatarios(1);
         $destR = null; //JobsDao::GetDestinatarios('SolicitudesRechazadas');
 
         if ($destA['success'] && count($destA['datos']) > 0) {
@@ -239,7 +239,7 @@ if (isset($argv[1])) {
             break;
         case 'help':
             echo 'JobCheques: Actualiza los cheques de los créditos autorizados\n';
-            echo 'SolicitudesCredito: Actualiza las solicitudes de crédito\n';
+            echo 'SolicitudesFinalizadas: Evalúa el comentario final de la solicitud y la procesa para concluir con la solicitud\n';
             break;
         default:
             echo 'No se encontró el job solicitado.\nEjecute "php JobsAhorro.php help" para ver los jobs disponibles.\n';

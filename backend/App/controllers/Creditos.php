@@ -93,7 +93,6 @@ class Creditos extends Controller
                         ]
                     })
 
-
                     actualizaDatosTabla(idTabla, datos)
                     $(".resultado").toggleClass("conDatos", true)
                 }
@@ -227,7 +226,7 @@ class Creditos extends Controller
 
         View::set('header', $this->_contenedor->header($this->getExtraHeader("Control de Garantías")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render('controlgarantias_busqueda');
+        View::render('controlgarantias');
     }
 
     public function ConsultaGarantias()
