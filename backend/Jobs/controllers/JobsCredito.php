@@ -79,7 +79,7 @@ class JobsCredito extends Job
         if (count($creditos['datos']) == 0) return self::SaveLog('Finalizado: No hay solicitudes de crédito por procesar');
 
         $destAprobadas = $this->GetDestinatarios(JobsDao::GetDestinatarios_Aplicacion(1));
-        $destRechazadas = [];
+        $destRechazadas = $this->GetDestinatarios(JobsDao::GetDestinatarios_Aplicacion(2));
 
         foreach ($creditos['datos'] as $key => $credito) {
             $aprobada = str_starts_with($credito['ESTATUS'], 'LISTA');
@@ -95,9 +95,9 @@ class JobsCredito extends Job
                 'concluyo' => $credito['CDGPE']
             ];
 
-            if ($r['success'] && $aprobada) {
+            if ($r['success']) {
                 $dest = $aprobada ? $destAprobadas : $destRechazadas;
-
+                $dest = $this->GetDestinatarios(JobsDao::GetDestinatarios_Sucursal($credito['CO']), $dest);
                 $plantilla = $this->Plantilla_mail_Solicitud_Finalizada($credito, $aprobada);
                 $tipo = $aprobada ? 'Aprobación' : 'Rechazo';
 

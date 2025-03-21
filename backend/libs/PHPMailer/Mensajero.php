@@ -65,14 +65,14 @@ class Mensajero
             $mensajero->setFrom(self::$SMTP_USER, self::$SMTP_FROM);
             $mensajero->addCustomHeader('Return-Path', self::$SMTP_USER);
 
-            if (!is_array($adjuntos)) $adjuntos = [$adjuntos];
+            $adjuntos = is_array($adjuntos) ? $adjuntos : [$adjuntos];
             if (count($adjuntos) > 0) {
                 foreach ($adjuntos as $adjunto) {
                     $mensajero->addAttachment($adjunto);
                 }
             }
 
-            if (!is_array($destinatarios)) $destinatarios = [$destinatarios];
+            $destinatarios = is_array($destinatarios) ? $destinatarios : [$destinatarios];
             foreach ($destinatarios as $destinatario) {
                 $mensajero->clearAddresses();
                 $mensajero->addAddress($destinatario);

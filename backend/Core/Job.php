@@ -90,6 +90,7 @@ class Job
             }
         }
 
+        sort($destinatarios);
         return array_unique($destinatarios);
     }
 }
