@@ -124,7 +124,7 @@ class JobsCredito extends Job
 
             $resumen[] = $r;
             //genera solo 1 solicitud para pruebas
-            //break;
+            // break;
         }
 
         self::SaveLog(json_encode($resumen));
@@ -214,7 +214,7 @@ class JobsCredito extends Job
                     📝 Comentarios del Call Center
                 </h3>
                 <ul style="list-style: none; padding: 0; margin: 0; color: #555">
-                    <li>🔸<b>Comentario inicial:</b> {$credito['COMENTARIO_INICIAL']}</li>
+                    <!-- <li>🔸<b>Comentario inicial:</b> {$credito['COMENTARIO_INICIAL']}</li> -->
                     <li>🔸<b>Comentario final:</b> {$credito['COMENTARIO_FINAL']}</li>
                 </ul>
             </div>

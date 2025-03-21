@@ -12,7 +12,6 @@ use \App\models\CallCenter as CallCenterDao;
 
 class CallCenter extends Controller
 {
-
     private $_contenedor;
     private $configuracion;
 
