@@ -77,4 +77,19 @@ class Job
         json_decode($texto);
         return (json_last_error() === JSON_ERROR_NONE);
     }
+
+    public function GetDestinatarios($respuestas, $destinatarios = [])
+    {
+        $respuestas = $respuestas['success'] ? [$respuestas] : $respuestas;
+
+        foreach ($respuestas as $respuesta) {
+            if ($respuesta['success'] && count($respuesta['datos']) > 0) {
+                $destinatarios = array_merge($destinatarios, array_map(function ($d) {
+                    return $d['CORREO'];
+                }, $respuesta['datos']));
+            }
+        }
+
+        return array_unique($destinatarios);
+    }
 }

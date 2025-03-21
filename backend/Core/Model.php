@@ -17,7 +17,57 @@ class Model
         return $res;
     }
 
-    public static function GetDestinatarios($aplicacion)
+    public static function GetDestinatarios_Usuario($usuarios)
+    {
+        $usuarios = is_array($usuarios) ? $usuarios : [$usuarios];
+        $usuarios = implode(",", array_map(function ($u) {
+            return "'$u'";
+        }, $usuarios));
+
+        $qry = <<<SQL
+            SELECT DISTINCT
+                CORREO
+            FROM
+                CORREO_DIRECTORIO
+            WHERE
+                USUARIO IN ($usuarios)
+        SQL;
+
+        try {
+            $db = new Database();
+            $res = $db->queryAll($qry);
+            return self::Responde(true, 'Destinatarios obtenidos', $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al obtener destinatarios', null, $e->getMessage());
+        }
+    }
+
+    public static function GetDestinatarios_Sucursal($sucursales)
+    {
+        $sucursales = is_array($sucursales) ? $sucursales : [$sucursales];
+        $sucursales = implode(",", array_map(function ($s) {
+            return "'$s'";
+        }, $sucursales));
+
+        $qry = <<<SQL
+            SELECT DISTINCT
+                CORREO
+            FROM
+                CORREO_DIRECTORIO
+            WHERE
+                SUCURSAL IN ($sucursales)
+        SQL;
+
+        try {
+            $db = new Database();
+            $res = $db->queryAll($qry);
+            return self::Responde(true, 'Destinatarios obtenidos', $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al obtener destinatarios', null, $e->getMessage());
+        }
+    }
+
+    public static function GetDestinatarios_Aplicacion($aplicacion)
     {
         $qry = <<<SQL
             SELECT DISTINCT

@@ -27,526 +27,341 @@ class CallCenter extends Controller
     public function Pendientes()
     {
         $tabla = "";
-        $extraHeader = <<<html
-        <title>Consulta de Clientes Call Center</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
-        $extraFooter = <<<html
-      <script>
-   
-       function getParameterByName(name) {
-        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-        }
-        
-        $('#doce_cl').on('change', function() {
-          if(this.value == 'N')
-              {
-                  swal("Atención", "Al finalizar la encuesta cancele la solicitud, no cumple con la política de seguridad de la pregunta #12", "warning");
-              }
-        });
-      
-        $(document).ready(function(){
-            $("#muestra-cupones").tablesorter();
-          var oTable = $('#muestra-cupones').DataTable({
-          "lengthMenu": [
-                    [6, 10, 20, 30, -1],
-                    [6, 10, 20, 30, 'Todos'],
-                ],
-                "columnDefs": [{
-                    "orderable": false,
-                    "targets": 0
-                }],
-                 "order": false
-            });
-            // Remove accented character from search input as well
-            $('#muestra-cupones input[type=search]').keyup( function () {
-                var table = $('#example').DataTable();
-                table.search(
-                    jQuery.fn.DataTable.ext.type.search.html(this.value)
-                ).draw();
-            });
-            var checkAll = 0;
-            
-        });
-         
-        function InfoDesactivaEncuesta()
-        {
-             swal("Atención", "Para continuar con la ENCUESTA del AVAL por favor, es nesesario completar la PRIMER LLAMADA del cliente. ", "warning");
-        }
-         
-        function enviar_add_cl(){	
-             fecha_trabajo = document.getElementById("fecha_cl").value; 
-             ciclo = document.getElementById("ciclo_cl").value; 
-             num_telefono = document.getElementById("movil_cl").value;  
-             tipo_cl = document.getElementById("tipo_llamada_cl").value; 
-             uno = document.getElementById("uno_cl").value; 
-             dos = document.getElementById("dos_cl").value; 
-             tres = document.getElementById("tres_cl").value; 
-             cuatro = document.getElementById("cuatro_cl").value; 
-             cinco = document.getElementById("cinco_cl").value; 
-             seis = document.getElementById("seis_cl").value; 
-             siete = document.getElementById("siete_cl").value; 
-             ocho = document.getElementById("ocho_cl").value; 
-             nueve = document.getElementById("nueve_cl").value; 
-             diez = document.getElementById("diez_cl").value; 
-             once = document.getElementById("once_cl").value; 
-             doce = document.getElementById("doce_cl").value; 
-             
-             nombre_aval_cl = document.getElementById("nombre_aval_cl").value; 
-             id_aval_cl = document.getElementById("id_aval_cl").value; 
-             
-             completo = $('input[name="completo"]:checked').val();
-             llamada = document.getElementById("titulo");
-             contenido = llamada.innerHTML;
-             
-             
-             if(contenido == '2')
-                 {
-                     mensaje = "";
-                 }
-             else 
-                 {
-                     if(completo == '1')
-                        {
-                            mensaje = "Usted va a finalizar y guardar la encuesta, no podrá editar esta información en un futuro.";
-                        }
-                     else 
-                         {
-                             mensaje = "";
-                         }
-                     
-                 }
-             
-             
-             
-             if(completo == '0')
-                 {
-                     
-                      if(tipo_cl == '')
-                        {
-                             swal("Seleccione el tipo de llamada que realizo", {icon: "warning",});
-                        }
-                      else 
-                          {
-                                  swal({
-                                  title: "¿Está segura de continuar con una llamada incompleta?",
-                                  text: mensaje,
-                                  icon: "warning",
-                                  buttons: ["Cancelar", "Continuar"],
-                                  dangerMode: false
-                                })
-                                .then((willDelete) => {
-                                  if (willDelete) {
-                                     
-                                      const agregar_CL = document.getElementById('agregar_CL');
-                                      agregar_CL.disabled = true; 
-                                      
-                                      $.ajax({
-                                            type: 'POST',
-                                            url: '/CallCenter/PagosAddEncuestaCL/',
-                                            data: $('#Add_cl').serialize()+'&contenido='+contenido,
-                                            success: function(respuesta) {
-                                                 if(respuesta=='1'){
-                                                 swal("Registro guardado exitosamente", {
-                                                              icon: "success",
-                                                            });
-                                                 location.reload();
-                                                }
-                                                else {
-                                                $('#modal_encuesta_cliente').modal('hide')
-                                                 swal(respuesta, {
-                                                              icon: "error",
-                                                            });
-                                                  
-                                                }
-                                            }
-                                            });
-                                  }
-                                  else {
-                                    swal("Continúe con su registro", {icon: "success",});
-                                  }
-                                });
-                         }
-                 }
-             else 
-                 {
-                      if(tipo_cl == '')
-                        {
-                             swal("Seleccione el tipo de llamada que realizo", {icon: "warning",});
-                        }else if(uno  == '') {
-                             swal("Seleccione una opción para la pregunta #1", {icon: "warning",});
-                        }else if(dos  == '') {
-                             swal("Seleccione una opción para la pregunta #2", {icon: "warning",});
-                        }else if(tres  == '') {
-                             swal("Seleccione una opción para la pregunta #3", {icon: "warning",});
-                        }else if(cuatro  == '') {
-                             swal("Seleccione una opción para la pregunta #4", {icon: "warning",});
-                        }else if(cinco  == '') {
-                             swal("Seleccione una opción para la pregunta #5", {icon: "warning",});
-                        }else if(seis  == '') {
-                             swal("Seleccione una opción para la pregunta #6", {icon: "warning",});
-                        }else if(siete  == '') {
-                             swal("Seleccione una opción para la pregunta #7", {icon: "warning",});
-                        }else if(ocho  == '') {
-                             swal("Seleccione una opción para la pregunta #8", {icon: "warning",});
-                        }else if(nueve  == '') {
-                             swal("Seleccione una opción para la pregunta #9", {icon: "warning",});
-                        }else if(diez  == '') {
-                             swal("Seleccione una opción para la pregunta #11", {icon: "warning",});
-                        }else if(once  == '') {
-                             swal("Seleccione una opción para la pregunta #11", {icon: "warning",});
-                        }else if(doce  == '') {
-                             swal("Seleccione una opción para la pregunta #12", {icon: "warning",});
-                        }else
-                        {
-                            
-                            ////////////////////////////////////777
-                            swal({
-                                  title: "¿Está segura de continuar?",
-                                  text: mensaje,
-                                  icon: "warning",
-                                  buttons: ["Cancelar", "Continuar"],
-                                  dangerMode: false
-                                })
-                                .then((willDelete) => {
-                                  if (willDelete) {
-                                      const agregar_CL = document.getElementById('agregar_CL');
-                                      agregar_CL.disabled = true; 
-                                      
-                                      $.ajax({
-                                        type: 'POST',
-                                        url: '/CallCenter/PagosAddEncuestaCL/',
-                                        data: $('#Add_cl').serialize()+'&contenido='+contenido,
-                                        success: function(respuesta) {
-                                             if(respuesta=='1'){
-                                          
-                                             swal("Registro guardado exitosamente", {
-                                                          icon: "success",
-                                                        });
-                                             location.reload();
-                                            
-                                            }
-                                            else {
-                                            $('#modal_encuesta_cliente').modal('hide')
-                                             swal(respuesta, {
-                                                          icon: "error",
-                                                        });
-                                                
-                                            }
-                                        }
-                                        });
-                                  }
-                                  else {
-                                    swal("Continúe con su registro", {icon: "info",});
-                                  }
-                                });
-                            //////////////////////////////777
-                        }
-                 }
-            
-           
-    }
-        function enviar_add_av(){	
-             fecha_trabajo = document.getElementById("fecha_solicitud_av").value; 
-             num_telefono = document.getElementById("movil_av").value;  
-             tipo_av = document.getElementById("tipo_llamada_av").value; 
-             uno = document.getElementById("uno_av").value; 
-             dos = document.getElementById("dos_av").value; 
-             tres = document.getElementById("tres_av").value; 
-             cuatro = document.getElementById("cuatro_av").value; 
-             cinco = document.getElementById("cinco_av").value; 
-             seis = document.getElementById("seis_av").value; 
-             siete = document.getElementById("siete_av").value; 
-             ocho = document.getElementById("ocho_av").value; 
-             nueve = document.getElementById("nueve_av").value; 
-             completo = $('input[name="completo_av"]:checked').val();
-             llamada = document.getElementById("titulo_av");
-             contenido = llamada.innerHTML;
-             
-             
-             if(contenido == '2')
-                 {
-                     mensaje = "";
-                 }
-             else 
-                 {
-                     if(completo == '1')
-                        {
-                            mensaje = "Usted va a finalizar y guardar la encuesta, no podrá editar esta información en un futuro.";
-                        }
-                     else 
-                         {
-                             mensaje = "";
-                         }
-                     
-                 }
-             
-             
-             
-             if(completo == '0')
-                 {
-                     
-                      if(tipo_av == '')
-                        {
-                             swal("Seleccione el tipo de llamada que realizo", {icon: "warning",});
-                        }
-                      else 
-                          {
-                                  swal({
-                                  title: "¿Está segura de continuar con una llamada incompleta?",
-                                  text: mensaje,
-                                  icon: "warning",
-                                  buttons: ["Cancelar", "Continuar"],
-                                  dangerMode: false
-                                })
-                                .then((willDelete) => {
-                                  if (willDelete) {
-                                      const agregar_AV = document.getElementById('agregar_av');
-                                      agregar_AV.disabled = true; 
-                                      $.ajax({
-                                            type: 'POST',
-                                            url: '/CallCenter/PagosAddEncuestaAV/',
-                                            data: $('#Add_av').serialize()+'&contenido_av='+contenido,
-                                            success: function(respuesta) {
-                                                 if(respuesta=='1'){
-                                                 swal("Registro guardado exitosamente", {
-                                                              icon: "success",
-                                                            });
-                                                 location.reload();
-                                                }
-                                                else {
-                                                $('#modal_encuesta_cliente').modal('hide')
-                                                 swal(respuesta, {
-                                                              icon: "error",
-                                                            });
-                                                    document.getElementById("monto").value = "";
-                                                }
-                                            }
-                                            });
-                                  }
-                                  else {
-                                    swal("Continúe con su registro", {icon: "info",});
-                                  }
-                                });
-                         }
-                 }
-             else 
-                 {
-                      if(tipo_av == '')
-                        {
-                             swal("Seleccione el tipo de llamada que realizo", {icon: "warning",});
-                        }else if(uno  == '') {
-                             swal("Seleccione una opción para la pregunta #1", {icon: "warning",});
-                        }else if(dos  == '') {
-                             swal("Seleccione una opción para la pregunta #2", {icon: "warning",});
-                        }else if(tres  == '') {
-                             swal("Seleccione una opción para la pregunta #3", {icon: "warning",});
-                        }else if(cuatro  == '') {
-                             swal("Seleccione una opción para la pregunta #4", {icon: "warning",});
-                        }else if(cinco  == '') {
-                             swal("Seleccione una opción para la pregunta #5", {icon: "warning",});
-                        }else if(seis  == '') {
-                             swal("Seleccione una opción para la pregunta #6", {icon: "warning",});
-                        }else if(siete  == '') {
-                             swal("Seleccione una opción para la pregunta #7", {icon: "warning",});
-                        }else if(ocho  == '') {
-                             swal("Seleccione una opción para la pregunta #8", {icon: "warning",});
-                        }else if(nueve  == '') {
-                             swal("Seleccione una opción para la pregunta #9", {icon: "warning",});
-                        }else 
-                        {
-                            
-                            ////////////////////////////////////777
-                            swal({
-                                  title: "¿Está segura de continuar?",
-                                  text: mensaje,
-                                  icon: "warning",
-                                  buttons: ["Cancelar", "Continuar"],
-                                  dangerMode: false
-                                })
-                                .then((willDelete) => {
-                                  if (willDelete) {
-                                      const agregar_AV = document.getElementById('agregar_av');
-                                      agregar_AV.disabled = true; 
-                                      
-                                      $.ajax({
-                                        type: 'POST',
-                                        url: '/CallCenter/PagosAddEncuestaAV/',
-                                        data: $('#Add_av').serialize()+'&contenido_av='+contenido,
-                                        success: function(respuesta) {
-                                             if(respuesta=='1'){
-                                          
-                                             swal("Registro guardado exitosamente", {
-                                                          icon: "success",
-                                                        });
-                                             location.reload();
-                                            
-                                            }
-                                            else {
-                                            $('#modal_encuesta_cliente').modal('hide')
-                                             swal(respuesta, {
-                                                          icon: "error",
-                                                        });
-                                                document.getElementById("monto").value = "";
-                                            }
-                                        }
-                                        });
-                                  }
-                                  else {
-                                    swal("Continúe con su registro", {icon: "info",});
-                                  }
-                                });
-                            //////////////////////////////777
-                        }
-                 }
-            
-           
-    }
-        function enviar_comentarios_add(){	
-             cliente_encuesta = document.getElementById("cliente_encuesta").value; 
-             cliente_id = document.getElementById("cliente_id").value; 
-             
-             cdgco_res = getParameterByName('Suc');
-             ciclo_cl_res = getParameterByName('Ciclo');
-             cliente_id_res = getParameterByName('Credito');
-             
-            if(cliente_encuesta != 'PENDIENTE'){
-                ///////
-                //Puede guardar comentarios iniciales pero no finales
-                ////
-                
-                                      
-                $.ajax({
-                type: 'POST',
-                url: '/CallCenter/Resumen/',
-                data: $('#Add_comentarios').serialize()+ "&cdgco_res="+cdgco_res+ "&ciclo_cl_res="+ciclo_cl_res+ "&cliente_id_res="+cliente_id,
-                success: function(respuesta) 
-                {
-                    if(respuesta=='1')
-                    {               
-                       swal("Registro guardado exitosamente", {
-                                icon: "success",
-                           });
-                       location.reload();
-                    }
-                    else 
-                    {
-                        $('#modal_encuesta_cliente').modal('hide')
-                        swal(respuesta, {
-                        icon: "error",
-                        });
-                        document.getElementById("monto").value = "";
-                    }
+        $extraFooter = <<<HTML
+            <script>
+                function getParameterByName(name) {
+                    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]")
+                    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                        results = regex.exec(location.search)
+                    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "))
                 }
-               });
-                
-            }
-            else
-            {
-                swal("Usted debe responder la encuesta del CLIENTE para poder guardar sus comentarios iniciales y poder continuar.", {icon: "warning",});
-            }
-            
-           
-    }
 
-    const mostrarAdvertencia = (aprobar = false) => {
-        const textos = {
-            mensajeOK: '"Sí, aprobar solicitud", dará inicio a el proceso de autorización del crédito.',
-            advertenciaOK: "¿estas segura de aprobar el crédito?",
-            botonOK: "Sí, aprobar solicitud",
-            mensajeCANCELAR: "El crédito se cancelara y se notificara al área correspondiente de la cancelación",
-            advertenciaCANCELAR: "¿Estas segura de cancelar la solicitud?",
-            botonCANCELAR: "Sí, cancelar solicitud"
-        }
-
-        const contenedor = document.createElement("div")
-        const mensaje = document.createElement("p")
-        const advertencia = document.createElement("p")
-
-        mensaje.innerHTML = aprobar ? textos.mensajeOK : textos.mensajeCANCELAR 
-        mensaje.style.fontSize = "15px"
-        mensaje.style.color = "black"
-
-        advertencia.textContent = aprobar ? textos.advertenciaOK : textos.advertenciaCANCELAR 
-        advertencia.style.color = "red"
-        advertencia.style.fontWeight = "bold"
-        advertencia.style.marginTop = "20px"
-        advertencia.style.fontSize = "18px"
-
-        contenedor.appendChild(mensaje)
-        contenedor.appendChild(advertencia)
-
-        return new Promise((resolve) => {
-            swal({
-                title: (aprobar ? "Aprobación" : "Rechazo") + " de solicitud de crédito",
-                content: contenedor,
-                icon: "warning",
-                buttons: ["No, volver", "Lea con atención (10)"],
-                closeOnClickOutside: false,
-                dangerMode: true
-            }).then((continuar) => {
-                resolve(continuar)
-            })
-
-            let tiempoRestante = 10;
-            const botonConfirmar = document.querySelector(".swal-button--danger");
-            botonConfirmar.disabled = true
-            const intervalo = setInterval(() => {
-                tiempoRestante--;
-
-                if (tiempoRestante > 0) botonConfirmar.textContent = "Lea con atención (" + tiempoRestante + ")"
-                else {
-                    clearInterval(intervalo)
-                    botonConfirmar.disabled = false
-                    botonConfirmar.textContent = aprobar ? textos.botonOK : textos.botonCANCELAR
-                }
-            }, 1000)
-        })
-    }
-
-    const enviar_resumen_add = async () => {
-        estatus_solicitud = document.getElementById("estatus_solicitud").value
-        cliente_encuesta = document.getElementById("cliente_encuesta").value
-        cliente_aval = document.getElementById("cliente_aval").value
-        comentarios_iniciales = document.getElementById("comentarios_iniciales").value
-        comentarios_finales = document.getElementById("comentarios_finales").value
-        vobo_gerente = document.getElementById("vobo_gerente").value
-        cliente_id = document.getElementById("cliente_id").value
-        cdgco_res = getParameterByName("Suc")
-        ciclo_cl_res = getParameterByName("Ciclo")
-
-        if (comentarios_iniciales == "") {
-            swal("Necesita ingresar los comentarios iniciales para la solicitud del cliente", {
-                icon: "warning"
-            })
-        } else {
-            if (comentarios_finales == "") {
-                swal("Necesita ingresar los comentarios finales para la solicitud del cliente", {
-                    icon: "warning"
+                $("#doce_cl").on("change", function () {
+                    if (this.value == "N") {
+                        swal(
+                            "Atención",
+                            "Al finalizar la encuesta cancele la solicitud, no cumple con la política de seguridad de la pregunta #12",
+                            "warning"
+                        )
+                    }
                 })
-            } else {
-                if (cliente_encuesta == "PENDIENTE") {
-                    swal("La encuesta del cliente no está marcada como validada", {
-                        icon: "danger"
-                    })
-                } else {
-                    if (estatus_solicitud == "") {
-                        swal("Necesita seleccionar el estatus final de la solicitud", {
-                            icon: "warning"
-                        })
-                    } else {
-                        const continuar = await mostrarAdvertencia(estatus_solicitud.toLowerCase().includes("lista"))
-                        if (!continuar) return
 
-                        const agregar_TS = document.getElementById("terminar_solicitud")
-                        agregar_TS.disabled = true
+                $(document).ready(function () {
+                    $("#muestra-cupones").tablesorter()
+                    var oTable = $("#muestra-cupones").DataTable({
+                        lengthMenu: [
+                            [6, 10, 20, 30, -1],
+                            [6, 10, 20, 30, "Todos"]
+                        ],
+                        columnDefs: [
+                            {
+                                orderable: false,
+                                targets: 0
+                            }
+                        ],
+                        order: false
+                    })
+                    // Remove accented character from search input as well
+                    $("#muestra-cupones input[type=search]").keyup(function () {
+                        var table = $("#example").DataTable()
+                        table.search(jQuery.fn.DataTable.ext.type.search.html(this.value)).draw()
+                    })
+                    var checkAll = 0
+                })
+
+                function InfoDesactivaEncuesta() {
+                    swal(
+                        "Atención",
+                        "Para continuar con la ENCUESTA del AVAL por favor, es nesesario completar la PRIMER LLAMADA del cliente. ",
+                        "warning"
+                    )
+                }
+
+                function enviar_add_cl() {
+                    fecha_trabajo = document.getElementById("fecha_cl").value
+                    ciclo = document.getElementById("ciclo_cl").value
+                    num_telefono = document.getElementById("movil_cl").value
+                    tipo_cl = document.getElementById("tipo_llamada_cl").value
+                    uno = document.getElementById("uno_cl").value
+                    dos = document.getElementById("dos_cl").value
+                    tres = document.getElementById("tres_cl").value
+                    cuatro = document.getElementById("cuatro_cl").value
+                    cinco = document.getElementById("cinco_cl").value
+                    seis = document.getElementById("seis_cl").value
+                    siete = document.getElementById("siete_cl").value
+                    ocho = document.getElementById("ocho_cl").value
+                    nueve = document.getElementById("nueve_cl").value
+                    diez = document.getElementById("diez_cl").value
+                    once = document.getElementById("once_cl").value
+                    doce = document.getElementById("doce_cl").value
+
+                    nombre_aval_cl = document.getElementById("nombre_aval_cl").value
+                    id_aval_cl = document.getElementById("id_aval_cl").value
+
+                    completo = $('input[name="completo"]:checked').val()
+                    llamada = document.getElementById("titulo")
+                    contenido = llamada.innerHTML
+
+                    if (contenido == "2") {
+                        mensaje = ""
+                    } else {
+                        if (completo == "1") {
+                            mensaje =
+                                "Usted va a finalizar y guardar la encuesta, no podrá editar esta información en un futuro."
+                        } else {
+                            mensaje = ""
+                        }
+                    }
+
+                    if (completo == "0") {
+                        if (tipo_cl == "") {
+                            swal("Seleccione el tipo de llamada que realizo", { icon: "warning" })
+                        } else {
+                            swal({
+                                title: "¿Está segura de continuar con una llamada incompleta?",
+                                text: mensaje,
+                                icon: "warning",
+                                buttons: ["Cancelar", "Continuar"],
+                                dangerMode: false
+                            }).then((willDelete) => {
+                                if (willDelete) {
+                                    const agregar_CL = document.getElementById("agregar_CL")
+                                    agregar_CL.disabled = true
+
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/CallCenter/PagosAddEncuestaCL/",
+                                        data: $("#Add_cl").serialize() + "&contenido=" + contenido,
+                                        success: function (respuesta) {
+                                            if (respuesta == "1") {
+                                                swal("Registro guardado exitosamente", {
+                                                    icon: "success"
+                                                })
+                                                location.reload()
+                                            } else {
+                                                $("#modal_encuesta_cliente").modal("hide")
+                                                swal(respuesta, {
+                                                    icon: "error"
+                                                })
+                                            }
+                                        }
+                                    })
+                                } else {
+                                    swal("Continúe con su registro", { icon: "success" })
+                                }
+                            })
+                        }
+                    } else {
+                        if (tipo_cl == "") {
+                            swal("Seleccione el tipo de llamada que realizo", { icon: "warning" })
+                        } else if (uno == "") {
+                            swal("Seleccione una opción para la pregunta #1", { icon: "warning" })
+                        } else if (dos == "") {
+                            swal("Seleccione una opción para la pregunta #2", { icon: "warning" })
+                        } else if (tres == "") {
+                            swal("Seleccione una opción para la pregunta #3", { icon: "warning" })
+                        } else if (cuatro == "") {
+                            swal("Seleccione una opción para la pregunta #4", { icon: "warning" })
+                        } else if (cinco == "") {
+                            swal("Seleccione una opción para la pregunta #5", { icon: "warning" })
+                        } else if (seis == "") {
+                            swal("Seleccione una opción para la pregunta #6", { icon: "warning" })
+                        } else if (siete == "") {
+                            swal("Seleccione una opción para la pregunta #7", { icon: "warning" })
+                        } else if (ocho == "") {
+                            swal("Seleccione una opción para la pregunta #8", { icon: "warning" })
+                        } else if (nueve == "") {
+                            swal("Seleccione una opción para la pregunta #9", { icon: "warning" })
+                        } else if (diez == "") {
+                            swal("Seleccione una opción para la pregunta #11", { icon: "warning" })
+                        } else if (once == "") {
+                            swal("Seleccione una opción para la pregunta #11", { icon: "warning" })
+                        } else if (doce == "") {
+                            swal("Seleccione una opción para la pregunta #12", { icon: "warning" })
+                        } else {
+                            ////////////////////////////////////777
+                            swal({
+                                title: "¿Está segura de continuar?",
+                                text: mensaje,
+                                icon: "warning",
+                                buttons: ["Cancelar", "Continuar"],
+                                dangerMode: false
+                            }).then((willDelete) => {
+                                if (willDelete) {
+                                    const agregar_CL = document.getElementById("agregar_CL")
+                                    agregar_CL.disabled = true
+
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/CallCenter/PagosAddEncuestaCL/",
+                                        data: $("#Add_cl").serialize() + "&contenido=" + contenido,
+                                        success: function (respuesta) {
+                                            if (respuesta == "1") {
+                                                swal("Registro guardado exitosamente", {
+                                                    icon: "success"
+                                                })
+                                                location.reload()
+                                            } else {
+                                                $("#modal_encuesta_cliente").modal("hide")
+                                                swal(respuesta, {
+                                                    icon: "error"
+                                                })
+                                            }
+                                        }
+                                    })
+                                } else {
+                                    swal("Continúe con su registro", { icon: "info" })
+                                }
+                            })
+                            //////////////////////////////777
+                        }
+                    }
+                }
+
+                function enviar_add_av() {
+                    fecha_trabajo = document.getElementById("fecha_solicitud_av").value
+                    num_telefono = document.getElementById("movil_av").value
+                    tipo_av = document.getElementById("tipo_llamada_av").value
+                    uno = document.getElementById("uno_av").value
+                    dos = document.getElementById("dos_av").value
+                    tres = document.getElementById("tres_av").value
+                    cuatro = document.getElementById("cuatro_av").value
+                    cinco = document.getElementById("cinco_av").value
+                    seis = document.getElementById("seis_av").value
+                    siete = document.getElementById("siete_av").value
+                    ocho = document.getElementById("ocho_av").value
+                    nueve = document.getElementById("nueve_av").value
+                    completo = $('input[name="completo_av"]:checked').val()
+                    llamada = document.getElementById("titulo_av")
+                    contenido = llamada.innerHTML
+
+                    if (contenido == "2") {
+                        mensaje = ""
+                    } else {
+                        if (completo == "1") {
+                            mensaje =
+                                "Usted va a finalizar y guardar la encuesta, no podrá editar esta información en un futuro."
+                        } else {
+                            mensaje = ""
+                        }
+                    }
+
+                    if (completo == "0") {
+                        if (tipo_av == "") {
+                            swal("Seleccione el tipo de llamada que realizo", { icon: "warning" })
+                        } else {
+                            swal({
+                                title: "¿Está segura de continuar con una llamada incompleta?",
+                                text: mensaje,
+                                icon: "warning",
+                                buttons: ["Cancelar", "Continuar"],
+                                dangerMode: false
+                            }).then((willDelete) => {
+                                if (willDelete) {
+                                    const agregar_AV = document.getElementById("agregar_av")
+                                    agregar_AV.disabled = true
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/CallCenter/PagosAddEncuestaAV/",
+                                        data: $("#Add_av").serialize() + "&contenido_av=" + contenido,
+                                        success: function (respuesta) {
+                                            if (respuesta == "1") {
+                                                swal("Registro guardado exitosamente", {
+                                                    icon: "success"
+                                                })
+                                                location.reload()
+                                            } else {
+                                                $("#modal_encuesta_cliente").modal("hide")
+                                                swal(respuesta, {
+                                                    icon: "error"
+                                                })
+                                                document.getElementById("monto").value = ""
+                                            }
+                                        }
+                                    })
+                                } else {
+                                    swal("Continúe con su registro", { icon: "info" })
+                                }
+                            })
+                        }
+                    } else {
+                        if (tipo_av == "") {
+                            swal("Seleccione el tipo de llamada que realizo", { icon: "warning" })
+                        } else if (uno == "") {
+                            swal("Seleccione una opción para la pregunta #1", { icon: "warning" })
+                        } else if (dos == "") {
+                            swal("Seleccione una opción para la pregunta #2", { icon: "warning" })
+                        } else if (tres == "") {
+                            swal("Seleccione una opción para la pregunta #3", { icon: "warning" })
+                        } else if (cuatro == "") {
+                            swal("Seleccione una opción para la pregunta #4", { icon: "warning" })
+                        } else if (cinco == "") {
+                            swal("Seleccione una opción para la pregunta #5", { icon: "warning" })
+                        } else if (seis == "") {
+                            swal("Seleccione una opción para la pregunta #6", { icon: "warning" })
+                        } else if (siete == "") {
+                            swal("Seleccione una opción para la pregunta #7", { icon: "warning" })
+                        } else if (ocho == "") {
+                            swal("Seleccione una opción para la pregunta #8", { icon: "warning" })
+                        } else if (nueve == "") {
+                            swal("Seleccione una opción para la pregunta #9", { icon: "warning" })
+                        } else {
+                            ////////////////////////////////////777
+                            swal({
+                                title: "¿Está segura de continuar?",
+                                text: mensaje,
+                                icon: "warning",
+                                buttons: ["Cancelar", "Continuar"],
+                                dangerMode: false
+                            }).then((willDelete) => {
+                                if (willDelete) {
+                                    const agregar_AV = document.getElementById("agregar_av")
+                                    agregar_AV.disabled = true
+
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/CallCenter/PagosAddEncuestaAV/",
+                                        data: $("#Add_av").serialize() + "&contenido_av=" + contenido,
+                                        success: function (respuesta) {
+                                            if (respuesta == "1") {
+                                                swal("Registro guardado exitosamente", {
+                                                    icon: "success"
+                                                })
+                                                location.reload()
+                                            } else {
+                                                $("#modal_encuesta_cliente").modal("hide")
+                                                swal(respuesta, {
+                                                    icon: "error"
+                                                })
+                                                document.getElementById("monto").value = ""
+                                            }
+                                        }
+                                    })
+                                } else {
+                                    swal("Continúe con su registro", { icon: "info" })
+                                }
+                            })
+                            //////////////////////////////777
+                        }
+                    }
+                }
+
+                function enviar_comentarios_add() {
+                    cliente_encuesta = document.getElementById("cliente_encuesta").value
+                    cliente_id = document.getElementById("cliente_id").value
+
+                    cdgco_res = getParameterByName("Suc")
+                    ciclo_cl_res = getParameterByName("Ciclo")
+                    cliente_id_res = getParameterByName("Credito")
+
+                    if (cliente_encuesta != "PENDIENTE") {
+                        ///////
+                        //Puede guardar comentarios iniciales pero no finales
+                        ////
 
                         $.ajax({
                             type: "POST",
-                            url: "/CallCenter/ResumenEjecutivo/",
+                            url: "/CallCenter/Resumen/",
                             data:
                                 $("#Add_comentarios").serialize() +
                                 "&cdgco_res=" +
@@ -554,32 +369,13 @@ html;
                                 "&ciclo_cl_res=" +
                                 ciclo_cl_res +
                                 "&cliente_id_res=" +
-                                cliente_id +
-                                "&comentarios_iniciales=" +
-                                comentarios_iniciales +
-                                "&comentarios_finales=" +
-                                comentarios_finales +
-                                "&estatus_solicitud=" +
-                                estatus_solicitud +
-                                "&vobo_gerente=" +
-                                vobo_gerente,
+                                cliente_id,
                             success: function (respuesta) {
                                 if (respuesta == "1") {
-                                    swal("Se guardo correctamente la información.", {
-                                        icon: "success",
-                                        buttons: {
-                                            catch: {
-                                                text: "Aceptar",
-                                                value: "catch"
-                                            }
-                                        }
-                                    }).then((value) => {
-                                        switch (value) {
-                                            case "catch":
-                                                window.location.href = "/CallCenter/Pendientes/"
-                                                break
-                                        }
+                                    swal("Registro guardado exitosamente", {
+                                        icon: "success"
                                     })
+                                    location.reload()
                                 } else {
                                     $("#modal_encuesta_cliente").modal("hide")
                                     swal(respuesta, {
@@ -589,63 +385,205 @@ html;
                                 }
                             }
                         })
+                    } else {
+                        swal(
+                            "Usted debe responder la encuesta del CLIENTE para poder guardar sus comentarios iniciales y poder continuar.",
+                            { icon: "warning" }
+                        )
                     }
                 }
-            }
-        }
-    }
-    
-        function check_2610()
-        {
-             llamada = document.getElementById("titulo");
-             contenido = llamada.innerHTML;
-             
-             
-            swal({
-            title: "¿Está segura de continuar con el registro de una solicitud con Información Inconsistente?",
-            text: "",
-            icon: "warning",
-            buttons: ["Cancelar", "Continuar"],
-            dangerMode: false
-            })
-            .then((willDelete) => {
-            if (willDelete) {
-                                     
-            const agregar_CL = document.getElementById('agregar_CL');
-            agregar_CL.disabled = true; 
-                                      
-            $.ajax({
-                    type: 'POST',
-                    url: '/CallCenter/PagosAddEncuestaCL/',
-                    data: $('#Add_cl').serialize()+'&contenido='+contenido+'&completo=0',
-                    success: function(respuesta) {
-                    
-                        if(respuesta=='1'){
-                        swal("Registro guardado exitosamente", {
-                            icon: "success",
-                            });
-                            location.reload();
-                         }
-                         else {
-                                  $('#modal_encuesta_cliente').modal('hide')
-                                  swal(respuesta, {
-                                         icon: "error",
-                                  });            
-                              }
-                         }
-                    });
+
+                const mostrarAdvertencia = (aprobar = false) => {
+                    const textos = {
+                        mensajeOK: '"Sí, aprobar solicitud", dará inicio a el proceso de autorización del crédito.',
+                        advertenciaOK: "¿estas segura de aprobar el crédito?",
+                        botonOK: "Sí, aprobar solicitud",
+                        mensajeCANCELAR:
+                            "El crédito se cancelara y se notificara al área correspondiente de la cancelación",
+                        advertenciaCANCELAR: "¿Estas segura de cancelar la solicitud?",
+                        botonCANCELAR: "Sí, cancelar solicitud"
                     }
-                    else {
-                            swal("Continúe con su registro", {icon: "success",});
-                            document.getElementById('check_2610').checked = false;
-                            return false;
-                         }
-            });
-                     
-        }
-    
-      </script>
-html;
+
+                    const contenedor = document.createElement("div")
+                    const mensaje = document.createElement("p")
+                    const advertencia = document.createElement("p")
+
+                    mensaje.innerHTML = aprobar ? textos.mensajeOK : textos.mensajeCANCELAR
+                    mensaje.style.fontSize = "15px"
+                    mensaje.style.color = "black"
+
+                    advertencia.textContent = aprobar ? textos.advertenciaOK : textos.advertenciaCANCELAR
+                    advertencia.style.color = "red"
+                    advertencia.style.fontWeight = "bold"
+                    advertencia.style.marginTop = "20px"
+                    advertencia.style.fontSize = "18px"
+
+                    contenedor.appendChild(mensaje)
+                    contenedor.appendChild(advertencia)
+
+                    return new Promise((resolve) => {
+                        swal({
+                            title: (aprobar ? "Aprobación" : "Rechazo") + " de solicitud de crédito",
+                            content: contenedor,
+                            icon: "warning",
+                            buttons: ["No, volver", "Lea con atención (10)"],
+                            closeOnClickOutside: false,
+                            dangerMode: true
+                        }).then((continuar) => {
+                            resolve(continuar)
+                        })
+
+                        let tiempoRestante = 10
+                        const botonConfirmar = document.querySelector(".swal-button--danger")
+                        botonConfirmar.disabled = true
+                        const intervalo = setInterval(() => {
+                            tiempoRestante--
+
+                            if (tiempoRestante > 0)
+                                botonConfirmar.textContent = "Lea con atención (" + tiempoRestante + ")"
+                            else {
+                                clearInterval(intervalo)
+                                botonConfirmar.disabled = false
+                                botonConfirmar.textContent = aprobar ? textos.botonOK : textos.botonCANCELAR
+                            }
+                        }, 1000)
+                    })
+                }
+
+                const enviar_resumen_add = async () => {
+                    estatus_solicitud = document.getElementById("estatus_solicitud").value
+                    cliente_encuesta = document.getElementById("cliente_encuesta").value
+                    cliente_aval = document.getElementById("cliente_aval").value
+                    comentarios_iniciales = document.getElementById("comentarios_iniciales").value
+                    comentarios_finales = document.getElementById("comentarios_finales").value
+                    vobo_gerente = document.getElementById("vobo_gerente").value
+                    cliente_id = document.getElementById("cliente_id").value
+                    cdgco_res = getParameterByName("Suc")
+                    ciclo_cl_res = getParameterByName("Ciclo")
+
+                    if (comentarios_iniciales == "") {
+                        swal("Necesita ingresar los comentarios iniciales para la solicitud del cliente", {
+                            icon: "warning"
+                        })
+                    } else {
+                        if (comentarios_finales == "") {
+                            swal("Necesita ingresar los comentarios finales para la solicitud del cliente", {
+                                icon: "warning"
+                            })
+                        } else {
+                            if (cliente_encuesta == "PENDIENTE") {
+                                swal("La encuesta del cliente no está marcada como validada", {
+                                    icon: "danger"
+                                })
+                            } else {
+                                if (estatus_solicitud == "") {
+                                    swal("Necesita seleccionar el estatus final de la solicitud", {
+                                        icon: "warning"
+                                    })
+                                } else {
+                                    if (estatus_solicitud != "PENDIENTE") {
+                                        const continuar = await mostrarAdvertencia(
+                                            estatus_solicitud.toLowerCase().includes("lista")
+                                        )
+                                        if (!continuar) return
+                                    }
+
+                                    const agregar_TS = document.getElementById("terminar_solicitud")
+                                    agregar_TS.disabled = true
+
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/CallCenter/ResumenEjecutivo/",
+                                        data:
+                                            $("#Add_comentarios").serialize() +
+                                            "&cdgco_res=" +
+                                            cdgco_res +
+                                            "&ciclo_cl_res=" +
+                                            ciclo_cl_res +
+                                            "&cliente_id_res=" +
+                                            cliente_id +
+                                            "&comentarios_iniciales=" +
+                                            comentarios_iniciales +
+                                            "&comentarios_finales=" +
+                                            comentarios_finales +
+                                            "&estatus_solicitud=" +
+                                            estatus_solicitud +
+                                            "&vobo_gerente=" +
+                                            vobo_gerente,
+                                        success: function (respuesta) {
+                                            if (respuesta == "1") {
+                                                swal("Se guardo correctamente la información.", {
+                                                    icon: "success",
+                                                    buttons: {
+                                                        catch: {
+                                                            text: "Aceptar",
+                                                            value: "catch"
+                                                        }
+                                                    }
+                                                }).then((value) => {
+                                                    switch (value) {
+                                                        case "catch":
+                                                            window.location.href = "/CallCenter/Pendientes/"
+                                                            break
+                                                    }
+                                                })
+                                            } else {
+                                                $("#modal_encuesta_cliente").modal("hide")
+                                                swal(respuesta, {
+                                                    icon: "error"
+                                                })
+                                                document.getElementById("monto").value = ""
+                                            }
+                                        }
+                                    })
+                                }
+                            }
+                        }
+                    }
+                }
+
+                function check_2610() {
+                    llamada = document.getElementById("titulo")
+                    contenido = llamada.innerHTML
+
+                    swal({
+                        title: "¿Está segura de continuar con el registro de una solicitud con Información Inconsistente?",
+                        text: "",
+                        icon: "warning",
+                        buttons: ["Cancelar", "Continuar"],
+                        dangerMode: false
+                    }).then((willDelete) => {
+                        if (willDelete) {
+                            const agregar_CL = document.getElementById("agregar_CL")
+                            agregar_CL.disabled = true
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/CallCenter/PagosAddEncuestaCL/",
+                                data: $("#Add_cl").serialize() + "&contenido=" + contenido + "&completo=0",
+                                success: function (respuesta) {
+                                    if (respuesta == "1") {
+                                        swal("Registro guardado exitosamente", {
+                                            icon: "success"
+                                        })
+                                        location.reload()
+                                    } else {
+                                        $("#modal_encuesta_cliente").modal("hide")
+                                        swal(respuesta, {
+                                            icon: "error"
+                                        })
+                                    }
+                                }
+                            })
+                        } else {
+                            swal("Continúe con su registro", { icon: "success" })
+                            document.getElementById("check_2610").checked = false
+                            return false
+                        }
+                    })
+                }
+            </script>
+        HTML;
 
         $credito = $_GET['Credito'];
         $ciclo = $_GET['Ciclo'];
@@ -653,71 +591,47 @@ html;
         $reg = $_GET['Reg'];
         $fec = $_GET['Fec'];
         $act = $_GET['Act'];
-
-
         $opciones_suc = '';
         $cdgco_all = array();
         $cdgco_suc = array();
-
         $ComboSucursales = CallCenterDao::getComboSucursales($this->__usuario);
-        //var_dump($ComboSucursales);
+        $opciones_suc .= '<option  value="000">(000) TODAS MIS SUCURSALES</option>';
 
-        $opciones_suc .= <<<html
-                <option  value="000">(000) TODAS MIS SUCURSALES</option>
-html;
         foreach ($ComboSucursales as $key => $val2) {
-
-            if ($suc == $val2['CODIGO']) {
-                $sel = 'selected';
-            } else {
-                $sel = '';
-            }
+            $sel = $suc == $val2['CODIGO'] ? 'selected' : '';
 
             $opciones_suc .= <<<html
                 <option {$sel} value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
-html;
+            html;
             array_push($cdgco_all, $val2['CODIGO']);
         }
 
-
-        //var_dump($AdministracionOne[4]['NUMERO_INTENTOS_AV']);
+        View::set('header', $this->_contenedor->header($this->GetExtraHeader('Consulta de Clientes Call Center')));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
 
         if ($credito != '' && $ciclo != '' && $fec != '') {
-
-
             $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo, $fec);
 
             if ($AdministracionOne[0] == '') {
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('Administracion', $AdministracionOne);
                 View::set('credito', $credito);
                 View::set('ciclo', $ciclo);
                 View::render("callcenter_cliente_message_all");
             } else {
-
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('Administracion', $AdministracionOne);
                 View::set('suc', $suc);
                 View::set('reg', $reg);
                 View::set('cdgpe', $this->__usuario);
                 View::set('pendientes', 'Mis ');
 
-                if ($act == 'N') {
-                    View::render("callcenter_cliente_all_disable");
-                } else {
-                    View::render("callcenter_cliente_all");
-                }
+                if ($act == 'N') View::render("callcenter_cliente_all_disable");
+                else View::render("callcenter_cliente_all");
             }
         } else {
-
             if ($credito == '' && $ciclo == '') {
                 if ($suc == '000' || $suc == '') {
                     $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_all);
-                    //var_dump("1");
                 } else {
-                    //var_dump("1010");
                     if ($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL') {
                         $Solicitudes = CallCenterDao::getAllSolicitudes('');
                     } else {
@@ -728,13 +642,9 @@ html;
             } else {
                 array_push($cdgco_suc, $suc);
                 $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_suc);
-                //var_dump($Solicitudes);
-                //var_dump("1");
             }
-            //var_dump($Solicitudes);
 
             foreach ($Solicitudes as $key => $value) {
-
                 if ($value['ESTATUS_CL'] == 'PENDIENTE') {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
@@ -778,6 +688,7 @@ html;
                     $icon_ci = 'fa-check';
                     $color_ci = 'success';
                 }
+
                 if ($value['COMENTARIO_FINAL'] == '') {
                     $icon_cf = 'fa-close';
                     $color_cf = 'danger';
@@ -785,6 +696,7 @@ html;
                     $icon_cf = 'fa-check';
                     $color_cf = 'success';
                 }
+
                 if ($value['ESTATUS_FINAL'] == '') {
                     $icon_ef = 'fa-close';
                     $color_ef = 'danger';
@@ -792,6 +704,7 @@ html;
                     $icon_ef = 'fa-clock-o';
                     $color_ef = 'warning';
                 }
+
                 if ($value['COMENTARIO_PRORROGA'] == '') {
                     $icon_cp_a = 'fa-close';
                     $color_cp_a = 'danger';
@@ -805,6 +718,7 @@ html;
                 } else {
                     $vobo = '<div><span class="label label-success"><span class="fa fa-check"></span></span> VoBo Gerente Regional</div>';
                 }
+
                 if ($value['PRORROGA'] == 2) {
                     $prorroga = '<hr><div><b>TIENE ACTIVA LA PRORROGA </b><span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #9101b2"><span class="fa fa-bell"> </span> </span></div><hr>';
                     $comentario_prorroga = '<div><span class="label label-' . $color_cp_a . '"><span class="fa ' . $icon_cp_a . '"></span></span> Comentarios Prorroga</div>';
@@ -818,15 +732,12 @@ html;
                 } else {
                     $reactivacion = '<hr><div><b>SE REACTIVO LA SOLICITUD </b><span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #006c75"><span class="fa fa-bell"> </span> </span></div><hr>';
                 }
-                //var_dump($vobo);
 
                 if (substr($value['TEL_CL'], 0, 1) == '(') {
                     $format = $value['TEL_CL'];
                 } else {
                     $format = "(" . substr($value['TEL_CL'], 0, 3) . ")" . " " . substr($value['TEL_CL'], 3, 3) . " - " . substr($value['TEL_CL'], 6, 4);
                 }
-                //var_dump($value['TEL_CL']);
-
 
                 if ($value['ID_SCALL'] == '') {
                     $id_scall = '0000';
@@ -834,41 +745,34 @@ html;
                     $id_scall = $value['ID_SCALL'];
                 }
 
-
                 if ($value['RECOMENDADO'] != '') {
                     $recomendado = '<div><b>CAMPAÑA ACTIVA</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #6a0013"><span class="fa fa-yelp"> </span> </span></div><b><em>RECOMIENDA MÁS Y PAGA MENOS <em></em></b><hr>';
                 }
 
-
-                $tabla .= <<<html
+                $tabla .= <<<HTML
                 <tr style="padding: 0px !important; ">
                     <td style="padding: 5px !important; width:65px !important;">
-                    
                     <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
                     <hr>
                     <div><label>{$value['CDGNS']}-{$value['CICLO']}</label></div>
-                    
-                    
                     </td>
                     <td style="padding: 10px !important; text-align: left">
-                         <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
+                        <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
                         <br>
-                         <span class="fa fa-map-marker"></span> SUCURSAL: ({$value['CODIGO_SUCURSAL']}) {$value['NOMBRE_SUCURSAL']}
+                        <span class="fa fa-map-marker"></span> SUCURSAL: ({$value['CODIGO_SUCURSAL']}) {$value['NOMBRE_SUCURSAL']}
                         <br>
                         <span class="fa fa-briefcase"></span> EJECUTIVO: {$value['EJECUTIVO']}
                     </td>
                     <td style="padding-top: 10px !important;">
-                            <span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label> <br><label><span class="fa fa-phone"></span> {$format}</label>
-                           
-                    </td>                    <td style="padding-top: 22px !important; text-align: left">
+                        <span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label> <br><label><span class="fa fa-phone"></span> {$format}</label>
+                    </td>
+                    <td style="padding-top: 22px !important; text-align: left">
                         <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
-                        
                         <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
-                         <br>
-                       
+                        <br>
                         $prorroga
                         $reactivacion
-                         {$recomendado}
+                        {$recomendado}
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
                     <td style="padding: 10px !important; text-align: left; width:165px !important;">
@@ -883,14 +787,9 @@ html;
                         </a>
                     </td>
                 </tr>
-html;
+                HTML;
             }
 
-
-
-
-            View::set('header', $this->_contenedor->header($extraHeader));
-            View::set('footer', $this->_contenedor->footer($extraFooter));
             View::set('tabla', $tabla);
             View::set('cdgpe', $this->__usuario);
             View::set('sucursal', $opciones_suc);
@@ -898,6 +797,7 @@ html;
             View::render("callcenter_pendientes_all");
         }
     }
+
     public function Busqueda()
     {
         $tabla = '';
@@ -4461,7 +4361,7 @@ html;
                             estatus: $("#estatus").val()
                         }
 
-                        descargaExcel("/CallCenter/ExcelReporteEncuestaPostventa", parametros)
+                        descargaExcel("/CallCenter/ExcelReporteEncuestaPostventa/?" + $.param(parametros))
                     })
                 })
             </script>
@@ -4523,9 +4423,10 @@ html;
             \PHPSpreadsheet::ColumnaExcel('COMENTARIO_ASESOR', 'Comentario del asesor')
         ];
 
-        $filas = CallCenterDao::GetReporteEncuestaPostventa($_POST);
+        $filas = CallCenterDao::GetReporteEncuestaPostventa($_GET);
+        $filas = $filas['success'] ? $filas['datos'] : [];
 
-        \PHPSpreadsheet::DescargaExcel('Reporte encuestas Postventa', 'Reporte', 'Encuestas Postventa', $columnas, $filas['datos']);
+        \PHPSpreadsheet::DescargaExcel('Reporte encuestas Postventa', 'Reporte', 'Encuestas Postventa', $columnas, $filas);
     }
 
     public function SupervisionEncuestaPostventa()

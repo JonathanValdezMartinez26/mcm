@@ -78,23 +78,8 @@ class JobsCredito extends Job
         if (!$creditos['success']) return self::SaveLog('Finalizado con error: ' . $creditos['mensaje'] . '->' . $creditos['error']);
         if (count($creditos['datos']) == 0) return self::SaveLog('Finalizado: No hay solicitudes de crédito por procesar');
 
-        $destAprobadas = [];
+        $destAprobadas = $this->GetDestinatarios(JobsDao::GetDestinatarios_Aplicacion(1));
         $destRechazadas = [];
-
-        $destA = JobsDao::GetDestinatarios(1);
-        $destR = null; //JobsDao::GetDestinatarios('SolicitudesRechazadas');
-
-        if ($destA['success'] && count($destA['datos']) > 0) {
-            foreach ($destA['datos'] as $key => $d) {
-                $destAprobadas[] = $d['CORREO'];
-            }
-        }
-
-        if ($destR['success'] && count($destR['datos']) > 0) {
-            foreach ($destR['datos'] as $key => $d) {
-                $destRechazadas[] = $d['CORREO'];
-            }
-        }
 
         foreach ($creditos['datos'] as $key => $credito) {
             $aprobada = str_starts_with($credito['ESTATUS'], 'LISTA');
@@ -110,8 +95,9 @@ class JobsCredito extends Job
                 'concluyo' => $credito['CDGPE']
             ];
 
-            if ($r['success']) {
+            if ($r['success'] && $aprobada) {
                 $dest = $aprobada ? $destAprobadas : $destRechazadas;
+
                 $plantilla = $this->Plantilla_mail_Solicitud_Finalizada($credito, $aprobada);
                 $tipo = $aprobada ? 'Aprobación' : 'Rechazo';
 
@@ -225,6 +211,18 @@ class JobsCredito extends Job
             </div>
         HTML;
     }
+
+    public function TstCorreos()
+    {
+        $destinatarios = $this->GetDestinatarios(JobsDao::GetDestinatarios_Sucursal('002'));
+
+        $destinatarios = $this->GetDestinatarios([
+            JobsDao::GetDestinatarios_Aplicacion(1),
+            JobsDao::GetDestinatarios_Sucursal('030')
+        ], $destinatarios);
+
+        echo json_encode($destinatarios) . PHP_EOL;
+    }
 }
 
 if (isset($argv[1])) {
@@ -236,6 +234,9 @@ if (isset($argv[1])) {
             break;
         case 'SolicitudesFinalizadas':
             $jobs->SolicitudesFinalizadas();
+            break;
+        case 'TstCorreos':
+            $jobs->TstCorreos();
             break;
         case 'help':
             echo 'JobCheques: Actualiza los cheques de los créditos autorizados\n';

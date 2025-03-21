@@ -1164,14 +1164,21 @@ sql;
                 TRUNC(FECHA) BETWEEN TO_DATE(:fechaI, 'YYYY-MM-DD') AND TO_DATE(:fechaF, 'YYYY-MM-DD')
         SQL;
 
-        if ($datos['estatus'] && $datos['estatus'] !== '*') $qry .= ' AND ESTATUS = :estatus';
-        else unset($datos['estatus']);
+        $prm = [
+            'fechaI' => $datos['fechaI'],
+            'fechaF' => $datos['fechaF']
+        ];
+
+        if ($datos['estatus'] && $datos['estatus'] !== '*') {
+            $qry .= ' AND ESTATUS = :estatus';
+            $prm['estatus'] = $datos['estatus'];
+        } else unset($datos['estatus']);
 
         $qry .= ' ORDER BY FECHA DESC';
 
         try {
             $db = new Database('SERVIDOR-AWS');
-            $reporte = $db->queryAll($qry, $datos);
+            $reporte = $db->queryAll($qry, $prm);
             return self::Responde(true, "Reporte encontrado.", $reporte);
         } catch (\Exception $e) {
             return self::Responde(false, "Error al obtener el reporte.", null, $e->getMessage());
