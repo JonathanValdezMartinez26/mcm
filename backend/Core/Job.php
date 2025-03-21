@@ -80,7 +80,7 @@ class Job
 
     public function GetDestinatarios($respuestas, $destinatarios = [])
     {
-        $respuestas = $respuestas['success'] ? [$respuestas] : $respuestas;
+        $respuestas = array_key_exists('success', $respuestas) ? [$respuestas] : $respuestas;
 
         foreach ($respuestas as $respuesta) {
             if ($respuesta['success'] && count($respuesta['datos']) > 0) {
