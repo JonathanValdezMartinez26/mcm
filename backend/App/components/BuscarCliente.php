@@ -4,7 +4,6 @@ namespace App\components;
 
 use App\components\TarjetaDedo;
 
-
 /**
  * Clase BuscarCliente
  * 

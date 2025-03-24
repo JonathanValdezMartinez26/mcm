@@ -211,18 +211,6 @@ class JobsCredito extends Job
             </div>
         HTML;
     }
-
-    public function TstCorreos()
-    {
-        $destinatarios = $this->GetDestinatarios(JobsDao::GetDestinatarios_Sucursal('002'));
-
-        $destinatarios = $this->GetDestinatarios([
-            JobsDao::GetDestinatarios_Aplicacion(1),
-            JobsDao::GetDestinatarios_Sucursal('030')
-        ], $destinatarios);
-
-        echo json_encode($destinatarios) . PHP_EOL;
-    }
 }
 
 if (isset($argv[1])) {
@@ -234,9 +222,6 @@ if (isset($argv[1])) {
             break;
         case 'SolicitudesFinalizadas':
             $jobs->SolicitudesFinalizadas();
-            break;
-        case 'TstCorreos':
-            $jobs->TstCorreos();
             break;
         case 'help':
             echo 'JobCheques: Actualiza los cheques de los créditos autorizados\n';

@@ -51,11 +51,13 @@ class Model
 
         $qry = <<<SQL
             SELECT DISTINCT
-                CORREO
+                CD.CORREO
             FROM
-                CORREO_DIRECTORIO
+                CORREO_GRUPO CG
+                JOIN CORREO_DIRECTORIO_GRUPO CDG ON CDG.ID_GRUPO = CG.ID
+                JOIN CORREO_DIRECTORIO CD ON CD.ID = CDG.ID_CORREO
             WHERE
-                SUCURSAL IN ($sucursales)
+                SUBSTR(CG.GRUPO, 1, 3) IN ($sucursales)
         SQL;
 
         try {
