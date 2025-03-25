@@ -7,7 +7,7 @@ namespace App\components;
  * 
  * Representa el componente para el menu del sistema.
  */
-class BuscarCliente
+class Menu
 {
     /**
      * Perfil del usuario.
@@ -44,6 +44,10 @@ class BuscarCliente
 
     private function Menu()
     {
+        $mis = $this->ValidaPermisos(['CALLC', 'ACALL']) ? 'Mis ' : '';
+        $analistas = $this->ValidaPermisos(['ADMIN', 'HSEJ']) ? ' (Analistas)' : '';
+        $tituloAdmin = $this->ValidaPermisos(['ADMIN', 'LGFR']) ? 'Administración' : 'Usuarios SICAFIN';
+
         return [
             [
                 'seccion' => 'General WEB AHORRO',
@@ -98,7 +102,7 @@ class BuscarCliente
                                 'titulo' => 'Layout Contable',
                                 'url' => [
                                     'directorio' => '/Pagos/Layout/',
-                                    'permisXos' => ['ADMIN', 'ACALL', 'LAYOU']
+                                    'permisos' => ['ADMIN', 'ACALL', 'LAYOU']
                                 ]
                             ],
                             [
@@ -132,49 +136,49 @@ class BuscarCliente
                                 'titulo' => 'Control de Garantías',
                                 'url' => [
                                     'directorio' => '/Creditos/ControlGarantias/',
-                                    'permisos' => ['control_garantias']
+                                    'permisos' => ['ADMIN', 'GARAN', 'ORHM', 'MAPH', 'AMOCA']
                                 ]
                             ],
                             [
                                 'titulo' => 'Calculo Descuento Telaraña',
                                 'url' => [
                                     'directorio' => '/Promociones/Telarana/',
-                                    'permisos' => ['calculo_telarana']
+                                    'permisos' => ['ADMIN', 'ORHM', 'MAPH']
                                 ]
                             ],
                             [
                                 'titulo' => 'Registro Telaraña',
                                 'url' => [
                                     'directorio' => '/Validaciones/RegistroTelarana/',
-                                    'permisos' => ['registro_telarana']
+                                    'permisos' => ['ADMIN', 'ORHM', 'MAPH']
                                 ]
                             ],
                             [
                                 'titulo' => 'Actualización de Créditos',
                                 'url' => [
                                     'directorio' => '/Creditos/ActualizaCredito/',
-                                    'permisos' => ['actualiza_creditos']
+                                    'permisos' => ['ADMIN', 'ORHM', 'MAPH']
                                 ]
                             ],
                             [
                                 'titulo' => 'Cambio de Sucursal',
                                 'url' => [
                                     'directorio' => '/Creditos/CambioSucursal/',
-                                    'permisos' => ['cambio_sucursal']
+                                    'permisos' => ['ADMIN', 'CAMAG', 'ORHM', 'MAPH']
                                 ]
                             ],
                             [
                                 'titulo' => 'Cancelación de Ref',
                                 'url' => [
-                                    'directorio' => '/Creditos/CancelaRef/',
-                                    'permisos' => ['cancela_ref']
+                                    'directorio' => '/CancelaRef/',
+                                    'permisos' => ['ADMIN', 'CAMAG', 'ORHM', 'MAPH']
                                 ]
                             ],
                             [
                                 'titulo' => 'Corrección Mov Ajustes',
                                 'url' => [
-                                    'directorio' => '/Creditos/CorreccionMovAjustes/',
-                                    'permisos' => ['correccion_mov_ajustes']
+                                    'directorio' => '/CorreccionAjustes/',
+                                    'permisos' => ['ADMIN', 'CAMAG', 'ORHM', 'MAPH']
                                 ]
                             ]
                         ]
@@ -187,63 +191,77 @@ class BuscarCliente
                                 'titulo' => 'Asignar Sucursales',
                                 'url' => [
                                     'directorio' => '/CallCenter/Administracion/',
-                                    'permisos' => ['asignar_sucursales']
+                                    'permisos' => ['ADMIN', 'ACALL', 'ESMM', 'HSEJ']
                                 ]
                             ],
                             [
                                 'titulo' => 'Solicitudes de Prorroga',
                                 'url' => [
                                     'directorio' => '/CallCenter/Prorroga/',
-                                    'permisos' => ['solicitudes_prorroga']
+                                    'permisos' => ['ADMIN', 'ACALL', 'ESMM', 'HSEJ']
                                 ]
                             ],
                             [
                                 'titulo' => 'Reactivar Solicitudes',
                                 'url' => [
                                     'directorio' => '/CallCenter/Reactivar/',
-                                    'permisos' => ['reactivar_solicitudes']
+                                    'permisos' => ['ADMIN', 'ACALL', 'ESMM', 'HSEJ']
                                 ]
                             ],
                             [
                                 'titulo' => 'Búsqueda Rápida',
                                 'url' => [
                                     'directorio' => '/CallCenter/Busqueda/',
-                                    'permisos' => ['busqueda_rapida']
+                                    'permisos' => ['ADMIN', 'ACALL', 'ESMM', 'HSEJ']
                                 ]
                             ],
                             [
-                                'titulo' => 'Pendientes (Analistas)',
+                                'titulo' => 'Histórico Analistas',
+                                'url' => [
+                                    'directorio' => '/CallCenter/HistoricoAnalistas/',
+                                    'permisos' => ['ESMM', 'MAPH']
+                                ]
+                            ],
+                            [
+                                'titulo' => 'Todos los Pendientes',
+                                'url' => [
+                                    'directorio' => '/CallCenter/Global/',
+                                    'permisos' => ['CALLC', 'ACALL']
+                                ]
+                            ],
+                            [
+                                'titulo' => $mis . 'Pendientes' . $analistas,
                                 'url' => [
                                     'directorio' => '/CallCenter/Pendientes/',
-                                    'permisos' => ['pendientes_analistas']
+                                    'permisos' => ['ADMIN', 'CALLC', 'ACALL', 'HSEJ']
                                 ]
                             ],
                             [
-                                'titulo' => 'Históricos (Analistas)',
+                                'titulo' => $mis . 'Históricos' . $analistas,
                                 'url' => [
                                     'directorio' => '/CallCenter/Historico/',
-                                    'permisos' => ['historicos_analistas']
+                                    'permisos' => ['ADMIN', 'CALLC', 'ACALL', 'HSEJ']
                                 ]
                             ],
                             [
                                 'titulo' => 'Postventa',
                                 'url' => [
                                     'directorio' => '/CallCenter/EncuestaPostventa/',
-                                    'permisos' => ['postventa']
+                                    'permisos' => ['ADMIN', 'CALLC', 'ACALL', 'HSEJ']
                                 ]
                             ],
                             [
                                 'titulo' => 'Reporte Postventa',
                                 'url' => [
                                     'directorio' => '/CallCenter/ReporteEncuestaPostventa/',
-                                    'permisos' => ['reporte_postventa']
+                                    'permisos' => ['ADMIN', 'CALLC', 'ACALL', 'HSEJ']
                                 ]
                             ],
                             [
                                 'titulo' => 'Supervisión Postventa',
                                 'url' => [
                                     'directorio' => '/CallCenter/SupervisionEncuestaPostventa/',
-                                    'permisos' => ['supervision_postventa']
+                                    'permisos' => ['ADMIN', 'CALLC', 'ACALL', 'HSEJ']
                                 ]
                             ]
                         ]
@@ -256,14 +274,14 @@ class BuscarCliente
                                 'titulo' => 'Consulta Clientes Solicitudes',
                                 'url' => [
                                     'directorio' => '/Cultiva/',
-                                    'permisos' => ['consulta_clientes']
+                                    'permisos' => ['ADMIN', 'PLMV', 'MCDP']
                                 ]
                             ],
                             [
                                 'titulo' => 'Reingresar Clientes a Grupo',
                                 'url' => [
                                     'directorio' => '/Cultiva/ReingresarClientesCredito/',
-                                    'permisos' => ['reingresar_clientes']
+                                    'permisos' => ['ADMIN', 'MCDP']
                                 ]
                             ]
                         ]
@@ -271,90 +289,88 @@ class BuscarCliente
                     [
                         'titulo' => 'Incidencias MCM',
                         'icono' => 'glyphicon glyphicon-cog',
-                        'url' => '',
-                        'permisos' => ['incidencias_module'],
                         'items' => [
                             [
                                 'titulo' => 'Error Autorizar y/o Rechazar Solicitud',
                                 'url' => [
                                     'directorio' => '/Incidencias/AutorizaRechazaSolicitud/',
-                                    'permisos' => ['error_autoriza_rechaza']
+                                    'permisos' => ['ADMIN', 'PLMV', 'PHEE']
                                 ]
                             ],
                             [
                                 'titulo' => 'Calculo de Devengos',
                                 'url' => [
                                     'directorio' => '/Incidencias/CalculoDevengo/',
-                                    'permisos' => ['calculo_devengos']
+                                    'permisos' => ['ADMIN', 'PLMV', 'PHEE']
                                 ]
                             ],
                             [
                                 'titulo' => 'Cancelar Refinanciamiento',
                                 'url' => [
                                     'directorio' => '/Incidencias/CancelarRefinanciamiento/',
-                                    'permisos' => ['cancelar_refinanciamiento']
+                                    'permisos' => ['ADMIN', 'PLMV', 'PHEE']
                                 ]
                             ],
                             [
                                 'titulo' => 'Cambio de Fecha para Pagos No conciliados del día',
                                 'url' => [
                                     'directorio' => '/Incidencias/ActualizarFechaPagosNoConciliados/',
-                                    'permisos' => ['cambio_fecha_pagos']
+                                    'permisos' => ['ADMIN', 'PLMV', 'PHEE']
                                 ]
                             ],
                             [
                                 'titulo' => 'Telaraña agregar referencias',
                                 'url' => [
                                     'directorio' => '/Incidencias/ActualizarFechaPagosNoConciliados/',
-                                    'permisos' => ['telarana_referencias']
+                                    'permisos' => ['ADMIN', 'PLMV', 'PHEE']
                                 ]
                             ]
                         ]
                     ],
                     [
-                        'titulo' => 'Administrar Caja',
+                        'titulo' => $tituloAdmin,
                         'icono' => 'glyphicon glyphicon-cog',
                         'items' => [
                             [
                                 'titulo' => 'Ajustar Hora de Cierre',
                                 'url' => [
                                     'directorio' => '/Pagos/AjusteHoraCierre/',
-                                    'permisos' => ['ajuste_hora_cierre']
+                                    'permisos' => ['ADMIN', 'LGFR']
                                 ]
                             ],
                             [
                                 'titulo' => 'Asignación Días Festivos',
                                 'url' => [
                                     'directorio' => '/Pagos/DiasFestivos/',
-                                    'permisos' => ['dias_festivos']
+                                    'permisos' => ['ADMIN', 'LGFR']
                                 ]
                             ],
                             [
                                 'titulo' => 'Reporte Usuarios SICAFIN MCM',
                                 'url' => [
                                     'directorio' => '/Reportes/UsuariosMCM/',
-                                    'permisos' => ['reporte_usuarios_mcm']
+                                    'permisos' => ['ADMIN', 'MAPH', 'HSEJ', 'PHEE', 'ORHM']
                                 ]
                             ],
                             [
                                 'titulo' => 'Reporte Usuarios SICAFIN Cultiva',
                                 'url' => [
                                     'directorio' => '/Reportes/UsuariosCultiva/',
-                                    'permisos' => ['reporte_usuarios_cultiva']
+                                    'permisos' => ['ADMIN', 'MAPH', 'HSEJ', 'PHEE', 'ORHM']
                                 ]
                             ],
                             [
                                 'titulo' => 'Situación Cartera',
                                 'url' => [
                                     'directorio' => '/Creditos/cierreDiario',
-                                    'permisos' => ['situacion_cartera']
+                                    'permisos' => ['ADMIN', 'MAPH', 'HSEJ', 'PHEE', 'ORHM']
                                 ]
                             ],
                             [
                                 'titulo' => 'Administración de Correos',
                                 'url' => [
                                     'directorio' => '/Creditos/AdminCorreos',
-                                    'permisos' => ['admin_correos']
+                                    'permisos' => ['ADMIN', 'MAPH', 'HSEJ', 'PHEE', 'ORHM']
                                 ]
                             ]
                         ]
@@ -367,7 +383,7 @@ class BuscarCliente
                                 'titulo' => 'Productividad Operaciones',
                                 'url' => [
                                     'directorio' => '/Indicadores/ProductividadOP/',
-                                    'permisos' => ['productividad_operaciones']
+                                    'permisos' => ['ADMIN']
                                 ]
                             ]
                         ]
@@ -377,7 +393,7 @@ class BuscarCliente
         ];
     }
 
-    private function mostrar()
+    function mostrar()
     {
         $menu = $this->Menu();
         $html = <<<HTML
@@ -388,7 +404,7 @@ class BuscarCliente
         foreach ($menu as $seccion) {
             $html .= $this->mostrarSeccion($seccion);
         }
-
+        
         $html .= <<<HTML
                 </div>
             </div>
@@ -406,9 +422,10 @@ class BuscarCliente
 
         if ($html !== '') {
             return <<<HTML
+                <hr>
                 <h3>{$seccion['seccion']}</h3>
                 <ul class="nav side-menu">
-                    {$seccion}
+                    {$html}
                 </ul>
             HTML;
         }
