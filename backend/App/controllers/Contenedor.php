@@ -204,7 +204,7 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'CALLC', 'ACALL', 'HSEJ'];
+        $permisos = ['ADMIN', 'CALLC', 'ACALL', 'HSEJ', 'ESMM', 'MAPH'];
         if ($this->ValidaPermiso($permisos)) {
             if ($this->__perfil == 'ADMIN' || $this->__usuario == 'HSEJ') {
                 $titulo = "(Analistas)";
