@@ -210,13 +210,13 @@ class Contenedor extends Controller
 
             if ($this->ValidaPermiso(['ADMIN', 'HSEJ', 'ESMM', 'MAPH'])) {
                 $titulo = "(Analistas)";
-            } else {
                 $mis = 'Mis';
+            } else {
                 $opcion .= '<li><a href="/CallCenter/Global/">Todos los Pendientes</a></li>';
             }
 
             if ($this->__usuario == 'ESMM' || $this->__usuario == 'MAPH') {
-                $opcion = '<li><a href="/CallCenter/HistoricoAnalistas/">Histórico Analistas</a></li>';
+                $opcion .= '<li><a href="/CallCenter/HistoricoAnalistas/">Histórico Analistas</a></li>';
             }
 
             $menu .= <<<HTML
