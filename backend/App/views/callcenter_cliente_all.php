@@ -139,7 +139,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td style="font-size: 16px;  !important;" colspan="14">
+                                                <td style="font-size: 16px !important;" colspan="14">
                                                     <div class="row">
                                                         <div class="col-md-8" style="padding-top: 11px">
                                                             <b><?php echo $Administracion[0]['CLIENTE']; ?> (<?php echo $Administracion[0]['ID_CLIENTE']; ?>) </b>
@@ -165,7 +165,7 @@
                                                                                         $format = "(" . substr($Administracion[1]['TELEFONO'], 0, 3) . ")" . " " . substr($Administracion[1]['TELEFONO'], 3, 3) . " - " . substr($Administracion[1]['TELEFONO'], 6, 4);
                                                                                         echo $format; ?>
                                                 </td>
-                                                <td style="font-size: 19px; font: " colspan="3">
+                                                <td style="font-size: 19px;" colspan="3">
                                                     <?php echo $titulo_l4 ?>
                                                     <button type="button" <?php echo $boton_ver_encuesta_l4 ?> class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_ver_encuesta_cliente" data-backdrop="static" data-keyboard="false">
                                                         <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Ver</label>
@@ -293,7 +293,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td style="font-size: 16px;  !important;" colspan="14">
+                                                <td style="font-size: 16px !important;" colspan="14">
                                                     <div class="row">
                                                         <div class="col-md-12" style="padding-top: 11px !important; padding-bottom: 11px !important;">
                                                             <?php echo $Administracion[0]['AVAL']; ?> (<?php echo $Administracion[0]['ID_AVAL']; ?>)
@@ -314,7 +314,7 @@
                                                                                         $format = "(" . substr($Administracion[2]['TELEFONO'], 0, 3) . ")" . " " . substr($Administracion[2]['TELEFONO'], 3, 3) . " - " . substr($Administracion[2]['TELEFONO'], 6, 4);
                                                                                         echo $format; ?>
                                                 </td>
-                                                <td style="font-size: 19px; font: " colspan="3">
+                                                <td style="font-size: 19px;" colspan="3">
                                                     <?php echo $titulo_l4_a ?>
                                                     <button type="button" <?php echo $boton_ver_encuesta_l4_a; ?> class="btn btn-primary" style="border: 1px solid #006700; background: #FFFFFF" data-toggle="modal" data-target="#modal_ver_encuesta_aval" data-backdrop="static" data-keyboard="false">
                                                         <i class="fa fa-eye" style="color: #1c4e63"></i> <label style="color: #1c4e63">Ver</label>
@@ -410,7 +410,7 @@ html;
                                         }
                                         ?>
                                         <div class="col-lg-<?php echo $tamaño_col; ?>">
-                                            <label for="Fecha">Comentarios Iniciales *</label>
+                                            <label for="Fecha">Comentarios Internos (Operaciones) *</label>
                                             <textarea name="comentarios_iniciales" id="comentarios_iniciales" class="form-control" rows="7" cols="50" placeholder="Escribe tus comentarios INICIALES una vez que hayas marcado al número del cliente o aval, por primera vez" style="background-color: white; resize: none"><?php echo $Administracion[3]['COMENTARIO_INICIAL']; ?></textarea>
 
                                             <button type="submit" name="agregar_resumen" value="enviar_resumen" class="btn btn-primary">
@@ -419,7 +419,7 @@ html;
                                         </div>
 
                                         <div class="col-lg-<?php echo $tamaño_col; ?>">
-                                            <label for="Fecha">Comentarios Finales *</label>
+                                            <label for="Fecha">Comentarios Externos (Sucursal) *</label>
                                             <textarea name="comentarios_finales" id="comentarios_finales" class="form-control" rows="7" cols="50" placeholder="Escribe tus comentarios FINALES, una vez que hayas completado el proceso correspondiente" style="background-color: white; resize: none"><?php echo $Administracion[3]['COMENTARIO_FINAL']; ?></textarea>
 
                                             <button type="submit" name="agregar_resumen" value="enviar_resumen" class="btn btn-primary">

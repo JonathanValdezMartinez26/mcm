@@ -3911,18 +3911,20 @@ html;
 
     public function HistorialGenera()
     {
+        $estilos = \PHPSpreadsheet::GetEstilosExcel();
+
         $columnas = [
             \PHPSpreadsheet::ColumnaExcel('A', '-'),
             \PHPSpreadsheet::ColumnaExcel('B', 'NOMBRE REGION'),
-            \PHPSpreadsheet::ColumnaExcel('C', 'FECHA DE TRABAJO'),
-            \PHPSpreadsheet::ColumnaExcel('D', 'SOLICITUD'),
+            \PHPSpreadsheet::ColumnaExcel('C', 'FECHA DE TRABAJO', ['estilo' => $estilos['fecha']]),
+            \PHPSpreadsheet::ColumnaExcel('D', 'SOLICITUD', ['estilo' => $estilos['fecha_hora']]),
             \PHPSpreadsheet::ColumnaExcel('E', 'INICIO'),
             \PHPSpreadsheet::ColumnaExcel('F', 'AGENCIA'),
             \PHPSpreadsheet::ColumnaExcel('G', 'EJECUTIVO'),
-            \PHPSpreadsheet::ColumnaExcel('H', 'CLIENTE'),
+            \PHPSpreadsheet::ColumnaExcel('H', 'CLIENTE', ['estilo' => $estilos['texto_derecha']]),
             \PHPSpreadsheet::ColumnaExcel('I', 'NOMBRE DE CLIENTE'),
-            \PHPSpreadsheet::ColumnaExcel('J', 'CICLO'),
-            \PHPSpreadsheet::ColumnaExcel('K', 'TELEFONO CLIENTE'),
+            \PHPSpreadsheet::ColumnaExcel('J', 'CICLO', ['estilo' => $estilos['texto_centrado']]),
+            \PHPSpreadsheet::ColumnaExcel('K', 'TELEFONO CLIENTE', ['estilo' => $estilos['texto_derecha']]),
             \PHPSpreadsheet::ColumnaExcel('L', 'TIPO DE LLAMADA'),
             \PHPSpreadsheet::ColumnaExcel('M', '¿Qué edad tiene?'),
             \PHPSpreadsheet::ColumnaExcel('N', '¿Cuál es su fecha de nacimiento?'),
@@ -3937,7 +3939,7 @@ html;
             \PHPSpreadsheet::ColumnaExcel('W', 'Me puede indicar ¿para qué utilizará su crédito?'),
             \PHPSpreadsheet::ColumnaExcel('X', '¿Compartirá su crédito con alguna otra persona?'),
             \PHPSpreadsheet::ColumnaExcel('Y', 'NOMBRE DEL AVAL'),
-            \PHPSpreadsheet::ColumnaExcel('Z', 'TELEFONO DE AVAL'),
+            \PHPSpreadsheet::ColumnaExcel('Z', 'TELEFONO DE AVAL', ['estilo' => $estilos['texto_derecha']]),
             \PHPSpreadsheet::ColumnaExcel('AA', 'TIPO DE LLAMADA'),
             \PHPSpreadsheet::ColumnaExcel('AB', '¿Qué edad tiene?'),
             \PHPSpreadsheet::ColumnaExcel('AC', 'Me indica su fecha de nacimiento por favor'),
@@ -3948,9 +3950,9 @@ html;
             \PHPSpreadsheet::ColumnaExcel('AH', '¿Qué Relación tiene con “Nombre del cliente”?'),
             \PHPSpreadsheet::ColumnaExcel('AI', '¿Sabe a que se dedica el Sr. (nombre de cliente)?'),
             \PHPSpreadsheet::ColumnaExcel('AJ', 'Me puede proporcionar el numero telefónico de “cliente”'),
-            \PHPSpreadsheet::ColumnaExcel('AK', 'DIA/HORA DE LLAMADA 1 CL'),
+            \PHPSpreadsheet::ColumnaExcel('AK', 'DIA/HORA DE LLAMADA 1 CL', ['estilo' => $estilos['fecha_hora']]),
             \PHPSpreadsheet::ColumnaExcel('AL', 'DIA/HORA DE LLAMADA 2 CL'),
-            \PHPSpreadsheet::ColumnaExcel('AM', 'DIA/HORA DE LLAMADA 1 AV'),
+            \PHPSpreadsheet::ColumnaExcel('AM', 'DIA/HORA DE LLAMADA 1 AV', ['estilo' => $estilos['fecha_hora']]),
             \PHPSpreadsheet::ColumnaExcel('AN', 'DIA/HORA DE LLAMADA 1 AV'),
             \PHPSpreadsheet::ColumnaExcel('AO', 'COMENTARIO INICIAL'),
             \PHPSpreadsheet::ColumnaExcel('AP', 'COMENTARIO FINAL'),
@@ -3970,34 +3972,37 @@ html;
             \PHPSpreadsheet::ColumnaExcel('BD', 'ANALISTA INICIAL')
         ];
 
-        $fecha_inicio = $_GET['Inicial'] ?? date('Y-m-d');
-        $fecha_fin = $_GET['Final'] ?? date('Y-m-d');
-        $Sucursal = $_GET['Suc'];
-        $cdgco_all = [];
-        $ComboSucursales = CallCenterDao::getComboSucursalesAllCDGCO();
-        foreach ($ComboSucursales as $key => $val2) {
-            array_push($cdgco_all, $val2['CODIGO']);
-        }
+        $sucursales = CallCenterDao::getComboSucursalesAllCDGCO($_GET);
+        $sucursales = $sucursales['success'] ? $sucursales['datos']['SUCURSALES'] : ['000'];
+        $datos = [
+            'fechaI' => $_GET['Inicial'] ?? date('Y-m-d'),
+            'fechaF' => $_GET['Final'] ?? date('Y-m-d'),
+            'sucursales' => $sucursales,
+            'usuario' => $this->__usuario,
+        ];
 
-        $filas = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco_all, $this->__usuario, $Sucursal);
+        $filas = CallCenterDao::getAllSolicitudesHistoricoExcel($datos);
+        $filas = $filas['success'] ? $filas['datos'] : [];
 
         \PHPSpreadsheet::DescargaExcel('Reporte Llamadas Finalizadas', 'Reporte', 'Reporte de Solicitudes', $columnas, $filas);
     }
 
     public function HistorialGeneraAnalistas()
     {
+        $estilos = \PHPSpreadsheet::GetEstilosExcel();
+
         $columnas = [
             \PHPSpreadsheet::ColumnaExcel('A', '-'),
             \PHPSpreadsheet::ColumnaExcel('B', 'NOMBRE REGION'),
-            \PHPSpreadsheet::ColumnaExcel('C', 'FECHA DE TRABAJO'),
-            \PHPSpreadsheet::ColumnaExcel('D', 'SOLICITUD'),
+            \PHPSpreadsheet::ColumnaExcel('C', 'FECHA DE TRABAJO', ['estilo' => $estilos['fecha']]),
+            \PHPSpreadsheet::ColumnaExcel('D', 'SOLICITUD', ['estilo' => $estilos['fecha_hora']]),
             \PHPSpreadsheet::ColumnaExcel('E', 'INICIO'),
             \PHPSpreadsheet::ColumnaExcel('F', 'AGENCIA'),
             \PHPSpreadsheet::ColumnaExcel('G', 'EJECUTIVO'),
-            \PHPSpreadsheet::ColumnaExcel('H', 'CLIENTE'),
+            \PHPSpreadsheet::ColumnaExcel('H', 'CLIENTE', ['estilo' => $estilos['texto_derecha']]),
             \PHPSpreadsheet::ColumnaExcel('I', 'NOMBRE DE CLIENTE'),
-            \PHPSpreadsheet::ColumnaExcel('J', 'CICLO'),
-            \PHPSpreadsheet::ColumnaExcel('K', 'TELEFONO CLIENTE'),
+            \PHPSpreadsheet::ColumnaExcel('J', 'CICLO', ['estilo' => $estilos['texto_centrado']]),
+            \PHPSpreadsheet::ColumnaExcel('K', 'TELEFONO CLIENTE', ['estilo' => $estilos['texto_derecha']]),
             \PHPSpreadsheet::ColumnaExcel('L', 'TIPO DE LLAMADA'),
             \PHPSpreadsheet::ColumnaExcel('M', '¿Qué edad tiene?'),
             \PHPSpreadsheet::ColumnaExcel('N', '¿Cuál es su fecha de nacimiento?'),
@@ -4006,26 +4011,26 @@ html;
             \PHPSpreadsheet::ColumnaExcel('Q', 'Actualmente ¿cual es su principal fuente de ingresos?'),
             \PHPSpreadsheet::ColumnaExcel('R', '¿Cuál es el nombre de su aval?'),
             \PHPSpreadsheet::ColumnaExcel('S', '¿Que Relación tiene con su aval?'),
-            \PHPSpreadsheet::ColumnaExcel('T', '¿ Cual es la actividad económica de su aval?'),
+            \PHPSpreadsheet::ColumnaExcel('T', '¿Cual es la actividad económica de su aval?'),
             \PHPSpreadsheet::ColumnaExcel('U', 'Por favor me proporciona el número telefónico de su aval'),
             \PHPSpreadsheet::ColumnaExcel('V', '¿Firmó su solicitud? ¿Cuando?'),
             \PHPSpreadsheet::ColumnaExcel('W', 'Me puede indicar ¿para qué utilizará su crédito?'),
             \PHPSpreadsheet::ColumnaExcel('X', '¿Compartirá su crédito con alguna otra persona?'),
             \PHPSpreadsheet::ColumnaExcel('Y', 'NOMBRE DEL AVAL'),
-            \PHPSpreadsheet::ColumnaExcel('Z', 'TELEFONO DE AVAL'),
+            \PHPSpreadsheet::ColumnaExcel('Z', 'TELEFONO DE AVAL', ['estilo' => $estilos['texto_derecha']]),
             \PHPSpreadsheet::ColumnaExcel('AA', 'TIPO DE LLAMADA'),
             \PHPSpreadsheet::ColumnaExcel('AB', '¿Qué edad tiene?'),
             \PHPSpreadsheet::ColumnaExcel('AC', 'Me indica su fecha de nacimiento por favor'),
             \PHPSpreadsheet::ColumnaExcel('AD', '¿Cuál es su domicilio?'),
             \PHPSpreadsheet::ColumnaExcel('AE', '¿Qué tiempo lleva viviendo en este domicilio?'),
             \PHPSpreadsheet::ColumnaExcel('AF', 'Actualmente  ¿cual es su principal fuente de ingresos?'),
-            \PHPSpreadsheet::ColumnaExcel('AG', '¿Hace cuanto conoce a “Nombre del cliente”?'),
+            \PHPSpreadsheet::ColumnaExcel('AG', '¿Hace cuanto conoce a  “Nombre del cliente”?'),
             \PHPSpreadsheet::ColumnaExcel('AH', '¿Qué Relación tiene con “Nombre del cliente”?'),
             \PHPSpreadsheet::ColumnaExcel('AI', '¿Sabe a que se dedica el Sr. (nombre de cliente)?'),
             \PHPSpreadsheet::ColumnaExcel('AJ', 'Me puede proporcionar el numero telefónico de “cliente”'),
-            \PHPSpreadsheet::ColumnaExcel('AK', 'DIA/HORA DE LLAMADA 1 CL'),
+            \PHPSpreadsheet::ColumnaExcel('AK', 'DIA/HORA DE LLAMADA 1 CL', ['estilo' => $estilos['fecha_hora']]),
             \PHPSpreadsheet::ColumnaExcel('AL', 'DIA/HORA DE LLAMADA 2 CL'),
-            \PHPSpreadsheet::ColumnaExcel('AM', 'DIA/HORA DE LLAMADA 1 AV'),
+            \PHPSpreadsheet::ColumnaExcel('AM', 'DIA/HORA DE LLAMADA 1 AV', ['estilo' => $estilos['fecha_hora']]),
             \PHPSpreadsheet::ColumnaExcel('AN', 'DIA/HORA DE LLAMADA 1 AV'),
             \PHPSpreadsheet::ColumnaExcel('AO', 'COMENTARIO INICIAL'),
             \PHPSpreadsheet::ColumnaExcel('AP', 'COMENTARIO FINAL'),
@@ -4045,16 +4050,18 @@ html;
             \PHPSpreadsheet::ColumnaExcel('BD', 'ANALISTA INICIAL')
         ];
 
-        $fecha_inicio = $_GET['Inicial'] ?? date('Y-m-d');
-        $fecha_fin = $_GET['Final'] ?? date('Y-m-d');
-        $sucursal = '000';
-        $cdgco_all = [];
-        $ComboSucursales = CallCenterDao::getComboSucursalesAllCDGCO();
-        foreach ($ComboSucursales as $key => $val2) {
-            array_push($cdgco_all, $val2['CODIGO']);
-        }
+        $sucursales = CallCenterDao::getComboSucursalesAllCDGCO($_GET);
+        $sucursales = $sucursales['success'] ? $sucursales['datos']['sucursales'] : [];
+        $datos = [
+            'fechaI' => $_GET['Inicial'] ?? date('Y-m-d'),
+            'fechaF' => $_GET['Final'] ?? date('Y-m-d'),
+            'sucursales' => $sucursales,
+            'usuario' => $this->__usuario,
+        ];
 
-        $filas = CallCenterDao::getAllSolicitudesHistoricoExcel($fecha_inicio, $fecha_fin, $cdgco_all, '', $sucursal);
+        $filas = CallCenterDao::getAllSolicitudesHistoricoExcel($datos);
+        $filas = $filas['success'] ? $filas['datos'] : [];
+
         \PHPSpreadsheet::DescargaExcel('Reporte Llamadas Finalizadas', 'Reporte', 'Reporte de Solicitudes', $columnas, $filas);
     }
 
