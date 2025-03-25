@@ -204,36 +204,29 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'MAPH', 'HSEJ', 'ORHM', 'LGFR'];
+        $permisos = ['ADMIN', 'CALLC', 'ACALL', 'HSEJ', 'ESMM', 'MAPH'];
         if ($this->ValidaPermiso($permisos)) {
-            $menu .= '<ul class="nav side-menu">';
-
-            if ($this->ValidaPermiso(['ADMIN', 'LGFR'])) {
-                $menu .= '<li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>';
+            if ($this->__perfil == 'ADMIN' || $this->__usuario == 'HSEJ') {
+                $titulo = "(Analistas)";
             } else {
-                $menu .= '<li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Usuarios SICAFIN <span class="fa fa-chevron-down"></span></a>';
+                $mis = 'Mis';
+                if ($this->__usuario == 'ESMM' || $this->__usuario == 'MAPH') {
+                    $opcion = '<li><a href="/CallCenter/HistoricoAnalistas/">Histórico Analistas</a></li>';
+                }
+                $opcion .= '<li><a href="/CallCenter/Global/">Todos los Pendientes</a></li>';
             }
 
-            $menu .= '<ul class="nav child_menu">';
-
-            if ($this->ValidaPermiso(['ADMIN', 'LGFR'])) {
-                $menu .= <<<HTML
-                   <li><a href="/Pagos/AjusteHoraCierre/">Ajustar Hora de Cierre</a></li>
-                   <li><a href="/Pagos/DiasFestivos/">Asignación Días Festivos</a></li>
-                HTML;
-            }
-
-            $permisos = ['ADMIN', 'MAPH', 'HSEJ', 'PHEE', 'ORHM'];
-            if ($this->ValidaPermiso($permisos)) {
-                $menu .= <<<HTML
-                    <li><a href="/Reportes/UsuariosMCM/">Reporte Usuarios SICAFIN MCM</a></li>
-                    <li><a href="/Reportes/UsuariosCultiva/">Reporte Usuarios SICAFIN Cultiva</a></li>
-                    <li><a href="/Creditos/cierreDiario">Situación Cartera</a></li>
-                    <li><a href="/Creditos/AdminCorreos">Administración de Correos</a></li>
-                HTML;
-            }
-
-            $menu .= '</ul></li></ul>';
+            $menu .= <<<HTML
+                        <li><a href="/CallCenter/Pendientes/">$mis Pendientes $titulo</a></li>
+                        <li><a href="/CallCenter/Historico/">$mis Históricos $titulo</a></li>
+                        <li><a href="/CallCenter/EncuestaPostventa/">Postventa</a></li>
+                        <li><a href="/CallCenter/ReporteEncuestaPostventa/">Reporte Postventa</a></li>
+                        <li><a href="/CallCenter/SupervisionEncuestaPostventa/">Supervisión Postventa</a></li>
+                        $opcion
+                        </ul>
+                    </li>
+                </ul>
+            HTML;
         }
 
         $permisos = ['ADMIN', 'PLMV', 'MCDP'];
