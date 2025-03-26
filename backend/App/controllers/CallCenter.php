@@ -2773,7 +2773,6 @@ html;
 
     public function DeleteAsignaSuc()
     {
-
         $cdgco = MasterDom::getDataAll('cdgco');
         $id = CallCenterDao::DeleteAsignaSuc($cdgco);
     }
@@ -3089,8 +3088,6 @@ html;
                     }
                 }
 
-                //var_dump($value['PRORROGA']);
-
                 if ($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-') {
                     $botones_prorroga = <<<html
                 <td style="padding-top: 22px !important;">
@@ -3149,14 +3146,9 @@ html;
                     <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span> Comentarios Finales</div>
                     <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud</div>
                     $vobo
-                   
                     $ver_resumen
-                    
-
                     </td>
-                   
-                     $botones_prorroga
-                     
+                    $botones_prorroga
                 </tr>
 html;
             }
@@ -3975,8 +3967,8 @@ html;
         $sucursales = CallCenterDao::getComboSucursalesAllCDGCO($_GET);
         $sucursales = $sucursales['success'] ? $sucursales['datos']['SUCURSALES'] : ['000'];
         $datos = [
-            'fechaI' => $_GET['Inicial'] ?? date('Y-m-d'),
-            'fechaF' => $_GET['Final'] ?? date('Y-m-d'),
+            'fechaI' => $_GET['Inicial'] == '' ? date('Y-m-d') : $_GET['Inicial'],
+            'fechaF' => $_GET['Final'] == '' ? date('Y-m-d') : $_GET['Final'],
             'sucursales' => $sucursales,
             'usuario' => $this->__usuario,
         ];
@@ -4053,8 +4045,8 @@ html;
         $sucursales = CallCenterDao::getComboSucursalesAllCDGCO($_GET);
         $sucursales = $sucursales['success'] ? $sucursales['datos']['sucursales'] : [];
         $datos = [
-            'fechaI' => $_GET['Inicial'] ?? date('Y-m-d'),
-            'fechaF' => $_GET['Final'] ?? date('Y-m-d'),
+            'fechaI' => $_GET['Inicial'] == '' ? date('Y-m-d') : $_GET['Inicial'],
+            'fechaF' => $_GET['Final'] == '' ? date('Y-m-d') : $_GET['Final'],
             'sucursales' => $sucursales,
             'usuario' => $this->__usuario,
         ];
