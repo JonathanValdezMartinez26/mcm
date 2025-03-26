@@ -4043,7 +4043,7 @@ html;
         ];
 
         $sucursales = CallCenterDao::getComboSucursalesAllCDGCO($_GET);
-        $sucursales = $sucursales['success'] ? $sucursales['datos']['sucursales'] : [];
+        $sucursales = $sucursales['success'] ? $sucursales['datos']['SUCURSALES'] : ['000'];
         $datos = [
             'fechaI' => $_GET['Inicial'] == '' ? date('Y-m-d') : $_GET['Inicial'],
             'fechaF' => $_GET['Final'] == '' ? date('Y-m-d') : $_GET['Final'],
