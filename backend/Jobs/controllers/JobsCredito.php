@@ -84,8 +84,6 @@ class JobsCredito extends Job
         foreach ($creditos['datos'] as $key => $credito) {
             $aprobada = str_starts_with($credito['ESTATUS'], 'LISTA');
 
-            //validar cuando sea una solicitud aprobada, el credito anterior tiene que estar liquidado
-
             $r = $aprobada ?
                 JobsDao::ProcesaSolicitudAprobada($credito) :
                 JobsDao::ProcesaSolicitudRechazada($credito);

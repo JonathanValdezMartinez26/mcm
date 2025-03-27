@@ -438,14 +438,14 @@ html;
                                                     <label for="estatus_solicitud"> Estatus Final de la Solicitud *</label>
                                                     <select class="form-control mr-sm-4" autofocus type="select" id="estatus_solicitud" name="estatus_solicitud">
                                                         <option selected disabled value="">Seleccione una opción</option>
+                                                        <option value="PENDIENTE">PENDIENTE</option>
+                                                        <option value="PENDIENTE, CORRECCION DE DATOS">PENDIENTE, CORRECCIÓN DE DATOS</option>
                                                         <option value="CANCELADA, NO LOCALIZADOS">CANCELADA, NO LOCALIZADOS</option>
-                                                        <option value="PENDIENTE, CORRECCION DE DATOS">PENDIENTE, CORRECCIÓN DE DATOS</option>
                                                         <option value="CANCELADA POR CLIENTE">CANCELADA POR CLIENTE</option>
                                                         <option value="CANCELADA POR POLÍTICAS">CANCELADA POR POLÍTICAS</option>
                                                         <option value="CANCELADA POR GERENTE">CANCELADA POR GERENTE</option>
                                                         <option value="LISTA CON OBSERVACION">LISTA CON OBSERVACIÓN</option>
                                                         <option value="LISTA SIN INCIDENCIA">LISTA SIN INCIDENCIA</option>
-                                                        <option value="PENDIENTE">PENDIENTE</option>
                                                     </select>
                                                 </div>
                                             </div>

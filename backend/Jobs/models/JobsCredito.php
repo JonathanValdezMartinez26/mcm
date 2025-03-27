@@ -51,8 +51,15 @@ class JobsCredito extends Model
             WHERE
                 SN.SITUACION = 'S'
                 AND SCC.ESTATUS <> 'PENDIENTE'
-                -- Poner 2025 al pasar a producción
                 AND SCC.FECHA_TRA_CL > TO_DATE('24/03/2025 00:00:00', 'DD/MM/YYYY HH24:MI:SS')
+                AND (SELECT
+                    COUNT(*) + CASE WHEN SN.CICLO = '01' THEN 1 ELSE 0 END	
+                FROM
+                    PRN
+                WHERE
+                    PRN.CDGNS = SN.CDGNS
+                    AND PRN.SITUACION = 'L'
+                    AND TO_NUMBER(PRN.CICLO) = TO_NUMBER(SN.CICLO) - 1) = 1
         SQL;
 
         try {
