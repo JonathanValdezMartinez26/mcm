@@ -2781,168 +2781,154 @@ html;
     {
         $tabla = '';
 
-        $extraFooter = <<<html
-      <script>
-      
-      function getParameterByName(name) {
-            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(location.search);
-            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-      }
-             
-      $(document).ready(function(){
-            $("#muestra-cupones").tablesorter();
-          var oTable = $('#muestra-cupones').DataTable({
-                  "lengthMenu": [
-                    [13, 50, -1],
-                    [13, 50, 'Todos'],
-                ],
-                "columnDefs": [{
-                    "orderable": false,
-                    "targets": 0,
-                }],
-                 "order": false
-            });
-            // Remove accented character from search input as well
-            $('#muestra-cupones input[type=search]').keyup( function () {
-                var table = $('#example').DataTable();
-                table.search(
-                    jQuery.fn.DataTable.ext.type.search.html(this.value)
-                ).draw();
-            });
-            var checkAll = 0;
-            
-        });
-      
-       fecha1 = getParameterByName('Inicial');
-            fecha2 = getParameterByName('Final');
-            cdgco = getParameterByName('Suc');
-            usuario = getParameterByName('Was');
-            
-             $("#export_excel_consulta").click(function(){
-              $('#all').attr('action', '/CallCenter/HistorialGeneraExcel/?Inicial='+fecha1+'&Final='+fecha2+'&Suc='+cdgco+'&Usuario='+usuario);
-              $('#all').attr('target', '_blank');
-              $("#all").submit();
-            });
-      
-      function ProrrogaPedir(id_call, estatus, reactivacion)
-         {
-             
-                if(reactivacion == '1')
-                 {
-                      swal("Actualmente tiene una REACTIVACION en espera de validación", {icon: "warning",});
-                      return;   
-                 }
-                
-                 if(estatus == '1')
-                 {
-                      swal("Su solicitud de PRORROGA esta siendo validada", {icon: "warning",});
-                      return;
-                      
-                 }else if(estatus == '3'){
-                    swal("Su solicitud de PRORROGA fue declinada", {icon: "warning",});
-                    return;
-                 }
-                     
-              swal({
-              title: "¿Está segura de solicitar a su administradora prorroga para esta solicitud?",
-              text: '',
-              icon: "warning",
-              buttons: ["Cancelar", "Continuar"],
-              dangerMode: false
-            })
-            .then((willDelete) => {
-              if (willDelete) {
-                  $.ajax({
-                        type: 'POST',
-                        url: '/CallCenter/ProrrogaUpdate/',
-                        data: 'prorroga=1'+'&id_call='+id_call,
-                        success: function(respuesta) {
-                             if(respuesta=='1'){
-                             swal("Registro guardado exitosamente", {
-                                          icon: "success",
-                                        });
-                             location.reload();
+        $extraFooter = <<<HTML
+            <script>
+                function getParameterByName(name) {
+                    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]")
+                    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                        results = regex.exec(location.search)
+                    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "))
+                }
+
+                $(document).ready(function () {
+                    $("#muestra-cupones").tablesorter()
+                    var oTable = $("#muestra-cupones").DataTable({
+                        lengthMenu: [
+                            [13, 50, -1],
+                            [13, 50, "Todos"]
+                        ],
+                        columnDefs: [
+                            {
+                                orderable: false,
+                                targets: 0
                             }
-                            else {
-                           
-                             swal(respuesta, {
-                                          icon: "error",
-                                        });
-                            }
+                        ],
+                        order: false
+                    })
+                    // Remove accented character from search input as well
+                    $("#muestra-cupones input[type=search]").keyup(function () {
+                        var table = $("#example").DataTable()
+                        table.search(jQuery.fn.DataTable.ext.type.search.html(this.value)).draw()
+                    })
+                    var checkAll = 0
+                })
+
+                fecha1 = getParameterByName("Inicial")
+                fecha2 = getParameterByName("Final")
+                cdgco = getParameterByName("Suc")
+                usuario = "{$this->__usuario}"
+
+                $("#export_excel_consulta").click(function () {
+                    $("#all").attr(
+                        "action",
+                        "/CallCenter/HistorialGeneraExcel/?Inicial=" +
+                            fecha1 +
+                            "&Final=" +
+                            fecha2 +
+                            "&Suc=" +
+                            cdgco +
+                            "&Usuario=" +
+                            usuario
+                    )
+                    $("#all").attr("target", "_blank")
+                    $("#all").submit()
+                })
+
+                function ProrrogaPedir(id_call, estatus, reactivacion) {
+                    if (reactivacion == "1") {
+                        swal("Actualmente tiene una REACTIVACION en espera de validación", { icon: "warning" })
+                        return
+                    }
+
+                    if (estatus == "1") {
+                        swal("Su solicitud de PRORROGA esta siendo validada", { icon: "warning" })
+                        return
+                    } else if (estatus == "3") {
+                        swal("Su solicitud de PRORROGA fue declinada", { icon: "warning" })
+                        return
+                    }
+
+                    swal({
+                        title: "¿Está segura de solicitar a su administradora prorroga para esta solicitud?",
+                        text: "",
+                        icon: "warning",
+                        buttons: ["Cancelar", "Continuar"],
+                        dangerMode: false
+                    }).then((willDelete) => {
+                        if (willDelete) {
+                            $.ajax({
+                                type: "POST",
+                                url: "/CallCenter/ProrrogaUpdate/",
+                                data: "prorroga=1" + "&id_call=" + id_call,
+                                success: function (respuesta) {
+                                    if (respuesta == "1") {
+                                        swal("Registro guardado exitosamente", {
+                                            icon: "success"
+                                        })
+                                        location.reload()
+                                    } else {
+                                        swal(respuesta, {
+                                            icon: "error"
+                                        })
+                                    }
+                                }
+                            })
+                        } else {
+                            swal("Operación Cancelada", { icon: "warning" })
                         }
-                        });
-              }
-              else {
-                swal("Operación Cancelada", {icon: "warning",});
-              }
-            });
-         }
-         
-      function VerResumen()
-         {
-               alert("Hola");
-         }
-         
-         
-      function ReactivarSolicitud(id_call, estatus, reactivacion )
-         {
-             
-             if(estatus == '1')
-                 {
-                      swal("Actualmente tiene una PRORROGA en espera de validación", {icon: "warning",});
-                      return;   
-                 }
-                
-                 if(reactivacion == '1')
-                 {
-                      swal("Su solicitud de REACTIVACIÓN esta siendo validada", {icon: "warning",});
-                      return;
-                      
-                 }else if(reactivacion == '3'){
-                    swal("Su solicitud de REACTIVACIÓN fue declinada", {icon: "warning",});
-                    return;
-                 }
-                 
-                 
-              swal({
-              title: "¿Está segura de solicitar la reactivación de la solicitud?",
-              text: 'Usted podrá seguir editando la solicitud',
-              icon: "warning",
-              buttons: ["Cancelar", "Continuar"],
-              dangerMode: false
-            })
-            .then((willDelete) => {
-              if (willDelete) {
-                  $.ajax({
-                        type: 'POST',
-                        url: '/CallCenter/ReactivarSolicitudEjec/',
-                        data: 'id_call='+id_call,
-                        success: function(respuesta) {
-                             if(respuesta=='1'){
-                             swal("Registro guardado exitosamente", {
-                                          icon: "success",
-                                        });
-                             location.reload();
-                            }
-                            else {
-                           
-                             swal(respuesta, {
-                                          icon: "error",
-                                        });
-                            }
+                    })
+                }
+
+                function VerResumen() {
+                    alert("Hola")
+                }
+
+                function ReactivarSolicitud(id_call, estatus, reactivacion) {
+                    if (estatus == "1") {
+                        swal("Actualmente tiene una PRORROGA en espera de validación", { icon: "warning" })
+                        return
+                    }
+
+                    if (reactivacion == "1") {
+                        swal("Su solicitud de REACTIVACIÓN esta siendo validada", { icon: "warning" })
+                        return
+                    } else if (reactivacion == "3") {
+                        swal("Su solicitud de REACTIVACIÓN fue declinada", { icon: "warning" })
+                        return
+                    }
+
+                    swal({
+                        title: "¿Está segura de solicitar la reactivación de la solicitud?",
+                        text: "Usted podrá seguir editando la solicitud",
+                        icon: "warning",
+                        buttons: ["Cancelar", "Continuar"],
+                        dangerMode: false
+                    }).then((willDelete) => {
+                        if (willDelete) {
+                            $.ajax({
+                                type: "POST",
+                                url: "/CallCenter/ReactivarSolicitudEjec/",
+                                data: "id_call=" + id_call,
+                                success: function (respuesta) {
+                                    if (respuesta == "1") {
+                                        swal("Registro guardado exitosamente", {
+                                            icon: "success"
+                                        })
+                                        location.reload()
+                                    } else {
+                                        swal(respuesta, {
+                                            icon: "error"
+                                        })
+                                    }
+                                }
+                            })
+                        } else {
+                            swal("Operación Cancelada", { icon: "warning" })
                         }
-                        });
-              }
-              else {
-                swal("Operación Cancelada", {icon: "warning",});
-              }
-            });
-         }
-      
-      </script>
-html;
+                    })
+                }
+            </script>
+        HTML;
 
         $fechaActual = date('Y-m-d');
         $Inicial = $_GET['Inicial'];
