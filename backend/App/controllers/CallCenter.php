@@ -426,14 +426,14 @@ class CallCenter extends Controller
                             title: (aprobar ? "Aprobación" : "Rechazo") + " de solicitud de crédito",
                             content: contenedor,
                             icon: "warning",
-                            buttons: ["No, volver", "Lea con atención (10)"],
+                            buttons: ["No, volver", "Lea con atención (3)"],
                             closeOnClickOutside: false,
                             dangerMode: true
                         }).then((continuar) => {
                             resolve(continuar)
                         })
 
-                        let tiempoRestante = 10
+                        let tiempoRestante = 3
                         const botonConfirmar = document.querySelector(".swal-button--danger")
                         botonConfirmar.disabled = true
                         const intervalo = setInterval(() => {
@@ -482,6 +482,10 @@ class CallCenter extends Controller
                                     })
                                 } else {
                                     if (estatus_solicitud != "PENDIENTE") {
+                                        if (estatus_solicitud != "PENDIENTE, CORRECION DE DATOS") {
+                                            // La solicitud quedara pendiente para la correcion de datos, ¿Desea continuar?
+                                        }
+
                                         const continuar = await mostrarAdvertencia(
                                             estatus_solicitud.toLowerCase().includes("lista")
                                         )
