@@ -2780,10 +2780,6 @@ html;
     public function Historico()
     {
         $tabla = '';
-        $extraHeader = <<<html
-        <title>Histórico de Llamadas</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
 
         $extraFooter = <<<html
       <script>
@@ -2825,7 +2821,7 @@ html;
             usuario = getParameterByName('Was');
             
              $("#export_excel_consulta").click(function(){
-              $('#all').attr('action', '/CallCenter/HistorialGenera/?Inicial='+fecha1+'&Final='+fecha2+'&Suc='+cdgco);
+              $('#all').attr('action', '/CallCenter/HistorialGeneraExcel/?Inicial='+fecha1+'&Final='+fecha2+'&Suc='+cdgco+'&Usuario='+usuario);
               $('#all').attr('target', '_blank');
               $("#all").submit();
             });
@@ -2952,38 +2948,18 @@ html;
         $Inicial = $_GET['Inicial'];
         $Final = $_GET['Final'];
         $Sucursal = $_GET['Suc'];
-
-
-
         $cdgco = array();
-
-        //////////////////////////////////////////
-
         $opciones_suc = '';
 
         $ComboSucursales = CallCenterDao::getComboSucursales($this->__usuario);
-        $opciones_suc .= <<<html
-                <option  value="000">(000) TODAS MIS SUCURSALES INCLUIDAS OTRAS NO MOSTRADAS EN LA LISTA</option>
-html;
+        $opciones_suc .= '<option value="000">(000) TODAS MIS SUCURSALES INCLUIDAS OTRAS NO MOSTRADAS EN LA LISTA</option>';
         foreach ($ComboSucursales as $key => $val2) {
-
-            if ($Sucursal == $val2['CODIGO']) {
-                $sel = 'selected';
-            } else {
-                $sel = '';
-            }
-
-            $opciones_suc .= <<<html
-                <option {$sel} value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
-html;
+            $sel = $Sucursal == $val2['CODIGO'] ? 'selected' : '';
+            $opciones_suc .= "<option $sel value='{$val2['CODIGO']}'>({$val2['CODIGO']}) {$val2['NOMBRE']}</option>";
             array_push($cdgco, $val2['CODIGO']);
         }
 
-        ///////////////////////////////////////
-
-
         if ($Inicial != '' || $Final != '' || $Sucursal != '') {
-            /////////////////////////////////
             $Consulta = CallCenterDao::getAllSolicitudesHistorico($Inicial, $Final, $cdgco, $this->__usuario, $this->__perfil, $Sucursal);
             foreach ($Consulta as $key => $value) {
 
@@ -3152,31 +3128,16 @@ html;
                 </tr>
 html;
             }
+
             if ($Consulta[0] == '') {
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::set('Inicial', $fechaActual);
-                View::set('Final', $fechaActual);
-                View::set('sucursal', $opciones_suc);
-                View::render("historico_call_center_message_f");
+                $vista = "historico_call_center_message_f";
             } else {
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('tabla', $tabla);
-                View::set('Inicial', $Inicial);
-                View::set('Final', $Final);
-                View::set('sucursal', $opciones_suc);
-                View::render("Historico_Call_Center");
+                $vista = "Historico_Call_Center";
             }
         } else {
-
             $Consulta = CallCenterDao::getAllSolicitudesHistorico($fechaActual, $fechaActual, $cdgco, $this->__usuario, $this->__perfil, $Sucursal);
-
-
-
-
             foreach ($Consulta as $key => $value) {
-
                 if ($value['ESTATUS_CL'] == 'PENDIENTE') {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
@@ -3272,7 +3233,6 @@ html;
                     }
                 }
 
-
                 if ($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-') {
                     $botones_prorroga = <<<html
                 <td style="padding-top: 22px !important;">
@@ -3300,8 +3260,6 @@ html;
 html;
                 }
 
-
-
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                     <td style="padding: 5px !important;"><label>{$value['CDGNS']}-{$value['CICLO']}</label></td>
@@ -3315,12 +3273,9 @@ html;
                     <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label></td>
                     <td style="padding-top: 22px !important; text-align: left">
                         <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
-                        
                         <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
                         <hr>
                         <div><b>VALIDO:</b> {$value['NOMBRE1']} {$value['PRIMAPE']} {$value['SEGAPE']}</div>
-                        
-                    
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
                     <td style="padding: 10px !important; text-align: left; width:165px !important;">
@@ -3328,113 +3283,100 @@ html;
                     <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span> Comentarios Finales</div>
                     <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud</div>
                     $vobo
-                    
                     $ver_resumen
                     </td>
-                   
-                     $botones_prorroga
+                    $botones_prorroga
                 </tr>
 html;
             }
+
             if ($Consulta[0] == '') {
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('fechaActual', $fechaActual);
-                View::set('Inicial', $fechaActual);
-                View::set('Final', $fechaActual);
-                View::set('sucursal', $opciones_suc);
-                View::render("historico_call_center_message_f");
+                $vista = "historico_call_center_message_f";
             } else {
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
                 View::set('tabla', $tabla);
-                View::set('Inicial', $fechaActual);
-                View::set('Final', $fechaActual);
-                View::set('sucursal', $opciones_suc);
-                View::render("Historico_Call_Center");
+                $vista = "Historico_Call_Center";
             }
         }
+
+        View::set('header', $this->_contenedor->header($this->GetExtraHeader('Histórico de Llamadas')));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::set('Inicial', $fechaActual);
+        View::set('Final', $fechaActual);
+        View::set('sucursal', $opciones_suc);
+        View::render($vista);
     }
 
     public function HistoricoAnalistas()
     {
         $tabla = '';
-        $extraHeader = <<<html
-        <title>Histórico de Llamadas Analistas</title>
-        <link rel="shortcut icon" href="/img/logo.png">
-html;
+        $extraHeader = <<<HTML
+            <title>Histórico de Llamadas Analistas</title>
+            <link rel="shortcut icon" href="/img/logo.png">
+        HTML;
 
-        $extraFooter = <<<html
-      <script>
-      
-      function getParameterByName(name) {
-            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(location.search);
-            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-      }
-             
-      $(document).ready(function(){
-            $("#muestra-cupones").tablesorter();
-          var oTable = $('#muestra-cupones').DataTable({
-                  "lengthMenu": [
-                    [13, 50, -1],
-                    [13, 50, 'Todos'],
-                ],
-                "columnDefs": [{
-                    "orderable": false,
-                    "targets": 0,
-                }],
-                 "order": false
-            });
-            // Remove accented character from search input as well
-            $('#muestra-cupones input[type=search]').keyup( function () {
-                var table = $('#example').DataTable();
-                table.search(
-                    jQuery.fn.DataTable.ext.type.search.html(this.value)
-                ).draw();
-            });
-            var checkAll = 0;
-            
-        });
-      
-       fecha1 = getParameterByName('Inicial');
-            fecha2 = getParameterByName('Final');
-            cdgco = getParameterByName('Suc');
-            usuario = getParameterByName('Was');
-            
-             $("#export_excel_consulta_analistas").click(function(){
-              $('#all').attr('action', '/CallCenter/HistorialGeneraAnalistas/?Inicial='+fecha1+'&Final='+fecha2+'&Suc='+cdgco);
-              $('#all').attr('target', '_blank');
-              $("#all").submit();
-            });
-    
-      </script>
-html;
+        $extraFooter = <<<HTML
+            <script>
+                function getParameterByName(name) {
+                    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]")
+                    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                        results = regex.exec(location.search)
+                    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "))
+                }
+
+                $(document).ready(function () {
+                    $("#muestra-cupones").tablesorter()
+                    var oTable = $("#muestra-cupones").DataTable({
+                        lengthMenu: [
+                            [13, 50, -1],
+                            [13, 50, "Todos"]
+                        ],
+                        columnDefs: [
+                            {
+                                orderable: false,
+                                targets: 0
+                            }
+                        ],
+                        order: false
+                    })
+                    // Remove accented character from search input as well
+                    $("#muestra-cupones input[type=search]").keyup(function () {
+                        var table = $("#example").DataTable()
+                        table.search(jQuery.fn.DataTable.ext.type.search.html(this.value)).draw()
+                    })
+                    var checkAll = 0
+                })
+
+                fecha1 = getParameterByName("Inicial")
+                fecha2 = getParameterByName("Final")
+                cdgco = getParameterByName("Suc")
+
+                $("#export_excel_consulta_analistas").click(function () {
+                    $("#all").attr(
+                        "action",
+                        "/CallCenter/HistorialGeneraExcel/?Inicial=" + fecha1 + "&Final=" + fecha2 + "&Suc=" + cdgco
+                    )
+                    $("#all").attr("target", "_blank")
+                    $("#all").submit()
+                })
+            </script>
+        HTML;
 
         $fechaActual = date('Y-m-d');
         $Inicial = $_GET['Inicial'];
         $Final = $_GET['Final'];
         $Sucursal = $_GET['Suc'];
-
         $cdgco = array();
-
         $ComboSucursales = CallCenterDao::getComboSucursales($this->__usuario);
 
         foreach ($ComboSucursales as $key => $val2) {
             array_push($cdgco, $val2['CODIGO']);
         }
 
-
         if ($Inicial != '' || $Final != '') {
             /////////////////////////////////
             $Consulta = CallCenterDao::getAllSolicitudesHistorico($Inicial, $Final, '', $this->__usuario, $this->__perfil, $Sucursal);
-
-
-
-
             foreach ($Consulta as $key => $value) {
-
                 if ($value['ESTATUS_CL'] == 'PENDIENTE') {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
@@ -3524,7 +3466,6 @@ html;
                 if ($value['REACTIVACION'] == NULL) {
                     $boton_titulo_reactivar = 'Reactivar';
                 } else {
-
                     if ($value['REACTIVACION'] == '1') {
                         $boton_titulo_reactivar = 'Reactivar <br>Pendiente';
                     } else if ($value['REACTIVACION'] == '2') {
@@ -3536,15 +3477,14 @@ html;
                     }
                 }
 
-                //var_dump($value['PRORROGA']);
                 if ($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-') {
                     $ver_resumen = '';
                 } else {
-                    $ver_resumen = <<<html
+                    $ver_resumen = <<<HTML
                         <hr>
                         <a type="button" target="_blank" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Act=N&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle"><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen
                         </a>
-html;
+                    HTML;
                 }
 
                 if ($value['RECOMENDADO'] != '' && $value['CICLO'] == '01') {
@@ -3553,41 +3493,36 @@ html;
                     $recomendado = '';
                 }
 
-                $tabla .= <<<html
-                <tr style="padding: 0px !important;">
-                    <td style="padding: 5px !important;"><label>{$value['CDGNS']}-{$value['CICLO']}</label></td>
-                    <td style="padding: 10px !important; text-align: left">
-                         <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
-                        <br>
-                         <span class="fa fa-map-marker"></span> SUCURSAL: ({$value['CODIGO_SUCURSAL']}) {$value['NOMBRE_SUCURSAL']}
-                        <br>
-                        <span class="fa fa-briefcase"></span> EJECUTIVO: {$value['EJECUTIVO']}
-                    </td>
-                    <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label></td>
-                    <td style="padding-top: 22px !important; text-align: left">
-                        <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
-                        
-                        <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
-                        <hr>
-                        {$recomendado}
-                        <div><b>VALIDO:</b> {$value['NOMBRE1']} {$value['PRIMAPE']} {$value['SEGAPE']}</div>
-
-                    </td>
-                    <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
-                    <td style="padding: 10px !important; text-align: left; width:165px !important;">
-                    <div><span class="label label-$color_ci" ><span class="fa $icon_ci"></span></span> Comentarios Iniciales</div>
-                    <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span> Comentarios Finales</div>
-                    <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud</div>
-                    $vobo
-                   
-                    $ver_resumen
-
-                    </td>
-                   
-                     
-                </tr>
-html;
+                $tabla .= <<<HTML
+                    <tr style="padding: 0px !important;">
+                        <td style="padding: 5px !important;"><label>{$value['CDGNS']}-{$value['CICLO']}</label></td>
+                        <td style="padding: 10px !important; text-align: left">
+                            <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
+                            <br>
+                            <span class="fa fa-map-marker"></span> SUCURSAL: ({$value['CODIGO_SUCURSAL']}) {$value['NOMBRE_SUCURSAL']}
+                            <br>
+                            <span class="fa fa-briefcase"></span> EJECUTIVO: {$value['EJECUTIVO']}
+                        </td>
+                        <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label></td>
+                        <td style="padding-top: 22px !important; text-align: left">
+                            <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
+                            <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
+                            <hr>
+                            {$recomendado}
+                            <div><b>VALIDO:</b> {$value['NOMBRE1']} {$value['PRIMAPE']} {$value['SEGAPE']}</div>
+                        </td>
+                        <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
+                        <td style="padding: 10px !important; text-align: left; width:165px !important;">
+                        <div><span class="label label-$color_ci" ><span class="fa $icon_ci"></span></span> Comentarios Iniciales</div>
+                        <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span> Comentarios Finales</div>
+                        <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud</div>
+                        $vobo
+                        $ver_resumen
+                        </td>
+                    </tr>
+                HTML;
             }
+
             if ($Consulta[0] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -3603,12 +3538,8 @@ html;
                 View::render("Historico_Analistas_Center");
             }
         } else {
-
             $Consulta = CallCenterDao::getAllSolicitudesHistorico($fechaActual, $fechaActual, '', $this->__usuario, $this->__perfil, $Sucursal);
-
-
             foreach ($Consulta as $key => $value) {
-
                 if ($value['ESTATUS_CL'] == 'PENDIENTE') {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
@@ -3692,7 +3623,6 @@ html;
                 if ($value['REACTIVACION'] == NULL) {
                     $boton_titulo_reactivar = 'Reactivar';
                 } else {
-
                     if ($value['REACTIVACION'] == '1') {
                         $boton_titulo_reactivar = 'Reactivar <br>Pendiente';
                     } else if ($value['REACTIVACION'] == '2') {
@@ -3707,48 +3637,42 @@ html;
                 if ($value['NOMBRE1'] == 'PENDIENTE DE VALIDAR' || $value['NOMBRE1'] == '-') {
                     $ver_resumen = '';
                 } else {
-                    $ver_resumen = <<<html
+                    $ver_resumen = <<<HTML
                         <hr>
                         <a type="button" target="_blank" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Act=N&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle"><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen
                         </a>
-html;
+                    HTML;
                 }
 
-
-
-                $tabla .= <<<html
-                <tr style="padding: 0px !important;">
-                    <td style="padding: 5px !important;"><label>{$value['CDGNS']}-{$value['CICLO']}</label></td>
-                    <td style="padding: 10px !important; text-align: left">
-                         <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
-                        <br>
-                         <span class="fa fa-map-marker"></span> SUCURSAL: ({$value['CODIGO_SUCURSAL']}) {$value['NOMBRE_SUCURSAL']}
-                        <br>
-                        <span class="fa fa-briefcase"></span> EJECUTIVO: {$value['EJECUTIVO']}
-                    </td>
-                    <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label></td>
-                    <td style="padding-top: 22px !important; text-align: left">
-                        <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
-                        
-                        <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
-                        <hr>
-                        <div><b>VALIDO:</b> {$value['NOMBRE1']} {$value['PRIMAPE']} {$value['SEGAPE']}</div>
-                        
-                    
-                    </td>
-                    <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
-                    <td style="padding: 10px !important; text-align: left; width:165px !important;">
-                    <div><span class="label label-$color_ci" ><span class="fa $icon_ci"></span></span> Comentarios Iniciales</div>
-                    <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span> Comentarios Finales</div>
-                    <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud</div>
-                    $vobo
-                    
-                    $ver_resumen
-                    </td>
-                   
-                </tr>
-html;
+                $tabla .= <<<HTML
+                    <tr style="padding: 0px !important;">
+                        <td style="padding: 5px !important;"><label>{$value['CDGNS']}-{$value['CICLO']}</label></td>
+                        <td style="padding: 10px !important; text-align: left">
+                            <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
+                            <br>
+                            <span class="fa fa-map-marker"></span> SUCURSAL: ({$value['CODIGO_SUCURSAL']}) {$value['NOMBRE_SUCURSAL']}
+                            <br>
+                            <span class="fa fa-briefcase"></span> EJECUTIVO: {$value['EJECUTIVO']}
+                        </td>
+                        <td style="padding-top: 10px !important;"><span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label></td>
+                        <td style="padding-top: 22px !important; text-align: left">
+                            <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
+                            <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
+                            <hr>
+                            <div><b>VALIDO:</b> {$value['NOMBRE1']} {$value['PRIMAPE']} {$value['SEGAPE']}</div>
+                        </td>
+                        <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
+                        <td style="padding: 10px !important; text-align: left; width:165px !important;">
+                        <div><span class="label label-$color_ci" ><span class="fa $icon_ci"></span></span> Comentarios Iniciales</div>
+                        <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span> Comentarios Finales</div>
+                        <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud</div>
+                        $vobo
+                        $ver_resumen
+                        </td>
+                    </tr>
+                HTML;
             }
+
             if ($Consulta[0] == '') {
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
@@ -3901,7 +3825,7 @@ html;
         $id = CallCenterDao::insertAsignaSucursal($asigna);
     }
 
-    public function HistorialGenera()
+    public function HistorialGeneraExcel()
     {
         $estilos = \PHPSpreadsheet::GetEstilosExcel();
 
@@ -3970,85 +3894,7 @@ html;
             'fechaI' => $_GET['Inicial'] == '' ? date('Y-m-d') : $_GET['Inicial'],
             'fechaF' => $_GET['Final'] == '' ? date('Y-m-d') : $_GET['Final'],
             'sucursales' => $sucursales,
-            'usuario' => $this->__usuario,
-        ];
-
-        $filas = CallCenterDao::getAllSolicitudesHistoricoExcel($datos);
-        $filas = $filas['success'] ? $filas['datos'] : [];
-
-        \PHPSpreadsheet::DescargaExcel('Reporte Llamadas Finalizadas', 'Reporte', 'Reporte de Solicitudes', $columnas, $filas);
-    }
-
-    public function HistorialGeneraAnalistas()
-    {
-        $estilos = \PHPSpreadsheet::GetEstilosExcel();
-
-        $columnas = [
-            \PHPSpreadsheet::ColumnaExcel('A', '-'),
-            \PHPSpreadsheet::ColumnaExcel('B', 'NOMBRE REGION'),
-            \PHPSpreadsheet::ColumnaExcel('C', 'FECHA DE TRABAJO', ['estilo' => $estilos['fecha']]),
-            \PHPSpreadsheet::ColumnaExcel('D', 'SOLICITUD', ['estilo' => $estilos['fecha_hora']]),
-            \PHPSpreadsheet::ColumnaExcel('E', 'INICIO'),
-            \PHPSpreadsheet::ColumnaExcel('F', 'AGENCIA'),
-            \PHPSpreadsheet::ColumnaExcel('G', 'EJECUTIVO'),
-            \PHPSpreadsheet::ColumnaExcel('H', 'CLIENTE', ['estilo' => $estilos['texto_derecha']]),
-            \PHPSpreadsheet::ColumnaExcel('I', 'NOMBRE DE CLIENTE'),
-            \PHPSpreadsheet::ColumnaExcel('J', 'CICLO', ['estilo' => $estilos['texto_centrado']]),
-            \PHPSpreadsheet::ColumnaExcel('K', 'TELEFONO CLIENTE', ['estilo' => $estilos['texto_derecha']]),
-            \PHPSpreadsheet::ColumnaExcel('L', 'TIPO DE LLAMADA'),
-            \PHPSpreadsheet::ColumnaExcel('M', '¿Qué edad tiene?'),
-            \PHPSpreadsheet::ColumnaExcel('N', '¿Cuál es su fecha de nacimiento?'),
-            \PHPSpreadsheet::ColumnaExcel('O', 'Me proporciona su domicilio completo por favor'),
-            \PHPSpreadsheet::ColumnaExcel('P', '¿Qué tiempo tiene viviendo en este domicilio?'),
-            \PHPSpreadsheet::ColumnaExcel('Q', 'Actualmente ¿cual es su principal fuente de ingresos?'),
-            \PHPSpreadsheet::ColumnaExcel('R', '¿Cuál es el nombre de su aval?'),
-            \PHPSpreadsheet::ColumnaExcel('S', '¿Que Relación tiene con su aval?'),
-            \PHPSpreadsheet::ColumnaExcel('T', '¿Cual es la actividad económica de su aval?'),
-            \PHPSpreadsheet::ColumnaExcel('U', 'Por favor me proporciona el número telefónico de su aval'),
-            \PHPSpreadsheet::ColumnaExcel('V', '¿Firmó su solicitud? ¿Cuando?'),
-            \PHPSpreadsheet::ColumnaExcel('W', 'Me puede indicar ¿para qué utilizará su crédito?'),
-            \PHPSpreadsheet::ColumnaExcel('X', '¿Compartirá su crédito con alguna otra persona?'),
-            \PHPSpreadsheet::ColumnaExcel('Y', 'NOMBRE DEL AVAL'),
-            \PHPSpreadsheet::ColumnaExcel('Z', 'TELEFONO DE AVAL', ['estilo' => $estilos['texto_derecha']]),
-            \PHPSpreadsheet::ColumnaExcel('AA', 'TIPO DE LLAMADA'),
-            \PHPSpreadsheet::ColumnaExcel('AB', '¿Qué edad tiene?'),
-            \PHPSpreadsheet::ColumnaExcel('AC', 'Me indica su fecha de nacimiento por favor'),
-            \PHPSpreadsheet::ColumnaExcel('AD', '¿Cuál es su domicilio?'),
-            \PHPSpreadsheet::ColumnaExcel('AE', '¿Qué tiempo lleva viviendo en este domicilio?'),
-            \PHPSpreadsheet::ColumnaExcel('AF', 'Actualmente  ¿cual es su principal fuente de ingresos?'),
-            \PHPSpreadsheet::ColumnaExcel('AG', '¿Hace cuanto conoce a  “Nombre del cliente”?'),
-            \PHPSpreadsheet::ColumnaExcel('AH', '¿Qué Relación tiene con “Nombre del cliente”?'),
-            \PHPSpreadsheet::ColumnaExcel('AI', '¿Sabe a que se dedica el Sr. (nombre de cliente)?'),
-            \PHPSpreadsheet::ColumnaExcel('AJ', 'Me puede proporcionar el numero telefónico de “cliente”'),
-            \PHPSpreadsheet::ColumnaExcel('AK', 'DIA/HORA DE LLAMADA 1 CL', ['estilo' => $estilos['fecha_hora']]),
-            \PHPSpreadsheet::ColumnaExcel('AL', 'DIA/HORA DE LLAMADA 2 CL'),
-            \PHPSpreadsheet::ColumnaExcel('AM', 'DIA/HORA DE LLAMADA 1 AV', ['estilo' => $estilos['fecha_hora']]),
-            \PHPSpreadsheet::ColumnaExcel('AN', 'DIA/HORA DE LLAMADA 1 AV'),
-            \PHPSpreadsheet::ColumnaExcel('AO', 'COMENTARIO INICIAL'),
-            \PHPSpreadsheet::ColumnaExcel('AP', 'COMENTARIO FINAL'),
-            \PHPSpreadsheet::ColumnaExcel('AQ', 'ESTATUS'),
-            \PHPSpreadsheet::ColumnaExcel('AR', 'INCIDENCIA COMERCIAL - ADMINISTRACION'),
-            \PHPSpreadsheet::ColumnaExcel('AS', 'Vo Bo GERENTE REGIONAL'),
-            \PHPSpreadsheet::ColumnaExcel('AT', 'ANALISTA'),
-            \PHPSpreadsheet::ColumnaExcel('AU', 'SEMAFORO'),
-            \PHPSpreadsheet::ColumnaExcel('AV', 'FECHA DE DESEMBOLSO'),
-            \PHPSpreadsheet::ColumnaExcel('AW', '$ ENTREGADA'),
-            \PHPSpreadsheet::ColumnaExcel('AX', '$ PARCIALIDAD'),
-            \PHPSpreadsheet::ColumnaExcel('AY', 'MORA AL CORTE'),
-            \PHPSpreadsheet::ColumnaExcel('AZ', '#  SEMANAS CON ATRASO'),
-            \PHPSpreadsheet::ColumnaExcel('BA', 'MES'),
-            \PHPSpreadsheet::ColumnaExcel('BB', 'LLAMADA POSTVENTA'),
-            \PHPSpreadsheet::ColumnaExcel('BC', 'RECAPTURADA SI-NO'),
-            \PHPSpreadsheet::ColumnaExcel('BD', 'ANALISTA INICIAL')
-        ];
-
-        $sucursales = CallCenterDao::getComboSucursalesAllCDGCO($_GET);
-        $sucursales = $sucursales['success'] ? $sucursales['datos']['SUCURSALES'] : ['000'];
-        $datos = [
-            'fechaI' => $_GET['Inicial'] == '' ? date('Y-m-d') : $_GET['Inicial'],
-            'fechaF' => $_GET['Final'] == '' ? date('Y-m-d') : $_GET['Final'],
-            'sucursales' => $sucursales,
-            'usuario' => $this->__usuario,
+            'usuario' => $_GET['Usuario'],
         ];
 
         $filas = CallCenterDao::getAllSolicitudesHistoricoExcel($datos);
