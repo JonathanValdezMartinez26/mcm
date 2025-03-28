@@ -27,7 +27,7 @@ class Job
         if (!file_exists($path)) mkdir($path, 0777, true);
     }
 
-    public function SaveLog($tdatos)
+    public function SaveLog($registro)
     {
         $archivo = $this->logPath . $this->nombreJob . ".log";
 
@@ -39,7 +39,10 @@ class Job
 
         $log = fopen($archivo, "a");
 
-        $infoReg = date("Y-m-d H:i:s") . ": " . debug_backtrace()[1]["function"] . " -> " . $tdatos;
+        $mensaje = is_string($registro)
+            ? $registro
+            : json_encode(is_array($registro) ? $registro : json_decode($registro), JSON_UNESCAPED_UNICODE);
+        $infoReg = date("Y-m-d H:i:s") . ": " . debug_backtrace()[1]["function"] . " -> " . $mensaje;
 
         fwrite($log, $infoReg . PHP_EOL);
         fclose($log);

@@ -24,13 +24,16 @@ class Database
     private function Conecta($s = null, $u = null, $p = null)
     {
         $s = $this->configuracion[$s] ?? $s;
-        $host = 'oci:dbname=//' . ($s ?? $this->configuracion['SERVIDOR']) . ':1521/ESIACOM;charset=UTF8';
+        $servidor = $s ?? $this->configuracion['SERVIDOR'];
+        $esquema = $this->configuracion['ESQUEMA'] ?? 'ESIACOM';
+
+        $cadena = "oci:dbname=//$servidor:1521/$esquema;charset=UTF8";
         $usuario = $u ?? $this->configuracion['USUARIO'];
         $password = $p ?? $this->configuracion['PASSWORD'];
         try {
-            $this->db_activa =  new PDO($host, $usuario, $password);
+            $this->db_activa =  new PDO($cadena, $usuario, $password);
         } catch (\PDOException $e) {
-            self::baseNoDisponible($e->getMessage());
+            self::baseNoDisponible("{$e->getMessage()}\nDatos de conexión: $cadena\nUsuario: $usuario\nPassword: $password");
             $this->db_activa =  null;
         }
     }
@@ -181,13 +184,15 @@ class Database
         return "PDOStatement::errorInfo():\n" . json_encode($arr);
     }
 
-    public function insertaMultiple($sql, $registros, $validacion = null)
+    public function insertaMultiple($sql, $registros, $validacion = null, $res = false)
     {
         try {
+            $resultados = [];
             $this->db_activa->beginTransaction();
             foreach ($registros as $i => $valores) {
                 $stmt = $this->db_activa->prepare($sql[$i]);
                 $result = $stmt->execute($valores);
+                $resultados[] = $result;
                 if (!$result) {
                     $err = $stmt->errorInfo();
                     $this->db_activa->rollBack();
@@ -207,11 +212,12 @@ class Database
             }
 
             $this->db_activa->commit();
-            return true;
+            return !$res ? true : $resultados;
         } catch (\PDOException $e) {
             $this->db_activa->rollBack();
             throw new \Exception("Error en insertaMultiple: " . $e->getMessage() . "\nSql: " . $sql[$i] . "\nDatos: " . print_r($valores, 1));
         } catch (\Exception $e) {
+            $this->db_activa->rollBack();
             throw new \Exception($e->getMessage());
         }
     }

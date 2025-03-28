@@ -11,6 +11,11 @@ use Core\Job;
 use Jobs\models\JobsCredito as JobsDao;
 use Mensajero;
 
+define('APROBADA', 'Aprobada');
+define('RECHAZADA', 'Rechazada');
+define('PENDIENTE', 'En espera de liquidación');
+define('CONCLUIDA', 'Concluida');
+
 class JobsCredito extends Job
 {
     public function __construct()
@@ -82,38 +87,55 @@ class JobsCredito extends Job
         $destRechazadas = $this->GetDestinatarios(JobsDao::GetDestinatarios_Aplicacion(2));
 
         foreach ($creditos['datos'] as $key => $credito) {
-            $aprobada = str_starts_with($credito['ESTATUS'], 'LISTA');
+            $aprobada = $credito['APROBADA'] === '1' ? true : false;
+            $r = ['success' => false];
+            $estatus = 'No procesada';
 
-            $r = $aprobada ?
-                JobsDao::ProcesaSolicitudAprobada($credito) :
-                JobsDao::ProcesaSolicitudRechazada($credito);
+            if ($aprobada && $credito['LIQUIDADO'] === '0' && $credito['SITUACION'] === 'S') {
+                $r = JobsDao::PonerSolicitudEnEspera($credito);
+                $estatus = PENDIENTE;
+            } else if ($aprobada && $credito['LIQUIDADO'] === '1') {
+                if ($credito['SITUACION'] === 'S') {
+                    $r = JobsDao::ProcesaSolicitudAprobada($credito);
+                    $estatus = APROBADA;
+                } else if ($credito['SITUACION'] === 'T') {
+                    $r = JobsDao::ConcluirSolicitudEnEspera($credito);
+                    $estatus = CONCLUIDA;
+                }
+            } else if (!$aprobada) {
+                $r = JobsDao::ProcesaSolicitudRechazada($credito);
+                $estatus = RECHAZADA;
+            }
 
             $r['datos'] = [
-                'credito' => $credito['CDGNS'],
+                'credito' => $credito['CREDITO'],
                 'ciclo' => $credito['CICLO'],
                 'fechaSolicitud' => $credito['SOLICITUD'],
-                'concluyo' => $credito['CDGPE']
+                'concluyo' => $credito['CDGPE'],
+                'liquidado' => $credito['LIQUIDADO'],
+                'situacion' => $credito['SITUACION'],
+                'estatus' => $estatus
             ];
 
-            if ($r['success']) {
-                $dest = $aprobada ? $destAprobadas : $destRechazadas;
-                $dest = $this->GetDestinatarios(JobsDao::GetDestinatarios_Sucursal($credito['CO']), $dest);
-                $plantilla = $this->Plantilla_mail_Solicitud_Finalizada($credito, $aprobada);
-                $tipo = $aprobada ? 'Aprobación' : 'Rechazo';
+            // if ($r['success'] && $estatus !== PENDIENTE) {
+            //     $dest = $aprobada ? $destAprobadas : $destRechazadas;
+            //     $dest = $this->GetDestinatarios(JobsDao::GetDestinatarios_Sucursal($credito['CO']), $dest);
+            //     $plantilla = $this->Plantilla_mail_Solicitud_Finalizada($credito, $aprobada);
+            //     $tipo = $aprobada ? 'Aprobación' : 'Rechazo';
 
-                Mensajero::EnviarCorreo(
-                    $dest,
-                    $tipo . ' de solicitud de crédito por Call Center',
-                    Mensajero::Notificaciones($plantilla)
-                );
-            }
+            //     Mensajero::EnviarCorreo(
+            //         $dest,
+            //         $tipo . ' de solicitud de crédito por Call Center',
+            //         Mensajero::Notificaciones($plantilla)
+            //     );
+            // }
 
             $resumen[] = $r;
             //genera solo 1 solicitud para pruebas
-            // break;
+            break;
         }
 
-        self::SaveLog(json_encode($resumen));
+        self::SaveLog($resumen);
         self::SaveLog('Finalizado');
     }
 

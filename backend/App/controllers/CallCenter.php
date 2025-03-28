@@ -29,6 +29,10 @@ class CallCenter extends Controller
         $tabla = "";
         $extraFooter = <<<HTML
             <script>
+                const APROBADO = "aprobado";
+                const RECHAZADO = "rechazado";
+                const PENDIENTE = "pendiente";
+
                 function getParameterByName(name) {
                     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]")
                     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
@@ -393,26 +397,38 @@ class CallCenter extends Controller
                     }
                 }
 
-                const mostrarAdvertencia = (aprobar = false) => {
+                const mostrarAdvertencia = (tipo) => {
                     const textos = {
-                        mensajeOK: '"Sí, aprobar solicitud", dará inicio a el proceso de autorización del crédito.',
-                        advertenciaOK: "¿estas segura de aprobar el crédito?",
-                        botonOK: "Sí, aprobar solicitud",
-                        mensajeCANCELAR:
-                            "El crédito se cancelara y se notificara al área correspondiente de la cancelación",
-                        advertenciaCANCELAR: "¿Estas segura de cancelar la solicitud?",
-                        botonCANCELAR: "Sí, cancelar solicitud"
+                        aprobado: {
+                            titulo: "Aprobación de solicitud de crédito",
+                            mensaje: '"Sí, aprobar solicitud", dará inicio a el proceso de autorización del crédito.',
+                            advertencia: "¿estas segura de aprobar el crédito?",
+                            boton: "Sí, aprobar solicitud"
+                        },
+                        rechazado: {
+                            titulo: "Rechazo de solicitud de crédito",
+                            mensaje: "El crédito se rechazara y se notificara al área correspondiente del rechazo",
+                            advertencia: "¿Estas segura de rechazar la solicitud?",
+                            boton: "Sí, rechazar solicitud"
+                        },
+                        pendiente: {
+                            titulo: "Corrección de datos de solicitud de crédito",
+                            mensaje: "El crédito quedara pendiente para la corrección de datos.",
+                            advertencia: "¿Desea continuar?",
+                            boton: "Sí, dejar pendiente"
+                        }
                     }
 
+                    const texto = textos[tipo]
                     const contenedor = document.createElement("div")
                     const mensaje = document.createElement("p")
                     const advertencia = document.createElement("p")
 
-                    mensaje.innerHTML = aprobar ? textos.mensajeOK : textos.mensajeCANCELAR
+                    mensaje.innerHTML = texto.mensaje
                     mensaje.style.fontSize = "15px"
                     mensaje.style.color = "black"
 
-                    advertencia.textContent = aprobar ? textos.advertenciaOK : textos.advertenciaCANCELAR
+                    advertencia.textContent = texto.advertencia
                     advertencia.style.color = "red"
                     advertencia.style.fontWeight = "bold"
                     advertencia.style.marginTop = "20px"
@@ -421,17 +437,20 @@ class CallCenter extends Controller
                     contenedor.appendChild(mensaje)
                     contenedor.appendChild(advertencia)
 
+                    const configuracion = {
+                        title: texto.titulo,
+                        content: contenedor,
+                        icon: "warning",
+                        buttons: ["No, volver", tipo === PENDIENTE ? texto.boton : "Lea con atención (3)"],
+                        closeOnClickOutside: false,
+                        dangerMode: true
+                    }
+
                     return new Promise((resolve) => {
-                        swal({
-                            title: (aprobar ? "Aprobación" : "Rechazo") + " de solicitud de crédito",
-                            content: contenedor,
-                            icon: "warning",
-                            buttons: ["No, volver", "Lea con atención (3)"],
-                            closeOnClickOutside: false,
-                            dangerMode: true
-                        }).then((continuar) => {
-                            resolve(continuar)
-                        })
+                        swal(configuracion)
+                        .then((continuar) => resolve(continuar))
+
+                        if (tipo === PENDIENTE) return
 
                         let tiempoRestante = 3
                         const botonConfirmar = document.querySelector(".swal-button--danger")
@@ -444,7 +463,7 @@ class CallCenter extends Controller
                             else {
                                 clearInterval(intervalo)
                                 botonConfirmar.disabled = false
-                                botonConfirmar.textContent = aprobar ? textos.botonOK : textos.botonCANCELAR
+                                botonConfirmar.textContent = texto.boton
                             }
                         }, 1000)
                     })
@@ -482,13 +501,16 @@ class CallCenter extends Controller
                                     })
                                 } else {
                                     if (estatus_solicitud != "PENDIENTE") {
-                                        if (estatus_solicitud != "PENDIENTE, CORRECION DE DATOS") {
-                                            // La solicitud quedara pendiente para la correcion de datos, ¿Desea continuar?
+                                        let tipo = ""
+                                        if (estatus_solicitud.toLowerCase().includes("lista")) tipo = APROBADO
+                                        else if (estatus_solicitud.toLowerCase().includes("pendiente")) tipo = PENDIENTE
+                                        else if (estatus_solicitud.toLowerCase().includes("cancelada")) tipo = RECHAZADO
+                                        else {
+                                            swal("El estatus seleccionado no es válido", { icon: "error" })
+                                            return
                                         }
 
-                                        const continuar = await mostrarAdvertencia(
-                                            estatus_solicitud.toLowerCase().includes("lista")
-                                        )
+                                        const continuar = await mostrarAdvertencia(tipo)
                                         if (!continuar) return
                                     }
 

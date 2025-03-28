@@ -13,53 +13,55 @@ class JobsCredito extends Model
     public static function GetSolicitudes()
     {
         $qry = <<<SQL
-            SELECT
-                SN.CDGNS,
-                SN.CICLO,
-                TO_CHAR(SN.SOLICITUD, 'DD/MM/YYYY HH24:MI:SS') AS SOLICITUD,
-                SCC.CDGPE,
-                CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS NOMBRE_PE,
-                SCC.ESTATUS AS ESTATUS,
-                CASE SCC.DIA_LLAMADA_2_CL
-                    WHEN NULL THEN 2
-                    ELSE 1
-                END AS NO_LLAMADAS,
-                TO_CHAR(SCC.DIA_LLAMADA_1_CL, 'DD/MM/YYYY HH24:MI:SS') AS PRIMERA_LLAMADA,
-                TO_CHAR(
-                    CASE
-                        WHEN SCC.DIA_LLAMADA_2_CL IS NULL THEN SCC.DIA_LLAMADA_1_CL
-                        ELSE SCC.DIA_LLAMADA_2_CL
-                    END
-                    , 'DD/MM/YYYY HH24:MI:SS') AS ULTIMA_LLAMADA,
-                SCC.NUMERO_INTENTOS_CL AS INTENTOS,
-                SCC.COMENTARIO_INICIAL,
-                SCC.COMENTARIO_FINAL,
-                CL.CODIGO AS CL,
-                CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE_CL,
-                CO.CODIGO AS CO,
-                CO.NOMBRE AS NOMBRE_CO,
-                RG.CODIGO AS RG,
-                RG.NOMBRE AS NOMBRE_RG
-            FROM
-                SN
-                RIGHT JOIN SOL_CALL_CENTER SCC ON SN.CDGNS = SCC.CDGNS AND SN.SOLICITUD = SCC.FECHA_SOL
-                RIGHT JOIN CO ON SN.CDGCO = CO.CODIGO
-                RIGHT JOIN RG ON CO.CDGRG = RG.CODIGO
-                RIGHT JOIN SC ON SN.CDGNS = SC.CDGNS AND SN.CICLO = SC.CICLO AND SN.SOLICITUD = SC.SOLICITUD AND SC.CANTSOLIC <> 9999
-                RIGHT JOIN CL ON SC.CDGCL = CL.CODIGO
-                RIGHT JOIN PE ON SCC.CDGPE = PE.CODIGO
-            WHERE
-                SN.SITUACION = 'S'
-                AND SCC.ESTATUS <> 'PENDIENTE'
-                AND SCC.FECHA_TRA_CL > TO_DATE('24/03/2025 00:00:00', 'DD/MM/YYYY HH24:MI:SS')
-                AND (SELECT
-                    COUNT(*) + CASE WHEN SN.CICLO = '01' THEN 1 ELSE 0 END	
-                FROM
-                    PRN
-                WHERE
-                    PRN.CDGNS = SN.CDGNS
-                    AND PRN.SITUACION = 'L'
-                    AND TO_NUMBER(PRN.CICLO) = TO_NUMBER(SN.CICLO) - 1) = 1
+            WITH SOLICITUDES AS (
+                SELECT 
+                    COALESCE(SN.CDGNS, PRN.CDGNS) AS CREDITO,
+                    COALESCE(SN.CICLO, PRN.CICLO) AS CICLO,
+                    TO_CHAR(COALESCE(SN.SOLICITUD, PRN.SOLICITUD), 'DD/MM/YYYY  HH24:MI:SS') AS SOLICITUD,
+                    SCC.CDGPE,
+                    CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS NOMBRE_PE,
+                    CASE WHEN SCC.ESTATUS LIKE 'LISTA%' THEN 1 ELSE 0 END AS APROBADA,
+                    SCC.ESTATUS,
+                    CASE WHEN SCC.DIA_LLAMADA_2_CL IS NULL THEN 2 ELSE 1 END AS NO_LLAMADAS,
+                    TO_CHAR(SCC.DIA_LLAMADA_1_CL, 'DD/MM/YYYY HH24:MI:SS') AS PRIMERA_LLAMADA,
+                    TO_CHAR(
+                        COALESCE(SCC.DIA_LLAMADA_2_CL, SCC.DIA_LLAMADA_1_CL), 
+                        'DD/MM/YYYY HH24:MI:SS'
+                    ) AS ULTIMA_LLAMADA,
+                    SCC.NUMERO_INTENTOS_CL AS INTENTOS,
+                    SCC.COMENTARIO_INICIAL,
+                    SCC.COMENTARIO_FINAL,
+                    CL.CODIGO AS CL,
+                    CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE_CL,
+                    CO.CODIGO AS CO,
+                    CO.NOMBRE AS NOMBRE_CO,
+                    RG.CODIGO AS RG,
+                    RG.NOMBRE AS NOMBRE_RG,
+                    (
+                        SELECT
+                            COUNT(*) + CASE WHEN COALESCE(SN.CICLO, PRN.CICLO) = '01' THEN 1 ELSE 0 END
+                        FROM
+                            PRN PRN2
+                        WHERE 
+                            PRN2.CDGNS = COALESCE(SN.CDGNS, PRN.CDGNS)
+                            AND PRN2.SITUACION = 'L'
+                            AND TO_NUMBER(PRN2.CICLO) = TO_NUMBER(COALESCE(SN.CICLO, PRN.CICLO)) - 1
+                    ) AS LIQUIDADO,
+                    COALESCE(SN.SITUACION, PRN.SITUACION) AS SITUACION
+                FROM 
+                    SOL_CALL_CENTER SCC
+                    LEFT JOIN SN ON SN.CDGNS = SCC.CDGNS AND SN.SOLICITUD = SCC.FECHA_SOL AND SN.SITUACION = 'S'
+                    LEFT JOIN PRN ON PRN.CDGNS = SCC.CDGNS AND PRN.SOLICITUD = SCC.FECHA_SOL AND PRN.SITUACION = 'T' AND PRN.NOCHEQUE IS NULL
+                    LEFT JOIN CO ON COALESCE(SN.CDGCO, PRN.CDGCO) = CO.CODIGO
+                    LEFT JOIN RG ON CO.CDGRG = RG.CODIGO
+                    LEFT JOIN SC ON SC.CDGNS = COALESCE(SN.CDGNS, PRN.CDGNS) AND SC.CICLO = COALESCE(SN.CICLO, PRN.CICLO) AND SC.SOLICITUD = COALESCE(SN.SOLICITUD, PRN.SOLICITUD) AND SC.CANTSOLIC <> 9999
+                    LEFT JOIN CL ON SC.CDGCL = CL.CODIGO
+                    LEFT JOIN PE ON SCC.CDGPE = PE.CODIGO
+                WHERE 
+                    SCC.ESTATUS NOT LIKE 'PENDIENTE%'
+                    AND SCC.FECHA_TRA_CL > TRUNC(SYSDATE) - 30
+            )
+            SELECT * FROM SOLICITUDES WHERE NOT CREDITO IS NULL
         SQL;
 
         try {
@@ -77,51 +79,24 @@ class JobsCredito extends Model
         $qrys = [];
         $parametros = [];
 
-        [$qrys[], $parametros[]] = self::Solicitud_A_Actualiza_SN($credito);
         [$qrys[], $parametros[]] = self::Solicitud_A_Actualiza_SC($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_A_Inserta_PRN($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_A_Inserta_PRC($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_A_Limpia_MPC($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_A_Limpia_JP($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_A_Limpia_MP($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_A_Inserta_MP($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_A_Inserta_JP($credito);
-        [$qrys[], $parametros[]] = self::Solicitud_A_Inserta_MPC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_A_Actualiza_SN($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Inserta_PRN($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Inserta_PRC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Limpia_MPC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Limpia_JP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Limpia_MP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Inserta_MP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Inserta_JP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Inserta_MPC($credito);
 
         try {
             $db = new Database();
-            $db->insertaMultiple($qrys, $parametros);
-            return self::Responde(true, "Solicitud aprobada procesada correctamente");
+            $r = $db->insertaMultiple($qrys, $parametros, null, true);
+            return self::Responde(true, "Solicitud aprobada correctamente");
         } catch (\Exception $e) {
             return self::Responde(false, "Error al actualizar la solicitud aprobada", null, $e->getMessage());
         }
-    }
-
-    public static function Solicitud_A_Actualiza_SN($datos)
-    {
-        $qry = <<<SQL
-            UPDATE
-                SN
-            SET
-                CANTAUTOR = CANTSOLIC - 9999
-                , SITUACION = 'A'
-            WHERE
-                SITUACION = 'S'
-                AND CDGNS = :CDGNS
-                AND CICLO = :CICLO
-                AND SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
-        SQL;
-
-        $parametros = [
-            "CDGNS" => $datos["CDGNS"],
-            "CICLO" => $datos["CICLO"],
-            "SOLICITUD" => $datos["SOLICITUD"]
-        ];
-
-        return [
-            $qry,
-            $parametros
-        ];
     }
 
     public static function Solicitud_A_Actualiza_SC($datos)
@@ -130,34 +105,55 @@ class JobsCredito extends Model
             UPDATE
                 SC
             SET
-                CANTAUTOR = CASE
-                                WHEN CANTSOLIC = 9999 THEN 0
-                                ELSE CANTSOLIC
+                SC.CANTAUTOR = CASE
+                                WHEN SC.CANTSOLIC = 9999 THEN 0
+                                ELSE SC.CANTSOLIC
                             END,
-                SITUACION = CASE
-                                WHEN CANTSOLIC = 9999 THEN 'R'
+                SC.SITUACION = CASE
+                                WHEN SC.CANTSOLIC = 9999 THEN 'R'
                                 ELSE 'A'
                             END
             WHERE
-                SITUACION = 'S'
-                AND CDGNS = :CDGNS
-                AND CICLO = :CICLO
-                AND SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+                SC.SITUACION = 'S'
+                AND SC.CDGNS = :CDGNS
+                AND SC.CICLO = :CICLO
+                AND SC.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
         SQL;
 
         $parametros = [
-            "CDGNS" => $datos["CDGNS"],
+            "CDGNS" => $datos["CREDITO"],
             "CICLO" => $datos["CICLO"],
             "SOLICITUD" => $datos["SOLICITUD"]
         ];
 
-        return [
-            $qry,
-            $parametros
-        ];
+        return [$qry, $parametros];
     }
 
-    public static function Solicitud_A_Inserta_PRN($datos)
+    public static function Solicitud_A_Actualiza_SN($datos)
+    {
+        $qry = <<<SQL
+            UPDATE
+                SN
+            SET
+                SN.CANTAUTOR = (SELECT SUM(SC.CANTAUTOR) FROM SC WHERE SC.SITUACION = 'A' AND SC.CDGNS = SN.CDGNS AND SC.CICLO = SN.CICLO)
+                , SN.SITUACION = 'A'
+            WHERE
+                SN.SITUACION = 'S'
+                AND SN.CDGNS = :CDGNS
+                AND SN.CICLO = :CICLO
+                AND SN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+        SQL;
+
+        $parametros = [
+            "CDGNS" => $datos["CREDITO"],
+            "CICLO" => $datos["CICLO"],
+            "SOLICITUD" => $datos["SOLICITUD"]
+        ];
+
+        return [$qry, $parametros];
+    }
+
+    public static function Solicitud_E_Inserta_PRN($datos)
     {
         $qry = <<<SQL
             INSERT INTO
@@ -197,7 +193,7 @@ class JobsCredito extends Model
                     ACTUALIZAENPE,
                     MODOAPLIRECA,
                     FCOMITE,
-                    NOCHEQUE,
+                    NOCHEQUE
                     ACTUALIZACHPE,
                     FEXP,
                     CDGCB,
@@ -221,8 +217,8 @@ class JobsCredito extends Model
                 SN.SOLICITUD,
                 SN.INICIO,
                 SN.PERIODICIDAD,
-                SN.CANTAUTOR,
-                SN.CANTAUTOR,
+                (SELECT SUM(SC.CANTAUTOR) FROM SC WHERE SC.SITUACION = 'A' AND SC.CDGNS = SN.CDGNS AND SC.CICLO = SN.CICLO),
+                (SELECT SUM(SC.CANTAUTOR) FROM SC WHERE SC.SITUACION = 'A' AND SC.CDGNS = SN.CDGNS AND SC.CICLO = SN.CICLO),
                 SN.DIAJUNTA,
                 SN.HORARIO,
                 SN.DESFASEPAGO,
@@ -248,7 +244,7 @@ class JobsCredito extends Model
                 :USUARIO,
                 SN.MODOAPLIRECA,
                 SYSDATE,
-                GET_CHQ(SN.CDGCO),
+                GET_CHQ(PRN.CDGCO),
                 :USUARIO,
                 SYSDATE,
                 GET_CDGCB(SN.CDGCO),
@@ -272,19 +268,16 @@ class JobsCredito extends Model
         SQL;
 
         $parametros = [
-            'CDGNS' => $datos['CDGNS'],
+            'CDGNS' => $datos['CREDITO'],
             'CICLO' => $datos['CICLO'],
             'SOLICITUD' => $datos['SOLICITUD'],
             'USUARIO' => 'AMGM'
         ];
 
-        return [
-            $qry,
-            $parametros
-        ];
+        return [$qry, $parametros];
     }
 
-    public static function Solicitud_A_Inserta_PRC($datos)
+    public static function Solicitud_E_Inserta_PRC($datos)
     {
         $qry = <<<SQL
             INSERT INTO
@@ -318,8 +311,8 @@ class JobsCredito extends Model
                 PRN.CICLO,
                 PRN.CDGNS,
                 PRN.SOLICITUD,
-                PRN.CANTAUTOR,
-                PRN.CANTENTRE,
+                SC.CANTAUTOR,
+                SC.CANTAUTOR,
                 '0001',
                 '001',
                 PRN.REPORTE,
@@ -336,28 +329,25 @@ class JobsCredito extends Model
                 PRN.CANTENTRE,
                 SC.DOMICILIA
             FROM
-                PRN
-                JOIN SC ON PRN.CDGNS = SC.CDGNS AND PRN.CICLO = SC.CICLO AND PRN.SOLICITUD = SC.SOLICITUD AND SC.SITUACION = 'A' AND SC.CANTSOLIC <> 9999
+                SC
+                JOIN PRN ON PRN.CDGNS = SC.CDGNS AND PRN.CICLO = SC.CICLO AND PRN.SOLICITUD = SC.SOLICITUD AND PRN.SITUACION = 'E'
             WHERE
-                PRN.SITUACION = 'E'
-                AND PRN.CDGNS = :CDGNS
-                AND PRN.CICLO = :CICLO
-                AND PRN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+                SC.CDGNS = :CDGNS
+                AND SC.CICLO = :CICLO
+                AND SC.SITUACION = 'A'
+                AND SC.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
         SQL;
 
         $parametros = [
-            'CDGNS' => $datos['CDGNS'],
+            'CDGNS' => $datos['CREDITO'],
             'CICLO' => $datos['CICLO'],
             'SOLICITUD' => $datos['SOLICITUD']
         ];
 
-        return [
-            $qry,
-            $parametros
-        ];
+        return [$qry, $parametros];
     }
 
-    public static function Solicitud_A_Limpia_MPC($datos)
+    public static function Solicitud_E_Limpia_MPC($datos)
     {
         $qry = <<<SQL
             DELETE FROM
@@ -372,17 +362,14 @@ class JobsCredito extends Model
         SQL;
 
         $parametros = [
-            "CDGNS" => $datos["CDGNS"],
+            "CDGNS" => $datos["CREDITO"],
             "CICLO" => $datos["CICLO"]
         ];
 
-        return [
-            $qry,
-            $parametros
-        ];
+        return [$qry, $parametros];
     }
 
-    public static function Solicitud_A_Limpia_JP($datos)
+    public static function Solicitud_E_Limpia_JP($datos)
     {
         $qry = <<<SQL
             DELETE FROM
@@ -397,17 +384,14 @@ class JobsCredito extends Model
         SQL;
 
         $parametros = [
-            "CDGNS" => $datos["CDGNS"],
+            "CDGNS" => $datos["CREDITO"],
             "CICLO" => $datos["CICLO"]
         ];
 
-        return [
-            $qry,
-            $parametros
-        ];
+        return [$qry, $parametros];
     }
 
-    public static function Solicitud_A_Limpia_MP($datos)
+    public static function Solicitud_E_Limpia_MP($datos)
     {
         $qry = <<<SQL
             DELETE FROM
@@ -422,17 +406,14 @@ class JobsCredito extends Model
         SQL;
 
         $parametros = [
-            "CDGNS" => $datos["CDGNS"],
+            "CDGNS" => $datos["CREDITO"],
             "CICLO" => $datos["CICLO"],
         ];
 
-        return [
-            $qry,
-            $parametros
-        ];
+        return [$qry, $parametros];
     }
 
-    public static function Solicitud_A_Inserta_MP($datos)
+    public static function Solicitud_E_Inserta_MP($datos)
     {
         $qry = <<<SQL
             INSERT INTO
@@ -522,19 +503,16 @@ class JobsCredito extends Model
         SQL;
 
         $parametros = [
-            "CDGNS" => $datos["CDGNS"],
+            "CDGNS" => $datos["CREDITO"],
             "CICLO" => $datos["CICLO"],
             "SOLICITUD" => $datos["SOLICITUD"],
             "ETIQUETA" => "Interés total del préstamo",
         ];
 
-        return [
-            $qry,
-            $parametros
-        ];
+        return [$qry, $parametros];
     }
 
-    public static function Solicitud_A_Inserta_JP($datos)
+    public static function Solicitud_E_Inserta_JP($datos)
     {
         $qry = <<<SQL
             INSERT INTO
@@ -620,18 +598,15 @@ class JobsCredito extends Model
         SQL;
 
         $parametros = [
-            "CDGNS" => $datos["CDGNS"],
+            "CDGNS" => $datos["CREDITO"],
             "CICLO" => $datos["CICLO"],
             "SOLICITUD" => $datos["SOLICITUD"]
         ];
 
-        return [
-            $qry,
-            $parametros
-        ];
+        return [$qry, $parametros];
     }
 
-    public static function Solicitud_A_Inserta_MPC($datos)
+    public static function Solicitud_E_Inserta_MPC($datos)
     {
         $qry = <<<SQL
             INSERT INTO
@@ -685,15 +660,396 @@ class JobsCredito extends Model
         SQL;
 
         $parametros = [
-            "CDGNS" => $datos["CDGNS"],
+            "CDGNS" => $datos["CREDITO"],
             "CICLO" => $datos["CICLO"],
             "SOLICITUD" => $datos["SOLICITUD"]
         ];
 
-        return [
-            $qry,
-            $parametros
+        return [$qry, $parametros];
+    }
+
+    // Metodos para poner solicitudes de crédito en espera
+    public static function PonerSolicitudEnEspera($credito)
+    {
+        $qrys = [];
+        $parametros = [];
+
+        [$qrys[], $parametros[]] = self::Solicitud_A_Actualiza_SC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_A_Actualiza_SN($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_T_Inserta_PRN($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_T_Inserta_PRC($credito);
+
+        try {
+            $db = new Database();
+            $db->insertaMultiple($qrys, $parametros);
+            return self::Responde(true, "Solicitud puesta en espera correctamente");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al actualizar la solicitud en espera", null, $e->getMessage());
+        }
+    }
+
+    public static function Solicitud_T_Inserta_PRN($datos)
+    {
+        $qry = <<<SQL
+            INSERT INTO
+                PRN (
+                    CDGEM,
+                    CDGNS,
+                    CICLO,
+                    CDGCO,
+                    CDGOCPE,
+                    SOLICITUD,
+                    INICIO,
+                    PERIODICIDAD,
+                    CANTAUTOR,
+                    DIAJUNTA,
+                    HORARIO,
+                    DESFASEPAGO,
+                    TASAINI,
+                    DURACINI,
+                    TASAFIN,
+                    DURACFIN,
+                    PERIGRCAP,
+                    PERIGRINT,
+                    CDGMCI,
+                    CDGFDI,
+                    DEPOSITA,
+                    SITUACION,
+                    CONCILIADO,
+                    AUTCARPE,
+                    FAUTCAR,
+                    AUTTESPE,
+                    FAUTTES,
+                    PRESIDENTE,
+                    TESORERO,
+                    SECRETARIO,
+                    MODOAPLIRECA,
+                    FORMAENTREGA,
+                    CDGTPC,
+                    CDGPCR,
+                    TASA,
+                    PLAZO,
+                    CDGMO,
+                    CDGPRPE,
+                    NOACUERDO,
+                    MULTPER
+                )
+            SELECT
+                SN.CDGEM,
+                SN.CDGNS,
+                SN.CICLO,
+                SN.CDGCO,
+                SN.CDGOCPE,
+                SN.SOLICITUD,
+                SN.INICIO,
+                SN.PERIODICIDAD,
+                (SELECT SUM(SC.CANTAUTOR) FROM SC WHERE SC.SITUACION = 'A' AND SC.CDGNS = SN.CDGNS AND SC.CICLO = SN.CICLO),
+                SN.DIAJUNTA,
+                SN.HORARIO,
+                SN.DESFASEPAGO,
+                SN.TASA,
+                SN.DURACION,
+                SN.TASA,
+                SN.DURACION,
+                SN.PERIGRCAP,
+                SN.PERIGRINT,
+                SN.CDGMCI,
+                SN.CDGFDI,
+                SN.DEPOSITA,
+                'T',
+                'C',
+                :USUARIO,
+                SYSDATE,
+                :USUARIO,
+                SYSDATE,
+                SN.PRESIDENTE,
+                SN.TESORERO,
+                SN.SECRETARIO,
+                SN.MODOAPLIRECA,
+                'I',
+                SN.CDGTPC,
+                SN.CDGPCR,
+                SN.TASA,
+                SN.DURACION,
+                SN.CDGMO,
+                SN.CDGPRPE,
+                SN.NOACUERDO,
+                SN.MULTPER
+            FROM
+                SN
+            WHERE
+                SN.SITUACION = 'A'
+                AND SN.CDGNS = :CDGNS
+                AND SN.CICLO = :CICLO
+                AND SN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+        SQL;
+
+        $parametros = [
+            'CDGNS' => $datos['CREDITO'],
+            'CICLO' => $datos['CICLO'],
+            'SOLICITUD' => $datos['SOLICITUD'],
+            'USUARIO' => 'AMGM'
         ];
+
+        return [$qry, $parametros];
+    }
+
+    public static function Solicitud_T_Inserta_PRC($datos)
+    {
+        $qry = <<<SQL
+            INSERT INTO
+                PRC (
+                    CDGEM,
+                    CDGCL,
+                    CICLO,
+                    CDGNS,
+                    SOLICITUD,
+                    CANTAUTOR,
+                    CDGORF,
+                    CDGLC,
+                    SITUACION,
+                    CONCILIADO,
+                    CLNS,
+                    FORMAENTREGA,
+                    CDGCLNS,
+                    DOMICILIA
+                )
+            SELECT
+                PRN.CDGEM,
+                SC.CDGCL,
+                PRN.CICLO,
+                PRN.CDGNS,
+                PRN.SOLICITUD,
+                SC.CANTAUTOR,
+                '0001',
+                '001',
+                PRN.SITUACION,
+                PRN.CONCILIADO,
+                SC.CLNS,
+                PRN.FORMAENTREGA,
+                SC.CDGNS,
+                SC.DOMICILIA
+            FROM
+                SC
+                JOIN PRN ON PRN.CDGNS = SC.CDGNS AND PRN.CICLO = SC.CICLO AND PRN.SOLICITUD = SC.SOLICITUD AND PRN.SITUACION = 'T'
+            WHERE
+                SC.CDGNS = :CDGNS
+                AND SC.CICLO = :CICLO
+                AND SC.SITUACION = 'A'
+                AND SC.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+        SQL;
+
+        $parametros = [
+            'CDGNS' => $datos['CREDITO'],
+            'CICLO' => $datos['CICLO'],
+            'SOLICITUD' => $datos['SOLICITUD']
+        ];
+
+        return [$qry, $parametros];
+    }
+
+    // Metodos para concluir solicitudes de crédito en espera
+    public static function ConcluirSolicitudEnEspera($credito)
+    {
+        $qrys = [];
+        $parametros = [];
+
+        [$qrys[], $parametros[]] = self::Solicitud_E_Actualiza_PRN($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Actualiza_PRC($credito);
+
+        try {
+            $db = new Database();
+            $db->insertaMultiple($qrys, $parametros, null, true);
+            return self::Responde(true, "Solicitud concluida correctamente");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al actualizar la solicitud concluida", null, $e->getMessage());
+        }
+    }
+
+    public static function Solicitud_E_Actualiza_PRN($datos)
+    {
+        $qry = <<<SQL
+            UPDATE
+                PRN
+            SET 
+                PRN.SITUACION = 'E',
+                PRN.REPORTE = '   C',
+                PRN.CONCILIADO = 'C',
+                PRN.AUTTESPE = :USUARIO,
+                PRN.FAUTTES = SYSDATE,
+                PRN.ACTUALIZAENPE = :USUARIO,
+                PRN.FCOMITE = SYSDATE,
+                PRN.NOCHEQUE = GET_CHQ(PRN.CDGCO),
+                PRN.ACTUALIZACHPE = :USUARIO,
+                PRN.FEXP = SYSDATE,
+                PRN.CDGCB = GET_CDGCB(PRN.CDGCO),
+                PRN.FORMAENTREGA = 'I',
+                PRN.ACTUALIZACPE = :USUARIO,
+                PRN.CANTENTRE = (
+                    SELECT
+                        SUM(SC.CANTAUTOR) 
+                    FROM
+                        SC 
+                    WHERE
+                        SC.SITUACION = 'A' 
+                        AND SC.CDGNS = PRN.CDGNS 
+                        AND SC.CICLO = PRN.CICLO
+                        AND SC.SOLICITUD = PRN.SOLICITUD
+                )
+            WHERE 
+                PRN.SITUACION = 'T'
+                AND PRN.CDGNS = :CDGNS
+                AND PRN.CICLO = :CICLO
+                AND PRN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+        SQL;
+
+        $parametros = [
+            'CDGNS' => $datos['CREDITO'],
+            'CICLO' => $datos['CICLO'],
+            'SOLICITUD' => $datos['SOLICITUD'],
+            'USUARIO' => 'AMGM'
+        ];
+
+        return [$qry, $parametros];
+    }
+
+    public static function Solicitud_E_Actualiza_PRC($datos)
+    {
+        $qry = <<<SQL
+            UPDATE
+                PRC
+            SET
+                CANTENTRE = (
+                    SELECT
+                        SC.CANTAUTOR
+                    FROM
+                        SC
+                    WHERE
+                        SC.CDGNS = PRC.CDGNS
+                        AND SC.CICLO = PRC.CICLO
+                        AND SC.CDGCL = PRC.CDGCL
+                        AND SC.SITUACION = 'A'
+                ),
+                REPORTE = (
+                    SELECT
+                        REPORTE
+                    FROM
+                        PRN
+                    WHERE
+                        CDGNS = PRC.CDGNS
+                        AND CICLO = PRC.CICLO
+                        AND SOLICITUD = PRC.SOLICITUD
+                ),
+                NOCHEQUE = (
+                    SELECT
+                        NOCHEQUE
+                    FROM
+                        PRN
+                    WHERE
+                        CDGNS = PRC.CDGNS
+                        AND CICLO = PRC.CICLO
+                        AND SOLICITUD = PRC.SOLICITUD
+                ),
+                FEXPCHEQUE = SYSDATE,
+                SITUACION = (
+                    SELECT
+                        SITUACION
+                    FROM
+                        PRN
+                    WHERE
+                        CDGNS = PRC.CDGNS
+                        AND CICLO = PRC.CICLO
+                        AND SOLICITUD = PRC.SOLICITUD
+                ),
+                CONCILIADO = (
+                    SELECT
+                        CONCILIADO
+                    FROM
+                        PRN
+                    WHERE
+                        CDGNS = PRC.CDGNS
+                        AND CICLO = PRC.CICLO
+                        AND SOLICITUD = PRC.SOLICITUD
+                ),
+                ACTUALIZACHPE = (
+                    SELECT
+                        ACTUALIZACHPE
+                    FROM
+                        PRN
+                    WHERE
+                        CDGNS = PRC.CDGNS
+                        AND CICLO = PRC.CICLO
+                        AND SOLICITUD = PRC.SOLICITUD
+                ),
+                FEXP = (
+                    SELECT
+                        FEXP
+                    FROM
+                        PRN
+                    WHERE
+                        CDGNS = PRC.CDGNS
+                        AND CICLO = PRC.CICLO
+                        AND SOLICITUD = PRC.SOLICITUD
+                ),
+                CDGCB = (
+                    SELECT
+                        CDGCB
+                    FROM
+                        PRN
+                    WHERE
+                        CDGNS = PRC.CDGNS
+                        AND CICLO = PRC.CICLO
+                        AND SOLICITUD = PRC.SOLICITUD
+                ),
+                FORMAENTREGA = (
+                    SELECT
+                        FORMAENTREGA
+                    FROM
+                        PRN
+                    WHERE
+                        CDGNS = PRC.CDGNS
+                        AND CICLO = PRC.CICLO
+                        AND SOLICITUD = PRC.SOLICITUD
+                ),
+                ENTRREAL = (
+                    SELECT
+                        SC.CANTAUTOR
+                    FROM
+                        SC
+                    WHERE
+                        SC.CDGNS = PRC.CDGNS
+                        AND SC.CICLO = PRC.CICLO
+                        AND SC.CDGCL = PRC.CDGCL
+                        AND SC.SITUACION = 'A'
+                )
+            WHERE
+                EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        SC
+                        JOIN PRN ON PRN.CDGNS = SC.CDGNS
+                        AND PRN.CICLO = SC.CICLO
+                        AND PRN.SOLICITUD = SC.SOLICITUD
+                        AND PRN.SITUACION = 'E'
+                    WHERE
+                        SC.CDGNS = :CDGNS
+                        AND SC.CICLO = :CICLO
+                        AND SC.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+                        AND SC.SITUACION = 'A'
+                        AND SC.CDGNS = PRC.CDGNS
+                        AND SC.CDGCL = PRC.CDGCL
+                        AND SC.CICLO = PRC.CICLO
+                )
+        SQL;
+
+        $parametros = [
+            'CDGNS' => $datos['CREDITO'],
+            'CICLO' => $datos['CICLO'],
+            'SOLICITUD' => $datos['SOLICITUD']
+        ];
+
+        return [$qry, $parametros];
     }
 
     // Metodos para las solicitudes de crédito rechazadas
@@ -702,55 +1058,16 @@ class JobsCredito extends Model
         $qrys = [];
         $parametros = [];
 
-        [$qrys[], $parametros[]] = self::Solicitud_R_Actualiza_SN($credito);
         [$qrys[], $parametros[]] = self::Solicitud_R_Actualiza_SC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_R_Actualiza_SN($credito);
 
         try {
             $db = new Database();
             $db->insertaMultiple($qrys, $parametros);
-            return self::Responde(true, "Solicitud rechazada procesada correctamente");
+            return self::Responde(true, "Solicitud rechazada correctamente");
         } catch (\Exception $e) {
             return self::Responde(false, "Error al actualizar la solicitud rechazada", null, $e->getMessage());
         }
-    }
-
-    public static function Solicitud_R_Actualiza_SN($datos)
-    {
-        $qry = <<<SQL
-            UPDATE
-                SN
-            SET
-                CICLO = 'R' || (
-                    SELECT
-                        COUNT(*) + 1
-                    FROM
-                        SN SN2
-                    WHERE
-                        SN2.CICLOR = SN.CICLO
-                        AND SN2.CDGNS = SN.CDGNS
-                ),
-                SITUACION = 'R',
-                CANTAUTOR = 0,
-                CICLOR = :CICLO,
-                RECCARPE = :USUARIOR
-            WHERE
-                SITUACION = 'S'
-                AND CDGNS = :CDGNS
-                AND CICLO = :CICLO
-                AND SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
-        SQL;
-
-        $parametros = [
-            "CDGNS" => $datos["CDGNS"],
-            "CICLO" => $datos["CICLO"],
-            "SOLICITUD" => $datos["SOLICITUD"],
-            "USUARIOR" => $datos["CDGPE"]
-        ];
-
-        return [
-            $qry,
-            $parametros
-        ];
     }
 
     public static function Solicitud_R_Actualiza_SC($datos)
@@ -759,7 +1076,7 @@ class JobsCredito extends Model
             UPDATE
                 SC
             SET
-                CICLO = 'R' || (
+                SC.CICLO = 'R' || (
                     SELECT
                         COUNT(*) + 1
                     FROM
@@ -768,25 +1085,58 @@ class JobsCredito extends Model
                         SC2.CICLOR = SC.CICLO
                         AND SC2.CDGNS = SC.CDGNS
                 ),
-                SITUACION = 'R',
-                CICLOR = :CICLO
+                SC.SITUACION = 'R',
+                SC.CICLOR = :CICLO
             WHERE
-                SITUACION = 'S'
-                AND CDGNS = :CDGNS
-                AND CICLO = :CICLO
-                AND SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+                SC.SITUACION = 'S'
+                AND SC.CDGNS = :CDGNS
+                AND SC.CICLO = :CICLO
+                AND SC.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
         SQL;
 
         $parametros = [
-            "CDGNS" => $datos["CDGNS"],
+            "CDGNS" => $datos["CREDITO"],
             "CICLO" => $datos["CICLO"],
             "SOLICITUD" => $datos["SOLICITUD"]
         ];
 
-        return [
-            $qry,
-            $parametros
+        return [$qry, $parametros];
+    }
+
+    public static function Solicitud_R_Actualiza_SN($datos)
+    {
+        $qry = <<<SQL
+            UPDATE
+                SN
+            SET
+                SN.CICLO = 'R' || (
+                    SELECT
+                        COUNT(*) + 1
+                    FROM
+                        SN SN2
+                    WHERE
+                        SN2.CICLOR = SN.CICLO
+                        AND SN2.CDGNS = SN.CDGNS
+                ),
+                SN.SITUACION = 'R',
+                SN.CANTAUTOR = 0,
+                SN.CICLOR = :CICLO,
+                SN.RECCARPE = :USUARIOR
+            WHERE
+                SN.SITUACION = 'S'
+                AND SN.CDGNS = :CDGNS
+                AND SN.CICLO = :CICLO
+                AND SN.SOLICITUD = TO_DATE(:SOLICITUD, 'DD/MM/YYYY HH24:MI:SS')
+        SQL;
+
+        $parametros = [
+            "CDGNS" => $datos["CREDITO"],
+            "CICLO" => $datos["CICLO"],
+            "SOLICITUD" => $datos["SOLICITUD"],
+            "USUARIOR" => $datos["CDGPE"]
         ];
+
+        return [$qry, $parametros];
     }
 
     // Metodos para los cheques
