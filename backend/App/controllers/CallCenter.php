@@ -3911,7 +3911,8 @@ html;
 
         $filas = CallCenterDao::getAllSolicitudesHistoricoExcel($datos);
         $filas = $filas['success'] ? $filas['datos'] : [];
-
+        echo json_encode($datos);
+        return;
         \PHPSpreadsheet::DescargaExcel('Reporte Llamadas Finalizadas', 'Reporte', 'Reporte de Solicitudes', $columnas, $filas);
     }
 

@@ -248,13 +248,18 @@ sql;
             FROM
                 ASIGNACION_SUC_A
             WHERE
-                :sucursal IS NULL
-                OR CDGCO = :sucursal
+                (:sucursal IS NULL
+                OR CDGCO = :sucursal)
         SQL;
 
         $prm = [
             'sucursal' => ($datos['Suc'] == '000' || $datos['Suc'] == '') ? null : $datos['Suc']
         ];
+
+        if (isset($datos['Usuario']) && $datos['Usuario'] != '') {
+            $qry .= ' AND CDGPE = :usuario';
+            $prm['usuario'] = $datos['Usuario'];
+        }
 
         try {
             $db = new Database();
