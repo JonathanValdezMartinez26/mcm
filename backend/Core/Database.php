@@ -241,6 +241,26 @@ class Database
         }
     }
 
+    public function EjecutaSP_DBMS_OUTPUT($sp, $parametros)
+    {
+        try {
+            $stmt = $this->db_activa->prepare("BEGIN DBMS_OUTPUT.ENABLE(NULL); END;");
+            $stmt->execute();
+            $stmt = $this->db_activa->prepare($sp);
+
+            foreach ($parametros as $key => $value) {
+                $stmt->bindValue(":$key", $value);
+            }
+
+            $stmt->execute();
+
+            $stmt = $this->db_activa->prepare("SELECT COLUMN_VALUE AS RESULTADO FROM TABLE(GET_DBMS_OUTPUT)");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            throw new \Exception("Error en EjecutaSP_DBMS_OUTPUT: " . $e->getMessage() . "\nSP: $sp \nDatos: " . print_r($parametros, 1));
+        }
+    }
 
     public function eliminar($sql, $prm = null)
     {

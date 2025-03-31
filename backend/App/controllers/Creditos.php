@@ -211,7 +211,7 @@ class Creditos extends Controller
                 }
 
                 $(document).ready(() => {
-                    $("#buscar").click(consultaGarantias)
+                    $("#buscar").click(() => consultaGarantias())
                     $("#creditoBuscar").on("keypress", buscarEnter)
                     $("#agregar").click(() => mostrarModal())
                     $("#excel").click(getExcel)

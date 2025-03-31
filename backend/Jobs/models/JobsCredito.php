@@ -1600,4 +1600,20 @@ class JobsCredito extends Model
             $parametros
         ];
     }
+
+    // Experimental para cierre diario
+    public static function EjecutaSP($sp, $parametros)
+    {
+        $qry = <<<SQL
+            CALL $sp
+        SQL;
+
+        try {
+            $db = new Database();
+            $res = $db->EjecutaSP_DBMS_OUTPUT($qry, $parametros);
+            return self::Responde(true, "SP ejecutado correctamente", $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al ejecutar el SP", null, $e->getMessage());
+        }
+    }
 }

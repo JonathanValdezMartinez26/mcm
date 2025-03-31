@@ -233,6 +233,23 @@ class JobsCredito extends Job
             </div>
         HTML;
     }
+
+    public function CierreDiario($fecha)
+    {
+        self::SaveLog('Iniciando ejecución del cierre diario');
+
+        if (!preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $fecha)) {
+            self::SaveLog('La fecha proporcionada no es válida' . $fecha);
+            return;
+        }
+
+        $sp = "SP_CIERRE_PRUEBA(TO_DATE(:fecha, 'DD/MM/YYYY'), '1')";
+        $params = ['fecha' => $fecha];
+        $resultado = JobsDao::EjecutaSP($sp, $params);
+
+        if (!$resultado['success']) self::SaveLog($resultado);
+        else self::SaveLog('Ejecución del cierre diario finalizado con el mensaje: ' . json_encode($resultado['datos']));
+    }
 }
 
 if (isset($argv[1])) {
@@ -244,6 +261,9 @@ if (isset($argv[1])) {
             break;
         case 'SolicitudesFinalizadas':
             $jobs->SolicitudesFinalizadas();
+            break;
+        case 'CierreDiario':
+            $jobs->CierreDiario($argv[2]);
             break;
         case 'help':
             echo 'JobCheques: Actualiza los cheques de los créditos autorizados\n';

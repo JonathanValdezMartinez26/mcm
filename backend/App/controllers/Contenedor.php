@@ -353,7 +353,8 @@ class Contenedor extends Controller
         $footer = <<<HTML
             </div>
             <script src="/js/moment/moment.min.js"></script>
-            <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+            <!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
+            <script src="/js/sweetalert.min.js"></script>
             <script src="/js/jquery.min.js"></script>
             <script src="/js/bootstrap.min.js"></script>
             <script src="/js/bootstrap/bootstrap-switch.js"></script>
@@ -364,7 +365,8 @@ class Contenedor extends Controller
             <script src="/js/tabla/jquery.dataTables.min.js"></script>
             <script src="/js/tabla/dataTables.bootstrap.min.js"></script>
             <script src="/js/tabla/jquery.tablesorter.js"></script>
-            <script src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js" ></script>
+            <!-- <script src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js" ></script> -->
+            <script src="/js/dataTables.buttons.min.js" ></script>
             <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js" ></script>
             <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js" ></script>
             <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js" ></script>
