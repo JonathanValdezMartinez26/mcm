@@ -13,12 +13,12 @@ class Creditos extends Model
     {
         $qryVal = <<<SQL
             SELECT
-                PRC.CDGNS NO_CREDITO
+                SC.CDGNS NO_CREDITO
             FROM
-                PRC
+                SC
             WHERE
-                PRC.CDGEM = 'EMPFIN'
-                AND PRC.CDGNS = :credito
+                SC.CDGEM = 'EMPFIN'
+                AND SC.CDGNS = :credito
         SQL;
 
         $qry = <<<SQL

@@ -243,7 +243,7 @@ class JobsCredito extends Job
             return;
         }
 
-        $sp = "SP_CIERRE_PRUEBA(TO_DATE(:fecha, 'DD/MM/YYYY'), '1')";
+        $sp = "SP_CIERRE_DIA(TO_DATE(:fecha, 'DD/MM/YYYY'), '1')";
         $params = ['fecha' => $fecha];
         $resultado = JobsDao::EjecutaSP($sp, $params);
 

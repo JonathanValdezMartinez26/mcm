@@ -264,7 +264,7 @@ sql;
         try {
             $db = new Database();
             $res = $db->queryOne($qry, $prm);
-            return self::Responde(true, 'Sucursales obtenidas', $res);
+            return self::Responde(true, 'Sucursales obtenidas', $res, $qry);
         } catch (\Exception $e) {
             return self::Responde(false, 'Error al obtener sucursales', null, $e->getMessage());
         }
@@ -370,7 +370,7 @@ sql;
 
     public static function getAllSolicitudesHistoricoExcel($datos)
     {
-        $sucursales = $datos['sucursales'] == '' ? '' : "SPR.CDGCO IN ({$datos['sucursales']})";
+        $sucursales = $datos['sucursales'] == '' ? 'SPR.CDGCO IS NULL' : "SPR.CDGCO IN ({$datos['sucursales']})";
         $fecha = $datos['fechaI'] != '' && $datos['fechaF'] != '' ? "AND TO_DATE(SPR.FECHA_SOL, 'DD/MM/YYYY HH24:MI:SS') BETWEEN TIMESTAMP '{$datos['fechaI']} 00:00:00.000000' AND TIMESTAMP '{$datos['fechaF']} 23:59:59.000000'" : '';
         $usuario = $datos['usuario'] == '' ? '' : "AND SPR.CDGPE = '{$datos['usuario']}'";
 
