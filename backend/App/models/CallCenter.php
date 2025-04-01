@@ -489,8 +489,8 @@ sql;
                         WHEN SPR.COMENTARIO_PRORROGA IS NULL THEN 'N'
                         ELSE 'S'
                     END AS AR,
-                    SPR.VOBO_REG AS _AS_,
-                    PE.NOMBRE1 || ' ' || PE.NOMBRE2 || ' ' || PE.PRIMAPE || ' ' || PE.SEGAPE AS _AT_,
+                    SPR.VOBO_REG AS AS_,
+                    PE.NOMBRE1 || ' ' || PE.NOMBRE2 || ' ' || PE.PRIMAPE || ' ' || PE.SEGAPE AS AT_,
                     SPR.SEMAFORO AS AU,
                     '' AS AV,
                     '' AS AW,
@@ -632,8 +632,8 @@ sql;
                         WHEN SPR.COMENTARIO_PRORROGA IS NULL THEN 'N'
                         ELSE 'S'
                     END AS AR,
-                    SPR.VOBO_REG AS ASS,
-                    '' AS ATT,
+                    SPR.VOBO_REG AS AS_,
+                    '' AS AT_,
                     SPR.SEMAFORO AS AU,
                     '' AS AV,
                     '' AS AW,
