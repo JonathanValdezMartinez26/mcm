@@ -42,6 +42,7 @@ class Job
         $mensaje = is_string($registro)
             ? $registro
             : json_encode(is_array($registro) ? $registro : json_decode($registro), JSON_UNESCAPED_UNICODE);
+
         $infoReg = date("Y-m-d H:i:s") . ": " . debug_backtrace()[1]["function"] . " -> " . $mensaje;
 
         fwrite($log, $infoReg . PHP_EOL);

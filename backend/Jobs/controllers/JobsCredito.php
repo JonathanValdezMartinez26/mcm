@@ -248,7 +248,7 @@ class JobsCredito extends Job
         $resultado = JobsDao::EjecutaSP($sp, $params);
 
         if (!$resultado['success']) self::SaveLog($resultado);
-        else self::SaveLog('Ejecución del cierre diario finalizado con el mensaje: ' . json_encode($resultado['datos']));
+        else self::SaveLog($resultado);
     }
 }
 
