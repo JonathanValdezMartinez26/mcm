@@ -59,7 +59,7 @@ class JobsCredito extends Model
                     LEFT JOIN PE ON SCC.CDGPE = PE.CODIGO
                 WHERE 
                     SCC.ESTATUS NOT LIKE 'PENDIENTE%'
-                    AND SCC.FECHA_TRA_CL > TRUNC(SYSDATE) - 30
+                    AND SCC.FECHA_TRA_CL > TRUNC(SYSDATE) - 7
             )
             SELECT * FROM SOLICITUDES WHERE NOT CREDITO IS NULL
         SQL;

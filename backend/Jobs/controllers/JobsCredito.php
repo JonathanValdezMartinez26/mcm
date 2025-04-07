@@ -26,6 +26,7 @@ class JobsCredito extends Job
     public function JobCheques()
     {
         self::SaveLog('Inicio');
+        return self::SaveLog('Finalizado: No hay créditos autorizados');
         $resumen = [];
         $creditos = JobsDao::GetCreditosAutorizados();
         if (!$creditos['success']) return self::SaveLog('Finalizado con error: ' . $creditos['mensaje'] . '->' . $creditos['error']);
