@@ -118,18 +118,18 @@ class JobsCredito extends Job
                 'estatus' => $estatus
             ];
 
-            // if ($r['success'] && $estatus !== PENDIENTE) {
-            //     $dest = $aprobada ? $destAprobadas : $destRechazadas;
-            //     $dest = $this->GetDestinatarios(JobsDao::GetDestinatarios_Sucursal($credito['CO']), $dest);
-            //     $plantilla = $this->Plantilla_mail_Solicitud_Finalizada($credito, $aprobada);
-            //     $tipo = $aprobada ? 'Aprobación' : 'Rechazo';
+            if ($r['success'] && $estatus !== PENDIENTE) {
+                $dest = []; //$aprobada ? $destAprobadas : $destRechazadas;
+                $dest = $this->GetDestinatarios(JobsDao::GetDestinatarios_Sucursal($credito['CO']), $dest);
+                $plantilla = $this->Plantilla_mail_Solicitud_Finalizada($credito, $aprobada);
+                $tipo = $aprobada ? 'Aprobación' : 'Rechazo';
 
-            //     Mensajero::EnviarCorreo(
-            //         $dest,
-            //         $tipo . ' de solicitud de crédito por Call Center',
-            //         Mensajero::Notificaciones($plantilla)
-            //     );
-            // }
+                Mensajero::EnviarCorreo(
+                    $dest,
+                    $tipo . ' de solicitud de crédito por Call Center',
+                    Mensajero::Notificaciones($plantilla)
+                );
+            }
 
             $resumen[] = $r;
             //genera solo 1 solicitud para pruebas
