@@ -119,7 +119,7 @@ class JobsCredito extends Job
             ];
 
             if ($r['success'] && $estatus !== PENDIENTE) {
-                $dest = []; //$aprobada ? $destAprobadas : $destRechazadas;
+                $dest = $aprobada ? $destAprobadas : $destRechazadas;
                 $dest = $this->GetDestinatarios(JobsDao::GetDestinatarios_Sucursal($credito['CO']), $dest);
                 $plantilla = $this->Plantilla_mail_Solicitud_Finalizada($credito, $aprobada);
                 $tipo = $aprobada ? 'Aprobación' : 'Rechazo';
