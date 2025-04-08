@@ -193,7 +193,7 @@ class JobsCredito extends Model
                     ACTUALIZAENPE,
                     MODOAPLIRECA,
                     FCOMITE,
-                    NOCHEQUE
+                    NOCHEQUE,
                     ACTUALIZACHPE,
                     FEXP,
                     CDGCB,
