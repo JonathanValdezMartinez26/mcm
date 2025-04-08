@@ -244,7 +244,7 @@ class JobsCredito extends Model
                 :USUARIO,
                 SN.MODOAPLIRECA,
                 SYSDATE,
-                GET_CHQ(PRN.CDGCO),
+                GET_CHQ(SN.CDGCO),
                 :USUARIO,
                 SYSDATE,
                 GET_CDGCB(SN.CDGCO),
