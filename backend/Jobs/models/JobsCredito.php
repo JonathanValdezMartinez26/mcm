@@ -45,6 +45,8 @@ class JobsCredito extends Model
                         WHERE 
                             PRN2.CDGNS = COALESCE(SN.CDGNS, PRN.CDGNS)
                             AND PRN2.SITUACION = 'L'
+                            AND REGEXP_LIKE(PRN2.CICLO, '^[0-9]+$')
+                            AND REGEXP_LIKE(COALESCE(SN.CICLO, PRN.CICLO), '^[0-9]+$')
                             AND TO_NUMBER(PRN2.CICLO) = TO_NUMBER(COALESCE(SN.CICLO, PRN.CICLO)) - 1
                     ) AS LIQUIDADO,
                     COALESCE(SN.SITUACION, PRN.SITUACION) AS SITUACION
@@ -61,7 +63,7 @@ class JobsCredito extends Model
                     SCC.ESTATUS NOT LIKE 'PENDIENTE%'
                     AND SCC.FECHA_TRA_CL > TRUNC(SYSDATE) - 7
             )
-            SELECT * FROM SOLICITUDES WHERE NOT CREDITO IS NULL
+            SELECT * FROM SOLICITUDES WHERE CREDITO IS NOT NULL ORDER BY TO_DATE(SOLICITUD, 'DD/MM/YYYY  HH24:MI:SS')
         SQL;
 
         try {

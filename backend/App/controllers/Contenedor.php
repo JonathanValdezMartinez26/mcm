@@ -229,6 +229,17 @@ class Contenedor extends Controller
             HTML;
         }
 
+        $permisos = ['ADMIN'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= <<<HTML
+            <li><a><span class="glyphicon	glyphicon glyphicon-usd">&nbsp;</span>Operaciones<span class="fa fa-chevron-down"></span></a>
+                <ul class="nav child_menu">
+                    <li><a href="/Operaciones/CierreDiario/">Cierre Diario</a></li>
+                </ul>
+            </li>
+            HTML;
+        }
+
         $permisos = ['ADMIN', 'PLMV', 'MCDP'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
