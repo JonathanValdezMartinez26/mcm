@@ -16,23 +16,29 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="fecha">Fecha:</label>
-                                <input type="date" id="fecha" class="form-control" style="font-size: 24px;" min="<?= date('Y-m-d', strtotime('-30 days')) ?>" max="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d') ?>">
+                                <input type="date" id="fecha" class="form-control" style="font-size: 24px;" min="<?= date('Y-m-d', strtotime('-30 days')) ?>" max="<?= date('Y-m-d', strtotime('1 days')) ?>" value="<?= date('Y-m-d') ?>">
                             </div>
                         </div>
-                        <div class="col-md-8">
-                            <div class="form-group" style="min-height: 68px; display: flex; align-items: center; justify-content: space-between;">
-                                <button type="button" class="btn btn-primary" id="procesar">Generar Cierre</button>
+                        <div class="col-md-4">
+                            <div class="form-group" style="margin: 0; min-height: 68px; display: flex; align-items: center; justify-content: space-between;">
+                                <button type="button" class="btn btn-primary" style="margin: 0;" id="procesar">Generar Cierre</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-danger" role="alert" style="text-align: center; padding: 4px; margin: 0; display: none;" id="alertaEjecucion">
+                                <label id="tiempoEstimado" style="margin: 0;"></label>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="panel-body resultado conDatos">
-            <div style="width: 100%; text-align: center; margin-bottom: 20px;">
-                <label style="font-size: large;">Destinatarios para notificación de resultado.</label>
-            </div>
-            <div class="botones">
+        <hr>
+        <div class=" panel-body resultado conDatos" style="margin-top:  20px;">
+            <div class="botones" style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <label style="font-size: large;">Destinatarios para notificación de resultado.</label>
+                </div>
                 <button type="button" class="btn btn-primary" id="agregar">
                     <span class="glyphicon glyphicon-plus">&nbsp;</span>Agrega Correo
                 </button>

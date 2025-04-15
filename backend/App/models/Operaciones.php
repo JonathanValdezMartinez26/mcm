@@ -4,10 +4,10 @@ namespace App\models;
 
 defined("APPPATH") or die("Access denied");
 
-use \Core\App;
 use \Core\Database;
+use Core\Model;
 
-class Operaciones
+class Operaciones extends Model
 {
     public static function ConsultarDesembolsos($Inicial, $Final)
     {
@@ -365,5 +365,103 @@ class Operaciones
         $db = new Database('SERVIDOR-CULTIVA');
         if ($db->db_activa == null) return [];
         return [$db->queryAll($query), $db->queryOne($query2)];
+    }
+
+    public static function RegistraInicioCierreDiario($datos)
+    {
+        $qry = <<<SQL
+            INSERT INTO BITACORA_CIERRE_DIARIO (FECHA_CALCULO, USUARIO)
+            VALUES (TO_DATE(:fecha, 'YYYY-MM-DD'), :usuario)
+        SQL;
+
+        $prm = [
+            'fecha' => $datos['fecha'],
+            'usuario' => $datos['usuario']
+        ];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $prm);
+            return self::Responde(true, "Registro correcto");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error en el registro", null, $e->getMessage());
+        }
+    }
+
+    public static function TiempoEstimadoCierreDiario()
+    {
+        $qry = <<<SQL
+            SELECT 
+                ROUND(AVG((CAST(FIN AS DATE) - CAST(INICIO AS DATE)) * 24 * 60), 0) AS ESTIMADO
+            FROM (
+                SELECT
+                    INICIO
+                    , FIN
+                FROM
+                    BITACORA_CIERRE_DIARIO
+                WHERE
+                    FIN IS NOT NULL
+                    AND INICIO IS NOT NULL
+                    AND EXITO = 1
+                ORDER BY
+                    FIN DESC
+                FETCH FIRST 7 ROWS ONLY
+            )
+        SQL;
+
+        try {
+            $db = new Database();
+            $resultado = $db->queryOne($qry);
+            return self::Responde(true, "Validación correcta", $resultado);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error en la validación", null, $e->getMessage());
+        }
+    }
+
+    public static function ValidaCierreEnEjecucion()
+    {
+        $qry = <<<SQL
+            SELECT
+                TO_CHAR(INICIO, 'DD/MM/YYYY HH24:MI:SS') AS INICIO,
+                TO_CHAR(FECHA_CALCULO, 'DD/MM/YYYY') AS FIN,
+                USUARIO
+            FROM
+                BITACORA_CIERRE_DIARIO
+            WHERE
+                FIN IS NULL
+        SQL;
+
+        try {
+            $db = new Database();
+            $resultado = $db->queryOne($qry);
+            return self::Responde(true, "Validación correcta", $resultado);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error en la validación", null, $e->getMessage());
+        }
+    }
+
+    public static function ValidacionPreviaCierre($datos)
+    {
+        $qry = <<<SQL
+            SELECT
+                COUNT(*) AS TOTAL
+            FROM
+                TBL_CIERRE_DIA
+            WHERE
+                FECHA_CALC = TO_DATE(:fecha, 'YYYY-MM-DD')
+                AND FECHA_LIQUIDA IS NULL
+        SQL;
+
+        $prm = [
+            'fecha' => $datos['fecha']
+        ];
+
+        try {
+            $db = new Database();
+            $resultado = $db->queryOne($qry, $prm);
+            return self::Responde(true, "Validación correcta", $resultado);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error en la validación", null, $e->getMessage());
+        }
     }
 }

@@ -239,17 +239,18 @@ class JobsCredito extends Job
     {
         self::SaveLog('Iniciando ejecución del cierre diario');
 
-        if (!preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $fecha)) {
-            self::SaveLog('La fecha proporcionada no es válida' . $fecha);
-            return;
-        }
+        $parametro = null;
+        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $fecha)) $parametro = "TO_DATE(:fecha, 'DD/MM/YYYY')";
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) $parametro = "TO_DATE(:fecha, 'YYYY-MM-DD')";
 
-        $sp = "SP_CIERRE_DIA(TO_DATE(:fecha, 'DD/MM/YYYY'), '1')";
-        $params = ['fecha' => $fecha];
-        $resultado = JobsDao::EjecutaSP($sp, $params);
+        if ($parametro === null) return self::SaveLog("Error: El parámetro de fecha solicitado no es válido. ({$fecha})");
 
-        if (!$resultado['success']) self::SaveLog($resultado);
-        else self::SaveLog($resultado);
+        // $sp = "SP_CIERRE_DIA({$fecha}, '1')";
+        // $params = ['fecha' => $fecha];
+        // $resultado = JobsDao::EjecutaSP($sp, $params);
+
+        // if (!$resultado['success']) self::SaveLog($resultado);
+        // else self::SaveLog($resultado);
     }
 }
 

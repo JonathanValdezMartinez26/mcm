@@ -312,7 +312,8 @@ class Contenedor extends Controller
             $menu .= '</ul></li></ul>';
         }
 
-        if ($this->__perfil == 'ADMIN') {
+        $permisos = ['AMGM'];
+        if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
                 <li>
                     <a>
