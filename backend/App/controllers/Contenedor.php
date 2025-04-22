@@ -280,7 +280,7 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'MAPH', 'HSEJ', 'ORHM', 'LGFR'];
+        $permisos = ['ADMIN', 'MAPH', 'HSEJ', 'ORHM', 'LGFR', 'FECR'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<ul class="nav side-menu">';
 
@@ -299,7 +299,7 @@ class Contenedor extends Controller
                 HTML;
             }
 
-            $permisos = ['ADMIN', 'MAPH', 'HSEJ', 'PHEE', 'ORHM'];
+            $permisos = ['ADMIN', 'MAPH', 'HSEJ', 'PHEE', 'ORHM', 'FECR'];
             if ($this->ValidaPermiso($permisos)) {
                 $menu .= <<<HTML
                     <li><a href="/Reportes/UsuariosMCM/">Reporte Usuarios SICAFIN MCM</a></li>
