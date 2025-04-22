@@ -858,6 +858,12 @@ class JobsCredito extends Model
 
         [$qrys[], $parametros[]] = self::Solicitud_E_Actualiza_PRN($credito);
         [$qrys[], $parametros[]] = self::Solicitud_E_Actualiza_PRC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Limpia_MPC($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Limpia_JP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Limpia_MP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Inserta_MP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Inserta_JP($credito);
+        [$qrys[], $parametros[]] = self::Solicitud_E_Inserta_MPC($credito);
 
         try {
             $db = new Database();
