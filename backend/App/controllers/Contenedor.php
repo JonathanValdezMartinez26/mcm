@@ -112,7 +112,7 @@ class Contenedor extends Controller
         $permisos = ['ADMIN', 'CAJA', 'GTOCA', 'AMOCA', 'OCOF', 'CPAGO', 'ACALL', 'LAYOU', 'TESP', 'MGJC'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
-            <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
+            <li><a><i class="glyphicon glyphicon-usd"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
             HTML;
         }
@@ -232,7 +232,7 @@ class Contenedor extends Controller
         $permisos = ['ADMIN'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
-            <li><a><span class="glyphicon	glyphicon glyphicon-usd">&nbsp;</span>Operaciones<span class="fa fa-chevron-down"></span></a>
+            <li><a><i class="glyphicon glyphicon-usd"></i>&nbsp;Operaciones<span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">
                     <li><a href="/Operaciones/CierreDiario/">Cierre Diario</a></li>
                 </ul>
@@ -266,7 +266,7 @@ class Contenedor extends Controller
             $menu .= <<<HTML
                 <ul class="nav side-menu">
                     <li>
-                        <a><i class="glyphicon glyphicon glyphicon-cog"> 
+                        <a><i class="glyphicon glyphicon-cog"> 
                     </i>&nbsp;Incidencias MCM<span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             <li><a href="/Incidencias/AutorizaRechazaSolicitud/">Error Autorizar y/o Rechazar Solicitud</a></li>
@@ -285,9 +285,9 @@ class Contenedor extends Controller
             $menu .= '<ul class="nav side-menu">';
 
             if ($this->ValidaPermiso(['ADMIN', 'LGFR'])) {
-                $menu .= '<li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>';
+                $menu .= '<li><a><i class="glyphicon glyphicon-cog"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>';
             } else {
-                $menu .= '<li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Usuarios SICAFIN <span class="fa fa-chevron-down"></span></a>';
+                $menu .= '<li><a><i class="glyphicon glyphicon-cog"> </i>&nbsp; Usuarios SICAFIN <span class="fa fa-chevron-down"></span></a>';
             }
 
             $menu .= '<ul class="nav child_menu">';
@@ -317,7 +317,7 @@ class Contenedor extends Controller
             $menu .= <<<HTML
                 <li>
                     <a>
-                        <i class="glyphicon glyphicon glyphicon-cog">&nbsp;</i>Indicadores
+                        <i class="glyphicon glyphicon-cog">&nbsp;</i>Indicadores
                         <span class="fa fa-chevron-down"></span>
                     </a>
                     <ul class="nav child_menu">
