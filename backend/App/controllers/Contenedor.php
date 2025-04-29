@@ -170,7 +170,6 @@ class Contenedor extends Controller
             <li><a href="/Promociones/Telarana/">Calculo Descuento Telaraña</a></li>
             <li><a href="/Validaciones/RegistroTelarana/">Registro Telaraña</a></li>
             <li><a href="/Creditos/ActualizaCredito/">Actualización de Créditos</a></li>
-            <!-- <li><a href="/Creditos/cierreDiario">Situación Cartera</a></li> -->
             HTML;
         }
 
@@ -180,6 +179,7 @@ class Contenedor extends Controller
             <li><a href="/Creditos/CambioSucursal/">Cambio de Sucursal</a></li>
             <li><a href="/CancelaRef/">Cancelación de Ref</a></li>
             <li><a href="/CorreccionAjustes/">Corrección Mov Ajustes</a></li>
+            <li><a href="/Cultiva/">Consulta Clientes Solicitudes</a></li>
             HTML;
         }
 
@@ -248,14 +248,13 @@ class Contenedor extends Controller
                     </i>&nbsp;Tesorería<span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             <li><a href="/Tesoreria/ReportePC">Reporte Productora Cultiva</a></li>
-                            <li><a href="/Cultiva/">Consulta Clientes Solicitudes</a></li>
             HTML;
         }
 
-        $permisos = ['ADMIN', 'MCDP'];
-        if ($this->ValidaPermiso($permisos)) {
-            $menu .= '<li><a href="/Cultiva/ReingresarClientesCredito/">Reingresar Clientes a Grupo</a></li>';
-        }
+        // $permisos = ['ADMIN', 'MCDP'];
+        // if ($this->ValidaPermiso($permisos)) {
+        //     $menu .= '<li><a href="/Cultiva/ReingresarClientesCredito/">Reingresar Clientes a Grupo</a></li>';
+        // }
 
         $permisos = ['ADMIN', 'PLMV', 'MCDP'];
         if ($this->ValidaPermiso($permisos)) {
