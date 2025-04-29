@@ -22,11 +22,7 @@ class Tesoreria extends Model
                 , SC.CDGCL CLIENTE
                 , CL.RFC
                 , TO_CHAR(SN.INICIO, 'DD/MM/YYYY') FECHA_INICIO
-                , CASE
-                    WHEN GET_DATOS_TRANSFERENCIA(SN.CDGEM, SN.CDGNS, SN.CICLO, 'ES_TRANSFERENCIA') = 1 THEN 'TRANSFERENCIA'
-                    WHEN GET_DATOS_TRANSFERENCIA(SN.CDGEM, SN.CDGNS, SN.CICLO, 'ES_TRANSFERENCIA') = 0 THEN 'EFECTIVO'
-                    ELSE 'N/A'
-                END TIPO_OPERACION
+                , GET_DATOS_TRANSFERENCIA(SN.CDGEM, SN.CDGNS, SN.CICLO, 'MEDIO') TIPO_OPERACION
                 , SN.CDGCO || ' - ' || GET_NOMBRE_SUCURSAL(SN.CDGCO) SUCURSAL
                 , CO.CDGRG || ' - ' || GET_NOMBRE_REGION(CO.CDGRG) REGION
                 , SC.CANTSOLIC MONTO
