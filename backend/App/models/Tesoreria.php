@@ -36,8 +36,8 @@ class Tesoreria extends Model
             WHERE
                 SN.INICIO BETWEEN TO_DATE(:fechaI, 'YYYY-MM-DD') AND TO_DATE(:fechaF, 'YYYY-MM-DD')
                 AND SN.SITUACION = 'S'
+                AND GET_DATOS_TRANSFERENCIA(SN.CDGEM, SN.CDGNS, SN.CICLO, 'ES_TRANSFERENCIA') = 1
         SQL;
-        //AND GET_DATOS_TRANSFERENCIA(SN.CDGEM, SN.CDGNS, SN.CICLO, 'ES_TRANSFERENCIA') = 1
 
         $prm = [
             'fechaI' => $datos['fechaI'],
