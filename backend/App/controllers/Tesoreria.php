@@ -110,6 +110,7 @@ class Tesoreria extends Controller
             \PHPSpreadsheet::ColumnaExcel('CREDITO', 'Crédito', $texto),
             \PHPSpreadsheet::ColumnaExcel('CICLO', 'Ciclo', $texto),
             \PHPSpreadsheet::ColumnaExcel('CLIENTE', 'Cliente', $texto),
+            \PHPSpreadsheet::ColumnaExcel('NOMBRE_CLIENTE', 'Nombre cliente', $texto),
             \PHPSpreadsheet::ColumnaExcel('RFC', 'RFC', $centrado),
             \PHPSpreadsheet::ColumnaExcel('FECHA_INICIO', 'Fecha inicio', ['estilo' => $estilos['fecha']]),
             \PHPSpreadsheet::ColumnaExcel('TIPO_OPERACION', 'Tipo operación', ['estilo' => $estilos['centrado'], 'total' => true, 'operacion' => 'CONTARA']),

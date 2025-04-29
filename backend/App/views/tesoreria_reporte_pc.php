@@ -66,6 +66,7 @@ if (date('N', strtotime($fechaF)) == 1 || date('N', strtotime($fechaF)) == 7) {
                             <th>Crédito</th>
                             <th>Ciclo</th>
                             <th>Cliente</th>
+                            <th>Nombre cliente</th>
                             <th>RFC</th>
                             <th>Fecha inicio</th>
                             <th>Tipo operación</th>
