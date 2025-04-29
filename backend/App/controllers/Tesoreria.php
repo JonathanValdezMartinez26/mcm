@@ -13,7 +13,6 @@ class Tesoreria extends Controller
 
     private $_contenedor;
 
-
     function __construct()
     {
         parent::__construct();
@@ -34,10 +33,6 @@ class Tesoreria extends Controller
                 {$this->formatoMoneda}
 
                 const idTabla = "reporte"
-
-                const buscarEnter = (e) => {
-                    if (e.key === "Enter") consultaReporte()
-                }
 
                 const consultaReporte = () => {
                     consultaServidor("/Tesoreria/GetReportePC", getPerametros(), (res) => {
@@ -74,10 +69,13 @@ class Tesoreria extends Controller
                 }
 
                 $(document).ready(() => {
-                    $("#buscar").click(() => consultaReporte())
+                    $("#fechaI").change(consultaReporte)
+                    $("#fechaF").change(consultaReporte)
+                    $("#sucursal").change(consultaReporte)
                     $("#excel").click(getExcel)
 
                     configuraTabla(idTabla)
+                    consultaReporte()
                 })
             </script>
         HTML;
@@ -105,25 +103,26 @@ class Tesoreria extends Controller
     {
         $estilos = \PHPSpreadsheet::GetEstilosExcel();
         $centrado = ['estilo' => $estilos['centrado']];
+        $texto = ['estilo' => $estilos['texto_centrado']];
 
         $columnas = [
             \PHPSpreadsheet::ColumnaExcel('FECHA_SOLICITUD', 'Fecha de solicitud', ['estilo' => $estilos['fecha']]),
-            \PHPSpreadsheet::ColumnaExcel('CREDITO', 'Crédito', $centrado),
-            \PHPSpreadsheet::ColumnaExcel('CICLO', 'Ciclo', $centrado),
-            \PHPSpreadsheet::ColumnaExcel('CLIENTE', 'Cliente', $centrado),
+            \PHPSpreadsheet::ColumnaExcel('CREDITO', 'Crédito', $texto),
+            \PHPSpreadsheet::ColumnaExcel('CICLO', 'Ciclo', $texto),
+            \PHPSpreadsheet::ColumnaExcel('CLIENTE', 'Cliente', $texto),
             \PHPSpreadsheet::ColumnaExcel('RFC', 'RFC', $centrado),
             \PHPSpreadsheet::ColumnaExcel('FECHA_INICIO', 'Fecha inicio', ['estilo' => $estilos['fecha']]),
-            \PHPSpreadsheet::ColumnaExcel('TIPO_OPERACION', 'Tipo operación', $centrado),
+            \PHPSpreadsheet::ColumnaExcel('TIPO_OPERACION', 'Tipo operación', ['estilo' => $estilos['centrado'], 'total' => true, 'operacion' => 'CONTARA']),
             \PHPSpreadsheet::ColumnaExcel('SUCURSAL', 'Sucursal'),
             \PHPSpreadsheet::ColumnaExcel('REGION', 'Región'),
-            \PHPSpreadsheet::ColumnaExcel('MONTO', 'Monto', ['estilo' => $estilos['moneda']]),
+            \PHPSpreadsheet::ColumnaExcel('MONTO', 'Monto', ['estilo' => $estilos['moneda'], 'total' => true]),
             \PHPSpreadsheet::ColumnaExcel('BANCO', 'Banco'),
-            \PHPSpreadsheet::ColumnaExcel('CLABE', 'CLABE', $centrado),
+            \PHPSpreadsheet::ColumnaExcel('CLABE', 'CLABE', $texto),
         ];
 
         $filas = TesoreriaDao::GetReportePC($_GET);
         $filas = $filas['success'] ? $filas['datos'] : [];
 
-        \PHPSpreadsheet::DescargaExcel('Reporte Productora Cultiva', 'Reporte', 'Créditos entregados por Productora Cultiva', $columnas, $filas);
+        \PHPSpreadsheet::DescargaExcel('Reporte Productora Cultiva', 'Reporte', 'Créditos solicitados para Productora Cultiva', $columnas, $filas);
     }
 }

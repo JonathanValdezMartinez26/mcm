@@ -1,5 +1,18 @@
 <?php
-$fecha = date('Y-m-d');
+$fechaI = date('Y-m-d', strtotime('-3 days'));
+if (date('N', strtotime($fechaI)) == 1 || date('N', strtotime($fechaI)) == 7) {
+    $fechaI = date('Y-m-d', strtotime('-2 days', strtotime($fechaI)));
+} elseif (date('N', strtotime($fechaI)) == 6) {
+    $fechaI = date('Y-m-d', strtotime('-1 day', strtotime($fechaI)));
+}
+
+$fechaF = date('Y-m-d', strtotime('+3 days'));
+if (date('N', strtotime($fechaF)) == 1 || date('N', strtotime($fechaF)) == 7) {
+    $fechaF = date('Y-m-d', strtotime('+2 days', strtotime($fechaF)));
+} elseif (date('N', strtotime($fechaF)) == 6) {
+    $fechaF = date('Y-m-d', strtotime('+1 day', strtotime($fechaF)));
+}
+
 ?>
 
 <?= $header; ?>
@@ -16,13 +29,13 @@ $fecha = date('Y-m-d');
                     <div class="row">
                         <div class="col-md-2">
                             <div class="form-group">
-                                <input class="form-control" type="date" id="fechaI" value="<?= $fecha ?>" max="<?= $fecha ?>">
+                                <input class="form-control" type="date" id="fechaI" value="<?= $fechaI ?>">
                                 <span>Fecha inicial</span>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                <input class="form-control" type="date" id="fechaF" value="<?= $fecha ?>" max="<?= $fecha ?>">
+                                <input class="form-control" type="date" id="fechaF" value="<?= $fechaF ?>">
                                 <span>Fecha final</span>
                             </div>
                         </div>
@@ -32,11 +45,6 @@ $fecha = date('Y-m-d');
                                     <?= $sucursales ?>
                                 </select>
                                 <span>Sucursal</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <button type="button" class="btn btn-primary" id="buscar">Buscar</button>
                             </div>
                         </div>
                     </div>
