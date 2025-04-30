@@ -21,7 +21,7 @@ class Tesoreria extends Model
                 , SN.CICLO
                 , SC.CDGCL CLIENTE
                 , GET_NOMBRE_CLIENTE(SC.CDGCL) NOMBRE_CLIENTE
-                , CL.RFC
+                , SC.RFC
                 , TO_CHAR(SN.INICIO, 'DD/MM/YYYY') FECHA_INICIO
                 , GET_DATOS_TRANSFERENCIA(SN.CDGEM, SN.CDGNS, SN.CICLO, 'MEDIO') TIPO_OPERACION
                 , SN.CDGCO || ' - ' || GET_NOMBRE_SUCURSAL(SN.CDGCO) SUCURSAL
