@@ -146,6 +146,10 @@ sql;
                     AND SCC.CICLO = '$ciclo'
                     AND SCC.CDGCL_CL = '$id_cliente'
                     AND FECHA_SOL = TIMESTAMP '$newDate.000'
+                ORDER BY
+                    SCC.FECHA_TRA_CL
+                FETCH FIRST
+                    1 ROW ONLY
             )
             SELECT
                 CL.CODIGO,
