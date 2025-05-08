@@ -99,9 +99,6 @@ class CallCenter extends Controller
                     once = document.getElementById("once_cl").value
                     doce = document.getElementById("doce_cl").value
 
-                    nombre_aval_cl = document.getElementById("nombre_aval_cl").value
-                    id_aval_cl = document.getElementById("id_aval_cl").value
-
                     completo = $('input[name="completo"]:checked').val()
                     llamada = document.getElementById("titulo")
                     contenido = llamada.innerHTML
@@ -183,7 +180,6 @@ class CallCenter extends Controller
                         } else if (doce == "") {
                             swal("Seleccione una opción para la pregunta #12", { icon: "warning" })
                         } else {
-                            ////////////////////////////////////777
                             swal({
                                 title: "¿Está segura de continuar?",
                                 text: mensaje,
@@ -217,26 +213,25 @@ class CallCenter extends Controller
                                     swal("Continúe con su registro", { icon: "info" })
                                 }
                             })
-                            //////////////////////////////777
                         }
                     }
                 }
 
-                function enviar_add_av() {
-                    fecha_trabajo = document.getElementById("fecha_solicitud_av").value
-                    num_telefono = document.getElementById("movil_av").value
-                    tipo_av = document.getElementById("tipo_llamada_av").value
-                    uno = document.getElementById("uno_av").value
-                    dos = document.getElementById("dos_av").value
-                    tres = document.getElementById("tres_av").value
-                    cuatro = document.getElementById("cuatro_av").value
-                    cinco = document.getElementById("cinco_av").value
-                    seis = document.getElementById("seis_av").value
-                    siete = document.getElementById("siete_av").value
-                    ocho = document.getElementById("ocho_av").value
-                    nueve = document.getElementById("nueve_av").value
-                    completo = $('input[name="completo_av"]:checked').val()
-                    llamada = document.getElementById("titulo_av")
+                function enviar_add_av(id) {
+                    fecha_trabajo = document.getElementById("fecha_solicitud_av_" + id).value
+                    num_telefono = document.getElementById("movil_av_" + id).value
+                    tipo_av = document.getElementById("tipo_llamada_av_" + id).value
+                    uno = document.getElementById("uno_av_" + id).value
+                    dos = document.getElementById("dos_av_" + id).value
+                    tres = document.getElementById("tres_av_" + id).value
+                    cuatro = document.getElementById("cuatro_av_" + id).value
+                    cinco = document.getElementById("cinco_av_" + id).value
+                    seis = document.getElementById("seis_av_" + id).value
+                    siete = document.getElementById("siete_av_" + id).value
+                    ocho = document.getElementById("ocho_av_" + id).value
+                    nueve = document.getElementById("nueve_av_" + id).value
+                    completo = $("input[name='completo_av_" + id + "]:checked").val()
+                    llamada = document.getElementById("titulo_av_" + id)
                     contenido = llamada.innerHTML
 
                     if (contenido == "2") {
@@ -262,12 +257,12 @@ class CallCenter extends Controller
                                 dangerMode: false
                             }).then((willDelete) => {
                                 if (willDelete) {
-                                    const agregar_AV = document.getElementById("agregar_av")
+                                    const agregar_AV = document.getElementById("agregar_av_" + id)
                                     agregar_AV.disabled = true
                                     $.ajax({
                                         type: "POST",
                                         url: "/CallCenter/PagosAddEncuestaAV/",
-                                        data: $("#Add_av").serialize() + "&contenido_av=" + contenido,
+                                        data: $("#Add_av_" + id).serialize() + "&contenido_av_" + id + "=" + contenido + "&no_av=" + id,
                                         success: function (respuesta) {
                                             if (respuesta == "1") {
                                                 swal("Registro guardado exitosamente", {
@@ -310,7 +305,6 @@ class CallCenter extends Controller
                         } else if (nueve == "") {
                             swal("Seleccione una opción para la pregunta #9", { icon: "warning" })
                         } else {
-                            ////////////////////////////////////777
                             swal({
                                 title: "¿Está segura de continuar?",
                                 text: mensaje,
@@ -319,13 +313,13 @@ class CallCenter extends Controller
                                 dangerMode: false
                             }).then((willDelete) => {
                                 if (willDelete) {
-                                    const agregar_AV = document.getElementById("agregar_av")
+                                    const agregar_AV = document.getElementById("agregar_av_" + id)
                                     agregar_AV.disabled = true
 
                                     $.ajax({
                                         type: "POST",
                                         url: "/CallCenter/PagosAddEncuestaAV/",
-                                        data: $("#Add_av").serialize() + "&contenido_av=" + contenido,
+                                        data: $("#Add_av_" + id).serialize() + "&contenido_av_" + id + "=" + contenido + "&no_av=" + id,
                                         success: function (respuesta) {
                                             if (respuesta == "1") {
                                                 swal("Registro guardado exitosamente", {
@@ -345,7 +339,6 @@ class CallCenter extends Controller
                                     swal("Continúe con su registro", { icon: "info" })
                                 }
                             })
-                            //////////////////////////////777
                         }
                     }
                 }
@@ -607,6 +600,10 @@ class CallCenter extends Controller
                             return false
                         }
                     })
+                }
+
+                const showEncuestaAval = (id) => {
+                    $("#modal_encuesta_aval_"+id).modal("show")
                 }
             </script>
         HTML;
@@ -3706,68 +3703,66 @@ html;
     public function PagosAddEncuestaCL()
     {
         $encuesta = new \stdClass();
-        $fecha_solicitud = MasterDom::getDataAll('fecha_solicitud');
-        $encuesta->_fecha_solicitud = $fecha_solicitud;
-        $encuesta->_cdgre = MasterDom::getData('cdgre');
-        $encuesta->_cliente = MasterDom::getData('cliente_id');
-        $encuesta->_cdgco = MasterDom::getData('cdgco');
-        $encuesta->_cdgns = MasterDom::getData('cdgns');
-        $encuesta->_fecha = MasterDom::getData('fecha_cl');
-        $encuesta->_ciclo = MasterDom::getData('ciclo_cl');
-        $encuesta->_movil = MasterDom::getData('movil_cl');
-        $encuesta->_tipo_llamada = MasterDom::getData('tipo_llamada_cl');
-        $encuesta->_uno = MasterDom::getData('uno_cl');
-        $encuesta->_dos = MasterDom::getData('dos_cl');
-        $encuesta->_tres = MasterDom::getData('tres_cl');
-        $encuesta->_cuatro = MasterDom::getData('cuatro_cl');
-        $encuesta->_cinco = MasterDom::getData('cinco_cl');
-        $encuesta->_seis = MasterDom::getData('seis_cl');
-        $encuesta->_siete = MasterDom::getData('siete_cl');
-        $encuesta->_ocho = MasterDom::getData('ocho_cl');
-        $encuesta->_nueve = MasterDom::getData('nueve_cl');
-        $encuesta->_diez = MasterDom::getData('diez_cl');
-        $encuesta->_once = MasterDom::getData('once_cl');
-        $encuesta->_doce = MasterDom::getData('doce_cl');
 
-        $encuesta->_nombre_aval_cl = MasterDom::getData('nombre_aval_cl');
-        $encuesta->_id_aval_cl = MasterDom::getData('id_aval_cl');
-        $encuesta->_telefono_aval_cl = MasterDom::getData('telefono_aval_cl');
+        $encuesta->_uno = $_POST["uno_cl"];
+        $encuesta->_dos = $_POST["dos_cl"];
+        $encuesta->_tres = $_POST["tres_cl"];
+        $encuesta->_cuatro = $_POST["cuatro_cl"];
+        $encuesta->_cinco = $_POST["cinco_cl"];
+        $encuesta->_seis = $_POST["seis_cl"];
+        $encuesta->_siete = $_POST["siete_cl"];
+        $encuesta->_ocho = $_POST["ocho_cl"];
+        $encuesta->_nueve = $_POST["nueve_cl"];
+        $encuesta->_diez = $_POST["diez_cl"];
+        $encuesta->_once = $_POST["once_cl"];
+        $encuesta->_doce = $_POST["doce_cl"];
 
-        $encuesta->_llamada = MasterDom::getData('contenido');
-        $encuesta->_completo = MasterDom::getData('completo');
+        $encuesta->_llamada = $_POST["contenido"];
+        $encuesta->_cdgre = $_POST["cdgre"];
+        $encuesta->_fecha = $_POST["fecha_cl"];
+        $encuesta->_fecha_solicitud = $_POST["fecha_solicitud"];
+        $encuesta->_cdgns = $_POST["cdgns"];
+        $encuesta->_cdgco = $_POST["cdgco"];
         $encuesta->_cdgpe = $this->__usuario;
+        $encuesta->_cliente = $_POST["cliente_id"];
+        $encuesta->_ciclo = $_POST["ciclo_cl"];
+        $encuesta->_movil = $_POST["movil_cl"];
+        $encuesta->_tipo_llamada = $_POST["tipo_llamada_cl"];
+        $encuesta->_id_aval_cl = $_POST["id_aval_cl_0"];
+        $encuesta->_telefono_aval_cl = $_POST["telefono_aval_cl_0"];
+        $encuesta->_id_aval_cl_2 = $_POST["id_aval_cl_1"];
+        $encuesta->_telefono_aval_cl_2 = $_POST["telefono_aval_cl_1"];
 
+        $encuesta->_completo = $_POST['completo'];
 
-        $id = CallCenterDao::insertEncuestaCL($encuesta);
+        CallCenterDao::insertEncuestaCL($encuesta);
     }
 
     public function PagosAddEncuestaAV()
     {
         $encuesta = new \stdClass();
-        $encuesta->_fecha_solicitud = MasterDom::getDataAll('fecha_solicitud_av');
-        $encuesta->_cdgre = MasterDom::getData('cdgre_av');
-        $encuesta->_cliente = MasterDom::getData('cliente_id_av');
-        $encuesta->_cdgco = MasterDom::getData('cdgco_av');
-        $encuesta->_fecha = MasterDom::getData('fecha_av');
-        $encuesta->_ciclo = MasterDom::getData('ciclo_av');
+        $no_av = $_POST['no_av'];
+        $encuesta->_no_av = $no_av + 1;
 
-        $encuesta->_movil = MasterDom::getData('movil_av');
-        $encuesta->_tipo_llamada = MasterDom::getData('tipo_llamada_av');
-        $encuesta->_uno = MasterDom::getData('uno_av');
-        $encuesta->_dos = MasterDom::getData('dos_av');
-        $encuesta->_tres = MasterDom::getData('tres_av');
-        $encuesta->_cuatro = MasterDom::getData('cuatro_av');
-        $encuesta->_cinco = MasterDom::getData('cinco_av');
-        $encuesta->_seis = MasterDom::getData('seis_av');
-        $encuesta->_siete = MasterDom::getData('siete_av');
-        $encuesta->_ocho = MasterDom::getData('ocho_av');
-        $encuesta->_nueve = MasterDom::getData('nueve_av');
-        $encuesta->_llamada = MasterDom::getData('contenido_av');
-        $encuesta->_completo = MasterDom::getData('completo_av');
+        $encuesta->_uno = $_POST["uno_av_$no_av"];
+        $encuesta->_dos = $_POST["dos_av_$no_av"];
+        $encuesta->_tres = $_POST["tres_av_$no_av"];
+        $encuesta->_cuatro = $_POST["cuatro_av_$no_av"];
+        $encuesta->_cinco = $_POST["cinco_av_$no_av"];
+        $encuesta->_seis = $_POST["seis_av_$no_av"];
+        $encuesta->_siete = $_POST["siete_av_$no_av"];
+        $encuesta->_ocho = $_POST["ocho_av_$no_av"];
+        $encuesta->_nueve = $_POST["nueve_av_$no_av"];
 
+        $encuesta->_llamada = $_POST["contenido_av_$no_av"];
+        $encuesta->_tipo_llamada = $_POST["tipo_llamada_av_$no_av"];
+        $encuesta->_completo = $_POST["completo_av_$no_av"];
 
+        $encuesta->_cdgco = $_POST["cdgco_av_$no_av"];
+        $encuesta->_cliente = $_POST["cliente_id_av_$no_av"];
+        $encuesta->_ciclo = $_POST["ciclo_av_$no_av"];
 
-        $id = CallCenterDao::insertEncuestaAV($encuesta);
+        CallCenterDao::insertEncuestaAV($encuesta);
     }
 
     public function Resumen()
