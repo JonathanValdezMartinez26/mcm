@@ -112,7 +112,7 @@ class Contenedor extends Controller
         $permisos = ['ADMIN', 'CAJA', 'GTOCA', 'AMOCA', 'OCOF', 'CPAGO', 'ACALL', 'LAYOU', 'TESP', 'MGJC'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
-            <li><a><i class="glyphicon	glyphicon glyphicon-usd"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
+            <li><a><i class="glyphicon glyphicon-usd"> </i>&nbsp; Pagos <span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
             HTML;
         }
@@ -170,7 +170,6 @@ class Contenedor extends Controller
             <li><a href="/Promociones/Telarana/">Calculo Descuento Telaraña</a></li>
             <li><a href="/Validaciones/RegistroTelarana/">Registro Telaraña</a></li>
             <li><a href="/Creditos/ActualizaCredito/">Actualización de Créditos</a></li>
-            <!-- <li><a href="/Creditos/cierreDiario">Situación Cartera</a></li> -->
             HTML;
         }
 
@@ -180,6 +179,7 @@ class Contenedor extends Controller
             <li><a href="/Creditos/CambioSucursal/">Cambio de Sucursal</a></li>
             <li><a href="/CancelaRef/">Cancelación de Ref</a></li>
             <li><a href="/CorreccionAjustes/">Corrección Mov Ajustes</a></li>
+            <li><a href="/Cultiva/">Consulta Clientes Solicitudes</a></li>
             HTML;
         }
 
@@ -232,7 +232,7 @@ class Contenedor extends Controller
         $permisos = ['ADMIN'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
-            <li><a><span class="glyphicon	glyphicon glyphicon-usd">&nbsp;</span>Operaciones<span class="fa fa-chevron-down"></span></a>
+            <li><a><i class="glyphicon glyphicon-usd"></i>&nbsp;Operaciones<span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">
                     <li><a href="/Operaciones/CierreDiario/">Cierre Diario</a></li>
                 </ul>
@@ -240,21 +240,21 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'PLMV', 'MCDP'];
+        $permisos = ['ADMIN', 'PLMV', 'MCDP', 'LGFR'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
                 <ul class="nav side-menu">
                     <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
-                    </i>&nbsp;Cultiva<span class="fa fa-chevron-down"></span></a>
+                    </i>&nbsp;Tesorería<span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
-                            <li><a href="/Cultiva/">Consulta Clientes Solicitudes</a></li>
+                            <li><a href="/Tesoreria/ReportePC">Reporte Productora Cultiva</a></li>
             HTML;
         }
 
-        $permisos = ['ADMIN', 'MCDP'];
-        if ($this->ValidaPermiso($permisos)) {
-            $menu .= '<li><a href="/Cultiva/ReingresarClientesCredito/">Reingresar Clientes a Grupo</a></li>';
-        }
+        // $permisos = ['ADMIN', 'MCDP'];
+        // if ($this->ValidaPermiso($permisos)) {
+        //     $menu .= '<li><a href="/Cultiva/ReingresarClientesCredito/">Reingresar Clientes a Grupo</a></li>';
+        // }
 
         $permisos = ['ADMIN', 'PLMV', 'MCDP'];
         if ($this->ValidaPermiso($permisos)) {
@@ -266,7 +266,7 @@ class Contenedor extends Controller
             $menu .= <<<HTML
                 <ul class="nav side-menu">
                     <li>
-                        <a><i class="glyphicon glyphicon glyphicon-cog"> 
+                        <a><i class="glyphicon glyphicon-cog"> 
                     </i>&nbsp;Incidencias MCM<span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             <li><a href="/Incidencias/AutorizaRechazaSolicitud/">Error Autorizar y/o Rechazar Solicitud</a></li>
@@ -285,9 +285,9 @@ class Contenedor extends Controller
             $menu .= '<ul class="nav side-menu">';
 
             if ($this->ValidaPermiso(['ADMIN', 'LGFR'])) {
-                $menu .= '<li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>';
+                $menu .= '<li><a><i class="glyphicon glyphicon-cog"> </i>&nbsp; Administrar Caja <span class="fa fa-chevron-down"></span></a>';
             } else {
-                $menu .= '<li><a><i class="glyphicon glyphicon glyphicon-cog"> </i>&nbsp; Usuarios SICAFIN <span class="fa fa-chevron-down"></span></a>';
+                $menu .= '<li><a><i class="glyphicon glyphicon-cog"> </i>&nbsp; Usuarios SICAFIN <span class="fa fa-chevron-down"></span></a>';
             }
 
             $menu .= '<ul class="nav child_menu">';
@@ -317,7 +317,7 @@ class Contenedor extends Controller
             $menu .= <<<HTML
                 <li>
                     <a>
-                        <i class="glyphicon glyphicon glyphicon-cog">&nbsp;</i>Indicadores
+                        <i class="glyphicon glyphicon-cog">&nbsp;</i>Indicadores
                         <span class="fa fa-chevron-down"></span>
                     </a>
                     <ul class="nav child_menu">
@@ -365,7 +365,6 @@ class Contenedor extends Controller
         $footer = <<<HTML
             </div>
             <script src="/js/moment/moment.min.js"></script>
-            <!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
             <script src="/js/sweetalert.min.js"></script>
             <script src="/js/jquery.min.js"></script>
             <script src="/js/bootstrap.min.js"></script>
@@ -377,7 +376,6 @@ class Contenedor extends Controller
             <script src="/js/tabla/jquery.dataTables.min.js"></script>
             <script src="/js/tabla/dataTables.bootstrap.min.js"></script>
             <script src="/js/tabla/jquery.tablesorter.js"></script>
-            <!-- <script src="https://cdn.datatables.net/buttons/1.4.2/js/dataTables.buttons.min.js" ></script> -->
             <script src="/js/dataTables.buttons.min.js" ></script>
             <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js" ></script>
             <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js" ></script>

@@ -186,6 +186,7 @@
                                         }
                                         ?>
                                         <option value="R">REFINANCIAMIENTO</option>
+                                        <option value="H">RECOMIENDA</option>
                                         <option value="S">SEGURO</option>
                                     </select>
                                 </div>
@@ -297,6 +298,7 @@
                                         <option value="G">GARANTÍA</option>
                                         <option value="D">DESCUENTO</option>
                                         <option value="R">REFINANCIAMIENTO</option>
+                                        <option value="H">RECOMIENDA</option>
                                         <option value="S">SEGURO</option>
                                     </select>
                                 </div>
@@ -408,6 +410,7 @@
                                         <option value="G">GARANTÍA</option>
                                         <option value="D">DESCUENTO</option>
                                         <option value="R">REFINANCIAMIENTO</option>
+                                        <option value="H">RECOMIENDA</option>
                                         <option value="S">SEGURO</option>
                                     </select>
                                 </div>
