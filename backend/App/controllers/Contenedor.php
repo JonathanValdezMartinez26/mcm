@@ -129,12 +129,12 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'ACALL', 'LAYOU'];
+        $permisos = ['ADMIN', 'ACALL', 'LAYOU', 'FECR'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/Pagos/Layout/">Layout Contable</a></li>';
         }
 
-        $permisos = ['ADMIN', 'CAJA', 'LGFR', 'PLMV', 'PMAB', 'MGJC', 'AVGA', 'FLCR', 'COCS', 'GOIY', 'DAGC', 'COVG', 'TESP'];
+        $permisos = ['ADMIN', 'CAJA', 'LGFR', 'PLMV', 'PMAB', 'MGJC', 'AVGA', 'FLCR', 'COCS', 'GOIY', 'DAGC', 'COVG', 'TESP', 'JACJ'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/Pagos/PagosRegistro/">Registro de Pagos Caja</a></li>';
         }
