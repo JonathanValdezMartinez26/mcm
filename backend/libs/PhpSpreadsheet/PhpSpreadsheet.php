@@ -127,6 +127,10 @@ class PHPSpreadsheet
                 'alignment' => ['horizontal' => Style\Alignment::HORIZONTAL_CENTER],
                 'numberFormat' => ['formatCode' => self::FORMATOPORCENTAJE]
             ],
+            'porcentaje_entero' => [
+                'alignment' => ['horizontal' => Style\Alignment::HORIZONTAL_CENTER],
+                'numberFormat' => ['formatCode' => self::FORMATOPORCENTAJE]
+            ],
             'texto_centrado' => [
                 'alignment' => ['horizontal' => Style\Alignment::HORIZONTAL_CENTER]
             ],
@@ -233,6 +237,8 @@ class PHPSpreadsheet
                     $hoja->setCellValue($columna['letra'] . $noFila, self::convierteFecha('d/m/Y H:i:s', $fila[$columna['campo']]));
                 else if ($columna['estilo'] === self::GetEstilosExcel('texto_centrado') || $columna['estilo'] === self::GetEstilosExcel('texto_izquierda') || $columna['estilo'] === self::GetEstilosExcel('texto_derecha'))
                     $hoja->setCellValueExplicit($columna['letra'] . $noFila, html_entity_decode($fila[$columna['campo']], ENT_QUOTES, "UTF-8"), DataType::TYPE_STRING);
+                else if ($columna['estilo'] === self::GetEstilosExcel('porcentaje_entero'))
+                    $hoja->setCellValue($columna['letra'] . $noFila, $fila[$columna['campo']] / 100);
                 else
                     $hoja->setCellValue($columna['letra'] . $noFila, html_entity_decode($fila[$columna['campo']], ENT_QUOTES, "UTF-8"));
 

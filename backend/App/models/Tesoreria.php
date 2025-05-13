@@ -36,7 +36,7 @@ class Tesoreria extends Model
                 JOIN CO ON CO.CODIGO = SN.CDGCO
             WHERE
                 SN.INICIO BETWEEN TO_DATE(:fechaI, 'YYYY-MM-DD') AND TO_DATE(:fechaF, 'YYYY-MM-DD')
-                AND SN.SITUACION = 'S'
+                AND SN.SITUACION IN ('S', 'A')
                 AND GET_DATOS_TRANSFERENCIA(SN.CDGEM, SN.CDGNS, SN.CICLO, 'ES_TRANSFERENCIA') = 1
         SQL;
 
