@@ -240,7 +240,7 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'PLMV', 'MCDP', 'LGFR'];
+        $permisos = ['ADMIN', 'PLMV', 'MCDP', 'LGFR', 'MACI'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
                 <ul class="nav side-menu">
