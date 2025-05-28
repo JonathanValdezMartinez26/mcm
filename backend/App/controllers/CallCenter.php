@@ -3106,7 +3106,11 @@ html;
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 5px !important;"><label>{$value['CDGNS']}-{$value['CICLO']}</label></td>
+                   <td style="padding: 5px !important; width:65px !important;">
+                    <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
+                    <hr>
+                    <div><label>{$value['CDGNS']}-{$value['CICLO']}</label></div>
+                    </td>
                     <td style="padding: 10px !important; text-align: left">
                          <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
                         <br>
@@ -3271,7 +3275,11 @@ html;
 
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
-                    <td style="padding: 5px !important;"><label>{$value['CDGNS']}-{$value['CICLO']}</label></td>
+                  <td style="padding: 5px !important; width:65px !important;">
+                    <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
+                    <hr>
+                    <div><label>{$value['CDGNS']}-{$value['CICLO']}</label></div>
+                    </td>
                     <td style="padding: 10px !important; text-align: left">
                          <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
                         <br>
@@ -3504,7 +3512,11 @@ html;
 
                 $tabla .= <<<HTML
                     <tr style="padding: 0px !important;">
-                        <td style="padding: 5px !important;"><label>{$value['CDGNS']}-{$value['CICLO']}</label></td>
+                       <td style="padding: 5px !important; width:65px !important;">
+                    <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
+                    <hr>
+                    <div><label>{$value['CDGNS']}-{$value['CICLO']}</label></div>
+                    </td>
                         <td style="padding: 10px !important; text-align: left">
                             <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
                             <br>
@@ -3655,7 +3667,11 @@ html;
 
                 $tabla .= <<<HTML
                     <tr style="padding: 0px !important;">
-                        <td style="padding: 5px !important;"><label>{$value['CDGNS']}-{$value['CICLO']}</label></td>
+                       <td style="padding: 5px !important; width:65px !important;">
+                    <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
+                    <hr>
+                    <div><label>{$value['CDGNS']}-{$value['CICLO']}</label></div>
+                    </td>
                         <td style="padding: 10px !important; text-align: left">
                             <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
                             <br>
