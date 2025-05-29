@@ -210,7 +210,7 @@
 
                                             </tbody>
                                         </table>
-                                        <div style="<?php echo $check; ?>">
+                                        <div style="<?php echo $check; ?> display: none"> <! -- Hay que hacerle funcional -->
                                             <input class="form-check-input" type="checkbox" value="" id="check_2610" name="check_2610" onclick="check_2610('');">
                                             <label class="form-check-label" for="flexCheckDefault" style="font-size: 15px">
                                                 Información Inconsistente
