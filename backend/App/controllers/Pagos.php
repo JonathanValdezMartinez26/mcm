@@ -1478,6 +1478,7 @@ html;
                 $tabla .= <<<HTML
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
+                     <td style="padding: 0px !important;">{$value['REGION']}</td>
                     <td style="padding: 0px !important;">{$value['NOMBRE_SUCURSAL']}</td>
                     <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
                     <td style="padding: 0px !important;">{$value['FECHA']}</td>
@@ -2743,6 +2744,7 @@ html;
     public function generarExcelConsulta()
     {
         $columnas = [
+            \PHPSpreadsheet::ColumnaExcel('REGION', 'Region'),
             \PHPSpreadsheet::ColumnaExcel('NOMBRE_SUCURSAL', 'Sucursal'),
             \PHPSpreadsheet::ColumnaExcel('SECUENCIA', 'Codigo'),
             \PHPSpreadsheet::ColumnaExcel('FECHA', 'Fecha'),
