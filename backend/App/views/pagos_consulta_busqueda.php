@@ -49,6 +49,7 @@
                         <thead>
                         <tr>
                                     <th>Medio</th>
+                                    <th>Region</th>
                                     <th>Sucursal</th>
                                     <th>Consecutivo</th>
                                     <th>Fecha</th>
