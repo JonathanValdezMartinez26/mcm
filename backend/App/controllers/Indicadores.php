@@ -24,6 +24,7 @@ class Indicadores extends Controller
         $extraFooter = <<<HTML
             <script>
                 {$this->mensajes}
+                
                 {$this->configuraTabla}
                 {$this->consultaServidor}
                 {$this->formatoMoneda}

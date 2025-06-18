@@ -97,14 +97,14 @@ class Indicadores extends Model
     {
         $qry1 = <<<SQL
                 SELECT
-                Q1.FECHA AS FECHA,
-                Q1.CDGNS,
-                Q1.CICLO,
-                Q1.MONTO,
-                Q1.REFERENCIA AS DESCRIPCION,
-                Q1.TIPO,
-                Q1.REGION, 
-                Q1.SUCURSAL
+                 Q1.FECHA AS FECHA,
+                    Q1.CDGNS,
+                    Q1.CICLO,
+                    Q1.MONTO,
+                    Q1.REFERENCIA AS DESCRIPCION,
+                    Q1.TIPO,
+                    Q1.REGION,
+                    Q1.SUCURSAL
             FROM
                 (
                     SELECT
@@ -116,8 +116,58 @@ class Indicadores extends Model
                         TO_CHAR(PD.FREGISTRO, 'MM') AS MES,
                         PD.FREGISTRO AS FECHA, 
                         COUNT(PD.CDGPE) AS TOTAL_INCIDENCIAS,
-                        'PAGO DÍA' AS TIPO, 
-                        'ACTUALIZACIÓN' AS REFERENCIA, 
+                         CASE
+            WHEN PD.ESTATUS = 'A' AND PD.FACTUALIZA IS NULL THEN 
+                'REGISTRO DE ' || 
+                CASE PD.TIPO
+                    WHEN 'P' THEN 'PAGO'
+                    WHEN 'X' THEN 'PAGO ELECTRÓNICO'
+                    WHEN 'Y' THEN 'PAGO EXCEDENTE'
+                    WHEN 'M' THEN 'MULTA'
+                    WHEN 'Z' THEN 'MULTA GESTORES'
+                    WHEN 'L' THEN 'MULTA ELECTRÓNICA'
+                    WHEN 'G' THEN 'GARANTÍA'
+                    WHEN 'D' THEN 'DESCUENTO'
+                    WHEN 'R' THEN 'REFINANCIAMIENTO'
+                    WHEN 'H' THEN 'RECOMIENDA'
+                    WHEN 'S' THEN 'SEGURO'
+                    ELSE 'DESCONOCIDO'
+                END
+            WHEN PD.ESTATUS = 'E' THEN 
+                'ELIMINACIÓN DE ' || 
+                CASE PD.TIPO
+                    WHEN 'P' THEN 'PAGO'
+                    WHEN 'X' THEN 'PAGO ELECTRÓNICO'
+                    WHEN 'Y' THEN 'PAGO EXCEDENTE'
+                    WHEN 'M' THEN 'MULTA'
+                    WHEN 'Z' THEN 'MULTA GESTORES'
+                    WHEN 'L' THEN 'MULTA ELECTRÓNICA'
+                    WHEN 'G' THEN 'GARANTÍA'
+                    WHEN 'D' THEN 'DESCUENTO'
+                    WHEN 'R' THEN 'REFINANCIAMIENTO'
+                    WHEN 'H' THEN 'RECOMIENDA'
+                    WHEN 'S' THEN 'SEGURO'
+                    ELSE 'DESCONOCIDO'
+                END
+            WHEN PD.ESTATUS = 'A' AND PD.FACTUALIZA IS NOT NULL THEN 
+                'ACTUALIZACIÓN DE ' || 
+                CASE PD.TIPO
+                    WHEN 'P' THEN 'PAGO'
+                    WHEN 'X' THEN 'PAGO ELECTRÓNICO'
+                    WHEN 'Y' THEN 'PAGO EXCEDENTE'
+                    WHEN 'M' THEN 'MULTA'
+                    WHEN 'Z' THEN 'MULTA GESTORES'
+                    WHEN 'L' THEN 'MULTA ELECTRÓNICA'
+                    WHEN 'G' THEN 'GARANTÍA'
+                    WHEN 'D' THEN 'DESCUENTO'
+                    WHEN 'R' THEN 'REFINANCIAMIENTO'
+                    WHEN 'H' THEN 'RECOMIENDA'
+                    WHEN 'S' THEN 'SEGURO'
+                    ELSE 'DESCONOCIDO'
+                END
+            ELSE 'TIPO NO DEFINIDO'
+        END AS TIPO,
+        'CAJA PAGOS DÍA' AS REFERENCIA,
                         CO.NOMBRE AS SUCURSAL,
                         RG.NOMBRE AS REGION
                     FROM
@@ -137,7 +187,10 @@ class Indicadores extends Model
                         TO_CHAR(PD.FREGISTRO, 'MM'),
                         PD.FREGISTRO, 
                         CO.NOMBRE ,
-                        RG.NOMBRE 
+                        RG.NOMBRE,
+                        PD.ESTATUS,
+                        PD.FACTUALIZA,
+                        PD.TIPO
                         
                  UNION 
                         
@@ -224,131 +277,7 @@ class Indicadores extends Model
         SQL;
 
         $qry2 = <<<SQL
-             SELECT
-                Q1.FECHA AS FECHA,
-                Q1.CDGNS,
-                Q1.CICLO,
-                Q1.MONTO,
-                Q1.REFERENCIA AS DESCRIPCION,
-                Q1.TIPO,
-                Q1.REGION, 
-                Q1.SUCURSAL
-            FROM
-                (
-                    SELECT
-                    	PD.CDGNS,
-                    	PD.CICLO,
-                    	PD.MONTO,
-                        PD.CDGPE,
-                        TO_CHAR(PD.FREGISTRO, 'YYYY') AS ANO,
-                        TO_CHAR(PD.FREGISTRO, 'MM') AS MES,
-                        PD.FREGISTRO AS FECHA, 
-                        COUNT(PD.CDGPE) AS TOTAL_INCIDENCIAS,
-                        'PAGO DÍA' AS TIPO, 
-                        'ACTUALIZACIÓN' AS REFERENCIA, 
-                        CO.NOMBRE AS SUCURSAL,
-                        RG.NOMBRE AS REGION
-                    FROM
-                        PAGOSDIA PD
-                    JOIN PRN ON PD.CDGNS = PRN.CDGNS AND PD.CICLO = PRN.CICLO
-                	JOIN CO ON PRN.CDGCO = CO.CODIGO
-                	JOIN RG ON CO.CDGRG = RG.CODIGO
-                	
-                    WHERE
-                        PD.FREGISTRO BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -12), 'MM') AND LAST_DAY(SYSDATE)
-                    GROUP BY
-                    	PD.CDGNS,
-                    	PD.CICLO,
-                    	PD.MONTO,
-                        PD.CDGPE,
-                        TO_CHAR(PD.FREGISTRO, 'YYYY'),
-                        TO_CHAR(PD.FREGISTRO, 'MM'),
-                        PD.FREGISTRO, 
-                        CO.NOMBRE ,
-                        RG.NOMBRE 
-                        
-                 UNION 
-                        
-                   SELECT
-                   m.CDGNS, 
-                   m.CICLO,
-                   m.CANTIDAD AS MONTO,
-                   m.ACTUALIZARPE AS CDGPE,  
-                   TO_CHAR(m.FDEPOSITO , 'YYYY') AS ANO,
-                   TO_CHAR(m.FDEPOSITO , 'MM') AS MES,
-                   m.FDEPOSITO AS FECHA, 
-                   COUNT(m.ACTUALIZARPE) AS TOTAL_INCIDENCIAS, 
-                   m.TIPO , 
-                   m.REFERENCIA, 
-                   CO.NOMBRE AS SUCURSAL,
-                   RG.NOMBRE AS REGION
-                   FROM MP m
-                    JOIN PRN ON m.CDGNS = PRN.CDGNS AND m.CICLO = PRN.CICLO
-                	JOIN CO ON PRN.CDGCO = CO.CODIGO
-                	JOIN RG ON CO.CDGRG = RG.CODIGO
-                   WHERE
-                        m.FDEPOSITO BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -12), 'MM') AND LAST_DAY(SYSDATE)
-                        AND m.ACTUALIZARPE IS NOT NULL
-                        AND m.TIPO != 'PD'
-                        AND  m.CANTIDAD > 2 OR m.CANTIDAD < -100
-                        AND m.REFERENCIA != 'Interés total del préstamo'
-                        
-                    GROUP BY
-                    m.CDGNS, 
-                    m.CICLO,
-                    m.CANTIDAD,
-                        m.ACTUALIZARPE,
-                        TO_CHAR(m.FDEPOSITO, 'YYYY'),
-                        TO_CHAR(m.FDEPOSITO, 'MM'),
-                        m.FDEPOSITO, 
-                        m.TIPO,
-                        m.REFERENCIA, 
-                        CO.NOMBRE ,
-                        RG.NOMBRE 
-                        
-                        
-                 UNION       
-                        
-                         SELECT 
-                         pgs.CDGCLNS AS CDGNS,
-                         pgs.CICLO, 
-                         pgs.CANTIDAD AS MONTO, 
-                         pgs.CDGPE,  
-                   TO_CHAR(pgs.FREGISTRO  , 'YYYY') AS ANO,
-                   TO_CHAR(pgs.FREGISTRO  , 'MM') AS MES,
-                   pgs.FREGISTRO AS FECHA, 
-                   COUNT(pgs.CDGPE) AS TOTAL_INCIDENCIAS, 
-                   'APLICACION GARANTIA' AS TIPO, 
-                   '' AS REFERENCIA,
-                   CO.NOMBRE AS SUCURSAL, 
-                   RG.NOMBRE AS REGION
-                   FROM PAG_GAR_SIM pgs
-                   JOIN PRN ON pgs.CDGCLNS = PRN.CDGNS AND pgs.CICLO = PRN.CICLO
-                	JOIN CO ON PRN.CDGCO = CO.CODIGO
-                	JOIN RG ON CO.CDGRG = RG.CODIGO
-                   WHERE
-                        pgs.FREGISTRO BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -12), 'MM') AND LAST_DAY(SYSDATE)
-                        AND pgs.ESTATUS = 'CP'
-                    GROUP BY
-                    pgs.CDGCLNS, 
-                    pgs.CICLO,
-                    pgs.CANTIDAD, 
-                       pgs.CDGPE,
-                        TO_CHAR(pgs.FREGISTRO, 'YYYY'),
-                        TO_CHAR(pgs.FREGISTRO, 'MM'),
-                        pgs.FREGISTRO, 
-                        CO.NOMBRE,
-                        RG.NOMBRE 
-                       
-                        
-                        
-                ) Q1
-                JOIN PE ON Q1.CDGPE = PE.CODIGO
-            WHERE
-               Q1.FECHA BETWEEN TO_DATE(:fechaI, 'YYYY-MM-DD') AND TO_DATE(:fechaF, 'YYYY-MM-DD')
-                AND PD.CDGPE = :usuario
-            ORDER BY
-                PD.FECHA DESC
+            
         SQL;
 
         $prm = [
