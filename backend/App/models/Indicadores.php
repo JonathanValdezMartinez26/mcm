@@ -74,13 +74,44 @@ class Indicadores extends Model
                        pgs.CDGPE,
                         TO_CHAR(pgs.FREGISTRO, 'YYYY'),
                         TO_CHAR(pgs.FREGISTRO, 'MM')
+                    
+                  UNION
+                  
+                  
+                  
+                         
+                  SELECT 
+                         scc.CDGPE, 
+                             TO_CHAR(scc.FECHA_TRA_CL  , 'YYYY') AS ANO,
+                             TO_CHAR(scc.FECHA_TRA_CL  , 'MM') AS MES,
+                             COUNT(scc.CDGPE) AS TOTAL_INCIDENCIAS, 
+                   CASE SN.SITUACION
+                         WHEN 'S' THEN 'CREDITO PENDIENTE'
+                         WHEN 'A' THEN 'CREDITO APROBADO'
+                         WHEN 'R' THEN 'CREDITO RECHAZADO'
+                         ELSE 'OTRO' -- por si hubiera valores diferentes
+                    END AS TIPO,
+                   'CALL CENTER APROBACIONES/RECHAZOS' AS REFERENCIA
+                   FROM SOL_CALL_CENTER scc 
+                   JOIN SN ON SN.CDGNS = scc.CDGNS AND SN.CICLO = scc.CICLO AND SN.SOLICITUD = scc.FECHA_SOL 
+                   JOIN CO ON CO.CODIGO = scc.CDGCO 
+                   JOIN RG ON RG.CODIGO  = CO.CDGRG  
+                   WHERE
+                        scc.FECHA_TRA_CL BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -12), 'MM') AND LAST_DAY(SYSDATE)
+                    GROUP BY
+                       scc.CDGPE,
+                        TO_CHAR(scc.FECHA_TRA_CL, 'YYYY'),
+                        TO_CHAR(scc.FECHA_TRA_CL, 'MM'),
+                        SN.SITUACION 
+                  
+                    
                         
                         
                 ) Q1
                 JOIN PE ON Q1.CDGPE = PE.CODIGO
             WHERE
                 PE.ACTIVO = 'S'
-                AND CODIGO IN ('MCDP', 'LVGA', 'ORHM', 'MAPH', 'PHEE')
+                AND CODIGO IN ('MCDP', 'LVGA', 'ORHM', 'MAPH', 'PHEE', 'JUJG', 'HTMP','HZDA', 'FSBA', 'CSLL', 'HELL', 'BCHF', 'JVRE', 'ESMM', 'GAGR')
             ORDER BY Q1.ANO DESC
         SQL;
 
@@ -203,11 +234,48 @@ class Indicadores extends Model
                    TO_CHAR(m.FDEPOSITO , 'MM') AS MES,
                    m.FDEPOSITO AS FECHA, 
                    COUNT(m.ACTUALIZARPE) AS TOTAL_INCIDENCIAS, 
-                   m.TIPO , 
-                   m.REFERENCIA, 
+                   UPPER(m.REFERENCIA) AS TIPO, 
+                   CASE WHEN CMA.DESCRIPCION = 'PAGO ELIMINADO POR EL BANCO'  AND MPR.OBSERVACIONES LIKE '%REFINANCIAMIENTO%'  AND MPR.RAZON = '05'THEN 'CANCELACIÓN DE REFINANCIAMIENTO'
+                       WHEN CMA.DESCRIPCION = 'DAÑOS ECONOMICOS AUT. TERRITORIAL' THEN 'DAÑOS ECONOMICOS AUT. TERRITORIAL'
+                       WHEN CMA.DESCRIPCION = 'DEVOLUCION POR CHEQUE A SOLICITUD DEL CLIENTE O SUCURSAL' THEN 'DEVOLUCION POR CHEQUE A SOLICITUD DEL CLIENTE O SUCURSAL'
+                       WHEN CMA.DESCRIPCION = 'REFERENCIA INCORRECTA' THEN 'REFERENCIA INCORRECTA'
+                       WHEN CMA.DESCRIPCION = 'TRASPASO DE GARANTIA A PAGO' THEN 'TRASPASO DE GARANTIA A PAGO'
+                       WHEN CMA.DESCRIPCION = 'CONDONACION POR DEFUNCION' THEN 'CONDONACION POR DEFUNCION'
+                       WHEN CMA.DESCRIPCION = 'LIQUIDACION ANTICIPADA' THEN 'LIQUIDACION ANTICIPADA'
+                       WHEN CMA.DESCRIPCION = 'PAGO ELIMINADO POR EL BANCO' THEN 'PAGO ELIMINADO DE CARTERA'
+                       WHEN CMA.DESCRIPCION = 'DEVOLUCION DE CHEQUE' THEN 'DEVOLUCION DE CHEQUE'
+                       WHEN CMA.DESCRIPCION = 'REESTRUCTURA' THEN 'REGISTRO DE REFINANCIAMIENTO'
+                       WHEN CMA.DESCRIPCION = 'CONDONACION DE INTERES POR ERROR EN TASA' THEN 'CONDONACION DE INTERES POR ERROR EN TASA'
+                       WHEN CMA.DESCRIPCION = 'DEVOLUCION POR CANCELACION DE CHEQUE' THEN 'DEVOLUCION POR CANCELACION DE CHEQUE'
+                       WHEN CMA.DESCRIPCION = 'CANCELACION POR APLICACIÓN DE PAGO A MICROCREDITO' THEN 'CANCELACION POR APLICACIÓN DE PAGO A MICROCREDITO'
+                       WHEN CMA.DESCRIPCION = 'CANCELACION PARA APLICACION AL SIGUIENTE CICLO' THEN 'CANCELACION PARA APLICACION AL SIGUIENTE CICLO'
+                       WHEN CMA.DESCRIPCION = 'REGISTRO DE PAGO DE GARANTIA' THEN 'REGISTRO DE PAGO DE GARANTIA'
+                       WHEN CMA.DESCRIPCION = 'PAGO DE MORA CON GARANTIA LIQUIDA' THEN 'PAGO DE MORA CON GARANTIA LIQUIDA'
+                       WHEN CMA.DESCRIPCION = 'DEVOLUCION POR RECHAZO DE SOLICITUD' THEN 'DEVOLUCION POR RECHAZO DE SOLICITUD'
+                       WHEN CMA.DESCRIPCION = 'CANCELACION PARA APLICACION A PAGO DE CREDITO' THEN 'CANCELACION PARA APLICACION A PAGO DE CREDITO'
+                       WHEN CMA.DESCRIPCION = 'CANCELACION DE CHEQUE DE DEVOLUCION DE GARANTIA' THEN 'CANCELACION DE CHEQUE DE DEVOLUCION DE GARANTIA'
+                       WHEN CMA.DESCRIPCION = 'CANCELACION PARA APLICACION A GARANTIA DE OTRO GRUPO' THEN 'CANCELACION PARA APLICACION A GARANTIA DE OTRO GRUPO'
+                       WHEN CMA.DESCRIPCION = 'TRASPASO DE PAGO A GARANTIA' THEN 'TRASPASO DE PAGO A GARANTIA'
+                       WHEN CMA.DESCRIPCION = 'CONDONACION DE INTERES PARA CASTIGOS' THEN 'MARCADO DE CARTERA POR CASTIGO'
+                       WHEN CMA.DESCRIPCION = 'REDISTRIBUCION DE PAGOS' THEN 'REDISTRIBUCION DE PAGOS'
+                       WHEN CMA.DESCRIPCION = 'CONDONACION DE INTERES POR AJUSTE' THEN 'CONDONACION DE INTERES POR AJUSTE'
+                       WHEN CMA.DESCRIPCION = 'CONDONACION DE SALDOS' THEN 'CONDONACION DE SALDOS'
+                       WHEN CMA.DESCRIPCION = 'CONDONACION DE INTERES PARA LIQUIDACION' THEN 'CONDONACION DE INTERES PARA LIQUIDACION'
+                       WHEN CMA.DESCRIPCION = 'DEVOLUCION DE EXCEDENTE' THEN 'DEVOLUCION DE EXCEDENTE'
+                       WHEN CMA.DESCRIPCION = 'CANCELACION DE DEVOLUCION DE EXCEDENTE' THEN 'CANCELACION DE DEVOLUCION DE EXCEDENTE'
+                       WHEN CMA.DESCRIPCION = 'DEVOLUCION DE CHEQUE EXTEMPORANEO' THEN 'DEVOLUCION DE CHEQUE EXTEMPORANEO'
+                       WHEN CMA.DESCRIPCION = 'DEVOLUCION POR DEPOSITO EXCEDENTE' THEN 'DEVOLUCION POR DEPOSITO EXCEDENTE'
+                       WHEN CMA.DESCRIPCION = 'CANCELACION SALDOS A FAVOR CREDITOS OPORTUNOS' THEN 'CANCELACION SALDOS A FAVOR CREDITOS OPORTUNOS'
+                       WHEN CMA.DESCRIPCION = 'DESCUENTO DE GL A OTROS QUEBRANTOS' THEN 'DESCUENTO DE GL A OTROS QUEBRANTOS'
+                       WHEN CMA.DESCRIPCION = 'RENOVACION ANTICIPADA' THEN 'RENOVACION ANTICIPADA'
+                       WHEN CMA.DESCRIPCION = 'DAÑOS ECONOMICOS' THEN 'DAÑOS ECONOMICOS'
+                       ELSE 'DESCONOCIDO'
+                       END AS REFERENCIA,
                    CO.NOMBRE AS SUCURSAL,
                    RG.NOMBRE AS REGION
                    FROM MP m
+                       JOIN MPR ON m.CDGNS = MPR.CDGNS AND m.CICLO = MPR.CICLO AND m.SECUENCIA = MPR.SECUENCIA AND m.PERIODO = MPR.PERIODO 
+                       JOIN CAT_MOVS_AJUSTE CMA ON MPR.RAZON = CMA.CODIGO 
                     JOIN PRN ON m.CDGNS = PRN.CDGNS AND m.CICLO = PRN.CICLO
                 	JOIN CO ON PRN.CDGCO = CO.CODIGO
                 	JOIN RG ON CO.CDGRG = RG.CODIGO
@@ -229,7 +297,11 @@ class Indicadores extends Model
                         m.TIPO,
                         m.REFERENCIA, 
                         CO.NOMBRE ,
-                        RG.NOMBRE 
+                        RG.NOMBRE,
+                        MPR.RAZON, 
+                        CMA.DESCRIPCION,
+                        MPR.OBSERVACIONES,
+                        CMA.CODIGO
                         
                         
                  UNION       
@@ -264,6 +336,50 @@ class Indicadores extends Model
                         pgs.FREGISTRO, 
                         CO.NOMBRE,
                         RG.NOMBRE 
+                    
+                    
+                    
+                    UNION 
+                    
+                            
+                        
+                         SELECT 
+                         scc.CDGNS,
+                         scc.CICLO, 
+                         SN.CANTAUTOR AS MONTO, 
+                         scc.CDGPE,  
+                   TO_CHAR(scc.FECHA_TRA_CL  , 'YYYY') AS ANO,
+                   TO_CHAR(scc.FECHA_TRA_CL  , 'MM') AS MES,
+                   scc.FECHA_TRA_CL AS FECHA,
+                   COUNT(scc.CDGPE) AS TOTAL_INCIDENCIAS, 
+                   CASE SN.SITUACION
+                         WHEN 'S' THEN 'CREDITO PENDIENTE'
+                         WHEN 'A' THEN 'CREDITO APROBADO'
+                         WHEN 'R' THEN 'CREDITO RECHAZADO'
+                         ELSE 'OTRO' -- por si hubiera valores diferentes
+                     END AS TIPO,
+                   'CALL CENTER APROBACIONES/RECHAZOS' AS REFERENCIA,
+                   CO.NOMBRE AS SUCURSAL,
+                             RG.NOMBRE AS REGION
+                   FROM SOL_CALL_CENTER scc 
+                   JOIN SN ON SN.CDGNS = scc.CDGNS AND SN.CICLO = scc.CICLO AND SN.SOLICITUD = scc.FECHA_SOL 
+                   JOIN CO ON CO.CODIGO = scc.CDGCO 
+                   JOIN RG ON RG.CODIGO  = CO.CDGRG  
+                   WHERE
+                        scc.FECHA_TRA_CL BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -12), 'MM') AND LAST_DAY(SYSDATE)
+                    GROUP BY
+                       scc.CDGPE,
+                        TO_CHAR(scc.FECHA_TRA_CL, 'YYYY'),
+                        TO_CHAR(scc.FECHA_TRA_CL, 'MM'),
+                        scc.CDGNS,
+                        scc.CICLO,
+                        SN.CANTAUTOR,
+                        scc.CDGPE,
+                        scc.FECHA_TRA_CL,
+                        CO.NOMBRE,
+                        RG.NOMBRE, 
+                        SN.SITUACION 
+                        
                        
                         
                         
