@@ -234,13 +234,12 @@ class Indicadores extends Model
                    TO_CHAR(m.FDEPOSITO , 'MM') AS MES,
                    m.FDEPOSITO AS FECHA, 
                    COUNT(m.ACTUALIZARPE) AS TOTAL_INCIDENCIAS, 
-                   UPPER(m.REFERENCIA) AS TIPO, 
                    CASE WHEN CMA.DESCRIPCION = 'PAGO ELIMINADO POR EL BANCO'  AND MPR.OBSERVACIONES LIKE '%REFINANCIAMIENTO%'  AND MPR.RAZON = '05'THEN 'CANCELACIÓN DE REFINANCIAMIENTO'
-                       WHEN CMA.DESCRIPCION = 'DAÑOS ECONOMICOS AUT. TERRITORIAL' THEN 'DAÑOS ECONOMICOS AUT. TERRITORIAL'
+                       WHEN CMA.DESCRIPCION = 'DAÑOS ECONOMICOS AUT. TERRITORIAL' THEN 'AJUSTE POR DAÑOS ECONOMICOS'
                        WHEN CMA.DESCRIPCION = 'DEVOLUCION POR CHEQUE A SOLICITUD DEL CLIENTE O SUCURSAL' THEN 'DEVOLUCION POR CHEQUE A SOLICITUD DEL CLIENTE O SUCURSAL'
                        WHEN CMA.DESCRIPCION = 'REFERENCIA INCORRECTA' THEN 'REFERENCIA INCORRECTA'
                        WHEN CMA.DESCRIPCION = 'TRASPASO DE GARANTIA A PAGO' THEN 'TRASPASO DE GARANTIA A PAGO'
-                       WHEN CMA.DESCRIPCION = 'CONDONACION POR DEFUNCION' THEN 'CONDONACION POR DEFUNCION'
+                       WHEN CMA.DESCRIPCION = 'CONDONACION POR DEFUNCION' THEN 'DEFUNCION (CONDONACIÓN)'
                        WHEN CMA.DESCRIPCION = 'LIQUIDACION ANTICIPADA' THEN 'LIQUIDACION ANTICIPADA'
                        WHEN CMA.DESCRIPCION = 'PAGO ELIMINADO POR EL BANCO' THEN 'PAGO ELIMINADO DE CARTERA'
                        WHEN CMA.DESCRIPCION = 'DEVOLUCION DE CHEQUE' THEN 'DEVOLUCION DE CHEQUE'
@@ -270,7 +269,8 @@ class Indicadores extends Model
                        WHEN CMA.DESCRIPCION = 'RENOVACION ANTICIPADA' THEN 'RENOVACION ANTICIPADA'
                        WHEN CMA.DESCRIPCION = 'DAÑOS ECONOMICOS' THEN 'DAÑOS ECONOMICOS'
                        ELSE 'DESCONOCIDO'
-                       END AS REFERENCIA,
+                       END AS TIPO,
+                   UPPER('AJUSTE MANUAL - ' || m.REFERENCIA) AS REFERENCIA,
                    CO.NOMBRE AS SUCURSAL,
                    RG.NOMBRE AS REGION
                    FROM MP m
@@ -315,8 +315,24 @@ class Indicadores extends Model
                    TO_CHAR(pgs.FREGISTRO  , 'MM') AS MES,
                    pgs.FREGISTRO AS FECHA, 
                    COUNT(pgs.CDGPE) AS TOTAL_INCIDENCIAS, 
-                   'APLICACION GARANTIA' AS TIPO, 
-                   '' AS REFERENCIA,
+                   CASE pgs.ESTATUS WHEN 'DE' THEN 'DEVOLUCION POR DEPOSITO EXCEDENTE'
+                        WHEN 'RE' THEN 'PAGO GL'
+                        WHEN 'CA' THEN 'MOVIMIENTO CANCELADO'
+                        WHEN 'DC' THEN 'DEVOLUCION POR CANCELACION DE CHEQUE'
+                        WHEN 'DS' THEN 'DEVOLUCION POR SOLICITUD DEL CLIENTE'
+                        WHEN 'CP' THEN 'CANCELACION POR APLICACION A PAGO DE CREDITO'
+                        WHEN 'CG' THEN 'CANCELACION POR TRASPASO DE GARANTIA A CICLO SIGUIENTE'
+                        WHEN 'DM' THEN 'PAGO DE MORA CON GARANTIA LIQUIDA'
+                        WHEN 'DG' THEN 'DESCUENTO DE GL A OTROS QUEBRANTOS'
+                        WHEN 'DR' THEN 'DEVOLUCION POR RECHAZO DE CREDITO'
+                        WHEN 'GP' THEN 'CANCELACION POR APLICACION DE GARANTIA A PAGO'
+                        WHEN 'CD' THEN 'CANCELACION DE DEVOLUCION DE GARANTIA'
+                        WHEN 'GG' THEN 'CANCELACION POR APLICACION DE GARANTIA A OTRO GRUPO'
+                        WHEN 'CS' THEN 'CANCELACION DE SEGURO POR DEVOLUCION'
+                        WHEN 'MS' THEN 'PAGO DE MICROSEGURO CON GARANTIA'
+                        ELSE 'OTRO' -- por si llega un código no contemplado
+                    END AS TIPO, 
+                   'MODULO DE GARANTIAS' AS REFERENCIA,
                    CO.NOMBRE AS SUCURSAL, 
                    RG.NOMBRE AS REGION
                    FROM PAG_GAR_SIM pgs
@@ -335,7 +351,8 @@ class Indicadores extends Model
                         TO_CHAR(pgs.FREGISTRO, 'MM'),
                         pgs.FREGISTRO, 
                         CO.NOMBRE,
-                        RG.NOMBRE 
+                        RG.NOMBRE,
+                        pgs.ESTATUS
                     
                     
                     
