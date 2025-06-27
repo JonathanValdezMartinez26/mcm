@@ -464,4 +464,215 @@ class Operaciones extends Model
             return self::Responde(false, "Error en la validación", null, $e->getMessage());
         }
     }
+
+    /////////////////////////////////////////////////////////////////
+    static public function GetReportePC($datos)
+    {
+        $qry = <<<SQL
+            WITH PERSONAS_BASE AS (
+            SELECT DISTINCT
+                SC.CDGNS,
+                SC.CICLO,
+                SC.CDGCL,
+                CL.CODIGO AS CLAVE,
+                CASE 
+                    WHEN SC.CANTSOLIC = 9999 THEN 'AVAL'
+                    ELSE 'CLIENTE'
+                END AS TIPO,
+                RTRIM(CL.NOMBRE1 || ' ' || NVL(CL.NOMBRE2, '') || ' ' || CL.PRIMAPE || ' ' || CL.SEGAPE) AS NOMBRE_COMPLETO,
+                CL.TELEFONO,
+                CL.CALLE,
+                CL.CDGCOL,
+                CL.CDGLO,
+                CL.CDGMU,
+                CL.CDGEF
+            FROM SC
+            JOIN CL ON SC.CDGCL = CL.CODIGO
+        ),
+        UNICOS AS (
+            SELECT
+                PB.CDGNS,
+                PB.CICLO,
+                PB.TIPO,
+                PB.CDGCL,
+                PB.NOMBRE_COMPLETO,
+                PB.TELEFONO,
+                PB.CALLE,
+                PB.CDGCOL,
+                PB.CDGLO,
+                PB.CDGMU,
+                PB.CDGEF,
+                ROW_NUMBER() OVER (
+                    PARTITION BY PB.CDGNS, PB.CICLO, PB.TIPO 
+                    ORDER BY PB.CDGCL
+                ) AS ORDEN
+            FROM PERSONAS_BASE PB
+        ),
+        INTEGRANTES AS (
+            SELECT
+                U.CDGNS,
+                U.CICLO,
+        
+                -- CLIENTE (ORDEN 1)
+                MAX(CASE WHEN TIPO = 'CLIENTE' AND ORDEN = 1 THEN CDGCL END) AS CDGCL_CLIENTE,
+                MAX(CASE WHEN TIPO = 'CLIENTE' AND ORDEN = 1 THEN NOMBRE_COMPLETO END) AS CLIENTE,
+                MAX(CASE WHEN TIPO = 'CLIENTE' AND ORDEN = 1 THEN TELEFONO END) AS TELEFONO_CLIENTE,
+                MAX(CASE WHEN TIPO = 'CLIENTE' AND ORDEN = 1 THEN CALLE END) AS CALLE_CLIENTE,
+                MAX(CASE WHEN TIPO = 'CLIENTE' AND ORDEN = 1 THEN CDGCOL END) AS CDGCOL_CLIENTE,
+                MAX(CASE WHEN TIPO = 'CLIENTE' AND ORDEN = 1 THEN CDGLO END) AS CDGLO_CLIENTE,
+                MAX(CASE WHEN TIPO = 'CLIENTE' AND ORDEN = 1 THEN CDGMU END) AS CDGMU_CLIENTE,
+                MAX(CASE WHEN TIPO = 'CLIENTE' AND ORDEN = 1 THEN CDGEF END) AS CDGEF_CLIENTE,
+        
+                -- AVAL 1 (ORDEN 1)
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 1 THEN CDGCL END) AS CDGCL_AVAL1,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 1 THEN NOMBRE_COMPLETO END) AS AVAL1,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 1 THEN TELEFONO END) AS TELEFONO_AVAL1,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 1 THEN CALLE END) AS CALLE_AVAL1,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 1 THEN CDGCOL END) AS CDGCOL_AVAL1,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 1 THEN CDGLO END) AS CDGLO_AVAL1,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 1 THEN CDGMU END) AS CDGMU_AVAL1,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 1 THEN CDGEF END) AS CDGEF_AVAL1,
+        
+                -- AVAL 2 (ORDEN 2)
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 2 THEN CDGCL END) AS CDGCL_AVAL2,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 2 THEN NOMBRE_COMPLETO END) AS AVAL2,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 2 THEN TELEFONO END) AS TELEFONO_AVAL2,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 2 THEN CALLE END) AS CALLE_AVAL2,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 2 THEN CDGCOL END) AS CDGCOL_AVAL2,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 2 THEN CDGLO END) AS CDGLO_AVAL2,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 2 THEN CDGMU END) AS CDGMU_AVAL2,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 2 THEN CDGEF END) AS CDGEF_AVAL2,
+        
+                -- AVAL 3 (ORDEN 3)
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 3 THEN CDGCL END) AS CDGCL_AVAL3,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 3 THEN NOMBRE_COMPLETO END) AS AVAL3,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 3 THEN TELEFONO END) AS TELEFONO_AVAL3,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 3 THEN CALLE END) AS CALLE_AVAL3,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 3 THEN CDGCOL END) AS CDGCOL_AVAL3,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 3 THEN CDGLO END) AS CDGLO_AVAL3,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 3 THEN CDGMU END) AS CDGMU_AVAL3,
+                MAX(CASE WHEN TIPO = 'AVAL' AND ORDEN = 3 THEN CDGEF END) AS CDGEF_AVAL3
+        
+            FROM UNICOS U
+            GROUP BY U.CDGNS, U.CICLO
+        )
+        SELECT 
+            PRN.CDGNS, 
+            PRN.CICLO, 
+            PRN.PLAZO, 
+            PRN.TASA, 
+           TO_CHAR(PRN.INICIO, 'DD/MM/YYYY') AS INICIO,
+           TO_CHAR(PRN.INICIO + NUMTODSINTERVAL(PRN.PLAZO * 7, 'DAY'), 'DD/MM/YYYY') AS FECHA_FIN,
+            PRN.CANTENTRE,
+            ABS(MP.CANTIDAD) + PRN.CANTENTRE AS TOTAL_CANTIDAD,
+        
+            -- Cliente
+            I.CDGCL_CLIENTE,
+            I.CLIENTE,
+            I.TELEFONO_CLIENTE,
+            RTRIM(I.CALLE_CLIENTE || ', ' || COL.NOMBRE || ', ' || LO.NOMBRE || ', ' || MU.NOMBRE || ', ' || EF.NOMBRE) AS DIRECCION_COMPLETA_CLIENTE,
+        
+            -- Aval 1
+            I.CDGCL_AVAL1,
+            I.AVAL1,
+            I.TELEFONO_AVAL1,
+            RTRIM(COL_AVAL1.NOMBRE || ', ' || LO_AVAL1.NOMBRE || ', ' || MU_AVAL1.NOMBRE || ', ' || EF_AVAL1.NOMBRE || ', ' || I.CALLE_AVAL1) AS DIRECCION_COMPLETA_AVAL1,
+        
+            -- Aval 2
+            I.CDGCL_AVAL2,
+            I.AVAL2,
+            I.TELEFONO_AVAL2,
+            RTRIM(COL_AVAL2.NOMBRE || ', ' || LO_AVAL2.NOMBRE || ', ' || MU_AVAL2.NOMBRE || ', ' || EF_AVAL2.NOMBRE || ', ' || I.CALLE_AVAL2) AS DIRECCION_COMPLETA_AVAL2,
+        
+            -- Aval 3
+            I.CDGCL_AVAL3,
+            I.AVAL3,
+            I.TELEFONO_AVAL3,
+            RTRIM(COL_AVAL3.NOMBRE || ', ' || LO_AVAL3.NOMBRE || ', ' || MU_AVAL3.NOMBRE || ', ' || EF_AVAL3.NOMBRE || ', ' || I.CALLE_AVAL3) AS DIRECCION_COMPLETA_AVAL3
+        
+        FROM PRN
+        JOIN MP ON MP.CDGNS = PRN.CDGNS AND MP.CICLO = PRN.CICLO 
+               AND MP.REFERENCIA = 'Interés total del préstamo'
+        JOIN INTEGRANTES I ON I.CDGNS = PRN.CDGNS AND I.CICLO = PRN.CICLO
+        
+        -- Cliente ubicación
+        LEFT JOIN COL ON COL.CODIGO = I.CDGCOL_CLIENTE
+                     AND COL.CDGLO = I.CDGLO_CLIENTE
+                     AND COL.CDGMU = I.CDGMU_CLIENTE
+                     AND COL.CDGEF = I.CDGEF_CLIENTE
+        
+        LEFT JOIN LO ON LO.CODIGO = I.CDGLO_CLIENTE
+                    AND LO.CDGMU = I.CDGMU_CLIENTE
+                    AND LO.CDGEF = I.CDGEF_CLIENTE
+        
+        LEFT JOIN MU ON MU.CODIGO = I.CDGMU_CLIENTE
+                    AND MU.CDGEF = I.CDGEF_CLIENTE
+        
+        LEFT JOIN EF ON EF.CODIGO = I.CDGEF_CLIENTE
+        
+        -- Aval 1 ubicación
+        LEFT JOIN COL COL_AVAL1 ON COL_AVAL1.CODIGO = I.CDGCOL_AVAL1
+                              AND COL_AVAL1.CDGLO = I.CDGLO_AVAL1
+                              AND COL_AVAL1.CDGMU = I.CDGMU_AVAL1
+                              AND COL_AVAL1.CDGEF = I.CDGEF_AVAL1
+        
+        LEFT JOIN LO LO_AVAL1 ON LO_AVAL1.CODIGO = I.CDGLO_AVAL1
+                             AND LO_AVAL1.CDGMU = I.CDGMU_AVAL1
+                             AND LO_AVAL1.CDGEF = I.CDGEF_AVAL1
+        
+        LEFT JOIN MU MU_AVAL1 ON MU_AVAL1.CODIGO = I.CDGMU_AVAL1
+                             AND MU_AVAL1.CDGEF = I.CDGEF_AVAL1
+        
+        LEFT JOIN EF EF_AVAL1 ON EF_AVAL1.CODIGO = I.CDGEF_AVAL1
+        
+        -- Aval 2 ubicación
+        LEFT JOIN COL COL_AVAL2 ON COL_AVAL2.CODIGO = I.CDGCOL_AVAL2
+                              AND COL_AVAL2.CDGLO = I.CDGLO_AVAL2
+                              AND COL_AVAL2.CDGMU = I.CDGMU_AVAL2
+                              AND COL_AVAL2.CDGEF = I.CDGEF_AVAL2
+        
+        LEFT JOIN LO LO_AVAL2 ON LO_AVAL2.CODIGO = I.CDGLO_AVAL2
+                             AND LO_AVAL2.CDGMU = I.CDGMU_AVAL2
+                             AND LO_AVAL2.CDGEF = I.CDGEF_AVAL2
+        
+        LEFT JOIN MU MU_AVAL2 ON MU_AVAL2.CODIGO = I.CDGMU_AVAL2
+                             AND MU_AVAL2.CDGEF = I.CDGEF_AVAL2
+        
+        LEFT JOIN EF EF_AVAL2 ON EF_AVAL2.CODIGO = I.CDGEF_AVAL2
+        
+        -- Aval 3 ubicación
+        LEFT JOIN COL COL_AVAL3 ON COL_AVAL3.CODIGO = I.CDGCOL_AVAL3
+                              AND COL_AVAL3.CDGLO = I.CDGLO_AVAL3
+                              AND COL_AVAL3.CDGMU = I.CDGMU_AVAL3
+                              AND COL_AVAL3.CDGEF = I.CDGEF_AVAL3
+        
+        LEFT JOIN LO LO_AVAL3 ON LO_AVAL3.CODIGO = I.CDGLO_AVAL3
+                             AND LO_AVAL3.CDGMU = I.CDGMU_AVAL3
+                             AND LO_AVAL3.CDGEF = I.CDGEF_AVAL3
+        
+        LEFT JOIN MU MU_AVAL3 ON MU_AVAL3.CODIGO = I.CDGMU_AVAL3
+                             AND MU_AVAL3.CDGEF = I.CDGEF_AVAL3
+        
+        LEFT JOIN EF EF_AVAL3 ON EF_AVAL3.CODIGO = I.CDGEF_AVAL3
+
+
+        WHERE PRN.INICIO BETWEEN TO_DATE(:fechaI, 'YYYY-MM-DD') AND TO_DATE(:fechaF, 'YYYY-MM-DD')
+            ORDER BY PRN.CDGNS, PRN.CICLO
+             
+        SQL;
+
+        $prm = [
+            'fechaI' => $datos['fechaI'],
+            'fechaF' => $datos['fechaF']
+        ];
+
+
+        try {
+            $db =  new Database();
+            $res = $db->queryAll($qry, $prm);
+            return self::Responde(true, 'Consulta exitosa', $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al consultar el reporte', null, $e->getMessage());
+        }
+    }
 }

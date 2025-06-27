@@ -229,12 +229,13 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN'];
+        $permisos = ['ADMIN', 'PHEE', 'MCDP'];
         if ($this->ValidaPermiso($permisos)) {
+            // <li><a href="/Operaciones/CierreDiario/">Cierre Diario</a></li>
             $menu .= <<<HTML
             <li><a><i class="glyphicon glyphicon-usd"></i>&nbsp;Operaciones<span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">
-                    <li><a href="/Operaciones/CierreDiario/">Cierre Diario</a></li>
+                     <li><a href="/Operaciones/ReportePC">Reporte Cliente y Aval Consolidado</a></li>
                 </ul>
             </li>
             HTML;
@@ -248,6 +249,7 @@ class Contenedor extends Controller
                     </i>&nbsp;Tesorería<span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             <li><a href="/Tesoreria/ReportePC">Reporte Productora Cultiva</a></li>
+                           
             HTML;
         }
 
