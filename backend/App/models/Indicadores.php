@@ -12,107 +12,121 @@ class Indicadores extends Model
     public static function GetIncidenciasUsuarios()
     {
         $qry = <<<SQL
-            SELECT
-                Q1.CDGPE,
-                Q1.ANO,
-                Q1.MES,
-                Q1.TOTAL_INCIDENCIAS,
-                CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS NOMBRE,
-                TO_CHAR(TO_DATE(Q1.MES, 'MM'), 'Month') AS MES_LETRA
-            FROM
-                (
-                    SELECT
-                        PD.CDGPE,
-                        TO_CHAR(PD.FREGISTRO, 'YYYY') AS ANO,
-                        TO_CHAR(PD.FREGISTRO, 'MM') AS MES,
-                        COUNT(PD.CDGPE) AS TOTAL_INCIDENCIAS,
-                        'PAGO DÍA' AS TIPO, 
-                        'ACTUALIZACIÓN' AS REFERENCIA
-                    FROM
-                        PAGOSDIA PD
-                    WHERE
-                        PD.FREGISTRO BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -12), 'MM') AND LAST_DAY(SYSDATE)
-                    GROUP BY
-                        PD.CDGPE,
-                        TO_CHAR(PD.FREGISTRO, 'YYYY'),
-                        TO_CHAR(PD.FREGISTRO, 'MM')
-                        
-                    UNION 
-                        
-                    SELECT
-                        m.ACTUALIZARPE AS CDGPE,  
-                        TO_CHAR(m.FDEPOSITO , 'YYYY') AS ANO,
-                        TO_CHAR(m.FDEPOSITO , 'MM') AS MES,
-                        COUNT(m.ACTUALIZARPE) AS TOTAL_INCIDENCIAS, 
-                        m.TIPO , 
-                        m.REFERENCIA 
-                    FROM
-                        MP m
-                    WHERE
-                        m.FDEPOSITO BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -12), 'MM') AND LAST_DAY(SYSDATE)
-                        AND m.ACTUALIZARPE IS NOT NULL
-                        AND m.TIPO != 'PD'
-                    GROUP BY
-                        m.ACTUALIZARPE,
-                        TO_CHAR(m.FDEPOSITO, 'YYYY'),
-                        TO_CHAR(m.FDEPOSITO, 'MM'),
-                        m.TIPO,
-                        m.REFERENCIA 
-                            
-                    UNION       
-                        
-                    SELECT
-                        pgs.CDGPE,  
-                        TO_CHAR(pgs.FREGISTRO  , 'YYYY') AS ANO,
-                        TO_CHAR(pgs.FREGISTRO  , 'MM') AS MES,
-                        COUNT(pgs.CDGPE) AS TOTAL_INCIDENCIAS, 
-                        'APLICACION GARANTIA' AS TIPO, 
-                        '' AS REFERENCIA
-                    FROM
-                        PAG_GAR_SIM pgs
-                    WHERE
-                        pgs.FREGISTRO BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -12), 'MM') AND LAST_DAY(SYSDATE)
-                        AND pgs.ESTATUS = 'CP'
-                    GROUP BY
-                        pgs.CDGPE,
-                        TO_CHAR(pgs.FREGISTRO, 'YYYY'),
-                        TO_CHAR(pgs.FREGISTRO, 'MM')
+            WITH DATOS AS (
+                SELECT
+                    PD.CDGPE,
+                    TO_CHAR(PD.FREGISTRO, 'YYYY') AS ANO,
+                    TO_CHAR(PD.FREGISTRO, 'MM') AS MES,
+                    COUNT(PD.CDGPE) AS TOTAL_INCIDENCIAS,
+                    'PAGO DÍA' AS TIPO, 
+                    'ACTUALIZACIÓN' AS REFERENCIA
+                FROM
+                    PAGOSDIA PD
+                WHERE
+                    PD.FREGISTRO BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -12), 'MM') AND LAST_DAY(SYSDATE)
+                GROUP BY
+                    PD.CDGPE,
+                    TO_CHAR(PD.FREGISTRO, 'YYYY'),
+                    TO_CHAR(PD.FREGISTRO, 'MM')
                     
-                    UNION
+                UNION 
+                    
+                SELECT
+                    m.ACTUALIZARPE AS CDGPE,  
+                    TO_CHAR(m.FDEPOSITO , 'YYYY') AS ANO,
+                    TO_CHAR(m.FDEPOSITO , 'MM') AS MES,
+                    COUNT(m.ACTUALIZARPE) AS TOTAL_INCIDENCIAS, 
+                    m.TIPO , 
+                    m.REFERENCIA 
+                FROM
+                    MP m
+                WHERE
+                    m.FDEPOSITO BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -12), 'MM') AND LAST_DAY(SYSDATE)
+                    AND m.ACTUALIZARPE IS NOT NULL
+                    AND m.TIPO != 'PD'
+                GROUP BY
+                    m.ACTUALIZARPE,
+                    TO_CHAR(m.FDEPOSITO, 'YYYY'),
+                    TO_CHAR(m.FDEPOSITO, 'MM'),
+                    m.TIPO,
+                    m.REFERENCIA 
                         
-                    SELECT 
-                        scc.CDGPE, 
-                        TO_CHAR(scc.FECHA_TRA_CL  , 'YYYY') AS ANO,
-                        TO_CHAR(scc.FECHA_TRA_CL  , 'MM') AS MES,
-                        COUNT(scc.CDGPE) AS TOTAL_INCIDENCIAS, 
-                        CASE SN.SITUACION
-                            WHEN 'S' THEN 'CREDITO PENDIENTE'
-                            WHEN 'A' THEN 'CREDITO APROBADO'
-                            WHEN 'R' THEN 'CREDITO RECHAZADO'
-                            ELSE 'OTRO' -- por si hubiera valores diferentes
-                        END AS TIPO,
-                        'CALL CENTER APROBACIONES/RECHAZOS' AS REFERENCIA
-                    FROM
-                        SOL_CALL_CENTER scc 
-                        JOIN SN ON SN.CDGNS = scc.CDGNS AND SN.CICLO = scc.CICLO AND SN.SOLICITUD = scc.FECHA_SOL 
-                        JOIN CO ON CO.CODIGO = scc.CDGCO 
-                        JOIN RG ON RG.CODIGO  = CO.CDGRG  
-                    WHERE
-                        scc.FECHA_TRA_CL BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -12), 'MM') AND LAST_DAY(SYSDATE)
-                    GROUP BY
-                        scc.CDGPE,
-                        TO_CHAR(scc.FECHA_TRA_CL, 'YYYY'),
-                        TO_CHAR(scc.FECHA_TRA_CL, 'MM'),
-                        SN.SITUACION
-                ) Q1
-                JOIN PE ON Q1.CDGPE = PE.CODIGO
+                UNION       
+                    
+                SELECT
+                    pgs.CDGPE,  
+                    TO_CHAR(pgs.FREGISTRO  , 'YYYY') AS ANO,
+                    TO_CHAR(pgs.FREGISTRO  , 'MM') AS MES,
+                    COUNT(pgs.CDGPE) AS TOTAL_INCIDENCIAS, 
+                    'APLICACION GARANTIA' AS TIPO, 
+                    '' AS REFERENCIA
+                FROM
+                    PAG_GAR_SIM pgs
+                WHERE
+                    pgs.FREGISTRO BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -12), 'MM') AND LAST_DAY(SYSDATE)
+                    AND pgs.ESTATUS = 'CP'
+                GROUP BY
+                    pgs.CDGPE,
+                    TO_CHAR(pgs.FREGISTRO, 'YYYY'),
+                    TO_CHAR(pgs.FREGISTRO, 'MM')
+                
+                UNION
+                    
+                SELECT 
+                    scc.CDGPE, 
+                    TO_CHAR(scc.FECHA_TRA_CL  , 'YYYY') AS ANO,
+                    TO_CHAR(scc.FECHA_TRA_CL  , 'MM') AS MES,
+                    COUNT(scc.CDGPE) AS TOTAL_INCIDENCIAS, 
+                    CASE SN.SITUACION
+                        WHEN 'S' THEN 'CREDITO PENDIENTE'
+                        WHEN 'A' THEN 'CREDITO APROBADO'
+                        WHEN 'R' THEN 'CREDITO RECHAZADO'
+                        ELSE 'OTRO' -- por si hubiera valores diferentes
+                    END AS TIPO,
+                    'CALL CENTER APROBACIONES/RECHAZOS' AS REFERENCIA
+                FROM
+                    SOL_CALL_CENTER scc 
+                    JOIN SN ON SN.CDGNS = scc.CDGNS AND SN.CICLO = scc.CICLO AND SN.SOLICITUD = scc.FECHA_SOL 
+                    JOIN CO ON CO.CODIGO = scc.CDGCO 
+                    JOIN RG ON RG.CODIGO  = CO.CDGRG  
+                WHERE
+                    scc.FECHA_TRA_CL BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -12), 'MM') AND LAST_DAY(SYSDATE)
+                GROUP BY
+                    scc.CDGPE,
+                    TO_CHAR(scc.FECHA_TRA_CL, 'YYYY'),
+                    TO_CHAR(scc.FECHA_TRA_CL, 'MM'),
+                    SN.SITUACION
+            ),
+            TOTAL AS (
+                SELECT
+                    D.CDGPE,
+                    D.ANO,
+                    D.MES,
+                    SUM(D.TOTAL_INCIDENCIAS) AS TOTAL
+                FROM
+                    DATOS D
+                GROUP BY
+                    D.CDGPE,
+                    D.ANO,
+                    D.MES
+            )
+            SELECT
+                T.CDGPE,
+                T.ANO,
+                T.MES,
+                T.TOTAL AS TOTAL_INCIDENCIAS,
+                CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS NOMBRE,
+                TO_CHAR(TO_DATE(T.MES, 'MM'), 'Month') AS MES_LETRA
+            FROM
+                TOTAL T
+                JOIN PE ON PE.CODIGO = T.CDGPE
             WHERE
                 PE.ACTIVO = 'S'
-                AND CODIGO IN ('MCDP', 'LVGA', 'ORHM', 'MAPH', 'PHEE', 'JUJG', 'HTMP','HZDA', 'FSBA', 'CSLL', 'HELL', 'BCHF', 'JVRE', 'ESMM', 'GAGR')
+                AND PE.CODIGO IN ('MCDP', 'LVGA', 'ORHM', 'MAPH', 'PHEE', 'JUJG', 'HTMP','HZDA', 'FSBA', 'CSLL', 'HELL', 'BCHF', 'JVRE', 'ESMM', 'GAGR')
             ORDER BY
-                Q1.ANO DESC,
-                Q1.MES DESC,
-                Q1.CDGPE
+                T.ANO DESC,
+                T.MES DESC,
+                T.CDGPE
         SQL;
 
         try {
