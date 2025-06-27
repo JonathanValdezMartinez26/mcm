@@ -3,7 +3,7 @@
 namespace App\controllers;
 
 defined("APPPATH") or die("Access denied");
-require_once dirname(__DIR__) . '../../libs/BrowserDetection\BrowserDetection.php';
+require_once dirname(__DIR__) . '../../libs/BrowserDetection/BrowserDetection.php';
 
 use \Core\View;
 use \Core\MasterDom;

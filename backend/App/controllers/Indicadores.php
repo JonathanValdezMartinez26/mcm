@@ -28,6 +28,7 @@ class Indicadores extends Controller
                 {$this->configuraTabla}
                 {$this->consultaServidor}
                 {$this->formatoMoneda}
+                {$this->descargaExcel}
                 
                 const datosGraficoIncidencias = {
                     labels: [],
@@ -127,11 +128,13 @@ class Indicadores extends Controller
                         actualizaTablaIncidencias(resultado.datos)
                         actualizaGraficoInicidencias(resultado.datos)
                     })
-                })
 
-                $("#detalleUsuario").on("hidden.bs.modal", () => {
-                    actualizaDetalleUsuario([])
-                    actualizaTablaUsuario([])
+                    $("#btnDescargaExcel").on("click", getExcelDetalle)
+
+                    $("#detalleUsuario").on("hidden.bs.modal", () => {
+                        actualizaDetalleUsuario([])
+                        actualizaTablaUsuario([])
+                    })
                 })
 
                 const getPeriodos = () => {
@@ -244,7 +247,7 @@ class Indicadores extends Controller
                 const verDetalle = (usuario, ano, mes, nombre) => {
                     const mesLetra = new Date(ano, mes - 1, 1).toLocaleString("default", { month: "long" })
                     $("#ttlNombre").html("<b>Total de incidencias atendidas por " + nombre + " en " + mesLetra + " de " + ano + "</b>")
-                    $("#detalleUsuario").modal("show")
+                    $("#detalleUsuario").modal("show")  
 
                     const datos = {
                         usuario,
@@ -255,6 +258,9 @@ class Indicadores extends Controller
                     consultaServidor("/Indicadores/GetIncidenciasUsuario/", datos, (resultado) => {
                         if (!resultado.success) showError(resultado.mensaje)
 
+                        $("#xsl_usuario").val(datos.usuario)
+                        $("#xsl_fechaI").val(datos.fechaI)
+                        $("#xsl_fechaF").val(datos.fechaF) 
                         actualizaDetalleUsuario(resultado.datos)
                         actualizaTablaUsuario(resultado.datos)
                     })
@@ -339,6 +345,16 @@ class Indicadores extends Controller
 
                     configuraTabla("tblUsuario")
                 }
+
+                const getExcelDetalle = () => {
+                    const datos = {
+                        usuario: $("#xsl_usuario").val(),
+                        fechaI: $("#xsl_fechaI").val(),
+                        fechaF: $("#xsl_fechaF").val()
+                    }
+                    const params = new URLSearchParams(datos).toString()
+                    descargaExcel("/Indicadores/GetExcelIncidenciasUsuario/?" + params)
+                }
             </script>
         HTML;
 
@@ -355,5 +371,30 @@ class Indicadores extends Controller
     public function GetIncidenciasUsuario()
     {
         echo json_encode(IndicadoresDao::GetIncidenciasUsuario($_POST));
+    }
+
+    public function GetExcelIncidenciasUsuario()
+    {
+        $estilos = \PHPSpreadsheet::GetEstilosExcel();
+
+        $columnas = [
+            \PHPSpreadsheet::ColumnaExcel('FECHA', 'Fecha', ['estilo' => $estilos['fecha']]),
+            \PHPSpreadsheet::ColumnaExcel('CDGNS', 'Crédito', ['estilo' => $estilos['centrado']]),
+            \PHPSpreadsheet::ColumnaExcel('CICLO', 'Ciclo', ['estilo' => $estilos['centrado']]),
+            \PHPSpreadsheet::ColumnaExcel('MONTO', 'Monto', ['estilo' => $estilos['moneda']]),
+            \PHPSpreadsheet::ColumnaExcel('DESCRIPCION', 'Descripción'),
+            \PHPSpreadsheet::ColumnaExcel('TIPO', 'Tipo'),
+            \PHPSpreadsheet::ColumnaExcel('REGION', 'Región'),
+            \PHPSpreadsheet::ColumnaExcel('SUCURSAL', 'Sucursal')
+        ];
+
+        $filas = IndicadoresDao::GetIncidenciasUsuario($_GET);
+        $filas = $filas['success'] ? $filas['datos'] : [];
+        $filas = array_map(function ($fila) {
+            $fila['FECHA'] = \DateTime::createFromFormat('d/m/y', $fila['FECHA'])->format('d/m/Y');
+            return $fila;
+        }, $filas);
+
+        \PHPSpreadsheet::DescargaExcel("Incidencias de {$_GET['usuario']}", 'Incidencias', 'Reporte de Incidencias', $columnas, $filas);
     }
 }

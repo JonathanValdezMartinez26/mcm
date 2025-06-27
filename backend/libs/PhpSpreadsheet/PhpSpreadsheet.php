@@ -233,6 +233,8 @@ class PHPSpreadsheet
 
                 if ($columna['estilo'] === self::GetEstilosExcel('fecha'))
                     $hoja->setCellValue($columna['letra'] . $noFila, self::convierteFecha('d/m/Y', $fila[$columna['campo']]));
+                else if ($columna['estilo'] === self::GetEstilosExcel('fecha_back'))
+                    $hoja->setCellValue($columna['letra'] . $noFila, self::convierteFecha('Y-m-d', $fila[$columna['campo']]));
                 else if ($columna['estilo'] === self::GetEstilosExcel('fecha_hora'))
                     $hoja->setCellValue($columna['letra'] . $noFila, self::convierteFecha('d/m/Y H:i:s', $fila[$columna['campo']]));
                 else if ($columna['estilo'] === self::GetEstilosExcel('texto_centrado') || $columna['estilo'] === self::GetEstilosExcel('texto_izquierda') || $columna['estilo'] === self::GetEstilosExcel('texto_derecha'))
@@ -407,8 +409,12 @@ class PHPSpreadsheet
         $f = DateTime::createFromFormat($formato, $fecha);
 
         if ($f === false) return null;
-        $f = Date::PHPToExcel($f);
 
+        if (strpos($formato, 'H') === false && strpos($formato, 'i') === false && strpos($formato, 's') === false) {
+            $f->setTime(0, 0, 0);
+        }
+
+        $f = Date::PHPToExcel($f);
         if ($f === false) return null;
         return $f;
     }

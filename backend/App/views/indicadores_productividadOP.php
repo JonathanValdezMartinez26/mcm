@@ -63,6 +63,14 @@
                 </div>
                 <hr>
                 <div class="row">
+                    <div class="col-md-12" style="text-align: center;">
+                        <button class="btn btn-success" id="btnDescargaExcel" style="margin-bottom: 10px;"><i class="fa fa-file-excel-o"></i> Descargar Excel</button>
+                        <input type="hidden" id="xsl_usuario" value="">
+                        <input type="hidden" id="xsl_fechaI" value="">
+                        <input type="hidden" id="xsl_fechaF" value="">
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-md-12">
                         <table id="tblUsuario" class="table table-striped table-bordered">
                             <thead>
