@@ -284,4 +284,128 @@ class Operaciones extends Controller
             'mensaje' => 'El proceso de cierre diario se ha iniciado correctamente.'
         ]);
     }
+
+    ////////////////////////////////////////////////////////////////////
+
+    public function ReportePC()
+    {
+        $extraFooter = <<<HTML
+            <script>
+                {$this->mensajes}
+                {$this->consultaServidor}
+                {$this->confirmarMovimiento}
+                {$this->configuraTabla}
+                {$this->descargaExcel}
+                {$this->formatoMoneda}
+
+                const idTabla = "reporte"
+
+                const consultaReporte = () => {
+                    consultaServidor("/Operaciones/GetReportePC", getPerametros(), (res) => {
+                        if (!res.success) return resultadoError(res.mensaje)
+                        resultadoOK(res.datos)
+                    })
+                }
+
+                const getPerametros = () => {
+                    const fechaI = $("#fechaI").val()
+                    const fechaF = $("#fechaF").val()
+
+                    return { fechaI, fechaF }
+                }
+
+                const resultadoError = (mensaje) => {
+                    $(".resultado").toggleClass("conDatos", false)
+                    showError(mensaje).then(() => actualizaDatosTabla(idTabla, []))
+                }
+
+                const resultadoOK = (datos) => {
+                    datos = datos.map((item) => {
+                        item.MONTO = "$ " + formatoMoneda(item.MONTO)
+                        return item
+                    })
+
+                    actualizaDatosTabla(idTabla, datos)
+                    $(".resultado").toggleClass("conDatos", true)
+                }
+
+                const getExcel = () => {
+                    descargaExcel("/Operaciones/GetReportePC_excel/?" + $.param(getPerametros()))
+                }
+
+                $(document).ready(() => {
+                    $("#fechaI").change(consultaReporte)
+                    $("#fechaF").change(consultaReporte)
+                    $("#excel").click(getExcel)
+
+                    configuraTabla(idTabla)
+                    consultaReporte()
+                })
+            </script>
+        HTML;
+
+
+
+        View::set('header', $this->_contenedor->header($this->getExtraHeader("Reporte Productora Cultiva")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+
+        View::render('operaciones_reporte_pc');
+    }
+
+    public function GetReportePC($datos = null)
+    {
+        echo json_encode(OperacionesDao::GetReportePC($_POST));
+    }
+
+    public function GetReportePC_excel()
+    {
+        $estilos = \PHPSpreadsheet::GetEstilosExcel();
+        $centrado = ['estilo' => $estilos['centrado']];
+        $texto = ['estilo' => $estilos['texto_centrado']];
+
+        $columnas = [
+            \PHPSpreadsheet::ColumnaExcel('CDGNS', 'Crédito', $texto),
+            \PHPSpreadsheet::ColumnaExcel('CICLO', 'Ciclo', $texto),
+            \PHPSpreadsheet::ColumnaExcel('PLAZO', 'Plazo (semanas)', $texto),
+            \PHPSpreadsheet::ColumnaExcel('TASA', 'Tasa', $texto),
+            \PHPSpreadsheet::ColumnaExcel('INICIO', 'Fecha inicio', ['estilo' => $estilos['fecha']]),
+            \PHPSpreadsheet::ColumnaExcel('FECHA_FIN', 'Fecha fin', ['estilo' => $estilos['fecha']]),
+            \PHPSpreadsheet::ColumnaExcel('CANTENTRE', 'Cantidad entregada', $texto),
+            \PHPSpreadsheet::ColumnaExcel('TOTAL_CANTIDAD', 'Total prestamo', $texto),
+
+            // Cliente
+            \PHPSpreadsheet::ColumnaExcel('CDGCL_CLIENTE', 'Clave cliente', $texto),
+            \PHPSpreadsheet::ColumnaExcel('CLIENTE', 'Nombre cliente', $texto),
+            \PHPSpreadsheet::ColumnaExcel('TELEFONO_CLIENTE', 'Teléfono cliente', $texto),
+            \PHPSpreadsheet::ColumnaExcel('DIRECCION_COMPLETA_CLIENTE', 'Dirección cliente', $texto),
+
+            // Aval 1
+            \PHPSpreadsheet::ColumnaExcel('CDGCL_AVAL1', 'Clave aval 1', $texto),
+            \PHPSpreadsheet::ColumnaExcel('AVAL1', 'Nombre aval 1', $texto),
+            \PHPSpreadsheet::ColumnaExcel('TELEFONO_AVAL1', 'Teléfono aval 1', $texto),
+            \PHPSpreadsheet::ColumnaExcel('DIRECCION_COMPLETA_AVAL1', 'Dirección aval 1', $texto),
+
+            // Aval 2
+            \PHPSpreadsheet::ColumnaExcel('CDGCL_AVAL2', 'Clave aval 2', $texto),
+            \PHPSpreadsheet::ColumnaExcel('AVAL2', 'Nombre aval 2', $texto),
+            \PHPSpreadsheet::ColumnaExcel('TELEFONO_AVAL2', 'Teléfono aval 2', $texto),
+            \PHPSpreadsheet::ColumnaExcel('DIRECCION_COMPLETA_AVAL2', 'Dirección aval 2', $texto),
+
+            // Aval 3
+            \PHPSpreadsheet::ColumnaExcel('CDGCL_AVAL3', 'Clave aval 3', $texto),
+            \PHPSpreadsheet::ColumnaExcel('AVAL3', 'Nombre aval 3', $texto),
+            \PHPSpreadsheet::ColumnaExcel('TELEFONO_AVAL3', 'Teléfono aval 3', $texto),
+            \PHPSpreadsheet::ColumnaExcel('DIRECCION_COMPLETA_AVAL3', 'Dirección aval 3', $texto),
+        ];
+
+        $filas = OperacionesDao::GetReportePC($_GET);
+        $filas = $filas['success'] ? $filas['datos'] : [];
+
+        \PHPSpreadsheet::DescargaExcel('Consolidado Clientes y Avales', 'Reporte', 'Consolidado Clientes y Avales', $columnas, $filas);
+    }
+
+
+
+
+
 }
