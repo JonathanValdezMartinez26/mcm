@@ -229,7 +229,7 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'PHEE', 'MCDP'];
+        $permisos = ['ADMIN', 'PHEE', 'MCDP', 'FECR', 'ORHM'];
         if ($this->ValidaPermiso($permisos)) {
             // <li><a href="/Operaciones/CierreDiario/">Cierre Diario</a></li>
             $menu .= <<<HTML
