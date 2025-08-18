@@ -1459,6 +1459,8 @@ html;
 			|| $this->__usuario == 'MAAL'
 			|| $this->__usuario == 'REHM'
 			|| $this->__usuario == 'JUSA'
+			|| $this->__usuario == 'MBAE'
+			
         ) {
             $getSucursales .= '<option value="">TODAS</option>';
         }
