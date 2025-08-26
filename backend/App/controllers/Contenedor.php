@@ -222,6 +222,7 @@ class Contenedor extends Controller
                         <li><a href="/CallCenter/EncuestaPostventa/">Postventa</a></li>
                         <li><a href="/CallCenter/ReporteEncuestaPostventa/">Reporte Postventa</a></li>
                         <li><a href="/CallCenter/SupervisionEncuestaPostventa/">Supervisión Postventa</a></li>
+                        <li><a href="/CallCenter/Busqueda/">Búsqueda Rápida</a></li>
                         $opcion
                         </ul>
                     </li>
