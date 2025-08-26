@@ -903,7 +903,7 @@ html;
                     else
                     {
                         $ciclo = <<<html
-                        <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado: <b>{$value['CICLOR']}</b></span>
+                        <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado</span>
 html;
                     }
 
@@ -3136,7 +3136,7 @@ html;
                 else
                 {
                     $ciclo_r = <<<html
-                        <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado: <b>{$value['CICLOR']}</b></span>
+                        <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado</span>
 html;
                     $cicloi = $value['CICLOR'];
                 }
@@ -3320,7 +3320,7 @@ html;
                 else
                 {
                     $ciclo_r = <<<html
-                        <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado: <b>{$value['CICLOR']}</b></span>
+                        <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado</span>
 html;
                     $cicloi = $value['CICLOR'];
                 }
@@ -3564,13 +3564,26 @@ html;
                     $recomendado = '';
                 }
 
+                if($value['CICLOR'] == '')
+                {
+                    $ciclo_r = '';
+                    $cicloi = $value['CICLO'];;
+                }
+                else
+                {
+                    $ciclo_r = <<<html
+                        <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado</span>
+html;
+                    $cicloi = $value['CICLOR'];
+                }
+
                 $tabla .= <<<HTML
                     <tr style="padding: 0px !important;">
                        <td style="padding: 5px !important; width:65px !important;">
                     <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
                     <hr>
-                    <div><label>{$value['CDGNS']}-{$value['CICLO']}</label></div>
-                    <div><label>asasasasasasasas</label></div>
+                    <div><label>{$value['CDGNS']}-{$cicloi}</label></div>
+                    <div><label>{$ciclo_r}</label></div>
                     </td>
                         <td style="padding: 10px !important; text-align: left">
                             <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
@@ -3728,7 +3741,7 @@ html;
                 else
                 {
                     $ciclo_r = <<<html
-                        <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado: <b>{$value['CICLOR']}</b></span>
+                        <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado</span>
 html;
                     $cicloi = $value['CICLOR'];
                 }
