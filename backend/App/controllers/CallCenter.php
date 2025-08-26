@@ -879,13 +879,34 @@ html;
             $Administracion = CallCenterDao::getAllSolicitudesBusquedaRapida($credito);
             foreach ($Administracion as $key => $value) {
 
-                if ($value['ESTATUS_GENERAL'] == "SIN HISTORIAL") {
+                if ($value['ESTATUS_GENERAL'] == "SIN HISTORIAL" && $value['ID_SCALL'] == "") {
                     $ver_resumen = '';
+                    $comentarios = '';
+                    $ciclo = $value['CICLO'];
                 } else {
                     $ver_resumen = <<<html
                         <a type="button" target="_blank" href="/CallCenter/Pendientes/?Credito={$value['CDGNS']}&Ciclo={$value['CICLO']}&Suc={$value['CODIGO_SUCURSAL']}&Act=N&Reg={$value['CODIGO_REGION']}&Fec={$value['FECHA_SOL']}" class="btn btn-primary btn-circle"><span class="label label-info"><span class="fa fa-eye"></span></span> Ver Resumen
                         </a>
 html;
+                    $comentarios = <<<html
+                        <br>
+                        <br>
+                        <span></span> COMENTARIOS INTERNOS: <br><b>{$value['COMENTARIO_INICIAL']}</b>
+                        <br>
+                        <br>
+                        <span></span> COMENTARIOS SUCURSAL: <br><b>{$value['COMENTARIO_FINAL']}</b>
+html;
+                    if($value['CICLOR'] == '')
+                    {
+                        $ciclo = $value['CICLO'];
+                    }
+                    else
+                    {
+                        $ciclo = <<<html
+                        <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado: <b>{$value['CICLOR']}</b></span>
+html;
+                    }
+
                 }
 
                 $monto = number_format($value['MONTO'], 2);
@@ -895,7 +916,7 @@ html;
                         <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
                         <hr>
                         <div><label>Crédito: {$value['CDGNS']}</label></div>
-                        <div><label>Ciclo: {$value['CICLO']}</label></div>
+                        <div><label>Ciclo: {$ciclo}</label></div>
                     </td>
                     
                     <td style="padding: 10px !important; text-align: left">
@@ -917,7 +938,7 @@ html;
                     
                     <td style="padding: 10px !important; text-align: left; width:225px !important;">
                          <span class="fa fa-calendar"></span> FECHA DE VALIDACIÓN: <br> <b>{$value['FECHA_TRABAJO']}</b>
-                        <br>
+                          {$comentarios}
                        
                        
                     </td>
@@ -927,6 +948,9 @@ html;
                         <br>
                         <br>
                          <span></span> LOCALÍCELA EN: <br><b>{$value['BANDEJA']}</b>
+                         <br>
+                        <br>
+                        
                     </td>
                   
                     

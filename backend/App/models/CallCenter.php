@@ -22,7 +22,10 @@ class CallCenter extends Model
                 SC.CDGNS NO_CREDITO,
                 SC.CDGCL ID_CLIENTE,
                 GET_NOMBRE_CLIENTE(SC.CDGCL) CLIENTE,
-                SC.CICLO,
+                CASE 
+                    WHEN SN.CICLOR IS NOT NULL THEN  SN.CICLOR || '(RECHAZADO)' 
+                    ELSE SN.CICLO 
+                END AS CICLO,
                 NVL(SC.CANTAUTOR,SC.CANTSOLIC) MONTO,
                 SC.SITUACION,
                 SN.PLAZOSOL PLAZO,
@@ -35,7 +38,8 @@ class CallCenter extends Model
                 SN.CDGOCPE ID_EJECUTIVO,
                 GET_NOMBRE_EMPLEADO(SN.CDGOCPE) EJECUTIVO,
                 SC.CDGPI ID_PROYECTO, 
-                TO_CHAR(SN.SOLICITUD ,'YYYY-MM-DD HH24:MI:SS') AS FECHA_SOL
+                TO_CHAR(SN.SOLICITUD ,'YYYY-MM-DD HH24:MI:SS') AS FECHA_SOL, 
+                SN.CICLOR
             FROM 
                 SN, SC
             WHERE
@@ -47,7 +51,11 @@ class CallCenter extends Model
         SQL;
 
         $credito_ = $mysqli->queryOne($query);
+        //var_dump($credito_);
         $id_cliente = $credito_['ID_CLIENTE'];
+        $id_credito = $credito_['NO_CREDITO'];
+        $id_proyecto = $credito_['ID_PROYECTO'];
+
 
         $query2 = <<<sql
          SELECT
@@ -84,10 +92,13 @@ class CallCenter extends Model
         AND MU.CODIGO = COL.CDGMU 
         AND LO.CODIGO = COL.CDGLO
         AND PI.CDGCL = CL.CODIGO 
+        AND PI.CDGNS = '$id_credito'
+        AND PI.PROYECTO = '$id_proyecto'
         ORDER BY PI.ACTUALIZA DESC
 sql;
 
         $cliente = $mysqli->queryOne($query2);
+
 
         $id_cliente_recomendado = $cliente['CLABE'];
         if ($id_cliente_recomendado != '') {
@@ -226,6 +237,17 @@ sql;
                 CL.CODIGO IN (SELECT SC.CDGCL FROM SC WHERE SC.CDGNS = '$credito' AND SC.CICLO = '$ciclo' AND SC.CANTSOLIC = '9999')
         SQL;
 
+        if (in_array($ciclo, [
+            'R1','R2','R3','R4','R5',
+            'R6','R7','R8','R9','R10',
+            'R11','R12','R13','R14','R15'
+        ])) {
+            $ciclo_actualizado =  $credito_['CICLOR'];
+        }else
+        {
+            $ciclo_actualizado =  $ciclo;
+        }
+
         $desbloqueo_cl = <<<sql
                 SELECT COUNT(ID_SCALL) as LLAMADA_UNO, 
                        CASE WHEN (DIA_LLAMADA_1_CL IS NOT NULL)  THEN (DIA_LLAMADA_1_CL ||' '|| TO_CHAR(HORA_LLAMADA_1_CL ,'HH24:MI:SS') || ' (' || TIPO_LLAM_1_CL ||')' ) ELSE '-' END AS HORA_LLAMADA_UNO, 
@@ -234,7 +256,7 @@ sql;
                 NUMERO_INTENTOS_CL, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS, VOBO_GERENTE_REGIONAL,
                 FIN_CL AS FINALIZADA, COMENTARIO_PRORROGA, PRORROGA, REACTIVACION 
                 FROM SOL_CALL_CENTER 
-                WHERE CICLO ='$ciclo' AND CDGCL_CL = '$id_cliente' AND (CICLO != 'R1') AND (FECHA_SOL = TIMESTAMP '$newDate.000')
+                WHERE CICLO ='$ciclo_actualizado' AND CDGCL_CL = '$id_cliente'  AND (FECHA_SOL = TIMESTAMP '$newDate.000')
                 GROUP BY ID_SCALL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, PRG_UNO_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, NUMERO_INTENTOS_CL, COMENTARIO_INICIAL, COMENTARIO_FINAL, FIN_CL, COMENTARIO_PRORROGA, PRORROGA, REACTIVACION, ESTATUS, VOBO_GERENTE_REGIONAL, TIPO_LLAM_1_CL, TIPO_LLAM_2_CL          
                 
 sql;
@@ -253,10 +275,14 @@ sql;
                 FIN_AV
 sql;
 
+
+
         $llamada_cl = $mysqli->queryOne($desbloqueo_cl);
         $llamada_av = $mysqli->queryOne($desbloqueo_aval);
         $cliente = $mysqli->queryOne($query2);
         $aval = $mysqli->queryAll($query3);
+
+        ///var_dump($desbloqueo_cl);
 
         return [$credito_, $cliente, $aval, $llamada_cl, $llamada_av, $res_recomendado];
     }
@@ -760,15 +786,10 @@ sql;
             
         FECHA_TRABAJO,
         CASE WHEN FECHA_SOL < TIMESTAMP '2023-10-19 00:00:00.000000' THEN 'SIN HISTORIAL' 
-        WHEN CICLO = 'R1'  THEN 'SE CANCELO/RECHAZO 1 VEZ' 
-        WHEN CICLO = 'R2'  THEN 'SE CANCELO/RECHAZO 2 VECES' 
-        WHEN CICLO = 'R3'  THEN 'SE CANCELO/RECHAZO 3 VECES' 
-        WHEN CICLO = 'R4'  THEN 'SE CANCELO/RECHAZO 4 VECES' 
-        WHEN CICLO = 'R5'  THEN 'SE CANCELO/RECHAZO 5 VECES' 
         ELSE 'PENDIENTE NO SE HA INICIADO VALIDACIÓN DE CALLCENTER, LA ADMINISTRADORA REGISTRO LA SOLICITUD EL DÍA: ' || FECHA_SOL END AS ESTATUS_GENERAL, 
             
         CASE WHEN FECHA_SOL < TIMESTAMP '2023-10-19 00:00:00.000000' THEN 'NO ESTA EN NINGUNA BANDEJA' 
-        ELSE 'BANDEJA PENDIENTES - SUC: ' || NOMBRE_SUCURSAL END AS BANDEJA
+        ELSE 'BANDEJA PENDIENTES - SUC: ' || NOMBRE_SUCURSAL END AS BANDEJA, COMENTARIO_INICIAL, COMENTARIO_FINAL, CICLOR
         FROM SOLICITUDES_PENDIENTES SPE WHERE CDGNS = '$cdgns'
                                         
 	    UNION 
@@ -780,7 +801,8 @@ sql;
         ELSE ESTATUS_FINAL END AS ESTATUS_GENERAL,
             
         CASE WHEN (ESTATUS_FINAL = 'PENDIENTE' OR ESTATUS_FINAL IS NULL) THEN 'BANDEJA PENDIENTES, VALIDANDO EL EJECUTIVO: ' || PE.NOMBRE1 || ' ' || PE.PRIMAPE || ' ' || PE.SEGAPE
-        ELSE 'BANDEJA HISTORICOS - VALIDO EJECUTIVO: ' || PE.NOMBRE1 || ' ' || PE.PRIMAPE || ' ' || PE.SEGAPE || ' EL DÍA:'|| FECHA_TRABAJO END AS BANDEJA
+        ELSE 'BANDEJA HISTORICOS - VALIDO EJECUTIVO: ' || PE.NOMBRE1 || ' ' || PE.PRIMAPE || ' ' || PE.SEGAPE || ' EL DÍA:'|| FECHA_TRABAJO END AS BANDEJA, COMENTARIO_INICIAL, COMENTARIO_FINAL,
+        CICLOR                                                                                                                                                    
         FROM SOLICITUDES_PROCESADAS SPR 
         INNER JOIN PE ON PE.CODIGO = SPR.CDGPE 
             WHERE CDGNS = '$cdgns') ORDER BY INICIO DESC
