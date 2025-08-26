@@ -3128,12 +3128,27 @@ html;
                     $recomendado = '';
                 }
 
+                if($value['CICLOR'] == '')
+                {
+                    $ciclo_r = '';
+                    $cicloi = $value['CICLO'];;
+                }
+                else
+                {
+                    $ciclo_r = <<<html
+                        <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado: <b>{$value['CICLOR']}</b></span>
+html;
+                    $cicloi = $value['CICLOR'];
+                }
+
+
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                    <td style="padding: 5px !important; width:65px !important;">
                     <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
                     <hr>
-                    <div><label>{$value['CDGNS']}-{$value['CICLO']}</label></div>
+                   <div><label>{$value['CDGNS']}-{$cicloi}</label></div>
+                    <div><label>{$ciclo_r}</label></div>
                     </td>
                     <td style="padding: 10px !important; text-align: left">
                          <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
@@ -3297,12 +3312,27 @@ html;
 html;
                 }
 
+                if($value['CICLOR'] == '')
+                {
+                    $ciclo_r = '';
+                    $cicloi = $value['CICLO'];;
+                }
+                else
+                {
+                    $ciclo_r = <<<html
+                        <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado: <b>{$value['CICLOR']}</b></span>
+html;
+                    $cicloi = $value['CICLOR'];
+                }
+
+
                 $tabla .= <<<html
                 <tr style="padding: 0px !important;">
                   <td style="padding: 5px !important; width:65px !important;">
                     <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
                     <hr>
-                    <div><label>{$value['CDGNS']}-{$value['CICLO']}</label></div>
+                    <div><label>{$value['CDGNS']}-{$cicloi}</label></div>
+                    <div><label>{$ciclo_r}</label></div>
                     </td>
                     <td style="padding: 10px !important; text-align: left">
                          <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
@@ -3540,6 +3570,7 @@ html;
                     <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
                     <hr>
                     <div><label>{$value['CDGNS']}-{$value['CICLO']}</label></div>
+                    <div><label>asasasasasasasas</label></div>
                     </td>
                         <td style="padding: 10px !important; text-align: left">
                             <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
@@ -3689,12 +3720,27 @@ html;
                     HTML;
                 }
 
+                if($value['CICLOR'] == '')
+                {
+                    $ciclo_r = '';
+                    $cicloi = $value['CICLO'];;
+                }
+                else
+                {
+                    $ciclo_r = <<<html
+                        <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado: <b>{$value['CICLOR']}</b></span>
+html;
+                    $cicloi = $value['CICLOR'];
+                }
+
                 $tabla .= <<<HTML
                     <tr style="padding: 0px !important;">
                        <td style="padding: 5px !important; width:65px !important;">
                     <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
                     <hr>
-                    <div><label>{$value['CDGNS']}-{$value['CICLO']}</label></div>
+                    <div><label>{$value['CDGNS']}-{$cicloi}</label></div>
+                    <div><label>{$ciclo_r}</label></div>
+                    
                     </td>
                         <td style="padding: 10px !important; text-align: left">
                             <span class="fa fa-building"></span> GERENCIA REGIONAL: ({$value['CODIGO_REGION']}) {$value['REGION']}
@@ -3881,7 +3927,7 @@ html;
             \PHPSpreadsheet::ColumnaExcel('B', 'NOMBRE REGION'),
             \PHPSpreadsheet::ColumnaExcel('C', 'FECHA DE TRABAJO', ['estilo' => $estilos['fecha']]),
             \PHPSpreadsheet::ColumnaExcel('D', 'SOLICITUD', ['estilo' => $estilos['fecha_hora']]),
-            \PHPSpreadsheet::ColumnaExcel('E', 'INICIO'),
+            \PHPSpreadsheet::ColumnaExcel('E', 'ESTATUS FINAL'),
             \PHPSpreadsheet::ColumnaExcel('F', 'AGENCIA'),
             \PHPSpreadsheet::ColumnaExcel('G', 'EJECUTIVO'),
             \PHPSpreadsheet::ColumnaExcel('H', 'CLIENTE', ['estilo' => $estilos['texto_derecha']]),
