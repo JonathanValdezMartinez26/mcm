@@ -178,7 +178,7 @@ class Contenedor extends Controller
             $menu .= <<<HTML
             <li><a href="/Creditos/CambioSucursal/">Cambio de Sucursal</a></li>
             <li><a href="/CancelaRef/">Cancelación de Ref</a></li>
-            <li><a href="/CorreccionAjustes/">Corrección Mov Ajustes</a></li>
+            <li><a href="/CorreccionAjustes/">Corrección Mov Ajustes </a></li>
             <li><a href="/Cultiva/">Consulta Clientes Solicitudes</a></li>
             HTML;
         }

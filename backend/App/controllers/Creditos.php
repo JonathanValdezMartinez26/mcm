@@ -695,6 +695,7 @@ html;
             \PHPSpreadsheet::ColumnaExcel('SALDO_TOTAL', 'SALDO TOTAL', ['estilo' => $estilos['moneda']]),
             \PHPSpreadsheet::ColumnaExcel('MORA_TOTAL', 'MORA TOTAL', ['estilo' => $estilos['moneda']]),
             \PHPSpreadsheet::ColumnaExcel('DIAS_MORA', 'DIAS MORA', $centrado),
+            \PHPSpreadsheet::ColumnaExcel('DIAS_ATRASO', 'DIAS ATRASO', $centrado),
             \PHPSpreadsheet::ColumnaExcel('TIPO_CARTERA', 'TIPO CARTERA', $centrado)
         ];
 

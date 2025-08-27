@@ -299,6 +299,14 @@ sql;
             CD.SDO_TOTAL AS SALDO_TOTAL,
             CD.MORA_TOTAL AS MORA_TOTAL,
             CD.DIAS_MORA AS DIAS_MORA,
+             -- NUEVA COLUMNA DIAS_ATRASO
+            ESIACOM.FNCALDIASATRASO(
+                'EMPFIN',
+                PRN.CDGNS,
+                PRN.CICLO,
+                'G',                           -- puedes reemplazar con PRMCLNS si lo tienes
+                TO_DATE('$fecha','YYYY-MM-DD')
+            ) AS DIAS_ATRASO,
             CASE
                 WHEN (SYSDATE > PRN.INICIO + (DURACINI * 7)) THEN 'VENCIDO'
                 ELSE 'VIGENTE'
