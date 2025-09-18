@@ -6,12 +6,9 @@ defined("APPPATH") or die("Access denied");
 
 use Core\Database;
 use Core\Model;
-use Mpdf\Tag\Tr;
 
 class Tesoreria extends Model
 {
-
-
     static public function GetReportePC($datos)
     {
         $qry = <<<SQL

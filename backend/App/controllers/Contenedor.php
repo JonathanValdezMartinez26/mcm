@@ -242,7 +242,7 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'PLMV', 'MCDP', 'LGFR', 'MACI', 'MGJC', 'JACJ'  ];
+        $permisos = ['ADMIN', 'PLMV', 'MCDP', 'LGFR', 'MACI', 'MGJC', 'JACJ'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
                 <ul class="nav side-menu">
@@ -269,7 +269,7 @@ class Contenedor extends Controller
             $menu .= <<<HTML
                 <ul class="nav side-menu">
                     <li>
-                        <a><i class="glyphicon glyphicon-cog"> 
+                        <a><i class="glyphicon glyphicon-exclamation-sign"> 
                     </i>&nbsp;Incidencias MCM<span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             <li><a href="/Incidencias/AutorizaRechazaSolicitud/">Error Autorizar y/o Rechazar Solicitud</a></li>
@@ -320,12 +320,29 @@ class Contenedor extends Controller
             $menu .= <<<HTML
                 <li>
                     <a>
-                        <i class="glyphicon glyphicon-cog">&nbsp;</i>Indicadores
+                        <i class="glyphicon glyphicon-stats">&nbsp;</i>Indicadores
                         <span class="fa fa-chevron-down"></span>
                     </a>
                     <ul class="nav child_menu">
                         <li>
                             <a href="/Indicadores/ProductividadOP/">Productividad Operaciones</a>
+                        </li>
+                    </ul>
+                </li>
+            HTML;
+        }
+
+        $permisos = ['AMGM'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= <<<HTML
+                <li>
+                    <a>
+                        <i class="glyphicon glyphicon-screenshot">&nbsp;</i>Radar de Cobranza
+                        <span class="fa fa-chevron-down"></span>
+                    </a>
+                    <ul class="nav child_menu">
+                        <li>
+                            <a href="/RadarCobranza/DashboardDia">Dashboard Día</a>
                         </li>
                     </ul>
                 </li>
