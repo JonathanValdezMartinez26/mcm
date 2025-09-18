@@ -264,7 +264,7 @@ class RadarCobranza extends Controller
 
                     let totalCobrados = 0,
                         totalPendientes = 0
-                    let ejecutivosHTML = ""
+                    let ejecutivos = []
 
                     Object.values(datos).forEach((sucursal) => {
                         if (sucursal.global) {
@@ -274,43 +274,57 @@ class RadarCobranza extends Controller
 
                         if (sucursal.detalle) {
                             sucursal.detalle.forEach((ejecutivo) => {
-                                const pagosCobrados = Math.abs(ejecutivo.PAGOS_COBRADOS)
-                                const efectivo = ejecutivo.POR_RECOLECTAR_EFECTIVO || 0
-
-                                ejecutivosHTML +=
-                                    "<div class='col-md-4 mb-3'>" +
-                                    "<div class='card'>" +
-                                    "<div class='card-body'>" +
-                                    "<h6 class='card-title'>" +
-                                    ejecutivo.NOMBRE_ASESOR +
-                                    "</h6>" +
-                                    "<p class='card-text small'>" +
-                                    "Del día: " +
-                                    ejecutivo.PAGOS_DEL_DIA +
-                                    "<br>" +
-                                    "Cobrados: " +
-                                    pagosCobrados +
-                                    "<br>" +
-                                    "Pendientes: " +
-                                    ejecutivo.PAGOS_PENDIENTES +
-                                    "<br>" +
-                                    "Efectivo: $" +
-                                    efectivo.toLocaleString() +
-                                    "</p>" +
-                                    "<button class='btn btn-sm btn-primary' onclick=\"mostrarDetalleEjecutivo('" +
-                                    ejecutivo.NOMBRE_ASESOR +
-                                    "', '" +
-                                    dia +
-                                    "', '" +
-                                    ejecutivo.SUCURSAL +
-                                    "')\">" +
-                                    "Ver Detalle" +
-                                    "</button>" +
-                                    "</div>" +
-                                    "</div>" +
-                                    "</div>"
+                                ejecutivos.push({
+                                    nombre: ejecutivo.NOMBRE_ASESOR,
+                                    pagosDia: ejecutivo.PAGOS_DEL_DIA,
+                                    pagosCobrados: Math.abs(ejecutivo.PAGOS_COBRADOS),
+                                    pagosPendientes: ejecutivo.PAGOS_PENDIENTES,
+                                    efectivo: ejecutivo.POR_RECOLECTAR_EFECTIVO || 0,
+                                    sucursal: ejecutivo.SUCURSAL
+                                })
                             })
                         }
+                    })
+
+                    // Ordenar ejecutivos alfabéticamente por nombre
+                    ejecutivos.sort((a, b) => a.nombre.localeCompare(b.nombre))
+
+                    let ejecutivosHTML = ""
+                    ejecutivos.forEach((ejecutivo) => {
+                        ejecutivosHTML +=
+                            "<div class='ejecutivo-card'>" +
+                            "<div class='card'>" +
+                            "<div class='card-body'>" +
+                            "<h6 class='card-title'>" +
+                            ejecutivo.nombre +
+                            "</h6>" +
+                            "<div class='card-text'>" +
+                            "<small>" +
+                            "Del día: " +
+                            ejecutivo.pagosDia +
+                            "<br>" +
+                            "Cobrados: " +
+                            ejecutivo.pagosCobrados +
+                            "<br>" +
+                            "Pendientes: " +
+                            ejecutivo.pagosPendientes +
+                            "<br>" +
+                            "Efectivo: $" +
+                            ejecutivo.efectivo.toLocaleString() +
+                            "</small>" +
+                            "</div>" +
+                            "<button class='btn btn-sm btn-primary' onclick=\"mostrarDetalleEjecutivo('" +
+                            ejecutivo.nombre +
+                            "', '" +
+                            dia +
+                            "', '" +
+                            ejecutivo.sucursal +
+                            "')\">" +
+                            "Ver Detalle" +
+                            "</button>" +
+                            "</div>" +
+                            "</div>" +
+                            "</div>"
                     })
 
                     const totalGeneral = totalCobrados + totalPendientes
@@ -354,7 +368,7 @@ class RadarCobranza extends Controller
                         "</div>" +
                         "<div class='col-md-6'>" +
                         "<h5>Ejecutivos</h5>" +
-                        "<div class='row'>" +
+                        "<div class='ejecutivos-container'>" +
                         ejecutivosHTML +
                         "</div>" +
                         "</div>" +
@@ -537,7 +551,6 @@ class RadarCobranza extends Controller
                     // Mostrar modal y cargar datos
                     $("#ejecutivoRutaNombre").text(ejecutivoActual.nombre)
                     $("#modalRutaCobranza").modal("show")
-                    $("#mapLoading").show()
                     $("#map").hide()
 
                     // Cargar script de Google Maps si no está cargado
@@ -574,9 +587,7 @@ class RadarCobranza extends Controller
                         fecha: ejecutivoActual.fecha
                     }
 
-                    consultaServidor("/RadarCobranza/GetRutaCobranza", requestData, (res) => {
-                        $("#mapLoading").hide()
-                        
+                    consultaServidor("/RadarCobranza/GetRutaCobranza", requestData, (res) => {                        
                         if (!res.success) {
                             $("#map").html("<div class='alert alert-danger text-center'><p>Error al cargar la ruta: " + res.mensaje + "</p></div>").show()
                             return
@@ -618,7 +629,7 @@ class RadarCobranza extends Controller
                     // Configurar mapa
                     const mapOptions = {
                         zoom: 12,
-                        center: { lat: 19.4326, lng: -99.1332 }, // Ciudad de México por defecto
+                        center: { lat: 19.4326, lng: -99.1332 },
                         mapTypeId: google.maps.MapTypeId.ROADMAP
                     }
 
@@ -705,6 +716,20 @@ class RadarCobranza extends Controller
                     $("#loginBtn").click(realizarLogin)
                     $("#usuario, #password").keypress((e) => {
                         if (e.which === 13) realizarLogin()
+                    })
+
+                    // Mejorar el comportamiento del accordion
+                    $(document).on('show.bs.collapse', '#accordionDias .collapse', function () {
+                        // Cerrar otros elementos del accordion
+                        $('#accordionDias .collapse.show').not(this).collapse('hide')
+                        
+                        // Rotar íconos
+                        $(this).prev().find('.btn-link i').removeClass('fa-chevron-down').addClass('fa-chevron-up')
+                    })
+
+                    $(document).on('hide.bs.collapse', '#accordionDias .collapse', function () {
+                        // Rotar íconos
+                        $(this).prev().find('.btn-link i').removeClass('fa-chevron-up').addClass('fa-chevron-down')
                     })
 
                     // Validar token al cargar

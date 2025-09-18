@@ -106,9 +106,6 @@
 
                 <!-- Estadísticas del Día -->
                 <div class="card mb-3">
-                    <div class="card-header">
-                        <h6 class="mb-0">Estadísticas del Día</h6>
-                    </div>
                     <div class="card-body">
                         <div class="row text-center">
                             <div class="col-md-4">
@@ -125,7 +122,7 @@
                             </div>
                         </div>
                         <div class="progress mt-3">
-                            <!-- <div id="progresoBar" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div> -->
+                            <!-- <div id="progresoBar" class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div> -->
                         </div>
                         <p class="text-center mt-2 mb-0">
                             <span class="text-muted">Progreso de Cobranza</span>
@@ -206,12 +203,6 @@
 
                 <!-- Mapa -->
                 <div id="map" style="width: 100%; height: 500px; border: 1px solid #ccc; border-radius: 5px;"></div>
-
-                <!-- Loading indicator -->
-                <div id="mapLoading" class="text-center" style="display: none;">
-                    <i class="fa fa-spinner fa-spin fa-3x"></i>
-                    <p>Cargando ruta de cobranza...</p>
-                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -375,6 +366,51 @@
         padding: 2rem;
         border-radius: 10px;
         z-index: 1000;
+    }
+
+    /* Solucionar problema de cards con diferentes alturas */
+    .ejecutivos-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px;
+    }
+
+    .ejecutivo-card {
+        width: 240px;
+    }
+
+    /* Para pantallas más pequeñas */
+    @media (max-width: 992px) {
+        .ejecutivo-card {
+            flex: 0 0 calc(50% - 7.5px);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .ejecutivo-card {
+            flex: 0 0 100%;
+        }
+    }
+
+    /* Asegurar que todas las cards tengan la misma altura */
+    .ejecutivo-card .card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ejecutivo-card .card-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ejecutivo-card .card-text {
+        flex: 1;
+    }
+
+    .ejecutivo-card .btn {
+        margin-top: auto;
     }
 </style>
 
