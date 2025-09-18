@@ -99,6 +99,14 @@ class RadarCobranza extends Controller
 
                 // Renderizar dashboard
                 const renderizarDashboard = (data) => {
+                    // Limpiar charts anteriores al renderizar nuevo dashboard
+                    Object.keys(chartInstances).forEach(chartId => {
+                        if (chartInstances[chartId]) {
+                            chartInstances[chartId].destroy()
+                            delete chartInstances[chartId]
+                        }
+                    })
+                    
                     if (!data.por_dia) {
                         showError("No hay datos disponibles")
                         return
@@ -233,12 +241,22 @@ class RadarCobranza extends Controller
                     }
                 }
 
+                // Variable para almacenar instancias de charts
+                const chartInstances = {}
+
                 // Cargar contenido del día
                 const cargarContenidoDia = (dia, datos) => {
                     if (!datos || Object.keys(datos).length === 0) {
                         document.getElementById("content" + dia).innerHTML =
                             "<p class='text-center'>No hay datos para este día</p>"
                         return
+                    }
+
+                    // Destruir chart anterior si existe
+                    const chartId = "chart" + dia
+                    if (chartInstances[chartId]) {
+                        chartInstances[chartId].destroy()
+                        delete chartInstances[chartId]
                     }
 
                     let totalCobrados = 0,
@@ -292,8 +310,6 @@ class RadarCobranza extends Controller
                         }
                     })
 
-                    // Crear gráfico
-                    const chartId = "chart" + dia
                     const totalGeneral = totalCobrados + totalPendientes
 
                     let chartHTML = ""
@@ -302,11 +318,13 @@ class RadarCobranza extends Controller
                         const porcentajePendientes = ((totalPendientes / totalGeneral) * 100).toFixed(1)
 
                         chartHTML =
-                            "<div class='text-center mb-3'>" +
+                            "<div class='text-center mb-3' style='flex: 1; display: flex; flex-direction: column; justify-content: space-between; height: 100%;'>" +
                             "<h5>Resumen del día</h5>" +
+                            "<div style='height: 85%; display: flex; justify-content: center; align-items: center;'>" +
                             "<canvas id='" +
                             chartId +
-                            "' width='300' height='300'></canvas>" +
+                            "'></canvas>" +
+                            "</div>" +
                             "<div class='mt-2'>" +
                             "<small>" +
                             "<span class='text-success'>■ Cobrados: " +
@@ -327,8 +345,8 @@ class RadarCobranza extends Controller
                     }
 
                     const contenidoHTML =
-                        "<div class='row'>" +
-                        "<div class='col-md-6'>" +
+                        "<div class='row' style='display: flex;'>" +
+                        "<div class='col-md-6' style='flex: 1; display: flex; justify-content: center; align-items: center;'>" +
                         chartHTML +
                         "</div>" +
                         "<div class='col-md-6'>" +
@@ -345,8 +363,8 @@ class RadarCobranza extends Controller
                     if (totalGeneral > 0) {
                         setTimeout(() => {
                             const ctx = document.getElementById(chartId)
-                            if (ctx) {
-                                new Chart(ctx, {
+                            if (ctx && ctx.getContext) {
+                                chartInstances[chartId] = new Chart(ctx.getContext("2d"), {
                                     type: "pie",
                                     data: {
                                         labels: ["Cobrados", "Pendientes"],
@@ -354,18 +372,22 @@ class RadarCobranza extends Controller
                                             {
                                                 data: [totalCobrados, totalPendientes],
                                                 backgroundColor: ["#28a745", "#dc3545"],
-                                                borderWidth: 1,
+                                                borderWidth: 2,
                                                 borderColor: "#fff"
                                             }
                                         ]
                                     },
                                     options: {
                                         responsive: true,
-                                        maintainAspectRatio: false,
+                                        maintainAspectRatio: true,
+                                        aspectRatio: 1,
                                         plugins: {
                                             legend: {
                                                 display: false
                                             }
+                                        },
+                                        animation: {
+                                            duration: 500
                                         }
                                     }
                                 })
@@ -424,6 +446,14 @@ class RadarCobranza extends Controller
 
                 // Cerrar sesión
                 const cerrarSesion = () => {
+                    // Limpiar todos los charts antes de cerrar sesión
+                    Object.keys(chartInstances).forEach(chartId => {
+                        if (chartInstances[chartId]) {
+                            chartInstances[chartId].destroy()
+                            delete chartInstances[chartId]
+                        }
+                    })
+                    
                     localStorage.removeItem("radar_auth")
                     $("#btnCerrarSesion").hide()
                     $("#accordionDias").html("")
