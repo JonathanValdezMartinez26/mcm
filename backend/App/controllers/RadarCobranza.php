@@ -99,6 +99,9 @@ class RadarCobranza extends Controller
 
                 // Renderizar dashboard
                 const renderizarDashboard = (data) => {
+                    // Guardar datos globalmente para uso en otras funciones
+                    window.dashboardData = data
+                    
                     // Limpiar charts anteriores al renderizar nuevo dashboard
                     Object.keys(chartInstances).forEach(chartId => {
                         if (chartInstances[chartId]) {
@@ -396,12 +399,13 @@ class RadarCobranza extends Controller
                     }
                 }
 
+                // Variables globales para el ejecutivo actual
+                let ejecutivoActual = null
+
                 // Mostrar detalle del ejecutivo
                 const mostrarDetalleEjecutivo = (nombreEjecutivo, dia, sucursal) => {
-                    // Obtener fecha actual o calcular fecha del día seleccionado
                     const fechaActual = new Date()
 
-                    // Mapear días a números (0=Domingo, 1=Lunes, etc.)
                     const mapaDias = {
                         LUNES: 1,
                         MARTES: 2,
@@ -410,7 +414,6 @@ class RadarCobranza extends Controller
                         VIERNES: 5
                     }
 
-                    // Calcular la fecha del día seleccionado
                     const diaNumerico = mapaDias[dia]
                     const diaActual = fechaActual.getDay()
                     let fechaDelDia = new Date(fechaActual)
@@ -421,27 +424,264 @@ class RadarCobranza extends Controller
                     }
 
                     const fechaFormateada = fechaDelDia.toLocaleDateString("es-MX", {
-                        weekday: "long",
                         year: "numeric",
-                        month: "long",
-                        day: "numeric"
+                        month: "long", 
+                        day: "2-digit"
                     })
 
-                    $("#modalDetalleTitle").text(nombreEjecutivo)
+                    // Guardar información del ejecutivo actual para usar en otras funciones
+                    ejecutivoActual = {
+                        nombre: nombreEjecutivo,
+                        dia: dia,
+                        sucursal: sucursal,
+                        fecha: fechaDelDia.toISOString().split('T')[0] // Formato yyyy-mm-dd
+                    }
+
+                    // Buscar datos del ejecutivo en el dashboard actual
+                    const datosEjecutivo = buscarDatosEjecutivo(nombreEjecutivo, dia)
+                    
+                    if (datosEjecutivo) {
+                        // Llenar cards de información
+                        $("#codigoEjecutivo").text(datosEjecutivo.ASESOR || "-")
+                        $("#efectivoRecolectado").text("$" + (datosEjecutivo.RECOLECTADO || 0).toLocaleString())
+                        $("#porRecolectar").text("$" + (datosEjecutivo.POR_RECOLECTAR_EFECTIVO || 0).toLocaleString())
+                        $("#pendienteEfectivo").text("$" + (datosEjecutivo.PENDIENTE_EFECTIVO || 0).toLocaleString())
+                        
+                        // Estadísticas del día
+                        const cobrados = Math.abs(datosEjecutivo.PAGOS_COBRADOS || 0)
+                        const pendientes = datosEjecutivo.PAGOS_PENDIENTES || 0
+                        const total = cobrados + pendientes
+                        const porcentaje = total > 0 ? ((cobrados / total) * 100).toFixed(1) : 0
+                        
+                        $("#cobradosDetalle").text(cobrados)
+                        $("#pendientesDetalle").text(pendientes)
+                        $("#totalDetalle").text(total)
+                        $("#progresoBar").css("width", porcentaje + "%")
+                        $("#porcentajeCobrado").text(porcentaje + "%")
+                    } else {
+                        // Valores por defecto si no se encuentran datos
+                        $("#codigoEjecutivo").text("-")
+                        $("#efectivoRecolectado").text("$0.00")
+                        $("#porRecolectar").text("$0.00")
+                        $("#pendienteEfectivo").text("$0.00")
+                        $("#cobradosDetalle").text("0")
+                        $("#pendientesDetalle").text("0")
+                        $("#totalDetalle").text("0")
+                        $("#progresoBar").css("width", "0%")
+                        $("#porcentajeCobrado").text("0%")
+                    }
+
                     $("#modalDetalleSubtitle").html(
                         "<div class='row'>" +
-                            "<div class='col-md-4'><strong>Día:</strong> " +
-                            dia +
+                            "<div class='col-md-6'><strong>Ejecutivo:</strong> " +
+                            nombreEjecutivo +
                             "</div>" +
-                            "<div class='col-md-4'><strong>Fecha:</strong> " +
-                            fechaFormateada +
-                            "</div>" +
-                            "<div class='col-md-4'><strong>Sucursal:</strong> " +
+                            "<div class='col-md-6'><strong>Sucursal:</strong> " +
                             sucursal +
                             "</div>" +
-                            "</div>"
+                            "<div class='col-md-6'><strong>Día:</strong> " +
+                            dia +
+                            "</div>" +
+                            "<div class='col-md-6'><strong>Fecha:</strong> " +
+                            fechaFormateada +
+                            "</div>" +
+                        "</div>"
                     )
                     $("#modalDetalle").modal("show")
+                }
+
+                // Buscar datos del ejecutivo en el dashboard cargado
+                const buscarDatosEjecutivo = (nombreEjecutivo, dia) => {
+                    // Esta función busca en los datos ya cargados del dashboard
+                    // Necesitamos acceso a los datos del dashboard, los almacenaremos globalmente
+                    if (window.dashboardData && window.dashboardData.por_dia && window.dashboardData.por_dia[dia]) {
+                        const datosDia = window.dashboardData.por_dia[dia]
+                        for (const sucursalKey in datosDia) {
+                            const sucursal = datosDia[sucursalKey]
+                            if (sucursal.detalle) {
+                                const ejecutivo = sucursal.detalle.find(e => e.NOMBRE_ASESOR === nombreEjecutivo)
+                                if (ejecutivo) return ejecutivo
+                            }
+                        }
+                    }
+                    return null
+                }
+
+                // Función para mostrar modal de ruta de cobranza
+                const verRutaCobranza = () => {
+                    if (!ejecutivoActual) {
+                        showError("No hay información del ejecutivo seleccionado")
+                        return
+                    }
+
+                    const authData = localStorage.getItem("radar_auth")
+                    if (!authData) {
+                        showError("No hay información de autenticación")
+                        return
+                    }
+
+                    let mapsKey = ""
+                    try {
+                        const data = JSON.parse(authData)
+                        mapsKey = data["key-maps"] || ""
+                    } catch (e) {
+                        showError("Error al obtener la clave de Google Maps")
+                        return
+                    }
+
+                    if (!mapsKey) {
+                        showError("No se encontró la clave de Google Maps en la sesión")
+                        return
+                    }
+
+                    // Mostrar modal y cargar datos
+                    $("#ejecutivoRutaNombre").text(ejecutivoActual.nombre)
+                    $("#modalRutaCobranza").modal("show")
+                    $("#mapLoading").show()
+                    $("#map").hide()
+
+                    // Cargar script de Google Maps si no está cargado
+                    if (!window.google) {
+                        const script = document.createElement("script")
+                        script.src = "https://maps.googleapis.com/maps/api/js?key=" + mapsKey
+                        script.async = true
+                        script.defer = true
+                        document.head.appendChild(script)
+                        // Inicializar mapa una vez que el script se haya cargado
+                        script.onload = () => {
+                            inicializarMapa()
+                        }
+                    } else {
+                        inicializarMapa()
+                    }
+                }
+
+                // Inicializar el mapa de Google Maps
+                const inicializarMapa = () => {
+                    const token = validarToken()
+                    if (!token) return
+
+                    // Buscar código del ejecutivo
+                    let codigoEjecutivo = ""
+                    const datosEjecutivo = buscarDatosEjecutivo(ejecutivoActual.nombre, ejecutivoActual.dia)
+                    if (datosEjecutivo && datosEjecutivo.ASESOR) {
+                        codigoEjecutivo = datosEjecutivo.ASESOR
+                    }
+
+                    const requestData = {
+                        token: token,
+                        ejecutivo: codigoEjecutivo,
+                        fecha: ejecutivoActual.fecha
+                    }
+
+                    consultaServidor("/RadarCobranza/GetRutaCobranza", requestData, (res) => {
+                        $("#mapLoading").hide()
+                        
+                        if (!res.success) {
+                            $("#map").html("<div class='alert alert-danger text-center'><p>Error al cargar la ruta: " + res.mensaje + "</p></div>").show()
+                            return
+                        }
+
+                        mostrarMapaConRuta(res.datos)
+                    })
+                }
+
+                // Mostrar mapa con los datos de la ruta
+                const mostrarMapaConRuta = (geoJsonData) => {
+                    $("#map").show()
+
+                    if (!geoJsonData || !geoJsonData.features || geoJsonData.features.length === 0) {
+                        $("#map").html("<div class='alert alert-info text-center'><p>No hay datos de ruta para mostrar</p></div>")
+                        return
+                    }
+
+                    // Procesar datos para el resumen
+                    const puntos = geoJsonData.features.filter(f => f.geometry.type === "Point")
+                    let montoTotal = 0
+                    let fechaRuta = "-"
+
+                    puntos.forEach(punto => {
+                        if (punto.properties.monto) {
+                            montoTotal += punto.properties.monto
+                        }
+                        if (punto.properties.fecha && fechaRuta === "-") {
+                            fechaRuta = punto.properties.fecha
+                        }
+                    })
+
+                    // Actualizar resumen
+                    $("#totalPuntos").text(puntos.length)
+                    $("#puntosPago").text(puntos.filter(p => p.properties.tipo === "PAGO").length)
+                    $("#montoTotal").text("$" + montoTotal.toLocaleString())
+                    $("#fechaRuta").text(fechaRuta)
+
+                    // Configurar mapa
+                    const mapOptions = {
+                        zoom: 12,
+                        center: { lat: 19.4326, lng: -99.1332 }, // Ciudad de México por defecto
+                        mapTypeId: google.maps.MapTypeId.ROADMAP
+                    }
+
+                    const map = new google.maps.Map(document.getElementById("map"), mapOptions)
+                    const bounds = new google.maps.LatLngBounds()
+
+                    // Agregar marcadores
+                    puntos.forEach((punto, index) => {
+                        const coords = punto.geometry.coordinates
+                        const position = new google.maps.LatLng(parseFloat(coords[1]), parseFloat(coords[0]))
+                        
+                        const marker = new google.maps.Marker({
+                            position: position,
+                            map: map,
+                            title: punto.properties.nombre + " - $" + punto.properties.monto,
+                            label: (index + 1).toString(),
+                            icon: {
+                                url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
+                                    "<svg width='30' height='30' xmlns='http://www.w3.org/2000/svg'>" +
+                                    "<circle cx='15' cy='15' r='12' fill='" + punto.properties.color + "' stroke='white' stroke-width='2'/>" +
+                                    "<text x='15' y='20' text-anchor='middle' fill='white' font-size='12' font-weight='bold'>" + (index + 1) + "</text>" +
+                                    "</svg>"
+                                )
+                            }
+                        })
+
+                        // Info window
+                        const infoWindow = new google.maps.InfoWindow({
+                            content: "<div><strong>" + punto.properties.nombre + "</strong><br>" +
+                                     "Tipo: " + punto.properties.tipo + "<br>" +
+                                     "Monto: $" + punto.properties.monto + "<br>" +
+                                     "Fecha: " + punto.properties.fecha + "</div>"
+                        })
+
+                        marker.addListener("click", () => {
+                            infoWindow.open(map, marker)
+                        })
+
+                        bounds.extend(position)
+                    })
+
+                    // Dibujar ruta si existe
+                    const rutaFeature = geoJsonData.features.find(f => f.geometry.type === "LineString")
+                    if (rutaFeature) {
+                        const rutaPath = rutaFeature.geometry.coordinates.map(coord => 
+                            new google.maps.LatLng(parseFloat(coord[1]), parseFloat(coord[0]))
+                        )
+
+                        const ruta = new google.maps.Polyline({
+                            path: rutaPath,
+                            geodesic: true,
+                            strokeColor: rutaFeature.properties.color || "#0000FF",
+                            strokeOpacity: 1.0,
+                            strokeWeight: 3
+                        })
+
+                        ruta.setMap(map)
+                    }
+
+                    // Ajustar vista del mapa
+                    if (puntos.length > 0) {
+                        map.fitBounds(bounds)
+                    }
                 }
 
                 // Cerrar sesión
@@ -490,5 +730,15 @@ class RadarCobranza extends Controller
     public function GetResumenCobranza()
     {
         echo json_encode(RadarCobranzaDao::GetResumenCobranza($_POST['token']));
+    }
+
+    public function GetRutaCobranza()
+    {
+        if (!isset($_POST['token'])) {
+            echo json_encode(['success' => false, 'mensaje' => 'Token requerido']);
+            return;
+        }
+
+        echo json_encode(RadarCobranzaDao::GetRutaCobranza($_POST['token'], $_POST));
     }
 }

@@ -5,7 +5,7 @@
         <div class="panel panel-body">
             <div class="x_title">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h3>Radar de Cobranza - Dashboard Día</h3>
+                    <h3>Dashboard Día</h3>
                     <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cerrarSesion()" style="display: none;" id="btnCerrarSesion">
                         <i class="fa fa-sign-out"></i> Cerrar Sesión API
                     </button>
@@ -58,14 +58,159 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalDetalleTitle">Detalle del Ejecutivo</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+                <h4 class="modal-title" id="modalDetalleTitle">Detalle del Ejecutivo</h4>
             </div>
             <div class="modal-body">
                 <div id="modalDetalleSubtitle" class="text-muted mb-3"></div>
-                <div id="modalDetalleContent">
+
+                <!-- Cards de información -->
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <div class="card info-card blue-card">
+                            <div class="card-body text-center">
+                                <i class="fa fa-user text-primary"></i>
+                                <h6>Código del Ejecutivo</h6>
+                                <h4 id="codigoEjecutivo">-</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card info-card green-card">
+                            <div class="card-body text-center">
+                                <i class="fa fa-dollar text-success"></i>
+                                <h6>Efectivo Recolectado</h6>
+                                <h4 id="efectivoRecolectado">$0.00</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card info-card yellow-card">
+                            <div class="card-body text-center">
+                                <i class="fa fa-clock-o text-warning"></i>
+                                <h6>Por Recolectar</h6>
+                                <h4 id="porRecolectar">$0.00</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card info-card red-card">
+                            <div class="card-body text-center">
+                                <i class="fa fa-exclamation-triangle text-danger"></i>
+                                <h6>Pendiente de Efectivo</h6>
+                                <h4 id="pendienteEfectivo">$0.00</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas del Día -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">Estadísticas del Día</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <h3 id="cobradosDetalle" class="text-success">0</h3>
+                                <p class="mb-0">Cobrados</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h3 id="pendientesDetalle" class="text-danger">0</h3>
+                                <p class="mb-0">Pendientes</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h3 id="totalDetalle" class="text-primary">0</h3>
+                                <p class="mb-0">Total</p>
+                            </div>
+                        </div>
+                        <div class="progress mt-3">
+                            <!-- <div id="progresoBar" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div> -->
+                        </div>
+                        <p class="text-center mt-2 mb-0">
+                            <span class="text-muted">Progreso de Cobranza</span>
+                            <strong id="porcentajeCobrado" class="ml-2">0%</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Botones de acciones -->
+                <div class="text-center mb-3">
+                    <button type="button" class="btn btn-danger btn-lg" onclick="verRutaCobranza()">
+                        <i class="fa fa-map-marker"></i> Ver Ruta de Cobranza
+                    </button>
+                </div>
+
+                <!-- Sección de Detalles de Créditos -->
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fa fa-credit-card fa-3x text-muted mb-3"></i>
+                        <h6>Detalles de Créditos</h6>
+                        <p class="text-muted">Esta sección mostrará los detalles de créditos cuando el endpoint esté disponible</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Ruta de Cobranza -->
+<div class="modal fade" id="modalRutaCobranza" tabindex="-1" role="dialog" aria-labelledby="modalRutaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+                <h4 class="modal-title" id="modalRutaTitle">
+                    <i class="fa fa-map-marker"></i> Ruta de Cobranza - <span id="ejecutivoRutaNombre">-</span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <!-- Resumen de puntos -->
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h4 id="totalPuntos" class="text-primary">0</h4>
+                                <small>Total Puntos</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h4 id="puntosPago" class="text-success">0</h4>
+                                <small>Pagos Registrados</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h4 id="montoTotal" class="text-warning">$0.00</h4>
+                                <small>Monto Total</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h4 id="fechaRuta" class="text-info">-</h4>
+                                <small>Fecha</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mapa -->
+                <div id="map" style="width: 100%; height: 500px; border: 1px solid #ccc; border-radius: 5px;"></div>
+
+                <!-- Loading indicator -->
+                <div id="mapLoading" class="text-center" style="display: none;">
+                    <i class="fa fa-spinner fa-spin fa-3x"></i>
+                    <p>Cargando ruta de cobranza...</p>
                 </div>
             </div>
             <div class="modal-footer">
@@ -160,6 +305,76 @@
 
     #accordionDias .btn-link:not(.collapsed) i {
         transform: rotate(0deg);
+    }
+
+    /* Estilos para cards de información */
+    .info-card {
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+    }
+
+    .info-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .blue-card {
+        background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    }
+
+    .green-card {
+        background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%);
+    }
+
+    .yellow-card {
+        background: linear-gradient(135deg, #fff8e1 0%, #fffde7 100%);
+    }
+
+    .red-card {
+        background: linear-gradient(135deg, #ffebee 0%, #fce4ec 100%);
+    }
+
+    .info-card .card-body {
+        padding: 1rem 0.5rem;
+    }
+
+    .info-card h4 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0.5rem 0;
+    }
+
+    .info-card h6 {
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+        color: #666;
+        font-weight: 500;
+    }
+
+    .info-card i {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Modal de ruta de cobranza */
+    .modal-xl {
+        max-width: 90%;
+    }
+
+    #map {
+        min-height: 500px;
+    }
+
+    #mapLoading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2rem;
+        border-radius: 10px;
+        z-index: 1000;
     }
 </style>
 
