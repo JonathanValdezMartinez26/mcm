@@ -470,7 +470,7 @@ class RadarCobranza extends Controller
                         $("#cobradosDetalle").text(cobrados)
                         $("#pendientesDetalle").text(pendientes)
                         $("#totalDetalle").text(total)
-                        $("#progresoBar").css("width", porcentaje + "%")
+                        $("#progresoBar").css("width", porcentaje + "%").attr("aria-valuenow", porcentaje)
                         $("#porcentajeCobrado").text(porcentaje + "%")
                     } else {
                         // Valores por defecto si no se encuentran datos
@@ -481,7 +481,7 @@ class RadarCobranza extends Controller
                         $("#cobradosDetalle").text("0")
                         $("#pendientesDetalle").text("0")
                         $("#totalDetalle").text("0")
-                        $("#progresoBar").css("width", "0%")
+                        $("#progresoBar").css("width", "0%").attr("aria-valuenow", 0)
                         $("#porcentajeCobrado").text("0%")
                     }
 
@@ -718,18 +718,19 @@ class RadarCobranza extends Controller
                         if (e.which === 13) realizarLogin()
                     })
 
-                    // Mejorar el comportamiento del accordion
+                    // Manejo de iconos del accordion
                     $(document).on('show.bs.collapse', '#accordionDias .collapse', function () {
-                        // Cerrar otros elementos del accordion
-                        $('#accordionDias .collapse.show').not(this).collapse('hide')
-                        
-                        // Rotar íconos
-                        $(this).prev().find('.btn-link i').removeClass('fa-chevron-down').addClass('fa-chevron-up')
+                        // Rotar íconos cuando se abre
+                        const button = $(this).prev('.card-header').find('.btn-link')
+                        button.find('i').css('transform', 'rotate(180deg)')
+                        button.removeClass('collapsed').attr('aria-expanded', 'true')
                     })
 
                     $(document).on('hide.bs.collapse', '#accordionDias .collapse', function () {
-                        // Rotar íconos
-                        $(this).prev().find('.btn-link i').removeClass('fa-chevron-up').addClass('fa-chevron-down')
+                        // Rotar íconos cuando se cierra
+                        const button = $(this).prev('.card-header').find('.btn-link')
+                        button.find('i').css('transform', 'rotate(0deg)')
+                        button.addClass('collapsed').attr('aria-expanded', 'false')
                     })
 
                     // Validar token al cargar

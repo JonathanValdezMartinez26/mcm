@@ -70,8 +70,8 @@
                         <div class="card info-card blue-card">
                             <div class="card-body text-center">
                                 <i class="fa fa-user text-primary"></i>
-                                <h6>Código del Ejecutivo</h6>
                                 <h4 id="codigoEjecutivo">-</h4>
+                                <h5>Código del Ejecutivo</h5>
                             </div>
                         </div>
                     </div>
@@ -79,8 +79,8 @@
                         <div class="card info-card green-card">
                             <div class="card-body text-center">
                                 <i class="fa fa-dollar text-success"></i>
-                                <h6>Efectivo Recolectado</h6>
                                 <h4 id="efectivoRecolectado">$0.00</h4>
+                                <h5>Efectivo Recolectado</h5>
                             </div>
                         </div>
                     </div>
@@ -88,8 +88,8 @@
                         <div class="card info-card yellow-card">
                             <div class="card-body text-center">
                                 <i class="fa fa-clock-o text-warning"></i>
-                                <h6>Por Recolectar</h6>
                                 <h4 id="porRecolectar">$0.00</h4>
+                                <h5>Por Recolectar</h5>
                             </div>
                         </div>
                     </div>
@@ -97,8 +97,8 @@
                         <div class="card info-card red-card">
                             <div class="card-body text-center">
                                 <i class="fa fa-exclamation-triangle text-danger"></i>
-                                <h6>Pendiente de Efectivo</h6>
                                 <h4 id="pendienteEfectivo">$0.00</h4>
+                                <h5>Pendiente de Efectivo</h5>
                             </div>
                         </div>
                     </div>
@@ -122,7 +122,7 @@
                             </div>
                         </div>
                         <div class="progress mt-3">
-                            <!-- <div id="progresoBar" class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div> -->
+                            <div id="progresoBar" class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                         <p class="text-center mt-2 mb-0">
                             <span class="text-muted">Progreso de Cobranza</span>
@@ -133,7 +133,7 @@
 
                 <!-- Botones de acciones -->
                 <div class="text-center mb-3">
-                    <button type="button" class="btn btn-danger btn-lg" onclick="verRutaCobranza()">
+                    <button type="button" class="btn btn-danger btn-md" onclick="verRutaCobranza()">
                         <i class="fa fa-map-marker"></i> Ver Ruta de Cobranza
                     </button>
                 </div>
@@ -142,8 +142,8 @@
                 <div class="card">
                     <div class="card-body text-center">
                         <i class="fa fa-credit-card fa-3x text-muted mb-3"></i>
-                        <h6>Detalles de Créditos</h6>
-                        <p class="text-muted">Esta sección mostrará los detalles de créditos cuando el endpoint esté disponible</p>
+                        <h5>Detalles de Créditos</h5>
+                        <p class="text-muted">Sin datos disponibles</p>
                     </div>
                 </div>
             </div>
@@ -287,15 +287,16 @@
     }
 
     #accordionDias .btn-link i {
-        transition: transform 0.2s;
+        transition: transform 0.2s ease;
     }
 
     #accordionDias .btn-link.collapsed i {
-        transform: rotate(-90deg);
+        transform: rotate(0deg);
     }
 
-    #accordionDias .btn-link:not(.collapsed) i {
-        transform: rotate(0deg);
+    #accordionDias .btn-link:not(.collapsed) i,
+    #accordionDias .btn-link[aria-expanded="true"] i {
+        transform: rotate(180deg);
     }
 
     /* Estilos para cards de información */
