@@ -2,19 +2,26 @@
 
 namespace App\models;
 
-defined("APPPATH") or die("Access denied");
-
-use Core\Database;
+use Core\App;
 use Core\Model;
 
 class RadarCobranza extends Model
 {
-    static private $apiBaseUrl = 'http://18.117.29.228:5000';
+    static private $apiBaseUrl = 'http://localhost:5000';
+
+    static private function getBaseUrl()
+    {
+        $config = App::getConfig();
+        if (isset($config['API_APP']) && !empty($config['API_APP'])) {
+            return $config['API_APP'];
+        }
+        return self::$apiBaseUrl;
+    }
 
     static public function Login($datos)
     {
         try {
-            $url = self::$apiBaseUrl . '/login';
+            $url = self::getBaseUrl() . '/login';
 
             $postData = json_encode([
                 'usuario' => $datos['usuario'],
@@ -60,7 +67,7 @@ class RadarCobranza extends Model
     static public function GetResumenCobranza($token)
     {
         try {
-            $url = self::$apiBaseUrl . '/ResumenCobranza';
+            $url = self::getBaseUrl() . '/ResumenCobranza';
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
@@ -105,7 +112,7 @@ class RadarCobranza extends Model
     static public function GetRutaCobranza($token, $datos)
     {
         try {
-            $url = self::$apiBaseUrl . '/RutaCobranzaEjecutivo';
+            $url = self::getBaseUrl() . '/RutaCobranzaEjecutivo';
 
             $postData = json_encode([
                 'ejecutivo' => $datos['ejecutivo'] ?? '',
