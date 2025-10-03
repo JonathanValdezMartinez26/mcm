@@ -189,6 +189,8 @@
                                         <option value="R">REFINANCIAMIENTO</option>
                                         <!--  <option value="H">RECOMIENDA</option> -->
                                         <option value="S">SEGURO</option>
+										<option value="B">AHORRO</option>
+										<option value="F">AHORRO ELECTRÓNICO</option>
                                     </select>
                                 </div>
                             </div>
@@ -306,6 +308,8 @@
                                         <option value="R">REFINANCIAMIENTO</option>
                                         <!--  <option value="H">RECOMIENDA</option> -->
                                         <option value="S">SEGURO</option>
+										<option value="B">AHORRO</option>
+										<option value="F">AHORRO ELECTRÓNICO</option>
                                     </select>
                                 </div>
                             </div>
