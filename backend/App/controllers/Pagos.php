@@ -284,20 +284,17 @@ class Pagos extends Controller
             }
 
             if ($value['DESIGNATION_ADMIN'] == 'SI') {
-				if($value['TIP'] == 'B' || $value['TIP'] == 'F')
-				{
-					$editar = <<<HTML
+                if ($value['TIP'] == 'B' || $value['TIP'] == 'F') {
+                    $editar = <<<HTML
                         <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
                         <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
                     HTML;
-				}
-				else
-				{
-					$editar = <<<HTML
+                } else {
+                    $editar = <<<HTML
 						<button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
 						<button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
 					HTML;
-				}
+                }
             } else {
                 $date_past = strtotime('-4 days', strtotime($fechaActual));
                 $date_past = date('Y-m-d', $date_past);
@@ -1438,18 +1435,18 @@ html;
             || $this->__usuario == 'PAES'
             || $this->__usuario == 'COCS'
             || $this->__usuario == 'LGFR'
-			|| $this->__usuario == 'FECR'
-			|| $this->__usuario == 'JACJ'
-			|| $this->__usuario == 'CILA'
+            || $this->__usuario == 'FECR'
+            || $this->__usuario == 'JACJ'
+            || $this->__usuario == 'CILA'
             || $this->__usuario == 'VAMA'
-			|| $this->__usuario == 'CRME'
-			|| $this->__usuario == 'ZEPG'
-			|| $this->__usuario == 'LRAF'
-			|| $this->__usuario == 'MAAL'
-			|| $this->__usuario == 'REHM'
-			|| $this->__usuario == 'JUSA'
-			|| $this->__usuario == 'MBAE'
-			
+            || $this->__usuario == 'CRME'
+            || $this->__usuario == 'ZEPG'
+            || $this->__usuario == 'LRAF'
+            || $this->__usuario == 'MAAL'
+            || $this->__usuario == 'REHM'
+            || $this->__usuario == 'JUSA'
+            || $this->__usuario == 'MBAE'
+
         ) {
             $getSucursales .= '<option value="">TODAS</option>';
         }
@@ -1782,8 +1779,43 @@ html;
                     agregarPago()
                 }
 
+                // const agregarPago = () => {
+                    // texto = $("#ejecutivo :selected").text()
+                    // $.ajax({
+                    //     type: "POST",
+                    //     url: "/Pagos/PagosAdd/",
+                    //     data: $("#Add").serialize() + "&ejec=" + texto,
+                    //     success: (respuesta) => {
+                    //         if (respuesta === "1 Proceso realizado exitosamente") {
+                    //             showSuccess("Registro guardado exitosamente")
+                    //             location.reload()
+                    //         } else {
+                    //             $("#modal_agregar_pago").modal("hide")
+                    //             $("#monto").val("")
+                    //             showError(respuesta)
+                    //         }
+                    //     }
+                    // })
+                // }
+
+
                 const agregarPago = () => {
-                    texto = $("#ejecutivo :selected").text()
+                    let texto = $("#ejecutivo :selected").text()
+                    let tipo = $("#tipo").val()
+
+                    // Validar si es Ahorro (B o F)
+                    if (tipo === "B" || tipo === "F") {
+                        const subTititulo = "Una vez registrado, no podrá ser modificado.\\n\\n¿Desea continuar?"
+
+                        confirmarMovimiento("Registro de Ahorro", subTititulo).then((continuar) => {
+                                if (continuar) agregarPago()
+                            })
+                    } else {
+                        enviarPago(texto)
+                    }
+                }
+
+                const enviarPago = (texto) => {
                     $.ajax({
                         type: "POST",
                         url: "/Pagos/PagosAdd/",
@@ -1800,6 +1832,7 @@ html;
                         }
                     })
                 }
+
 
                 const enviar_edit = () => {
                     monto = $("#monto_e").val()
@@ -2058,20 +2091,17 @@ html;
             }
 
             if ($value['DESIGNATION'] == 'SI') {
-				if($value['TIP'] == 'B' || $value['TIP'] == 'F')
-				{
-					 $editar = <<<HTML
+                if ($value['TIP'] == 'B' || $value['TIP'] == 'F') {
+                    $editar = <<<HTML
                             <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
                             <button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
                         HTML;
-				}
-				else
-				{
-					$editar = <<<HTML
+                } else {
+                    $editar = <<<HTML
 						<button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
 						<button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
 					HTML;
-				}
+                }
             } else {
                 if ($fue_dia_festivo == 4) {
                     $date_past_b = strtotime('-6 days', strtotime($fechaActual));
@@ -2097,20 +2127,17 @@ html;
                 if (($inicio_b == $fecha_base) ||  $fecha_base >= $date_past_b && $AdministracionOne[2]['FECHA_CAPTURA'] <= $AdministracionOne[2]['FECHA_CAPTURA']) // aqui poner el dia en que se estaran capturando
                 {
                     if ($horaActual <= $hora_cierre && $value['DESIGNATION'] == 'SI') { // AQUI SE HIZO EL AJUSTE 25/06/2025
-						if($value['TIP'] == 'B' || $value['TIP'] == 'F')
-						{
-							 $editar = <<<HTML
+                        if ($value['TIP'] == 'B' || $value['TIP'] == 'F') {
+                            $editar = <<<HTML
 									<button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
 									<button type="button" class="btn btn-danger btn-circle"  onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-trash"></i></button>
 								HTML;
-						}
-						else
-						{
-							$editar = <<<HTML
+                        } else {
+                            $editar = <<<HTML
 								<button type="button" class="btn btn-success btn-circle" onclick="EditarPago('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['NOMBRE']}', '{$value['CICLO']}', '{$value['TIP']}', '{$value['MONTO']}', '{$value['CDGOCPE']}', '{$value['SECUENCIA']}', '{$situacion_credito}');"><i class="fa fa-edit"></i></button>
 								<button type="button" class="btn btn-danger btn-circle" onclick="FunDelete_Pago('{$value['SECUENCIA']}', '{$value['FECHA']}', '{$this->__usuario}');"><i class="fa fa-trash"></i></button>
 							HTML;
-						}
+                        }
                     } else {
                         $editar = <<<HTML
                             <button type="button" class="btn btn-success btn-circle" onclick="Desactivado()" style="background: #E5E5E5"><i class="fa fa-edit"></i></button>
