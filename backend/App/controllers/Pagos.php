@@ -1807,9 +1807,10 @@ html;
                     if (tipo === "B" || tipo === "F") {
                         const subTititulo = "Una vez registrado, no podrá ser modificado.\\n\\n¿Desea continuar?"
 
-                        confirmarMovimiento("Registro de Ahorro", subTititulo).then((continuar) => {
-                                if (continuar) agregarPago()
-                            })
+                        confirmarMovimiento("Registro de Ahorro", subTititulo)
+                        .then((continuar) => {
+                            if (continuar) enviarPago(texto)
+                        })
                     } else {
                         enviarPago(texto)
                     }
