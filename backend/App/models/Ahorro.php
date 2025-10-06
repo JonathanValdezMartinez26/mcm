@@ -5,8 +5,9 @@ namespace App\models;
 defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
+use Core\Model;
 
-class Ahorro
+class Ahorro extends Model
 {
     public static function ConsultaTickets($usuario)
     {
@@ -112,5 +113,48 @@ sql;
 
         $mysqli = new Database();
         return $mysqli->queryAll($query);
+    }
+
+    public static function getPagoAhorro($datos)
+    {
+        $qry = <<<SQL
+            SELECT 
+                PAGOSDIA,
+                RETIROS_AHORRO_SIMPLE,
+                PAGOSDIA - RETIROS_AHORRO_SIMPLE AS TOTAL,
+                FECHA_APERTURA_AHORRO
+            FROM (
+                SELECT 
+                    -- Total de pagos del día
+                    (SELECT NVL(SUM(MONTO), 0)
+                    FROM PAGOSDIA
+                    WHERE CDGNS = :credito
+                        AND ESTATUS = 'A') AS PAGOSDIA,
+                        
+                    -- Total de retiros de ahorro simple
+                    (SELECT NVL(SUM(MONTO), 0)
+                    FROM RETIROS_AHORRO_SIMPLE
+                    WHERE CDGNS = :credito) AS RETIROS_AHORRO_SIMPLE,
+                    
+                    -- Fecha del primer registro tipo B o F (inicio del ahorro)
+                    (SELECT MIN(FECHA)
+                    FROM PAGOSDIA
+                    WHERE CDGNS = :credito
+                        AND TIPO IN ('B','F')) AS FECHA_APERTURA_AHORRO
+                FROM DUAL
+            );
+        SQL;
+
+        $params = [
+            ':credito' => $datos['credito']
+        ];
+
+        try {
+            $db = new Database();
+            $res = $db->queryOne($qry, $params);
+            return self::Responde(true, "Pago de ahorro obtenido correctamente", $res ?? []);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener el pago de ahorro", null, $e->getMessage());
+        }
     }
 }

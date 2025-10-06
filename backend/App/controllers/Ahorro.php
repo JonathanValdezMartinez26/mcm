@@ -1179,12 +1179,12 @@ class Ahorro extends Controller
 
     public function ValidaHuella()
     {
-		echo json_encode([
+        echo json_encode([
             "success" => true,
             "mensaje" => "Validada."
         ]);
-		return;
-		
+        return;
+
         $repuesta = [
             "success" => false,
             "mensaje" => "No se ha podido validar la huella."
@@ -5744,5 +5744,61 @@ html;
     public function CalculadoraView()
     {
         View::render("calculadora_view");
+    }
+
+    public function PagosRegistro()
+    {
+        $extraFooter = <<<JAVASCRIPT
+            <script>
+                {$this->mensajes}
+                {$this->consultaServidor}
+                {$this->confirmarMovimiento}
+                {$this->configuraTabla}
+                {$this->descargaExcel}
+                {$this->parseaNumero}
+                {$this->formatoMoneda}
+
+                const consultaPagoAhorro = () => {
+                    const credito = $("#creditoBuscar").val()
+                    if (credito === "") return inputError("creditoBuscar", "Debe ingresar un número de crédito.")
+
+                    consultaServidor("/Ahorro/getPagoAhorro/", { credito }, (resultado) => {
+                        if (!resultado.success) return resultadoError(resultado.mensaje)
+                        $("#fechaAperturaAhorro").val(resultado.datos.FECHA_APERTURA_AHORRO)
+                        $("#nombreCliente").val(resultado.datos.NOMBRE)
+                    })
+                }
+
+                const buscarEnter = (e) => {
+                    if (e.key === "Enter") consultaPagoAhorro()
+                }
+
+                const inputError = (id, mensaje) => {
+                    $("#" + id).toggleClass("incorrecto", true)
+                    $("#" + id).focus()
+                    resultadoError(mensaje)
+                }
+
+                const resultadoError = (mensaje) => {
+                    $(".resultado").toggleClass("conDatos", false)
+                    showError(mensaje).then(() => actualizaDatosTabla(idTabla, []))
+                }
+
+                $(document).ready(() => {
+                    $("#buscar").click(consultaPagoAhorro)
+                    $("#creditoBuscar").on("keypress", buscarEnter)
+                })
+            </script>
+        JAVASCRIPT;
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Ahorro Consulta")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("ahorro_pago_registro");
+    }
+
+    public function getPagoAhorro()
+    {
+        $r = AhorroDao::getPagoAhorro($_POST);
+        echo json_encode($r);
     }
 }
