@@ -16,7 +16,7 @@
         box-shadow: 0 0px 0px rgba(0, 0, 0, 0); /* sombra suave para efecto flotante */
         color: #333;
         transition: box-shadow 0.4s ease;
-        animation: levitar 4s ease-in-out infinite; /* 🔹 animación flotante */
+        
     }
 
     /* Animación levitar */

@@ -89,10 +89,11 @@ class AhorroSimple extends Controller
 
         if ($cdgns != '') {
             $Consulta = AhorroSimpleDao::ConsultarPagosFechaSucursal($cdgns);
+	
+			$ConsultaDatos = $Consulta[0];
 			
-
             $tabla = '';
-            foreach ($Consulta as $key => $value) {
+            foreach ($Consulta[1] as $key => $value) {
                 if ($value['FIDENTIFICAPP'] ==  NULL) {
                     $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
                     $mensaje = 'InfoAdmin();';
@@ -102,23 +103,27 @@ class AhorroSimple extends Controller
                 }
 
                 $monto = number_format($value['MONTO'], 2);
+				
+				// Definimos la variable para el icono según tipo de operación
+				if($value['TIPO_OPERA'] = 'ABONO') {
+					$icono = '<i class="fa fa-arrow-down" style="color: green;"></i>'; // flecha verde para ingresos
+				} else {
+					$icono = '<i class="fa fa-arrow-up" style="color: red;"></i>'; // flecha roja para cargos/retiros
+				}
+
+				
+				
                 $tabla .= <<<HTML
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
-                     <td style="padding: 0px !important;">{$value['REGION']}</td>
-                    <td style="padding: 0px !important;">{$value['NOMBRE_SUCURSAL']}</td>
-                    <td style="padding: 0px !important;" width="45" nowrap>{$value['SECUENCIA']}</td>
                     <td style="padding: 0px !important;">{$value['FECHA']}</td>
-                    <td style="padding: 0px !important;">{$value['CDGNS']}</td>
-                    <td style="padding: 0px !important;">{$value['NOMBRE']}</td>
                     <td style="padding: 0px !important;">{$value['CICLO']}</td>
-                    <td style="padding: 0px !important;">$ {$monto}</td>
+                     <td style="padding: 0px !important;">$icono $ {$monto}</td>
                     <td style="padding: 0px !important;">{$value['TIPO']}</td>
                     <td style="padding: 0px !important;">{$value['EJECUTIVO']}</td>
                     <td style="padding: 0px !important;">{$value['FREGISTRO']}</td>
                 </tr>
                 HTML;
-				
 				
             }
 
@@ -134,13 +139,13 @@ class AhorroSimple extends Controller
                 View::set('Final', $Final);
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));
+				View::set('ConsultaDatos', $ConsultaDatos);
                 View::render("pagos_consulta_busqueda_ahorro");
             }
         } else {
             View::set('header', $this->_contenedor->header($extraHeader));
             View::set('footer', $this->_contenedor->footer($extraFooter));
             View::set('fechaActual', $fechaActual);
-            View::set('getSucursales', $getSucursales);
             View::render("pagos_consulta_ahorro_all");
         }
     }
