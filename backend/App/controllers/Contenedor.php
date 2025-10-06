@@ -117,7 +117,7 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'LGFR', 'MGJC', 'MCDP'];
+        $permisos = ['ADMIN', 'MCDP', 'LVGA'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/Pagos/">Administración Pagos</a></li>';
         }
@@ -150,7 +150,7 @@ class Contenedor extends Controller
 
         $menu .= '</ul></li>';
 		
-		$permisos = ['ADMIN', 'CAJA', 'GTOCA', 'AMOCA', 'OCOF', 'CPAGO', 'ACALL', 'LAYOU', 'TESP', 'MGJC'];
+		$permisos = ['ADMIN'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
             <li><a><i class="fa fa-money"> </i>&nbsp; Resumen Ahorro <span class="fa fa-chevron-down"></span></a>
@@ -158,16 +158,26 @@ class Contenedor extends Controller
             HTML;
 
         }
-		 $permisos = ['ADMIN', 'LGFR', 'MGJC', 'MCDP'];
+		
+		 $permisos = ['ADMIN'];
         if ($this->ValidaPermiso($permisos)) {
-            $menu .= '<li><a href="/Ahorro/">Actualiza Solicitudes Retiro</a></li>';
+            $menu .= '<li><a href="/AhorroSimple/EstadoCuenta/">Estado de Cuenta Ahorro</a></li>';
+			$menu .= '<li><a href="/AhorroSimple/PagosRegistro/">Alta Contrato</a></li>';
         }
 		
-		 $permisos = ['ADMIN', 'CAJA', 'LGFR', 'PLMV', 'PMAB', 'MGJC', 'AVGA', 'FLCR', 'COCS', 'GOIY', 'DAGC', 'COVG', 'TESP', 'JACJ'];
+		 $permisos = ['ADMIN', 'MCDP', 'LVGA'];
         if ($this->ValidaPermiso($permisos)) {
-            $menu .= '<li><a href="/Ahorro/PagosRegistro/">Consulta Ahorro</a></li>';
-			$menu .= '<li><a href="/Ahorro/PagosRegistro/">Solicitud Retiro</a></li>';
-			$menu .= '<li><a href="/Ahorro/PagosRegistro/">Alta Contrato</a></li>';
+            $menu .= '<li><a href="/AhorroConsulta/">1.- Solicitudes Retiro</a></li>';
+        }
+		
+		 $permisos = ['ADMIN', 'MCDP'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= '<li><a href="/Ahorro/PagosRegistro/">2.- Aprobar Solicitud Retiro Tesorería</a></li>';
+        }
+		
+		 $permisos = ['ADMIN', 'MCDP', 'LVGA'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= '<li><a href="/AhorroConsulta/">3.- Cancelar Solicitudes Super Admin</a></li>';
         }
 		
 		 $menu .= '</ul></li>';
