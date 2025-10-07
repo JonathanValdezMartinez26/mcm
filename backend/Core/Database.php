@@ -140,6 +140,20 @@ class Database
             print_r($arr);
         }
     }
+	
+	public function insert_bene($sql)
+    {
+        $stmt = $this->db_activa->prepare($sql);
+        $result = $stmt->execute();
+
+        if ($result) {
+            //echo '1';
+        } else {
+            echo "\nPDOStatement::errorInfo():\n";
+            $arr = $stmt->errorInfo();
+            print_r($arr);
+        }
+    }
 
     public function insertar($sql, $datos)
     {

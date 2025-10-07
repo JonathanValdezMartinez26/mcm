@@ -33,14 +33,14 @@
                     <!-- Saldo -->
                     <div class="col-md-1 col-sm-2 tile_stats_count">
                         <span class="count_top" style="font-size: 15px;"><i class="fa fa-wallet"></i> Saldo</span>
-                        <div class="count" style="font-size: 16px; font-weight: bold;">$ <?=  number_format($ConsultaDatos['TOTAL']);  ?></div>
+                        <div class="count" style="font-size: 16px; font-weight: bold;">$ <?= number_format((float)$ConsultaDatos['TOTAL'], 2, '.', ','); ?></div>
                     </div>
 
                     <!-- Abonos -->
                     <div class="col-md-1 col-sm-2 tile_stats_count">
                         <span class="count_top" style="font-size: 15px; color: green;"><i class="fa fa-arrow-down"></i> Abonos</span>
                         <div class="count" style="font-size: 16px; font-weight: bold; color: green;">
-                            $ <?= number_format($ConsultaDatos['PAGOSDIA']); ?>
+                           $ <?= number_format((float)$ConsultaDatos['PAGOSDIA'], 2, '.', ','); ?>
                         </div>
                     </div>
 
@@ -48,7 +48,7 @@
                     <div class="col-md-1 col-sm-2 tile_stats_count">
                         <span class="count_top" style="font-size: 15px; color: red;"><i class="fa fa-arrow-up"></i> Retiros</span>
                         <div class="count" style="font-size: 16px; font-weight: bold; color: red;">
-                            $ <?= number_format($ConsultaDatos['RETIROS_AHORRO_SIMPLE']); ?>
+                            $ <?= number_format((float)$ConsultaDatos['RETIROS_AHORRO_SIMPLE'], 2, '.', ''); ?>
                         </div>
                     </div>
 
@@ -56,10 +56,12 @@
                     <div class="col-md-1 col-sm-2 tile_stats_count">
                         <span class="count_top" style="font-size: 15px;"><i class="fa fa-percent"></i> Tasa</span>
                         <div class="count" style="font-size: 16px; font-weight: bold;">6% ANUAL</div>
+						<span class="count_top" style="font-size: 15px;"><i class=""></i> Interes Anual</span>
+                        <div class="count" style="font-size: 16px; font-weight: bold;">$ 0.00</div>
                     </div>
-
+					
                     <!-- Sucursal -->
-                    <div class="col-md-1 col-sm-2 tile_stats_count">
+                    <div class="col-md-2 col-sm-2 tile_stats_count">
                         <span class="count_top" style="font-size: 15px;"><i class="fa fa-building"></i> Sucursal</span>
                         <div class="count" style="font-size: 16px; font-weight: bold;"><?= $ConsultaDatos['SUCURSAL'] ?></div>
                     </div>
@@ -83,7 +85,7 @@
 							<th>Operación</th>
                             <th>Monto</th>
                             <th>Tipo de Movimiento</th>
-                            <th>Ejecutivo / Adminsitradora</th>
+                            <th>Ejecutivo</th>
                             <th>Fecha Registro</th>
                         </tr>
                     </thead>

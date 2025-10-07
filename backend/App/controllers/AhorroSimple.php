@@ -118,6 +118,7 @@ class AhorroSimple extends Controller
                     <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
                     <td style="padding: 0px !important;">{$value['FECHA']}</td>
                     <td style="padding: 0px !important;">{$value['CICLO']}</td>
+                     <td style="padding: 0px !important;">{$value['TIPO_OPERA']}</td>
                      <td style="padding: 0px !important;">$icono $ {$monto}</td>
                     <td style="padding: 0px !important;">{$value['TIPO']}</td>
                     <td style="padding: 0px !important;">{$value['EJECUTIVO']}</td>
@@ -150,7 +151,187 @@ class AhorroSimple extends Controller
         }
     }
 
-   
+
+	public function Contrato()
+	{
+		$extraHeader = self::GetExtraHeader('Contratos de Ahorro');
+		$extraFooter = <<<HTML
+		<script>
+		$(document).ready(function () {
+			$("#muestra-contratos").DataTable({
+				lengthMenu: [[13, 50, -1], [13, 50, "Todos"]],
+				order: false
+			});
+		});
+
+		// Abre el modal
+		function abrirModal(cdg, nombre) {
+			$("#modal_cdgns").val(cdg);
+			$("#modal_nombre").val(nombre);
+			$('#modal_contrato').modal('show');
+		}
+
+		// Agregar beneficiario dinámico (máx. 3)
+		var contadorBeneficiarios = 1;
+		function agregarBeneficiario() {
+			if (contadorBeneficiarios >= 3) {
+				swal("Solo puedes agregar hasta 3 beneficiarios");
+				return;
+			}
+			contadorBeneficiarios++;
+			let html = `
+			<div class="beneficiario-extra">
+				<div class="col-md-12"><hr></div>
+				<div class="col-md-4">
+					<label>Nombre completo</label>
+					<input type="text" class="form-control form-control-sm" name="beneficiario_nombre[]" required>
+				</div>
+				<div class="col-md-4">
+					<label>Parentesco</label>
+					<select class="form-control form-control-sm" name="beneficiario_parentesco[]" required>
+						<option value="">Seleccionar...</option>
+						<option value="Padre">Padre</option>
+						<option value="Madre">Madre</option>
+						<option value="Hermano">Hermano</option>
+						<option value="Hermana">Hermana</option>
+						<option value="Esposo(a)">Esposo(a)</option>
+						<option value="Hijo(a)">Hijo(a)</option>
+						<option value="Abuelo(a)">Abuelo(a)</option>
+						<option value="Tío(a)">Tío(a)</option>
+						<option value="Primo(a)">Primo(a)</option>
+						<option value="Otro">Otro</option>
+					</select>
+				</div>
+				<div class="col-md-4">
+					<label>Porcentaje (%)</label>
+					<input type="number" class="form-control form-control-sm" name="beneficiario_porcentaje[]" max="100" min="0" step="0.01" required>
+				</div>
+			</div>`;
+			$("#contenedor-beneficiarios").append(html);
+		}
+
+		// Guardar contrato y beneficiarios (con soporte para múltiples registros)
+		function guardarContrato() {
+			const form = document.getElementById('form_contrato');
+			const data = new FormData(form);
+
+			$.ajax({
+				url: '/AhorroSimple/ContratoAdd/',
+				type: 'POST',
+				data: data,
+				processData: false,
+				contentType: false,
+				success: function(respuesta) {
+					if (respuesta.trim() === '1') {
+						swal("Contrato guardado exitosamente", { icon: "success" });
+						setTimeout(() => location.reload(), 1000);
+					} else {
+						swal("Error: " + respuesta, { icon: "error" });
+					}
+				},
+				error: function(xhr, status, error) {
+					swal("Error de conexión: " + error, { icon: "error" });
+				}
+			});
+		}
+		</script>
+		HTML;
+
+		// Consulta de clientes sin contrato
+		$Consulta = AhorroSimpleDao::ListarClientesSinContrato();
+		$tabla = '';
+
+		foreach ($Consulta as $key => $value) {
+			$cdgns = $value['CDGNS'];
+			$nombre = $value['NOMBRE'];
+
+			$tabla .= <<<HTML
+			<tr>
+				<td>{$cdgns}</td>
+				<td>{$nombre}</td>
+				<td style="text-align:center;">
+					<button class="btn btn-primary btn-sm" onclick="abrirModal('{$cdgns}', '{$nombre}')">
+						<i class="fa fa-plus"></i>
+					</button>
+				</td>
+			</tr>
+			HTML;
+		}
+
+		View::set('tabla', $tabla);
+		View::set('header', $this->_contenedor->header($extraHeader));
+		View::set('footer', $this->_contenedor->footer($extraFooter));
+		View::render("contratos_lista_ahorro");
+	}
+	
+	
+	public function ContratoAdd()
+	{
+		$contrato = new \stdClass();
+
+		// Datos del contrato
+		$contrato->_cdgns = $_POST['cdgns'] ?? '';
+		$contrato->_fecha_registro = date('Y-m-d H:i:s');
+		$contrato->_tipo_ahorro = 'AHORRO SIMPLE';
+		$contrato->_tasa_anual = 6.00;
+		$contrato->_cdgpe_alta = $_POST['cdgpe'] ?? '';
+		$contrato->_cdgpe = $_POST['cdgpe'] ?? '';
+
+		// Validar CDGNS
+		if (empty($contrato->_cdgns)) {
+			echo 'Falta seleccionar un cliente';
+			return;
+		}
+
+		// Insertar contrato
+		$idContrato = AhorroSimpleDao::insertContrato($contrato);
+		if (!$idContrato) {
+			echo 'Error al registrar el contrato';
+			return;
+		}
+
+		// Preparar beneficiarios
+		$nombres = $_POST['beneficiario_nombre'] ?? [];
+		$parentescos = $_POST['beneficiario_parentesco'] ?? [];
+		$porcentajes = $_POST['beneficiario_porcentaje'] ?? [];
+
+		$beneficiarios = [];
+		$totalPorcentaje = 0;
+
+		for ($i = 0; $i < count($nombres); $i++) {
+			$nombre = trim($nombres[$i]);
+			$parentesco = trim($parentescos[$i] ?? '');
+			$porcentaje = floatval($porcentajes[$i] ?? 0);
+
+			if (empty($nombre)) continue;
+
+			$totalPorcentaje += $porcentaje;
+			$beneficiarios[] = [
+				'nombre' => $nombre,
+				'parentesco' => $parentesco,
+				'porcentaje' => $porcentaje
+			];
+		}
+
+		if ($totalPorcentaje > 100) {
+			echo "El porcentaje total de beneficiarios no puede exceder 100%";
+			return;
+		}
+
+		// Insertar beneficiarios
+		$res = AhorroSimpleDao::insertBeneficiarios($beneficiarios, $idContrato, $contrato->_cdgpe_alta, $contrato->_cdgpe);
+
+		// Si $res es string → error real
+		if (is_string($res)) {
+			echo $res;
+			return;
+		}
+
+		// Todo salió bien
+		//echo '1';
+	}
+
+
     public function generarExcel()
     {
         $columnas = [

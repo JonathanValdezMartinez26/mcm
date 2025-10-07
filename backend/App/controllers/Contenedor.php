@@ -117,7 +117,7 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'MCDP', 'LVGA'];
+        $permisos = ['ADMIN', 'MCDP', 'LVGA', 'QARO'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/Pagos/">Administración Pagos</a></li>';
         }
@@ -150,7 +150,7 @@ class Contenedor extends Controller
 
         $menu .= '</ul></li>';
 		
-		$permisos = ['ADMIN'];
+		$permisos = ['ADMIN', 'QARO'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
             <li><a><i class="fa fa-money"> </i>&nbsp; Resumen Ahorro <span class="fa fa-chevron-down"></span></a>
@@ -159,23 +159,28 @@ class Contenedor extends Controller
 
         }
 		
-		 $permisos = ['ADMIN'];
+		 $permisos = ['ADMIN', 'AMOCA', 'VAOY', 'TOOA', 'HTMP', 'JUJG', 'QARO'];
         if ($this->ValidaPermiso($permisos)) {
-            $menu .= '<li><a href="/AhorroSimple/EstadoCuenta/">Estado de Cuenta Ahorro</a></li>';
-			$menu .= '<li><a href="/AhorroSimple/PagosRegistro/">Alta Contrato</a></li>';
+			$menu .= '<li><a href="/AhorroSimple/Contrato/">Alta Contrato</a></li>';
         }
 		
-		 $permisos = ['ADMIN', 'MCDP', 'LVGA'];
+		
+		 $permisos = ['ADMIN', 'AMOCA', 'VAOY', 'TOOA', 'HTMP', 'JUJG', 'LFGR', 'MGJC' ];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= '<li><a href="/AhorroSimple/EstadoCuenta/">Estado de Cuenta Ahorro</a></li>';
+        }
+		
+		 $permisos = ['AMGM'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/AhorroConsulta/">1.- Solicitudes Retiro</a></li>';
         }
 		
-		 $permisos = ['ADMIN', 'MCDP'];
+		 $permisos = ['AMGM'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/Ahorro/PagosRegistro/">2.- Aprobar Solicitud Retiro Tesorería</a></li>';
         }
 		
-		 $permisos = ['ADMIN', 'MCDP', 'LVGA'];
+		 $permisos = ['AMGM'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/AhorroConsulta/">3.- Cancelar Solicitudes Super Admin</a></li>';
         }

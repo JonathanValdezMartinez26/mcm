@@ -30,18 +30,18 @@ class AhorroSimple
 				-- Total de pagos del día
 				(SELECT NVL(SUM(MONTO), 0)
 				   FROM PAGOSDIA
-				  WHERE CDGNS = '003011'
-					AND ESTATUS = 'A') AS PAGOSDIA,
+				  WHERE CDGNS = '$cdgns'
+					AND ESTATUS = 'A' AND TIPO IN('B', 'F')) AS PAGOSDIA,
 					
 				-- Total de retiros de ahorro simple
 				(SELECT NVL(SUM(CANTIDAD_AUTORIZADA), 0)
 				   FROM RETIROS_AHORRO_SIMPLE
-				  WHERE CDGNS = '003011') AS RETIROS_AHORRO_SIMPLE,
+				  WHERE CDGNS = '$cdgns') AS RETIROS_AHORRO_SIMPLE,
 				  
 				-- Fecha del primer registro tipo B o F (inicio del ahorro)
 				(SELECT MIN(FECHA)
 				   FROM PAGOSDIA
-				  WHERE CDGNS = '003011'
+				  WHERE CDGNS = '$cdgns'
 					AND TIPO IN ('B','F')) AS FECHA_APERTURA_AHORRO
 			FROM DUAL
 		) PD
@@ -62,7 +62,7 @@ class AhorroSimple
 					JOIN SC Q2 ON SC.CDGNS = Q2.CDGNS AND SC.CICLO = Q2.CICLO AND SC.CDGCL <> Q2.CDGCL
 					JOIN PRN ON PRN.CICLO = SC.CICLO AND PRN.CDGNS = SC.CDGNS
 				WHERE
-					SC.CDGNS = '003011'
+					SC.CDGNS = '$cdgns'
 					AND SC.CANTSOLIC <> '9999'
 				ORDER BY SC.SOLICITUD DESC
 			)
@@ -107,5 +107,87 @@ sql;
 		$res2 = $mysqli->queryAll($query);
         return [$res1, $res2];
     }
+
+
+	public static function ListarClientesSinContrato()
+{
+    $query = <<<SQL
+    SELECT 
+        P.CDGNS,
+        P.NOMBRE
+    FROM 
+        PAGOSDIA P
+    WHERE 
+        P.TIPO IN ('F', 'B')
+        AND NOT EXISTS (
+            SELECT 1 FROM CONTRATOS_AHORRO C WHERE C.CDGNS = P.CDGNS
+        )
+    GROUP BY 
+        P.CDGNS, P.NOMBRE
+    ORDER BY 
+        P.NOMBRE
+    SQL;
+
+    $mysqli = new Database();
+    return $mysqli->queryAll($query);
+}
+
+
+	
+	public static function insertContrato($contrato)
+	{
+		$mysqli = new Database();
+
+		// 1. Obtenemos el siguiente valor de la secuencia
+		$idQuery = "SELECT CONTRATOS_AHORRO_SEQQ.NEXTVAL AS ID_CONTRATO FROM DUAL";
+		$idData = $mysqli->queryOne($idQuery);
+		$id_contrato = $idData['ID_CONTRATO'];
+
+		// 2. Insertamos el contrato usando ese ID
+		$query = <<<sql
+			INSERT INTO CONTRATOS_AHORRO
+			(ID_CONTRATO, CDGNS, FECHA_REGISTRO, TIPO_AHORRO, TASA_ANUAL, CDGPE)
+			VALUES(
+				'{$id_contrato}', 
+				'{$contrato->_cdgns}', 
+				TO_DATE('{$contrato->_fecha_registro}', 'YYYY-MM-DD HH24:MI:SS'),
+				'{$contrato->_tipo_ahorro}',
+				'{$contrato->_tasa_anual}',
+				'AMGM'
+			)
+		sql;
+
+		$mysqli->insert($query);
+		return $id_contrato;
+	}
+
+	public static function insertBeneficiarios($beneficiarios, $idContrato, $cdgpe_alta, $cdgpe)
+	{
+		$mysqli = new Database();
+		$insertados = 0;
+
+		foreach ($beneficiarios as $benef) {
+			$nombre = substr(str_replace("'", "''", $benef['nombre']), 0, 100);
+			$parentesco = substr(str_replace("'", "''", $benef['parentesco']), 0, 30);
+			$porcentaje = floatval($benef['porcentaje']);
+			$cdgpe_alta = substr(str_replace("'", "''", $cdgpe_alta), 0, 10);
+			$cdgpe = substr(str_replace("'", "''", $cdgpe), 0, 10);
+
+			$query = <<<sql
+				INSERT INTO CONTRATOS_BENEFICIARIOS
+				(ID_CONTRATO, NOMBRE_COMPLETO, PARENTESCO, PORCENTAJE, CDGPE_ALTA, CDGPE)
+				VALUES
+				($idContrato, '$nombre', '$parentesco', $porcentaje, '$cdgpe_alta', '$cdgpe')
+			sql;
+
+			$mysqli->insert_bene($query);
+			$insertados++;
+		}
+
+		return $insertados; // solo un número interno, no se hace echo
+	}
+
+	
+	
 
 }
