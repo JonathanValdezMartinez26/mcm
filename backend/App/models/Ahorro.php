@@ -132,7 +132,7 @@ sql;
                         AND ESTATUS = 'A') AS PAGOSDIA,
                         
                     -- Total de retiros de ahorro simple
-                    (SELECT NVL(SUM(MONTO), 0)
+                    (SELECT NVL(SUM(CANTIDAD_AUTORIZADA), 0)
                     FROM RETIROS_AHORRO_SIMPLE
                     WHERE CDGNS = :credito) AS RETIROS_AHORRO_SIMPLE,
                     
@@ -142,11 +142,11 @@ sql;
                     WHERE CDGNS = :credito
                         AND TIPO IN ('B','F')) AS FECHA_APERTURA_AHORRO
                 FROM DUAL
-            );
+            )
         SQL;
 
         $params = [
-            ':credito' => $datos['credito']
+            'credito' => $datos['credito']
         ];
 
         try {

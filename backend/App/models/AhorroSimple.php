@@ -5,13 +5,13 @@ namespace App\models;
 defined("APPPATH") or die("Access denied");
 
 use Core\Database;
+use Core\Model;
 
-class AhorroSimple
+class AhorroSimple extends Model
 {
 
-    public static function ConsultarPagosFechaSucursal($cdgns)
-    {
-		
+	public static function ConsultarPagosFechaSucursal($cdgns)
+	{
 		$query_datos = <<<sql
 		SELECT
 			PD.PAGOSDIA,
@@ -68,10 +68,10 @@ class AhorroSimple
 			)
 			WHERE ROWNUM = 1
 		) C
-sql;	
+sql;
 
 
-        $query = <<<sql
+		$query = <<<sql
         SELECT
         RG.CODIGO ID_REGION,
         RG.NOMBRE REGION,
@@ -101,17 +101,17 @@ sql;
     ORDER BY
         FREGISTRO DESC, SECUENCIA
 sql;
-        $mysqli = new Database();
-	
+		$mysqli = new Database();
+
 		$res1 = $mysqli->queryOne($query_datos);
 		$res2 = $mysqli->queryAll($query);
-        return [$res1, $res2];
-    }
+		return [$res1, $res2];
+	}
 
 
 	public static function ListarClientesSinContrato()
-{
-    $query = <<<SQL
+	{
+		$query = <<<SQL
     SELECT 
         P.CDGNS,
         P.NOMBRE
@@ -128,12 +128,12 @@ sql;
         P.NOMBRE
     SQL;
 
-    $mysqli = new Database();
-    return $mysqli->queryAll($query);
-}
+		$mysqli = new Database();
+		return $mysqli->queryAll($query);
+	}
 
 
-	
+
 	public static function insertContrato($contrato)
 	{
 		$mysqli = new Database();
@@ -187,7 +187,27 @@ sql;
 		return $insertados; // solo un número interno, no se hace echo
 	}
 
-	
-	
+	public static function GetCliente($datos)
+	{
+		$query = <<<SQL
+			SELECT 
+				CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE
+			FROM 
+				PRC
+				LEFT JOIN CL ON PRC.CDGCL = CL.CODIGO
+			WHERE 
+				PRC.CDGNS = :credito
+			FETCH FIRST 1 ROWS ONLY
+		SQL;
 
+		$params = ['credito' => $datos['credito']];
+
+		try {
+			$db = new Database();
+			$res = $db->queryOne($query, $params);
+			return self::Responde(true, 'Cliente obtenido', $res);
+		} catch (\Exception $e) {
+			return  self::Responde(false, 'Error al obtener cliente', null, $e->getMessage());
+		}
+	}
 }

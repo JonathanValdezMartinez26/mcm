@@ -1,4 +1,5 @@
 <?php echo $header; ?>
+
 <div class="right_col">
     <div class="col-md-12">
         <div class="panel panel-body">
@@ -6,12 +7,12 @@
                 <h3>Contratos de Ahorro - Asignación de Beneficiarios (Pendientes)</h3>
                 <div class="clearfix"></div>
             </div>
-			<div class="x_title d-flex justify-content-between align-items-center">
-    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal_alta_contrato">
-        <i class="fa fa-plus"></i> Dar de Alta Contrato
-    </button>
-    <div class="clearfix"></div>
-</div>
+            <div class="x_title d-flex justify-content-between align-items-center">
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal_alta_contrato">
+                    <i class="fa fa-plus"></i> Dar de Alta Contrato
+                </button>
+                <div class="clearfix"></div>
+            </div>
 
             <div class="card col-md-12">
                 <div class="dataTable_wrapper">
@@ -33,7 +34,6 @@
     </div>
 </div>
 
-
 <!-- Modal dar de alta contrato -->
 <div class="modal fade" id="modal_alta_contrato" tabindex="-1" role="dialog" aria-labelledby="modalAltaContratoLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -49,24 +49,23 @@
                     <div class="row align-items-end mb-3">
                         <div class="col-md-4">
                             <label>Código del Crédito</label>
-                            <input type="text" class="form-control form-control-sm" id="alta_cdgns" name="cdgns" placeholder="Ej. 000000" required>
+                            <input type="text" class="form-control form-control-sm" id="alta_cdgns" name="cdgns" placeholder="Ej. 000000" maxlength="6" required>
                         </div>
                         <div class="col-md-3">
-                            <button type="button" class="btn btn-info btn-sm mt-2" onclick="buscarClienteAlta()">
+                            <button type="button" class="btn btn-info btn-sm mt-2" id="btnBuscarNuevo">
                                 <i class="fa fa-search"></i> Buscar
                             </button>
                         </div>
-						<br>
+                        <br>
                     </div>
-					<hr>
-					<br>
-					
+                    <hr>
+                    <br>
 
                     <!-- Datos del cliente y contrato -->
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label>Nombre</label>
-                            <input type="text" class="form-control form-control-sm" id="alta_nombre" name="nombre" placeholder="Nombre completo" required>
+                            <input type="text" class="form-control form-control-sm" id="alta_nombre" name="nombre" placeholder="Nombre completo" required disabled>
                         </div>
                         <div class="col-md-3">
                             <label>Tipo de Ahorro</label>
@@ -82,45 +81,43 @@
                     <h5>Beneficiarios</h5>
 
                     <!-- Beneficiarios -->
-                    <div id="contenedor-beneficiarios-alta">
-                        <div class="row beneficiario-row mb-2">
-                            <div class="col-md-4">
+                    <div id="contenedor-beneficiarios">
+                        <div class="row beneficiario-row-header mb-2">
+                            <div class="col-md-6" style="display: flex; align-items: center; justify-content: center;">
                                 <label>Nombre completo</label>
-                                <input type="text" class="form-control form-control-sm" name="beneficiario_nombre[]" required>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3" style="display: flex; align-items: center; justify-content: center;">
                                 <label>Parentesco</label>
-                                <select class="form-control form-control-sm parentesco-select" name="beneficiario_parentesco[]" required>
-                                    <option value="">Seleccionar...</option>
-                                    <option value="Padre">Padre</option>
-                                    <option value="Madre">Madre</option>
-                                    <option value="Hermano">Hermano</option>
-                                    <option value="Hermana">Hermana</option>
-                                    <option value="Esposo(a)">Esposo(a)</option>
-                                    <option value="Hijo(a)">Hijo(a)</option>
-                                    <option value="Abuelo(a)">Abuelo(a)</option>
-                                    <option value="Tío(a)">Tío(a)</option>
-                                    <option value="Primo(a)">Primo(a)</option>
-                                    <option value="Otro">Otro</option>
-                                </select>
+                            </div>
+                            <div class="col-md-3" style="display: flex; align-items: center; justify-content: center;">
+                                <label>Porcentaje (%)</label>
+                            </div>
+                        </div>
+
+                        <div class="row beneficiario-row mb-2">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control form-control-sm nombreBeneficiario" name="beneficiario_nombre[]" required disabled>
                             </div>
                             <div class="col-md-3">
-                                <label>Porcentaje (%)</label>
-                                <input type="number" class="form-control form-control-sm" name="beneficiario_porcentaje[]" max="100" min="0" step="0.01" required>
+                                <select class="form-control form-control-sm parentesco-select parentescoBeneficiario" name="beneficiario_parentesco[]" required disabled>
+                                    <?= $parentescosOptions; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" class="form-control form-control-sm porcentajeBeneficiario" name="beneficiario_porcentaje[]" max="100" min="0" step="0.01" required disabled>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-success btn-sm btnAgregaBeneficiario" disabled>
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="col-md-1" style="display: none;">
+                                <button type="button" class="btn btn-danger btn-sm btnEliminaBeneficiario" disabled>
+                                    <i class="fa fa-minus"></i>
+                                </button>
                             </div>
                         </div>
-						<br>
                     </div>
-
-                    <!-- Botón agregar beneficiario -->
-                    <div class="row mt-2">
-                        <div class="col-md-12">
-                            <button type="button" class="btn btn-success btn-sm" id="btn-agregar-beneficiario-alta">
-                                <i class="fa fa-plus"></i> Agregar Beneficiario
-                            </button>
-                        </div>
-                    </div>
-
                 </form>
             </div>
             <div class="modal-footer">
@@ -132,10 +129,6 @@
         </div>
     </div>
 </div>
-
-
-
-
 
 <!-- Modal alta de contrato -->
 <div class="modal fade" id="modal_contrato" tabindex="-1" role="dialog" aria-labelledby="modalContratoLabel" aria-hidden="true">
@@ -190,14 +183,14 @@
                             </select>
                         </div>
                         <div class="col-md-4">
-							
+
                             <label>Porcentaje (%)</label>
                             <input type="number" class="form-control form-control-sm" name="beneficiario_porcentaje[]" max="100" min="0" step="0.01" required>
                         </div>
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-12">
-						<br>
+                            <br>
                             <button type="button" class="btn btn-success btn-sm" onclick="agregarBeneficiario()">
                                 <i class="fa fa-plus"></i> Agregar Beneficiario
                             </button>
@@ -215,4 +208,4 @@
     </div>
 </div>
 
-<?php echo $footer; ?>
+<?= $footer; ?>

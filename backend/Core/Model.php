@@ -136,4 +136,17 @@ class Model
             return self::Responde(false, 'Error al obtener destinatarios', null, $e->getMessage());
         }
     }
+
+    public static function GetCatalogoParentescos()
+    {
+        $query = 'SELECT * FROM CAT_PARENTESCO';
+
+        try {
+            $db = new Database();
+            $res = $db->queryAll($query);
+            return self::Responde(true, 'Parentescos obtenidos', $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al obtener parentescos', null, $e->getMessage());
+        }
+    }
 }
