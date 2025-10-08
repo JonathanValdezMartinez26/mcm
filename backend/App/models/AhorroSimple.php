@@ -254,8 +254,6 @@ sql;
 			];
 		}
 
-
-
 		try {
 			$db = new Database();
 			$res = $db->insertaMultiple($inserts, $datosInsert);
@@ -263,6 +261,74 @@ sql;
 			return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.");
 		} catch (\Exception $e) {
 			return  self::Responde(false, 'Error al registrar el contrato de ahorro', null, $e->getMessage());
+		}
+	}
+
+	public static function GetBeneficiarios($datos)
+	{
+		$query = <<<SQL
+			SELECT
+				NOMBRE_COMPLETO,
+				PARENTESCO,
+				PORCENTAJE
+			FROM 
+				CONTRATOS_BENEFICIARIOS
+			WHERE 
+				ID_CONTRATO = (SELECT ID_CONTRATO FROM CONTRATOS_AHORRO WHERE CDGNS = :credito)
+		SQL;
+
+		$params = ['credito' => $datos['credito']];
+
+		try {
+			$db = new Database();
+			$res = $db->queryAll($query, $params);
+			return self::Responde(true, 'Beneficiarios obtenidos', $res);
+		} catch (\Exception $e) {
+			return  self::Responde(false, 'Error al obtener beneficiarios', null, $e->getMessage());
+		}
+	}
+
+	public static function ActualizaBeneficiarios($datos)
+	{
+		$qryDelete = <<<SQL
+			DELETE FROM CONTRATOS_BENEFICIARIOS
+			WHERE ID_CONTRATO = (SELECT ID_CONTRATO FROM CONTRATOS_AHORRO WHERE CDGNS = :credito)
+		SQL;
+
+		$qryBeneficiario = <<<SQL
+			INSERT INTO CONTRATOS_BENEFICIARIOS
+				(ID_CONTRATO, NOMBRE_COMPLETO, PARENTESCO, PORCENTAJE, CDGPE_ALTA, CDGPE)
+			VALUES
+				((SELECT ID_CONTRATO FROM CONTRATOS_AHORRO WHERE CDGNS = :credito), :nombre, :parentesco, :porcentaje, :cdgpe_alta, :cdgpe)
+		SQL;
+
+		$inserts = [];
+		$datosInsert = [];
+
+		$inserts[] = $qryDelete;
+		$datosInsert[] = [
+			'credito' => $datos['noCredito']
+		];
+
+		foreach ($datos['beneficiario_parentesco'] as $index => $p) {
+			$inserts[] = $qryBeneficiario;
+			$datosInsert[] = [
+				'credito' => $datos['noCredito'],
+				'nombre' => $datos['beneficiario_nombre'][$index],
+				'parentesco' => $datos['beneficiario_parentesco'][$index],
+				'porcentaje' => $datos['beneficiario_porcentaje'][$index],
+				'cdgpe_alta' => $datos['ejecutivo'],
+				'cdgpe' => $datos['ejecutivo']
+			];
+		}
+
+		try {
+			$db = new Database();
+			$res = $db->insertaMultiple($inserts, $datosInsert);
+			if ($res) return self::Responde(true, "Beneficiarios actualizados correctamente", $res);
+			return self::Responde(false, "Ocurrió un error al actualizar los beneficiarios.");
+		} catch (\Exception $e) {
+			return  self::Responde(false, 'Error al actualizar los beneficiarios', null, $e->getMessage());
 		}
 	}
 }

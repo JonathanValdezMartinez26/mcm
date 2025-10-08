@@ -163,72 +163,14 @@ class AhorroSimple extends Controller
 			{$this->descargaExcel}
 			{$this->formatoMoneda}
 			{$this->soloNumeros}
-			
-			// Abre el modal
-            function abrirModal(cdg, nombre) {
-                $("#modal_cdgns").val(cdg);
-                $("#modal_nombre").val(nombre);
-                $('#modal_contrato').modal('show');
-            }
 
-       var contadorBeneficiarios = 1;
-
-        function agregarBeneficiario() {
-            if (contadorBeneficiarios >= 2) {
-                swal("Solo puedes agregar hasta 2 beneficiarios");
-                return;
-            }
-        
-            contadorBeneficiarios++;
-        
-            let html = `
-            <div class="beneficiario-extra">
-                <hr>
-                <div class="">
-                    <div class="col-md-4">
-                   
-                        <label>Nombre completo</label>
-                        <input type="text" class="form-control form-control-sm" name="beneficiario_nombre[]" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label>Parentesco</label>
-                        <select class="form-control form-control-sm" name="beneficiario_parentesco[]" required="">
-                                <option value="">Seleccionar...</option><option value="03">PADRE</option><option value="04">MADRE</option><option value="05">HERMANO</option><option value="06">HERMANA</option><option value="01">CÓNYUGE</option><option value="02">HIJO</option>                            </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label>Porcentaje (%)</label>
-                        <input type="number" class="form-control form-control-sm" name="beneficiario_porcentaje[]" max="100" min="0" step="0.01" required>
-                    </div>
-                </div>
-            </div>`;
-        
-            $("#contenedor-beneficiarios_").append(html);
-        }
-            
-            
-			// Guardar contrato y beneficiarios (con soporte para múltiples registros)
-			function guardarContrato() {
-				const form = document.getElementById('form_contrato');
-				const data = new FormData(form);
-
-				$.ajax({
-					url: '/AhorroSimple/ContratoAdd/',
-					type: 'POST',
-					data: data,
-					processData: false,
-					contentType: false,
-					success: function(respuesta) {
-						if (respuesta.trim() === '1') {
-							swal("Contrato guardado exitosamente", { icon: "success" });
-							setTimeout(() => location.reload(), 1000);
-						} else {
-							swal("Error: " + respuesta, { icon: "error" });
-						}
-					},
-					error: function(xhr, status, error) {
-						swal("Error de conexión: " + error, { icon: "error" });
-					}
-				});
+			const mostrarBusqueda = () => {
+				$("#busqueda_cliente").show()
+				limpiaBusqueda()
+				limpiarBeneficiarios()
+				$("#btnRegistraContrato").show()
+				$("#btnActualizaBeneficiarios").hide()
+				$('#modal_alta_contrato').modal('show')
 			}
 
 			const buscarClienteAlta = () => {
@@ -335,16 +277,66 @@ class AhorroSimple extends Controller
 				})
 			}
 
+			const mostrarBeneficiarios = (credito, nombre) => {
+				$("#busqueda_cliente").hide()
+				limpiaBusqueda()
+				limpiarBeneficiarios()
+
+				$("#alta_nombre").val(nombre)
+				$("#noCredito").val(credito)
+
+				$(".nombreBeneficiario").prop("disabled", false)
+				$(".parentescoBeneficiario").prop("disabled", false)
+				$(".porcentajeBeneficiario").prop("disabled", false)
+
+				consultaServidor("/AhorroSimple/GetBeneficiarios/", { credito }, (respuesta) => {
+					if (!respuesta.success) return showError(respuesta.mensaje)
+					if (!respuesta?.datos || respuesta.datos.length === 0) return showError("No se encontraron beneficiarios para este contrato")
+
+					respuesta.datos.forEach((b, index) => {
+						if (index > 0) $(".btnAgregaBeneficiario").click()
+						$(".nombreBeneficiario").eq(index).val(b.NOMBRE_COMPLETO)
+						$(".parentescoBeneficiario").eq(index).val(b.PARENTESCO)
+						$(".porcentajeBeneficiario").eq(index).val(b.PORCENTAJE)
+					})
+				})
+
+				$("#btnRegistraContrato").hide()
+				$("#btnActualizaBeneficiarios").show()
+				$('#modal_alta_contrato').modal('show')
+			}
+
+			const actualizaBeneficiarios = () => {
+				const totalPorcentaje = Array.from($(".porcentajeBeneficiario")).reduce((acc, input) => acc + (parseFloat(input.value) || 0), 0)
+				if (totalPorcentaje > 100) return showError("El porcentaje total de beneficiarios no puede exceder 100%")
+				if (totalPorcentaje < 100) return showError("El porcentaje total de beneficiarios debe ser 100%")
+
+				confirmarMovimiento("Actualización de Beneficiarios", "¿Desea continuar con la actualización de los beneficiarios?")
+				.then((continuar) => {
+					if (!continuar) return
+
+					let params = $("#form_alta_contrato").serialize()
+					params += "&ejecutivo={$_SESSION['usuario']}"
+
+					consultaServidor("/AhorroSimple/ActualizaBeneficiarios/", params, (respuesta) => {
+						if (!respuesta.success) return showError(respuesta.mensaje)
+						showSuccess(respuesta.mensaje).then(() => {
+							$('#modal_alta_contrato').modal('hide')
+							limpiaBusqueda()
+							limpiarBeneficiarios()
+							location.reload();
+						})
+					})
+				})
+			}
+
 			$(document).ready(function () {
 				$("#muestra-contratos").DataTable({
 					lengthMenu: [[13, 50, -1], [13, 50, "Todos"]],
 					order: false
 				});
 
-				$('#modal_alta_contrato').on('hidden.bs.modal', () => {
-					limpiaBusqueda()
-					limpiarBeneficiarios()
-				})
+				$("#btnMostrarBusqueda").on("click", mostrarBusqueda)
 
 				$("#alta_cdgns").on("keypress", (e) => soloNumeros(e, buscarClienteAlta))
 				$("#btnBuscarNuevo").on("click", buscarClienteAlta)
@@ -355,12 +347,11 @@ class AhorroSimple extends Controller
 				$(document).on("click", ".btnEliminaBeneficiario", eliminarBeneficiario)
 
 				$("#btnRegistraContrato").on("click", registraContrato)
+				$("#btnActualizaBeneficiarios").on("click", actualizaBeneficiarios)
 			});
 		</script>
-HTML;
+		HTML;
 
-
-		// Consulta de clientes sin contrato
 		$Consulta = AhorroSimpleDao::ListarClientesSinContrato();
 		$tabla = '';
 
@@ -373,7 +364,7 @@ HTML;
 				<td>{$cdgns}</td>
 				<td>{$nombre}</td>
 				<td style="text-align:center;">
-					<button class="btn btn-primary btn-sm" onclick="abrirModal('{$cdgns}', '{$nombre}')">
+					<button class="btn btn-primary btn-sm" onclick="mostrarBeneficiarios('{$cdgns}', '{$nombre}')">
 						<i class="fa fa-plus"></i>
 					</button>
 				</td>
@@ -404,6 +395,16 @@ HTML;
 	public function RegistraContrato()
 	{
 		echo json_encode(AhorroSimpleDao::RegistraContrato($_POST));
+	}
+
+	public function GetBeneficiarios()
+	{
+		echo json_encode(AhorroSimpleDao::GetBeneficiarios($_POST));
+	}
+
+	public function ActualizaBeneficiarios()
+	{
+		echo json_encode(AhorroSimpleDao::ActualizaBeneficiarios($_POST));
 	}
 
 	public function ContratoAdd()

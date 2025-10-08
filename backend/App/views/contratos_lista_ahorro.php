@@ -8,7 +8,7 @@
                 <div class="clearfix"></div>
             </div>
             <div class="x_title d-flex justify-content-between align-items-center">
-                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal_alta_contrato">
+                <button type="button" class="btn btn-primary btn-sm" id="btnMostrarBusqueda">
                     <i class="fa fa-plus"></i> Dar de Alta Contrato
                 </button>
                 <div class="clearfix"></div>
@@ -44,23 +44,19 @@
             </div>
             <div class="modal-body">
                 <form id="form_alta_contrato" onsubmit="return false;">
-
                     <!-- CDGNS + Botón Buscar -->
-                    <div class="row align-items-end mb-3">
+                    <div class="row align-items-end mb-3" id="busqueda_cliente">
                         <div class="col-md-4">
                             <label>Código del Crédito</label>
-                            <input type="text" class="form-control form-control-sm" id="alta_cdgns" name="cdgns" placeholder="Ej. 000000" maxlength="6" required>
+                            <div style="display: flex; flex-direction: row; gap: 10px;">
+                                <input type="text" class="form-control form-control-sm" id="alta_cdgns" name="cdgns" placeholder="Ej. 000000" maxlength="6" required>
+                                <button type="button" class="btn btn-info" id="btnBuscarNuevo">
+                                    <i class="fa fa-search"></i> Buscar
+                                </button>
+                            </div>
                         </div>
-                        <div class="col-md-3">
-                            <button type="button" class="btn btn-info btn-sm mt-2" id="btnBuscarNuevo">
-                                <i class="fa fa-search"></i> Buscar
-                            </button>
-                        </div>
-                        <br>
                     </div>
                     <hr>
-                    <br>
-
                     <!-- Datos del cliente y contrato -->
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -123,81 +119,14 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="button" class="btn btn-primary" form="form_alta_contrato" id="btnRegistraContrato">
-                    <span class="glyphicon glyphicon-floppy-disk"></span> Guardar Contrato
+                <button class="btn btn-default" data-dismiss="modal">
+                    <span class="glyphicon glyphicon-remove">&nbsp;</span>Cancelar
                 </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal alta de contrato -->
-<div class="modal fade" id="modal_contrato" tabindex="-1" role="dialog" aria-labelledby="modalContratoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content p-3">
-            <div class="modal-header">
-                <h4 class="modal-title" id="modalContratoLabel">Registrar Contrato y Beneficiarios</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="form_contrato" onsubmit="guardarContrato(); return false;">
-                    <div class="row">
-                        <div class="col-md-2">
-                            <label>CDGNS</label>
-                            <input type="text" class="form-control form-control-sm" id="modal_cdgns" name="cdgns" readonly>
-                        </div>
-                        <div class="col-md-4">
-                            <label>Nombre</label>
-                            <input type="text" class="form-control form-control-sm" id="modal_nombre" readonly>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Tipo de Ahorro</label>
-                            <input type="text" class="form-control form-control-sm" value="Ahorro Simple" readonly>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Tasa Anual (%)</label>
-                            <input type="text" class="form-control form-control-sm" value="6.00" readonly>
-                        </div>
-                    </div>
-
-                    <hr>
-                    <h5>Beneficiarios</h5>
-                    <div id="contenedor-beneficiarios_" class="row">
-
-                        <div class="col-md-4">
-                            <label>Nombre completo</label>
-                            <input type="text" class="form-control form-control-sm" name="beneficiario_nombre[]" required>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label>Parentesco</label>
-                            <select class="form-control form-control-sm" name="beneficiario_parentesco[]" required>
-                                <?= $parentescosOptions; ?>
-                            </select>
-                        </div>
-
-
-                        <div class="col-md-4">
-
-                            <label>Porcentaje (%)</label>
-                            <input type="number" class="form-control form-control-sm" name="beneficiario_porcentaje[]" max="100" min="0" step="0.01" required>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-12">
-                            <br>
-                            <button type="button" class="btn btn-success btn-sm" onclick="agregarBeneficiario()">
-                                <i class="fa fa-plus"></i> Agregar Beneficiario
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="submit" class="btn btn-primary" form="form_contrato">
-                    <span class="glyphicon glyphicon-floppy-disk"></span> Guardar Contrato
+                <button type="button" class="btn btn-primary" form="form_alta_contrato" id="btnRegistraContrato">
+                    <span class="glyphicon glyphicon-floppy-disk">&nbsp;</span>Guardar Contrato
+                </button>
+                <button type="button" class="btn btn-primary" form="form_alta_contrato" id="btnActualizaBeneficiarios" style="display: none;">
+                    <span class="glyphicon glyphicon-floppy-disk">&nbsp;</span>Actualizar Beneficiarios
                 </button>
             </div>
         </div>
