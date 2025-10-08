@@ -303,6 +303,7 @@ class AhorroSimple extends Controller
 							$('#modal_alta_contrato').modal('hide')
 							limpiaBusqueda()
 							limpiarBeneficiarios()
+							location.reload();
 						})
 					})
 				})
