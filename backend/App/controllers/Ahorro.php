@@ -78,22 +78,6 @@ class Ahorro extends Controller
         const r = dd + "/" + mm + "/" + yyyy
         return completo ? r  + " " + hoy.getHours().toString().padStart(2, "0") + ":" + hoy.getMinutes().toString().padStart(2, "0") + ":" + hoy.getSeconds().toString().padStart(2, "0") : r
     }';
-    private $soloNumeros = 'const soloNumeros = (e) => {
-        valKD = false
-        if (
-            !(e.key >= "0" && e.key <= "9") &&
-            e.key !== "." &&
-            e.key !== "Backspace" &&
-            e.key !== "Delete" &&
-            e.key !== "ArrowLeft" &&
-            e.key !== "ArrowRight" &&
-            e.key !== "ArrowUp" &&
-            e.key !== "ArrowDown" &&
-            e.key !== "Tab"
-        ) e.preventDefault()
-        if (e.key === "." && e.target.value.includes(".")) e.preventDefault()
-        valKD = true
-    }';
     private $numeroLetras = 'const numeroLetras = (numero) => {
         if (!numero) return ""
         const unidades = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"]

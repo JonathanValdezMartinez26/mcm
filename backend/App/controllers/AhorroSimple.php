@@ -211,10 +211,16 @@ class AhorroSimple extends Controller
 				if (credito === "") return showError("Debe ingresar un número de cliente")
 				if (credito.length < 6) return showError("El número de cliente debe tener 6 dígitos")
 
-				consultaServidor("/AhorroSimple/getCliente/", { credito }, (respuesta) => {
+				consultaServidor("/AhorroSimple/GetCliente/", { credito }, (respuesta) => {
 					if (!respuesta.success) return showError(respuesta.mensaje)
 
+					limpiarBeneficiarios()
+					if (!respuesta?.datos || respuesta.datos.length === 0) return showError("No se encontró un cliente con ese número de crédito")
+
 					$("#alta_nombre").val(respuesta.datos.NOMBRE)
+					$("#noCredito").val(credito)
+					$("#noCliente").val(respuesta.datos.CLIENTE)
+
 					$(".nombreBeneficiario").prop("disabled", false)
 					$(".parentescoBeneficiario").prop("disabled", false)
 					$(".porcentajeBeneficiario").prop("disabled", false)
@@ -263,6 +269,45 @@ class AhorroSimple extends Controller
 				}
 			}
 
+			const limpiaBusqueda = () => {
+				$("#alta_cdgns").val('')
+				$("#alta_nombre").val('')
+				$("#noCredito").val('')
+				$("#noCliente").val('')
+			}
+
+			const limpiarBeneficiarios = () => {
+				$("#contenedor-beneficiarios").find(".beneficiario-row:not(:first)").remove()
+				$("#contenedor-beneficiarios").find("input, select").val('')
+				$("#btnAgregaBeneficiario").prop("disabled", true)
+				$(".nombreBeneficiario").prop("disabled", true)
+				$(".parentescoBeneficiario").prop("disabled", true)
+				$(".porcentajeBeneficiario").prop("disabled", true)
+			}
+
+			const registraContrato = () => {
+				const totalPorcentaje = Array.from($(".porcentajeBeneficiario")).reduce((acc, input) => acc + (parseFloat(input.value) || 0), 0)
+				if (totalPorcentaje > 100) return showError("El porcentaje total de beneficiarios no puede exceder 100%")
+				if (totalPorcentaje < 100) return showError("El porcentaje total de beneficiarios debe ser 100%")
+
+				confirmarMovimiento("Registro de Contrato", "¿Desea continuar con la creación del contrato?")
+				.then((continuar) => {
+					if (!continuar) return
+
+					let params = $("#form_alta_contrato").serialize()
+					params += "&sucursal={$_SESSION['cdgco']}&ejecutivo={$_SESSION['usuario']}"
+
+					consultaServidor("/AhorroSimple/RegistraContrato/", params, (respuesta) => {
+						if (!respuesta.success) return showError(respuesta.mensaje)
+						showSuccess(respuesta.mensaje).then(() => {
+							$('#modal_alta_contrato').modal('hide')
+							limpiaBusqueda()
+							limpiarBeneficiarios()
+						})
+					})
+				})
+			}
+
 			$(document).ready(function () {
 				$("#muestra-contratos").DataTable({
 					lengthMenu: [[13, 50, -1], [13, 50, "Todos"]],
@@ -270,14 +315,8 @@ class AhorroSimple extends Controller
 				});
 
 				$('#modal_alta_contrato').on('hidden.bs.modal', () => {
-					$("#alta_cdgns").val('');
-					$("#alta_nombre").val('');
-					$("#contenedor-beneficiarios").find(".beneficiario-row:not(:first)").remove();
-					$("#contenedor-beneficiarios").find("input, select").val('');
-					$("#btnAgregaBeneficiario").prop("disabled", true);
-					$(".nombreBeneficiario").prop("disabled", true)
-					$(".parentescoBeneficiario").prop("disabled", true)
-					$(".porcentajeBeneficiario").prop("disabled", true)
+					limpiaBusqueda()
+					limpiarBeneficiarios()
 				})
 
 				$("#alta_cdgns").on("keypress", (e) => soloNumeros(e, buscarClienteAlta))
@@ -287,6 +326,8 @@ class AhorroSimple extends Controller
 				$(document).on("change", ".parentescoBeneficiario", (e) => activarBotonAgregar(e))
 				$(document).on("click", ".btnAgregaBeneficiario", agregarBeneficiarioRow)
 				$(document).on("click", ".btnEliminaBeneficiario", eliminarBeneficiario)
+
+				$("#btnRegistraContrato").on("click", registraContrato)
 			});
 		</script>
 		HTML;
@@ -317,7 +358,7 @@ class AhorroSimple extends Controller
 		$parentescosOptions = '<option value="">Seleccionar...</option>';
 		if ($parentescos['success']) {
 			foreach ($parentescos['datos'] as $key => $value) {
-				$parentescosOptions .= "<option value='{$value['DESCRIPCION']}'>{$value['DESCRIPCION']}</option>";
+				$parentescosOptions .= "<option value='{$value['CODIGO']}'>{$value['DESCRIPCION']}</option>";
 			}
 		}
 
@@ -328,9 +369,14 @@ class AhorroSimple extends Controller
 		View::render("contratos_lista_ahorro");
 	}
 
-	public function getCliente()
+	public function GetCliente()
 	{
 		echo json_encode(AhorroSimpleDao::GetCliente($_POST));
+	}
+
+	public function RegistraContrato()
+	{
+		echo json_encode(AhorroSimpleDao::RegistraContrato($_POST));
 	}
 
 	public function ContratoAdd()

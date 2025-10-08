@@ -190,13 +190,13 @@ sql;
 	public static function GetCliente($datos)
 	{
 		$query = <<<SQL
-			SELECT 
-				CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE
+			SELECT
+				CL.CODIGO AS CLIENTE
+				, CONCATENA_NOMBRE(CL.NOMBRE1, CL.NOMBRE2, CL.PRIMAPE, CL.SEGAPE) AS NOMBRE
 			FROM 
 				PRC
 				LEFT JOIN CL ON PRC.CDGCL = CL.CODIGO
 				INNER JOIN PRN ON PRN.CDGNS = PRC.CDGNS AND PRN.CICLO = PRC.CICLO
-				
 			WHERE 
 				PRC.CDGNS = :credito
 				AND PRN.SITUACION = 'E'
@@ -211,6 +211,57 @@ sql;
 			return self::Responde(true, 'Cliente obtenido', $res);
 		} catch (\Exception $e) {
 			return  self::Responde(false, 'Error al obtener cliente', null, $e->getMessage());
+		}
+	}
+
+	public static function RegistraContrato($datos)
+	{
+		$qryContrato = <<<SQL
+			INSERT INTO ASIGNA_PROD_AHORRO
+				(CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, SALDO, TASA, CDGCO, CDGPE_REGISTRO)
+			VALUES
+				(:contrato, :cliente, SYSDATE, '1', 'A', 0, :tasa, :sucursal, :ejecutivo_registro)
+		SQL;
+
+		$qryBeneficiario = <<<SQL
+			INSERT INTO BENEFICIARIOS_AHORRO
+				(CDG_CONTRATO, NOMBRE, CDGCT_PARENTESCO, ESTATUS, FECHA_MODIFICACION, PORCENTAJE)
+			VALUES
+				(:contrato, :nombre, :parentesco, 'A', SYSDATE, :porcentaje)
+		SQL;
+
+		$inserts = [];
+		$datosInsert = [];
+
+		$noContrato = $datos['noCredito'] . date('Ymd');
+		$inserts[] = $qryContrato;
+		$datosInsert[] = [
+			'contrato' => $noContrato,
+			'cliente' => $datos['noCliente'],
+			'tasa' => $datos['tasa'],
+			'sucursal' => $datos['sucursal'],
+			'ejecutivo_registro' => $datos['ejecutivo']
+		];
+
+		foreach ($datos['beneficiario_parentesco'] as $index => $p) {
+			$inserts[] = $qryBeneficiario;
+			$datosInsert[] = [
+				'contrato' => $noContrato,
+				'nombre' => $datos['beneficiario_nombre'][$index],
+				'parentesco' => $datos['beneficiario_parentesco'][$index],
+				'porcentaje' => $datos['beneficiario_porcentaje'][$index]
+			];
+		}
+
+
+
+		try {
+			$db = new Database();
+			$res = $db->insertaMultiple($inserts, $datosInsert);
+			if ($res) return self::Responde(true, "Contrato de ahorro registrado correctamente", $res);
+			return self::Responde(false, "Ocurrió un error al registrar el contrato de ahorro.");
+		} catch (\Exception $e) {
+			return  self::Responde(false, 'Error al registrar el contrato de ahorro', null, $e->getMessage());
 		}
 	}
 }

@@ -173,15 +173,21 @@ class Controller
         }
     JAVASCRIPT;
     public $soloNumeros = <<<JAVASCRIPT
-        const soloNumeros = (evento, enterFnc = null) => {
-            const charCode = (evento.which) ? evento.which : evento.keyCode
-
-            if (enterFnc && charCode === 13) {
-                evento.preventDefault()
-                return enterFnc()
-            }
-
-            if (charCode > 31 && (charCode < 48 || charCode > 57)) evento.preventDefault()
+        const soloNumeros = (e) => {
+            valKD = false
+            if (
+                !(e.key >= "0" && e.key <= "9") &&
+                e.key !== "." &&
+                e.key !== "Backspace" &&
+                e.key !== "Delete" &&
+                e.key !== "ArrowLeft" &&
+                e.key !== "ArrowRight" &&
+                e.key !== "ArrowUp" &&
+                e.key !== "ArrowDown" &&
+                e.key !== "Tab"
+            ) e.preventDefault()
+            if (e.key === "." && e.target.value.includes(".")) e.preventDefault()
+            valKD = true
         }
     JAVASCRIPT;
 

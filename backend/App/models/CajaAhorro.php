@@ -5,9 +5,10 @@ namespace App\models;
 defined("APPPATH") or die("Access denied");
 
 use \Core\Database;
+use Core\Model;
 use \App\models\LogTransaccionesAhorro;
 
-class CajaAhorro
+class CajaAhorro extends Model
 {
     public static function Responde($respuesta, $mensaje, $datos = null, $error = null)
     {
