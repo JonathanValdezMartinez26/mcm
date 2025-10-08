@@ -164,27 +164,20 @@ class AhorroSimple extends Controller
 			{$this->formatoMoneda}
 			{$this->soloNumeros}
 
-<<<<<<< HEAD
-		// Abre el modal
-		function abrirModal(cdg, nombre) {
-			$("#modal_cdgns").val(cdg);
-			$("#modal_nombre").val(nombre);
-			$('#modal_contrato').modal('show');
-		}
+			// Agregar beneficiario dinámico (máx. 3)
+			var contadorBeneficiarios = 1;
+			function agregarBeneficiario() {
+				if (contadorBeneficiarios >= 2) {
+					swal("Solo puedes agregar hasta 2 beneficiarios");
+					return;
+				}
+			}
 
-		// Agregar beneficiario dinámico (máx. 3)
-		var contadorBeneficiarios = 1;
-		function agregarBeneficiario() {
-			if (contadorBeneficiarios >= 2) {
-				swal("Solo puedes agregar hasta 2 beneficiarios");
-				return;
-=======
 			// Abre el modal
 			function abrirModal(cdg, nombre) {
 				$("#modal_cdgns").val(cdg);
 				$("#modal_nombre").val(nombre);
 				$('#modal_contrato').modal('show');
->>>>>>> 113264f88abfb0add8f0c77dee6df06a763c2df6
 			}
 
 			// Guardar contrato y beneficiarios (con soporte para múltiples registros)
@@ -241,7 +234,7 @@ class AhorroSimple extends Controller
 				if (parseFloat(porcentaje) > 0) padre.find(".btnAgregaBeneficiario").prop("disabled", false)
 			}
 
-			const agregarBeneficiario = (e) => {
+			const agregarBeneficiarioRow = (e) => {
 				const padre = $(e.target).closest(".beneficiario-row")
 				const abuelo = padre.closest("#contenedor-beneficiarios")
 				const totalPorcentaje = Array.from(abuelo.find(".porcentajeBeneficiario")).reduce((acc, input) => acc + (parseFloat(input.value) || 0), 0)
@@ -287,17 +280,17 @@ class AhorroSimple extends Controller
 					$(".porcentajeBeneficiario").prop("disabled", true)
 				})
 
-
 				$("#alta_cdgns").on("keypress", (e) => soloNumeros(e, buscarClienteAlta))
 				$("#btnBuscarNuevo").on("click", buscarClienteAlta)
 				$(document).on("keypress", ".porcentajeBeneficiario", (e) => maximo100(e))
 				$(document).on("input", ".nombreBeneficiario, .porcentajeBeneficiario", (e) => activarBotonAgregar(e))
 				$(document).on("change", ".parentescoBeneficiario", (e) => activarBotonAgregar(e))
-				$(document).on("click", ".btnAgregaBeneficiario", agregarBeneficiario)
+				$(document).on("click", ".btnAgregaBeneficiario", agregarBeneficiarioRow)
 				$(document).on("click", ".btnEliminaBeneficiario", eliminarBeneficiario)
 			});
 		</script>
 		HTML;
+
 
 		// Consulta de clientes sin contrato
 		$Consulta = AhorroSimpleDao::ListarClientesSinContrato();
@@ -324,7 +317,7 @@ class AhorroSimple extends Controller
 		$parentescosOptions = '<option value="">Seleccionar...</option>';
 		if ($parentescos['success']) {
 			foreach ($parentescos['datos'] as $key => $value) {
-				$parentescosOptions .= "<option value='{$value['CODIGO']}'>{$value['DESCRIPCION']}</option>";
+				$parentescosOptions .= "<option value='{$value['DESCRIPCION']}'>{$value['DESCRIPCION']}</option>";
 			}
 		}
 

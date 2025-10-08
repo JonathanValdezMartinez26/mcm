@@ -34,7 +34,7 @@
     </div>
 </div>
 
-<!-- Modal dar de alta contrato -->
+<!-- Modal dar de alta contrato Alberto-->
 <div class="modal fade" id="modal_alta_contrato" tabindex="-1" role="dialog" aria-labelledby="modalAltaContratoLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content p-3">
@@ -162,26 +162,20 @@
                     <hr>
                     <h5>Beneficiario 1</h5>
                     <div id="contenedor-beneficiarios" class="row">
-                        <div class="col-md-4">
+                        
+						<div class="col-md-4">
                             <label>Nombre completo</label>
                             <input type="text" class="form-control form-control-sm" name="beneficiario_nombre[]" required>
                         </div>
-                        <div class="col-md-4">
-                            <label>Parentesco</label>
-                            <select class="form-control form-control-sm" name="beneficiario_parentesco[]" required>
-                                <option value="">Seleccionar...</option>
-                                <option value="Padre">Padre</option>
-                                <option value="Madre">Madre</option>
-                                <option value="Hermano">Hermano</option>
-                                <option value="Hermana">Hermana</option>
-                                <option value="Esposo(a)">Esposo(a)</option>
-                                <option value="Hijo(a)">Hijo(a)</option>
-                                <option value="Abuelo(a)">Abuelo(a)</option>
-                                <option value="Tío(a)">Tío(a)</option>
-                                <option value="Primo(a)">Primo(a)</option>
-                                <option value="Otro">Otro</option>
-                            </select>
+						
+						 <div class="col-md-4">
+								<label>Parentesco</label>
+                                <select class="form-control form-control-sm"  name="beneficiario_parentesco[]" required >
+                                    <?= $parentescosOptions; ?>
+                                </select>
                         </div>
+							
+                        
                         <div class="col-md-4">
 
                             <label>Porcentaje (%)</label>
