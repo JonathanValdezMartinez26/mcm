@@ -26,7 +26,7 @@ class Pagos extends Controller
 
     public function index()
     {
-        $extraFooter = <<<HTML
+          $extraFooter = <<<HTML
             <script>
                 {$this->mensajes}
                 {$this->configuraTabla}
@@ -168,8 +168,24 @@ class Pagos extends Controller
                     $("#ejecutivo_e").val(ejecutivo)
                     $("#modal_editar_pago").modal("show")
                 }
+				
+				const mapTipos = {
+					"PAGO": "P",
+					"PAGO ELECTRÓNICO": "X",
+					"PAGO EXCEDENTE": "Y",
+					"MULTA": "M",
+					"MULTA GESTORES": "Z",
+					"MULTA ELECTRÓNICA": "L",
+					"GARANTÍA": "G",
+					"DESCUENTO": "D",
+					"REFINANCIAMIENTO": "R",
+					"RECOMIENDA": "H",
+					"SEGURO": "S",
+					"AHORRO": "B",
+					"AHORRO ELECTRÓNICO": "F"
+				};
 
-					const muestraAdmin = (e) => {
+                const muestraAdmin = (e) => {
                     const tr = e.target.tagName === "I" ? e.target.parentElement.parentElement.parentElement : e.target.parentElement.parentElement
 
                     const [, secuencia, cdgns, fecha_tabla, ciclo, monto, tipo, ejecutivo] = tr.children
@@ -186,12 +202,11 @@ class Pagos extends Controller
                     $("#Fecha_admin").attr("min", fechaMin.toISOString().split("T")[0])
                     $("#ciclo_admin").val(ciclo.innerText)
                     $("#monto_admin").val(parseaNumero(monto.innerText))
-                    $("#tipo_admin").val(tipo.innerText.charAt(0))
+                   $("#tipo_admin").val(mapTipos[tipo.innerText.trim()] || "");
                     $("#ejecutivo_admin").val($("#ejecutivo_admin option").filter((i, e) => e.text === ejecutivo.innerText).val())
 
                     $("#modal_admin").modal("show")
                 }
-                
 
                 const justificacion = (tipo) => {
                     $("#tituloJustificacion").text(tipo === 0 ? "Editar Pago" : "Eliminar Pago")
@@ -260,7 +275,7 @@ class Pagos extends Controller
                     $("#enviaJustificacion").click(enviarCambios)
                 })
             </script>
-        HTML;
+HTML;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader('Administración de Pagos')));
         View::set('footer', $this->_contenedor->footer($extraFooter));
