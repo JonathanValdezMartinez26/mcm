@@ -169,6 +169,28 @@ class Pagos extends Controller
                     $("#modal_editar_pago").modal("show")
                 }
 
+					const muestraAdmin = (e) => {
+                    const tr = e.target.tagName === "I" ? e.target.parentElement.parentElement.parentElement : e.target.parentElement.parentElement
+
+                    const [, secuencia, cdgns, fecha_tabla, ciclo, monto, tipo, ejecutivo] = tr.children
+                    const fecha = new Date(fecha_tabla.innerText.split("/").reverse().join("-"))
+                    const fechaMin = new Date(fecha)
+                    fechaMin.setDate(fecha.getDate() - 20)
+                    
+                    $("#nombre_admin").val($("#nombreCliente").text())
+                    $("#secuencia_admin").val(secuencia.innerText)
+                    $("#cdgns_admin").val(cdgns.innerText)
+                    $("#Fecha_admin_r").val(fecha.toISOString().split("T")[0])
+                    $("#Fecha_admin").val(fecha.toISOString().split("T")[0])
+                    $("#Fecha_admin").attr("max", fecha.toISOString().split("T")[0])
+                    $("#Fecha_admin").attr("min", fechaMin.toISOString().split("T")[0])
+                    $("#ciclo_admin").val(ciclo.innerText)
+                    $("#monto_admin").val(parseaNumero(monto.innerText))
+                    $("#tipo_admin").val(tipo.innerText.charAt(0))
+                    $("#ejecutivo_admin").val($("#ejecutivo_admin option").filter((i, e) => e.text === ejecutivo.innerText).val())
+
+                    $("#modal_admin").modal("show")
+                }
                 
 
                 const justificacion = (tipo) => {
