@@ -172,6 +172,18 @@ class Controller
             window.focus()
         }
     JAVASCRIPT;
+    public $soloNumeros = <<<JAVASCRIPT
+        const soloNumeros = (evento, enterFnc = null) => {
+            const charCode = (evento.which) ? evento.which : evento.keyCode
+
+            if (enterFnc && charCode === 13) {
+                evento.preventDefault()
+                return enterFnc()
+            }
+
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) evento.preventDefault()
+        }
+    JAVASCRIPT;
 
     public $__usuario = '';
     public $__nombre = '';

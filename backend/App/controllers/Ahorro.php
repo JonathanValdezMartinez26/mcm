@@ -5748,7 +5748,7 @@ html;
 
     public function PagosRegistro()
     {
-        $extraFooter = <<<JAVASCRIPT
+        $extraFooter = <<<HTML
             <script>
                 {$this->mensajes}
                 {$this->consultaServidor}
@@ -5789,7 +5789,7 @@ html;
                     $("#creditoBuscar").on("keypress", buscarEnter)
                 })
             </script>
-        JAVASCRIPT;
+        HTML;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Ahorro Consulta")));
         View::set('footer', $this->_contenedor->footer($extraFooter));

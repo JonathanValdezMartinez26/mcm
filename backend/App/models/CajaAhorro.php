@@ -53,25 +53,6 @@ class CajaAhorro
         return $mysqli->queryAll($query);
     }
 
-    public static function GetCatalogoParentescos()
-    {
-        $query = <<<sql
-        SELECT
-            *
-        FROM
-            CAT_PARENTESCO
-        sql;
-
-        try {
-            $mysqli = new Database();
-            $res = $mysqli->queryAll($query);
-            if ($res) return $res;
-            return array();
-        } catch (\Exception $e) {
-            return array();
-        }
-    }
-
     public static function GetSucursalAsignadaCajeraAhorro($usuario = '')
     {
         $var = $usuario == "" ? "" : "WHERE SUC_CAJERA_AHORRO.CDG_USUARIO = '" . $usuario . "'";

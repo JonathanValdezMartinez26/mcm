@@ -13,23 +13,23 @@ use App\models\CallCenter as CallCenterDao;
 class AhorroSimple extends Controller
 {
 
-    private $_contenedor;
+	private $_contenedor;
 
 
-    function __construct()
-    {
-        parent::__construct();
-        $this->_contenedor = new Contenedor;
-        View::set('header', $this->_contenedor->header());
-        View::set('footer', $this->_contenedor->footer());
-    }
+	function __construct()
+	{
+		parent::__construct();
+		$this->_contenedor = new Contenedor;
+		View::set('header', $this->_contenedor->header());
+		View::set('footer', $this->_contenedor->footer());
+	}
 
-  
-    public function EstadoCuenta()
-    {
-        $extraHeader = self::GetExtraHeader('Consulta de Pagos');
 
-        $extraFooter = <<<HTML
+	public function EstadoCuenta()
+	{
+		$extraHeader = self::GetExtraHeader('Consulta de Pagos');
+
+		$extraFooter = <<<HTML
         <script>
             function getParameterByName(name) {
                 name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]")
@@ -82,38 +82,38 @@ class AhorroSimple extends Controller
         </script>
         HTML;
 
-        $fechaActual = date('Y-m-d');
+		$fechaActual = date('Y-m-d');
 		$cdgns = $_GET['cdgns'];
 
-     
 
-        if ($cdgns != '') {
-            $Consulta = AhorroSimpleDao::ConsultarPagosFechaSucursal($cdgns);
-	
+
+		if ($cdgns != '') {
+			$Consulta = AhorroSimpleDao::ConsultarPagosFechaSucursal($cdgns);
+
 			$ConsultaDatos = $Consulta[0];
-			
-            $tabla = '';
-            foreach ($Consulta[1] as $key => $value) {
-                if ($value['FIDENTIFICAPP'] ==  NULL) {
-                    $medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
-                    $mensaje = 'InfoAdmin();';
-                } else {
-                    $medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
-                    $mensaje = 'InfoPhone();';
-                }
 
-                $monto = number_format($value['MONTO'], 2);
-				
+			$tabla = '';
+			foreach ($Consulta[1] as $key => $value) {
+				if ($value['FIDENTIFICAPP'] ==  NULL) {
+					$medio = '<span class="count_top" style="font-size: 25px"><i class="fa fa-female"></i></span>';
+					$mensaje = 'InfoAdmin();';
+				} else {
+					$medio = '<span class="count_top" style="font-size: 30px"><i class="fa fa-phone"></i></span>';
+					$mensaje = 'InfoPhone();';
+				}
+
+				$monto = number_format($value['MONTO'], 2);
+
 				// Definimos la variable para el icono según tipo de operación
-				if($value['TIPO_OPERA'] = 'ABONO') {
+				if ($value['TIPO_OPERA'] = 'ABONO') {
 					$icono = '<i class="fa fa-arrow-down" style="color: green;"></i>'; // flecha verde para ingresos
 				} else {
 					$icono = '<i class="fa fa-arrow-up" style="color: red;"></i>'; // flecha roja para cargos/retiros
 				}
 
-				
-				
-                $tabla .= <<<HTML
+
+
+				$tabla .= <<<HTML
                 <tr style="padding: 0px !important;">
                     <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
                     <td style="padding: 0px !important;">{$value['FECHA']}</td>
@@ -125,31 +125,30 @@ class AhorroSimple extends Controller
                     <td style="padding: 0px !important;">{$value['FREGISTRO']}</td>
                 </tr>
                 HTML;
-				
-            }
+			}
 
-            if ($Consulta[0] == '') {
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
-                View::set('getSucursales', $getSucursales);
-                View::set('fechaActual', $fechaActual);
-                View::render("pagos_consulta_busqueda_message_ahorro");
-            } else {
-                View::set('tabla', $tabla);
-                View::set('Inicial', $Inicial);
-                View::set('Final', $Final);
-                View::set('header', $this->_contenedor->header($extraHeader));
-                View::set('footer', $this->_contenedor->footer($extraFooter));
+			if ($Consulta[0] == '') {
+				View::set('header', $this->_contenedor->header($extraHeader));
+				View::set('footer', $this->_contenedor->footer($extraFooter));
+				View::set('getSucursales', $getSucursales);
+				View::set('fechaActual', $fechaActual);
+				View::render("pagos_consulta_busqueda_message_ahorro");
+			} else {
+				View::set('tabla', $tabla);
+				View::set('Inicial', $Inicial);
+				View::set('Final', $Final);
+				View::set('header', $this->_contenedor->header($extraHeader));
+				View::set('footer', $this->_contenedor->footer($extraFooter));
 				View::set('ConsultaDatos', $ConsultaDatos);
-                View::render("pagos_consulta_busqueda_ahorro");
-            }
-        } else {
-            View::set('header', $this->_contenedor->header($extraHeader));
-            View::set('footer', $this->_contenedor->footer($extraFooter));
-            View::set('fechaActual', $fechaActual);
-            View::render("pagos_consulta_ahorro_all");
-        }
-    }
+				View::render("pagos_consulta_busqueda_ahorro");
+			}
+		} else {
+			View::set('header', $this->_contenedor->header($extraHeader));
+			View::set('footer', $this->_contenedor->footer($extraFooter));
+			View::set('fechaActual', $fechaActual);
+			View::render("pagos_consulta_ahorro_all");
+		}
+	}
 
 
 	public function Contrato()
@@ -157,13 +156,15 @@ class AhorroSimple extends Controller
 		$extraHeader = self::GetExtraHeader('Contratos de Ahorro');
 		$extraFooter = <<<HTML
 		<script>
-		$(document).ready(function () {
-			$("#muestra-contratos").DataTable({
-				lengthMenu: [[13, 50, -1], [13, 50, "Todos"]],
-				order: false
-			});
-		});
+			{$this->mensajes}
+			{$this->consultaServidor}
+			{$this->confirmarMovimiento}
+			{$this->configuraTabla}
+			{$this->descargaExcel}
+			{$this->formatoMoneda}
+			{$this->soloNumeros}
 
+<<<<<<< HEAD
 		// Abre el modal
 		function abrirModal(cdg, nombre) {
 			$("#modal_cdgns").val(cdg);
@@ -177,63 +178,124 @@ class AhorroSimple extends Controller
 			if (contadorBeneficiarios >= 2) {
 				swal("Solo puedes agregar hasta 2 beneficiarios");
 				return;
+=======
+			// Abre el modal
+			function abrirModal(cdg, nombre) {
+				$("#modal_cdgns").val(cdg);
+				$("#modal_nombre").val(nombre);
+				$('#modal_contrato').modal('show');
+>>>>>>> 113264f88abfb0add8f0c77dee6df06a763c2df6
 			}
-			contadorBeneficiarios++;
-			let html = `
-			<div class="beneficiario-extra">
-				<div class="col-md-12"><hr></div>
-				<div class="col-md-4">
-					<label>Nombre completo</label>
-					<input type="text" class="form-control form-control-sm" name="beneficiario_nombre[]" required>
-				</div>
-				<div class="col-md-4">
-					<label>Parentesco</label>
-					<select class="form-control form-control-sm" name="beneficiario_parentesco[]" required>
-						<option value="">Seleccionar...</option>
-						<option value="Padre">Padre</option>
-						<option value="Madre">Madre</option>
-						<option value="Hermano">Hermano</option>
-						<option value="Hermana">Hermana</option>
-						<option value="Esposo(a)">Esposo(a)</option>
-						<option value="Hijo(a)">Hijo(a)</option>
-						<option value="Abuelo(a)">Abuelo(a)</option>
-						<option value="Tío(a)">Tío(a)</option>
-						<option value="Primo(a)">Primo(a)</option>
-						<option value="Otro">Otro</option>
-					</select>
-				</div>
-				<div class="col-md-4">
-					<label>Porcentaje (%)</label>
-					<input type="number" class="form-control form-control-sm" name="beneficiario_porcentaje[]" max="100" min="0" step="0.01" required>
-				</div>
-			</div>`;
-			$("#contenedor-beneficiarios").append(html);
-		}
 
-		// Guardar contrato y beneficiarios (con soporte para múltiples registros)
-		function guardarContrato() {
-			const form = document.getElementById('form_contrato');
-			const data = new FormData(form);
+			// Guardar contrato y beneficiarios (con soporte para múltiples registros)
+			function guardarContrato() {
+				const form = document.getElementById('form_contrato');
+				const data = new FormData(form);
 
-			$.ajax({
-				url: '/AhorroSimple/ContratoAdd/',
-				type: 'POST',
-				data: data,
-				processData: false,
-				contentType: false,
-				success: function(respuesta) {
-					if (respuesta.trim() === '1') {
-						swal("Contrato guardado exitosamente", { icon: "success" });
-						setTimeout(() => location.reload(), 1000);
-					} else {
-						swal("Error: " + respuesta, { icon: "error" });
+				$.ajax({
+					url: '/AhorroSimple/ContratoAdd/',
+					type: 'POST',
+					data: data,
+					processData: false,
+					contentType: false,
+					success: function(respuesta) {
+						if (respuesta.trim() === '1') {
+							swal("Contrato guardado exitosamente", { icon: "success" });
+							setTimeout(() => location.reload(), 1000);
+						} else {
+							swal("Error: " + respuesta, { icon: "error" });
+						}
+					},
+					error: function(xhr, status, error) {
+						swal("Error de conexión: " + error, { icon: "error" });
 					}
-				},
-				error: function(xhr, status, error) {
-					swal("Error de conexión: " + error, { icon: "error" });
+				});
+			}
+
+			const buscarClienteAlta = () => {
+				const credito = $("#alta_cdgns").val().trim()
+
+				if (credito === "") return showError("Debe ingresar un número de cliente")
+				if (credito.length < 6) return showError("El número de cliente debe tener 6 dígitos")
+
+				consultaServidor("/AhorroSimple/getCliente/", { credito }, (respuesta) => {
+					if (!respuesta.success) return showError(respuesta.mensaje)
+
+					$("#alta_nombre").val(respuesta.datos.NOMBRE)
+					$(".nombreBeneficiario").prop("disabled", false)
+					$(".parentescoBeneficiario").prop("disabled", false)
+					$(".porcentajeBeneficiario").prop("disabled", false)
+				})
+			}
+
+			const activarBotonAgregar = (e) => {
+				const padre = $(e.target).closest(".beneficiario-row")
+				const nombre = padre.find(".nombreBeneficiario").val().trim()
+				const parentesco = padre.find(".parentescoBeneficiario").val().trim()
+				const porcentaje = Array.from(padre.find(".porcentajeBeneficiario")).reduce((acc, input) => acc + (parseFloat(input.value) || 0), 0)
+
+				padre.find(".btnAgregaBeneficiario").prop("disabled", true)
+				if (nombre === "") return
+				if (parentesco === "") return
+				if (parseFloat(porcentaje) >= 100) return
+				if (parseFloat(porcentaje) > 0) padre.find(".btnAgregaBeneficiario").prop("disabled", false)
+			}
+
+			const agregarBeneficiario = (e) => {
+				const padre = $(e.target).closest(".beneficiario-row")
+				const abuelo = padre.closest("#contenedor-beneficiarios")
+				const totalPorcentaje = Array.from(abuelo.find(".porcentajeBeneficiario")).reduce((acc, input) => acc + (parseFloat(input.value) || 0), 0)
+				
+				if (totalPorcentaje > 100) return showError("El porcentaje total de beneficiarios no puede exceder 100%")
+				if ($(".beneficiario-row").length >= 3) return showError("No se pueden agregar más de 3 beneficiarios")
+
+				const clone = padre.clone()
+				clone.find("input").val("")
+				clone.find("select").val("")
+				clone.find(".btnAgregaBeneficiario").prop("disabled", true).hide()
+				clone.find(".btnEliminaBeneficiario").prop("disabled", false).closest('div').show()
+				abuelo.append(clone)
+			}
+
+			const eliminarBeneficiario = (e) => {
+				const padre = $(e.target).closest(".beneficiario-row")
+				padre.remove()
+			}
+
+			const maximo100 = (e) => {
+				const valor = $(e.target).val()
+				if (parseFloat(valor) > 100) {
+					$(e.target).val(100)
+					showError("El porcentaje no puede ser mayor a 100")
 				}
+			}
+
+			$(document).ready(function () {
+				$("#muestra-contratos").DataTable({
+					lengthMenu: [[13, 50, -1], [13, 50, "Todos"]],
+					order: false
+				});
+
+				$('#modal_alta_contrato').on('hidden.bs.modal', () => {
+					$("#alta_cdgns").val('');
+					$("#alta_nombre").val('');
+					$("#contenedor-beneficiarios").find(".beneficiario-row:not(:first)").remove();
+					$("#contenedor-beneficiarios").find("input, select").val('');
+					$("#btnAgregaBeneficiario").prop("disabled", true);
+					$(".nombreBeneficiario").prop("disabled", true)
+					$(".parentescoBeneficiario").prop("disabled", true)
+					$(".porcentajeBeneficiario").prop("disabled", true)
+				})
+
+
+				$("#alta_cdgns").on("keypress", (e) => soloNumeros(e, buscarClienteAlta))
+				$("#btnBuscarNuevo").on("click", buscarClienteAlta)
+				$(document).on("keypress", ".porcentajeBeneficiario", (e) => maximo100(e))
+				$(document).on("input", ".nombreBeneficiario, .porcentajeBeneficiario", (e) => activarBotonAgregar(e))
+				$(document).on("change", ".parentescoBeneficiario", (e) => activarBotonAgregar(e))
+				$(document).on("click", ".btnAgregaBeneficiario", agregarBeneficiario)
+				$(document).on("click", ".btnEliminaBeneficiario", eliminarBeneficiario)
 			});
-		}
 		</script>
 		HTML;
 
@@ -258,13 +320,26 @@ class AhorroSimple extends Controller
 			HTML;
 		}
 
+		$parentescos = AhorroSimpleDao::GetCatalogoParentescos();
+		$parentescosOptions = '<option value="">Seleccionar...</option>';
+		if ($parentescos['success']) {
+			foreach ($parentescos['datos'] as $key => $value) {
+				$parentescosOptions .= "<option value='{$value['CODIGO']}'>{$value['DESCRIPCION']}</option>";
+			}
+		}
+
 		View::set('tabla', $tabla);
 		View::set('header', $this->_contenedor->header($extraHeader));
 		View::set('footer', $this->_contenedor->footer($extraFooter));
+		View::set('parentescosOptions', $parentescosOptions);
 		View::render("contratos_lista_ahorro");
 	}
-	
-	
+
+	public function getCliente()
+	{
+		echo json_encode(AhorroSimpleDao::GetCliente($_POST));
+	}
+
 	public function ContratoAdd()
 	{
 		$contrato = new \stdClass();
@@ -336,44 +411,43 @@ class AhorroSimple extends Controller
 	}
 
 
-    public function generarExcel()
-    {
-        $columnas = [
-            \PHPSpreadsheet::ColumnaExcel('FECHA', 'Fecha'),
-            \PHPSpreadsheet::ColumnaExcel('REFERENCIA', 'Referencia'),
-            \PHPSpreadsheet::ColumnaExcel('MONTO', 'Monto'),
-            \PHPSpreadsheet::ColumnaExcel('MONEDA', 'Moneda', ['estilo' => \PHPSpreadsheet::GetEstilosExcel('moneda')])
-        ];
+	public function generarExcel()
+	{
+		$columnas = [
+			\PHPSpreadsheet::ColumnaExcel('FECHA', 'Fecha'),
+			\PHPSpreadsheet::ColumnaExcel('REFERENCIA', 'Referencia'),
+			\PHPSpreadsheet::ColumnaExcel('MONTO', 'Monto'),
+			\PHPSpreadsheet::ColumnaExcel('MONEDA', 'Moneda', ['estilo' => \PHPSpreadsheet::GetEstilosExcel('moneda')])
+		];
 
-        $fecha_inicio = $_GET['Inicial'];
-        $fecha_fin = $_GET['Final'];
-        $filas = PagosDao::GeneraLayoutContable($fecha_inicio, $fecha_fin);
+		$fecha_inicio = $_GET['Inicial'];
+		$fecha_fin = $_GET['Final'];
+		$filas = PagosDao::GeneraLayoutContable($fecha_inicio, $fecha_fin);
 
-        \PHPSpreadsheet::DescargaExcel('Layout Pagos', 'Reporte', 'Pagos', $columnas, $filas);
-    }
+		\PHPSpreadsheet::DescargaExcel('Layout Pagos', 'Reporte', 'Pagos', $columnas, $filas);
+	}
 
-    public function generarExcelConsulta()
-    {
-        $columnas = [
-            \PHPSpreadsheet::ColumnaExcel('REGION', 'Region'),
-            \PHPSpreadsheet::ColumnaExcel('NOMBRE_SUCURSAL', 'Sucursal'),
-            \PHPSpreadsheet::ColumnaExcel('SECUENCIA', 'Codigo'),
-            \PHPSpreadsheet::ColumnaExcel('FECHA', 'Fecha'),
-            \PHPSpreadsheet::ColumnaExcel('CDGNS', 'Cliente'),
-            \PHPSpreadsheet::ColumnaExcel('NOMBRE', 'Nombre'),
-            \PHPSpreadsheet::ColumnaExcel('CICLO', 'Ciclo'),
-            \PHPSpreadsheet::ColumnaExcel('MONTO', 'Monto'),
-            \PHPSpreadsheet::ColumnaExcel('TIPO', 'Tipo'),
-            \PHPSpreadsheet::ColumnaExcel('EJECUTIVO', 'Ejecutivo'),
-            \PHPSpreadsheet::ColumnaExcel('FREGISTRO', 'Registro')
-        ];
+	public function generarExcelConsulta()
+	{
+		$columnas = [
+			\PHPSpreadsheet::ColumnaExcel('REGION', 'Region'),
+			\PHPSpreadsheet::ColumnaExcel('NOMBRE_SUCURSAL', 'Sucursal'),
+			\PHPSpreadsheet::ColumnaExcel('SECUENCIA', 'Codigo'),
+			\PHPSpreadsheet::ColumnaExcel('FECHA', 'Fecha'),
+			\PHPSpreadsheet::ColumnaExcel('CDGNS', 'Cliente'),
+			\PHPSpreadsheet::ColumnaExcel('NOMBRE', 'Nombre'),
+			\PHPSpreadsheet::ColumnaExcel('CICLO', 'Ciclo'),
+			\PHPSpreadsheet::ColumnaExcel('MONTO', 'Monto'),
+			\PHPSpreadsheet::ColumnaExcel('TIPO', 'Tipo'),
+			\PHPSpreadsheet::ColumnaExcel('EJECUTIVO', 'Ejecutivo'),
+			\PHPSpreadsheet::ColumnaExcel('FREGISTRO', 'Registro')
+		];
 
-        $fecha_inicio = $_GET['Inicial'];
-        $fecha_fin = $_GET['Final'];
-        $Sucursal = $_GET['Sucursal'];
-        $filas = PagosDao::ConsultarPagosFechaSucursal($Sucursal, $fecha_inicio, $fecha_fin);
+		$fecha_inicio = $_GET['Inicial'];
+		$fecha_fin = $_GET['Final'];
+		$Sucursal = $_GET['Sucursal'];
+		$filas = PagosDao::ConsultarPagosFechaSucursal($Sucursal, $fecha_inicio, $fecha_fin);
 
-        \PHPSpreadsheet::DescargaExcel('Consulta Pagos Global', 'Reporte', 'Pagos', $columnas, $filas);
-    }
-
+		\PHPSpreadsheet::DescargaExcel('Consulta Pagos Global', 'Reporte', 'Pagos', $columnas, $filas);
+	}
 }

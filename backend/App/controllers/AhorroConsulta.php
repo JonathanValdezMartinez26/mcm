@@ -22,7 +22,7 @@ class AhorroConsulta extends Controller
 
     public function index()
     {
-        $extraFooter = <<<JAVASCRIPT
+        $extraFooter = <<<HTML
             <script>
                 {$this->mensajes}
                 {$this->consultaServidor}
@@ -187,7 +187,7 @@ class AhorroConsulta extends Controller
                     consultaSolicitudes()
                 });
             </script>
-        JAVASCRIPT;
+        HTML;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Ahorro Consulta")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
