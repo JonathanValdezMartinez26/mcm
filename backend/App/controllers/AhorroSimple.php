@@ -295,7 +295,7 @@ class AhorroSimple extends Controller
 					if (!continuar) return
 
 					let params = $("#form_alta_contrato").serialize()
-					params += "&sucursal={$_SESSION['cdgco']}&ejecutivo={$_SESSION['usuario']}"
+					params += "&ejecutivo={$_SESSION['usuario']}"
 
 					consultaServidor("/AhorroSimple/RegistraContrato/", params, (respuesta) => {
 						if (!respuesta.success) return showError(respuesta.mensaje)
