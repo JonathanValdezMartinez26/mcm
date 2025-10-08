@@ -174,8 +174,8 @@ class AhorroSimple extends Controller
 		// Agregar beneficiario dinámico (máx. 3)
 		var contadorBeneficiarios = 1;
 		function agregarBeneficiario() {
-			if (contadorBeneficiarios >= 3) {
-				swal("Solo puedes agregar hasta 3 beneficiarios");
+			if (contadorBeneficiarios >= 2) {
+				swal("Solo puedes agregar hasta 2 beneficiarios");
 				return;
 			}
 			contadorBeneficiarios++;
@@ -315,6 +315,10 @@ class AhorroSimple extends Controller
 
 		if ($totalPorcentaje > 100) {
 			echo "El porcentaje total de beneficiarios no puede exceder 100%";
+			return;
+		}
+		if ($totalPorcentaje < 100) {
+			echo "El porcentaje total de beneficiarios debe ser 100%";
 			return;
 		}
 
