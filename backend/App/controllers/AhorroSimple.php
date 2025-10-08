@@ -272,7 +272,7 @@ class AhorroSimple extends Controller
 				const totalPorcentaje = Array.from(abuelo.find(".porcentajeBeneficiario")).reduce((acc, input) => acc + (parseFloat(input.value) || 0), 0)
 				
 				if (totalPorcentaje > 100) return showError("El porcentaje total de beneficiarios no puede exceder 100%")
-				if ($(".beneficiario-row").length >= 3) return showError("No se pueden agregar más de 3 beneficiarios")
+				if ($(".beneficiario-row").length >= 2) return showError("No se pueden agregar más de 2 beneficiarios")
 
 				const clone = padre.clone()
 				clone.find("input").val("")
