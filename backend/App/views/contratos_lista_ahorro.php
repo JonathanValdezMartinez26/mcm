@@ -162,8 +162,8 @@
                     </div>
 
                     <hr>
-                    <h5>Beneficiario 1</h5>
-                    <div id="contenedor-beneficiarios" class="row">
+                    <h5>Beneficiarios</h5>
+                    <div id="contenedor-beneficiarios_" class="row">
 
                         <div class="col-md-4">
                             <label>Nombre completo</label>

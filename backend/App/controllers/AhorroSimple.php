@@ -163,23 +163,49 @@ class AhorroSimple extends Controller
 			{$this->descargaExcel}
 			{$this->formatoMoneda}
 			{$this->soloNumeros}
-
-			// Agregar beneficiario dinámico (máx. 3)
-			var contadorBeneficiarios = 1;
-			function agregarBeneficiario() {
-				if (contadorBeneficiarios >= 2) {
-					swal("Solo puedes agregar hasta 2 beneficiarios");
-					return;
-				}
-			}
-
+			
 			// Abre el modal
-			function abrirModal(cdg, nombre) {
-				$("#modal_cdgns").val(cdg);
-				$("#modal_nombre").val(nombre);
-				$('#modal_contrato').modal('show');
-			}
+            function abrirModal(cdg, nombre) {
+                $("#modal_cdgns").val(cdg);
+                $("#modal_nombre").val(nombre);
+                $('#modal_contrato').modal('show');
+            }
 
+       var contadorBeneficiarios = 1;
+
+        function agregarBeneficiario() {
+            if (contadorBeneficiarios >= 2) {
+                swal("Solo puedes agregar hasta 2 beneficiarios");
+                return;
+            }
+        
+            contadorBeneficiarios++;
+        
+            let html = `
+            <div class="beneficiario-extra">
+                <hr>
+                <div class="">
+                    <div class="col-md-4">
+                   
+                        <label>Nombre completo</label>
+                        <input type="text" class="form-control form-control-sm" name="beneficiario_nombre[]" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Parentesco</label>
+                        <select class="form-control form-control-sm" name="beneficiario_parentesco[]" required="">
+                                <option value="">Seleccionar...</option><option value="03">PADRE</option><option value="04">MADRE</option><option value="05">HERMANO</option><option value="06">HERMANA</option><option value="01">CÓNYUGE</option><option value="02">HIJO</option>                            </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Porcentaje (%)</label>
+                        <input type="number" class="form-control form-control-sm" name="beneficiario_porcentaje[]" max="100" min="0" step="0.01" required>
+                    </div>
+                </div>
+            </div>`;
+        
+            $("#contenedor-beneficiarios_").append(html);
+        }
+            
+            
 			// Guardar contrato y beneficiarios (con soporte para múltiples registros)
 			function guardarContrato() {
 				const form = document.getElementById('form_contrato');
@@ -331,7 +357,7 @@ class AhorroSimple extends Controller
 				$("#btnRegistraContrato").on("click", registraContrato)
 			});
 		</script>
-		HTML;
+HTML;
 
 
 		// Consulta de clientes sin contrato
