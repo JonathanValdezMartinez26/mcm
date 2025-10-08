@@ -217,39 +217,40 @@ sql;
 	public static function RegistraContrato($datos)
 	{
 		$qryContrato = <<<SQL
-			INSERT INTO ASIGNA_PROD_AHORRO
-				(CONTRATO, CDGCL, FECHA_APERTURA, CDGPR_PRIORITARIO, ESTATUS, SALDO, TASA, CDGCO, CDGPE_REGISTRO)
+			INSERT INTO CONTRATOS_AHORRO
+				(CDGNS, TIPO_AHORRO, TASA_ANUAL, CDGPE_ALTA, CDGPE)
 			VALUES
-				(:contrato, :cliente, SYSDATE, '1', 'A', 0, :tasa, :sucursal, :ejecutivo_registro)
+				(:credito, :tipo, :tasa, :cdgpe_alta, :cdgpe)
 		SQL;
 
 		$qryBeneficiario = <<<SQL
-			INSERT INTO BENEFICIARIOS_AHORRO
-				(CDG_CONTRATO, NOMBRE, CDGCT_PARENTESCO, ESTATUS, FECHA_MODIFICACION, PORCENTAJE)
+			INSERT INTO CONTRATOS_BENEFICIARIOS
+				(ID_CONTRATO, NOMBRE_COMPLETO, PARENTESCO, PORCENTAJE, CDGPE_ALTA, CDGPE)
 			VALUES
-				(:contrato, :nombre, :parentesco, 'A', SYSDATE, :porcentaje)
+				((SELECT ID_CONTRATO FROM CONTRATOS_AHORRO WHERE CDGNS = :credito), :nombre, :parentesco, :porcentaje, :cdgpe_alta, :cdgpe)
 		SQL;
 
 		$inserts = [];
 		$datosInsert = [];
 
-		$noContrato = $datos['noCredito'] . date('Ymd');
 		$inserts[] = $qryContrato;
 		$datosInsert[] = [
-			'contrato' => $noContrato,
-			'cliente' => $datos['noCliente'],
+			'credito' => $datos['noCredito'],
+			'tipo' => $datos['tipo'],
 			'tasa' => $datos['tasa'],
-			'sucursal' => $datos['sucursal'],
-			'ejecutivo_registro' => $datos['ejecutivo']
+			'cdgpe_alta' => $datos['ejecutivo'],
+			'cdgpe' => $datos['ejecutivo']
 		];
 
 		foreach ($datos['beneficiario_parentesco'] as $index => $p) {
 			$inserts[] = $qryBeneficiario;
 			$datosInsert[] = [
-				'contrato' => $noContrato,
+				'credito' => $datos['noCredito'],
 				'nombre' => $datos['beneficiario_nombre'][$index],
 				'parentesco' => $datos['beneficiario_parentesco'][$index],
-				'porcentaje' => $datos['beneficiario_porcentaje'][$index]
+				'porcentaje' => $datos['beneficiario_porcentaje'][$index],
+				'cdgpe_alta' => $datos['ejecutivo'],
+				'cdgpe' => $datos['ejecutivo']
 			];
 		}
 

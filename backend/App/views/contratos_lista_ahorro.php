@@ -71,7 +71,7 @@
                         </div>
                         <div class="col-md-3">
                             <label>Tipo de Ahorro</label>
-                            <input type="text" class="form-control form-control-sm" value="Ahorro Simple" readonly>
+                            <input type="text" class="form-control form-control-sm" value="Ahorro Simple" name="tipo" readonly>
                         </div>
                         <div class="col-md-3">
                             <label>Tasa (%)</label>
