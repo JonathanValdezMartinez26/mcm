@@ -220,7 +220,7 @@ class AhorroSimple extends Controller
 				clone.find("input").val("")
 				clone.find("select").val("")
 				clone.find(".btnAgregaBeneficiario").prop("disabled", true).hide()
-				clone.find(".btnEliminaBeneficiario").prop("disabled", false).closest('div').show()
+				clone.find(".btnEliminaBeneficiario").prop("disabled", false).show()
 				abuelo.append(clone)
 			}
 
@@ -254,9 +254,8 @@ class AhorroSimple extends Controller
 			}
 
 			const registraContrato = () => {
-				const totalPorcentaje = Array.from($(".porcentajeBeneficiario")).reduce((acc, input) => acc + (parseFloat(input.value) || 0), 0)
-				if (totalPorcentaje > 100) return showError("El porcentaje total de beneficiarios no puede exceder 100%")
-				if (totalPorcentaje < 100) return showError("El porcentaje total de beneficiarios debe ser 100%")
+				if ($("#noCredito").val().trim() === "") return showError("Se debe buscar un cliente primero")
+				if (!validaBeneficiarios()) return
 
 				confirmarMovimiento("Registro de Contrato", "¿Desea continuar con la creación del contrato?")
 				.then((continuar) => {
@@ -306,10 +305,26 @@ class AhorroSimple extends Controller
 				$('#modal_alta_contrato').modal('show')
 			}
 
+			const validaBeneficiarios = () => {
+				try {
+					Array.from($(".beneficiario-row")).forEach((beneficiario) => {
+						if (beneficiario.querySelector(".nombreBeneficiario").value.trim() === "") throw new Error("Falta capturar el nombre de un beneficiario")
+						if (beneficiario.querySelector(".parentescoBeneficiario").value.trim() === "") throw new Error("Falta seleccionar el parentesco de un beneficiario")
+						if (beneficiario.querySelector(".porcentajeBeneficiario").value.trim() === "") throw new Error("Falta capturar el porcentaje de un beneficiario")
+					})
+
+					const totalPorcentaje = Array.from($(".porcentajeBeneficiario")).reduce((acc, input) => acc + (parseFloat(input.value) || 0), 0)
+					if (totalPorcentaje > 100) throw new Error("El porcentaje total de beneficiarios no puede exceder 100%")
+					if (totalPorcentaje < 100) throw new Error("El porcentaje total de beneficiarios debe ser 100%")
+				} catch (e) {
+					showError(e.message)
+					return false
+				}
+				return true
+			}
+
 			const actualizaBeneficiarios = () => {
-				const totalPorcentaje = Array.from($(".porcentajeBeneficiario")).reduce((acc, input) => acc + (parseFloat(input.value) || 0), 0)
-				if (totalPorcentaje > 100) return showError("El porcentaje total de beneficiarios no puede exceder 100%")
-				if (totalPorcentaje < 100) return showError("El porcentaje total de beneficiarios debe ser 100%")
+				if (!validaBeneficiarios()) return
 
 				confirmarMovimiento("Actualización de Beneficiarios", "¿Desea continuar con la actualización de los beneficiarios?")
 				.then((continuar) => {
@@ -340,7 +355,7 @@ class AhorroSimple extends Controller
 
 				$("#alta_cdgns").on("keypress", (e) => soloNumeros(e, buscarClienteAlta))
 				$("#btnBuscarNuevo").on("click", buscarClienteAlta)
-				$(document).on("keypress", ".porcentajeBeneficiario", (e) => maximo100(e))
+				$(document).on("keyup", ".porcentajeBeneficiario", (e) => maximo100(e))
 				$(document).on("input", ".nombreBeneficiario, .porcentajeBeneficiario", (e) => activarBotonAgregar(e))
 				$(document).on("change", ".parentescoBeneficiario", (e) => activarBotonAgregar(e))
 				$(document).on("click", ".btnAgregaBeneficiario", agregarBeneficiarioRow)

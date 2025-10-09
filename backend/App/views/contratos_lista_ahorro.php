@@ -39,8 +39,8 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content p-3">
             <div class="modal-header">
-                <h4 class="modal-title" id="modalAltaContratoLabel">Dar de Alta Contrato y Beneficiarios</h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="modalAltaContratoLabel">Dar de Alta Contrato y Beneficiarios</h4>
             </div>
             <div class="modal-body">
                 <form id="form_alta_contrato" onsubmit="return false;">
@@ -55,8 +55,10 @@
                                 </button>
                             </div>
                         </div>
+                        <div class="col-md-12">
+                            <hr>
+                        </div>
                     </div>
-                    <hr>
                     <!-- Datos del cliente y contrato -->
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -92,7 +94,7 @@
                             </div>
                         </div>
 
-                        <div class="row beneficiario-row mb-2">
+                        <div class="row mb-2 beneficiario-row">
                             <div class="col-md-6">
                                 <input type="text" class="form-control form-control-sm nombreBeneficiario" name="beneficiario_nombre[]" required disabled>
                             </div>
@@ -104,13 +106,11 @@
                             <div class="col-md-2">
                                 <input type="number" class="form-control form-control-sm porcentajeBeneficiario" name="beneficiario_porcentaje[]" max="100" min="0" step="0.01" required disabled>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-1" style="display: flex; justify-content: flex-end;">
                                 <button type="button" class="btn btn-success btn-sm btnAgregaBeneficiario" disabled>
                                     <i class="fa fa-plus"></i>
                                 </button>
-                            </div>
-                            <div class="col-md-1" style="display: none;">
-                                <button type="button" class="btn btn-danger btn-sm btnEliminaBeneficiario" disabled>
+                                <button type="button" class="btn btn-danger btn-sm btnEliminaBeneficiario" style="display: none;" disabled>
                                     <i class="fa fa-minus"></i>
                                 </button>
                             </div>
