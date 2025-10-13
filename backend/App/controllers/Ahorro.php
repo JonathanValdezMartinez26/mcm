@@ -1065,8 +1065,10 @@ class Ahorro extends Controller
 
         $parentescos = CajaAhorroDao::GetCatalogoParentescos();
         $opcParentescos = "<option value='' disabled selected>Seleccionar</option>";
-        foreach ($parentescos as $parentesco) {
-            $opcParentescos .= "<option value='{$parentesco['CODIGO']}'>{$parentesco['DESCRIPCION']}</option>";
+        if ($parentescos['success']) {
+            foreach ($parentescos['datos'] as $parentesco) {
+                $opcParentescos .= "<option value='{$parentesco['CODIGO']}'>{$parentesco['DESCRIPCION']}</option>";
+            }
         }
 
 
