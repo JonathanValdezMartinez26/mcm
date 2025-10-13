@@ -19,20 +19,6 @@ class AdminSucursales extends Controller
         if (e.keyCode < 9 || e.keyCode > 57) e.preventDefault()
         if (e.keyCode === 13) buscar()
     }';
-    private $soloNumeros = 'const soloNumeros = (e) => {
-        valKD = false
-        if (
-            !(e.key >= "0" && e.key <= "9") &&
-            e.key !== "." &&
-            e.key !== "Backspace" &&
-            e.key !== "Delete" &&
-            e.key !== "ArrowLeft" &&
-            e.key !== "ArrowRight" &&
-            e.key !== "Tab"
-        ) e.preventDefault()
-        if (e.key === "." && e.target.value.includes(".")) e.preventDefault()
-        valKD = true
-    }';
     private $numeroLetras = 'const numeroLetras = (numero) => {
         if (!numero) return ""
         const unidades = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"]
@@ -250,7 +236,7 @@ class AdminSucursales extends Controller
     // Reporte de saldos diarios por sucursal
     public function SaldosDiarios()
     {
-        $extraFooter = <<<script
+        $extraFooter = <<<HTML
         <script>
             {$this->mensajes}
             {$this->configuraTabla}
@@ -286,16 +272,16 @@ class AdminSucursales extends Controller
                 )
             }
         </script>
-        script;
+        HTML;
 
         // $filas = self::GetSaldosSucursal();
         $filas = ""; //$filas['success'] ? $filas['datos'] : "";
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Saldos de sucursales")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::set('filas', $filas);
-        View::set('fechaI', date('Y-m-d'));
-        View::set('fechaF', date('Y-m-d'));
+        // View::set('filas', $filas);
+        // View::set('fechaI', date('Y-m-d'));
+        // View::set('fechaF', date('Y-m-d'));
         View::render("caja_admin_saldos_dia");
     }
 
