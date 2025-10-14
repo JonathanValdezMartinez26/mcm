@@ -3918,7 +3918,7 @@ class Ahorro extends Controller
     // Generación de ticket's de operaciones realizadas
     public function ValidaHorario()
     {
-        if ($_SESSION['perfil'] == 'ADMIN' || $_SESSION['usuario'] == 'AMGM') return true;
+        if ($_SESSION['perfil'] == 'ADMIN' || $_SESSION['usuario'] == 'AMGM' || $_SESSION['usuario'] == 'LGFR') return true;
         $ahora = new DateTime();
         $inicio = DateTime::createFromFormat('H:i:s', $_SESSION['inicio']);
         $fin = DateTime::createFromFormat('H:i:s', $_SESSION['fin']); // "19:00:00"); //
