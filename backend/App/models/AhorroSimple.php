@@ -109,28 +109,57 @@ sql;
 	}
 
 
-	public static function ListarClientesSinContrato()
-	{
-		$query = <<<SQL
-    SELECT 
-        P.CDGNS,
-        P.NOMBRE
-    FROM 
-        PAGOSDIA P
-    WHERE 
-        P.TIPO IN ('F', 'B')
-        AND NOT EXISTS (
-            SELECT 1 FROM CONTRATOS_AHORRO C WHERE C.CDGNS = P.CDGNS
-        )
-    GROUP BY 
-        P.CDGNS, P.NOMBRE
-    ORDER BY 
-        P.NOMBRE
+    public static function ListarClientesSinContrato($user)
+    {
+
+        // 1️⃣ Obtiene las sucursales asignadas al usuario
+        $query_obten_sucu = "SELECT CDGCO FROM PCO WHERE CDGPE = '$user'";
+
+        $mysqli = new Database();
+        $sucursales = $mysqli->queryAll($query_obten_sucu);
+
+        // 2️⃣ Convierte los resultados en una lista para el IN
+        $listaSucursales = [];
+
+        if (!empty($sucursales)) {
+            foreach ($sucursales as $row) {
+                $listaSucursales[] = "'" . $row['CDGCO'] . "'";
+            }
+        }
+
+        // Si el usuario no tiene sucursales asignadas, evita error en SQL
+        if (empty($listaSucursales)) {
+            $listaSucursales[] = "'NULL'";
+        }
+
+        $in_sucursales = implode(",", $listaSucursales);
+
+        // 3️⃣ Consulta principal, ahora filtrando por las sucursales del usuario
+        $query = <<<SQL
+        SELECT 
+            P.CDGNS,
+            P.NOMBRE,
+            PRN.CDGCO,
+            CO.NOMBRE AS SUCURSAL
+        FROM 
+            PAGOSDIA P
+            INNER JOIN PRN ON PRN.CDGNS = P.CDGNS AND PRN.CICLO = P.CICLO
+            INNER JOIN CO ON CODIGO = PRN.CDGCO
+        WHERE 
+            P.TIPO IN ('F', 'B')
+            AND PRN.CDGCO IN ($in_sucursales)
+            AND NOT EXISTS (
+                SELECT 1 FROM CONTRATOS_AHORRO C WHERE C.CDGNS = P.CDGNS
+            )
+        GROUP BY 
+            P.CDGNS, P.NOMBRE, PRN.CDGCO, CO.NOMBRE
+        ORDER BY 
+            P.NOMBRE
     SQL;
 
-		$mysqli = new Database();
-		return $mysqli->queryAll($query);
-	}
+        // 4️⃣ Retorna el resultado
+        return $mysqli->queryAll($query);
+    }
 
 
 

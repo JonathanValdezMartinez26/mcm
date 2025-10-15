@@ -299,9 +299,8 @@ class AhorroSimple extends Controller
 						$(".porcentajeBeneficiario").eq(index).val(b.PORCENTAJE)
 					})
 				})
-
-				$("#btnRegistraContrato").hide()
-				$("#btnActualizaBeneficiarios").show()
+				$("#btnRegistraContrato").show()
+				$("#btnActualizaBeneficiarios").hide()
 				$('#modal_alta_contrato').modal('show')
 			}
 
@@ -367,7 +366,7 @@ class AhorroSimple extends Controller
 		</script>
 		HTML;
 
-		$Consulta = AhorroSimpleDao::ListarClientesSinContrato();
+		$Consulta = AhorroSimpleDao::ListarClientesSinContrato($this->__usuario);
 		$tabla = '';
 
 		foreach ($Consulta as $key => $value) {
