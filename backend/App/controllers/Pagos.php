@@ -139,6 +139,10 @@ class Pagos extends Controller
                             $("<option>", {
                                 value: "Y",
                                 text: "PAGO EXCEDENTE"
+                            }),
+                            $("<option>", {
+                                value: "O",
+                                text: "PAGO EXCEDENTE ELECTRÓNICO"
                             })
                         )
                     }
@@ -160,6 +164,22 @@ class Pagos extends Controller
                             $("<option>", {
                                 value: "Z",
                                 text: "MULTA GESTORES"
+                            }),
+                            $("<option>", {
+                                value: "Z",
+                                text: "MULTA GESTORES"
+                            }),
+                            $("<option>", {
+                                value: "L",
+                                text: "MULTA ELECTRÓNICA"
+                            }),
+                            $("<option>", {
+                                value: "Y",
+                                text: "PAGO EXCEDENTE"
+                            }),
+                            $("<option>", {
+                                value: "O",
+                                text: "PAGO EXCEDENTE ELECTRÓNICO"
                             })
                         )
                     }
@@ -182,7 +202,8 @@ class Pagos extends Controller
 					"RECOMIENDA": "H",
 					"SEGURO": "S",
 					"AHORRO": "B",
-					"AHORRO ELECTRÓNICO": "F"
+					"AHORRO ELECTRÓNICO": "F",
+					"PAGO EXCEDENTE ELECTRÓNICO": "O"
 				};
 
                 const muestraAdmin = (e) => {
@@ -1921,6 +1942,10 @@ html;
                             $("<option>", {
                                 value: "Y",
                                 text: "PAGO EXCEDENTE"
+                            }),
+                            $("<option>", {
+                                value: "O",
+                                text: "PAGO EXCEDENTE ELECTRÓNICO"
                             })
                         )
 
@@ -1948,6 +1973,22 @@ html;
                             $("<option>", {
                                 value: "Z",
                                 text: "MULTA GESTORES"
+                            }),
+                            $("<option>", {
+                                value: "Z",
+                                text: "MULTA GESTORES"
+                            }),
+                            $("<option>", {
+                                value: "L",
+                                text: "MULTA ELECTRÓNICA"
+                            }),
+                            $("<option>", {
+                                value: "Y",
+                                text: "PAGO EXCEDENTE"
+                            }),
+                            $("<option>", {
+                                value: "O",
+                                text: "PAGO EXCEDENTE ELECTRÓNICO"
                             })
                         )
                     }

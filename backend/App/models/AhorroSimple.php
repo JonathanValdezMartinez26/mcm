@@ -147,6 +147,7 @@ sql;
             INNER JOIN CO ON CODIGO = PRN.CDGCO
         WHERE 
             P.TIPO IN ('F', 'B')
+            AND ESTATUS = 'A'
             AND PRN.CDGCO IN ($in_sucursales)
             AND NOT EXISTS (
                 SELECT 1 FROM CONTRATOS_AHORRO C WHERE C.CDGNS = P.CDGNS
