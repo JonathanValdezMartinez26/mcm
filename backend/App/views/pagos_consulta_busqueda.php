@@ -200,6 +200,7 @@ const mapTipos = {
     "PAGO": "P",
     "PAGO ELECTRÓNICO": "X",
     "PAGO EXCEDENTE": "Y",
+    "PAGO EXCEDENTE ELECTRÓNICO": "O",
     "MULTA": "M",
     "MULTA GESTORES": "Z",
     "MULTA ELECTRÓNICA": "L",

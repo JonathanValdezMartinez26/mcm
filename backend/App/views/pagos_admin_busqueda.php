@@ -163,6 +163,7 @@
                                         <option value="P">PAGO</option>
                                         <option value="X">PAGO ELECTRÓNICO</option>
                                         <option value="Y">PAGO EXCEDENTE</option>
+                                        <option value="O">PAGO EXCEDENTE ELECTRÓNICO</option>
                                         <option value="M">MULTA</option>
                                         <option value="Z">MULTA GESTORES</option>
                                         <option value="L">MULTA ELECTRÓNICA</option>
@@ -294,6 +295,7 @@
                                         <option value="P">PAGO</option>
                                         <option value="X">PAGO ELECTRÓNICO</option>
                                         <option value="Y">PAGO EXCEDENTE</option>
+                                        <option value="O">PAGO EXCEDENTE ELECTRÓNICO</option>
                                         <option value="M">MULTA</option>
                                         <option value="Z">MULTA GESTORES</option>
                                         <option value="L">MULTA ELECTRÓNICA</option>
@@ -408,6 +410,7 @@
                                         <option value="P">PAGO</option>
                                         <option value="X">PAGO ELECTRÓNICO</option>
                                         <option value="Y">PAGO EXCEDENTE</option>
+                                        <option value="O">PAGO EXCEDENTE ELECTRÓNICO</option>
                                         <option value="M">MULTA</option>
                                         <option value="Z">MULTA GESTORES</option>
                                         <option value="L">MULTA ELECTRÓNICA</option>
