@@ -5744,35 +5744,113 @@ html;
                 {$this->parseaNumero}
                 {$this->formatoMoneda}
 
-                const consultaPagoAhorro = () => {
-                    const credito = $("#creditoBuscar").val()
-                    if (credito === "") return inputError("creditoBuscar", "Debe ingresar un número de crédito.")
+                const idTabla = "retiros"
 
-                    consultaServidor("/Ahorro/getPagoAhorro/", { credito }, (resultado) => {
-                        if (!resultado.success) return resultadoError(resultado.mensaje)
-                        $("#fechaAperturaAhorro").val(resultado.datos.FECHA_APERTURA_AHORRO)
-                        $("#nombreCliente").val(resultado.datos.NOMBRE)
+                const getRetiros = () => {
+                    consultaServidor("/Ahorro/getRetiros/", null, (resultado) => {
+                        if (!resultado.success) return showError(resultado.mensaje)
+                        resultadoOK(resultado.datos)
                     })
                 }
 
-                const buscarEnter = (e) => {
-                    if (e.key === "Enter") consultaPagoAhorro()
+                const resultadoOK = (datos) => {
+                    datos = datos.map((dato) => {
+                        dato.CANTIDAD_SOLICITADA = "$ " + formatoMoneda(dato.CANTIDAD_SOLICITADA)
+                        const acciones = [
+                            {
+                                texto: "Aprobar",
+                                icono: "fa-check text-success",
+                                funcion: "aprobarSolicitud(" + dato.ID_RETIRO + ")"
+                            },
+                            {
+                                texto: "Rechazar",
+                                icono: "fa-times text-danger",
+                                funcion: "rechazarSolicitud(" + dato.ID_RETIRO + ")"
+                            }
+                        ]
+
+                        return [
+                            dato.ID_RETIRO,
+                            dato.CDGNS,
+                            dato.CANTIDAD_SOLICITADA,
+                            dato.FECHA_SOLICITUD,
+                            dato.FECHA_ENTREGA_SOLICITADA,
+                            dato.CDGPE_ADMINISTRADORA,
+                            menuAcciones(acciones)
+                        ]
+                    })
+
+                    actualizaDatosTabla(idTabla, datos)
+                    $(".resultado").toggleClass("conDatos", true)
                 }
 
-                const inputError = (id, mensaje) => {
-                    $("#" + id).toggleClass("incorrecto", true)
-                    $("#" + id).focus()
-                    resultadoError(mensaje)
+                const menuAcciones = (opciones) => {
+                    const acciones = opciones
+                        .map((opcion) => {
+                            if (opcion === null || opcion === undefined) return ""
+                            if (opcion instanceof HTMLElement) return opcion.outerHTML
+                            if (opcion instanceof jQuery) return opcion[0].outerHTML
+                            if (typeof opcion === "string") {
+                                if (opcion === "divisor") return `<div class="dropdown-divider"></div>`
+                                return opcion
+                            }
+
+                            return '<li><a href="' + (opcion.href || "javascript:;") + 
+                            '" onclick="' + opcion.funcion + '">' +
+                            '<i class="fa ' + opcion.icono + '">&nbsp;</i>' + opcion.texto + '</a></li>'
+                        })
+                        .join("")
+
+                    return '<div class="dropdown"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></button><ul class="dropdown-menu">' + acciones + '</ul></div>'
                 }
 
-                const resultadoError = (mensaje) => {
-                    $(".resultado").toggleClass("conDatos", false)
-                    showError(mensaje).then(() => actualizaDatosTabla(idTabla, []))
+                const aprobarSolicitud = (retiro) => {
+                    const params = { 
+                        retiro,
+                        usuario: "{$_SESSION['usuario']}"
+                     }
+
+                    confirmarMovimiento("Aprobar crédito", "¿Está seguro de aprobar esta solicitud de retiro?")
+                    .then((continuar) => {
+                            if (!continuar) return
+                            consultaServidor("/Ahorro/AprobarRetiro/",
+                                params,
+                                (resultado) => {
+                                    if (!resultado.success) return showError(resultado.mensaje)
+
+                                    showSuccess("La solicitud de retiro ha sido aprobada.")
+                                    .then(getRetiros)
+                                }
+                            )
+                        }
+                    )
+                }
+
+                const rechazarSolicitud = (retiro) => {
+                    const params = { 
+                        retiro,
+                        usuario: "{$_SESSION['usuario']}"
+                     }
+
+                    confirmarMovimiento("Rechazar crédito", "¿Está seguro de rechazar esta solicitud de retiro?")
+                    .then((continuar) => {
+                            if (!continuar) return
+                            consultaServidor("/Ahorro/RechazarRetiro/",
+                                params,
+                                (resultado) => {
+                                    if (!resultado.success) return showError(resultado.mensaje)
+
+                                    showSuccess("La solicitud de retiro ha sido rechazada.")
+                                    .then(getRetiros)
+                                }
+                            )
+                        }
+                    )
                 }
 
                 $(document).ready(() => {
-                    $("#buscar").click(consultaPagoAhorro)
-                    $("#creditoBuscar").on("keypress", buscarEnter)
+                    configuraTabla(idTabla)
+                    getRetiros()
                 })
             </script>
         HTML;
@@ -5782,9 +5860,21 @@ html;
         View::render("ahorro_pago_registro");
     }
 
-    public function getPagoAhorro()
+    public function getRetiros()
     {
-        $r = AhorroDao::getPagoAhorro($_POST);
+        $r = AhorroDao::getRetiros();
+        echo json_encode($r);
+    }
+
+    public function AprobarRetiro()
+    {
+        $r = AhorroDao::AprobarRetiro($_POST);
+        echo json_encode($r);
+    }
+
+    public function RechazarRetiro()
+    {
+        $r = AhorroDao::RechazarRetiro($_POST);
         echo json_encode($r);
     }
 }
