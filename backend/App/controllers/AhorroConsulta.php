@@ -30,6 +30,7 @@ class AhorroConsulta extends Controller
                 {$this->configuraTabla}
                 {$this->descargaExcel}
                 {$this->formatoMoneda}
+                {$this->parseaNumero}
 
                 const idTabla = "tablaRetiros"
 
@@ -119,21 +120,62 @@ class AhorroConsulta extends Controller
                     $("#modalComprobante").modal("show");
                 }
 
-
                 const nuevaSolicitud = () => {
-                    const hoy = new Date().toISOString().split("T")[0];
-                    const dosDiasDespues = new Date();
-                    dosDiasDespues.setDate(dosDiasDespues.getDate() + 2);
+                    resetFomRetiro();
                     
-                    $("#formNuevaSolicitud")[0].reset();
-                    $("#nueva_fecha_solicitud").val(hoy);
-                    $("#nueva_fecha_entrega_solicitada").val(dosDiasDespues.toISOString().split("T")[0]);
                     $("#modalNuevaSolicitud").modal("show");
                 }
 
+                const resetFomRetiro = () => {
+                    const hoy = new Date().toISOString().split("T")[0];
+                    const dosDiasDespues = new Date();
+                    dosDiasDespues.setDate(dosDiasDespues.getDate() + 2);
+
+                    $("#formNuevaSolicitud")[0].reset();
+                    $("#nueva_cdgns").val("");
+                    $("#saldo_ahorro_disponible").val("");
+                    $("#nueva_fecha_solicitud").val(hoy);
+                    $("#nueva_fecha_entrega_solicitada").val(dosDiasDespues.toISOString().split("T")[0]);
+
+                    $("#nueva_cantidad_solicitada").prop("disabled", true);
+                    $("#nueva_fecha_solicitud").prop("disabled", true);
+                    $("#nueva_fecha_entrega_solicitada").prop("disabled", true);
+                    $("#nueva_observaciones_administradora").prop("disabled", true);
+                    $("#nueva_foto").prop("disabled", true);
+                    $("#btnGuardarNuevaSolicitud").prop("disabled", true);
+                }
+
+                const buscarCredito = () => {
+                    const cdgns = $("#cdgns_buscar").val().trim();
+                    resetFomRetiro()
+
+                    if (!cdgns || cdgns.length !== 6) return showError("El crédito debe tener 6 dígitos");
+
+                    consultaServidor("/AhorroConsulta/BuscarSaldo", { cdgns }, (res) => {
+                        if (!res.success) return showError(res.mensaje);
+                        if (res.datos.length === 0) return showError("No se encontró el crédito especificado.");
+                        
+                        const saldo = parseaNumero(res.datos?.SALDO_DISPONIBLE);
+
+                        if (saldo <= 0) return showError("El crédito no tiene saldo disponible para retiro.")
+
+                        $("#nueva_cdgns").val(cdgns);
+                        $("#saldo_ahorro_disponible").val(saldo);
+                        $("#nueva_cantidad_solicitada").prop("disabled", false);
+                        $("#nueva_fecha_solicitud").prop("disabled", false);
+                        $("#nueva_fecha_entrega_solicitada").prop("disabled", false);
+                        $("#nueva_observaciones_administradora").prop("disabled", false);
+                        $("#nueva_foto").prop("disabled", false);
+                        $("#btnGuardarNuevaSolicitud").prop("disabled", false);
+                    });
+                }
+
                 const guardarNuevaSolicitud = () => {
+                    const cantidadSolicitada = parseaNumero($("#nueva_cantidad_solicitada").val());
+                    const saldo = parseaNumero($("#saldo_ahorro_disponible").val());
+                    if (cantidadSolicitada > saldo) return showError("La cantidad solicitada no puede ser mayor al saldo disponible ($" + formatoMoneda(saldo) + ")");
+
                     const cdgns = $("#nueva_cdgns").val().trim();
-                    const cantidadSolicitada = $("#nueva_cantidad_solicitada").val();
                     const fechaSolicitud = $("#nueva_fecha_solicitud").val();
                     const fechaEntrega = $("#nueva_fecha_entrega_solicitada").val();
                     
@@ -146,7 +188,6 @@ class AhorroConsulta extends Controller
                     if (!archivo) return showError("Debe seleccionar un archivo");
                     if (archivo && archivo.size > 5242880) return showError("El archivo no debe superar los 5MB");
                     
-                    // Confirmar guardado
                     confirmarMovimiento("Registro de retiro de ahorro", "¿Está seguro de crear esta solicitud de retiro?")
                         .then((continuar) => {
                         if (continuar) {
@@ -159,7 +200,6 @@ class AhorroConsulta extends Controller
                             
                             if (archivo) formData.append("foto", archivo)
                             
-                            // Mostrar loading
                             consultaServidor("/AhorroConsulta/InsertRetiro", formData, (res) => {
                                 if (!res.success) return showError(res.mensaje)
                                 showSuccess(res.mensaje)
@@ -183,6 +223,14 @@ class AhorroConsulta extends Controller
                         $(this).show();
                     });
 
+                    const hoy = new Date().getDate()
+                    const fechaI = new Date().setDate(hoy - 7);
+                    const fechaF = new Date().setDate(hoy + 7);
+                    $("#fechaI").val(new Date(fechaI).toISOString().split("T")[0]);
+                    $("#fechaF").val(new Date(fechaF).toISOString().split("T")[0]);
+
+                    $("#btnBuscarCredito").click(buscarCredito);
+
                     configuraTabla(idTabla)
                     consultaSolicitudes()
                 });
@@ -202,6 +250,11 @@ class AhorroConsulta extends Controller
     public function GetRetiroById()
     {
         echo json_encode(AhorroConsultaDao::getRetiroById($_POST['id']));
+    }
+
+    public function BuscarSaldo()
+    {
+        echo json_encode(AhorroConsultaDao::BuscarSaldo($_POST));
     }
 
     public function InsertRetiro()
