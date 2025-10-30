@@ -149,43 +149,42 @@ class Contenedor extends Controller
         }
 
         $menu .= '</ul></li>';
-		
-		$permisos = ['ADMIN', 'QARO', 'AMOCA'];
+
+        $permisos = ['ADMIN', 'QARO', 'AMOCA'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
             <li><a><i class="fa fa-money"> </i>&nbsp; Resumen Ahorro <span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
             HTML;
+        }
 
-        }
-		
-		 $permisos = ['ADMIN', 'AMOCA', 'VAOY', 'TOOA', 'HTMP', 'JUJG', 'QARO'];
+        $permisos = ['ADMIN', 'AMOCA', 'VAOY', 'TOOA', 'HTMP', 'JUJG', 'QARO'];
         if ($this->ValidaPermiso($permisos)) {
-			$menu .= '<li><a href="/AhorroSimple/Contrato/">Alta Contrato</a></li>';
+            $menu .= '<li><a href="/AhorroSimple/Contrato/">Alta Contrato</a></li>';
         }
-		
-		
-		 $permisos = ['ADMIN', 'AMOCA', 'VAOY', 'TOOA', 'HTMP', 'JUJG', 'LFGR', 'MGJC' ];
+
+
+        $permisos = ['ADMIN', 'AMOCA', 'VAOY', 'TOOA', 'HTMP', 'JUJG', 'LFGR', 'MGJC'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/AhorroSimple/EstadoCuenta/">Estado de Cuenta Ahorro</a></li>';
         }
-		
-		 $permisos = ['AMGM'];
+
+        $permisos = ['AMGM'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/AhorroConsulta/">1.- Solicitudes Retiro</a></li>';
         }
-		
-		 $permisos = ['AMGM'];
+
+        $permisos = ['AMGM'];
         if ($this->ValidaPermiso($permisos)) {
-            $menu .= '<li><a href="/Ahorro/PagosRegistro/">2.- Aprobar Solicitud Retiro Tesorería</a></li>';
+            $menu .= '<li><a href="/Ahorro/Retiros/">2.- Aprobar Solicitud Retiro Tesorería</a></li>';
         }
-		
-		 $permisos = ['AMGM'];
+
+        $permisos = ['AMGM'];
         if ($this->ValidaPermiso($permisos)) {
-            $menu .= '<li><a href="/AhorroConsulta/">3.- Cancelar Solicitudes Super Admin</a></li>';
+            $menu .= '<li><a href="/Ahorro/CancelarSolicitudes/">3.- Cancelar Solicitudes Super Admin</a></li>';
         }
-		
-		 $menu .= '</ul></li>';
+
+        $menu .= '</ul></li>';
 
         $persmisos = ['ADMIN', 'GARAN', 'CAMAG', 'ORHM', 'MAPH'];
         if ($this->ValidaPermiso($persmisos)) {

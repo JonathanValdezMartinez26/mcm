@@ -5732,7 +5732,7 @@ html;
         View::render("calculadora_view");
     }
 
-    public function PagosRegistro()
+    public function Retiros()
     {
         $extraFooter = <<<HTML
             <script>
@@ -5855,9 +5855,9 @@ html;
             </script>
         HTML;
 
-        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Ahorro Consulta")));
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Retiros Ahorro")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render("ahorro_pago_registro");
+        View::render("ahorro_retiros");
     }
 
     public function getRetiros()
@@ -5875,6 +5875,163 @@ html;
     public function RechazarRetiro()
     {
         $r = AhorroDao::RechazarRetiro($_POST);
+        echo json_encode($r);
+    }
+
+    public function CancelarSolicitudes()
+    {
+        $extraFooter = <<<HTML
+            <script>
+                {$this->mensajes}
+                {$this->consultaServidor}
+                {$this->confirmarMovimiento}
+                {$this->configuraTabla}
+                {$this->descargaExcel}
+                {$this->parseaNumero}
+                {$this->formatoMoneda}
+
+                const idTabla = "retiros"
+
+                const getRetiros = () => {
+                    const params = { 
+                        fechaF: $("#fechaF").val(),
+                        fechaI: $("#fechaI").val()
+                     }
+
+                    consultaServidor("/Ahorro/getRetirosAdmin/", params, (resultado) => {
+                        if (!resultado.success) return showError(resultado.mensaje)
+                        resultadoOK(resultado.datos)
+                    })
+                }
+
+                const resultadoOK = (datos) => {
+                    datos = datos.map((dato) => {
+                        dato.CANTIDAD_SOLICITADA = "$ " + formatoMoneda(dato.CANTIDAD_SOLICITADA)
+                        const acciones = [
+                            {
+                                texto: "Cancelar",
+                                icono: "fa-ban text-danger",
+                                funcion: "capturarComentario(" + dato.ID_RETIRO + ")"
+                            }
+                        ]
+
+
+
+                        return [
+                            dato.ID_RETIRO,
+                            dato.CDGNS,
+                            dato.CANTIDAD_SOLICITADA,
+                            dato.FECHA_SOLICITUD,
+                            dato.FECHA_ENTREGA_SOLICITADA,
+                            dato.CDGPE_ADMINISTRADORA,
+                            getBadge(dato.ESTATUS_TESORERIA),
+                            menuAcciones(acciones)
+                        ]
+                    })
+
+                    actualizaDatosTabla(idTabla, datos)
+                    $(".resultado").toggleClass("conDatos", true)
+                }
+
+                const getBadge = (estatus) => {
+                    let clase = "default"
+                    let texto = "PENDIENTE"
+
+                    switch (estatus) {
+                        case "A":
+                            clase = "success"
+                            texto = "APROBADO"
+                            break;
+                        case "R":
+                            clase = "warning"
+                            texto = "RECHAZADO"
+                            break;
+                        case "C":
+                            clase = "danger"
+                            texto = "CANCELADO"
+                            break;
+                    }
+
+                    return '<span class="badge alert-' + clase + '">' + texto + '</span>'
+                }
+
+                const menuAcciones = (opciones) => {
+                    const acciones = opciones
+                        .map((opcion) => {
+                            if (opcion === null || opcion === undefined) return ""
+                            if (opcion instanceof HTMLElement) return opcion.outerHTML
+                            if (opcion instanceof jQuery) return opcion[0].outerHTML
+                            if (typeof opcion === "string") {
+                                if (opcion === "divisor") return `<div class="dropdown-divider"></div>`
+                                return opcion
+                            }
+
+                            return '<li><a href="' + (opcion.href || "javascript:;") + 
+                            '" onclick="' + opcion.funcion + '">' +
+                            '<i class="fa ' + opcion.icono + '">&nbsp;</i>' + opcion.texto + '</a></li>'
+                        })
+                        .join("")
+
+                    return '<div class="dropdown"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></button><ul class="dropdown-menu">' + acciones + '</ul></div>'
+                }
+
+                const capturarComentario = (retiro) => {
+                    $("#idRetiroCancelar").val(retiro)
+                    $("#motivoCancelacion").val("")
+                    
+                    $("#modalCancelarSolicitud").modal("show")
+                }
+
+                const cancelarSolicitud = () => {
+                    const comentario = $("#motivoCancelacion").val().trim()
+                    if (comentario === "") return showError("Debe capturar el motivo para cancelar la solicitud de retiro.")
+
+                    const params = { 
+                        retiro: $("#idRetiroCancelar").val(),
+                        comentario,
+                        usuario: "{$_SESSION['usuario']}"
+                     }
+
+                    consultaServidor("/Ahorro/CancelarRetiro/",
+                        params,
+                        (resultado) => {
+                            if (!resultado.success) return showError(resultado.mensaje)
+                            $("#modalCancelarSolicitud").modal("hide")
+                            showSuccess("La solicitud de retiro ha sido cancelada.")
+                            .then(getRetiros)
+                        }
+                    )
+                }
+
+                $(document).ready(() => {
+                    const hoy = new Date().getDate()
+                    const fechaI = new Date().setDate(hoy - 7)
+                    $("#fechaI").val(new Date(fechaI).toISOString().split("T")[0])
+                    $("#fechaF").val(new Date().toISOString().split("T")[0])
+
+                    $("#fechaI, #fechaF").change(getRetiros)
+                    $("#btnCancelarSolicitud").click(cancelarSolicitud)
+                    
+                    configuraTabla(idTabla)
+                    getRetiros()
+                })
+            </script>
+        HTML;
+
+        View::set('header', $this->_contenedor->header(self::GetExtraHeader("Cancelar Solicitudes de Retiro")));
+        View::set('footer', $this->_contenedor->footer($extraFooter));
+        View::render("ahorro_cancelar_solicitudes");
+    }
+
+    public function getRetirosAdmin()
+    {
+        $r = AhorroDao::getRetirosAdmin($_POST);
+        echo json_encode($r);
+    }
+
+    public function CancelarRetiro()
+    {
+        $r = AhorroDao::CancelarRetiro($_POST);
         echo json_encode($r);
     }
 }
