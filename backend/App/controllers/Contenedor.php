@@ -80,7 +80,7 @@ class Contenedor extends Controller
 
         $menu = "";
 
-        $permisos = ['LGFR', 'PAES', 'PMAB', 'AMGM', 'DCRI', 'GUGJ', 'JUSA', 'HEDC', 'ARTF'];
+        $permisos = [];
         if ($permiso_ahorro == '1' || $this->ValidaPermiso($permisos)) {
 
             $menu .= <<<HTML
@@ -91,7 +91,7 @@ class Contenedor extends Controller
         }
 
 
-        if ($permiso_ahorro == '1' || $this->__usuario == 'AMGM') {
+        if ($this->__usuario == 'AMGMM') {
             $menu .= '<li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>';
         }
 
