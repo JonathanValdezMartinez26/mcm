@@ -100,6 +100,44 @@ class AhorroConsulta extends Model
         }
     }
 
+    public static function BuscarSaldo($datos)
+    {
+        $qry = <<<SQL
+            SELECT
+                NVL(pd_total, 0) - NVL(ra_total, 0) AS SALDO_DISPONIBLE
+            FROM
+                (SELECT
+                    SUM(MONTO) AS pd_total
+                FROM
+                    PAGOSDIA
+                WHERE
+                    ESTATUS = 'A'
+                    AND CDGNS = :cdgns) pd,
+                (SELECT
+                    SUM(CANTIDAD_SOLICITADA) AS ra_total
+                FROM
+                    RETIROS_AHORRO_SIMPLE
+                WHERE
+                    ESTATUS_CALL_CENTER = 1
+                    AND CDGNS = :cdgns) ra
+        SQL;
+
+        $params = [
+            ':cdgns' => $datos['cdgns']
+        ];
+
+        try {
+            $db = new Database();
+            $res = $db->queryOne($qry, $params);
+
+            if (!$res) return self::Responde(false, "No se encontró el ahorro", null);
+
+            return self::Responde(true, "Saldo obtenido correctamente", $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener el saldo", null, $e->getMessage());
+        }
+    }
+
     public static function insertRetiro($datos)
     {
         $qry = <<<SQL

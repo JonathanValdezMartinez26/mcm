@@ -1,19 +1,3 @@
-<?php
-$fechaI = date('Y-m-d', strtotime('-3 days'));
-if (date('N', strtotime($fechaI)) == 1 || date('N', strtotime($fechaI)) == 7) {
-    $fechaI = date('Y-m-d', strtotime('-2 days', strtotime($fechaI)));
-} elseif (date('N', strtotime($fechaI)) == 6) {
-    $fechaI = date('Y-m-d', strtotime('-1 day', strtotime($fechaI)));
-}
-
-$fechaF = date('Y-m-d', strtotime('+3 days'));
-if (date('N', strtotime($fechaF)) == 1 || date('N', strtotime($fechaF)) == 7) {
-    $fechaF = date('Y-m-d', strtotime('+2 days', strtotime($fechaF)));
-} elseif (date('N', strtotime($fechaF)) == 6) {
-    $fechaF = date('Y-m-d', strtotime('+1 day', strtotime($fechaF)));
-}
-?>
-
 <?= $header; ?>
 
 <div class="right_col">
@@ -99,30 +83,36 @@ if (date('N', strtotime($fechaF)) == 1 || date('N', strtotime($fechaF)) == 7) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Crédito (CDGNS) <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="nueva_cdgns" maxlength="6" placeholder="Ingrese el crédito" required>
-                                    <small class="form-text text-muted">6 dígitos</small>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Cantidad Solicitada <span class="text-danger">*</span></label>
-                                    <input type="number" step="0.01" class="form-control" id="nueva_cantidad_solicitada" placeholder="0.00" required>
-                                    <small class="form-text text-muted">Monto solicitado</small>
+                                    <div class="form-group" style="display: flex; gap: 10px;">
+                                        <input type="text" class="form-control" id="cdgns_buscar" maxlength="6" placeholder="Ingrese el crédito" required>
+                                        <input type="hidden" id="saldo_ahorro_disponible">
+                                        <input type="hidden" id="nueva_cdgns">
+                                        <button type="button" class="btn btn-primary" id="btnBuscarCredito">
+                                            <span class="fa fa-search">&nbsp;</span>Buscar
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Cantidad Solicitada <span class="text-danger">*</span></label>
+                                    <input type="number" step="0.01" class="form-control" id="nueva_cantidad_solicitada" placeholder="0.00" required disabled>
+                                    <small class="form-text text-muted">Monto solicitado</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Fecha Solicitud <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="nueva_fecha_solicitud" required>
+                                    <input type="date" class="form-control" id="nueva_fecha_solicitud" required disabled>
                                     <small class="form-text text-muted">Fecha de solicitud</small>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Fecha Entrega Solicitada <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="nueva_fecha_entrega_solicitada" required>
+                                    <input type="date" class="form-control" id="nueva_fecha_entrega_solicitada" required disabled>
                                     <small class="form-text text-muted">Fecha deseada de entrega</small>
                                 </div>
                             </div>
@@ -131,7 +121,7 @@ if (date('N', strtotime($fechaF)) == 1 || date('N', strtotime($fechaF)) == 7) {
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>Observaciones</label>
-                                    <textarea class="form-control" id="nueva_observaciones_administradora" rows="3" placeholder="Ingrese observaciones (opcional)"></textarea>
+                                    <textarea class="form-control" id="nueva_observaciones_administradora" rows="3" placeholder="Ingrese observaciones (opcional)" disabled></textarea>
                                     <small class="form-text text-muted">Comentarios adicionales</small>
                                 </div>
                             </div>
@@ -140,7 +130,7 @@ if (date('N', strtotime($fechaF)) == 1 || date('N', strtotime($fechaF)) == 7) {
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>Foto/Comprobante</label>
-                                    <input type="file" class="form-control" id="nueva_foto" accept="image/*">
+                                    <input type="file" class="form-control" id="nueva_foto" accept="image/*" disabled>
                                     <small class="form-text text-muted">Formatos aceptados: JPG, PNG, PDF (Máx. 5MB)</small>
                                 </div>
                             </div>
@@ -152,7 +142,7 @@ if (date('N', strtotime($fechaF)) == 1 || date('N', strtotime($fechaF)) == 7) {
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <span class="glyphicon glyphicon-remove"></span> Cancelar
                 </button>
-                <button type="button" class="btn btn-success" id="btnGuardarNuevaSolicitud">
+                <button type="button" class="btn btn-success" id="btnGuardarNuevaSolicitud" disabled>
                     <span class="glyphicon glyphicon-floppy-disk"></span> Guardar Solicitud
                 </button>
             </div>

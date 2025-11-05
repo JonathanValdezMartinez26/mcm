@@ -157,4 +157,148 @@ sql;
             return self::Responde(false, "Error al obtener el pago de ahorro", null, $e->getMessage());
         }
     }
+
+    public static function getRetiros()
+    {
+        $qry = <<<SQL
+            SELECT 
+                ID_RETIRO
+                , CDGNS
+                , CANTIDAD_SOLICITADA
+                , TO_CHAR(FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
+                , TO_CHAR(FECHA_ENTREGA_SOLICITADA, 'DD/MM/YYYY') AS FECHA_ENTREGA_SOLICITADA
+                , CDGPE_ADMINISTRADORA
+            FROM 
+                RETIROS_AHORRO_SIMPLE
+            WHERE 
+                ESTATUS_TESORERIA IS NULL
+            ORDER BY 
+                FECHA_SOLICITUD ASC
+        SQL;
+
+        try {
+            $db = new Database();
+            $res = $db->queryAll($qry);
+            return self::Responde(true, "Retiros obtenidos correctamente", $res ?? []);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener los retiros", null, $e->getMessage());
+        }
+    }
+
+    public static function AprobarRetiro($datos)
+    {
+        $qry = <<<SQL
+            UPDATE 
+                RETIROS_AHORRO_SIMPLE
+            SET 
+                ESTATUS_TESORERIA = 'A'
+                , FECHA_PROCESA_TESORERIA = SYSDATE
+                , CDGPE_TESORERIA = :cdgpe
+            WHERE 
+                ID_RETIRO = :retiro
+        SQL;
+
+        $params = [
+            ':retiro' => $datos['retiro'],
+            ':cdgpe' => $datos['usuario']
+        ];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $params);
+            return self::Responde(true, "Retiro aprobado correctamente");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al aprobar el retiro", null, $e->getMessage());
+        }
+    }
+
+    public static function RechazarRetiro($datos)
+    {
+        $qry = <<<SQL
+            UPDATE 
+                RETIROS_AHORRO_SIMPLE
+            SET 
+                ESTATUS_TESORERIA = 'R'
+                , FECHA_PROCESA_TESORERIA = SYSDATE
+                , CDGPE_TESORERIA = :cdgpe
+            WHERE 
+                ID_RETIRO = :retiro
+        SQL;
+
+        $params = [
+            ':retiro' => $datos['retiro'],
+            ':cdgpe' => $datos['usuario']
+        ];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $params);
+            return self::Responde(true, "Retiro aprobado correctamente");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al aprobar el retiro", null, $e->getMessage());
+        }
+    }
+
+    public static function getRetirosAdmin($datos)
+    {
+        $qry = <<<SQL
+            SELECT 
+                ID_RETIRO
+                , CDGNS
+                , CANTIDAD_SOLICITADA
+                , TO_CHAR(FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
+                , TO_CHAR(FECHA_ENTREGA_SOLICITADA, 'DD/MM/YYYY') AS FECHA_ENTREGA_SOLICITADA
+                , CDGPE_ADMINISTRADORA
+                , ESTATUS_TESORERIA
+            FROM 
+                RETIROS_AHORRO_SIMPLE
+            WHERE 
+                FECHA_SOLICITUD >= TO_DATE(:fechaI, 'YYYY-MM-DD')
+                AND FECHA_SOLICITUD <= TO_DATE(:fechaF, 'YYYY-MM-DD')
+            ORDER BY 
+                FECHA_SOLICITUD DESC
+        SQL;
+
+        $params = [
+            ':fechaI' => $datos['fechaI'],
+            ':fechaF' => $datos['fechaF']
+        ];
+
+        try {
+            $db = new Database();
+            $res = $db->queryAll($qry, $params);
+            return self::Responde(true, "Retiros obtenidos correctamente", $res ?? []);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener los retiros", null, $e->getMessage());
+        }
+    }
+
+    public static function CancelarRetiro($datos)
+    {
+        $qry = <<<SQL
+            UPDATE 
+                RETIROS_AHORRO_SIMPLE
+            SET 
+                ESTATUS_TESORERIA = 'C'
+                , FECHA_PROCESA_TESORERIA = SYSDATE
+                , MOTIVO_CANCELACION = :comentario
+                , CDGPE_CANCELA = :cdgpe
+            WHERE 
+                ID_RETIRO = :retiro
+        SQL;
+
+        $params = [
+            ':retiro' => $datos['retiro'],
+            ':cdgpe' => $datos['usuario'],
+            ':comentario' => $datos['comentario']
+        ];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $params);
+            return self::Responde(true, "Retiro cancelado correctamente");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al cancelar el retiro", null, $e->getMessage());
+        }
+    }
 }
