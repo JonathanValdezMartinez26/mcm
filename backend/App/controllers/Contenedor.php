@@ -95,7 +95,7 @@ class Contenedor extends Controller
             $menu .= '<li><a href="/Ahorro/CuentaCorriente/"><i class="glyphicon glyphicon-usd"> </i>&nbsp; Mi espacio </a> </li>';
         }
 
-        $permisos = ['AMGM', 'LGFR', 'PAES', 'PMAB', 'DCRI', 'GUGJ', 'JUSA', 'HEDC', 'ARTF'];
+        $permisos = [];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
             <li><a href="/AdminSucursales/SaldosDiarios/"><i class="glyphicon glyphicon-paste"> </i>&nbsp; Admin Sucursales </a> </li>
