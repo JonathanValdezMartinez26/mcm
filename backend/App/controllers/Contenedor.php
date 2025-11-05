@@ -369,7 +369,7 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['AMGM'];
+        $permisos = ['AMGM', 'ADMIN'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
                 <li>
