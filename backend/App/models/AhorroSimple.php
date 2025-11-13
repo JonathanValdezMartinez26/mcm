@@ -10,6 +10,7 @@ use Core\Model;
 class AhorroSimple extends Model
 {
 
+
 	public static function ConsultarPagosFechaSucursal($cdgns)
 	{
 		$query_datos = <<<sql
