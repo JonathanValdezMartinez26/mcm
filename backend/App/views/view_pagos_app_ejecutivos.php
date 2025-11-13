@@ -1,4 +1,5 @@
-<?php echo $header; ?>
+<?= $header; ?>
+
 <div class="right_col">
     <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
@@ -6,7 +7,6 @@
                 <h3> Recepción de pagos capturados en Campo (App) <span class="fa fa-mobile"></span></h3>
                 <div class="clearfix"></div>
             </div>
-
             <div class="card col-md-12">
                 <div class="card card-danger col-md-12">
                     <ul class="nav navbar-nav navbar-right">
@@ -24,24 +24,23 @@
                 <div class="dataTable_wrapper">
                     <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                         <thead>
-                        <tr>
-                            <th>Código de Barras</th>
-                            <th>Sucursal</th>
-                            <th>Pagos Cobrados</th>
-                            <th>Ejecutivo</th>
-                            <th>Cobro</th>
-                            <th>Pagos</th>
-                            <th>Multas</th>
-                            <th>Ref</th>
-                            <th>Des</th>
-                            <th>Gar</th>
-                            <th>Monto Total Recolectado (Entregar)</th>
-                            <th>Acciones</th>
-
-                        </tr>
+                            <tr>
+                                <th>Código de Barras</th>
+                                <th>Sucursal</th>
+                                <th>Pagos Cobrados</th>
+                                <th>Ejecutivo</th>
+                                <th>Cobro</th>
+                                <th>Pagos</th>
+                                <th>Multas</th>
+                                <th>Ref</th>
+                                <th>Des</th>
+                                <th>Gar</th>
+                                <th>Monto Total Recolectado (Entregar)</th>
+                                <th>Acciones</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <?= $tabla; ?>
+                            <?= $tabla; ?>
                         </tbody>
                     </table>
                 </div>
@@ -50,5 +49,4 @@
     </div>
 </div>
 
-
-<?php echo $footer; ?>
+<?= $footer; ?>
