@@ -1,12 +1,11 @@
 <?= $header; ?>
 
 <div class="right_col">
-  <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
+    <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12">
         <div class="panel panel-body">
             <div class="x_title">
                 <h3>Histórico de pagos capturados en campo por los ejecutivos <span class="fa fa-mobile"></span></h3>
             </div>
-
             <div class="card col-md-12">
                 <div class="row">
                     <div class="col-md-3">
@@ -25,9 +24,7 @@
                         <button class="btn btn-primary btn-circle" type="submit" onclick=buscar()><i class="fa fa-search"></i> Buscar</button>
                     </div>
                 </div>
-
                 <hr>
-            
                 <div class="dataTable_wrapper">
                     <table class="table table-striped table-bordered table-hover" id="tbl-historico">
                         <thead>
