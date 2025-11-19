@@ -150,7 +150,7 @@ class Contenedor extends Controller
 
         $menu .= '</ul></li>';
 
-        $permisos = ['ADMIN', 'QARO', 'AMOCA'];
+        $permisos = ['ADMIN', 'QARO', 'AMOCA', 'MAPH'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
             <li><a><i class="fa fa-money"> </i>&nbsp; Resumen Ahorro <span class="fa fa-chevron-down"></span></a>
@@ -158,15 +158,16 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'AMOCA', 'VAOY', 'TOOA', 'HTMP', 'JUJG', 'QARO'];
+        $permisos = ['ADMIN', 'AMOCA', 'VAOY', 'TOOA', 'HTMP', 'JUJG', 'QARO', 'MAPH'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/AhorroSimple/Contrato/">Alta Contrato</a></li>';
         }
 
 
-        $permisos = ['ADMIN', 'AMOCA', 'VAOY', 'TOOA', 'HTMP', 'JUJG', 'LFGR', 'MGJC'];
+        $permisos = ['ADMIN', 'AMOCA', 'VAOY', 'TOOA', 'HTMP', 'JUJG', 'LFGR', 'MGJC', 'MAPH'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/AhorroSimple/EstadoCuenta/">Estado de Cuenta Ahorro</a></li>';
+            $menu .= '<li><a href="/AhorroSimple/ValidaAdicional/">Valida Crédito Adicional </a></li>';
         }
 
         $permisos = ['AMGM'];
@@ -188,6 +189,7 @@ class Contenedor extends Controller
 
         $persmisos = ['ADMIN', 'GARAN', 'CAMAG', 'ORHM', 'MAPH'];
         if ($this->ValidaPermiso($persmisos)) {
+            $menu .= '<ul class="nav side-menu">';
             $menu .= <<<HTML
             <li><a><i class="fa fa-users"> </i>&nbsp; Créditos <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">

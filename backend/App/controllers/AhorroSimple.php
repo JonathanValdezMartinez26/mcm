@@ -150,6 +150,88 @@ class AhorroSimple extends Controller
 		}
 	}
 
+    public function ValidaAdicional()
+    {
+        $extraHeader = self::GetExtraHeader('Consulta de Pagos');
+
+        $extraFooter = <<<HTML
+        <script>
+            function getParameterByName(name) {
+                name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]")
+                var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                    results = regex.exec(location.search)
+                return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "))
+            }
+
+            $(document).ready(function () {
+                $("#muestra-cupones").tablesorter()
+                var oTable = $("#muestra-cupones").DataTable({
+                    lengthMenu: [
+                        [13, 50, -1],
+                        [132, 50, "Todos"]
+                    ],
+                    columnDefs: [
+                        {
+                            orderable: false,
+                            targets: 0
+                        }
+                    ],
+                    order: false
+                })
+                // Remove accented character from search input as well
+                $("#muestra-cupones input[type=search]").keyup(function () {
+                    var table = $("#example").DataTable()
+                    table.search(jQuery.fn.DataTable.ext.type.search.html(this.value)).draw()
+                })
+                var checkAll = 0
+
+                fecha1 = getParameterByName("Inicial")
+                fecha2 = getParameterByName("Final")
+                sucursal = getParameterByName("id_sucursal")
+
+                $("#export_excel_consulta").click(function () {
+                    $("#all").attr(
+                        "action",
+                        "/Pagos/generarExcelConsulta/?Inicial=" +
+                            fecha1 +
+                            "&Final=" +
+                            fecha2 +
+                            "&Sucursal=" +
+                            sucursal
+                    )
+                    $("#all").attr("target", "_blank")
+                    $("#all").submit()
+                })
+            })
+
+        </script>
+        HTML;
+
+        $fechaActual = date('Y-m-d');
+        $cdgns = $_GET['cdgns'];
+
+
+
+        if ($cdgns != '') {
+            $Consulta = AhorroSimpleDao::ConsultarPagosFechaSucursal($cdgns);
+            $ConsultaDatos = $Consulta[0];
+
+            $Consulta1 = AhorroSimpleDao::ProcesaProcedure('003011', '01');
+
+                View::set('header', $this->_contenedor->header($extraHeader));
+                View::set('footer', $this->_contenedor->footer($extraFooter));
+                View::set('ConsultaDatos', $ConsultaDatos);
+                View::set('resultado', $Consulta1);
+                View::render("resultado_validacion_adicional");
+
+        } else {
+            View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
+            View::set('fechaActual', $fechaActual);
+            View::render("valida_consulta_adicional_all");
+        }
+    }
+
 
 	public function Contrato()
 	{

@@ -351,6 +351,51 @@ class Database
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////7
+    public function queryValidacionClienteCO($cdgns_, $ciclo_)
+    {
+        $empresa = "EMPFIN";
+        $cdgns = $cdgns_;
+        $ciclo = $ciclo_;
+        $clns = "G";
+        $fecha = date("d-m-Y");
+
+        // ACTIVAR DBMS_OUTPUT
+        $this->db_activa->exec("BEGIN DBMS_OUTPUT.ENABLE(NULL); END;");
+
+        // LLAMADA AL SP
+        $query_text = "BEGIN ESIACOM.SP_VALIDACION_CLIENTE_CO(:p1,:p2,:p3,:p4,:p5); END;";
+        $stmt = $this->db_activa->prepare($query_text);
+
+        $stmt->bindParam(':p1', $empresa);
+        $stmt->bindParam(':p2', $cdgns);
+        $stmt->bindParam(':p3', $ciclo);
+        $stmt->bindParam(':p4', $clns);
+        $stmt->bindParam(':p5', $fecha);
+
+        $stmt->execute();
+
+        // LEER SALIDA DEL DBMS_OUTPUT
+        $output = "";
+        $readStmt = $this->db_activa->prepare("
+        DECLARE 
+            l_line VARCHAR2(32000);
+            l_done NUMBER;
+        BEGIN
+            LOOP
+                DBMS_OUTPUT.GET_LINE(l_line, l_done);
+                EXIT WHEN l_done = 1;
+                :text := :text || l_line || CHR(10);
+            END LOOP;
+        END;
+    ");
+
+        $readStmt->bindParam(':text', $output, PDO::PARAM_STR | PDO::PARAM_INPUT_OUTPUT, 40000);
+        $readStmt->execute();
+
+        $resultado = ltrim($output);
+        return $resultado;// ← AQUÍ REGRESA TODO EL TEXTO REAL
+    }
+
 
     public function queryProcedurePago($credito, $ciclo_, $monto_, $tipo_, $nombre_, $user_, $ejecutivo_id,  $ejec_nom_, $tipo_procedure, $fecha_aux, $secuencia, $fecha)
     {

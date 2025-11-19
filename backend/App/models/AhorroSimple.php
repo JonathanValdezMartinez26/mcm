@@ -108,6 +108,12 @@ sql;
 		return [$res1, $res2];
 	}
 
+    public static function ProcesaProcedure($credito_, $ciclo_)
+    {
+
+        $mysqli = new Database();
+        return $mysqli->queryValidacionClienteCO($credito_, $ciclo_);
+    }
 
     public static function ListarClientesSinContrato($user)
     {
