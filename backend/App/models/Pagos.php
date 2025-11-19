@@ -5,8 +5,9 @@ namespace App\models;
 defined("APPPATH") or die("Access denied");
 
 use Core\Database;
+use Core\Model;
 
-class Pagos
+class Pagos extends Model
 {
 
     public static function ConsultarPagosAdministracion($noCredito, $hora)
@@ -93,20 +94,6 @@ sql;
         WHERE CDGCO='$horario->_sucursal'
 sql;
         //var_dump($query);
-        return $mysqli->insert($query);
-    }
-
-    public static function updateEstatusValidaPago($update)
-    {
-
-        $mysqli = new Database();
-
-        //Agregar un registro completo (Bien) lLAMADA 1
-        $query = <<<sql
-        UPDATE CORTECAJA_PAGOSDIA
-        SET ESTATUS_CAJA='$update->_estatus'
-        WHERE CORTECAJA_PAGOSDIA_PK='$update->_id_check'
-sql;
         return $mysqli->insert($query);
     }
 
@@ -245,40 +232,45 @@ sql;
     {
 
         $query = <<<SQL
-        SELECT
-            (COD_SUC || COUNT(NOMBRE) || COMP_BARRA || CAST(SUM(MONTO) AS INTEGER)) AS BARRAS, COD_SUC, SUCURSAL, COUNT(NOMBRE) AS NUM_PAGOS, NOMBRE, FECHA_D, FECHA, 
-        FECHA_REGISTRO, CDGOCPE,
-        SUM(PAGOS) AS TOTAL_PAGOS, 
-        SUM(MULTA) AS TOTAL_MULTA, 
-        SUM(REFINANCIAMIENTO) AS TOTAL_REFINANCIAMIENTO, 
-        SUM(DESCUENTO) AS TOTAL_DESCUENTO, 
-        SUM(GARANTIA) AS GARANTIA, 
-        SUM(MONTO) AS MONTO_TOTAL
-        FROM
-        (
-        SELECT TO_CHAR(FECHA, 'DDMMYYYY' ) AS COMP_BARRA ,CO.CODIGO AS COD_SUC, CO.NOMBRE AS SUCURSAL, CORTECAJA_PAGOSDIA.EJECUTIVO AS NOMBRE, 
-        TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH') || '- ' || TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MON-YYYY' ) AS FECHA_D ,
-        TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) AS FECHA,
-        TO_CHAR(CORTECAJA_PAGOSDIA.FREGISTRO) AS FECHA_REGISTRO,
-        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'P' THEN MONTO END PAGOS,
-        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'M' THEN MONTO END MULTA,
-        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'R' THEN MONTO END REFINANCIAMIENTO,
-        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'D' THEN MONTO END DESCUENTO,
-        CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'G' THEN MONTO END GARANTIA, 
-        CORTECAJA_PAGOSDIA.MONTO, CORTECAJA_PAGOSDIA.CDGOCPE
-        FROM CORTECAJA_PAGOSDIA
-        INNER JOIN PRN ON PRN.CDGNS = CORTECAJA_PAGOSDIA.CDGNS 
-        INNER JOIN CO ON CO.CODIGO = PRN.CDGCO 
-        WHERE PROCESA_PAGOSDIA = '0'
-        AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
-        AND PRN.CDGCO = CO.CODIGO
-        )
-        GROUP BY NOMBRE, FECHA_D, FECHA, CDGOCPE, FECHA_REGISTRO, COD_SUC, SUCURSAL, COMP_BARRA
+            SELECT
+                (COD_SUC || COUNT(NOMBRE) || COMP_BARRA || CAST(SUM(MONTO) AS INTEGER)) AS BARRAS, COD_SUC, SUCURSAL, COUNT(NOMBRE) AS NUM_PAGOS, NOMBRE, FECHA_D, FECHA, 
+            FECHA_REGISTRO, CDGOCPE,
+            SUM(PAGOS) AS TOTAL_PAGOS, 
+            SUM(MULTA) AS TOTAL_MULTA, 
+            SUM(REFINANCIAMIENTO) AS TOTAL_REFINANCIAMIENTO, 
+            SUM(DESCUENTO) AS TOTAL_DESCUENTO, 
+            SUM(GARANTIA) AS GARANTIA, 
+            SUM(MONTO) AS MONTO_TOTAL
+            FROM
+            (
+            SELECT TO_CHAR(FECHA, 'DDMMYYYY' ) AS COMP_BARRA ,CO.CODIGO AS COD_SUC, CO.NOMBRE AS SUCURSAL, CORTECAJA_PAGOSDIA.EJECUTIVO AS NOMBRE, 
+            TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH') || '- ' || TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MON-YYYY' ) AS FECHA_D ,
+            TO_CHAR(CORTECAJA_PAGOSDIA.FECHA, 'DD-MM-YYYY' ) AS FECHA,
+            TO_CHAR(CORTECAJA_PAGOSDIA.FREGISTRO) AS FECHA_REGISTRO,
+            CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'P' THEN MONTO END PAGOS,
+            CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'M' THEN MONTO END MULTA,
+            CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'R' THEN MONTO END REFINANCIAMIENTO,
+            CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'D' THEN MONTO END DESCUENTO,
+            CASE WHEN CORTECAJA_PAGOSDIA.TIPO = 'G' THEN MONTO END GARANTIA, 
+            CORTECAJA_PAGOSDIA.MONTO, CORTECAJA_PAGOSDIA.CDGOCPE
+            FROM CORTECAJA_PAGOSDIA
+            INNER JOIN PRN ON PRN.CDGNS = CORTECAJA_PAGOSDIA.CDGNS 
+            INNER JOIN CO ON CO.CODIGO = PRN.CDGCO 
+            WHERE PROCESA_PAGOSDIA = '0'
+            AND PRN.CICLO = CORTECAJA_PAGOSDIA.CICLO
+            AND PRN.CDGCO = CO.CODIGO
+            )
+            GROUP BY NOMBRE, FECHA_D, FECHA, CDGOCPE, FECHA_REGISTRO, COD_SUC, SUCURSAL, COMP_BARRA
         SQL;
 
         /////AND PRN.SITUACION = 'E' PONER ESTA CUANDO ESTEMOS EN PRODUCTIVO
-        $mysqli = new Database();
-        return $mysqli->queryAll($query);
+        try {
+            $db = new Database();
+            $res = $db->queryAll($query);
+            return self::Responde(true, 'Pagos obtenidos', $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al obtener pagos', null, $e->getMessage());
+        }
     }
 
     public static function ConsultarPagosAppHistorico($fi, $ff)
@@ -749,9 +741,7 @@ sql;
     {
 
         $mysqli = new Database();
-        $query_horario = <<<sql
-        SELECT * FROM CIERRE_HORARIO WHERE CDGPE = '$user'
-sql;
+        $query_horario = "SELECT * FROM CIERRE_HORARIO WHERE CDGPE = '$user'";
 
         return $mysqli->queryOne($query_horario);
     }
@@ -1143,6 +1133,381 @@ sql;
             return $db->queryOne($qry, $param);
         } catch (\Exception $e) {
             return [];
+        }
+    }
+
+    public static function GetPagosApp()
+    {
+        $qry = <<<SQL
+            SELECT (COD_SUC || COUNT(NOMBRE) || COMP_BARRA || CAST(SUM(MONTO) AS INTEGER)) AS BARRAS
+                ,COD_SUC
+                ,SUCURSAL
+                ,COUNT(NOMBRE) AS NUM_PAGOS
+                ,NOMBRE
+                ,FECHA_D
+                ,FECHA
+                ,FECHA_REGISTRO
+                ,CDGOCPE
+                ,SUM(PAGOS) AS TOTAL_PAGOS
+                ,SUM(MULTA) AS TOTAL_MULTA
+                ,SUM(REFINANCIAMIENTO) AS TOTAL_REFINANCIAMIENTO
+                ,SUM(DESCUENTO) AS TOTAL_DESCUENTO
+                ,SUM(GARANTIA) AS GARANTIA
+                ,SUM(MONTO) AS MONTO_TOTAL
+            FROM (
+                SELECT TO_CHAR(FECHA, 'DDMMYYYY') AS COMP_BARRA
+                    ,CO.CODIGO AS COD_SUC
+                    ,CO.NOMBRE AS SUCURSAL
+                    ,PA.EJECUTIVO AS NOMBRE
+                    ,TO_CHAR(PA.FECHA, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH') || '- ' || TO_CHAR(PA.FECHA, 'DD-MON-YYYY') AS FECHA_D
+                    ,TO_CHAR(PA.FECHA, 'DD-MM-YYYY') AS FECHA
+                    ,TO_CHAR(PA.FREGISTRO) AS FECHA_REGISTRO
+                    ,DECODE(PA.TIPO, 'P', MONTO, 0) AS PAGOS
+                    ,DECODE(PA.TIPO, 'M', MONTO, 0) AS MULTA
+                    ,DECODE(PA.TIPO, 'R', MONTO, 0) AS REFINANCIAMIENTO
+                    ,DECODE(PA.TIPO, 'D', MONTO, 0) AS DESCUENTO
+                    ,DECODE(PA.TIPO, 'G', MONTO, 0) AS GARANTIA
+                    ,PA.MONTO
+                    ,PA.CDGOCPE
+                FROM
+                    PAGOSDIA_APP PA
+                    INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
+                    INNER JOIN CO ON CO.CODIGO = PRN.CDGCO
+                WHERE
+                    NVL(PA.ESTATUS_CAJA, 0) = 0
+                    AND PRN.CICLO = PA.CICLO
+                    AND PRN.CDGCO = CO.CODIGO
+                )
+            GROUP BY
+                NOMBRE
+                ,FECHA_D
+                ,FECHA
+                ,CDGOCPE
+                ,FECHA_REGISTRO
+                ,COD_SUC
+                ,SUCURSAL
+                ,COMP_BARRA
+        SQL;
+
+        try {
+            $db = new Database();
+            $res = $db->queryAll($qry);
+            return self::Responde(true, "Pagos obtenidos", $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener los pagos", null, $e->getMessage());
+        }
+    }
+
+    public static function GetPagosAppResumen($datos)
+    {
+        $qry = <<<SQL
+            SELECT
+                SUM(DECODE(ESTATUS, 'A', 1, 0)) AS TOTAL_PAGOS_TOTAL
+                ,SUM(CASE 
+                        WHEN (
+                                NVL(PA.ESTATUS_CAJA, 0) <> 0
+                                AND (
+                                    TIPO = 'P'
+                                    OR TIPO = 'M'
+                                    )
+                                AND ESTATUS = 'A'
+                                )
+                            THEN 1
+                        ELSE 0
+                        END) AS TOTAL_VALIDADOS
+                ,SUM(CASE 
+                        WHEN (
+                                (
+                                    TIPO = 'P'
+                                    OR TIPO = 'M'
+                                    )
+                                AND ESTATUS = 'A'
+                                )
+                            THEN 1
+                        ELSE 0
+                        END) AS TOTAL_PAGOS
+                ,SUM(CASE 
+                        WHEN (
+                                NVL(PA.ESTATUS_CAJA, 0) <> 0
+                                AND INCIDENCIA = 1
+                                AND (
+                                    TIPO = 'P'
+                                    OR TIPO = 'M'
+                                    )
+                                AND ESTATUS = 'A'
+                                )
+                            THEN TO_NUMBER(NUEVO_MONTO)
+                        ELSE 0
+                        END) AS TOTAL_NUEVOS_MONTOS
+                ,SUM(CASE 
+                        WHEN (
+                                NVL(PA.ESTATUS_CAJA, 0) = 1
+                                AND INCIDENCIA = 0
+                                AND (
+                                    TIPO = 'P'
+                                    OR TIPO = 'M'
+                                    )
+                                AND ESTATUS = 'A'
+                                )
+                            THEN MONTO
+                        ELSE 0
+                        END) AS TOTAL_MONT_SIN_MOD
+                ,(
+                    SUM(CASE 
+                            WHEN (
+                                    NVL(PA.ESTATUS_CAJA, 0) = 1
+                                    AND INCIDENCIA = 1
+                                    AND (
+                                        TIPO = 'P'
+                                        OR TIPO = 'M'
+                                        )
+                                    AND ESTATUS = 'A'
+                                    )
+                                THEN TO_NUMBER(NUEVO_MONTO)
+                            ELSE 0
+                            END)
+                    +
+                    SUM(CASE 
+                            WHEN (
+                                    NVL(PA.ESTATUS_CAJA, 0) = 1
+                                    AND INCIDENCIA = 0
+                                    AND (
+                                        TIPO = 'P'
+                                        OR TIPO = 'M'
+                                        )
+                                    AND ESTATUS = 'A'
+                                    )
+                                THEN MONTO
+                            ELSE 0
+                            END)
+                    ) AS TOTAL
+            FROM
+                PAGOSDIA_APP PA
+                INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
+                INNER JOIN CO ON CO.CODIGO = PRN.CDGCO
+            WHERE
+                PA.CDGOCPE = :ejecutivo
+                AND PRN.CICLO = PA.CICLO
+                AND PRN.CDGCO = :sucursal
+                AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
+        SQL;
+
+        $params = [
+            'ejecutivo' => $datos['ejecutivo'] ?? null,
+            'fecha' => $datos['fecha'] ?? null,
+            'sucursal' => $datos['sucursal'] ?? null,
+        ];
+
+        try {
+            $db = new Database();
+            $res = $db->queryOne($qry, $params);
+            return self::Responde(true, "Pagos obtenidos", $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener los pagos", null, $e->getMessage());
+        }
+    }
+
+    public static function GetPagosAppEjecutivoDetalle($datos, $pendientes)
+    {
+        $qry = <<<SQL
+            SELECT
+                PA.SECUENCIA
+                ,TO_CHAR(PA.FECHA, 'DD/MM/YYYY') AS FECHA
+                ,PA.CDGNS
+                ,PA.NOMBRE
+                ,PA.CICLO
+                ,PA.CDGOCPE
+                ,PA.EJECUTIVO
+                ,PA.FREGISTRO
+                ,PA.CDGPE
+                ,PA.ESTATUS
+                ,PA.FACTUALIZA
+                ,PA.MONTO
+                ,PA.TIPO
+                ,PA.INCIDENCIA
+                ,PA.NUEVO_MONTO
+                ,PA.COMENTARIOS_EJECUTIVO
+                ,PA.ESTATUS_CAJA
+                ,TO_CHAR(PA.FREGISTRO, 'DD/MM/YYYY HH24:MI:SS') AS FREGISTRO
+            FROM
+                PAGOSDIA_APP PA
+                INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
+                INNER JOIN CO ON CO.CODIGO = PRN.CDGCO
+            WHERE
+                PA.CDGOCPE = :ejecutivo
+                AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
+                AND PRN.CICLO = PA.CICLO
+                AND PRN.CDGCO = :sucursal
+                AND NVL(PA.ESTATUS_CAJA, 0) PENDIENTES 0
+            ORDER BY
+                DECODE(PA.TIPO, 'P', 1, 'M', 2, 'G', 3, 'D', 4, 'R', 5) ASC, PA.FREGISTRO
+        SQL;
+
+        $params = [
+            'ejecutivo' => $datos['ejecutivo'] ?? null,
+            'fecha' => $datos['fecha'] ?? null,
+            'sucursal' => $datos['sucursal'] ?? null,
+        ];
+
+        $qry = str_replace('PENDIENTES', $pendientes ? '=' : '<>', $qry);
+
+        try {
+            $db = new Database();
+            $res = $db->queryAll($qry, $params);
+            return self::Responde(true, "Pagos obtenidos", $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener los pagos", null, $e->getMessage());
+        }
+    }
+
+    public static function GetPagosAppEjecutivo($datos)
+    {
+        $qry = <<<SQL
+            SELECT
+                PA.SECUENCIA
+                ,PA.FECHA
+                ,PA.CDGNS
+                ,PA.NOMBRE
+                ,PA.CICLO
+                ,PA.CDGOCPE
+                ,PA.EJECUTIVO
+                ,PA.FREGISTRO
+                ,PA.CDGPE
+                ,PA.ESTATUS
+                ,PA.FACTUALIZA
+                ,PA.MONTO
+                ,PA.TIPO
+                ,PA.INCIDENCIA
+                ,PA.NUEVO_MONTO
+                ,PA.COMENTARIOS_EJECUTIVO
+                ,PA.ESTATUS_CAJA
+                ,TO_CHAR(PA.FREGISTRO, 'DD/MM/YYYY HH24:MI:SS') AS FREGISTRO
+            FROM
+                PAGOSDIA_APP PA
+                INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
+                INNER JOIN CO ON CO.CODIGO = PRN.CDGCO
+            WHERE
+                PA.CDGOCPE = :ejecutivo
+                AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
+                AND (
+                    PA.TIPO = 'P'
+                    OR PA.TIPO = 'M'
+                    )
+                AND PRN.CICLO = PA.CICLO
+                AND PRN.CDGCO = :sucursal
+                AND NVL(PA.ESTATUS_CAJA, 0) <> 0
+            UNION
+            SELECT
+                PA.SECUENCIA
+                ,PA.FECHA
+                ,PA.CDGNS
+                ,PA.NOMBRE
+                ,PA.CICLO
+                ,PA.CDGOCPE
+                ,PA.EJECUTIVO
+                ,PA.FREGISTRO
+                ,PA.CDGPE
+                ,PA.ESTATUS
+                ,PA.FACTUALIZA
+                ,0 AS MONTO
+                ,PA.TIPO
+                ,PA.INCIDENCIA
+                ,PA.NUEVO_MONTO
+                ,PA.COMENTARIOS_EJECUTIVO
+                ,PA.ESTATUS_CAJA
+                ,TO_CHAR(PA.FREGISTRO, 'DD/MM/YYYY HH24:MI:SS') AS FREGISTRO
+            FROM
+                PAGOSDIA_APP PA
+                INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
+                INNER JOIN CO ON CO.CODIGO = PRN.CDGCO
+            WHERE
+                PA.CDGOCPE = :ejecutivo
+                AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
+                AND (
+                    PA.TIPO <> 'P'
+                    OR PA.TIPO <> 'M'
+                    )
+                AND PRN.CICLO = PA.CICLO
+                AND PRN.CDGCO = :sucursal
+                AND NVL(PA.ESTATUS_CAJA, 0) = 0
+        SQL;
+
+        $params = [
+            'ejecutivo' => $datos['ejecutivo'] ?? null,
+            'fecha' => $datos['fecha'] ?? null,
+            'sucursal' => $datos['sucursal'] ?? null,
+        ];
+
+        try {
+            $db = new Database();
+            $res = $db->queryAll($qry, $params);
+            return self::Responde(true, "Pagos obtenidos", $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener los pagos", null, $e->getMessage());
+        }
+    }
+
+    public static function ActualizaEstatusPagoApp($datos)
+    {
+        $qry = <<<SQL
+            UPDATE PAGOSDIA_APP
+            SET 
+                ESTATUS_CAJA = :estatus
+            WHERE 
+                TRUNC(FECHA) = TO_DATE(:fecha, 'DD/MM/YYYY')
+                AND CDGNS = :grupo
+                AND CICLO = :ciclo
+                AND SECUENCIA = :secuencia
+        SQL;
+
+        $params = [
+            'estatus' => $datos['estatus'] ?? null,
+            'fecha' => $datos['fecha'] ?? null,
+            'grupo' => $datos['grupo'] ?? null,
+            'ciclo' => $datos['ciclo'] ?? null,
+            'secuencia' => $datos['secuencia'] ?? null
+        ];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $params);
+            return self::Responde(true, "Pago actualizado", $params);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al actualizar el pago", null, $e->getMessage());
+        }
+    }
+
+    public static function ActualizaInfoPagoApp($datos)
+    {
+        $qry = <<<SQL
+            UPDATE PAGOSDIA_APP
+            SET 
+                TIPO = :tipo
+                , NUEVO_MONTO = :nuevo_monto
+                , COMENTARIOS_EJECUTIVO = :comentario
+            WHERE 
+                TRUNC(FECHA) = TO_DATE(:fecha, 'DD/MM/YYYY')
+                AND CDGNS = :grupo
+                AND CICLO = :ciclo
+                AND SECUENCIA = :secuencia
+        SQL;
+
+        $params = [
+            'tipo' => $datos['tipo'] ?? null,
+            'nuevo_monto' => $datos['nuevo_monto'] ?? null,
+            'comentario' => $datos['comentario'] ?? null,
+            'fecha' => $datos['fecha'] ?? null,
+            'grupo' => $datos['grupo'] ?? null,
+            'ciclo' => $datos['ciclo'] ?? null,
+            'secuencia' => $datos['secuencia'] ?? null
+        ];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $params);
+            return self::Responde(true, "Pago actualizado", $params);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al actualizar el pago", null, $e->getMessage());
         }
     }
 }

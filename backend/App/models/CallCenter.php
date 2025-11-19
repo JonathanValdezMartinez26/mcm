@@ -15,8 +15,8 @@ class CallCenter extends Model
         $date = str_replace('/', '-', $fec);
         $newDate = date("Y-m-d H:i:s", strtotime($date));
 
-
         $mysqli = new Database();
+
         $query = <<<SQL
             SELECT 
                 SC.CDGNS NO_CREDITO,
@@ -39,7 +39,8 @@ class CallCenter extends Model
                 GET_NOMBRE_EMPLEADO(SN.CDGOCPE) EJECUTIVO,
                 SC.CDGPI ID_PROYECTO, 
                 TO_CHAR(SN.SOLICITUD ,'YYYY-MM-DD HH24:MI:SS') AS FECHA_SOL, 
-                SN.CICLOR
+                SN.CICLOR,
+                SN.CREDITO_ADICIONAL
             FROM 
                 SN, SC
             WHERE
@@ -55,6 +56,7 @@ class CallCenter extends Model
         $id_cliente = $credito_['ID_CLIENTE'];
         $id_credito = $credito_['NO_CREDITO'];
         $id_proyecto = $credito_['ID_PROYECTO'];
+
 
 
         $query2 = <<<sql
@@ -237,13 +239,24 @@ sql;
         SQL;
 
         if (in_array($ciclo, [
-            'R1','R2','R3','R4','R5',
-            'R6','R7','R8','R9','R10',
-            'R11','R12','R13','R14','R15'
+            'R1',
+            'R2',
+            'R3',
+            'R4',
+            'R5',
+            'R6',
+            'R7',
+            'R8',
+            'R9',
+            'R10',
+            'R11',
+            'R12',
+            'R13',
+            'R14',
+            'R15'
         ])) {
             $ciclo_actualizado =  $credito_['CICLOR'];
-        }else
-        {
+        } else {
             $ciclo_actualizado =  $ciclo;
         }
 
@@ -280,6 +293,8 @@ sql;
         $llamada_av = $mysqli->queryOne($desbloqueo_aval);
         $cliente = $mysqli->queryOne($query2);
         $aval = $mysqli->queryAll($query3);
+        //$credito_adicional = $mysqli->queryOne($query_busca_adicional);
+        /// aqui hacer algo para volver a validar politicas
 
         ///var_dump($desbloqueo_cl);
 
@@ -805,7 +820,7 @@ sql;
         ELSE 'PENDIENTE NO SE HA INICIADO VALIDACIÓN DE CALLCENTER, LA ADMINISTRADORA REGISTRO LA SOLICITUD EL DÍA: ' || FECHA_SOL END AS ESTATUS_GENERAL, 
             
         CASE WHEN FECHA_SOL < TIMESTAMP '2023-10-19 00:00:00.000000' THEN 'NO ESTA EN NINGUNA BANDEJA' 
-        ELSE 'BANDEJA PENDIENTES - SUC: ' || NOMBRE_SUCURSAL END AS BANDEJA, COMENTARIO_INICIAL, COMENTARIO_FINAL, CICLOR
+        ELSE 'BANDEJA PENDIENTES - SUC: ' || NOMBRE_SUCURSAL END AS BANDEJA, COMENTARIO_INICIAL, COMENTARIO_FINAL, CICLOR, CREDITO_ADICIONAL
         FROM SOLICITUDES_PENDIENTES SPE WHERE CDGNS = '$cdgns'
                                         
 	    UNION 
@@ -818,7 +833,7 @@ sql;
             
         CASE WHEN (ESTATUS_FINAL = 'PENDIENTE' OR ESTATUS_FINAL IS NULL) THEN 'BANDEJA PENDIENTES, VALIDANDO EL EJECUTIVO: ' || PE.NOMBRE1 || ' ' || PE.PRIMAPE || ' ' || PE.SEGAPE
         ELSE 'BANDEJA HISTORICOS - VALIDO EJECUTIVO: ' || PE.NOMBRE1 || ' ' || PE.PRIMAPE || ' ' || PE.SEGAPE || ' EL DÍA:'|| FECHA_TRABAJO END AS BANDEJA, COMENTARIO_INICIAL, COMENTARIO_FINAL,
-        CICLOR                                                                                                                                                    
+        CICLOR, CREDITO_ADICIONAL                                                                                                                                             
         FROM SOLICITUDES_PROCESADAS SPR 
         INNER JOIN PE ON PE.CODIGO = SPR.CDGPE 
             WHERE CDGNS = '$cdgns') ORDER BY INICIO DESC

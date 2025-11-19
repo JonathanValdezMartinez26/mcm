@@ -227,8 +227,8 @@
                     <div class="x_content">
                         <div class="col-sm-12">
                             <div class="card-body">
-                                <div class="dataTable_wrapper">
-                                    <table class="table table-striped table-bordered table-hover">
+                                <div class="dataTable_wrapper" style="display: <?php echo $visible; ?>">
+                                <table class="table table-striped table-bordered table-hover">
                                         <tbody>
                                             <tr>
                                                 <?php

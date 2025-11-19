@@ -641,7 +641,13 @@ class CallCenter extends Controller
                 View::set('ciclo', $ciclo);
                 View::render("callcenter_cliente_message_all");
             } else {
+
                 View::set('Administracion', $AdministracionOne);
+                if ($AdministracionOne[0]['CREDITO_ADICIONAL'] === '1') {
+                    View::set('visible', 'none');
+                } else {
+                    View::set('visible', 'block');
+                }
                 View::set('suc', $suc);
                 View::set('reg', $reg);
                 View::set('cdgpe', $this->__usuario);
@@ -680,8 +686,17 @@ class CallCenter extends Controller
                 }
 
                 if ($value['ESTATUS_AV'] == 'PENDIENTE') {
-                    $color_a = 'primary';
-                    $icon_a = 'fa-frown-o';
+                    if($value['CREDITO_ADICIONAL'])
+                    {
+                        $color_a = '';
+                        $icon_a = '';
+                    }
+                    else
+                    {
+                        $color_a = 'primary';
+                        $icon_a = 'fa-frown-o';
+                    }
+
                 } else if ($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $color_a = 'warning';
                     $icon_a = 'fa-clock-o';
@@ -772,6 +787,17 @@ class CallCenter extends Controller
                     $recomendado = '<div><b>CAMPAÑA ACTIVA</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #6a0013"><span class="fa fa-yelp"> </span> </span></div><b><em>RECOMIENDA MÁS Y PAGA MENOS <em></em></b><hr>';
                 }
 
+                if($value['CREDITO_ADICIONAL'] == 1)
+                {
+                    $adicional = '<div><b>TIPO:</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #6a0013"><span class="fa fa-yelp"> </span> </span></div><b><em>MÁS POR TI (ADICIONAL) <em></em></b><hr>';
+                    $aval_r= 'NO APLICA';
+                }
+                else
+                {
+                    $adicional = '<div><b>TIPO:</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #6a0013"><span class="fa fa-yelp"> </span> </span></div><b><em>CRÉDITO TRADICIONAL <em></em></b><hr>';
+                    $aval_r= $value['ESTATUS_AV'];
+                }
+
                 $tabla .= <<<HTML
                 <tr style="padding: 0px !important; ">
                     <td style="padding: 5px !important; width:65px !important;">
@@ -788,10 +814,15 @@ class CallCenter extends Controller
                     </td>
                     <td style="padding-top: 10px !important;">
                         <span class="fa fa-user"></span> <label style="color: #1c4e63">{$value['NOMBRE']}</label> <br><label><span class="fa fa-phone"></span> {$format}</label>
+                        <hr>
+                        $adicional
                     </td>
                     <td style="padding-top: 22px !important; text-align: left">
-                        <div><b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span></div>
-                        <div><b>AVAL:</b> {$value['ESTATUS_AV']}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
+                        <div>
+                        <b>CLIENTE:</b> {$value['ESTATUS_CL']}  <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span>
+                         
+                        </div>
+                        <div><b>AVAL:</b> {$aval_r}  <span class="label label-$color_a" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon_a"></span> </span></div>
                         <br>
                         $prorroga
                         $reactivacion
@@ -910,6 +941,16 @@ html;
                 }
 
                 $monto = number_format($value['MONTO'], 2);
+                if($value['CREDITO_ADICIONAL'] == 1)
+                {
+                    $valor_c = 'Más Por Ti (Adicional)';
+                    $aval_r = 'NO APLICA';
+                }
+                else
+                {
+                    $valor_c = 'Tradicional';
+                    $aval_r = $value['ESTATUS_AV'];
+                }
                 $tabla .= <<<html
                      <tr style="padding: 0px !important; ">
                     <td style="padding: 5px !important; width:65px !important; width:125px !important;">
@@ -927,13 +968,15 @@ html;
                         <span class="fa fa-briefcase"></span> CLAVE EJECUTIVO: {$value['ID_EJECUTIVO']}
                         <br>
                         <span class="fa fa-briefcase"></span> FECHA DE CAPTURA ADMINISTRADORA: <b>{$value['FECHA_SOL']}</b>
+                        <br>
+                        <span class="fa fa-briefcase"></span> TIPO DE CRÉDITO: <b>{$valor_c}</b>
                     </td>
                     
                     <td style="padding: 10px !important; text-align: left; width:225px !important;">
                          ESTATUS CLIENTE:  <br><b>{$value['ESTATUS_CL']}</b>
                         <br>
                         <br>
-                         ESTATUS AVAL: <br><b>{$value['ESTATUS_AV']}</b>
+                         ESTATUS AVAL: <br><b>{$aval_r}</b>
                     </td>
                     
                     <td style="padding: 10px !important; text-align: left; width:225px !important;">
