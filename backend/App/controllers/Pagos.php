@@ -764,7 +764,7 @@ html;
                     } else {
                         swal(
                             "Atención",
-                            `Debe validar todos los pagos (tiene ${pendientes} registros pendientes)`,
+                            "Debe validar todos los pagos (tiene " + pendientes + " registros pendientes)",
                             "warning"
                         );
                     }
@@ -776,32 +776,36 @@ html;
                     $("#all").submit()
                 }
 
-                function boton_terminar(barcode) {
-                    let tabla = document.querySelector("#terminar_resumen").querySelector("tbody")
-                    let filas = tabla.querySelectorAll("tr")
+                const boton_terminar = (barcode) => {
+                    const filas = $("#terminar_resumen tbody tr")
+                    const pagos = []
 
-                    swal({
-                        title: "Procesando Pagos",
-                        text: "Espere por favor...",
-                        buttons: false,
-                        onOpen: function () {
-                            swal.showLoading()
-                        }
-                    })
+                    filas.each(function() {
+                        const celdas = $(this).find('td');
+                        const secuencia = celdas.eq(0).text().trim()
+                        const fecha = celdas.eq(1).text().trim()
+                        const grupo = celdas.eq(2).text().trim()
+                        const ciclo = celdas.eq(3).text().trim()
 
-                    Array.from(filas).forEach((fila) => {
-                        pk = fila.cells[0].innerText
-                        $.ajax({
-                            type: "POST",
-                            url: "/Pagos/PagosAddApp/",
-                            data: "cortecaja_pk=" + pk + "&barcode=" + barcode
+
+                        pagos.push({
+                            secuencia,
+                            fecha,
+                            grupo,
+                            ciclo
                         })
                     })
 
-                    location.reload()
+                    consultaServidor("/Pagos/ProcesarPagosApp/", {barcode, pagos}, (respuesta) => {
+                        if (!respuesta.success) return showError(respuesta.message)
+
+                        showSuccess("Corte registrado exitosamente").then(() => {
+                            location.reload()
+                        })
+                    })
                 }
                 
-                $(document).ready(function () {
+                $(document).ready(() => {
                     configuraTabla("muestra-cupones")
                     var checkAll = 0
                 })
@@ -863,36 +867,25 @@ html;
                 'X' => 'PAGO ELECTRÓNICO',
                 'Y' => 'PAGO EXCEDENTE',
                 'O' => 'PAGO EXCEDENTE ELECTRÓNICO',
-
                 'M' => 'MULTA',
                 'Z' => 'MULTA GESTORES',
                 'L' => 'MULTA ELECTRÓNICA',
-
                 'G' => 'GARANTÍA',
-
                 'D' => 'DESCUENTO',
-
                 'R' => 'REFINANCIAMIENTO',
                 'H' => 'RECOMIENDA',
-
                 'S' => 'SEGURO',
-
                 'B' => 'AHORRO',
                 'F' => 'AHORRO ELECTRÓNICO'
             ];
 
             $dg = PagosDao::GetPagosAppResumen($_GET);
             $pendientes = false;
+            $procesados = false;
             if ($dg['success']) {
                 $detalleGlobal = $dg['datos'];
-                if($detalleGlobal['TOTAL_VALIDADOS'] == $detalleGlobal['TOTAL_PAGOS'])
-                {
-                    $pendientes = true;
-                }
-                else{
-                    $pendientes = false;
-                }
-
+                $pendientes = $detalleGlobal['TOTAL_VALIDADOS'] == $detalleGlobal['TOTAL_PAGOS'] ? true : false;
+                $procesados = $detalleGlobal['TOTAL_PROCESADOS'] == $detalleGlobal['TOTAL_PAGOS'] ? true : false;
             }
 
             $pagos = PagosDao::GetPagosAppEjecutivoDetalle($_GET, $pendientes);
@@ -909,93 +902,99 @@ html;
                     $color_celda = "background-color: #FFC733 !important;";
                     $check_visible = 'display:none;';
 
-                    if (in_array($value['TIPO'], ['P','X','Y','O','M','Z','L','G','D','R','H','S','B','F'])) {
+                    if (in_array($value['TIPO'], ['P', 'X', 'Y', 'O', 'M', 'Z', 'L', 'G', 'D', 'R', 'H', 'S', 'B', 'F'])) {
                         $color_celda = '';
                         $check_visible = '';
                     }
 
                     $json = json_encode($value);
-                    $acciones = $pendientes ?
-                        "<button type='button' class='btn btn-success btn-circle' onclick='editar_pago($json);'><i class='fa fa-edit'></i> Editar Pago</button>"
-                        : '<b>Pago Procesado</b>';
+                    $show_validado = $pendientes ? 'none' : 'block';
+                    $acciones = "<button type='button' class='btn btn-success btn-circle' onclick='editar_pago($json);'><i class='fa fa-edit'></i> Editar Pago</button>";
+                    if ($value['ESTATUS_CAJA'] == 1) {
+                        $acciones = '<b>Pago Validado</b>';
+                    }
+                    if ($value['ESTATUS_CAJA'] == 2) {
+                        $acciones = '<b>Pago Procesado</b>';
+                    }
 
                     $tabla .= <<<HTML
-                    <tr style="padding: 0px !important;">
-                        <td style="padding: 10px !important; color: #000 !important; font-weight: 600; $color_celda">
-                            $secuencia
-                        </td>
-                
-                        <td style="padding: 10px !important; text-align: left; color: #000 !important; $color_celda">
-                        <div>
-                            Crédito:
-                            <span style="
-                                background:#0f7d00;
-                                color:#fff;
-                                padding:1px 6px;
-                                border-radius:4px;
-                                font-weight:600;
-                                font-size:12px;
-                                display:inline-block;
-                                line-height:1.2;
-                            ">
-                                {$value['CDGNS']}
-                            </span>
-                        </div>
-                        <div style="margin-bottom: 3px;">Ciclo: <b>{$value['CICLO']}</b></div>
-                            <div style="margin-bottom: 3px;">Nombre del cliente: <b>{$value['NOMBRE']}</b></div>
-                            
-                            <div style="margin-bottom: 3px;">Fecha Aplicación: <b>{$value['FECHA']}</b></div>
-                        </td>
-                
-                        <td style="padding: 10px !important; color: #000 !important; text-align: center; $color_celda">
-                        
-                            <b>{$tipo_pago}</b>
-                            {$campo}
-                            <div style="margin-top: 5px;">
-                                <input 
-                                    style="{$check_visible} margin-right: 3px;" 
-                                    class="form-check-input" 
-                                    type="checkbox" 
-                                    value="" 
-                                    id="$secuencia" 
-                                    name="$secuencia" 
-                                    onclick="check_pagos('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['CICLO']}', '$secuencia');" 
-                                    $selected
-                                >
-                                <label style="{$check_visible}; color: #000 !important;" class="form-check-label">
-                                    Validado
-                                </label>
-                            </div>
-                        </td>
-                
-                        <td style="padding: 10px !important; color: #000 !important; text-align: left; $color_celda">
-                            
-                            <div style="opacity: 0.8;">
-                                <i class="fa fa-useraaa" style="margin-right:5px; color:#333;"></i>
-                                 <b><u>Ejecutivo:</u></b>
-                                {$value['COMENTARIOS_EJECUTIVO']}
-                            </div>
-                            
-                            <div style="opacity: 0.8;">
-                                <i class="fa fa-dollaraa" style="margin-right:5px; color:#555;"></i>
-                                <b><u>Cajera Incidencias:</u></b>
-                                {$value['COMENTARIOS_INCIDENCIA']}
-                            </div>
-                        </td>
-                
-                        <td style="padding: 10px !important; color: #000 !important; text-align: center; $color_celda">
-                            {$value['FREGISTRO']}
-                        </td>
-                
-                        <td style="padding: 30px 10px !important; text-align: center; color: #000 !important;">
-                            $acciones
-                        </td>
-                    </tr>
-                HTML;
+                        <tr style="padding: 0px !important;">
+                            <td style="padding: 10px !important; color: #000 !important; font-weight: 600; $color_celda">
+                                $secuencia
+                            </td>
+                    
+                            <td style="padding: 10px !important; text-align: left; color: #000 !important; $color_celda">
+                                <div>
+                                    Crédito:
+                                    <span style="
+                                        background:#0f7d00;
+                                        color:#fff;
+                                        padding:1px 6px;
+                                        border-radius:4px;
+                                        font-weight:600;
+                                        font-size:12px;
+                                        display:inline-block;
+                                        line-height:1.2;
+                                    ">
+                                        {$value['CDGNS']}
+                                    </span>
+                                </div>
+                                <div style="margin-bottom: 3px;">Ciclo: <b>{$value['CICLO']}</b></div>
+                                <div style="margin-bottom: 3px;">Nombre del cliente: <b>{$value['NOMBRE']}</b></div>
+                                <div style="margin-bottom: 3px;">Fecha Aplicación: <b>{$value['FECHA']}</b></div>
+                            </td>
+                    
+                            <td style="padding: 10px !important; color: #000 !important; text-align: center; $color_celda">
+                                <b>{$tipo_pago}</b>
+                                {$campo}
 
+                                <div style="margin-top: 5px; display: {$show_validado};">
+                                    <input 
+                                        style="{$check_visible} margin-right: 3px;" 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        value="" 
+                                        id="$secuencia" 
+                                        name="$secuencia" 
+                                        onclick="check_pagos('{$value['FECHA']}', '{$value['CDGNS']}', '{$value['CICLO']}', '$secuencia');" 
+                                        $selected
+                                    >
+                                    <label style="{$check_visible}; color: #000 !important;" class="form-check-label">
+                                        Validado
+                                    </label>
+                                </div>
+                            </td>
+                    
+                            <td style="padding: 10px !important; color: #000 !important; text-align: left; $color_celda">
+                                <div style="opacity: 0.8;">
+                                    <i class="fa fa-useraaa" style="margin-right:5px; color:#333;"></i>
+                                    <b><u>Ejecutivo:</u></b>
+                                    {$value['COMENTARIOS_EJECUTIVO']}
+                                </div>
+                                
+                                <div style="opacity: 0.8;">
+                                    <i class="fa fa-dollaraa" style="margin-right:5px; color:#555;"></i>
+                                    <b><u>Cajera Incidencias:</u></b>
+                                    {$value['COMENTARIOS_INCIDENCIA']}
+                                </div>
+                            </td>
+                    
+                            <td style="padding: 10px !important; color: #000 !important; text-align: center; $color_celda">
+                                {$value['FREGISTRO']}
+                            </td>
+
+                            <td>
+                                <span>{$value['ESTATUS_CAJA_NOMBRE']}</span>
+                            </td>
+                    
+                            <td style="padding: 30px 10px !important; text-align: center; color: #000 !important;">
+                                $acciones
+                            </td>
+                        </tr>
+                    HTML;
                 }
 
-                if ($pendientes == true) {
+                if ($pendientes) {
                     $resumen = PagosDao::GetPagosAppEjecutivo($_GET);
 
                     $tabla_resumen = '';
@@ -1009,19 +1008,22 @@ html;
                             $tabla_resumen .= <<<HTML
                                 <tr>
                                     <td style="display: none; padding: 10px !important; background: #9d9d9d; color:#000 !important;">
-                                        {$value_resumen['CORTECAJA_PAGOSDIA_PK']}
+                                        {$value_resumen['SECUENCIA']}
+                                    </td>
+                                    <td style="display: none; padding: 10px !important; background: #9d9d9d; color:#000 !important;">
+                                        {$value_resumen['FECHA']}
                                     </td>
                             
                                     <td id="codigo" style="text-align: left; padding: 3px !important; color:#000 !important;">
                                         <b>{$value_resumen['CDGNS']}</b>
                                     </td>
                             
-                                    <td id="nombre" style="text-align: left; padding: 3px !important; color:#000 !important;">
-                                        {$value_resumen['NOMBRE']}
-                                    </td>
-                            
                                     <td id="ciclo" style="padding: 3px !important; color:#000 !important;">
                                         <b>{$value_resumen['CICLO']}</b>
+                                    </td>
+                            
+                                    <td id="nombre" style="text-align: left; padding: 3px !important; color:#000 !important;">
+                                        {$value_resumen['NOMBRE']}
                                     </td>
                             
                                     <td id="tipo" style="padding: 3px !important; color:#000 !important;">
@@ -1033,15 +1035,12 @@ html;
                                     </td>
                                 </tr>
                             HTML;
-
                         }
                     }
 
-                    $vista = 'view_pagos_app_detalle';
-                    $vista = 'view_pagos_app_detalle';
+                    $vista = $procesados ? 'view_pagos_app_detalle_imprimir' : 'view_pagos_app_detalle';
                 } else {
-                    //$vista = 'view_pagos_app_detalle';
-                    $vista = 'view_pagos_app_detalle_imprimir';
+                    $vista = 'view_pagos_app_detalle';
                 }
             }
         }
@@ -1658,13 +1657,9 @@ html;
 
     }
 
-    public function PagosAddApp()
+    public function ProcesarPagosApp()
     {
-
-        $add_app = $_POST['cortecaja_pk'];
-        $barcode = $_POST['barcode'];
-
-        $id = PagosDao::AddPagoApp($add_app, $barcode);
+        echo json_encode(PagosDao::ProcesarPagosApp($_POST));
     }
 
     public function PagosRegistro()

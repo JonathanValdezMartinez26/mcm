@@ -42,6 +42,7 @@
                                     <th>Movimiento</th>
                                     <th>Comentarios</th>
                                     <th>Fecha Captura</th>
+                                    <th>Estatus</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -196,14 +197,15 @@
                             <div class="dataTable_wrapper">
                                 <table style="margin-bottom: 0px;" class="table table-striped table-bordered table-hover" id="terminar_resumen" name="terminar_resumen">
                                     <thead>
-                                    <tr style="color:#000 !important; text-align:center;">
-                                        <th style="display: none; color:#000 !important; text-align:center;">ID-MCM</th>
-                                        <th style="color:#000 !important;">Cliente</th>
-                                        <th style="color:#000 !important; ">Nombre</th>
-                                        <th style="color:#000 !important; text-align:center;">Ciclo</th>
-                                        <th style="color:#000 !important; text-align:center;">Tipo</th>
-                                        <th style="color:#000 !important; text-align:center;">Monto</th>
-                                    </tr>
+                                        <tr style="color:#000 !important; text-align:center;">
+                                            <th style="display: none; color:#000 !important; text-align:center;"></th>
+                                            <th style="display: none; color:#000 !important; text-align:center;"></th>
+                                            <th style="color:#000 !important;">Cliente</th>
+                                            <th style="color:#000 !important; text-align:center;">Ciclo</th>
+                                            <th style="color:#000 !important; ">Nombre</th>
+                                            <th style="color:#000 !important; text-align:center;">Tipo</th>
+                                            <th style="color:#000 !important; text-align:center;">Monto</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
                                         <?= $tabla_resumen; ?>

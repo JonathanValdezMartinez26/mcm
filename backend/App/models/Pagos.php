@@ -1156,7 +1156,7 @@ sql;
               ,SUM(AHORRO) AS TOTAL_AHORRO
               ,SUM(MONTO) AS MONTO_TOTAL
         
-        FROM (
+            FROM (
                 SELECT TO_CHAR(FECHA, 'DDMMYYYY') AS COMP_BARRA
                       ,CO.CODIGO AS COD_SUC
                       ,CO.NOMBRE AS SUCURSAL
@@ -1204,8 +1204,8 @@ sql;
                 WHERE NVL(PA.ESTATUS_CAJA, 0) = 0
                   AND PRN.CICLO = PA.CICLO
                   AND PRN.CDGCO = CO.CODIGO
-             )
-        GROUP BY NOMBRE
+            )
+            GROUP BY NOMBRE
                 ,FECHA_D
                 ,FECHA
                 ,CDGOCPE
@@ -1227,81 +1227,88 @@ sql;
     public static function GetPagosAppResumen($datos)
     {
         $qry = <<<SQL
-                    SELECT
-            -- Total de pagos con ESTATUS A
-            SUM(DECODE(PA.ESTATUS, 'A', 1, 0)) AS TOTAL_PAGOS_TOTAL,
-        
-            -- Total validados
-            SUM(
-                CASE 
-                    WHEN NVL(PA.ESTATUS_CAJA,0) <> 0 
-                         AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
-                         AND PA.ESTATUS = 'A'
-                    THEN 1
-                    ELSE 0
-                END
-            ) AS TOTAL_VALIDADOS,
-        
-            -- Total de pagos por tipo
-            SUM(
-                CASE 
-                    WHEN PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
-                         AND PA.ESTATUS = 'A'
-                    THEN 1
-                    ELSE 0
-                END
-            ) AS TOTAL_PAGOS,
-        
-            -- Total montos sin modificación
-            SUM(
-                CASE 
-                    WHEN NVL(PA.ESTATUS_CAJA,0) = 1 
-                         AND PA.INCIDENCIA = 0
-                         AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
-                         AND PA.ESTATUS = 'A'
-                    THEN PA.MONTO
-                    ELSE 0
-                END
-            ) AS TOTAL_MONT_SIN_MOD,
-        
-            -- Total montos modificados
-            SUM(
-                CASE 
-                    WHEN NVL(PA.ESTATUS_CAJA,0) <> 0
-                         AND PA.INCIDENCIA = 1
-                         AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
-                         AND PA.ESTATUS = 'A'
-                    THEN TO_NUMBER(PA.NUEVO_MONTO)
-                    ELSE 0
-                END
-            ) AS TOTAL_NUEVOS_MONTOS,
-        
-            --  TOTAL REAL SIN DUPLICAR
-            SUM(
-                CASE
-                    WHEN PA.ESTATUS = 'A'
-                         AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
-                         AND NVL(PA.ESTATUS_CAJA,0) <> 0
-                    THEN
-                        CASE
-                            WHEN PA.INCIDENCIA = 1 THEN TO_NUMBER(PA.NUEVO_MONTO)
-                            ELSE PA.MONTO
-                        END
-                    ELSE 0
-                END
-            ) AS TOTAL
-        
-        FROM PAGOSDIA_APP PA
-        INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
-        INNER JOIN CO  ON CO.CODIGO = PRN.CDGCO
-        
-        WHERE PA.CDGOCPE = :ejecutivo
-          AND PRN.CICLO = PA.CICLO
-          AND PRN.CDGCO = :sucursal
-          AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
-SQL;
+            SELECT
+                -- Total de pagos con ESTATUS A
+                SUM(DECODE(PA.ESTATUS, 'A', 1, 0)) AS TOTAL_PAGOS_TOTAL,
+            
+                -- Total validados
+                SUM(
+                    CASE 
+                        WHEN NVL(PA.ESTATUS_CAJA,0) <> 0 
+                            AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                            AND PA.ESTATUS = 'A'
+                        THEN 1
+                        ELSE 0
+                    END
+                ) AS TOTAL_VALIDADOS,
 
-        //var_dump($qry);
+                -- Total validados
+                SUM(
+                    CASE 
+                        WHEN NVL(PA.ESTATUS_CAJA,0) = 2 THEN 1
+                        ELSE 0
+                    END
+                ) AS TOTAL_PROCESADOS,
+            
+                -- Total de pagos por tipo
+                SUM(
+                    CASE 
+                        WHEN PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                            AND PA.ESTATUS = 'A'
+                        THEN 1
+                        ELSE 0
+                    END
+                ) AS TOTAL_PAGOS,
+            
+                -- Total montos sin modificación
+                SUM(
+                    CASE 
+                        WHEN NVL(PA.ESTATUS_CAJA,0) = 1 
+                            AND PA.INCIDENCIA = 0
+                            AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                            AND PA.ESTATUS = 'A'
+                        THEN PA.MONTO
+                        ELSE 0
+                    END
+                ) AS TOTAL_MONT_SIN_MOD,
+            
+                -- Total montos modificados
+                SUM(
+                    CASE 
+                        WHEN NVL(PA.ESTATUS_CAJA,0) <> 0
+                            AND PA.INCIDENCIA = 1
+                            AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                            AND PA.ESTATUS = 'A'
+                        THEN TO_NUMBER(PA.NUEVO_MONTO)
+                        ELSE 0
+                    END
+                ) AS TOTAL_NUEVOS_MONTOS,
+            
+                --  TOTAL REAL SIN DUPLICAR
+                SUM(
+                    CASE
+                        WHEN PA.ESTATUS = 'A'
+                            AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                            AND NVL(PA.ESTATUS_CAJA,0) <> 0
+                        THEN
+                            CASE
+                                WHEN PA.INCIDENCIA = 1 THEN TO_NUMBER(PA.NUEVO_MONTO)
+                                ELSE PA.MONTO
+                            END
+                        ELSE 0
+                    END
+                ) AS TOTAL
+            
+            FROM
+                PAGOSDIA_APP PA
+                INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
+                INNER JOIN CO  ON CO.CODIGO = PRN.CDGCO
+            WHERE
+                PA.CDGOCPE = :ejecutivo
+                AND PRN.CICLO = PA.CICLO
+                AND PRN.CDGCO = :sucursal
+                AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
+        SQL;
 
         $params = [
             'ejecutivo' => $datos['ejecutivo'] ?? null,
@@ -1341,6 +1348,12 @@ SQL;
                  ,PA.COMENTARIOS_INCIDENCIA
                 ,PA.ESTATUS_CAJA
                 ,TO_CHAR(PA.FREGISTRO, 'DD/MM/YYYY HH24:MI:SS') AS FREGISTRO
+                , CASE NVL(PA.ESTATUS_CAJA, 0)
+                    WHEN '0' THEN 'PENDIENTE'
+                    WHEN '1' THEN 'VALIDADO'
+                    WHEN '2' THEN 'PROCESADO'
+                    ELSE 'DESCONOCIDO'
+                END AS ESTATUS_CAJA_NOMBRE
             FROM
                 PAGOSDIA_APP PA
                 INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
@@ -1376,7 +1389,7 @@ SQL;
         $qry = <<<SQL
             SELECT
                 PA.SECUENCIA
-                ,PA.FECHA
+                ,TO_CHAR(PA.FECHA, 'DD/MM/YYYY') AS FECHA
                 ,PA.CDGNS
                 ,PA.NOMBRE
                 ,PA.CICLO
@@ -1407,7 +1420,7 @@ SQL;
             UNION
             SELECT
                 PA.SECUENCIA
-                ,PA.FECHA
+                ,TO_CHAR(PA.FECHA, 'DD/MM/YYYY') AS FECHA
                 ,PA.CDGNS
                 ,PA.NOMBRE
                 ,PA.CICLO
@@ -1515,6 +1528,51 @@ SQL;
             return self::Responde(true, "Pago actualizado", $params);
         } catch (\Exception $e) {
             return self::Responde(false, "Error al actualizar el pago", null, $e->getMessage());
+        }
+    }
+
+    public static function ProcesarPagosApp($datos)
+    {
+        //Agregar un registro completo (Bien) lLAMADA 1
+        $qry_1 = <<<SQL
+            INSERT INTO FOLIO_APP
+            (ID_FOLIO_APP, FOLIO, CORTECAJA_PAGOSDIA_PK, FECHA_REGISTRO)
+            VALUES(FOLIO_APP_I.nextval, :barcode, :secuencia, CURRENT_TIMESTAMP)
+        SQL;
+
+        $qry_2 = <<<SQL
+            UPDATE PAGOSDIA_APP
+            SET  ESTATUS_CAJA = 2
+            WHERE
+                TRUNC(FECHA) = TO_DATE(:fecha, 'DD/MM/YYYY')
+                AND CDGNS = :grupo
+                AND CICLO = :ciclo
+                AND SECUENCIA = :secuencia
+        SQL;
+
+        $params = [];
+
+        try {
+            $db = new Database();
+            foreach ($datos['pagos'] as $pago) {
+                $qrys[] = $qry_1;
+                $params[] = [
+                    'barcode' => $datos['barcode'],
+                    'secuencia' => $pago['secuencia']
+                ];
+                $qrys[] = $qry_2;
+                $params[] = [
+                    'fecha' => $pago['fecha'],
+                    'grupo' => $pago['grupo'],
+                    'ciclo' => $pago['ciclo'],
+                    'secuencia' => $pago['secuencia']
+                ];
+            }
+
+            $db->insertaMultiple($qrys, $params);
+            return self::Responde(true, 'Pago agregado correctamente');
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al agregar pago', null, $e->getMessage());
         }
     }
 }

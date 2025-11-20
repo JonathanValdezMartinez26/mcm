@@ -34,14 +34,13 @@
                         <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
                             <thead>
                                 <tr>
-                                    <th>ID Transacción</th>
+                                    <th>Secuencia</th>
                                     <th>Cliente</th>
-                                    <th>Tipo Pago</th>
-                                    <th>Monto</th>
-                                    <th>Comentario Cajas</th>
+                                    <th>Movimiento</th>
+                                    <th>Comentarios</th>
                                     <th>Fecha Captura</th>
                                     <th>Estatus</th>
-
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
