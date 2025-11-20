@@ -39,9 +39,8 @@
                                 <tr>
                                     <th>Secuencia</th>
                                     <th>Cliente</th>
-                                    <th>Tipo Pago</th>
-                                    <th>Monto</th>
-                                    <th>Comentario</th>
+                                    <th>Movimiento</th>
+                                    <th>Comentarios</th>
                                     <th>Fecha Captura</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -84,8 +83,34 @@
                                 <label for="tipo_pago_detalle">Tipo de Pago *</label>
                                 <select class="form-control" autofocus type="select" id="tipo_pago_detalle" name="tipo_pago_detalle">
                                     <option value="0" disabled>Seleccione una opción</option>
-                                    <option value="P">Pago</option>
-                                    <option value="M">Multa</option>
+                                    <option value="P">PAGO</option>
+                                    <option value="X">PAGO ELECTRÓNICO</option>
+                                    <option value="Y">PAGO EXCEDENTE</option>
+                                    <option value="O">PAGO EXCEDENTE ELECTRÓNICO</option>
+                                    <option value="M">MULTA</option>
+                                    <option value="Z">MULTA GESTORES</option>
+                                    <option value="L">MULTA ELECTRÓNICA</option>
+                                    <option value="G">GARANTÍA</option>
+                                    <option value="D">DESCUENTO</option>
+
+                                    <?php
+                                    if (
+                                        $cdgco == '007' ||
+                                        $cdgco == '014' ||
+                                        $cdgco == '020' ||
+                                        $cdgco == '025' ||
+                                        $cdgco == '026' ||
+                                        $cdgco == '027' ||
+                                        $usuario == 'AMGM' ||
+                                        $usuario == 'GASC'
+                                    ) echo '<option value="D">DESCUENTO DE CAMPAÑA POR LEALTAD</option>';
+                                    ?>
+
+                                    <option value="R">REFINANCIAMIENTO</option>
+                                    <!--  <option value="H">RECOMIENDA</option> -->
+                                    <option value="S">SEGURO</option>
+                                    <option value="B">AHORRO</option>
+                                    <option value="F">AHORRO ELECTRÓNICO</option>
                                 </select>
                             </div>
                         </div>
@@ -105,8 +130,8 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="comentario_detalle">Comentario (motivo de cambio) *</label>
-                                <textarea class="form-control" id="comentario_detalle" name="comentario_detalle" placeholder=""></textarea>
+                                <label for="comentario_detalle">Comentario/Incidencia (motivo de cambio) *</label>
+                                <textarea class="form-control" id="comentario_detalle" name="comentario_detalle" placeholder="Comentarios exclusivos para la cajera"></textarea>
                                 <small id="emailHelp" class="form-text text-muted">Detalle el motivo del cambio, para el tipo de pago o el nuevo monto</small>
                             </div>
                         </div>
@@ -171,14 +196,14 @@
                             <div class="dataTable_wrapper">
                                 <table style="margin-bottom: 0px;" class="table table-striped table-bordered table-hover" id="terminar_resumen" name="terminar_resumen">
                                     <thead>
-                                        <tr>
-                                            <th style="display: none;">ID-MCM</th>
-                                            <th>Cliente</th>
-                                            <th>Nombre</th>
-                                            <th>Ciclo</th>
-                                            <th>Tipo</th>
-                                            <th>Monto</th>
-                                        </tr>
+                                    <tr style="color:#000 !important; text-align:center;">
+                                        <th style="display: none; color:#000 !important; text-align:center;">ID-MCM</th>
+                                        <th style="color:#000 !important;">Cliente</th>
+                                        <th style="color:#000 !important; ">Nombre</th>
+                                        <th style="color:#000 !important; text-align:center;">Ciclo</th>
+                                        <th style="color:#000 !important; text-align:center;">Tipo</th>
+                                        <th style="color:#000 !important; text-align:center;">Monto</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
                                         <?= $tabla_resumen; ?>
@@ -197,7 +222,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="boton_terminar('<?= $barcode; ?>');"><span class="glyphicon glyphicon-floppy-disk"></span>Terminar</button>
+                <button type="button" class="btn btn-primary" onclick="boton_terminar('<?= $barcode; ?>');"><span class="glyphicon glyphicon-floppy-disk"></span>Cobrar</button>
             </div>
         </div>
     </div>

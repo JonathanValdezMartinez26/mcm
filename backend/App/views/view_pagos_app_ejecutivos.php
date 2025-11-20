@@ -29,12 +29,11 @@
                                 <th>Sucursal</th>
                                 <th>Pagos Cobrados</th>
                                 <th>Ejecutivo</th>
-                                <th>Cobro</th>
+                                <th>Fecha</th>
                                 <th>Pagos</th>
                                 <th>Multas</th>
-                                <th>Ref</th>
-                                <th>Des</th>
-                                <th>Gar</th>
+                                <th>Ahorro</th>
+                                <th>Seguro</th>
                                 <th>Monto Total Recolectado (Entregar)</th>
                                 <th>Acciones</th>
                             </tr>

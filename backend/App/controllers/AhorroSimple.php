@@ -341,7 +341,7 @@ class AhorroSimple extends Controller
             $Consulta = AhorroSimpleDao::ConsultarPagosFechaSucursal($cdgns);
             $ConsultaDatos = $Consulta[0];
 
-            $Consulta1 = AhorroSimpleDao::ProcesaProcedure('003011', '01');
+            $Consulta1 = AhorroSimpleDao::ProcesaProcedure($cdgns, $ConsultaDatos['CICLO']);
 
                 View::set('header', $this->_contenedor->header($extraHeader));
                 View::set('footer', $this->_contenedor->footer($extraFooter));

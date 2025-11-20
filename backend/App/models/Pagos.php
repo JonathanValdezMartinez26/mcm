@@ -1140,46 +1140,72 @@ sql;
     {
         $qry = <<<SQL
             SELECT (COD_SUC || COUNT(NOMBRE) || COMP_BARRA || CAST(SUM(MONTO) AS INTEGER)) AS BARRAS
-                ,COD_SUC
-                ,SUCURSAL
-                ,COUNT(NOMBRE) AS NUM_PAGOS
-                ,NOMBRE
-                ,FECHA_D
-                ,FECHA
-                ,FECHA_REGISTRO
-                ,CDGOCPE
-                ,SUM(PAGOS) AS TOTAL_PAGOS
-                ,SUM(MULTA) AS TOTAL_MULTA
-                ,SUM(REFINANCIAMIENTO) AS TOTAL_REFINANCIAMIENTO
-                ,SUM(DESCUENTO) AS TOTAL_DESCUENTO
-                ,SUM(GARANTIA) AS GARANTIA
-                ,SUM(MONTO) AS MONTO_TOTAL
-            FROM (
+              ,COD_SUC
+              ,SUCURSAL
+              ,COUNT(NOMBRE) AS NUM_PAGOS
+              ,NOMBRE
+              ,FECHA_D
+              ,FECHA
+              ,FECHA_REGISTRO
+              ,CDGOCPE
+              
+              -- 🔥 TOTALES
+              ,SUM(TOTAL_PAGO) AS TOTAL_PAGOS
+              ,SUM(MULTA) AS TOTAL_MULTA
+              ,SUM(SEGURO) AS TOTAL_SEGURO
+              ,SUM(AHORRO) AS TOTAL_AHORRO
+              ,SUM(MONTO) AS MONTO_TOTAL
+        
+        FROM (
                 SELECT TO_CHAR(FECHA, 'DDMMYYYY') AS COMP_BARRA
-                    ,CO.CODIGO AS COD_SUC
-                    ,CO.NOMBRE AS SUCURSAL
-                    ,PA.EJECUTIVO AS NOMBRE
-                    ,TO_CHAR(PA.FECHA, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH') || '- ' || TO_CHAR(PA.FECHA, 'DD-MON-YYYY') AS FECHA_D
-                    ,TO_CHAR(PA.FECHA, 'DD-MM-YYYY') AS FECHA
-                    ,TO_CHAR(PA.FREGISTRO) AS FECHA_REGISTRO
-                    ,DECODE(PA.TIPO, 'P', MONTO, 0) AS PAGOS
-                    ,DECODE(PA.TIPO, 'M', MONTO, 0) AS MULTA
-                    ,DECODE(PA.TIPO, 'R', MONTO, 0) AS REFINANCIAMIENTO
-                    ,DECODE(PA.TIPO, 'D', MONTO, 0) AS DESCUENTO
-                    ,DECODE(PA.TIPO, 'G', MONTO, 0) AS GARANTIA
-                    ,PA.MONTO
-                    ,PA.CDGOCPE
-                FROM
-                    PAGOSDIA_APP PA
-                    INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
-                    INNER JOIN CO ON CO.CODIGO = PRN.CDGCO
-                WHERE
-                    NVL(PA.ESTATUS_CAJA, 0) = 0
-                    AND PRN.CICLO = PA.CICLO
-                    AND PRN.CDGCO = CO.CODIGO
-                )
-            GROUP BY
-                NOMBRE
+                      ,CO.CODIGO AS COD_SUC
+                      ,CO.NOMBRE AS SUCURSAL
+                      ,PA.EJECUTIVO AS NOMBRE
+        
+                      ,TO_CHAR(PA.FECHA, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH') 
+                           || '- ' || TO_CHAR(PA.FECHA, 'DD-MON-YYYY') AS FECHA_D
+        
+                      ,TO_CHAR(PA.FECHA, 'DD-MM-YYYY') AS FECHA
+                      ,TO_CHAR(PA.FREGISTRO) AS FECHA_REGISTRO
+        
+                      -- PAGOS (todos los tipos)
+                      ,DECODE(PA.TIPO, 'P', MONTO, 0) AS PAGOS
+                      ,DECODE(PA.TIPO, 'X', MONTO, 0) AS PAGOS_ELECTRONICOS
+                      ,DECODE(PA.TIPO, 'Y', MONTO, 0) AS PAGOS_EXCEDENTE
+                      ,DECODE(PA.TIPO, 'O', MONTO, 0) AS PAGOS_EXCEDENTE_ELECTRONICO
+        
+                      -- SUMA de todos los tipos de pago
+                      ,DECODE(PA.TIPO,
+                              'P', MONTO,
+                              'X', MONTO,
+                              'Y', MONTO,
+                              'O', MONTO,
+                              0) AS TOTAL_PAGO
+        
+                      -- MULTAS
+                      ,DECODE(PA.TIPO, 'M', MONTO, 0) AS MULTA
+                      ,DECODE(PA.TIPO, 'Z', MONTO, 0) AS MULTA_GESTORES
+                      ,DECODE(PA.TIPO, 'L', MONTO, 0) AS MULTA_ELECTRONICA
+        
+                      -- SEGURO
+                      ,DECODE(PA.TIPO, 'S', MONTO, 0) AS SEGURO
+        
+                      -- AHORRO
+                      ,DECODE(PA.TIPO, 'B', MONTO, 0) AS AHORRO
+                      ,DECODE(PA.TIPO, 'F', MONTO, 0) AS AHORRO_ELECTRONICO
+        
+                      ,PA.MONTO
+                      ,PA.CDGOCPE
+        
+                FROM PAGOSDIA_APP PA
+                     INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
+                     INNER JOIN CO  ON CO.CODIGO = PRN.CDGCO
+        
+                WHERE NVL(PA.ESTATUS_CAJA, 0) = 0
+                  AND PRN.CICLO = PA.CICLO
+                  AND PRN.CDGCO = CO.CODIGO
+             )
+        GROUP BY NOMBRE
                 ,FECHA_D
                 ,FECHA
                 ,CDGOCPE
@@ -1201,96 +1227,81 @@ sql;
     public static function GetPagosAppResumen($datos)
     {
         $qry = <<<SQL
-            SELECT
-                SUM(DECODE(ESTATUS, 'A', 1, 0)) AS TOTAL_PAGOS_TOTAL
-                ,SUM(CASE 
-                        WHEN (
-                                NVL(PA.ESTATUS_CAJA, 0) <> 0
-                                AND (
-                                    TIPO = 'P'
-                                    OR TIPO = 'M'
-                                    )
-                                AND ESTATUS = 'A'
-                                )
-                            THEN 1
-                        ELSE 0
-                        END) AS TOTAL_VALIDADOS
-                ,SUM(CASE 
-                        WHEN (
-                                (
-                                    TIPO = 'P'
-                                    OR TIPO = 'M'
-                                    )
-                                AND ESTATUS = 'A'
-                                )
-                            THEN 1
-                        ELSE 0
-                        END) AS TOTAL_PAGOS
-                ,SUM(CASE 
-                        WHEN (
-                                NVL(PA.ESTATUS_CAJA, 0) <> 0
-                                AND INCIDENCIA = 1
-                                AND (
-                                    TIPO = 'P'
-                                    OR TIPO = 'M'
-                                    )
-                                AND ESTATUS = 'A'
-                                )
-                            THEN TO_NUMBER(NUEVO_MONTO)
-                        ELSE 0
-                        END) AS TOTAL_NUEVOS_MONTOS
-                ,SUM(CASE 
-                        WHEN (
-                                NVL(PA.ESTATUS_CAJA, 0) = 1
-                                AND INCIDENCIA = 0
-                                AND (
-                                    TIPO = 'P'
-                                    OR TIPO = 'M'
-                                    )
-                                AND ESTATUS = 'A'
-                                )
-                            THEN MONTO
-                        ELSE 0
-                        END) AS TOTAL_MONT_SIN_MOD
-                ,(
-                    SUM(CASE 
-                            WHEN (
-                                    NVL(PA.ESTATUS_CAJA, 0) = 1
-                                    AND INCIDENCIA = 1
-                                    AND (
-                                        TIPO = 'P'
-                                        OR TIPO = 'M'
-                                        )
-                                    AND ESTATUS = 'A'
-                                    )
-                                THEN TO_NUMBER(NUEVO_MONTO)
-                            ELSE 0
-                            END)
-                    +
-                    SUM(CASE 
-                            WHEN (
-                                    NVL(PA.ESTATUS_CAJA, 0) = 1
-                                    AND INCIDENCIA = 0
-                                    AND (
-                                        TIPO = 'P'
-                                        OR TIPO = 'M'
-                                        )
-                                    AND ESTATUS = 'A'
-                                    )
-                                THEN MONTO
-                            ELSE 0
-                            END)
-                    ) AS TOTAL
-            FROM
-                PAGOSDIA_APP PA
-                INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
-                INNER JOIN CO ON CO.CODIGO = PRN.CDGCO
-            WHERE
-                PA.CDGOCPE = :ejecutivo
-                AND PRN.CICLO = PA.CICLO
-                AND PRN.CDGCO = :sucursal
-                AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
-        SQL;
+                    SELECT
+            -- Total de pagos con ESTATUS A
+            SUM(DECODE(PA.ESTATUS, 'A', 1, 0)) AS TOTAL_PAGOS_TOTAL,
+        
+            -- Total validados
+            SUM(
+                CASE 
+                    WHEN NVL(PA.ESTATUS_CAJA,0) <> 0 
+                         AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                         AND PA.ESTATUS = 'A'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS TOTAL_VALIDADOS,
+        
+            -- Total de pagos por tipo
+            SUM(
+                CASE 
+                    WHEN PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                         AND PA.ESTATUS = 'A'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS TOTAL_PAGOS,
+        
+            -- Total montos sin modificación
+            SUM(
+                CASE 
+                    WHEN NVL(PA.ESTATUS_CAJA,0) = 1 
+                         AND PA.INCIDENCIA = 0
+                         AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                         AND PA.ESTATUS = 'A'
+                    THEN PA.MONTO
+                    ELSE 0
+                END
+            ) AS TOTAL_MONT_SIN_MOD,
+        
+            -- Total montos modificados
+            SUM(
+                CASE 
+                    WHEN NVL(PA.ESTATUS_CAJA,0) <> 0
+                         AND PA.INCIDENCIA = 1
+                         AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                         AND PA.ESTATUS = 'A'
+                    THEN TO_NUMBER(PA.NUEVO_MONTO)
+                    ELSE 0
+                END
+            ) AS TOTAL_NUEVOS_MONTOS,
+        
+            --  TOTAL REAL SIN DUPLICAR
+            SUM(
+                CASE
+                    WHEN PA.ESTATUS = 'A'
+                         AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                         AND NVL(PA.ESTATUS_CAJA,0) <> 0
+                    THEN
+                        CASE
+                            WHEN PA.INCIDENCIA = 1 THEN TO_NUMBER(PA.NUEVO_MONTO)
+                            ELSE PA.MONTO
+                        END
+                    ELSE 0
+                END
+            ) AS TOTAL
+        
+        FROM PAGOSDIA_APP PA
+        INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
+        INNER JOIN CO  ON CO.CODIGO = PRN.CDGCO
+        
+        WHERE PA.CDGOCPE = :ejecutivo
+          AND PRN.CICLO = PA.CICLO
+          AND PRN.CDGCO = :sucursal
+          AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
+SQL;
+
+        //var_dump($qry);
 
         $params = [
             'ejecutivo' => $datos['ejecutivo'] ?? null,
@@ -1326,7 +1337,8 @@ sql;
                 ,PA.TIPO
                 ,PA.INCIDENCIA
                 ,PA.NUEVO_MONTO
-                ,PA.COMENTARIOS_EJECUTIVO
+                ,UPPER(PA.COMENTARIOS_EJECUTIVO) AS COMENTARIOS_EJECUTIVO
+                 ,PA.COMENTARIOS_INCIDENCIA
                 ,PA.ESTATUS_CAJA
                 ,TO_CHAR(PA.FREGISTRO, 'DD/MM/YYYY HH24:MI:SS') AS FREGISTRO
             FROM
@@ -1338,7 +1350,6 @@ sql;
                 AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
                 AND PRN.CICLO = PA.CICLO
                 AND PRN.CDGCO = :sucursal
-                AND NVL(PA.ESTATUS_CAJA, 0) PENDIENTES 0
             ORDER BY
                 DECODE(PA.TIPO, 'P', 1, 'M', 2, 'G', 3, 'D', 4, 'R', 5) ASC, PA.FREGISTRO
         SQL;
@@ -1389,10 +1400,7 @@ sql;
             WHERE
                 PA.CDGOCPE = :ejecutivo
                 AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
-                AND (
-                    PA.TIPO = 'P'
-                    OR PA.TIPO = 'M'
-                    )
+                AND PA.TIPO IN('P','X','Y','O','M','Z','L','S','B','F')
                 AND PRN.CICLO = PA.CICLO
                 AND PRN.CDGCO = :sucursal
                 AND NVL(PA.ESTATUS_CAJA, 0) <> 0
@@ -1423,10 +1431,7 @@ sql;
             WHERE
                 PA.CDGOCPE = :ejecutivo
                 AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
-                AND (
-                    PA.TIPO <> 'P'
-                    OR PA.TIPO <> 'M'
-                    )
+                AND PA.TIPO IN('P','X','Y','O','M','Z','L','S','B','F')
                 AND PRN.CICLO = PA.CICLO
                 AND PRN.CDGCO = :sucursal
                 AND NVL(PA.ESTATUS_CAJA, 0) = 0
@@ -1441,6 +1446,7 @@ sql;
         try {
             $db = new Database();
             $res = $db->queryAll($qry, $params);
+
             return self::Responde(true, "Pagos obtenidos", $res);
         } catch (\Exception $e) {
             return self::Responde(false, "Error al obtener los pagos", null, $e->getMessage());
@@ -1484,7 +1490,8 @@ sql;
             SET 
                 TIPO = :tipo
                 , NUEVO_MONTO = :nuevo_monto
-                , COMENTARIOS_EJECUTIVO = :comentario
+                , COMENTARIOS_INCIDENCIA = :comentario
+                ,INCIDENCIA = 1
             WHERE 
                 TRUNC(FECHA) = TO_DATE(:fecha, 'DD/MM/YYYY')
                 AND CDGNS = :grupo
