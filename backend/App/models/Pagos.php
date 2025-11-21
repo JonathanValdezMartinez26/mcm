@@ -1345,10 +1345,10 @@ sql;
                 ,PA.INCIDENCIA
                 ,PA.NUEVO_MONTO
                 ,UPPER(PA.COMENTARIOS_EJECUTIVO) AS COMENTARIOS_EJECUTIVO
-                 ,PA.COMENTARIOS_INCIDENCIA
+                ,PA.COMENTARIOS_INCIDENCIA
                 ,PA.ESTATUS_CAJA
                 ,TO_CHAR(PA.FREGISTRO, 'DD/MM/YYYY HH24:MI:SS') AS FREGISTRO
-                , CASE NVL(PA.ESTATUS_CAJA, 0)
+                ,CASE NVL(PA.ESTATUS_CAJA, 0)
                     WHEN '0' THEN 'PENDIENTE'
                     WHEN '1' THEN 'VALIDADO'
                     WHEN '2' THEN 'PROCESADO'
@@ -1533,7 +1533,6 @@ sql;
 
     public static function ProcesarPagosApp($datos)
     {
-        //Agregar un registro completo (Bien) lLAMADA 1
         $qry_1 = <<<SQL
             INSERT INTO FOLIO_APP
             (ID_FOLIO_APP, FOLIO, CORTECAJA_PAGOSDIA_PK, FECHA_REGISTRO)
@@ -1573,6 +1572,92 @@ sql;
             return self::Responde(true, 'Pago agregado correctamente');
         } catch (\Exception $e) {
             return self::Responde(false, 'Error al agregar pago', null, $e->getMessage());
+        }
+    }
+
+    public static function ReciboPagosApp($datos)
+    {
+        $qry_monto = <<<SQL
+            SELECT
+                TO_CHAR(TRUNC(FECHA), 'DD/MM/YYYY') AS FECHA
+                , SUM(MONTO) AS MONTO
+            FROM
+                PAGOSDIA_APP PA
+                INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
+            WHERE
+                PA.CDGOCPE = :ejecutivo
+                AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
+                AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                AND PRN.CICLO = PA.CICLO
+                AND PRN.CDGCO = :sucursal
+                AND NVL(PA.ESTATUS_CAJA, 0) = 2
+            GROUP BY
+                TRUNC(FECHA)
+        SQL;
+
+        $params_monto = [
+            'ejecutivo' => $datos['cdgpe'] ?? null,
+            'fecha' => $datos['fecha'] ?? null,
+            'sucursal' => $datos['sucursal'] ?? null,
+        ];
+
+        $qry_sucursal = <<<SQL
+            SELECT
+                CO.CODIGO AS SUCURSAL
+                , CO.NOMBRE AS SUCURSAL_NOMBRE
+            FROM
+                CO
+            WHERE
+                CO.CODIGO = :sucursal
+        SQL;
+
+        $params_sucursal = [
+            'sucursal' => $datos['sucursal'] ?? null,
+        ];
+
+        $qry_ejecutivo = <<<SQL
+            SELECT
+                CODIGO AS EJECUTIVO
+                , CONCATENA_NOMBRE(PE.NOMBRE1, PE.NOMBRE2, PE.PRIMAPE, PE.SEGAPE) AS EJECUTIVO_NOMBRE
+                , CASE WHEN PE.SEXO = 'M' THEN 'del ejecutivo' ELSE 'de la ejecutiva' END AS EJECUTIVO_GENERO
+            FROM
+                PE
+            WHERE
+                PE.CODIGO = :ejecutivo
+        SQL;
+
+        $params_ejecutivo = [
+            'ejecutivo' => $datos['cdgpe'] ?? null,
+        ];
+
+        $qry_folio = <<<SQL
+            SELECT
+                FOLIO
+                , TO_CHAR(TRUNC(FECHA_REGISTRO), 'DD/MM/YYYY') AS FECHA_REGISTRO
+            FROM
+                FOLIO_APP FA
+            WHERE
+                FA.FOLIO = :folio
+            GROUP BY
+                FOLIO, TRUNC(FECHA_REGISTRO)
+        SQL;
+
+        $params_folio = [
+            'folio' => $datos['barcode'] ?? null,
+        ];
+
+        try {
+            $db = new Database();
+            $monto = $db->queryOne($qry_monto, $params_monto);
+            $sucursal = $db->queryOne($qry_sucursal, $params_sucursal);
+            $ejecutivo = $db->queryOne($qry_ejecutivo, $params_ejecutivo);
+            $folio = $db->queryOne($qry_folio, $params_folio);
+
+            $resultado = array_merge($monto, $sucursal, $ejecutivo, $folio);
+
+            return self::Responde(true, "Datos para recibo obtenidos", $resultado);
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al obtener los datos para recibo", null, $e->getMessage());
         }
     }
 }

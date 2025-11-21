@@ -770,8 +770,20 @@ html;
                     }
                 }
 
-                function boton_ticket(barcode) {
-                    $("#all").attr("action", "/Pagos/Ticket/" + barcode + "/")
+                const boton_ticket = () => {
+                    const cdgpe = "{$_GET['cdgpe']}"
+                    const barcode = "{$_GET['barcode']}"
+                    const fecha = "{$_GET['fecha']}"
+                    const sucursal = "{$_GET['sucursal']}"
+
+                    const parametros = new URLSearchParams({
+                        cdgpe,
+                        barcode,
+                        fecha,
+                        sucursal
+                    })
+
+                    $("#all").attr("action", "/Pagos/Ticket/?" + parametros.toString())
                     $("#all").attr("target", "_blank")
                     $("#all").submit()
                 }
@@ -807,6 +819,7 @@ html;
                 
                 $(document).ready(() => {
                     configuraTabla("muestra-cupones")
+                    $("#recibo_pagos").click(boton_ticket)
                     var checkAll = 0
                 })
             </script>
@@ -848,7 +861,6 @@ html;
             $vista = 'view_pagos_app_ejecutivos';
         } else {
             $ejecutivo = $_GET['ejecutivo'];
-            $barcode = $_GET['barcode'];
             $cierreCaja = PagosDao::ConsultarCierreCajaCajera($this->__usuario);
             $hora_cierre = $cierreCaja[1]['HORA_CIERRE'] == '' ? '10:00:00' : $cierreCaja[1]['HORA_CIERRE'];
             $fechaActual = date("Y-m-d");
@@ -912,9 +924,11 @@ html;
                     $acciones = "<button type='button' class='btn btn-success btn-circle' onclick='editar_pago($json);'><i class='fa fa-edit'></i> Editar Pago</button>";
                     if ($value['ESTATUS_CAJA'] == 1) {
                         $acciones = '<b>Pago Validado</b>';
+                        $check_visible = 'display:none;';
                     }
                     if ($value['ESTATUS_CAJA'] == 2) {
                         $acciones = '<b>Pago Procesado</b>';
+                        $check_visible = 'display:none;';
                     }
 
                     $tabla .= <<<HTML
@@ -1055,7 +1069,6 @@ html;
         View::set('Ejecutivo', $Ejec);
         View::set('inicio_f', $inicio_f);
         View::set('fin_f', $fin_f);
-        View::set('barcode', $barcode);
         View::set('fechaActual', $fechaActual);
         View::render($vista);
     }
@@ -1072,230 +1085,167 @@ html;
         echo json_encode($res);
     }
 
-    public function Ticket($barcode)
+    public function Ticket()
     {
         $mpdf = new \mPDF([
-            'mode' => 'c',
+            'mode' => 'utf-8',
+            'format' => 'Letter',
+            'default_font_size' => 10,
+            'default_font' => 'Arial',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
         ]);
-        $mpdf->defaultPageNumStyle = 'I';
-        $mpdf->h2toc = array('H5' => 0, 'H6' => 1);
 
-        $style = <<<html
-      <style>
-     
-       .titulo{
-          width:100%;
-          margin-top: 30px;
-          color: #b92020;
-          margin-left:auto;
-          margin-right:auto;
+        $detalle = PagosDao::ReciboPagosApp($_GET);
+        if (!$detalle['success']) {
+            echo "Error: No se encontró información para los datos proporcionados.";
+            exit;
         }
-        
-        body {
-          padding: 50px;
-        }
-        
-        * {
-          box-sizing: border-box;
-        }
-        
-        .receipt-main {
-          display: inline-block;
-          width: 100%;
-          padding: 15px;
-          font-size: 12px;
-          border: 1px solid #000;
-        }
-        
-        .receipt-title {
-          text-align: center;
-          text-transform: uppercase;
-          font-size: 20px;
-          font-weight: 600;
-          margin: 0;
-        }
-          
-        .receipt-label {
-          font-weight: 600;
-        }
-        
-        .text-large {
-          font-size: 16px;
-        }
-        
-        .receipt-section {
-          margin-top: 10px;
-        }
-        
-        .receipt-footer {
-          text-align: center;
-          background: #ff0000;
-        }
-        
-        .receipt-signature {
-          height: 80px;
-          margin: 50px 0;
-          padding: 0 50px;
-          background: #fff;
-          
-          .receipt-line {
-            margin-bottom: 10px;
-            border-bottom: 1px solid #000;
-          }
-          
-          p {
-            text-align: justify;
-            margin: 0;
-            font-size: 17px;
-          }
-        }
-      </style>
-html;
-        $complemento = PagosDao::getByIdReporte($barcode);
 
-        $cant_total = "$" . number_format($complemento[0]['TOTAL'], 2);
+        $datos = $detalle['datos'];
+        $monto = abs($datos['MONTO'] ?? 0);
+        $entero = floor($monto);
+        $centavos = round(($monto - $entero) * 100);
+        $fmt = new \NumberFormatter("es", \NumberFormatter::SPELLOUT);
+        $texto_entero = $fmt->format($entero);
+        $texto_centavos = str_pad($centavos, 2, '0', STR_PAD_LEFT);
+        $monto_letra = mb_strtoupper("$texto_entero pesos $texto_centavos/100 M.N.", 'UTF-8');
 
-        $tabla = <<<html
+        $fmt = new \NumberFormatter('es_MX', \NumberFormatter::CURRENCY);
+        $monto = $fmt->formatCurrency($monto, 'MXN');
 
-        <div class="receipt-main">
-         <table class="table">
-             <tr>
-                 <th style="width: 600px;" class="text-right">
-                    <p class="receipt-title"><b>Recibo de Pago</b></p>
-                 </th>
-                 <th style="width: 10px;" class="text-right">
-                    <img src="img/logo.png" alt="Esta es una descripcion alternativa de la imagen para cuando no se pueda mostrar" width="60" height="50" align="left"/>
-                 </th>
-             </tr>
-        </table>
-         
-          <div class="receipt-section pull-left">
-            <span class="receipt-label text-large">#FOLIO:</span>
-            <span class="text-large"><b>{$barcode}</b></span>
-          </div>
-          
-           <div class="receipt-section pull-left">
-            <span class="receipt-label text-large">FECHA DE COBRO:</span>
-            <span class="text-large">{$complemento[0]['FECHA_GRUPO']}</span>
-          </div>
-          
-          
-          <div class="clearfix"></div>
-          
-          <div class="receipt-section">
-        
-            <p>Recibí del ejecutiv(a) <b>{$complemento[0]['EJECUTIVO']}</b>, la cantidad de <b>{$cant_total} M.N</b>, 
-            por concepto de recoleccion de <b>pagos varios</b> <u>({$complemento[0]['TOTAL_VALIDADOS']} pagos)</u> de Financiera Más con Menos, sucursal <u>{$complemento[0]['NOMBRE_SUC']}</u>, con aplicación a la fecha: <b>31/10/2023</b>.
-             </p>
-             <p>Así mismo el ejecutivo firma de conformidad, la entrega a detalle de los siguientes pagos, en donde se especifica número de crédito, ciclo, nombre completo del cliente, tipo de pago y monto:</p>
-          </div>
-          
-          <hr>
-          
-        
-       <div class="table-responsive-sm">
-          <table class="table">
-              <thead>
-                 <tr>
-                     <th># Crédito</th>
-                     <th>Nombre del Cliente</th>
-                     <th>Ciclo</th>
-                     <th width="19%" class="text-right">Tipo</th>
-                     <th class="text-right">Monto</th>
-                 </tr>
-              </thead>
-                  <tbody>
-                     
-html;
-
-
-        foreach ($complemento[1] as $key => $value) {
-            if ($value['TIPO'] == 'P') {
-                $tipo_pago = 'PAGO';
-                if ($value['INCIDENCIA'] == '1') {
-                    $procede = "$" . number_format($value['NUEVO_MONTO'], 2);
-                } else {
-                    $procede = "$" . number_format($value['MONTO'], 2);
+        $estilo = <<<HTML
+            <style>
+                body {
+                    width: 100%;
+                    height: 100%;
+                    margin: 0;
+                    padding: 0;
                 }
-            } else if ($value['TIPO'] == 'M') {
-                $tipo_pago = 'MULTA';
-                if ($value['INCIDENCIA'] == '1') {
-                    $procede = "$" . number_format($value['NUEVO_MONTO'], 2);
-                } else {
-                    $procede = "$" . number_format($value['MONTO'], 2);
+                
+                .header {
+                    text-align: center;
+                    margin-bottom: 5px;
+                    border-bottom: 2px solid #333;
                 }
-            } else if ($value['TIPO'] == 'G') {
-                $tipo_pago = 'GARANTIA';
-                $procede = '$00.00';
-            } else if ($value['TIPO'] == 'D') {
-                $tipo_pago = 'MULTA';
-                $procede = '$00.00';
-            } else if ($value['TIPO'] == 'R') {
-                $tipo_pago = 'REFINANCIAMIENTO';
-                $procede = '$00.00';
-            }
+                
+                .content-section {
+                    text-align: justify;
+                    line-height: 1.6;
+                }
 
-            $tabla .= <<<html
-                   
-            <tr style="background-color:#B8B8B8;">
-            <td style="height:auto; width: 80px;background-color:#E4E4E4; text-align: center;">{$value['CDGNS']}</td>
-            <td style="height:auto; width: 300px;background-color:#E4E4E4; ">{$value['NOMBRE']}</td>
-            <td style="height:auto; width: 60px;background-color:#E4E4E4; text-align: center;">{$value['CICLO']}</td>
-            <td style="height:auto; width: 80px;background-color:#E4E4E4; text-align: center;">{$tipo_pago}</td>
-            <td class="center" style="height:auto; width: 100px;background-color:#E4E4E4; text-align: center;">{$procede}</td>
-            </tr>
-html;
-        }
+                .amount-section {
+                    text-align: center;
+                    margin: 0;
+                }
+                
+                .amount-box {
+                    display: inline-block;
+                    border: 2px solid #333;
+                    padding: 15px;
+                    background-color: #f9f9f9;
+                }
+                
+                .amount-value {
+                    font-weight: bold;
+                    color: #333;
+                }
 
-        $tabla .= <<<html
-      </table>
-      </div>
-      <hr>
-      <br>
-      <br>
-      <br>
-      
-        <table class="table">
-             <tr>
-                 <th style="width: 370px;" class="text-right">
-                 <b>Ejecutiv(a)</b>
-                 <br>
-                 <br>
-                 <br>
-                 _____________________
-                 <br>
-                 <b>{$complemento[0]['EJECUTIVO']}</b>
-                 <br>
-                 <b>Firma de conformidad</b>
-                 
-                 
-                 </th>
-                 <th style="width: 270px;" class="text-right">
-                 <b>Cajer(a)</b>
-                 <br>
-                 <br>
-                 <br>
-                 _____________________
-                 <br>
-                 <b>$this->__nombre</b>
-                 <br>
-                 <b>Firma de conformidad</b>
-                 
-                 
-                 </th>
-             </tr>
-        </table>
-      
-</div>
+                .signatures {
+                    width: 100%;
+                    text-align: center;
+                }
 
-html;
+                .signatures-signature {
+                    height: 100px;
+                }
 
-        $fechaActual = date('Y-m-d H:i:s');
+                .signatures-space {
+                    width: 10%;
+                }
 
+                .signatures-data {
+                    width: 35%;
+                    border-top: 1px solid #333;
+                }
+                
+                .signature-title {
+                    font-weight: bold;
+                }
+            </style>
+        HTML;
 
-        $mpdf->WriteHTML($style, 1);
-        $mpdf->WriteHTML($tabla, 2);
-        $mpdf->SetHTMLFooter('<div style="text-align:center;font-size:10px;font-family:opensans;">Este recibo de pago se genero el día ' . $fechaActual . '<br>{PAGENO}</div>');
+        $cuerpo = <<<HTML
+            <div>
+                <div class="header">
+                    <h1>Recibo de Pago</h1>
+                </div>
+            
+                <div>
+                    <span>FOLIO:</span>
+                    <span><b>{$datos['FOLIO']}</b></span>
+                </div>
+            
+                <div>
+                    <span>FECHA DE COBRO:</span>
+                    <span><b>{$datos['FECHA_REGISTRO']}</b></span>
+                </div>
+                
+                <div class="content-section">
+                    <p>Recibí en la sucursal <b>{$datos['SUCURSAL_NOMBRE']}</b> de parte {$datos['EJECUTIVO_GENERO']} <b>{$datos['EJECUTIVO_NOMBRE']}</b>, la cantidad de:</p>
+                </div>
+
+                <div class="amount-section">
+                    <div class="amount-box">
+                        <div class="amount-value">$monto</div>
+                        <div class="amount-text">($monto_letra)</div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <p>por concepto de recolección de <b>pagos varios</b> con aplicación a la fecha: <b>{$datos['FECHA']}</b>.
+                    </p>
+                </div>
+                
+                <table class="signatures">
+                    <tr>
+                        <td></td>
+                        <td class="signatures-signature">
+                            <span class="signature-title">ENTREGA</span>
+                        </td>
+                        <td></td>
+                        <td class="signatures-signature">
+                            <span class="signature-title">RECIBE</span>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="signatures-space"></td>
+                        <td class="signatures-data">
+                            <span>Nombre y Firma</span>
+                        </td>
+                        <td class="signatures-space"></td>
+                        <td class="signatures-data">
+                            <span>Nombre y Firma</span>
+                        </td>
+                        <td class="signatures-space"></td>
+                    </tr>
+                </table>
+            </div>
+        HTML;
+
+        $mpdf->WriteHTML($estilo, 1);
+        $mpdf->WriteHTML($cuerpo, 2);
+
+        $duplicado = <<<HTML
+            <div style="border-top: 1px dashed #000; margin-top: 80px;">
+                {$cuerpo}
+            </div>
+        HTML;
+        $mpdf->WriteHTML($duplicado);
+
         print_r($mpdf->Output());
         exit;
     }
