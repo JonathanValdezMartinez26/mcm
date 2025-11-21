@@ -771,9 +771,9 @@ html;
                 }
 
                 const boton_ticket = () => {
-                    const cdgpe = "{$_GET['cdgpe']}"
-                    const barcode = "{$_GET['barcode']}"
+                    const cdgpe = "{$_GET['ejecutivo']}"
                     const fecha = "{$_GET['fecha']}"
+                    const barcode = "{$_GET['barcode']}"
                     const sucursal = "{$_GET['sucursal']}"
 
                     const parametros = new URLSearchParams({
@@ -861,6 +861,7 @@ html;
             $vista = 'view_pagos_app_ejecutivos';
         } else {
             $ejecutivo = $_GET['ejecutivo'];
+            $barcode = $_GET['barcode'];
             $cierreCaja = PagosDao::ConsultarCierreCajaCajera($this->__usuario);
             $hora_cierre = $cierreCaja[1]['HORA_CIERRE'] == '' ? '10:00:00' : $cierreCaja[1]['HORA_CIERRE'];
             $fechaActual = date("Y-m-d");
@@ -1069,6 +1070,7 @@ html;
         View::set('Ejecutivo', $Ejec);
         View::set('inicio_f', $inicio_f);
         View::set('fin_f', $fin_f);
+        View::set('barcode', $barcode);
         View::set('fechaActual', $fechaActual);
         View::render($vista);
     }
