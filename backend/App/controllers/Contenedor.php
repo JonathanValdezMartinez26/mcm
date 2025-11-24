@@ -117,15 +117,15 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'MCDP', 'LVGA', 'QARO'];
+        $permisos = ['ADMIN', 'MCDP', 'LVGA', 'QARO', 'CRCV','LUMM','EMGL','PEAE'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/Pagos/">Administración Pagos</a></li>';
         }
 
-        $permisos = ['ADMIN', 'FLHR'];
+        $permisos = ['ADMIN', 'FLHR', 'HEDC', 'JULM'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
-            <li><a href="/Pagos/CorteEjecutivo/">Recepción Pagos App</a></li> 
+            <li><a href="/Pagos/CorteEjecutivo/">PRUEBAS Pagos App</a></li> 
             <li><a href="/Pagos/CorteEjecutivoReimprimir/">Reimprimir Recibos App</a></li> 
             HTML;
         }

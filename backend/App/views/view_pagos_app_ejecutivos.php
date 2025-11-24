@@ -33,7 +33,6 @@
                                 <th>Pagos</th>
                                 <th>Multas</th>
                                 <th>Ahorro</th>
-                                <th>Seguro</th>
                                 <th>Monto Total Recolectado (Entregar)</th>
                                 <th>Acciones</th>
                             </tr>

@@ -115,18 +115,17 @@
                                 </select>
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="monto_detalle">Monto Registrado *</label>
                                 <input type="text" class="form-control" id="monto_detalle" readonly name="monto_detalle" placeholder="" value="">
-                                <small id="emailHelp" class="form-text text-muted">Fecha de registro para la asignación.</small>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="nuevo_monto">Nuevo Monto *</label>
                                 <input type="text" class="form-control" id="nuevo_monto" name="nuevo_monto" placeholder="" value="">
-                                <small id="emailHelp" class="form-text text-muted">Fecha de registro para la asignación.</small>
                             </div>
                         </div>
                         <div class="col-md-12">

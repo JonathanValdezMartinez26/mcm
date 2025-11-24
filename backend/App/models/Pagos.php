@@ -1348,6 +1348,7 @@ sql;
                 ,PA.COMENTARIOS_INCIDENCIA
                 ,PA.ESTATUS_CAJA
                 ,TO_CHAR(PA.FREGISTRO, 'DD/MM/YYYY HH24:MI:SS') AS FREGISTRO
+                ,PRN.SITUACION
                 ,CASE NVL(PA.ESTATUS_CAJA, 0)
                     WHEN '0' THEN 'PENDIENTE'
                     WHEN '1' THEN 'VALIDADO'

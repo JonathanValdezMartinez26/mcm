@@ -701,6 +701,7 @@ html;
                         grupo: $("#grupo").val(),
                         ciclo: $("#ciclo").val(),
                         secuencia: $("#secuencia").val(),
+                        monto_original: $("#monto_detalle").val(),
                         nuevo_monto: $("#nuevo_monto").val(),
                         comentario: $("#comentario_detalle").val(),
                         tipo: $("#tipo_pago_detalle").val()
@@ -834,8 +835,8 @@ html;
                 foreach ($pagos['datos'] as $key => $value) {
                     $pago = number_format($value['TOTAL_PAGOS'], 2);
                     $multa = number_format($value['TOTAL_MULTA'], 2);
-                    $refinanciamiento = number_format($value['TOTAL_AHORRO'], 2);
-                    $descuento = number_format($value['TOTAL_SEGURO'], 2);
+                    $ahorro = number_format($value['TOTAL_AHORRO'], 2);
+
                     $monto_total = number_format($value['MONTO_TOTAL'], 2);
 
                     $tabla .= <<<HTML
@@ -847,8 +848,7 @@ html;
                             <td style="padding: 0px !important;"><strong>{$value['FECHA_D']}</strong></td>
                             <td style="padding: 0px !important;">$ {$pago}</td>
                             <td style="padding: 0px !important;">$ {$multa}</td>
-                            <td style="padding: 0px !important;">$ {$refinanciamiento}</td>
-                            <td style="padding: 0px !important;">$ {$descuento}</td>
+                            <td style="padding: 0px !important;">$ {$ahorro}</td>
                             <td style="padding: 0px !important;">$ {$monto_total}</td>
                             <td style="padding: 0px !important;">
                                 <a href="/Pagos/CorteEjecutivo/?ejecutivo={$value['CDGOCPE']}&fecha={$value['FECHA']}&barcode={$value['BARRAS']}&sucursal={$value['COD_SUC']}" type="button" class="btn btn-success btn-circle"><i class="fa fa-edit"></i> Procesar Pagos</a>
@@ -932,6 +932,20 @@ html;
                         $check_visible = 'display:none;';
                     }
 
+                    if($value['SITUACION'] == 'E')
+                    {
+                        $sit = 'ENTREGADO';
+                    }
+                    if($value['SITUACION'] == 'S')
+                    {
+                        $sit = 'SOLICITADO';
+                    }
+                    if($value['SITUACION'] == 'L') {
+                        $sit = 'LIQUIDADO';
+                    }
+
+
+
                     $tabla .= <<<HTML
                         <tr style="padding: 0px !important;">
                             <td style="padding: 10px !important; color: #000 !important; font-weight: 600; $color_celda">
@@ -957,6 +971,7 @@ html;
                                 <div style="margin-bottom: 3px;">Ciclo: <b>{$value['CICLO']}</b></div>
                                 <div style="margin-bottom: 3px;">Nombre del cliente: <b>{$value['NOMBRE']}</b></div>
                                 <div style="margin-bottom: 3px;">Fecha Aplicación: <b>{$value['FECHA']}</b></div>
+                                <div style="margin-bottom: 3px;">Situación: <b>{$sit}</b></div>
                             </td>
                     
                             <td style="padding: 10px !important; color: #000 !important; text-align: center; $color_celda">
