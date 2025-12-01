@@ -634,8 +634,6 @@ class CallCenter extends Controller
 
         if ($credito != '' && $ciclo != '' && $fec != '') {
             $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo, $fec);
-            var_dump($AdministracionOne[0]['CREDITO_ADICIONAL']);
-            var_dump("********");
 
             if ($AdministracionOne[0] == '') {
                 View::set('Administracion', $AdministracionOne);
@@ -645,7 +643,7 @@ class CallCenter extends Controller
             } else {
 
                 View::set('Administracion', $AdministracionOne);
-                if ($AdministracionOne[0]['CREDITO_ADICIONAL'] = '1') {
+                if ($AdministracionOne[0]['CREDITO_ADICIONAL'] == '1') {
                     View::set('visible', 'none');
                 } else {
                     View::set('visible', 'block');
@@ -657,7 +655,7 @@ class CallCenter extends Controller
 
                 if ($act == 'N')
                 {
-                    if($AdministracionOne[0]['CREDITO_ADICIONAL'] = 1)
+                    if($AdministracionOne[0]['CREDITO_ADICIONAL'] == 1)
                     {
 
                     }
@@ -666,9 +664,9 @@ class CallCenter extends Controller
                     }
                 }
                 else {
-                    if($AdministracionOne[0]['CREDITO_ADICIONAL'] = 1)
+                    if($AdministracionOne[0]['CREDITO_ADICIONAL'] == 1)
                     {
-                        View::render("callcenter_cliente_all_mas");
+                        View::render("callcenter_cliente_all");
                     }
                     else
                     {
@@ -4043,6 +4041,8 @@ html;
         $encuesta->_telefono_aval_cl_2 = $_POST["telefono_aval_cl_1"];
 
         $encuesta->_completo = $_POST['completo'];
+
+        var_dump($encuesta);
 
         CallCenterDao::insertEncuestaCL($encuesta);
     }
