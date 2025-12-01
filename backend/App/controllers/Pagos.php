@@ -859,7 +859,9 @@ html;
             }
 
             $vista = 'view_pagos_app_ejecutivos';
-        } else {
+        }
+        else
+        {
             $ejecutivo = $_GET['ejecutivo'];
             $barcode = $_GET['barcode'];
             $cierreCaja = PagosDao::ConsultarCierreCajaCajera($this->__usuario);
@@ -867,6 +869,7 @@ html;
             $fechaActual = date("Y-m-d");
             $inicio_f = $fechaActual;
             $fin_f = $fechaActual;
+
 
             if (date("H:i:s") <= $hora_cierre) {
                 $dias = date("N") == 1 ? '-3 days' : '-1 days';
@@ -1197,7 +1200,7 @@ html;
         $cuerpo = <<<HTML
             <div>
                 <div class="header">
-                    <h1>Recibo de Pago</h1>
+                    <h1>Recibo de Cobranza</h1>
                 </div>
             
                 <div>
@@ -1206,12 +1209,12 @@ html;
                 </div>
             
                 <div>
-                    <span>FECHA DE COBRO:</span>
+                    <span>FECHA DE ENTREGA SUC:</span>
                     <span><b>{$datos['FECHA_REGISTRO']}</b></span>
                 </div>
                 
                 <div class="content-section">
-                    <p>Recibí en la sucursal <b>{$datos['SUCURSAL_NOMBRE']}</b> de parte {$datos['EJECUTIVO_GENERO']} <b>{$datos['EJECUTIVO_NOMBRE']}</b>, la cantidad de:</p>
+                    <p>Recibí en <b>{$datos['SUCURSAL_NOMBRE']}</b> de <b>{$datos['EJECUTIVO_NOMBRE']}</b>, la cantidad de:</p>
                 </div>
 
                 <div class="amount-section">
@@ -1222,7 +1225,7 @@ html;
                 </div>
 
                 <div class="content-section">
-                    <p>por concepto de recolección de <b>pagos varios</b> con aplicación a la fecha: <b>{$datos['FECHA']}</b>.
+                    <p>Por concepto de recolección de <b>pagos varios</b> con aplicación a la fecha</b>.
                     </p>
                 </div>
                 
