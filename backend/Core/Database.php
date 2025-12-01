@@ -25,7 +25,7 @@ class Database
     {
         $s = $this->configuracion[$s] ?? $s;
         $servidor = $s ?? $this->configuracion['SERVIDOR'];
-        $esquema = $this->configuracion['ESQUEMA'] ?? 'ESIACOM';
+        $esquema = $this->configuracion['ESQUEMA'] ?? 'ESIACOM_TST';
 
         $cadena = "oci:dbname=//$servidor:1521/$esquema;charset=UTF8";
         $usuario = $u ?? $this->configuracion['USUARIO'];
