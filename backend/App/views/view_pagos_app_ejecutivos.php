@@ -12,12 +12,13 @@
                     <ul class="nav navbar-nav navbar-right">
                         <b style="font-size: 20px; color: red;">Pagos capturados en campo por los ejecutivos</b>
                         <br>
-                        <b></b>
                         <br>
                         <br>
                         <br>
+
                     </ul>
                 </div>
+
 
                 <hr style="border-top: 1px solid #787878; margin-top: 5px;">
 

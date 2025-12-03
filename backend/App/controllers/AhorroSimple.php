@@ -8,7 +8,6 @@ use Core\View;
 use Core\MasterDom;
 use Core\Controller;
 use App\models\AhorroSimple as AhorroSimpleDao;
-use App\models\CallCenter as CallCenterDao;
 
 class AhorroSimple extends Controller
 {
@@ -357,6 +356,75 @@ class AhorroSimple extends Controller
         }
     }
 
+    public function ExepcionesMXT()
+    {
+        $extraHeader = self::GetExtraHeader('Exepciones Adicional MXT');
+
+        $extraFooter = <<<HTML
+        <script>
+            function getParameterByName(name) {
+                name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]")
+                var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                    results = regex.exec(location.search)
+                return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "))
+            }
+
+            function enviar_add() {
+                $.ajax({
+                type: 'POST',
+                url: '/AhorroSimple/GuardarExcepcionesMXT/',
+                data: $('#Add').serialize(),
+                success: function(respuesta) {
+        
+                    if (respuesta == '1') {
+        
+                        swal("Excepciones guardadas exitosamente", {
+                            icon: "success",
+                        });
+        
+                        setTimeout(() => { location.reload(); }, 1500);
+        
+                    } else {
+        
+                        swal(respuesta, {
+                            icon: "error",
+                        });
+                    }
+                }
+            });
+        }
+
+        </script>
+        HTML;
+
+        $fechaActual = date('Y-m-d');
+        $cdgns = $_GET['cdgns'];
+
+
+
+        if ($cdgns != '') {
+            $ConsultaA = AhorroSimpleDao::ConsultarActivosExcepciones($cdgns);
+            $ConsultaActivos = $ConsultaA[0];
+            $Consulta = AhorroSimpleDao::ConsultarPagosFechaSucursal($cdgns);
+            $ConsultaDatos = $Consulta[0];
+
+            $Consulta1 = AhorroSimpleDao::ProcesaProcedure($cdgns, $ConsultaDatos['CICLO']);
+
+            View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
+            View::set('ConsultaDatos', $ConsultaDatos);
+            View::set('resultado', $Consulta1);
+            View::set('ConsultaActivos', $ConsultaActivos);
+            View::render("agregar_excepcion_adicional");
+
+        } else {
+            View::set('header', $this->_contenedor->header($extraHeader));
+            View::set('footer', $this->_contenedor->footer($extraFooter));
+            View::set('fechaActual', $fechaActual);
+            View::render("agrega_excepciones_adicional_all");
+        }
+    }
+
 
 	public function Contrato()
 	{
@@ -628,7 +696,36 @@ class AhorroSimple extends Controller
 		echo json_encode(AhorroSimpleDao::ActualizaBeneficiarios($_POST));
 	}
 
-	public function ContratoAdd()
+    public function GuardarExcepcionesMXT()
+    {
+        $exc = new \stdClass();
+
+        // Campos principales del crédito
+        $exc->_no_credito = MasterDom::getData('no_credito');
+        $exc->_cliente    = MasterDom::getData('cliente');
+        $exc->_sucursal   = MasterDom::getData('sucursal');
+        $exc->_ejecutivo  = MasterDom::getData('ejecutivo');
+        $exc->_ciclo   = MasterDom::getData('ciclo');
+
+        // Usuario logueado
+        $exc->_usuario = $this->__usuario;
+
+        // Checkboxes (si no vienen marcados = null → se convierten a 'N')
+        $exc->_exc_uno     = (MasterDom::getData('exc_ciclo')    ? 'S' : 'N');
+        $exc->_exc_dos     = (MasterDom::getData('exc_semanas')  ? 'S' : 'N');
+        $exc->_exc_tres    = (MasterDom::getData('exc_rango')    ? 'S' : 'N');
+        $exc->_exc_cuatro  = (MasterDom::getData('exc_atraso')   ? 'S' : 'N');
+        $exc->_exc_cinco   = (MasterDom::getData('exc_5pagos')   ? 'S' : 'N');
+        $exc->_exc_seis    = (MasterDom::getData('exc_ahorro')   ? 'S' : 'N');
+
+        // Llamar a tu procedimiento
+        $id = AhorroSimpleDao::ActualizaExcepciones($exc);
+
+        return $id;
+    }
+
+
+    public function ContratoAdd()
 	{
 		$contrato = new \stdClass();
 

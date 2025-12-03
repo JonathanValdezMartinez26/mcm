@@ -117,12 +117,12 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'MCDP', 'LVGA', 'QARO', 'CRCV','LUMM','EMGL','PEAE'];
+        $permisos = ['ADMIN', 'MCDP', 'LVGA', 'QARO'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/Pagos/">Administración Pagos</a></li>';
         }
 
-        $permisos = ['ADMIN', 'FLHR', 'HEDC', 'JULM'];
+        $permisos = ['ADMIN', 'FLHR', 'HEDC', 'JULM', 'CRCV','LUMM','EMGL','PEAE', 'MCDP', 'LVGA'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
             <li><a href="/Pagos/CorteEjecutivo/">PRUEBAS Pagos App</a></li> 
@@ -169,6 +169,7 @@ class Contenedor extends Controller
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/AhorroSimple/EstadoCuenta/">Estado de Cuenta Ahorro</a></li>';
             $menu .= '<li><a href="/AhorroSimple/ValidaAdicional/">Valida Crédito Adicional </a></li>';
+            $menu .= '<li><a href="/AhorroSimple/ExepcionesMXT/">Agregar Exepciones MXT</a></li>';
         }
 
         $permisos = ['AMGM'];

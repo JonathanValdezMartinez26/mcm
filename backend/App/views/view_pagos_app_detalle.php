@@ -32,6 +32,16 @@
                     </div>
                     <div class="dataTable_wrapper">
                         <hr>
+
+                        <div class="card card-danger col-md-12">
+                            <ul class="nav navbar-nav navbar-right">
+                                <b style="font-size: 20px; color: #286090;">Su horario de cierre es: | <?= $Administracion[1]['HORA_CIERRE']; ?> a.m. |</b>
+                                <br>
+                                <b>Si su horario es incorrecto o necesita más tiempo, comuníquelo</b>
+                                <br>
+                                <b>al área correspondiente.</b>
+                            </ul>
+                        </div>
                         <p><b><span class="fa fa-sticky-note"></span> Nota:Si ya valido el pago y es correcto marque la casilla (Validado)</b></p>
                         <hr style="border-top: 1px solid #787878; margin-top: 5px;">
                         <table class="table table-striped table-bordered table-hover" id="muestra-cupones">

@@ -109,6 +109,83 @@ sql;
 		return [$res1, $res2];
 	}
 
+    public static function ConsultarActivosExcepciones($cdgns)
+    {
+        $query = <<<sql
+        SELECT
+       *
+    FROM
+        EXCEPCIONES_CREDITO
+    WHERE
+        CDGNS = $cdgns
+sql;
+        $mysqli = new Database();
+        return $mysqli->queryAll($query);
+    }
+
+    public static function ActualizaExcepciones($datos)
+    {
+        // $datos es un stdClass, no un array
+        $cdgns = $datos->_no_credito;
+        $ciclo = $datos->_ciclo;
+
+        $uno = $datos->_exc_uno;
+        $dos = $datos->_exc_dos;
+        $tres = $datos->_exc_tres;
+        $cuatro = $datos->_exc_cuatro;
+        $cinco = $datos->_exc_cinco;
+        $seis = $datos->_exc_seis;
+
+        $mysqli = new Database();
+
+        // Buscar si ya existe una excepción activa
+        $query_datos = <<<sql
+        SELECT ID_EXCEPCION
+        FROM ESIACOM.EXCEPCIONES_CREDITO
+        WHERE CDGNS = '$cdgns'
+          AND CICLO = '$ciclo'
+          AND ESTATUS = 'ACTIVO'
+          AND ROWNUM = 1
+sql;
+
+        $res1 = $mysqli->queryOne($query_datos);
+
+        // Si NO existe → INSERT
+        if (!$res1) {
+
+            $query = <<<sql
+            INSERT INTO ESIACOM.EXCEPCIONES_CREDITO
+            (CDGNS, CICLO, EXC_UNO, EXC_DOS, EXC_TRES, EXC_CUATRO, EXC_CINCO, EXC_SEIS, ESTATUS, FECHA_CARGA, USUARIO_CARGA)
+            VALUES
+            ('$cdgns', '$ciclo', '$uno','$dos','$tres','$cuatro','$cinco','$seis','ACTIVO', SYSTIMESTAMP, NULL)
+sql;
+
+            $mysqli->queryAll($query);
+            return "INSERT";
+
+        } else {
+
+            // Si existe → UPDATE
+            $id = $res1->ID_EXCEPCION;  // porque queryOne también devuelve stdClass
+
+            $query = <<<sql
+            UPDATE ESIACOM.EXCEPCIONES_CREDITO
+            SET EXC_UNO='$uno',
+                EXC_DOS='$dos',
+                EXC_TRES='$tres',
+                EXC_CUATRO='$cuatro',
+                EXC_CINCO='$cinco',
+                EXC_SEIS='$seis',
+                FECHA_CARGA=SYSTIMESTAMP,
+                USUARIO_CARGA=NULL
+            WHERE CDGNS = '$cdgns'
+          AND CICLO = '$ciclo'
+sql;
+
+            return $mysqli->insert($query);
+        }
+    }
+
     public static function ProcesaProcedure($credito_, $ciclo_)
     {
 

@@ -1151,9 +1151,9 @@ sql;
               
               -- 🔥 TOTALES
               ,SUM(TOTAL_PAGO) AS TOTAL_PAGOS
-              ,SUM(MULTA) AS TOTAL_MULTA
+              ,SUM(MULTA + MULTA_ELECTRONICA + MULTA_GESTORES) AS TOTAL_MULTA
               ,SUM(SEGURO) AS TOTAL_SEGURO
-              ,SUM(AHORRO) AS TOTAL_AHORRO
+              ,SUM(AHORRO + AHORRO_ELECTRONICO) AS TOTAL_AHORRO
               ,SUM(MONTO) AS MONTO_TOTAL
         
             FROM (
@@ -1201,7 +1201,7 @@ sql;
                      INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
                      INNER JOIN CO  ON CO.CODIGO = PRN.CDGCO
         
-                WHERE NVL(PA.ESTATUS_CAJA, 0) = 0
+                WHERE NVL(PA.ESTATUS_CAJA, 0) != 2
                   AND PRN.CICLO = PA.CICLO
                   AND PRN.CDGCO = CO.CODIGO
             )
@@ -1580,8 +1580,14 @@ sql;
     {
         $qry_monto = <<<SQL
             SELECT
-                TO_CHAR(TRUNC(FECHA), 'DD/MM/YYYY') AS FECHA
-                , SUM(MONTO) AS MONTO
+                TO_CHAR(TRUNC(FECHA), 'DD/MM/YYYY') AS FECHA,
+                SUM(
+                    CASE 
+                        WHEN PA.NUEVO_MONTO IS NOT NULL AND PA.NUEVO_MONTO > 0 
+                            THEN PA.NUEVO_MONTO 
+                            ELSE PA.MONTO 
+                    END
+                ) AS MONTO
             FROM
                 PAGOSDIA_APP PA
                 INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
@@ -1592,8 +1598,7 @@ sql;
                 AND PRN.CICLO = PA.CICLO
                 AND PRN.CDGCO = :sucursal
                 AND NVL(PA.ESTATUS_CAJA, 0) = 2
-            GROUP BY
-                TRUNC(FECHA)
+                GROUP BY TO_CHAR(TRUNC(FECHA), 'DD/MM/YYYY')
         SQL;
 
         $params_monto = [

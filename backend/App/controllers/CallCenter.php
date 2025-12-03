@@ -653,8 +653,21 @@ class CallCenter extends Controller
                 View::set('cdgpe', $this->__usuario);
                 View::set('pendientes', 'Mis ');
 
-                if ($act == 'N') View::render("callcenter_cliente_all_disable");
-                else View::render("callcenter_cliente_all");
+                if ($act == 'N')
+                {
+                    View::render("callcenter_cliente_all_disable");
+                }
+                else {
+                    if($AdministracionOne[0]['CREDITO_ADICIONAL'] === 1)
+                    {
+
+                    }
+                    else
+                    {
+                        var_dump("Si entra");
+                        View::render("callcenter_cliente_all");
+                    }
+                }
             }
         } else {
             if ($credito == '' && $ciclo == '') {
