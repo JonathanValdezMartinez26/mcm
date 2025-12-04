@@ -790,6 +790,7 @@ html;
                 }
 
                 const boton_terminar = (barcode) => {
+                    const fechaAplicacion = $("#Fecha").val()
                     const filas = $("#terminar_resumen tbody tr")
                     const pagos = []
 
@@ -809,7 +810,7 @@ html;
                         })
                     })
 
-                    consultaServidor("/Pagos/ProcesarPagosApp/", {barcode, pagos}, (respuesta) => {
+                    consultaServidor("/Pagos/ProcesarPagosApp/", {barcode, fechaAplicacion, pagos}, (respuesta) => {
                         if (!respuesta.success) return showError(respuesta.message)
 
                         showSuccess("Corte registrado exitosamente").then(() => {
@@ -822,6 +823,14 @@ html;
                     configuraTabla("muestra-cupones")
                     $("#recibo_pagos").click(boton_ticket)
                     var checkAll = 0
+
+                    $("#Fecha").on("change", function() {
+                        const fecha = new Date(this.value)
+                        const dia = fecha.getUTCDay()
+                        
+                        if (dia === 0 || dia === 6)
+                            showWarning("La fecha seleccionada cae en fin de semana. Por favor, seleccione un día hábil.")
+                    })
                 })
             </script>
         HTML;
@@ -868,12 +877,12 @@ html;
             $inicio_f = $fechaActual;
             $fin_f = $fechaActual;
 
-
             if (date("H:i:s") <= $hora_cierre) {
                 $dias = date("N") == 1 ? '-3 days' : '-1 days';
                 $date_past = strtotime($dias, strtotime($fechaActual));
                 $date_past = date('Y-m-d', $date_past);
                 $inicio_f = $date_past;
+                $fin_f = $date_past;
             }
 
             $etiquetas_pago = [
@@ -1223,7 +1232,7 @@ html;
                 </div>
 
                 <div class="content-section">
-                    <p>Por concepto de recolección de <b>pagos varios</b> con aplicación a la fecha</b>.
+                    <p>Por concepto de recolección de <b>pagos varios</b> con aplicación a la fecha {$datos['APLICACION']}.
                     </p>
                 </div>
                 
