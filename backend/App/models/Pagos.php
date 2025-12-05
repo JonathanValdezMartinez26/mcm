@@ -1414,6 +1414,7 @@ sql;
                 ,PA.FACTUALIZA
                 ,PA.MONTO
                 ,PA.TIPO
+                ,PA.TIPO_NUEVO
                 ,PA.INCIDENCIA
                 ,PA.NUEVO_MONTO
                 ,UPPER(PA.COMENTARIOS_EJECUTIVO) AS COMENTARIOS_EJECUTIVO
@@ -1574,10 +1575,11 @@ sql;
         $qry = <<<SQL
             UPDATE PAGOSDIA_APP
             SET 
-                TIPO = :tipo
-                , NUEVO_MONTO = :nuevo_monto
+                TIPO_NUEVO = CASE WHEN :tipo = TIPO THEN NULL ELSE :tipo END
+                , NUEVO_MONTO = CASE WHEN :nuevo_monto = MONTO THEN NULL ELSE :nuevo_monto END
                 , COMENTARIOS_INCIDENCIA = :comentario
-                ,INCIDENCIA = 1
+                , INCIDENCIA = 1
+                , FACTUALIZA = SYSDATE
             WHERE 
                 TRUNC(FECHA) = TO_DATE(:fecha, 'DD/MM/YYYY')
                 AND CDGNS = :grupo
@@ -1615,6 +1617,8 @@ sql;
         $qry_2 = <<<SQL
             UPDATE PAGOSDIA_APP
             SET  ESTATUS_CAJA = 2
+                , FPROCESAPAGO = SYSDATE
+                , FAPLICACION = TO_DATE(:fecha_aplicacion, 'YYYY-MM-DD')
             WHERE
                 TRUNC(FECHA) = TO_DATE(:fecha, 'DD/MM/YYYY')
                 AND CDGNS = :grupo
@@ -1637,7 +1641,8 @@ sql;
                     'fecha' => $pago['fecha'],
                     'grupo' => $pago['grupo'],
                     'ciclo' => $pago['ciclo'],
-                    'secuencia' => $pago['secuencia']
+                    'secuencia' => $pago['secuencia'],
+                    'fecha_aplicacion' => $datos['fechaAplicacion']
                 ];
             }
 
@@ -1653,6 +1658,7 @@ sql;
         $qry_monto = <<<SQL
             SELECT
                 TO_CHAR(TRUNC(FECHA), 'DD/MM/YYYY') AS FECHA,
+                TO_CHAR(TRUNC(FAPLICACION), 'DD/MM/YYYY') AS APLICACION,
                 SUM(
                     CASE 
                         WHEN PA.NUEVO_MONTO IS NOT NULL AND PA.NUEVO_MONTO > 0 
@@ -1670,7 +1676,9 @@ sql;
                 AND PRN.CICLO = PA.CICLO
                 AND PRN.CDGCO = :sucursal
                 AND NVL(PA.ESTATUS_CAJA, 0) = 2
-                GROUP BY TO_CHAR(TRUNC(FECHA), 'DD/MM/YYYY')
+            GROUP BY
+                TO_CHAR(TRUNC(FECHA), 'DD/MM/YYYY')
+                , TO_CHAR(TRUNC(FAPLICACION), 'DD/MM/YYYY')
         SQL;
 
         $params_monto = [

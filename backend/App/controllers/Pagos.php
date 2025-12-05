@@ -790,6 +790,7 @@ html;
                 }
 
                 const boton_terminar = (barcode) => {
+                    const fechaAplicacion = $("#Fecha").val()
                     const filas = $("#terminar_resumen tbody tr")
                     const pagos = []
 
@@ -809,7 +810,7 @@ html;
                         })
                     })
 
-                    consultaServidor("/Pagos/ProcesarPagosApp/", {barcode, pagos}, (respuesta) => {
+                    consultaServidor("/Pagos/ProcesarPagosApp/", {barcode, fechaAplicacion, pagos}, (respuesta) => {
                         if (!respuesta.success) return showError(respuesta.message)
 
                         showSuccess("Corte registrado exitosamente").then(() => {
@@ -822,6 +823,14 @@ html;
                     configuraTabla("muestra-cupones")
                     $("#recibo_pagos").click(boton_ticket)
                     var checkAll = 0
+
+                    $("#Fecha").on("change", function() {
+                        const fecha = new Date(this.value)
+                        const dia = fecha.getUTCDay()
+                        
+                        if (dia === 0 || dia === 6)
+                            showWarning("La fecha seleccionada cae en fin de semana. Por favor, seleccione un día hábil.")
+                    })
                 })
             </script>
         HTML;
@@ -859,9 +868,7 @@ html;
             }
 
             $vista = 'view_pagos_app_ejecutivos';
-        }
-        else
-        {
+        } else {
             $ejecutivo = $_GET['ejecutivo'];
             $barcode = $_GET['barcode'];
             $cierreCaja = PagosDao::ConsultarCierreCajaCajera($this->__usuario);
@@ -870,12 +877,12 @@ html;
             $inicio_f = $fechaActual;
             $fin_f = $fechaActual;
 
-
             if (date("H:i:s") <= $hora_cierre) {
                 $dias = date("N") == 1 ? '-3 days' : '-1 days';
                 $date_past = strtotime($dias, strtotime($fechaActual));
                 $date_past = date('Y-m-d', $date_past);
                 $inicio_f = $date_past;
+                $fin_f = $date_past;
             }
 
             $etiquetas_pago = [
@@ -910,11 +917,13 @@ html;
                 foreach ($pagos['datos'] as $key => $value) {
                     $Ejec = $value['EJECUTIVO'];
                     $tipo_pago = $etiquetas_pago[$value['TIPO']] ?? "DESCONOCIDO ({$value['TIPO']})";
+                    $nuevo_tipo_pago = $etiquetas_pago[$value['TIPO_NUEVO']] ?? "DESCONOCIDO ({$value['TIPO_NUEVO']})";
                     $monto = number_format($value['MONTO'], 2);
                     $nuevo_monto = number_format($value['NUEVO_MONTO'], 2);
                     $secuencia = $value['SECUENCIA'];
                     $selected = $value['ESTATUS_CAJA'] == 1 ? 'checked' : '';
-                    $campo = $value['INCIDENCIA'] == 1 ? '<div><del>$' . $monto . '</del></div> <div style="font-size: 20px!important;"> $' . $nuevo_monto . '</div>' : '<div style="font-size: 20px!important;">$' . $monto . '</div>';
+                    $lbl_tipo = $value['TIPO_NUEVO'] ? '<div><del>' . $tipo_pago . '</del></div><div"><b>' . $nuevo_tipo_pago . '</b></div>' : '<div"><b>' . $tipo_pago . '</b></div>';
+                    $campo = $value['NUEVO_MONTO'] ? '<div><del>$' . $monto . '</del></div> <div style="font-size: 20px!important;"> $' . $nuevo_monto . '</div>' : '<div style="font-size: 20px!important;">$' . $monto . '</div>';
                     $color_celda = "background-color: #FFC733 !important;";
                     $check_visible = 'display:none;';
 
@@ -935,15 +944,13 @@ html;
                         $check_visible = 'display:none;';
                     }
 
-                    if($value['SITUACION'] == 'E')
-                    {
+                    if ($value['SITUACION'] == 'E') {
                         $sit = 'ENTREGADO';
                     }
-                    if($value['SITUACION'] == 'S')
-                    {
+                    if ($value['SITUACION'] == 'S') {
                         $sit = 'SOLICITADO';
                     }
-                    if($value['SITUACION'] == 'L') {
+                    if ($value['SITUACION'] == 'L') {
                         $sit = 'LIQUIDADO';
                     }
 
@@ -978,7 +985,7 @@ html;
                             </td>
                     
                             <td style="padding: 10px !important; color: #000 !important; text-align: center; $color_celda">
-                                <b>{$tipo_pago}</b>
+                                {$lbl_tipo}
                                 {$campo}
 
                                 <div style="margin-top: 5px; display: {$show_validado};">
@@ -1225,7 +1232,7 @@ html;
                 </div>
 
                 <div class="content-section">
-                    <p>Por concepto de recolección de <b>pagos varios</b> con aplicación a la fecha</b>.
+                    <p>Por concepto de recolección de <b>pagos varios</b> con aplicación a la fecha {$datos['APLICACION']}.
                     </p>
                 </div>
                 

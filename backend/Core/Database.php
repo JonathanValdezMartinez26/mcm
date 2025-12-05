@@ -140,8 +140,8 @@ class Database
             print_r($arr);
         }
     }
-	
-	public function insert_bene($sql)
+
+    public function insert_bene($sql)
     {
         $stmt = $this->db_activa->prepare($sql);
         $result = $stmt->execute();
@@ -393,7 +393,7 @@ class Database
         $readStmt->execute();
 
         $resultado = ltrim($output);
-        return $resultado;// ← AQUÍ REGRESA TODO EL TEXTO REAL
+        return $resultado; // ← AQUÍ REGRESA TODO EL TEXTO REAL
     }
 
 
