@@ -638,6 +638,16 @@ sql;
     public static function ConsultarPagosAdministracionOne($noCredito, $perfil, $user)
     {
 
+
+
+        $query_determina_adicional = <<<sql
+        select * from SN where CREDITO_ADICIONAL is not null and cdgns = '$noCredito'
+sql;
+        $mysqli = new Database();
+
+
+
+
         if ($perfil != 'ADMIN') {
             $Q1 = "AND PRN.CDGCO = 
             
@@ -657,7 +667,13 @@ sql;
             $Q1 = '';
         }
 
-        $query = <<<sql
+
+        $consulta = $mysqli->queryOne($query_determina_adicional);
+
+        $res_adicional = $consulta['CREDITO_ADICIONAL'];
+        if($res_adicional == null)
+        {
+            $query = <<<sql
         SELECT 
 		SC.CDGNS NO_CREDITO,
 		SC.CDGCL ID_CLIENTE,
@@ -694,7 +710,8 @@ sql;
 		GET_NOMBRE_SUCURSAL(SN.CDGCO) SUCURSAL,
 		SN.CDGOCPE ID_EJECUTIVO,
 		GET_NOMBRE_EMPLEADO(SN.CDGOCPE) EJECUTIVO,
-		SC.CDGPI ID_PROYECTO
+		SC.CDGPI ID_PROYECTO,
+		'TRADICIONAL' as TIPO_C
 	FROM 
 		SN, SC, SC Q2, PRN
 	WHERE
@@ -710,11 +727,66 @@ sql;
 	    $Q1
 		AND SC.CANTSOLIC <> '9999' order by SC.SOLICITUD  desc
 sql;
+        }
+        else{
+            $query = <<<sql
+        SELECT 
+		SC.CDGNS NO_CREDITO,
+		SC.CDGCL ID_CLIENTE,
+		GET_NOMBRE_CLIENTE(SC.CDGCL) CLIENTE,
+		SC.CICLO,
+		NVL(SC.CANTAUTOR,SC.CANTSOLIC) MONTO,
+		PRN.SITUACION,
+        CASE PRN.SITUACION
+        WHEN 'S'THEN 'SOLICITADO' 
+        WHEN 'E'THEN 'ENTREGADO' 
+        WHEN 'A'THEN 'AUTORIZADO' 
+        WHEN 'L'THEN 'LIQUIDADO' 
+        ELSE 'DESCONOCIDO'
+      END SITUACION_NOMBRE,
+               CASE PRN.SITUACION
+    WHEN 'S'THEN '#1F6CC1FF'
+    WHEN 'E'THEN '#298732FF' 
+    WHEN 'A'THEN '#A31FC1FF' 
+    WHEN 'L'THEN '#000000FF' 
+    ELSE '#FF0000FF'
+  END COLOR,
+               CASE PRN.SITUACION
+    WHEN 'E'THEN ''
+    ELSE 'none'
+  END ACTIVO,
+		SN.PLAZOSOL PLAZO,
+		SN.PERIODICIDAD,
+		SN.TASA,
+		DIA_PAGO(SN.NOACUERDO) DIA_PAGO,
+		CALCULA_PARCIALIDAD(SN.PERIODICIDAD, SN.TASA, NVL(SC.CANTAUTOR,SC.CANTSOLIC), SN.PLAZOSOL) PARCIALIDAD,
+		SN.CDGCO ID_SUCURSAL,
+		GET_NOMBRE_SUCURSAL(SN.CDGCO) SUCURSAL,
+		SN.CDGOCPE ID_EJECUTIVO,
+		GET_NOMBRE_EMPLEADO(SN.CDGOCPE) EJECUTIVO,
+		SC.CDGPI ID_PROYECTO,
+		'MAS POR TI' as TIPO_C
+	FROM 
+		SN, SC, PRN
+	WHERE
+		SC.CDGNS = '$noCredito'
+		
+		AND SC.CDGNS = SN.CDGNS
+		AND SC.CICLO = SN.CICLO
+	    AND PRN.CICLO = SC.CICLO 
+		AND PRN.CDGNS = SC.CDGNS 
+		AND PRN.SITUACION IN('E', 'L')
+	    $Q1
+		AND SC.CANTSOLIC <> '9999' order by SC.SOLICITUD  desc
+sql;
+        }
+
+
         //var_dump($query);
 
 
 
-        $mysqli = new Database();
+
         $consulta = $mysqli->queryOne($query);
 
         $cdgco = $consulta['ID_SUCURSAL'];

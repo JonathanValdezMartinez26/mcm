@@ -53,7 +53,7 @@
 
                         <div class="count" style="font-size: 14px"><?= $Administracion[0]['CLIENTE']; ?></div>
                         <span class="count_top badge" style="padding: 1px 1px; background: <?= $Administracion[0]['COLOR']; ?>">
-                            <h5><b><i class="">SITUACIÓN: <?= $Administracion[0]['SITUACION_NOMBRE']; ?></i></b></h5>
+                            <h5><b><i class="">SITUACIÓN: <?= $Administracion[0]['SITUACION_NOMBRE']; ?></i></b> </h5><?= $Administracion[0]['TIPO_C']; ?>
                         </span>
 
                     </div>

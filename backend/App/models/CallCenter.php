@@ -1116,13 +1116,8 @@ sql;
             // Se inserta cuando es la primera llamada
             $campos["ID_SCALL"] = "sol_call_center_id.nextval";
             $campos["CDGRG"] = $encuesta->_cdgre;
-            $campos["FECHA_TRA_CL"] = !empty($encuesta->_fecha)
-                ? "TO_DATE('$encuesta->_fecha', 'YYYY-MM-DD')"
-                : "NULL";
-
-            $campos["FECHA_SOL"] = !empty($encuesta->_fecha_solicitud)
-                ? "TO_DATE('$encuesta->_fecha_solicitud', 'YYYY-MM-DD')"
-                : "NULL";
+            $campos["FECHA_TRA_CL"] = "TIMESTAMP '$encuesta->_fecha.000000'";
+            $campos["FECHA_SOL"] = "TIMESTAMP '$encuesta->_fecha_solicitud.000000'";
             $campos["CDGNS"] = $encuesta->_cdgns;
             $campos["CDGCO"] = $encuesta->_cdgco;
             $campos["CDGPE"] = $encuesta->_cdgpe;
@@ -1193,7 +1188,6 @@ sql;
             SQL;
         }
 
-        var_dump($query);
         $mysqli = new Database();
         return $mysqli->insert($query);
     }
