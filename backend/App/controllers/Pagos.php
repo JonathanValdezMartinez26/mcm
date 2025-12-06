@@ -701,7 +701,7 @@ html;
                         grupo: $("#grupo").val(),
                         ciclo: $("#ciclo").val(),
                         secuencia: $("#secuencia").val(),
-                        monto_original: $("#monto_detalle").val(),
+                        monto_original: $("#monto_detalle").val().replace(/[$,]/g, ''),
                         nuevo_monto: $("#nuevo_monto").val(),
                         comentario: $("#comentario_detalle").val(),
                         tipo: $("#tipo_pago_detalle").val()

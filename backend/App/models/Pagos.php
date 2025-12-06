@@ -671,8 +671,7 @@ sql;
         $consulta = $mysqli->queryOne($query_determina_adicional);
 
         $res_adicional = $consulta['CREDITO_ADICIONAL'];
-        if($res_adicional == null)
-        {
+        if ($res_adicional == null) {
             $query = <<<sql
         SELECT 
 		SC.CDGNS NO_CREDITO,
@@ -727,8 +726,7 @@ sql;
 	    $Q1
 		AND SC.CANTSOLIC <> '9999' order by SC.SOLICITUD  desc
 sql;
-        }
-        else{
+        } else {
             $query = <<<sql
         SELECT 
 		SC.CDGNS NO_CREDITO,
@@ -1575,8 +1573,8 @@ sql;
         $qry = <<<SQL
             UPDATE PAGOSDIA_APP
             SET 
-                TIPO_NUEVO = CASE WHEN :tipo = TIPO THEN NULL ELSE :tipo END
-                , NUEVO_MONTO = CASE WHEN :nuevo_monto = MONTO THEN NULL ELSE :nuevo_monto END
+                TIPO_NUEVO = CASE WHEN :tipo = TIPO THEN TIPO_NUEVO ELSE :tipo END
+                , NUEVO_MONTO = CASE WHEN TO_NUMBER(:nuevo_monto) = MONTO THEN NUEVO_MONTO ELSE TO_NUMBER(:nuevo_monto) END
                 , COMENTARIOS_INCIDENCIA = :comentario
                 , INCIDENCIA = 1
                 , FACTUALIZA = SYSDATE
