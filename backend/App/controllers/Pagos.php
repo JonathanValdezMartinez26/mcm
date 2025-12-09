@@ -1042,7 +1042,8 @@ html;
                         foreach ($resumen['datos'] as $key => $value_resumen) {
                             $ejecutivo = $value_resumen['EJECUTIVO'];
                             $cdgpe_ejecutivo = $value_resumen['CDGPE'];
-                            $tipo_pago = $etiquetas_pago[$value_resumen['TIPO']] ?? "DESCONOCIDO ({$value_resumen['TIPO']})";
+                            $tipo = $value_resumen['INCIDENCIA'] == 1 && $value_resumen['TIPO_NUEVO'] ? $value_resumen['TIPO_NUEVO'] : $value_resumen['TIPO'];
+                            $tipo_pago = $etiquetas_pago[$tipo] ?? "DESCONOCIDO ({$tipo})";
                             $monto = '$' . number_format($value_resumen['INCIDENCIA'] == 1 ? $value_resumen['NUEVO_MONTO'] : $value_resumen['MONTO'], 2);
 
                             $tabla_resumen .= <<<HTML

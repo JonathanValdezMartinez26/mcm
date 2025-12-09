@@ -1305,8 +1305,8 @@ sql;
                 SUM(
                     CASE 
                         WHEN NVL(PA.ESTATUS_CAJA,0) <> 0 
-                            AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
                             AND PA.ESTATUS = 'A'
+                            AND NVL(PA.TIPO_NUEVO, PA.TIPO) IN ('P','X','Y','O','M','Z','L','S','B','F')
                         THEN 1
                         ELSE 0
                     END
@@ -1323,7 +1323,7 @@ sql;
                 -- Total de pagos por tipo
                 SUM(
                     CASE 
-                        WHEN PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                        WHEN NVL(PA.TIPO_NUEVO, PA.TIPO) IN ('P','X','Y','O','M','Z','L','S','B','F')
                             AND PA.ESTATUS = 'A'
                         THEN 1
                         ELSE 0
@@ -1335,7 +1335,7 @@ sql;
                     CASE 
                         WHEN NVL(PA.ESTATUS_CAJA,0) = 1 
                             AND PA.INCIDENCIA = 0
-                            AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                            AND NVL(PA.TIPO_NUEVO, PA.TIPO) IN ('P','X','Y','O','M','Z','L','S','B','F')
                             AND PA.ESTATUS = 'A'
                         THEN PA.MONTO
                         ELSE 0
@@ -1347,7 +1347,7 @@ sql;
                     CASE 
                         WHEN NVL(PA.ESTATUS_CAJA,0) <> 0
                             AND PA.INCIDENCIA = 1
-                            AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                            AND NVL(PA.TIPO_NUEVO, PA.TIPO) IN ('P','X','Y','O','M','Z','L','S','B','F')
                             AND PA.ESTATUS = 'A'
                         THEN TO_NUMBER(PA.NUEVO_MONTO)
                         ELSE 0
@@ -1358,13 +1358,10 @@ sql;
                 SUM(
                     CASE
                         WHEN PA.ESTATUS = 'A'
-                            AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
+                            AND NVL(PA.TIPO_NUEVO, PA.TIPO) IN ('P','X','Y','O','M','Z','L','S','B','F')
                             AND NVL(PA.ESTATUS_CAJA,0) <> 0
                         THEN
-                            CASE
-                                WHEN PA.INCIDENCIA = 1 THEN TO_NUMBER(PA.NUEVO_MONTO)
-                                ELSE PA.MONTO
-                            END
+                            NVL(PA.NUEVO_MONTO, PA.MONTO)
                         ELSE 0
                     END
                 ) AS TOTAL
@@ -1473,6 +1470,7 @@ sql;
                 ,PA.FACTUALIZA
                 ,PA.MONTO
                 ,PA.TIPO
+                ,PA.TIPO_NUEVO
                 ,PA.INCIDENCIA
                 ,PA.NUEVO_MONTO
                 ,PA.COMENTARIOS_EJECUTIVO
@@ -1485,7 +1483,7 @@ sql;
             WHERE
                 PA.CDGOCPE = :ejecutivo
                 AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
-                AND PA.TIPO IN('P','X','Y','O','M','Z','L','S','B','F')
+                AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
                 AND PRN.CICLO = PA.CICLO
                 AND PRN.CDGCO = :sucursal
                 AND NVL(PA.ESTATUS_CAJA, 0) <> 0
@@ -1504,6 +1502,7 @@ sql;
                 ,PA.FACTUALIZA
                 ,0 AS MONTO
                 ,PA.TIPO
+                ,PA.TIPO_NUEVO
                 ,PA.INCIDENCIA
                 ,PA.NUEVO_MONTO
                 ,PA.COMENTARIOS_EJECUTIVO
