@@ -842,7 +842,7 @@ html;
         $tabla = '';
 
         if (count($_GET) === 1) {
-            $pagos = PagosDao::GetPagosApp();
+            $pagos = PagosDao::GetPagosApp(['sucursal' => $_SESSION['cdgco']]);
 
             if ($pagos['success']) {
                 foreach ($pagos['datos'] as $key => $value) {

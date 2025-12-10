@@ -1275,6 +1275,7 @@ sql;
                   AND PRN.CICLO = PA.CICLO
                   AND PRN.CDGCO = CO.CODIGO
             )
+            FILTRO_SUCURSAL
             GROUP BY NOMBRE
                 ,FECHA_D
                 ,FECHA
@@ -1285,9 +1286,19 @@ sql;
                 ,COMP_BARRA
         SQL;
 
+        if ($_SESSION['perfil'] != 'ADMIN') {
+            $qry = str_replace('FILTRO_SUCURSAL', 'WHERE COD_SUC = :sucursal', $qry);
+            $params = [
+                'sucursal' => $_SESSION['cdgco'] ?? null,
+            ];
+        } else {
+            $qry = str_replace('FILTRO_SUCURSAL', '', $qry);
+            $params = [];
+        }
+
         try {
             $db = new Database();
-            $res = $db->queryAll($qry);
+            $res = $db->queryAll($qry, $params);
             return self::Responde(true, "Pagos obtenidos", $res);
         } catch (\Exception $e) {
             return self::Responde(false, "Error al obtener los pagos", null, $e->getMessage());
