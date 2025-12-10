@@ -1046,7 +1046,6 @@ html;
                             $tipo_pago = $etiquetas_pago[$tipo] ?? "DESCONOCIDO ({$tipo})";
                             $monto_pago = $value_resumen['INCIDENCIA'] == 1 && $value_resumen['NUEVO_MONTO'] ? $value_resumen['NUEVO_MONTO'] : $value_resumen['MONTO'];
                             $monto = '$' . number_format($monto_pago, 2);
-                            // $monto = '$' . number_format($value_resumen['INCIDENCIA'] == 1 ? $value_resumen['NUEVO_MONTO'] : $value_resumen['MONTO'], 2);
 
                             $tabla_resumen .= <<<HTML
                                 <tr>
