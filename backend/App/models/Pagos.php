@@ -1515,7 +1515,7 @@ sql;
             WHERE
                 PA.CDGOCPE = :ejecutivo
                 AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
-                AND PA.TIPO IN('P','X','Y','O','M','Z','L','S','B','F')
+                AND PA.TIPO IN ('P','X','Y','O','M','Z','L','S','B','F')
                 AND PRN.CICLO = PA.CICLO
                 AND PRN.CDGCO = :sucursal
                 AND NVL(PA.ESTATUS_CAJA, 0) = 0
