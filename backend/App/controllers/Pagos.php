@@ -822,6 +822,10 @@ html;
                 $(document).ready(() => {
                     configuraTabla("muestra-cupones")
                     $("#recibo_pagos").click(boton_ticket)
+                    $("#comentario_detalle").on("input", function() {
+                        $("#btn_terminar").prop("disabled", this.value.trim() === "");
+                    });
+
                     var checkAll = 0
 
                     $("#Fecha").on("change", function() {

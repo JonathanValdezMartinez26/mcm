@@ -149,7 +149,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancelar</button>
-                    <button type="submit" name="agregar" class="btn btn-primary" value="enviar"><span class="glyphicon glyphicon-floppy-disk"></span>Terminar</button>
+                    <button type="submit" name="agregar" class="btn btn-primary" value="enviar" id="btn_terminar" disabled><span class="glyphicon glyphicon-floppy-disk"></span>Terminar</button>
                 </div>
             </form>
         </div>
@@ -225,7 +225,6 @@
                         <div class="card card-danger col-md-12" style="padding: 2px">
                             <ul class="nav navbar-nav navbar-right">
                                 <b style="font-size: 20px; color: #173b00;">Total: $<?= number_format($DetalleGlobal['TOTAL'], 2); ?></b>
-
                             </ul>
                         </div>
                     </form>
