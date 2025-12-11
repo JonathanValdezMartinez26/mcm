@@ -1227,7 +1227,7 @@ sql;
               ,SUM(MONTO) AS MONTO_TOTAL
         
             FROM (
-                SELECT TO_CHAR(FECHA, 'DDMMYYYY') AS COMP_BARRA
+                SELECT TO_CHAR(PA.FECHA, 'DDMMYYYY') AS COMP_BARRA
                       ,CO.CODIGO AS COD_SUC
                       ,CO.NOMBRE AS SUCURSAL
                       ,PA.EJECUTIVO AS NOMBRE
