@@ -22,11 +22,11 @@
                             <div class="col-md-3 col-sm-4  tile_stats_count">
                                 <span class="count_top" style="font-size: 15px"><i class="fa fa-user"></i> Terminar Validación</span>
                                 <div class="count" style="font-size: 35px; color: #368a05">
-                                    <? if ($pagos_efectivo) { ?>
+                                    <?php if ($pagos_efectivo > 0) { ?>
                                         <button type="button" id="recibo_pagos" class="btn btn-primary" style="border: 1px solid #338300; background: #40a200;" data-keyboard="false">
-                                            <i class="fa fa-print" style="color: #ffffff"></i> <span style="color: #ffffff"> Imprimir Recibo de Pagos</span>
+                                            <i class="fa fa-print" style="color: #ffffff"></i> <span style="color: #ffffff"> Imprimir Recibo de Pagos </span>
                                         </button>
-                                    <? } ?>
+                                    <?php } ?>
                                 </div>
                             </div>
                         </div>

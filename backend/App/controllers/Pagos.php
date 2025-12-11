@@ -1105,7 +1105,7 @@ html;
         View::set('fin_f', $fin_f);
         View::set('barcode', $barcode);
         View::set('fechaActual', $fechaActual);
-        View::set('pagos_efectivo', $pagos_efectivo > 0);
+        View::set('pagos_efectivo', $pagos_efectivo);
         View::render($vista);
     }
 
