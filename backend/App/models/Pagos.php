@@ -1680,7 +1680,7 @@ sql;
             WHERE
                 PA.CDGOCPE = :ejecutivo
                 AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
-                AND PA.TIPO IN ('P', 'Y', 'M', 'Z', 'S', 'B') -- ('P','X','Y','O','M','Z','L','S','B','F')
+                AND NVL(PA.TIPO_NUEVO, PA.TIPO) IN ('P', 'Y', 'M', 'Z', 'S', 'B') -- ('P','X','Y','O','M','Z','L','S','B','F')
                 AND PRN.CICLO = PA.CICLO
                 AND PRN.CDGCO = :sucursal
                 AND NVL(PA.ESTATUS_CAJA, 0) = 2
@@ -1743,15 +1743,22 @@ sql;
         try {
             $db = new Database();
             $monto = $db->queryOne($qry_monto, $params_monto);
+            if (!$monto) return self::Responde(false, "No se encontraron pagos para el recibo solicitado", null);
+
             $sucursal = $db->queryOne($qry_sucursal, $params_sucursal);
+            if (!$sucursal) return self::Responde(false, "No se encontró la sucursal para el recibo solicitado", null);
+
             $ejecutivo = $db->queryOne($qry_ejecutivo, $params_ejecutivo);
+            if (!$ejecutivo) return self::Responde(false, "No se encontró el ejecutivo para el recibo solicitado", null);
+
             $folio = $db->queryOne($qry_folio, $params_folio);
+            if (!$folio) return self::Responde(false, "No se encontró el folio para el recibo solicitado", null);
 
             $resultado = array_merge($monto, $sucursal, $ejecutivo, $folio);
 
             return self::Responde(true, "Datos para recibo obtenidos", $resultado);
         } catch (\Exception $e) {
-            return self::Responde(false, "Error al obtener los datos para recibo", null, $e->getMessage());
+            return self::Responde(false, "Error al obtener los datos para recibo solicitado", null, $e->getMessage());
         }
     }
 }

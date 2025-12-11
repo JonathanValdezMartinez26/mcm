@@ -842,7 +842,7 @@ html;
         $tabla = '';
 
         if (count($_GET) === 1) {
-            $pagos = PagosDao::GetPagosApp(['sucursal' => $_SESSION['cdgco']]);
+            $pagos = PagosDao::GetPagosApp();
 
             if ($pagos['success']) {
                 foreach ($pagos['datos'] as $key => $value) {
@@ -906,6 +906,12 @@ html;
                 'F' => 'AHORRO ELECTRÓNICO'
             ];
 
+            $etiquetas_situacion = [
+                'E' => 'ENTREGADO',
+                'S' => 'SOLICITADO',
+                'L' => 'LIQUIDADO'
+            ];
+
             $dg = PagosDao::GetPagosAppResumen($_GET);
             $pendientes = false;
             $procesados = false;
@@ -918,6 +924,8 @@ html;
             $pagos = PagosDao::GetPagosAppEjecutivoDetalle($_GET, $pendientes);
 
             if ($pagos['success']) {
+                $pagos_efectivo = 0;
+                $pagos_electronico = 0;
                 foreach ($pagos['datos'] as $key => $value) {
                     $Ejec = $value['EJECUTIVO'];
                     $tipo_pago = $etiquetas_pago[$value['TIPO']] ?? "DESCONOCIDO ({$value['TIPO']})";
@@ -936,6 +944,9 @@ html;
                         $check_visible = '';
                     }
 
+                    if (in_array($value['TIPO'], ['X', 'O', 'L', 'F'])) $pagos_electronico++;
+                    else $pagos_efectivo++;
+
                     $json = json_encode($value);
                     $show_validado = $pendientes ? 'none' : 'block';
                     $acciones = "<button type='button' class='btn btn-success btn-circle' onclick='editar_pago($json);'><i class='fa fa-edit'></i> Editar Pago</button>";
@@ -948,17 +959,7 @@ html;
                         $check_visible = 'display:none;';
                     }
 
-                    if ($value['SITUACION'] == 'E') {
-                        $sit = 'ENTREGADO';
-                    }
-                    if ($value['SITUACION'] == 'S') {
-                        $sit = 'SOLICITADO';
-                    }
-                    if ($value['SITUACION'] == 'L') {
-                        $sit = 'LIQUIDADO';
-                    }
-
-
+                    $sit = $etiquetas_situacion[$value['SITUACION']] ?? '';
 
                     $tabla .= <<<HTML
                         <tr style="padding: 0px !important;">
@@ -1103,6 +1104,7 @@ html;
         View::set('fin_f', $fin_f);
         View::set('barcode', $barcode);
         View::set('fechaActual', $fechaActual);
+        View::set('pagos_efectivo', $pagos_efectivo > 0);
         View::render($vista);
     }
 
@@ -1133,6 +1135,11 @@ html;
 
         $detalle = PagosDao::ReciboPagosApp($_GET);
         if (!$detalle['success']) {
+            echo $detalle['mensaje'] ?? "Error: Ocurrió un error.";
+            exit;
+        }
+
+        if (empty($detalle['datos']) || !is_array($detalle['datos']) || count($detalle['datos']) === 0) {
             echo "Error: No se encontró información para los datos proporcionados.";
             exit;
         }
