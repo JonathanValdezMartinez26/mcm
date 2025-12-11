@@ -944,7 +944,8 @@ html;
                         $check_visible = '';
                     }
 
-                    if (in_array($value['TIPO'], ['X', 'O', 'L', 'F'])) $pagos_electronico++;
+                    $tipo = $value['INCIDENCIA'] == 1 && $value['TIPO_NUEVO'] ? $value['TIPO_NUEVO'] : $value['TIPO'];
+                    if (in_array($tipo, ['X', 'O', 'L', 'F'])) $pagos_electronico++;
                     else $pagos_efectivo++;
 
                     $json = json_encode($value);
