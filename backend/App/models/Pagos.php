@@ -1286,7 +1286,8 @@ sql;
                 ,COMP_BARRA
         SQL;
 
-        if ($_SESSION['perfil'] != 'ADMIN') {
+        // Se añade excepcion temporal para el usuario FLHR que apoya con las pruebas
+        if ($_SESSION['perfil'] != 'ADMIN' && $_SESSION['usuario'] != 'FLHR') {
             $qry = str_replace('FILTRO_SUCURSAL', 'WHERE COD_SUC = :sucursal', $qry);
             $params = [
                 'sucursal' => $_SESSION['cdgco'] ?? null,
