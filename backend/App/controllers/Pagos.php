@@ -2024,18 +2024,18 @@ html;
                     $date_past = strtotime('-4 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 } else {
-                    $date_past = strtotime('-4 days', strtotime($fechaActual));
+                    $date_past = strtotime('-3 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 }
             } else {
                 if ($fue_dia_festivo == 1 && $dia == 2) {
-                    $date_past = strtotime('-5 days', strtotime($fechaActual));
+                    $date_past = strtotime('-4 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 } else if ($fue_dia_festivo == 1 && $dia != 2) {
-                    $date_past = strtotime('-3 days', strtotime($fechaActual));
+                    $date_past = strtotime('-2 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 } else {
-                    $date_past = strtotime('-2 days', strtotime($fechaActual));
+                    $date_past = strtotime('-1 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 }
             }
