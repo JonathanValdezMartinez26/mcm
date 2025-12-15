@@ -2012,30 +2012,30 @@ html;
         if ($horaActual <= $hora_cierre) {
             if ($dia == 1) {
                 if ($fue_dia_festivo == 4) {
-                    $date_past = strtotime('-6 days', strtotime($fechaActual));
+                    $date_past = strtotime('-7 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 } else if ($fue_dia_festivo == 3) {
-                    $date_past = strtotime('-5 days', strtotime($fechaActual));
+                    $date_past = strtotime('-6 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 } else if ($fue_dia_festivo == 2) {
-                    $date_past = strtotime('-4 days', strtotime($fechaActual));
+                    $date_past = strtotime('-5 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 } else if ($fue_dia_festivo == 1) {
-                    $date_past = strtotime('-3 days', strtotime($fechaActual));
+                    $date_past = strtotime('-4 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 } else {
-                    $date_past = strtotime('-3 days', strtotime($fechaActual));
+                    $date_past = strtotime('-4 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 }
             } else {
                 if ($fue_dia_festivo == 1 && $dia == 2) {
-                    $date_past = strtotime('-4 days', strtotime($fechaActual));
+                    $date_past = strtotime('-5 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 } else if ($fue_dia_festivo == 1 && $dia != 2) {
-                    $date_past = strtotime('-2 days', strtotime($fechaActual));
+                    $date_past = strtotime('-3 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 } else {
-                    $date_past = strtotime('-1 days', strtotime($fechaActual));
+                    $date_past = strtotime('-2 days', strtotime($fechaActual));
                     $date_past = date('Y-m-d', $date_past);
                 }
             }
