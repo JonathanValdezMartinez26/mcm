@@ -935,7 +935,7 @@ html;
                     $secuencia = $value['SECUENCIA'];
                     $selected = $value['ESTATUS_CAJA'] == 1 ? 'checked' : '';
                     $lbl_tipo = $value['TIPO_NUEVO'] ? '<div><del>' . $tipo_pago . '</del></div><div"><b>' . $nuevo_tipo_pago . '</b></div>' : '<div"><b>' . $tipo_pago . '</b></div>';
-                    $campo = $value['NUEVO_MONTO'] ? '<div><del>$' . $monto . '</del></div> <div style="font-size: 20px!important;"> $' . $nuevo_monto . '</div>' : '<div style="font-size: 20px!important;">$' . $monto . '</div>';
+                    $campo = !is_null($value['NUEVO_MONTO']) ? '<div><del>$' . $monto . '</del></div> <div style="font-size: 20px!important;"> $' . $nuevo_monto . '</div>' : '<div style="font-size: 20px!important;">$' . $monto . '</div>';
                     $color_celda = "background-color: #FFC733 !important;";
                     $check_visible = 'display:none;';
 
@@ -1050,7 +1050,7 @@ html;
                             $cdgpe_ejecutivo = $value_resumen['CDGPE'];
                             $tipo = $value_resumen['INCIDENCIA'] == 1 && $value_resumen['TIPO_NUEVO'] ? $value_resumen['TIPO_NUEVO'] : $value_resumen['TIPO'];
                             $tipo_pago = $etiquetas_pago[$tipo] ?? "DESCONOCIDO ({$tipo})";
-                            $monto_pago = $value_resumen['INCIDENCIA'] == 1 && $value_resumen['NUEVO_MONTO'] ? $value_resumen['NUEVO_MONTO'] : $value_resumen['MONTO'];
+                            $monto_pago = $value_resumen['INCIDENCIA'] == 1 && !is_null($value_resumen['NUEVO_MONTO']) ? $value_resumen['NUEVO_MONTO'] : $value_resumen['MONTO'];
                             $monto = '$' . number_format($monto_pago, 2);
 
                             $tabla_resumen .= <<<HTML

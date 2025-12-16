@@ -1670,7 +1670,7 @@ sql;
                 TO_CHAR(TRUNC(FAPLICACION), 'DD/MM/YYYY') AS APLICACION,
                 SUM(
                     CASE 
-                        WHEN PA.NUEVO_MONTO IS NOT NULL AND PA.NUEVO_MONTO > 0 
+                        WHEN PA.NUEVO_MONTO IS NOT NULL
                             THEN PA.NUEVO_MONTO 
                             ELSE PA.MONTO 
                     END
