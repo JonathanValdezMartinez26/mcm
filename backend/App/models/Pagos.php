@@ -1216,7 +1216,6 @@ sql;
               ,NOMBRE
               ,FECHA_D
               ,FECHA
-              ,FECHA_REGISTRO
               ,CDGOCPE
               
               -- 🔥 TOTALES
@@ -1231,12 +1230,9 @@ sql;
                       ,CO.CODIGO AS COD_SUC
                       ,CO.NOMBRE AS SUCURSAL
                       ,PA.EJECUTIVO AS NOMBRE
-        
                       ,TO_CHAR(PA.FECHA, 'DAY', 'NLS_DATE_LANGUAGE=SPANISH') 
                            || '- ' || TO_CHAR(PA.FECHA, 'DD-MON-YYYY') AS FECHA_D
-        
                       ,TO_CHAR(PA.FECHA, 'DD-MM-YYYY') AS FECHA
-                      ,TO_CHAR(PA.FREGISTRO) AS FECHA_REGISTRO
         
                       -- PAGOS (todos los tipos)
                       ,DECODE(PA.TIPO, 'P', MONTO, 0) AS PAGOS
@@ -1266,7 +1262,6 @@ sql;
         
                       ,PA.MONTO
                       ,PA.CDGOCPE
-        
                 FROM PAGOSDIA_APP PA
                      INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
                      INNER JOIN CO  ON CO.CODIGO = PRN.CDGCO
@@ -1280,7 +1275,6 @@ sql;
                 ,FECHA_D
                 ,FECHA
                 ,CDGOCPE
-                ,FECHA_REGISTRO
                 ,COD_SUC
                 ,SUCURSAL
                 ,COMP_BARRA
@@ -1415,7 +1409,6 @@ sql;
                 ,PA.CICLO
                 ,PA.CDGOCPE
                 ,PA.EJECUTIVO
-                ,PA.FREGISTRO
                 ,PA.CDGPE
                 ,PA.ESTATUS
                 ,PA.FACTUALIZA
@@ -1428,6 +1421,7 @@ sql;
                 ,PA.COMENTARIOS_INCIDENCIA
                 ,PA.ESTATUS_CAJA
                 ,TO_CHAR(PA.FREGISTRO, 'DD/MM/YYYY HH24:MI:SS') AS FREGISTRO
+                ,TO_CHAR(PA.FREGISTRO_APP, 'DD/MM/YYYY HH24:MI:SS') AS FREGISTRO_APP
                 ,PRN.SITUACION
                 ,CASE NVL(PA.ESTATUS_CAJA, 0)
                     WHEN '0' THEN 'PENDIENTE'

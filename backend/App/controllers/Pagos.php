@@ -1026,7 +1026,7 @@ html;
                             </td>
                     
                             <td style="padding: 10px !important; color: #000 !important; text-align: center; $color_celda">
-                                {$value['FREGISTRO']}
+                                {$value['FREGISTRO_APP']}
                             </td>
 
                             <td>
