@@ -814,7 +814,9 @@ html;
                         if (!respuesta.success) return showError(respuesta.message)
 
                         showSuccess("Corte registrado exitosamente").then(() => {
-                            location.reload()
+                            const url = new URL(window.location.href);
+                            url.searchParams.set('imprimir', '1');
+                            window.location.href = url.toString();
                         })
                     })
                 }
@@ -921,7 +923,7 @@ html;
                 $procesados = $detalleGlobal['TOTAL_PROCESADOS'] == $detalleGlobal['TOTAL_PAGOS'] ? true : false;
             }
 
-            $pagos = PagosDao::GetPagosAppEjecutivoDetalle($_GET, $pendientes);
+            $pagos = PagosDao::GetPagosAppEjecutivoDetalle($_GET);
 
             if ($pagos['success']) {
                 $pagos_efectivo = 0;

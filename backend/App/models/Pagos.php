@@ -1209,7 +1209,7 @@ sql;
     public static function GetPagosApp()
     {
         $qry = <<<SQL
-            SELECT (COD_SUC || COUNT(NOMBRE) || COMP_BARRA || CAST(SUM(MONTO) AS INTEGER)) AS BARRAS
+            SELECT (COD_SUC || '{$_SESSION['usuario']}' || COMP_BARRA) AS BARRAS
               ,COD_SUC
               ,SUCURSAL
               ,COUNT(NOMBRE) AS NUM_PAGOS
@@ -1226,7 +1226,7 @@ sql;
               ,SUM(MONTO) AS MONTO_TOTAL
         
             FROM (
-                SELECT TO_CHAR(PA.FECHA, 'DDMMYYYY') AS COMP_BARRA
+                SELECT TO_CHAR(SYSDATE, 'DDMMYYYYHH24MISS') AS COMP_BARRA
                       ,CO.CODIGO AS COD_SUC
                       ,CO.NOMBRE AS SUCURSAL
                       ,PA.EJECUTIVO AS NOMBRE
@@ -1381,6 +1381,7 @@ sql;
                 AND PRN.CICLO = PA.CICLO
                 AND PRN.CDGCO = :sucursal
                 AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
+                AND PA.FOLIO_ENTREGA IMPRIMIR
         SQL;
 
         $params = [
@@ -1388,6 +1389,13 @@ sql;
             'fecha' => $datos['fecha'] ?? null,
             'sucursal' => $datos['sucursal'] ?? null,
         ];
+
+        if (isset($datos['imprimir'])) {
+            $qry = str_replace('IMPRIMIR', '= :folio_entrega', $qry);
+            $params['folio_entrega'] = $datos['barcode'] ?? null;
+        } else {
+            $qry = str_replace('IMPRIMIR', 'IS NULL', $qry);
+        }
 
         try {
             $db = new Database();
@@ -1398,7 +1406,7 @@ sql;
         }
     }
 
-    public static function GetPagosAppEjecutivoDetalle($datos, $pendientes)
+    public static function GetPagosAppEjecutivoDetalle($datos)
     {
         $qry = <<<SQL
             SELECT
@@ -1438,6 +1446,7 @@ sql;
                 AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
                 AND PRN.CICLO = PA.CICLO
                 AND PRN.CDGCO = :sucursal
+                AND PA.FOLIO_ENTREGA IMPRIMIR
             ORDER BY
                 DECODE(PA.TIPO, 'P', 1, 'M', 2, 'G', 3, 'D', 4, 'R', 5) ASC, PA.FREGISTRO
         SQL;
@@ -1448,7 +1457,12 @@ sql;
             'sucursal' => $datos['sucursal'] ?? null,
         ];
 
-        $qry = str_replace('PENDIENTES', $pendientes ? '=' : '<>', $qry);
+        if (isset($datos['imprimir'])) {
+            $qry = str_replace('IMPRIMIR', '= :folio_entrega', $qry);
+            $params['folio_entrega'] = $datos['barcode'] ?? null;
+        } else {
+            $qry = str_replace('IMPRIMIR', 'IS NULL', $qry);
+        }
 
         try {
             $db = new Database();
@@ -1493,6 +1507,7 @@ sql;
                 AND PRN.CICLO = PA.CICLO
                 AND PRN.CDGCO = :sucursal
                 AND NVL(PA.ESTATUS_CAJA, 0) <> 0
+                AND PA.FOLIO_ENTREGA IS NULL
             UNION
             SELECT
                 PA.SECUENCIA
@@ -1525,6 +1540,7 @@ sql;
                 AND PRN.CICLO = PA.CICLO
                 AND PRN.CDGCO = :sucursal
                 AND NVL(PA.ESTATUS_CAJA, 0) = 0
+                AND PA.FOLIO_ENTREGA IS NULL
         SQL;
 
         $params = [
@@ -1622,6 +1638,7 @@ sql;
             SET  ESTATUS_CAJA = 2
                 , FPROCESAPAGO = SYSDATE
                 , FAPLICACION = TO_DATE(:fecha_aplicacion, 'YYYY-MM-DD')
+                , FOLIO_ENTREGA = :barcode
             WHERE
                 TRUNC(FECHA) = TO_DATE(:fecha, 'DD/MM/YYYY')
                 AND CDGNS = :grupo
@@ -1645,7 +1662,8 @@ sql;
                     'grupo' => $pago['grupo'],
                     'ciclo' => $pago['ciclo'],
                     'secuencia' => $pago['secuencia'],
-                    'fecha_aplicacion' => $datos['fechaAplicacion']
+                    'fecha_aplicacion' => $datos['fechaAplicacion'],
+                    'barcode' => $datos['barcode'],
                 ];
             }
 
@@ -1668,26 +1686,24 @@ sql;
                             THEN PA.NUEVO_MONTO 
                             ELSE PA.MONTO 
                     END
-                ) AS MONTO
+                ) AS MONTO,
+                PA.FOLIO_ENTREGA
             FROM
                 PAGOSDIA_APP PA
                 INNER JOIN PRN ON PRN.CDGNS = PA.CDGNS
             WHERE
-                PA.CDGOCPE = :ejecutivo
-                AND TRUNC(PA.FECHA) = TO_DATE(:fecha, 'DD-MM-YYYY')
+                PA.FOLIO_ENTREGA = :folio_entrega
                 AND NVL(PA.TIPO_NUEVO, PA.TIPO) IN ('P', 'Y', 'M', 'Z', 'S', 'B') -- ('P','X','Y','O','M','Z','L','S','B','F')
                 AND PRN.CICLO = PA.CICLO
-                AND PRN.CDGCO = :sucursal
                 AND NVL(PA.ESTATUS_CAJA, 0) = 2
             GROUP BY
                 TO_CHAR(TRUNC(FECHA), 'DD/MM/YYYY')
                 , TO_CHAR(TRUNC(FAPLICACION), 'DD/MM/YYYY')
+                , PA.FOLIO_ENTREGA
         SQL;
 
         $params_monto = [
-            'ejecutivo' => $datos['cdgpe'] ?? null,
-            'fecha' => $datos['fecha'] ?? null,
-            'sucursal' => $datos['sucursal'] ?? null,
+            'folio_entrega' => $datos['barcode'] ?? null,
         ];
 
         $qry_sucursal = <<<SQL
