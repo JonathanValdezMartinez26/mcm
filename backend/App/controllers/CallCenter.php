@@ -646,7 +646,7 @@ class CallCenter extends Controller
 
                 View::set('Administracion', $AdministracionOne);
 
-                if ($AdministracionOne[0]['CREDITO_ADICIONAL'] === '1') {
+                if ($AdministracionOne[0]['CREDITO_ADICIONAL'] == '1') {
                     View::set('visible', 'none');
                 } else {
                     View::set('visible', 'block');
@@ -656,19 +656,15 @@ class CallCenter extends Controller
                 View::set('cdgpe', $this->__usuario);
                 View::set('pendientes', 'Mis ');
 
-                if ($act == 'N')
-                {
+                if ($act == 'N') {
 
-                    if($AdministracionOne[0]['CREDITO_ADICIONAL'] == 1)
-                    {
-
-                    }
-                    else {
+                    if ($AdministracionOne[0]['CREDITO_ADICIONAL'] == 1) {
+                        View::render("callcenter_cliente_all_mas");
+                    } else {
                         View::render("callcenter_cliente_all_disable");
                     }
-                }
-                else {
-                        View::render("callcenter_cliente_all");
+                } else {
+                    View::render("callcenter_cliente_all");
                 }
             }
         } else {
@@ -701,17 +697,13 @@ class CallCenter extends Controller
                 }
 
                 if ($value['ESTATUS_AV'] == 'PENDIENTE') {
-                    if($value['CREDITO_ADICIONAL'])
-                    {
+                    if ($value['CREDITO_ADICIONAL']) {
                         $color_a = '';
                         $icon_a = '';
-                    }
-                    else
-                    {
+                    } else {
                         $color_a = 'primary';
                         $icon_a = 'fa-frown-o';
                     }
-
                 } else if ($value['ESTATUS_AV'] == 'REGISTRO INCOMPLETO') {
                     $color_a = 'warning';
                     $icon_a = 'fa-clock-o';
@@ -802,15 +794,12 @@ class CallCenter extends Controller
                     $recomendado = '<div><b>CAMPAÑA ACTIVA</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #6a0013"><span class="fa fa-yelp"> </span> </span></div><b><em>RECOMIENDA MÁS Y PAGA MENOS <em></em></b><hr>';
                 }
 
-                if($value['CREDITO_ADICIONAL'] == 1)
-                {
+                if ($value['CREDITO_ADICIONAL'] == 1) {
                     $adicional = '<div><b>TIPO:</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #6a0013"><span class="fa fa-yelp"> </span> </span></div><b><em>MÁS POR TI (ADICIONAL) <em></em></b><hr>';
-                    $aval_r= 'NO APLICA';
-                }
-                else
-                {
+                    $aval_r = 'NO APLICA';
+                } else {
                     $adicional = '<div><b>TIPO:</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #6a0013"><span class="fa fa-yelp"> </span> </span></div><b><em>CRÉDITO TRADICIONAL <em></em></b><hr>';
-                    $aval_r= $value['ESTATUS_AV'];
+                    $aval_r = $value['ESTATUS_AV'];
                 }
 
                 $tabla .= <<<HTML
@@ -942,27 +931,20 @@ html;
                         <br>
                         <span></span> COMENTARIOS SUCURSAL: <br><b>{$value['COMENTARIO_FINAL']}</b>
 html;
-                    if($value['CICLOR'] == '')
-                    {
+                    if ($value['CICLOR'] == '') {
                         $ciclo = $value['CICLO'];
-                    }
-                    else
-                    {
+                    } else {
                         $ciclo = <<<html
                         <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado</span>
 html;
                     }
-
                 }
 
                 $monto = number_format($value['MONTO'], 2);
-                if($value['CREDITO_ADICIONAL'] == 1)
-                {
+                if ($value['CREDITO_ADICIONAL'] == 1) {
                     $valor_c = 'Más Por Ti (Adicional)';
                     $aval_r = 'NO APLICA';
-                }
-                else
-                {
+                } else {
                     $valor_c = 'Tradicional';
                     $aval_r = $value['ESTATUS_AV'];
                 }
@@ -3187,13 +3169,10 @@ html;
                     $recomendado = '';
                 }
 
-                if($value['CICLOR'] == '')
-                {
+                if ($value['CICLOR'] == '') {
                     $ciclo_r = '';
                     $cicloi = $value['CICLO'];;
-                }
-                else
-                {
+                } else {
                     $ciclo_r = <<<html
                         <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado</span>
 html;
@@ -3371,13 +3350,10 @@ html;
 html;
                 }
 
-                if($value['CICLOR'] == '')
-                {
+                if ($value['CICLOR'] == '') {
                     $ciclo_r = '';
                     $cicloi = $value['CICLO'];;
-                }
-                else
-                {
+                } else {
                     $ciclo_r = <<<html
                         <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado</span>
 html;
@@ -3623,13 +3599,10 @@ html;
                     $recomendado = '';
                 }
 
-                if($value['CICLOR'] == '')
-                {
+                if ($value['CICLOR'] == '') {
                     $ciclo_r = '';
                     $cicloi = $value['CICLO'];;
-                }
-                else
-                {
+                } else {
                     $ciclo_r = <<<html
                         <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado</span>
 html;
@@ -3792,13 +3765,10 @@ html;
                     HTML;
                 }
 
-                if($value['CICLOR'] == '')
-                {
+                if ($value['CICLOR'] == '') {
                     $ciclo_r = '';
                     $cicloi = $value['CICLO'];;
-                }
-                else
-                {
+                } else {
                     $ciclo_r = <<<html
                         <span  class="label label-warning" style="color: #0D0A0A; font-sice;  font-size: 12px;"> Rechazado</span>
 html;
