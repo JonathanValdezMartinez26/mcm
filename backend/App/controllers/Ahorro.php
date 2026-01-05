@@ -5755,24 +5755,24 @@ html;
 
                 const resultadoOK = (datos) => {
                     datos = datos.map((dato) => {
-                        dato.CANTIDAD_SOLICITADA = "$ " + formatoMoneda(dato.CANTIDAD_SOLICITADA)
+                        dato.CANT_SOLICITADA = "$ " + formatoMoneda(dato.CANT_SOLICITADA)
                         const acciones = [
                             {
                                 texto: "Aprobar",
                                 icono: "fa-check text-success",
-                                funcion: "aprobarSolicitud(" + dato.ID_RETIRO + ")"
+                                funcion: "aprobarSolicitud(" + dato.ID + ")"
                             },
                             {
                                 texto: "Rechazar",
                                 icono: "fa-times text-danger",
-                                funcion: "rechazarSolicitud(" + dato.ID_RETIRO + ")"
+                                funcion:  "capturarComentario(" + dato.ID + ")"
                             }
                         ]
 
                         return [
-                            dato.ID_RETIRO,
+                            dato.ID,
                             dato.CDGNS,
-                            dato.CANTIDAD_SOLICITADA,
+                            dato.CANT_SOLICITADA,
                             dato.FECHA_SOLICITUD,
                             dato.FECHA_ENTREGA_SOLICITADA,
                             dato.CDGPE_ADMINISTRADORA,
@@ -5826,9 +5826,20 @@ html;
                     )
                 }
 
-                const rechazarSolicitud = (retiro) => {
+                const capturarComentario = (retiro) => {
+                    $("#idRetiroRechazar").val(retiro)
+                    $("#motivoRechazo").val("")
+                    
+                    $("#modalRechazarSolicitud").modal("show")
+                }
+
+                const rechazarSolicitud = () => {
+                    const comentario = $("#motivoRechazo").val().trim()
+                    if (comentario === "") return showError("Debe capturar el motivo para rechazar la solicitud de retiro.")
+
                     const params = { 
-                        retiro,
+                        retiro: $("#idRetiroRechazar").val(),
+                        comentario,
                         usuario: "{$_SESSION['usuario']}"
                      }
 
@@ -5839,7 +5850,7 @@ html;
                                 params,
                                 (resultado) => {
                                     if (!resultado.success) return showError(resultado.mensaje)
-
+                                    $("#modalRechazarSolicitud").modal("hide")
                                     showSuccess("La solicitud de retiro ha sido rechazada.")
                                     .then(getRetiros)
                                 }
@@ -5851,6 +5862,8 @@ html;
                 $(document).ready(() => {
                     configuraTabla(idTabla)
                     getRetiros()
+                    
+                    $("#btnRechazarSolicitud").click(rechazarSolicitud)
                 })
             </script>
         HTML;
@@ -5906,26 +5919,26 @@ html;
 
                 const resultadoOK = (datos) => {
                     datos = datos.map((dato) => {
-                        dato.CANTIDAD_SOLICITADA = "$ " + formatoMoneda(dato.CANTIDAD_SOLICITADA)
+                        dato.CANT_SOLICITADA = "$ " + formatoMoneda(dato.CANT_SOLICITADA)
                         const acciones = [
                             {
                                 texto: "Cancelar",
                                 icono: "fa-ban text-danger",
-                                funcion: "capturarComentario(" + dato.ID_RETIRO + ")"
+                                funcion: "capturarComentario(" + dato.ID + ")"
                             }
                         ]
 
 
 
                         return [
-                            dato.ID_RETIRO,
+                            dato.ID,
                             dato.CDGNS,
-                            dato.CANTIDAD_SOLICITADA,
+                            dato.CANT_SOLICITADA,
                             dato.FECHA_SOLICITUD,
                             dato.FECHA_ENTREGA_SOLICITADA,
                             dato.CDGPE_ADMINISTRADORA,
-                            getBadge(dato.ESTATUS_TESORERIA),
-                            menuAcciones(acciones)
+                            getBadge(dato.ESTATUS_ADMINISTRADORA, dato.ESTATUS_TESORERIA),
+                            dato.ESTATUS_ADMINISTRADORA === "P" && !dato.ESTATUS_TESORERIA ? menuAcciones(acciones) : ""
                         ]
                     })
 
@@ -5933,26 +5946,28 @@ html;
                     $(".resultado").toggleClass("conDatos", true)
                 }
 
-                const getBadge = (estatus) => {
-                    let clase = "default"
-                    let texto = "PENDIENTE"
-
-                    switch (estatus) {
-                        case "A":
-                            clase = "success"
-                            texto = "APROBADO"
-                            break;
-                        case "R":
-                            clase = "warning"
-                            texto = "RECHAZADO"
-                            break;
-                        case "C":
-                            clase = "danger"
-                            texto = "CANCELADO"
-                            break;
+                const getBadge = (estatusAdmin, estatusTesoreria) => {
+                    const badges = {
+                        P: {
+                            clase: "default",
+                            texto: "PENDIENTE",
+                        },
+                        A: {
+                            clase: "success",
+                            texto: "APROBADO",
+                        },
+                        R: {
+                            clase: "danger",
+                            texto: "RECHAZADO POR TESORERÍA",
+                        },
+                        C: {
+                            clase: "warning",
+                            texto: "CANCELADO POR GERENTE",
+                        }
                     }
 
-                    return '<span class="badge alert-' + clase + '">' + texto + '</span>'
+                    const {clase, texto} = estatusAdmin === "C" ? badges.C : badges[estatusTesoreria] || badges.P
+                    return "<span class='badge alert-" + clase + "'>" + texto + "</span>"
                 }
 
                 const menuAcciones = (opciones) => {

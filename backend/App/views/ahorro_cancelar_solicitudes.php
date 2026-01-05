@@ -37,7 +37,7 @@
                             <th>Fecha de solicitud</th>
                             <th>Fecha de entrega solicitada</th>
                             <th>Administradora</th>
-                            <th>Estatus tesorería</th>
+                            <th>Estatus</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>

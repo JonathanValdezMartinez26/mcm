@@ -120,8 +120,8 @@ sql;
         $qry = <<<SQL
             SELECT 
                 PAGOSDIA,
-                RETIROS_AHORRO_SIMPLE,
-                PAGOSDIA - RETIROS_AHORRO_SIMPLE AS TOTAL,
+                RETIROS_AHORRO,
+                PAGOSDIA - RETIROS_AHORRO AS TOTAL,
                 FECHA_APERTURA_AHORRO
             FROM (
                 SELECT 
@@ -133,8 +133,8 @@ sql;
                         
                     -- Total de retiros de ahorro simple
                     (SELECT NVL(SUM(CANTIDAD_AUTORIZADA), 0)
-                    FROM RETIROS_AHORRO_SIMPLE
-                    WHERE CDGNS = :credito) AS RETIROS_AHORRO_SIMPLE,
+                    FROM RETIROS_AHORRO
+                    WHERE CDGNS = :credito) AS RETIROS_AHORRO,
                     
                     -- Fecha del primer registro tipo B o F (inicio del ahorro)
                     (SELECT MIN(FECHA)
@@ -162,16 +162,17 @@ sql;
     {
         $qry = <<<SQL
             SELECT 
-                ID_RETIRO
+                ID
                 , CDGNS
-                , CANTIDAD_SOLICITADA
+                , CANT_SOLICITADA
                 , TO_CHAR(FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
                 , TO_CHAR(FECHA_ENTREGA_SOLICITADA, 'DD/MM/YYYY') AS FECHA_ENTREGA_SOLICITADA
                 , CDGPE_ADMINISTRADORA
             FROM 
-                RETIROS_AHORRO_SIMPLE
+                RETIROS_AHORRO
             WHERE 
                 ESTATUS_TESORERIA IS NULL
+                ANd ESTATUS_ADMINISTRADORA = 'P'
             ORDER BY 
                 FECHA_SOLICITUD ASC
         SQL;
@@ -189,13 +190,14 @@ sql;
     {
         $qry = <<<SQL
             UPDATE 
-                RETIROS_AHORRO_SIMPLE
+                RETIROS_AHORRO
             SET 
                 ESTATUS_TESORERIA = 'A'
+                , CANT_AUTORIZADA = CANT_SOLICITADA
                 , FECHA_PROCESA_TESORERIA = SYSDATE
                 , CDGPE_TESORERIA = :cdgpe
             WHERE 
-                ID_RETIRO = :retiro
+                ID = :retiro
         SQL;
 
         $params = [
@@ -216,18 +218,20 @@ sql;
     {
         $qry = <<<SQL
             UPDATE 
-                RETIROS_AHORRO_SIMPLE
+                RETIROS_AHORRO
             SET 
                 ESTATUS_TESORERIA = 'R'
+                , OBSERVACIONES_TESORERIA = :comentario
                 , FECHA_PROCESA_TESORERIA = SYSDATE
                 , CDGPE_TESORERIA = :cdgpe
             WHERE 
-                ID_RETIRO = :retiro
+                ID = :retiro
         SQL;
 
         $params = [
             ':retiro' => $datos['retiro'],
-            ':cdgpe' => $datos['usuario']
+            ':cdgpe' => $datos['usuario'],
+            ':comentario' => $datos['comentario']
         ];
 
         try {
@@ -243,15 +247,16 @@ sql;
     {
         $qry = <<<SQL
             SELECT 
-                ID_RETIRO
+                ID
                 , CDGNS
-                , CANTIDAD_SOLICITADA
+                , CANT_SOLICITADA
                 , TO_CHAR(FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
                 , TO_CHAR(FECHA_ENTREGA_SOLICITADA, 'DD/MM/YYYY') AS FECHA_ENTREGA_SOLICITADA
                 , CDGPE_ADMINISTRADORA
+                , ESTATUS_ADMINISTRADORA
                 , ESTATUS_TESORERIA
             FROM 
-                RETIROS_AHORRO_SIMPLE
+                RETIROS_AHORRO
             WHERE 
                 FECHA_SOLICITUD >= TO_DATE(:fechaI, 'YYYY-MM-DD')
                 AND FECHA_SOLICITUD <= TO_DATE(:fechaF, 'YYYY-MM-DD')
@@ -277,14 +282,14 @@ sql;
     {
         $qry = <<<SQL
             UPDATE 
-                RETIROS_AHORRO_SIMPLE
+                RETIROS_AHORRO
             SET 
-                ESTATUS_TESORERIA = 'C'
-                , FECHA_PROCESA_TESORERIA = SYSDATE
+                ESTATUS_ADMINISTRADORA = 'C'
+                , FECHA_CANCELACION = SYSDATE
                 , MOTIVO_CANCELACION = :comentario
-                , CDGPE_CANCELA = :cdgpe
+                , CDGPE_CANCELACION = :cdgpe
             WHERE 
-                ID_RETIRO = :retiro
+                ID = :retiro
         SQL;
 
         $params = [

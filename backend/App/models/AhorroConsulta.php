@@ -13,32 +13,33 @@ class AhorroConsulta extends Model
     {
         $qry = <<<SQL
             SELECT 
-                ID_RETIRO
+                ID
                 ,CDGNS
-                ,CANTIDAD_SOLICITADA
-                ,NVL(CANTIDAD_AUTORIZADA, 0) AS CANTIDAD_AUTORIZADA
+                ,CANT_SOLICITADA
+                ,NVL(CANT_AUTORIZADA, 0) AS CANT_AUTORIZADA
                 ,TO_CHAR(FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
                 ,TO_CHAR(FECHA_ENTREGA_SOLICITADA, 'DD/MM/YYYY') AS FECHA_ENTREGA_SOLICITADA
                 ,OBSERVACIONES_ADMINISTRADORA
                 ,ESTATUS_ADMINISTRADORA
                 ,CDGPE_ADMINISTRADORA
                 ,CDGPE_SOPORTE
-                ,FECHA_PROCESA_TESORERIA
+                ,TO_CHAR(FECHA_PROCESA_TESORERIA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_PROCESA_TESORERIA 
                 ,ESTATUS_TESORERIA
                 ,OBSERVACIONES_TESORERIA
                 ,CDGPE_TESORERIA
-                ,FECHA_PROCESA_CALL_CENTER
+                ,TO_CHAR(FECHA_CALL_CENTER, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CALL_CENTER
                 ,ESTATUS_CALL_CENTER
                 ,OBSERVACIONES_CALL_CENTER
                 ,CDGPE_CALL_CENTER
-                ,FECHA_CREACION
+                ,TO_CHAR(FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
+                ,TO_CHAR(FECHA_CANCELACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CANCELACION
             FROM 
-                RETIROS_AHORRO_SIMPLE
+                RETIROS_AHORRO
             WHERE
                 TRUNC(FECHA_CREACION) >= TO_DATE(:fechaI, 'YYYY-MM-DD')
                 AND TRUNC(FECHA_CREACION) <= TO_DATE(:fechaF, 'YYYY-MM-DD')
             ORDER BY 
-                ID_RETIRO DESC
+                ID DESC
         SQL;
 
         $params = [
@@ -59,10 +60,10 @@ class AhorroConsulta extends Model
     {
         $qry = <<<SQL
             SELECT 
-                ID_RETIRO
+                ID
                 ,CDGNS
-                ,CANTIDAD_SOLICITADA
-                ,CANTIDAD_AUTORIZADA
+                ,CANT_SOLICITADA
+                ,NVL(CANT_AUTORIZADA, 0) AS CANT_AUTORIZADA
                 ,TO_CHAR(FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
                 ,TO_CHAR(FECHA_ENTREGA_SOLICITADA, 'DD/MM/YYYY') AS FECHA_ENTREGA_SOLICITADA
                 ,OBSERVACIONES_ADMINISTRADORA
@@ -73,15 +74,15 @@ class AhorroConsulta extends Model
                 ,ESTATUS_TESORERIA
                 ,OBSERVACIONES_TESORERIA
                 ,CDGPE_TESORERIA
-                ,TO_CHAR(FECHA_PROCESA_CALL_CENTER, 'DD/MM/YYYY') AS FECHA_PROCESA_CALL_CENTER
+                ,TO_CHAR(FECHA_CALL_CENTER, 'DD/MM/YYYY') AS FECHA_CALL_CENTER
                 ,ESTATUS_CALL_CENTER
                 ,OBSERVACIONES_CALL_CENTER
                 ,CDGPE_CALL_CENTER
-                ,TO_CHAR(FECHA_CREACION, 'DD/MM/YYYY') AS FECHA_CREACION
+                ,TO_CHAR(FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
             FROM 
-                RETIROS_AHORRO_SIMPLE
+                RETIROS_AHORRO
             WHERE 
-                ID_RETIRO = :id
+                ID = :id
         SQL;
 
         $params = [':id' => $id];
@@ -104,22 +105,15 @@ class AhorroConsulta extends Model
     {
         $qry = <<<SQL
             SELECT
-                NVL(pd_total, 0) - NVL(ra_total, 0) AS SALDO_DISPONIBLE
+                CDGNS,
+                MAX(TO_NUMBER(CICLO)) AS CICLO_ACTUAL,
+                FN_GET_AHORRO(:cdgns) AS SALDO_ACTUAL
             FROM
-                (SELECT
-                    SUM(MONTO) AS pd_total
-                FROM
-                    PAGOSDIA
-                WHERE
-                    ESTATUS = 'A'
-                    AND CDGNS = :cdgns) pd,
-                (SELECT
-                    SUM(CANTIDAD_SOLICITADA) AS ra_total
-                FROM
-                    RETIROS_AHORRO_SIMPLE
-                WHERE
-                    ESTATUS_CALL_CENTER = 1
-                    AND CDGNS = :cdgns) ra
+                PRN
+            WHERE
+                CDGNS = :cdgns
+            GROUP BY
+                CDGNS
         SQL;
 
         $params = [
@@ -141,30 +135,33 @@ class AhorroConsulta extends Model
     public static function insertRetiro($datos)
     {
         $qry = <<<SQL
-                INSERT INTO RETIROS_AHORRO_SIMPLE (
-                    CDGNS
-                    ,CANTIDAD_SOLICITADA
-                    ,FECHA_SOLICITUD
-                    ,FECHA_ENTREGA_SOLICITADA
-                    ,OBSERVACIONES_ADMINISTRADORA
-                    ,CDGPE_ADMINISTRADORA
-                    ,FOTO
-                    ,FECHA_CREACION
-                ) VALUES (
-                    :cdgns
-                    ,:cantidad_solicitada
-                    ,TO_DATE(:fecha_solicitud, 'YYYY-MM-DD')
-                    ,TO_DATE(:fecha_entrega_solicitada, 'YYYY-MM-DD')
-                    ,:observaciones_administradora
-                    ,:cdgpe_administradora
-                    , EMPTY_BLOB()
-                    ,SYSDATE
-                )
-                RETURNING FOTO INTO :foto
-            SQL;
+            INSERT INTO RETIROS_AHORRO (
+                CDGNS
+                , CICLO
+                ,CANT_SOLICITADA
+                ,FECHA_SOLICITUD
+                ,FECHA_ENTREGA_SOLICITADA
+                ,OBSERVACIONES_ADMINISTRADORA
+                ,CDGPE_ADMINISTRADORA
+                ,FOTO
+                ,FECHA_CREACION
+            ) VALUES (
+                :cdgns
+                ,:ciclo
+                ,:cantidad_solicitada
+                ,TO_DATE(:fecha_solicitud, 'YYYY-MM-DD')
+                ,TO_DATE(:fecha_entrega_solicitada, 'YYYY-MM-DD')
+                ,:observaciones_administradora
+                ,:cdgpe_administradora
+                , EMPTY_BLOB()
+                ,SYSDATE
+            )
+            RETURNING FOTO INTO :foto
+        SQL;
 
         $params = [
             'cdgns' => $datos['cdgns'],
+            'ciclo' => $datos['ciclo'],
             'cantidad_solicitada' => $datos['cantidad_solicitada'],
             'fecha_solicitud' => $datos['fecha_solicitud'],
             'fecha_entrega_solicitada' => $datos['fecha_entrega_solicitada'],
@@ -188,9 +185,9 @@ class AhorroConsulta extends Model
             SELECT 
                 FOTO
             FROM 
-                RETIROS_AHORRO_SIMPLE
+                RETIROS_AHORRO
             WHERE 
-                ID_RETIRO = :id
+                ID = :id
         SQL;
 
         $params = [':id' => $datos['id']];

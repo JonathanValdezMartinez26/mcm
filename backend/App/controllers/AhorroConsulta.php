@@ -51,17 +51,61 @@ class AhorroConsulta extends Controller
                 const resultadoOK = (datos) => {
                     datos = datos.map((item) => {
                         return [
-                            item.ID_RETIRO,
+                            item.ID,
                             item.CDGNS,
-                            "$ " + formatoMoneda(item.CANTIDAD_SOLICITADA),
-                            "$ " + formatoMoneda(item.CANTIDAD_AUTORIZADA),
-                            item.FECHA_SOLICITUD,
-                            '<button class="btn btn-info btn-sm" onclick="verDetalle(' + item.ID_RETIRO + ')"><i class="fa fa-eye"></i> Ver detalle</button>'
+                            "$ " + formatoMoneda(item.CANT_SOLICITADA),
+                            "$ " + formatoMoneda(item.CANT_AUTORIZADA),
+                            getFechas(item.FECHA_CREACION, item.FECHA_SOLICITUD, item.FECHA_ENTREGA_SOLICITADA, item.FECHA_PROCESA_TESORERIA, item.FECHA_CANCELACION),
+                            getBadge(item.ESTATUS_ADMINISTRADORA, item.ESTATUS_TESORERIA),
+                            '<button class="btn btn-info btn-sm" onclick="verDetalle(' + item.ID + ')"><i class="fa fa-eye"></i> Ver detalle</button>'
                         ]
                     })
 
                     actualizaDatosTabla(idTabla, datos)
                     $(".resultado").toggleClass("conDatos", true)
+                }
+
+                const getFechas = (fechaCreacion, fechaSolicitud, fechaEntrega, fechaProcesaTesoreria, fechaCancelacion) => {
+                    const titulos = {
+                        "Creación": fechaCreacion,
+                        "Solicitud": fechaSolicitud,
+                        "Entrega Solicitada": fechaEntrega
+                    }
+                    
+                    if (fechaProcesaTesoreria) titulos["Tesorería"] = fechaProcesaTesoreria
+                    if (fechaCancelacion) titulos["Cancelación"] = fechaCancelacion
+                    
+                    let resultado = "<div style='text-align: left;'>"
+                    Object.entries(titulos).forEach(([key, value]) => {
+                        resultado += "<strong>" + key + ":</strong> " + value + "<br/>"
+                    })
+                    resultado += "</div>"
+
+                    return resultado
+                }
+
+                const getBadge = (estatusAdmin, estatusTesoreria) => {
+                    const badges = {
+                        P: {
+                            clase: "default",
+                            texto: "PENDIENTE",
+                        },
+                        A: {
+                            clase: "success",
+                            texto: "APROBADO",
+                        },
+                        R: {
+                            clase: "danger",
+                            texto: "RECHAZADO POR TESORERÍA",
+                        },
+                        C: {
+                            clase: "warning",
+                            texto: "CANCELADO POR GERENTE",
+                        }
+                    }
+
+                    const {clase, texto} = estatusAdmin === "C" ? badges.C : badges[estatusTesoreria] || badges.P
+                    return "<span class='badge alert-" + clase + "'>" + texto + "</span>"
                 }
 
                 const resultadoError = (mensaje) => {
@@ -82,11 +126,11 @@ class AhorroConsulta extends Controller
                         const datos = res.datos;
                         
                         // Llenar el modal con los datos
-                        $("#detalle_id_retiro").val(datos.ID_RETIRO || "");
+                        $("#detalle_id_retiro").val(datos.ID || "");
                         $("#detalle_credito").val(datos.CDGNS || "");
                         $("#detalle_fecha_creacion").val(datos.FECHA_CREACION || "");
-                        $("#detalle_cantidad_solicitada").val("$" + formatoMoneda(datos.CANTIDAD_SOLICITADA || 0));
-                        $("#detalle_cantidad_autorizada").val("$" + formatoMoneda(datos.CANTIDAD_AUTORIZADA || 0));
+                        $("#detalle_cantidad_solicitada").val("$" + formatoMoneda(datos.CANT_SOLICITADA || 0));
+                        $("#detalle_cantidad_autorizada").val("$" + formatoMoneda(datos.CANT_AUTORIZADA || 0));
                         $("#detalle_fecha_solicitud").val(datos.FECHA_SOLICITUD || "");
                         $("#detalle_fecha_entrega_solicitada").val(datos.FECHA_ENTREGA_SOLICITADA || "");
                         $("#detalle_estatus_administradora").val(datos.ESTATUS_ADMINISTRADORA || "");
@@ -155,11 +199,12 @@ class AhorroConsulta extends Controller
                         if (!res.success) return showError(res.mensaje);
                         if (res.datos.length === 0) return showError("No se encontró el crédito especificado.");
                         
-                        const saldo = parseaNumero(res.datos?.SALDO_DISPONIBLE);
+                        const saldo = parseaNumero(res.datos?.SALDO_ACTUAL);
 
                         if (saldo <= 0) return showError("El crédito no tiene saldo disponible para retiro.")
 
                         $("#nueva_cdgns").val(cdgns);
+                        $("#nueva_ciclo").val(res.datos?.CICLO_ACTUAL);
                         $("#saldo_ahorro_disponible").val(saldo);
                         $("#nueva_cantidad_solicitada").prop("disabled", false);
                         $("#nueva_fecha_solicitud").prop("disabled", false);
@@ -193,10 +238,12 @@ class AhorroConsulta extends Controller
                         if (continuar) {
                             const formData = new FormData();
                             formData.append("cdgns", cdgns);
+                            formData.append("ciclo", $("#nueva_ciclo").val());
                             formData.append("cantidad_solicitada", cantidadSolicitada);
                             formData.append("fecha_solicitud", fechaSolicitud);
                             formData.append("fecha_entrega_solicitada", fechaEntrega);
                             formData.append("observaciones_administradora", $("#nueva_observaciones_administradora").val() || "");
+                            formData.append("cdgpe_administradora", "{$_SESSION['usuario']}");
                             
                             if (archivo) formData.append("foto", archivo)
                             

@@ -51,7 +51,8 @@
                             <th>Crédito</th>
                             <th>Cantidad Solicitada</th>
                             <th>Cantidad Autorizada</th>
-                            <th>Fecha Solicitud</th>
+                            <th>Fechas</th>
+                            <th>Estatus</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -87,6 +88,7 @@
                                         <input type="text" class="form-control" id="cdgns_buscar" maxlength="6" placeholder="Ingrese el crédito" required>
                                         <input type="hidden" id="saldo_ahorro_disponible">
                                         <input type="hidden" id="nueva_cdgns">
+                                        <input type="hidden" id="nueva_ciclo">
                                         <button type="button" class="btn btn-primary" id="btnBuscarCredito">
                                             <span class="fa fa-search">&nbsp;</span>Buscar
                                         </button>
