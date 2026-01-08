@@ -29,8 +29,7 @@ class AhorroConsulta extends Model
                 RETIROS_AHORRO RA
                 LEFT JOIN RETIROS_AHORRO_CALLCENTER RAC ON RA.ID = RAC.RETIRO
             WHERE
-                TRUNC(RA.FECHA_CREACION) >= TO_DATE(:fechaI, 'YYYY-MM-DD')
-                AND TRUNC(RA.FECHA_CREACION) <= TO_DATE(:fechaF, 'YYYY-MM-DD')
+                TRUNC(RA.FECHA_CREACION) BETWEEN TO_DATE(:fechaI, 'YYYY-MM-DD') AND TO_DATE(:fechaF, 'YYYY-MM-DD')
             ORDER BY 
                 RA.ID DESC
         SQL;
@@ -61,6 +60,7 @@ class AhorroConsulta extends Model
                 ,TO_CHAR(RA.FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_ENTREGA
                 ,RA.OBSERVACIONES_ADMINISTRADORA
                 ,RA.ESTATUS
+                ,RA.MOTIVO_CANCELACION
                 ,RA.CDGPE_ADMINISTRADORA
                 ,GET_NOMBRE_EMPLEADO(RA.CDGPE_ADMINISTRADORA) AS NOMBRE_ADMINISTRADORA
                 ,TO_CHAR(RA.FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION

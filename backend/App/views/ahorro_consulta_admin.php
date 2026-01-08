@@ -4,7 +4,7 @@
     <div class="panel">
         <div class="panel-header" style="padding: 10px;">
             <div class="x_title">
-                <label style="font-size: large;">Consulta de Retiros de Ahorro</label>
+                <label style="font-size: large;">Solicitudes de Retiro (Admin)</label>
                 <div class="clearfix"></div>
             </div>
             <div class="card">
@@ -12,44 +12,33 @@
                     <div class="row">
                         <div class="col-md-2">
                             <div class="form-group">
-                                <input class="form-control" type="date" id="fechaI">
+                                <input class="form-control" type="date" id="fechaI" value="<?= $fechaI ?>">
                                 <span>Fecha inicial</span>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                <input class="form-control" type="date" id="fechaF">
+                                <input class="form-control" type="date" id="fechaF" value="<?= $fechaF ?>">
                                 <span>Fecha final</span>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <button type="button" class="btn btn-primary" id="btnBuscar" style="margin-top: 0;">
-                                    <span class="fa fa-search">&nbsp;</span>Buscar
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group" style="text-align: right;">
-                                <button type="button" class="btn btn-success" id="btnNuevaSolicitud" style="margin-top: 0;">
-                                    <span class="fa fa-plus">&nbsp;</span>Registrar Nueva Solicitud
-                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <hr>
         <div class="panel-body resultado">
             <div class="row">
-                <table class="table table-striped table-bordered table-hover" id="tablaRetiros">
+                <table class="table table-striped table-bordered table-hover" id="retiros">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Crédito</th>
                             <th>Cantidad Solicitada</th>
-                            <th>Fechas</th>
+                            <th>Fecha de solicitud</th>
+                            <th>Fecha de entrega</th>
+                            <th>Región</th>
+                            <th>Sucursal</th>
+                            <th>Administradora</th>
                             <th>Estatus</th>
                             <th>Acciones</th>
                         </tr>
@@ -62,8 +51,7 @@
     </div>
 </div>
 
-<!-- Modal para Nueva Solicitud -->
-<div class="modal fade" id="modalNuevaSolicitud" tabindex="-1" role="dialog" aria-labelledby="modalNuevaSolicitudLabel" aria-hidden="true">
+<div class="modal fade" id="modalCancelarSolicitud" tabindex="-1" role="dialog" aria-labelledby="modalCancelarSolicitudLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -71,78 +59,28 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <center>
-                    <h4 class="modal-title" id="modalNuevaSolicitudLabel">Nueva Solicitud de Retiro</h4>
+                    <h4 class="modal-title">Cancelar Solicitud de Retiro</h4>
                 </center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form id="formNuevaSolicitud">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Crédito (CDGNS) <span class="text-danger">*</span></label>
-                                    <div class="form-group" style="display: flex; gap: 10px;">
-                                        <input type="text" class="form-control" id="cdgns_buscar" maxlength="6" placeholder="Ingrese el crédito" required>
-                                        <input type="hidden" id="saldo_ahorro_disponible">
-                                        <input type="hidden" id="nueva_cdgns">
-                                        <input type="hidden" id="nueva_ciclo">
-                                        <button type="button" class="btn btn-primary" id="btnBuscarCredito">
-                                            <span class="fa fa-search">&nbsp;</span>Buscar
-                                        </button>
-                                    </div>
-                                </div>
+                    <div class="row">
+                        <input type="hidden" id="idRetiroCancelar" />
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="motivoCancelacion">Comentario de cancelación:</label>
+                                <textarea class="form-control" id="motivoCancelacion" rows="4" placeholder="Ingrese el motivo de la cancelación"></textarea>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Cantidad Solicitada <span class="text-danger">*</span></label>
-                                    <input type="number" step="0.01" class="form-control" id="nueva_cantidad_solicitada" placeholder="0.00" required disabled>
-                                    <small class="form-text text-muted">Monto solicitado</small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Fecha Solicitud <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="nueva_fecha_solicitud" required disabled min="<?= date('Y-m-d', strtotime('-3 days')) ?>" max="<?= date('Y-m-d', strtotime('+3 days')) ?>">
-                                    <small class="form-text text-muted">Fecha de solicitud</small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Fecha Entrega</label>
-                                    <input type="date" class="form-control" id="nueva_fecha_entrega" readonly>
-                                    <small class="form-text text-muted">Fecha de entrega</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>Observaciones</label>
-                                    <textarea class="form-control" id="nueva_observaciones_administradora" rows="3" placeholder="Ingrese observaciones (opcional)" disabled></textarea>
-                                    <small class="form-text text-muted">Comentarios adicionales</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>Foto/Comprobante</label>
-                                    <input type="file" class="form-control" id="nueva_foto" accept="image/*" disabled>
-                                    <small class="form-text text-muted">Formatos aceptados: JPG, PNG, PDF (Máx. 5MB)</small>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <span class="glyphicon glyphicon-remove"></span> Cancelar
+                    <span class="glyphicon glyphicon-remove">&nbsp;</span>Volver
                 </button>
-                <button type="button" class="btn btn-success" id="btnGuardarNuevaSolicitud" disabled>
-                    <span class="glyphicon glyphicon-floppy-disk"></span> Guardar Solicitud
+                <button type="button" class="btn btn-danger" id="btnCancelarSolicitud">
+                    <span class="glyphicon glyphicon-floppy-disk">&nbsp;</span>Cancelar Solicitud
                 </button>
             </div>
         </div>

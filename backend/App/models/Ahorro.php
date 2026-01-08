@@ -158,88 +158,46 @@ sql;
         }
     }
 
-    public static function getRetiros()
+    public static function ReporteSolicitudesRetiro($datos)
     {
         $qry = <<<SQL
             SELECT 
-                ID
-                , CDGNS
-                , CANT_SOLICITADA
-                , TO_CHAR(FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
-                , TO_CHAR(FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_ENTREGA
-                , CDGPE_ADMINISTRADORA
+                RA.ID
+                , RA.CDGNS
+                , RA.CANT_SOLICITADA
+                , TO_CHAR(RA.FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
+                , TO_CHAR(RA.FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
+                , TO_CHAR(RA.FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_ENTREGA
+                , RA.CDGPE_ADMINISTRADORA
+                , RG.CODIGO AS REGION
+                , RG.NOMBRE AS NOMBRE_REGION
+                , CO.CODIGO AS SUCURSAL
+                , CO.NOMBRE AS NOMBRE_SUCURSAL
             FROM 
-                RETIROS_AHORRO
+                RETIROS_AHORRO RA
+                INNER JOIN SN ON SN.CDGNS = RA.CDGNS AND SN.CICLO = RA.CICLO
+                INNER JOIN SC ON SC.CDGNS = SN.CDGNS AND SC.CICLO = SN.CICLO AND SC.CANTSOLIC <> 9999
+                INNER JOIN CL ON CL.CODIGO = SC.CDGCL 
+                INNER JOIN CO ON SN.CDGCO = CO.CODIGO 
+                INNER JOIN RG ON CO.CDGRG = RG.CODIGO 
+                INNER JOIN PE ON PE.CODIGO = SN.CDGOCPE
             WHERE 
-                ESTATUS_TESORERIA IS NULL
-                ANd ESTATUS_ADMINISTRADORA = 'P'
+                RA.FECHA_ENTREGA BETWEEN TO_DATE(:fechaI, 'YYYY-MM-DD') AND TO_DATE(:fechaF, 'YYYY-MM-DD')
             ORDER BY 
-                FECHA_SOLICITUD ASC
+                RA.FECHA_ENTREGA ASC
         SQL;
+
+        $prms = [
+            'fechaI' => $datos['fechaI'],
+            'fechaF' => $datos['fechaF']
+        ];
 
         try {
             $db = new Database();
-            $res = $db->queryAll($qry);
+            $res = $db->queryAll($qry, $prms);
             return self::Responde(true, "Retiros obtenidos correctamente", $res ?? []);
         } catch (\Exception $e) {
             return self::Responde(false, "Error al obtener los retiros", null, $e->getMessage());
-        }
-    }
-
-    public static function AprobarRetiro($datos)
-    {
-        $qry = <<<SQL
-            UPDATE 
-                RETIROS_AHORRO
-            SET 
-                ESTATUS_TESORERIA = 'A'
-                , CANT_AUTORIZADA = CANT_SOLICITADA
-                , FECHA_PROCESA_TESORERIA = SYSDATE
-                , CDGPE_TESORERIA = :cdgpe
-            WHERE 
-                ID = :retiro
-        SQL;
-
-        $params = [
-            ':retiro' => $datos['retiro'],
-            ':cdgpe' => $datos['usuario']
-        ];
-
-        try {
-            $db = new Database();
-            $db->insertar($qry, $params);
-            return self::Responde(true, "Retiro aprobado correctamente");
-        } catch (\Exception $e) {
-            return self::Responde(false, "Error al aprobar el retiro", null, $e->getMessage());
-        }
-    }
-
-    public static function RechazarRetiro($datos)
-    {
-        $qry = <<<SQL
-            UPDATE 
-                RETIROS_AHORRO
-            SET 
-                ESTATUS_TESORERIA = 'R'
-                , OBSERVACIONES_TESORERIA = :comentario
-                , FECHA_PROCESA_TESORERIA = SYSDATE
-                , CDGPE_TESORERIA = :cdgpe
-            WHERE 
-                ID = :retiro
-        SQL;
-
-        $params = [
-            ':retiro' => $datos['retiro'],
-            ':cdgpe' => $datos['usuario'],
-            ':comentario' => $datos['comentario']
-        ];
-
-        try {
-            $db = new Database();
-            $db->insertar($qry, $params);
-            return self::Responde(true, "Retiro aprobado correctamente");
-        } catch (\Exception $e) {
-            return self::Responde(false, "Error al aprobar el retiro", null, $e->getMessage());
         }
     }
 
@@ -247,21 +205,35 @@ sql;
     {
         $qry = <<<SQL
             SELECT 
-                ID
-                , CDGNS
-                , CANT_SOLICITADA
-                , TO_CHAR(FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
-                , TO_CHAR(FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_ENTREGA
-                , CDGPE_ADMINISTRADORA
-                , ESTATUS_ADMINISTRADORA
-                , ESTATUS_TESORERIA
+                RA.ID
+                ,RA.CDGNS
+                ,RA.CANT_SOLICITADA
+                ,NVL(RA.CANT_AUTORIZADA, 0) AS CANT_AUTORIZADA
+                ,TO_CHAR(RA.FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
+                ,TO_CHAR(RA.FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_ENTREGA
+                ,RA.OBSERVACIONES_ADMINISTRADORA
+                ,RA.ESTATUS
+                ,RA.CDGPE_ADMINISTRADORA
+                ,TO_CHAR(RA.FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
+                ,TO_CHAR(RA.FECHA_CANCELACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CANCELACION
+                ,TO_CHAR(CASE WHEN RAC.FECHA_LLAMADA_2 IS NOT NULL THEN RAC.FECHA_LLAMADA_2 ELSE RAC.FECHA_LLAMADA_1 END, 'DD/MM/YYYY HH24:MI:SS') AS ULTIMA_LLAMADA
+                ,RG.CODIGO AS REGION
+                ,RG.NOMBRE AS NOMBRE_REGION
+                ,CO.CODIGO AS SUCURSAL
+                ,CO.NOMBRE AS NOMBRE_SUCURSAL
             FROM 
-                RETIROS_AHORRO
-            WHERE 
-                FECHA_SOLICITUD >= TO_DATE(:fechaI, 'YYYY-MM-DD')
-                AND FECHA_SOLICITUD <= TO_DATE(:fechaF, 'YYYY-MM-DD')
+                RETIROS_AHORRO RA
+                INNER JOIN SN ON SN.CDGNS = RA.CDGNS AND SN.CICLO = RA.CICLO
+                INNER JOIN SC ON SC.CDGNS = SN.CDGNS AND SC.CICLO = SN.CICLO AND SC.CANTSOLIC <> 9999
+                INNER JOIN CL ON CL.CODIGO = SC.CDGCL 
+                INNER JOIN CO ON SN.CDGCO = CO.CODIGO 
+                INNER JOIN RG ON CO.CDGRG = RG.CODIGO 
+                INNER JOIN PE ON PE.CODIGO = SN.CDGOCPE
+                LEFT JOIN RETIROS_AHORRO_CALLCENTER RAC ON RA.ID = RAC.RETIRO
+            WHERE
+                TRUNC(RA.FECHA_CREACION) BETWEEN TO_DATE(:fechaI, 'YYYY-MM-DD') AND TO_DATE(:fechaF, 'YYYY-MM-DD')
             ORDER BY 
-                FECHA_SOLICITUD DESC
+                RA.ID DESC
         SQL;
 
         $params = [
@@ -284,7 +256,7 @@ sql;
             UPDATE 
                 RETIROS_AHORRO
             SET 
-                ESTATUS_ADMINISTRADORA = 'C'
+                ESTATUS = 'C'
                 , FECHA_CANCELACION = SYSDATE
                 , MOTIVO_CANCELACION = :comentario
                 , CDGPE_CANCELACION = :cdgpe

@@ -5746,8 +5746,13 @@ html;
 
                 const idTabla = "retiros"
 
-                const getRetiros = () => {
-                    consultaServidor("/Ahorro/getRetiros/", null, (resultado) => {
+                const reporteSolicitudesRetiro = () => {
+                    const fechaI = $("#fechaI").val()
+                    const fechaF = $("#fechaF").val()
+
+                    if (new Date(fechaI) > new Date(fechaF)) return showError("La fecha inicial no puede ser mayor a la fecha final.")
+
+                    consultaServidor("/Ahorro/reporteSolicitudesRetiro/", { fechaI, fechaF }, (resultado) => {
                         if (!resultado.success) return showError(resultado.mensaje)
                         resultadoOK(resultado.datos)
                     })
@@ -5756,27 +5761,17 @@ html;
                 const resultadoOK = (datos) => {
                     datos = datos.map((dato) => {
                         dato.CANT_SOLICITADA = "$ " + formatoMoneda(dato.CANT_SOLICITADA)
-                        const acciones = [
-                            {
-                                texto: "Aprobar",
-                                icono: "fa-check text-success",
-                                funcion: "aprobarSolicitud(" + dato.ID + ")"
-                            },
-                            {
-                                texto: "Rechazar",
-                                icono: "fa-times text-danger",
-                                funcion:  "capturarComentario(" + dato.ID + ")"
-                            }
-                        ]
 
                         return [
                             dato.ID,
                             dato.CDGNS,
                             dato.CANT_SOLICITADA,
+                            dato.FECHA_CREACION,
                             dato.FECHA_SOLICITUD,
                             dato.FECHA_ENTREGA,
-                            dato.CDGPE_ADMINISTRADORA,
-                            menuAcciones(acciones)
+                            dato.REGION,
+                            dato.SUCURSAL,
+                            dato.CDGPE_ADMINISTRADORA
                         ]
                     })
 
@@ -5784,86 +5779,31 @@ html;
                     $(".resultado").toggleClass("conDatos", true)
                 }
 
-                const menuAcciones = (opciones) => {
-                    const acciones = opciones
-                        .map((opcion) => {
-                            if (opcion === null || opcion === undefined) return ""
-                            if (opcion instanceof HTMLElement) return opcion.outerHTML
-                            if (opcion instanceof jQuery) return opcion[0].outerHTML
-                            if (typeof opcion === "string") {
-                                if (opcion === "divisor") return `<div class="dropdown-divider"></div>`
-                                return opcion
-                            }
+                const descargaReporte = () => {
+                    const fechaF = $("#fechaF").val()
+                    const fechaI = $("#fechaI").val()
 
-                            return '<li><a href="' + (opcion.href || "javascript:;") + 
-                            '" onclick="' + opcion.funcion + '">' +
-                            '<i class="fa ' + opcion.icono + '">&nbsp;</i>' + opcion.texto + '</a></li>'
-                        })
-                        .join("")
+                    const datos = {
+                        fechaI,
+                        fechaF
+                    }
 
-                    return '<div class="dropdown"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></button><ul class="dropdown-menu">' + acciones + '</ul></div>'
-                }
-
-                const aprobarSolicitud = (retiro) => {
-                    const params = { 
-                        retiro,
-                        usuario: "{$_SESSION['usuario']}"
-                     }
-
-                    confirmarMovimiento("Aprobar crédito", "¿Está seguro de aprobar esta solicitud de retiro?")
-                    .then((continuar) => {
-                            if (!continuar) return
-                            consultaServidor("/Ahorro/AprobarRetiro/",
-                                params,
-                                (resultado) => {
-                                    if (!resultado.success) return showError(resultado.mensaje)
-
-                                    showSuccess("La solicitud de retiro ha sido aprobada.")
-                                    .then(getRetiros)
-                                }
-                            )
-                        }
-                    )
-                }
-
-                const capturarComentario = (retiro) => {
-                    $("#idRetiroRechazar").val(retiro)
-                    $("#motivoRechazo").val("")
-                    
-                    $("#modalRechazarSolicitud").modal("show")
-                }
-
-                const rechazarSolicitud = () => {
-                    const comentario = $("#motivoRechazo").val().trim()
-                    if (comentario === "") return showError("Debe capturar el motivo para rechazar la solicitud de retiro.")
-
-                    const params = { 
-                        retiro: $("#idRetiroRechazar").val(),
-                        comentario,
-                        usuario: "{$_SESSION['usuario']}"
-                     }
-
-                    confirmarMovimiento("Rechazar crédito", "¿Está seguro de rechazar esta solicitud de retiro?")
-                    .then((continuar) => {
-                            if (!continuar) return
-                            consultaServidor("/Ahorro/RechazarRetiro/",
-                                params,
-                                (resultado) => {
-                                    if (!resultado.success) return showError(resultado.mensaje)
-                                    $("#modalRechazarSolicitud").modal("hide")
-                                    showSuccess("La solicitud de retiro ha sido rechazada.")
-                                    .then(getRetiros)
-                                }
-                            )
-                        }
-                    )
+                    const params = new URLSearchParams(datos).toString()
+                    descargaExcel("/Ahorro/excelReporteSolicitudesRetiro/?" + params)
                 }
 
                 $(document).ready(() => {
-                    configuraTabla(idTabla)
-                    getRetiros()
-                    
-                    $("#btnRechazarSolicitud").click(rechazarSolicitud)
+                    const hoy = new Date().getDate()
+                    const fechaI = new Date().setDate(hoy - 7);
+                    const fechaF = new Date().setDate(hoy + 7);
+                    $("#fechaI").val(new Date(fechaI).toISOString().split("T")[0]);
+                    $("#fechaF").val(new Date(fechaF).toISOString().split("T")[0]);
+                    $("#fechaI").on("change", reporteSolicitudesRetiro)
+                    $("#fechaF").on("change", reporteSolicitudesRetiro)
+
+                    $("#btnDescargarReporte").on("click", descargaReporte)
+
+                    reporteSolicitudesRetiro()
                 })
             </script>
         HTML;
@@ -5873,25 +5813,35 @@ html;
         View::render("ahorro_retiros");
     }
 
-    public function getRetiros()
+    public function reporteSolicitudesRetiro()
     {
-        $r = AhorroDao::getRetiros();
-        echo json_encode($r);
+        echo json_encode(AhorroDao::ReporteSolicitudesRetiro($_POST));
     }
 
-    public function AprobarRetiro()
+    public function excelReporteSolicitudesRetiro()
     {
-        $r = AhorroDao::AprobarRetiro($_POST);
-        echo json_encode($r);
+        $estilos = \PHPSpreadsheet::GetEstilosExcel();
+
+        $columnas = [
+            \PHPSpreadsheet::ColumnaExcel('ID', 'ID retiro'),
+            \PHPSpreadsheet::ColumnaExcel('CDGNS', 'No. Crédito'),
+            \PHPSpreadsheet::ColumnaExcel('CANT_SOLICITADA', 'Monto', ['estilo' => $estilos['moneda'], 'total' => true]),
+            \PHPSpreadsheet::ColumnaExcel('FECHA_CREACION', 'Fecha Registro', ['estilo' => $estilos['fecha_hora']]),
+            \PHPSpreadsheet::ColumnaExcel('FECHA_SOLICITUD', 'Fecha Solicitud', ['estilo' => $estilos['fecha']]),
+            \PHPSpreadsheet::ColumnaExcel('FECHA_ENTREGA', 'Fecha Entrega', ['estilo' => $estilos['fecha']]),
+            \PHPSpreadsheet::ColumnaExcel('REGION', 'Región'),
+            \PHPSpreadsheet::ColumnaExcel('SUCURSAL', 'Sucursal'),
+            \PHPSpreadsheet::ColumnaExcel('CDGPE_ADMINISTRADORA', 'Administradora'),
+        ];
+
+        $filas = AhorroDao::ReporteSolicitudesRetiro($_GET);
+        if ($filas['success']) $filas = $filas['datos'];
+        else $filas = [];
+
+        \PHPSpreadsheet::DescargaExcel('Reporte Solicitudes Retiro', 'Reporte', 'Retiros', $columnas, $filas);
     }
 
-    public function RechazarRetiro()
-    {
-        $r = AhorroDao::RechazarRetiro($_POST);
-        echo json_encode($r);
-    }
-
-    public function CancelarSolicitudes()
+    public function SolicitudesRetiroAdmin()
     {
         $extraFooter = <<<HTML
             <script>
@@ -5922,13 +5872,20 @@ html;
                         dato.CANT_SOLICITADA = "$ " + formatoMoneda(dato.CANT_SOLICITADA)
                         const acciones = [
                             {
-                                texto: "Cancelar",
-                                icono: "fa-ban text-danger",
-                                funcion: "capturarComentario(" + dato.ID + ")"
+                                icono: "fa-eye",
+                                texto: "Ver detalle",
+                                funcion: "verDetalle(" + dato.ID + ")"
                             }
                         ]
 
-
+                        if (dato.ESTATUS === "P" && !dato.ESTATUS_TESORERIA) acciones.push(
+                            "divisor",
+                            {
+                                icono: "fa-times-circle text-danger",
+                                texto: "Cancelar solicitud",
+                                funcion: "capturarComentario(" + dato.ID + ")"
+                            }
+                        )
 
                         return [
                             dato.ID,
@@ -5936,9 +5893,11 @@ html;
                             dato.CANT_SOLICITADA,
                             dato.FECHA_SOLICITUD,
                             dato.FECHA_ENTREGA,
+                            dato.REGION,
+                            dato.SUCURSAL,
                             dato.CDGPE_ADMINISTRADORA,
-                            getBadge(dato.ESTATUS_ADMINISTRADORA, dato.ESTATUS_TESORERIA),
-                            dato.ESTATUS_ADMINISTRADORA === "P" && !dato.ESTATUS_TESORERIA ? menuAcciones(acciones) : ""
+                            getBadge(dato.ESTATUS),
+                            menuAcciones(acciones)
                         ]
                     })
 
@@ -5946,7 +5905,7 @@ html;
                     $(".resultado").toggleClass("conDatos", true)
                 }
 
-                const getBadge = (estatusAdmin, estatusTesoreria) => {
+                const getBadge = (estatus) => {
                     const badges = {
                         P: {
                             clase: "default",
@@ -5958,15 +5917,19 @@ html;
                         },
                         R: {
                             clase: "danger",
-                            texto: "RECHAZADO POR TESORERÍA",
+                            texto: "RECHAZADO",
                         },
                         C: {
                             clase: "warning",
-                            texto: "CANCELADO POR GERENTE",
+                            texto: "CANCELADO",
+                        },
+                        V: {
+                            clase: "info",
+                            texto: "VALIDADO",
                         }
                     }
 
-                    const {clase, texto} = estatusAdmin === "C" ? badges.C : badges[estatusTesoreria] || badges.P
+                    const {clase, texto} = badges[estatus] || badges.P
                     return "<span class='badge alert-" + clase + "'>" + texto + "</span>"
                 }
 
@@ -5977,7 +5940,7 @@ html;
                             if (opcion instanceof HTMLElement) return opcion.outerHTML
                             if (opcion instanceof jQuery) return opcion[0].outerHTML
                             if (typeof opcion === "string") {
-                                if (opcion === "divisor") return `<div class="dropdown-divider"></div>`
+                                if (opcion === "divisor") return `<hr class="dropdown-divider" style="margin: 0; padding: 0;">`
                                 return opcion
                             }
 
@@ -5988,6 +5951,60 @@ html;
                         .join("")
 
                     return '<div class="dropdown"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></button><ul class="dropdown-menu">' + acciones + '</ul></div>'
+                }
+
+                const verDetalle = (idRetiro) => {
+                    consultaServidor("/AhorroConsulta/GetRetiroById", { id: idRetiro }, (res) => {
+                        if (!res.success) {
+                            return Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: res.mensaje
+                            });
+                        }
+                        
+                        const datos = res.datos;
+                        
+                        $("#detalle_id_retiro").val(datos.ID || "");
+                        $("#detalle_credito").val(datos.CDGNS || "");
+                        $("#detalle_fecha_creacion").val(datos.FECHA_CREACION || "");
+                        $("#detalle_fecha_solicitud").val(datos.FECHA_SOLICITUD || "");
+                        $("#detalle_fecha_entrega").val(datos.FECHA_ENTREGA || "");
+                        $("#detalle_cantidad_solicitada").val("$" + formatoMoneda(datos.CANT_SOLICITADA || 0));
+                        $("#detalle_estatus").val(datos.ESTATUS_ETIQUETA || "")
+                        if (datos.ESTATUS === "C" || datos.ESTATUS === "R") {
+                            const titulo = datos.ESTATUS === "C" ? "Motivo de cancelación" : "Motivo de rechazo";
+                            $("#detalle_titulo_motivo").text(titulo);
+                            $("#detalle_motivo").val(datos.MOTIVO_CANCELACION || "");
+                            $("#grupo_motivo_cancelacion").show();
+                        } else {
+                            $("#detalle_motivo").val("");
+                            $("#grupo_motivo_cancelacion").hide();
+                        }
+                        $("#detalle_cdgpe_administradora").val(datos.CDGPE_ADMINISTRADORA || "");
+                        $("#detalle_nombre_administradora").val(datos.NOMBRE_ADMINISTRADORA || "");
+                        $("#detalle_observaciones_administradora").val(datos.OBSERVACIONES_ADMINISTRADORA || "");
+                        $("#detalle_estatus_call_center").val(datos.ESTATUS_CC_ETIQUETA || "");
+                        $("#detalle_cdgpe_call_center").val(datos.CDGPE_CC || "");
+                        $("#detalle_fecha_procesa_call_center").val(datos.ULTIMA_LLAMADA || "");
+                        $("#detalle_observaciones_call_center").val(datos.COMENTARIO_EXTERNO || "");
+                        
+                        $("#btnVerComprobante").off("click").on("click", function() {
+                            verComprobante(idRetiro);
+                        });
+                        
+                        $('#modalDetalle .nav-tabs a[href="#tabGeneral"]').tab('show');
+                        $("#modalDetalle").modal("show");
+                    });
+                }
+
+                const verComprobante = (idRetiro) => {
+                    $("#modalDetalle").modal("hide");
+                    $("#comprobanteImg").hide();
+                    $("#loadingImg").show();
+                    $("#comprobanteImg").attr("src", "/AhorroConsulta/GetImgSolicitud/?id=" + idRetiro + "&tipo=comprobante");
+
+                    $("#modalComprobante").modal("show");
                 }
 
                 const capturarComentario = (retiro) => {
@@ -6027,6 +6044,11 @@ html;
                     $("#fechaI, #fechaF").change(getRetiros)
                     $("#btnCancelarSolicitud").click(cancelarSolicitud)
                     
+                    $("#comprobanteImg").on("load", function() {
+                        $("#loadingImg").hide()
+                        $(this).show()
+                    })  
+                    
                     configuraTabla(idTabla)
                     getRetiros()
                 })
@@ -6035,7 +6057,7 @@ html;
 
         View::set('header', $this->_contenedor->header(self::GetExtraHeader("Cancelar Solicitudes de Retiro")));
         View::set('footer', $this->_contenedor->footer($extraFooter));
-        View::render("ahorro_cancelar_solicitudes");
+        View::render("ahorro_consulta_admin");
     }
 
     public function getRetirosAdmin()

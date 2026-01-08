@@ -54,10 +54,15 @@ class AhorroConsulta extends Controller
                             item.ID,
                             item.CDGNS,
                             "$ " + formatoMoneda(item.CANT_SOLICITADA),
-                            "$ " + formatoMoneda(item.CANT_AUTORIZADA),
                             getFechas(item.FECHA_CREACION, item.FECHA_SOLICITUD, item.FECHA_ENTREGA, item.ESTATUS === "V" ? item.ULTIMA_LLAMADA : null, item.ESTATUS === "C" ? item.FECHA_CANCELACION : null, item.ESTATUS === "R" ? item.FECHA_CANCELACION : null),
                             getBadge(item.ESTATUS),
-                            '<button class="btn btn-info btn-sm" onclick="verDetalle(' + item.ID + ')"><i class="fa fa-eye"></i> Ver detalle</button>'
+                            menuAcciones([
+                                {
+                                    icono: "fa-eye",
+                                    texto: "Ver detalle",
+                                    funcion: "verDetalle(" + item.ID + ")"
+                                }
+                            ])
                         ]
                     })
 
@@ -113,6 +118,26 @@ class AhorroConsulta extends Controller
                     return "<span class='badge alert-" + clase + "'>" + texto + "</span>"
                 }
 
+                const menuAcciones = (opciones) => {
+                    const acciones = opciones
+                        .map((opcion) => {
+                            if (opcion === null || opcion === undefined) return ""
+                            if (opcion instanceof HTMLElement) return opcion.outerHTML
+                            if (opcion instanceof jQuery) return opcion[0].outerHTML
+                            if (typeof opcion === "string") {
+                                if (opcion === "divisor") return `<div class="dropdown-divider"></div>`
+                                return opcion
+                            }
+
+                            return '<li><a href="' + (opcion.href || "javascript:;") + 
+                            '" onclick="' + opcion.funcion + '">' +
+                            '<i class="fa ' + opcion.icono + '">&nbsp;</i>' + opcion.texto + '</a></li>'
+                        })
+                        .join("")
+
+                    return '<div class="dropdown"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></button><ul class="dropdown-menu">' + acciones + '</ul></div>'
+                }
+
                 const resultadoError = (mensaje) => {
                     $(".resultado").toggleClass("conDatos", false)
                     showError(mensaje).then(() => actualizaDatosTabla(idTabla, []))
@@ -130,7 +155,6 @@ class AhorroConsulta extends Controller
                         
                         const datos = res.datos;
                         
-                        // Llenar el modal con los datos
                         $("#detalle_id_retiro").val(datos.ID || "");
                         $("#detalle_credito").val(datos.CDGNS || "");
                         $("#detalle_fecha_creacion").val(datos.FECHA_CREACION || "");
@@ -138,6 +162,17 @@ class AhorroConsulta extends Controller
                         $("#detalle_fecha_entrega").val(datos.FECHA_ENTREGA || "");
                         $("#detalle_cantidad_solicitada").val("$" + formatoMoneda(datos.CANT_SOLICITADA || 0));
                         $("#detalle_estatus").val(datos.ESTATUS_ETIQUETA || "");
+
+                        if (datos.ESTATUS === "C" || datos.ESTATUS === "R") {
+                            const titulo = datos.ESTATUS === "C" ? "Motivo de cancelación" : "Motivo de rechazo";
+                            $("#detalle_titulo_motivo").text(titulo);
+                            $("#detalle_motivo").val(datos.MOTIVO_CANCELACION || "");
+                            $("#grupo_motivo_cancelacion").show();
+                        } else {
+                            $("#detalle_motivo").val("");
+                            $("#grupo_motivo_cancelacion").hide();
+                        }
+                        
                         $("#detalle_cdgpe_administradora").val(datos.CDGPE_ADMINISTRADORA || "");
                         $("#detalle_nombre_administradora").val(datos.NOMBRE_ADMINISTRADORA || "");
                         $("#detalle_observaciones_administradora").val(datos.OBSERVACIONES_ADMINISTRADORA || "");
@@ -146,11 +181,11 @@ class AhorroConsulta extends Controller
                         $("#detalle_fecha_procesa_call_center").val(datos.ULTIMA_LLAMADA || "");
                         $("#detalle_observaciones_call_center").val(datos.COMENTARIO_EXTERNO || "");
                         
-                        // Configurar botón de ver comprobante
                         $("#btnVerComprobante").off("click").on("click", function() {
                             verComprobante(idRetiro);
                         });
                         
+                        $('#modalDetalle .nav-tabs a[href="#tabGeneral"]').tab('show');
                         $("#modalDetalle").modal("show");
                     });
                 }
@@ -172,21 +207,32 @@ class AhorroConsulta extends Controller
 
                 const resetFomRetiro = () => {
                     const hoy = new Date().toISOString().split("T")[0];
-                    const dosDiasDespues = new Date();
-                    dosDiasDespues.setDate(dosDiasDespues.getDate() + 2);
 
                     $("#formNuevaSolicitud")[0].reset();
                     $("#nueva_cdgns").val("");
                     $("#saldo_ahorro_disponible").val("");
                     $("#nueva_fecha_solicitud").val(hoy);
-                    $("#nueva_fecha_entrega").val(dosDiasDespues.toISOString().split("T")[0]);
+                    $("#nueva_fecha_entrega").val(calculaFechaEntrega());
 
                     $("#nueva_cantidad_solicitada").prop("disabled", true);
                     $("#nueva_fecha_solicitud").prop("disabled", true);
-                    $("#nueva_fecha_entrega").prop("disabled", true);
                     $("#nueva_observaciones_administradora").prop("disabled", true);
                     $("#nueva_foto").prop("disabled", true);
                     $("#btnGuardarNuevaSolicitud").prop("disabled", true);
+                }
+
+                const calculaFechaEntrega = () => {
+                    const fecha = new Date()
+                    const diaSemana = fecha.getDay()
+
+                    if (diaSemana === 4 || diaSemana === 5) {
+                        fecha.setDate(fecha.getDate() + 4);
+                    } else if (diaSemana === 6) {
+                        fecha.setDate(fecha.getDate() + 5);
+                    } else {
+                        fecha.setDate(fecha.getDate() + 3);
+                    }
+                    return fecha.toISOString().split("T")[0];
                 }
 
                 const buscarCredito = () => {

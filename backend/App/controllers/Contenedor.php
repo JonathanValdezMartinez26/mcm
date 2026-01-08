@@ -122,7 +122,7 @@ class Contenedor extends Controller
             $menu .= '<li><a href="/Pagos/">Administración Pagos</a></li>';
         }
 
-        $permisos = ['ADMIN', 'FLHR', 'HEDC', 'JULM', 'CRCV','LUMM','EMGL','PEAE', 'MCDP', 'LVGA'];
+        $permisos = ['ADMIN', 'FLHR', 'HEDC', 'JULM', 'CRCV', 'LUMM', 'EMGL', 'PEAE', 'MCDP', 'LVGA'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
             <li><a href="/Pagos/CorteEjecutivo/">PRUEBAS Pagos App</a></li> 
@@ -179,12 +179,12 @@ class Contenedor extends Controller
 
         $permisos = ['AMGM'];
         if ($this->ValidaPermiso($permisos)) {
-            $menu .= '<li><a href="/Ahorro/Retiros/">2.- Aprobar Solicitud Retiro Tesorería</a></li>';
+            $menu .= '<li><a href="/Ahorro/SolicitudesRetiroAdmin/">2.- Solicitudes Retiro Admin</a></li>';
         }
 
         $permisos = ['AMGM'];
         if ($this->ValidaPermiso($permisos)) {
-            $menu .= '<li><a href="/Ahorro/CancelarSolicitudes/">3.- Cancelar Solicitudes Super Admin</a></li>';
+            $menu .= '<li><a href="/Ahorro/Retiros/">Reporte de solicitudes</a></li>';
         }
 
         $menu .= '</ul></li>';
