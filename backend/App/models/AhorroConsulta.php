@@ -13,33 +13,26 @@ class AhorroConsulta extends Model
     {
         $qry = <<<SQL
             SELECT 
-                ID
-                ,CDGNS
-                ,CANT_SOLICITADA
-                ,NVL(CANT_AUTORIZADA, 0) AS CANT_AUTORIZADA
-                ,TO_CHAR(FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
-                ,TO_CHAR(FECHA_ENTREGA_SOLICITADA, 'DD/MM/YYYY') AS FECHA_ENTREGA_SOLICITADA
-                ,OBSERVACIONES_ADMINISTRADORA
-                ,ESTATUS_ADMINISTRADORA
-                ,CDGPE_ADMINISTRADORA
-                ,CDGPE_SOPORTE
-                ,TO_CHAR(FECHA_PROCESA_TESORERIA, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_PROCESA_TESORERIA 
-                ,ESTATUS_TESORERIA
-                ,OBSERVACIONES_TESORERIA
-                ,CDGPE_TESORERIA
-                ,TO_CHAR(FECHA_CALL_CENTER, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CALL_CENTER
-                ,ESTATUS_CALL_CENTER
-                ,OBSERVACIONES_CALL_CENTER
-                ,CDGPE_CALL_CENTER
-                ,TO_CHAR(FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
-                ,TO_CHAR(FECHA_CANCELACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CANCELACION
+                RA.ID
+                ,RA.CDGNS
+                ,RA.CANT_SOLICITADA
+                ,NVL(RA.CANT_AUTORIZADA, 0) AS CANT_AUTORIZADA
+                ,TO_CHAR(RA.FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
+                ,TO_CHAR(RA.FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_ENTREGA
+                ,RA.OBSERVACIONES_ADMINISTRADORA
+                ,RA.ESTATUS
+                ,RA.CDGPE_ADMINISTRADORA
+                ,TO_CHAR(RA.FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
+                ,TO_CHAR(RA.FECHA_CANCELACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CANCELACION
+                ,TO_CHAR(CASE WHEN RAC.FECHA_LLAMADA_2 IS NOT NULL THEN RAC.FECHA_LLAMADA_2 ELSE RAC.FECHA_LLAMADA_1 END, 'DD/MM/YYYY HH24:MI:SS') AS ULTIMA_LLAMADA
             FROM 
-                RETIROS_AHORRO
+                RETIROS_AHORRO RA
+                LEFT JOIN RETIROS_AHORRO_CALLCENTER RAC ON RA.ID = RAC.RETIRO
             WHERE
-                TRUNC(FECHA_CREACION) >= TO_DATE(:fechaI, 'YYYY-MM-DD')
-                AND TRUNC(FECHA_CREACION) <= TO_DATE(:fechaF, 'YYYY-MM-DD')
+                TRUNC(RA.FECHA_CREACION) >= TO_DATE(:fechaI, 'YYYY-MM-DD')
+                AND TRUNC(RA.FECHA_CREACION) <= TO_DATE(:fechaF, 'YYYY-MM-DD')
             ORDER BY 
-                ID DESC
+                RA.ID DESC
         SQL;
 
         $params = [
@@ -60,29 +53,41 @@ class AhorroConsulta extends Model
     {
         $qry = <<<SQL
             SELECT 
-                ID
-                ,CDGNS
-                ,CANT_SOLICITADA
-                ,NVL(CANT_AUTORIZADA, 0) AS CANT_AUTORIZADA
-                ,TO_CHAR(FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
-                ,TO_CHAR(FECHA_ENTREGA_SOLICITADA, 'DD/MM/YYYY') AS FECHA_ENTREGA_SOLICITADA
-                ,OBSERVACIONES_ADMINISTRADORA
-                ,ESTATUS_ADMINISTRADORA
-                ,CDGPE_ADMINISTRADORA
-                ,CDGPE_SOPORTE
-                ,TO_CHAR(FECHA_PROCESA_TESORERIA, 'DD/MM/YYYY') AS FECHA_PROCESA_TESORERIA
-                ,ESTATUS_TESORERIA
-                ,OBSERVACIONES_TESORERIA
-                ,CDGPE_TESORERIA
-                ,TO_CHAR(FECHA_CALL_CENTER, 'DD/MM/YYYY') AS FECHA_CALL_CENTER
-                ,ESTATUS_CALL_CENTER
-                ,OBSERVACIONES_CALL_CENTER
-                ,CDGPE_CALL_CENTER
-                ,TO_CHAR(FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
-            FROM 
-                RETIROS_AHORRO
+                RA.ID
+                ,RA.CDGNS
+                ,RA.CANT_SOLICITADA
+                ,NVL(RA.CANT_AUTORIZADA, 0) AS CANT_AUTORIZADA
+                ,TO_CHAR(RA.FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
+                ,TO_CHAR(RA.FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_ENTREGA
+                ,RA.OBSERVACIONES_ADMINISTRADORA
+                ,RA.ESTATUS
+                ,RA.CDGPE_ADMINISTRADORA
+                ,GET_NOMBRE_EMPLEADO(RA.CDGPE_ADMINISTRADORA) AS NOMBRE_ADMINISTRADORA
+                ,TO_CHAR(RA.FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
+                ,CASE RA.ESTATUS
+                    WHEN 'V' THEN 'Validado'
+                    WHEN 'C' THEN 'Cancelado'
+                    WHEN 'R' THEN 'Rechazado'
+                    WHEN 'P' THEN 'Pendiente'
+                    WHEN 'A' THEN 'Aprobado'
+                    WHEN 'E' THEN 'Entregado'
+                    WHEN 'D' THEN 'Devuelto'
+                    ELSE NULL
+                 END AS ESTATUS_ETIQUETA
+                ,RAC.ESTATUS AS ESTATUS_CC
+                ,CASE RAC.ESTATUS
+                    WHEN 'C' THEN 'Completado'
+                    WHEN 'I' THEN 'Incompleto'
+                    ELSE 'Pendiente'
+                 END AS ESTATUS_CC_ETIQUETA
+                ,RAC.CDGPE AS CDGPE_CC
+                ,RAC.COMENTARIO_EXTERNO
+                ,TO_CHAR(CASE WHEN RAC.FECHA_LLAMADA_2 IS NOT NULL THEN RAC.FECHA_LLAMADA_2 ELSE RAC.FECHA_LLAMADA_1 END, 'DD/MM/YYYY HH24:MI:SS') AS ULTIMA_LLAMADA
+            FROM  
+                RETIROS_AHORRO RA
+                LEFT JOIN RETIROS_AHORRO_CALLCENTER RAC ON RA.ID = RAC.RETIRO
             WHERE 
-                ID = :id
+                RA.ID = :id
         SQL;
 
         $params = [':id' => $id];
@@ -140,7 +145,7 @@ class AhorroConsulta extends Model
                 , CICLO
                 ,CANT_SOLICITADA
                 ,FECHA_SOLICITUD
-                ,FECHA_ENTREGA_SOLICITADA
+                ,FECHA_ENTREGA
                 ,OBSERVACIONES_ADMINISTRADORA
                 ,CDGPE_ADMINISTRADORA
                 ,FOTO
@@ -150,7 +155,7 @@ class AhorroConsulta extends Model
                 ,:ciclo
                 ,:cantidad_solicitada
                 ,TO_DATE(:fecha_solicitud, 'YYYY-MM-DD')
-                ,TO_DATE(:fecha_entrega_solicitada, 'YYYY-MM-DD')
+                ,TO_DATE(:fecha_entrega, 'YYYY-MM-DD')
                 ,:observaciones_administradora
                 ,:cdgpe_administradora
                 , EMPTY_BLOB()
@@ -164,7 +169,7 @@ class AhorroConsulta extends Model
             'ciclo' => $datos['ciclo'],
             'cantidad_solicitada' => $datos['cantidad_solicitada'],
             'fecha_solicitud' => $datos['fecha_solicitud'],
-            'fecha_entrega_solicitada' => $datos['fecha_entrega_solicitada'],
+            'fecha_entrega' => $datos['fecha_entrega'],
             'observaciones_administradora' => $datos['observaciones_administradora'],
             'cdgpe_administradora' => $datos['cdgpe_administradora'],
             'foto' => $datos['foto']

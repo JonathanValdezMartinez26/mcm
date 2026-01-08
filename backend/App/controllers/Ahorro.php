@@ -5774,7 +5774,7 @@ html;
                             dato.CDGNS,
                             dato.CANT_SOLICITADA,
                             dato.FECHA_SOLICITUD,
-                            dato.FECHA_ENTREGA_SOLICITADA,
+                            dato.FECHA_ENTREGA,
                             dato.CDGPE_ADMINISTRADORA,
                             menuAcciones(acciones)
                         ]
@@ -5935,7 +5935,7 @@ html;
                             dato.CDGNS,
                             dato.CANT_SOLICITADA,
                             dato.FECHA_SOLICITUD,
-                            dato.FECHA_ENTREGA_SOLICITADA,
+                            dato.FECHA_ENTREGA,
                             dato.CDGPE_ADMINISTRADORA,
                             getBadge(dato.ESTATUS_ADMINISTRADORA, dato.ESTATUS_TESORERIA),
                             dato.ESTATUS_ADMINISTRADORA === "P" && !dato.ESTATUS_TESORERIA ? menuAcciones(acciones) : ""

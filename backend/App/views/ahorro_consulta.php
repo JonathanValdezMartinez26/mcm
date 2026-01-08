@@ -114,7 +114,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Fecha Entrega Solicitada <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="nueva_fecha_entrega_solicitada" required disabled>
+                                    <input type="date" class="form-control" id="nueva_fecha_entrega" required disabled>
                                     <small class="form-text text-muted">Fecha deseada de entrega</small>
                                 </div>
                             </div>
@@ -197,32 +197,32 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Cantidad Solicitada</label>
-                                <input type="text" class="form-control" id="detalle_cantidad_solicitada" disabled>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Cantidad Autorizada</label>
-                                <input type="text" class="form-control" id="detalle_cantidad_autorizada" disabled>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
                                 <label>Fecha Solicitud</label>
                                 <input type="text" class="form-control" id="detalle_fecha_solicitud" disabled>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label>Fecha Entrega Solicitada</label>
-                                <input type="text" class="form-control" id="detalle_fecha_entrega_solicitada" disabled>
+                                <label>Fecha Entrega</label>
+                                <input type="text" class="form-control" id="detalle_fecha_entrega" disabled>
                             </div>
                         </div>
                     </div>
-
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Cantidad Solicitada</label>
+                                <input type="text" class="form-control" id="detalle_cantidad_solicitada" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Estatus</label>
+                                <input type="text" class="form-control" id="detalle_estatus" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
                     <!-- Información de Administradora -->
                     <div class="row">
                         <div class="col-md-12">
@@ -235,20 +235,14 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Estatus</label>
-                                <input type="text" class="form-control" id="detalle_estatus_administradora" disabled>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
                                 <label>CDGPE</label>
                                 <input type="text" class="form-control" id="detalle_cdgpe_administradora" disabled>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-8">
                             <div class="form-group">
-                                <label>CDGPE Soporte</label>
-                                <input type="text" class="form-control" id="detalle_cdgpe_soporte" disabled>
+                                <label>Nombre</label>
+                                <input type="text" class="form-control" id="detalle_nombre_administradora" disabled>
                             </div>
                         </div>
                     </div>
@@ -260,45 +254,7 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Información de Tesorería -->
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h5 class="text-primary">
-                                <span class="glyphicon glyphicon-usd"></span> Tesorería
-                            </h5>
-                            <hr>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Estatus</label>
-                                <input type="text" class="form-control" id="detalle_estatus_tesoreria" disabled>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>CDGPE</label>
-                                <input type="text" class="form-control" id="detalle_cdgpe_tesoreria" disabled>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Fecha Proceso</label>
-                                <input type="text" class="form-control" id="detalle_fecha_procesa_tesoreria" disabled>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label>Observaciones</label>
-                                <textarea class="form-control" id="detalle_observaciones_tesoreria" rows="3" disabled></textarea>
-                            </div>
-                        </div>
-                    </div>
-
+                    <hr>
                     <!-- Información de Call Center -->
                     <div class="row">
                         <div class="col-md-12">
@@ -336,7 +292,7 @@
                             </div>
                         </div>
                     </div>
-
+                    <hr>
                     <!-- Comprobante -->
                     <div class="row">
                         <div class="col-md-12">

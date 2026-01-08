@@ -55,8 +55,8 @@ class AhorroConsulta extends Controller
                             item.CDGNS,
                             "$ " + formatoMoneda(item.CANT_SOLICITADA),
                             "$ " + formatoMoneda(item.CANT_AUTORIZADA),
-                            getFechas(item.FECHA_CREACION, item.FECHA_SOLICITUD, item.FECHA_ENTREGA_SOLICITADA, item.FECHA_PROCESA_TESORERIA, item.FECHA_CANCELACION),
-                            getBadge(item.ESTATUS_ADMINISTRADORA, item.ESTATUS_TESORERIA),
+                            getFechas(item.FECHA_CREACION, item.FECHA_SOLICITUD, item.FECHA_ENTREGA, item.ESTATUS === "V" ? item.ULTIMA_LLAMADA : null, item.ESTATUS === "C" ? item.FECHA_CANCELACION : null, item.ESTATUS === "R" ? item.FECHA_CANCELACION : null),
+                            getBadge(item.ESTATUS),
                             '<button class="btn btn-info btn-sm" onclick="verDetalle(' + item.ID + ')"><i class="fa fa-eye"></i> Ver detalle</button>'
                         ]
                     })
@@ -65,15 +65,16 @@ class AhorroConsulta extends Controller
                     $(".resultado").toggleClass("conDatos", true)
                 }
 
-                const getFechas = (fechaCreacion, fechaSolicitud, fechaEntrega, fechaProcesaTesoreria, fechaCancelacion) => {
+                const getFechas = (fechaCreacion, fechaSolicitud, fechaEntrega, fechaValidacion = null, fechaCancelacion = null, fechaRechazo = null) => {
                     const titulos = {
                         "Creación": fechaCreacion,
                         "Solicitud": fechaSolicitud,
-                        "Entrega Solicitada": fechaEntrega
+                        "Entrega": fechaEntrega
                     }
                     
-                    if (fechaProcesaTesoreria) titulos["Tesorería"] = fechaProcesaTesoreria
+                    if (fechaValidacion) titulos["Validación"] = fechaValidacion
                     if (fechaCancelacion) titulos["Cancelación"] = fechaCancelacion
+                    if (fechaRechazo) titulos["Rechazo"] = fechaRechazo
                     
                     let resultado = "<div style='text-align: left;'>"
                     Object.entries(titulos).forEach(([key, value]) => {
@@ -84,7 +85,7 @@ class AhorroConsulta extends Controller
                     return resultado
                 }
 
-                const getBadge = (estatusAdmin, estatusTesoreria) => {
+                const getBadge = (estatus) => {
                     const badges = {
                         P: {
                             clase: "default",
@@ -96,15 +97,19 @@ class AhorroConsulta extends Controller
                         },
                         R: {
                             clase: "danger",
-                            texto: "RECHAZADO POR TESORERÍA",
+                            texto: "RECHAZADO",
                         },
                         C: {
                             clase: "warning",
-                            texto: "CANCELADO POR GERENTE",
+                            texto: "CANCELADO",
+                        },
+                        V: {
+                            clase: "info",
+                            texto: "VALIDADO",
                         }
                     }
 
-                    const {clase, texto} = estatusAdmin === "C" ? badges.C : badges[estatusTesoreria] || badges.P
+                    const {clase, texto} = badges[estatus] || badges.P
                     return "<span class='badge alert-" + clase + "'>" + texto + "</span>"
                 }
 
@@ -129,22 +134,17 @@ class AhorroConsulta extends Controller
                         $("#detalle_id_retiro").val(datos.ID || "");
                         $("#detalle_credito").val(datos.CDGNS || "");
                         $("#detalle_fecha_creacion").val(datos.FECHA_CREACION || "");
-                        $("#detalle_cantidad_solicitada").val("$" + formatoMoneda(datos.CANT_SOLICITADA || 0));
-                        $("#detalle_cantidad_autorizada").val("$" + formatoMoneda(datos.CANT_AUTORIZADA || 0));
                         $("#detalle_fecha_solicitud").val(datos.FECHA_SOLICITUD || "");
-                        $("#detalle_fecha_entrega_solicitada").val(datos.FECHA_ENTREGA_SOLICITADA || "");
-                        $("#detalle_estatus_administradora").val(datos.ESTATUS_ADMINISTRADORA || "");
+                        $("#detalle_fecha_entrega").val(datos.FECHA_ENTREGA || "");
+                        $("#detalle_cantidad_solicitada").val("$" + formatoMoneda(datos.CANT_SOLICITADA || 0));
+                        $("#detalle_estatus").val(datos.ESTATUS_ETIQUETA || "");
                         $("#detalle_cdgpe_administradora").val(datos.CDGPE_ADMINISTRADORA || "");
-                        $("#detalle_cdgpe_soporte").val(datos.CDGPE_SOPORTE || "");
+                        $("#detalle_nombre_administradora").val(datos.NOMBRE_ADMINISTRADORA || "");
                         $("#detalle_observaciones_administradora").val(datos.OBSERVACIONES_ADMINISTRADORA || "");
-                        $("#detalle_estatus_tesoreria").val(datos.ESTATUS_TESORERIA || "");
-                        $("#detalle_cdgpe_tesoreria").val(datos.CDGPE_TESORERIA || "");
-                        $("#detalle_fecha_procesa_tesoreria").val(datos.FECHA_PROCESA_TESORERIA || "");
-                        $("#detalle_observaciones_tesoreria").val(datos.OBSERVACIONES_TESORERIA || "");
-                        $("#detalle_estatus_call_center").val(datos.ESTATUS_CALL_CENTER || "");
-                        $("#detalle_cdgpe_call_center").val(datos.CDGPE_CALL_CENTER || "");
-                        $("#detalle_fecha_procesa_call_center").val(datos.FECHA_PROCESA_CALL_CENTER || "");
-                        $("#detalle_observaciones_call_center").val(datos.OBSERVACIONES_CALL_CENTER || "");
+                        $("#detalle_estatus_call_center").val(datos.ESTATUS_CC_ETIQUETA || "");
+                        $("#detalle_cdgpe_call_center").val(datos.CDGPE_CC || "");
+                        $("#detalle_fecha_procesa_call_center").val(datos.ULTIMA_LLAMADA || "");
+                        $("#detalle_observaciones_call_center").val(datos.COMENTARIO_EXTERNO || "");
                         
                         // Configurar botón de ver comprobante
                         $("#btnVerComprobante").off("click").on("click", function() {
@@ -179,11 +179,11 @@ class AhorroConsulta extends Controller
                     $("#nueva_cdgns").val("");
                     $("#saldo_ahorro_disponible").val("");
                     $("#nueva_fecha_solicitud").val(hoy);
-                    $("#nueva_fecha_entrega_solicitada").val(dosDiasDespues.toISOString().split("T")[0]);
+                    $("#nueva_fecha_entrega").val(dosDiasDespues.toISOString().split("T")[0]);
 
                     $("#nueva_cantidad_solicitada").prop("disabled", true);
                     $("#nueva_fecha_solicitud").prop("disabled", true);
-                    $("#nueva_fecha_entrega_solicitada").prop("disabled", true);
+                    $("#nueva_fecha_entrega").prop("disabled", true);
                     $("#nueva_observaciones_administradora").prop("disabled", true);
                     $("#nueva_foto").prop("disabled", true);
                     $("#btnGuardarNuevaSolicitud").prop("disabled", true);
@@ -208,7 +208,7 @@ class AhorroConsulta extends Controller
                         $("#saldo_ahorro_disponible").val(saldo);
                         $("#nueva_cantidad_solicitada").prop("disabled", false);
                         $("#nueva_fecha_solicitud").prop("disabled", false);
-                        $("#nueva_fecha_entrega_solicitada").prop("disabled", false);
+                        $("#nueva_fecha_entrega").prop("disabled", false);
                         $("#nueva_observaciones_administradora").prop("disabled", false);
                         $("#nueva_foto").prop("disabled", false);
                         $("#btnGuardarNuevaSolicitud").prop("disabled", false);
@@ -222,7 +222,7 @@ class AhorroConsulta extends Controller
 
                     const cdgns = $("#nueva_cdgns").val().trim();
                     const fechaSolicitud = $("#nueva_fecha_solicitud").val();
-                    const fechaEntrega = $("#nueva_fecha_entrega_solicitada").val();
+                    const fechaEntrega = $("#nueva_fecha_entrega").val();
                     
                     if (!cdgns || cdgns.length !== 6) return showError("El crédito debe tener 6 dígitos");
                     if (!cantidadSolicitada || parseFloat(cantidadSolicitada) <= 0) return showError("Debe ingresar una cantidad solicitada válida mayor a 0");
@@ -241,7 +241,7 @@ class AhorroConsulta extends Controller
                             formData.append("ciclo", $("#nueva_ciclo").val());
                             formData.append("cantidad_solicitada", cantidadSolicitada);
                             formData.append("fecha_solicitud", fechaSolicitud);
-                            formData.append("fecha_entrega_solicitada", fechaEntrega);
+                            formData.append("fecha_entrega", fechaEntrega);
                             formData.append("observaciones_administradora", $("#nueva_observaciones_administradora").val() || "");
                             formData.append("cdgpe_administradora", "{$_SESSION['usuario']}");
                             

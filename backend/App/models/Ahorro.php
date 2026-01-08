@@ -166,7 +166,7 @@ sql;
                 , CDGNS
                 , CANT_SOLICITADA
                 , TO_CHAR(FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
-                , TO_CHAR(FECHA_ENTREGA_SOLICITADA, 'DD/MM/YYYY') AS FECHA_ENTREGA_SOLICITADA
+                , TO_CHAR(FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_ENTREGA
                 , CDGPE_ADMINISTRADORA
             FROM 
                 RETIROS_AHORRO
@@ -251,7 +251,7 @@ sql;
                 , CDGNS
                 , CANT_SOLICITADA
                 , TO_CHAR(FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
-                , TO_CHAR(FECHA_ENTREGA_SOLICITADA, 'DD/MM/YYYY') AS FECHA_ENTREGA_SOLICITADA
+                , TO_CHAR(FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_ENTREGA
                 , CDGPE_ADMINISTRADORA
                 , ESTATUS_ADMINISTRADORA
                 , ESTATUS_TESORERIA

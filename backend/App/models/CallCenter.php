@@ -11,11 +11,8 @@ class CallCenter extends Model
 {
     public static function getAllDescription($credito, $ciclo, $fec)
     {
-
         $date = str_replace('/', '-', $fec);
         $newDate = date("Y-m-d H:i:s", strtotime($date));
-
-        $mysqli = new Database();
 
         $query = <<<SQL
             SELECT 
@@ -51,102 +48,97 @@ class CallCenter extends Model
                 AND SC.CANTSOLIC <> '9999'  
         SQL;
 
+        $mysqli = new Database();
         $credito_ = $mysqli->queryOne($query);
-        //var_dump($credito_);
+
         $id_cliente = $credito_['ID_CLIENTE'];
-        $id_credito = $credito_['NO_CREDITO'];
         $id_proyecto = $credito_['ID_PROYECTO'];
 
-
-
-        $query2 = <<<sql
-         SELECT
-        CONCATENA_NOMBRE(CL.NOMBRE1,CL.NOMBRE2,CL.PRIMAPE,CL.SEGAPE) NOMBRE,
-        CL.NACIMIENTO,
-        TRUNC(MONTHS_BETWEEN(SYSDATE, CL.NACIMIENTO) / 12) EDAD,
-        CL.SEXO,
-        EDO_CIVIL(CL.EDOCIVIL) EDO_CIVIL,
-        CL.TELEFONO,
-        EF.NOMBRE ESTADO,
-        UPPER(MU.NOMBRE) MUNICIPIO,
-        LO.NOMBRE LOCALIDAD,
-        COL.NOMBRE COLONIA,
-        COL.CDGPOSTAL CP,
-        CL.CALLE, PI.NOMBRE ACT_ECO, 
-        CL.CLABE
-    FROM
-        CL,
-        EF,
-        MU,
-        LO,
-        COL, 
-        PI
-    WHERE
-        CL.CODIGO = '$id_cliente'
-        AND EF.CODIGO = CL.CDGEF
-        AND MU.CODIGO = CL.CDGMU
-        AND LO.CODIGO = CL.CDGLO 
-        AND COL.CODIGO = CL.CDGCOL
-        AND EF.CODIGO = MU.CDGEF 
-        AND EF.CODIGO = LO.CDGEF
-        AND EF.CODIGO = COL.CDGEF
-        AND MU.CODIGO = LO.CDGMU 
-        AND MU.CODIGO = COL.CDGMU 
-        AND LO.CODIGO = COL.CDGLO
-        AND PI.CDGCL = CL.CODIGO 
-        AND PI.PROYECTO = '$id_proyecto'
-        ORDER BY PI.ACTUALIZA DESC
-sql;
+        $query2 = <<<SQL
+            SELECT
+                CONCATENA_NOMBRE(CL.NOMBRE1,CL.NOMBRE2,CL.PRIMAPE,CL.SEGAPE) NOMBRE,
+                CL.NACIMIENTO,
+                TRUNC(MONTHS_BETWEEN(SYSDATE, CL.NACIMIENTO) / 12) EDAD,
+                CL.SEXO,
+                EDO_CIVIL(CL.EDOCIVIL) EDO_CIVIL,
+                CL.TELEFONO,
+                EF.NOMBRE ESTADO,
+                UPPER(MU.NOMBRE) MUNICIPIO,
+                LO.NOMBRE LOCALIDAD,
+                COL.NOMBRE COLONIA,
+                COL.CDGPOSTAL CP,
+                CL.CALLE, PI.NOMBRE ACT_ECO, 
+                CL.CLABE
+            FROM
+                CL,
+                EF,
+                MU,
+                LO,
+                COL, 
+                PI
+            WHERE
+                CL.CODIGO = '$id_cliente'
+                AND EF.CODIGO = CL.CDGEF
+                AND MU.CODIGO = CL.CDGMU
+                AND LO.CODIGO = CL.CDGLO 
+                AND COL.CODIGO = CL.CDGCOL
+                AND EF.CODIGO = MU.CDGEF 
+                AND EF.CODIGO = LO.CDGEF
+                AND EF.CODIGO = COL.CDGEF
+                AND MU.CODIGO = LO.CDGMU 
+                AND MU.CODIGO = COL.CDGMU 
+                AND LO.CODIGO = COL.CDGLO
+                AND PI.CDGCL = CL.CODIGO 
+                AND PI.PROYECTO = '$id_proyecto'
+                ORDER BY PI.ACTUALIZA DESC
+        SQL;
 
         $cliente = $mysqli->queryOne($query2);
 
-
+        $res_recomendado = '';
         $id_cliente_recomendado = $cliente['CLABE'];
         if ($id_cliente_recomendado != '') {
-            $query_recomendado = <<<sql
-             SELECT
-            CONCATENA_NOMBRE(CL.NOMBRE1,CL.NOMBRE2,CL.PRIMAPE,CL.SEGAPE) NOMBRE,
-            CL.NACIMIENTO,
-            TRUNC(MONTHS_BETWEEN(SYSDATE, CL.NACIMIENTO) / 12) EDAD,
-            CL.SEXO,
-            EDO_CIVIL(CL.EDOCIVIL) EDO_CIVIL,
-            CL.TELEFONO,
-            EF.NOMBRE ESTADO,
-            UPPER(MU.NOMBRE) MUNICIPIO,
-            LO.NOMBRE LOCALIDAD,
-            COL.NOMBRE COLONIA,
-            COL.CDGPOSTAL CP,
-            CL.CALLE, 
-            PI.NOMBRE ACT_ECO
-        FROM
-            CL,
-            EF,
-            MU,
-            LO,
-            COL, 
-            PI
-        WHERE
-            CL.CODIGO = '$id_cliente_recomendado'
-            AND EF.CODIGO = CL.CDGEF
-            AND MU.CODIGO = CL.CDGMU
-            AND LO.CODIGO = CL.CDGLO 
-            AND COL.CODIGO = CL.CDGCOL
-            AND EF.CODIGO = MU.CDGEF 
-            AND EF.CODIGO = LO.CDGEF
-            AND EF.CODIGO = COL.CDGEF
-            AND MU.CODIGO = LO.CDGMU 
-            AND MU.CODIGO = COL.CDGMU 
-            AND LO.CODIGO = COL.CDGLO
-            AND PI.CDGCL = CL.CODIGO 
-            ORDER BY PI.ACTUALIZA DESC
-sql;
+            $query_recomendado = <<<SQL
+                SELECT
+                    CONCATENA_NOMBRE(CL.NOMBRE1,CL.NOMBRE2,CL.PRIMAPE,CL.SEGAPE) NOMBRE,
+                    CL.NACIMIENTO,
+                    TRUNC(MONTHS_BETWEEN(SYSDATE, CL.NACIMIENTO) / 12) EDAD,
+                    CL.SEXO,
+                    EDO_CIVIL(CL.EDOCIVIL) EDO_CIVIL,
+                    CL.TELEFONO,
+                    EF.NOMBRE ESTADO,
+                    UPPER(MU.NOMBRE) MUNICIPIO,
+                    LO.NOMBRE LOCALIDAD,
+                    COL.NOMBRE COLONIA,
+                    COL.CDGPOSTAL CP,
+                    CL.CALLE, 
+                    PI.NOMBRE ACT_ECO
+                FROM
+                    CL,
+                    EF,
+                    MU,
+                    LO,
+                    COL, 
+                    PI
+                WHERE
+                    CL.CODIGO = '$id_cliente_recomendado'
+                    AND EF.CODIGO = CL.CDGEF
+                    AND MU.CODIGO = CL.CDGMU
+                    AND LO.CODIGO = CL.CDGLO 
+                    AND COL.CODIGO = CL.CDGCOL
+                    AND EF.CODIGO = MU.CDGEF 
+                    AND EF.CODIGO = LO.CDGEF
+                    AND EF.CODIGO = COL.CDGEF
+                    AND MU.CODIGO = LO.CDGMU 
+                    AND MU.CODIGO = COL.CDGMU 
+                    AND LO.CODIGO = COL.CDGLO
+                    AND PI.CDGCL = CL.CODIGO 
+                    ORDER BY PI.ACTUALIZA DESC
+            SQL;
 
             $res_recomendado = $mysqli->queryOne($query_recomendado);
-        } else {
-            $res_recomendado = '';
         }
 
-        //var_dump($query2);
         $query3 = <<<SQL
             WITH SCC AS (
                 SELECT
@@ -238,42 +230,21 @@ sql;
                 CL.CODIGO IN (SELECT SC.CDGCL FROM SC WHERE SC.CDGNS = '$credito' AND SC.CICLO = '$ciclo' AND SC.CANTSOLIC = '9999')
         SQL;
 
-        if (in_array($ciclo, [
-            'R1',
-            'R2',
-            'R3',
-            'R4',
-            'R5',
-            'R6',
-            'R7',
-            'R8',
-            'R9',
-            'R10',
-            'R11',
-            'R12',
-            'R13',
-            'R14',
-            'R15'
-        ])) {
-            $ciclo_actualizado =  $credito_['CICLOR'];
-        } else {
-            $ciclo_actualizado =  $ciclo;
-        }
+        $ciclo_actualizado =  str_starts_with($ciclo, 'R') ? $credito_['CICLOR'] : $ciclo;
 
-        $desbloqueo_cl = <<<sql
-                SELECT COUNT(ID_SCALL) as LLAMADA_UNO, 
-                       CASE WHEN (DIA_LLAMADA_1_CL IS NOT NULL)  THEN (DIA_LLAMADA_1_CL ||' '|| TO_CHAR(HORA_LLAMADA_1_CL ,'HH24:MI:SS') || ' (' || TIPO_LLAM_1_CL ||')' ) ELSE '-' END AS HORA_LLAMADA_UNO, 
-                       CASE WHEN (DIA_LLAMADA_2_CL IS NOT NULL)  THEN (DIA_LLAMADA_2_CL ||' '|| TO_CHAR(HORA_LLAMADA_2_CL ,'HH24:MI:SS') || ' (' || TIPO_LLAM_2_CL ||')' )  ELSE '-' END AS HORA_LLAMADA_DOS, 
-                       
-                NUMERO_INTENTOS_CL, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS, VOBO_GERENTE_REGIONAL,
-                FIN_CL AS FINALIZADA, COMENTARIO_PRORROGA, PRORROGA, REACTIVACION 
-                FROM SOL_CALL_CENTER 
-                WHERE CICLO ='$ciclo_actualizado' AND CDGCL_CL = '$id_cliente'  AND (FECHA_SOL = TIMESTAMP '$newDate.000')
-                GROUP BY ID_SCALL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, PRG_UNO_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, NUMERO_INTENTOS_CL, COMENTARIO_INICIAL, COMENTARIO_FINAL, FIN_CL, COMENTARIO_PRORROGA, PRORROGA, REACTIVACION, ESTATUS, VOBO_GERENTE_REGIONAL, TIPO_LLAM_1_CL, TIPO_LLAM_2_CL          
-                
-sql;
+        $desbloqueo_cl = <<<SQL
+            SELECT COUNT(ID_SCALL) as LLAMADA_UNO, 
+                    CASE WHEN (DIA_LLAMADA_1_CL IS NOT NULL)  THEN (DIA_LLAMADA_1_CL ||' '|| TO_CHAR(HORA_LLAMADA_1_CL ,'HH24:MI:SS') || ' (' || TIPO_LLAM_1_CL ||')' ) ELSE '-' END AS HORA_LLAMADA_UNO, 
+                    CASE WHEN (DIA_LLAMADA_2_CL IS NOT NULL)  THEN (DIA_LLAMADA_2_CL ||' '|| TO_CHAR(HORA_LLAMADA_2_CL ,'HH24:MI:SS') || ' (' || TIPO_LLAM_2_CL ||')' )  ELSE '-' END AS HORA_LLAMADA_DOS, 
+                    
+            NUMERO_INTENTOS_CL, COMENTARIO_INICIAL, COMENTARIO_FINAL, ESTATUS, VOBO_GERENTE_REGIONAL,
+            FIN_CL AS FINALIZADA, COMENTARIO_PRORROGA, PRORROGA, REACTIVACION 
+            FROM SOL_CALL_CENTER 
+            WHERE CICLO ='$ciclo_actualizado' AND CDGCL_CL = '$id_cliente'  AND (FECHA_SOL = TIMESTAMP '$newDate.000')
+            GROUP BY ID_SCALL, DIA_LLAMADA_1_CL, HORA_LLAMADA_1_CL, PRG_UNO_CL, DIA_LLAMADA_2_CL, HORA_LLAMADA_2_CL, NUMERO_INTENTOS_CL, COMENTARIO_INICIAL, COMENTARIO_FINAL, FIN_CL, COMENTARIO_PRORROGA, PRORROGA, REACTIVACION, ESTATUS, VOBO_GERENTE_REGIONAL, TIPO_LLAM_1_CL, TIPO_LLAM_2_CL          
+        SQL;
 
-        $desbloqueo_aval = <<<sql
+        $desbloqueo_aval = <<<SQL
                 select COUNT(ID_SCALL) as LLAMADA_UNO, 
                        DIA_LLAMADA_1_AV AS NUM_LLAM, 
                        CASE WHEN (DIA_LLAMADA_1_AV IS NOT NULL)  THEN (DIA_LLAMADA_1_AV ||' '|| TO_CHAR(HORA_LLAMADA_1_AV ,'HH24:MI:SS') || ' (' || TIPO_LLAM_1_AV ||')' ) ELSE '-' END AS HORA_LLAMADA_UNO, 
@@ -285,7 +256,7 @@ sql;
                 WHERE CICLO ='$ciclo' AND CDGCL_CL = '$id_cliente' AND (CICLO != 'R1')  AND (FECHA_SOL = TIMESTAMP '$newDate.000')
                 GROUP BY ID_SCALL, DIA_LLAMADA_1_AV, HORA_LLAMADA_1_AV, PRG_UNO_AV, DIA_LLAMADA_2_AV, HORA_LLAMADA_2_AV, NUMERO_INTENTOS_AV, TIPO_LLAM_1_AV, TIPO_LLAM_2_AV,
                 FIN_AV
-sql;
+            SQL;
 
 
 
@@ -293,27 +264,30 @@ sql;
         $llamada_av = $mysqli->queryOne($desbloqueo_aval);
         $cliente = $mysqli->queryOne($query2);
         $aval = $mysqli->queryAll($query3);
-        //$credito_adicional = $mysqli->queryOne($query_busca_adicional);
-        /// aqui hacer algo para volver a validar politicas
-
-        ///var_dump($desbloqueo_cl);
 
         return [$credito_, $cliente, $aval, $llamada_cl, $llamada_av, $res_recomendado];
     }
 
     public static function getComboSucursales($CDGPE)
     {
-
-        $mysqli = new Database();
-        $query = <<<sql
+        $qry = <<<SQL
            SELECT CO.CODIGO, CO.NOMBRE  FROM ASIGNACION_SUC_A
            INNER JOIN CO ON CO.CODIGO = ASIGNACION_SUC_A.CDGCO 
-           WHERE ASIGNACION_SUC_A.CDGPE = '$CDGPE'
-           AND CO.CODIGO = ASIGNACION_SUC_A.CDGCO 
-		    
-sql;
-        //var_dump($query);
-        return $mysqli->queryAll($query);
+           WHERE ASIGNACION_SUC_A.CDGPE = :cdgpe
+           AND CO.CODIGO = ASIGNACION_SUC_A.CDGCO
+        SQL;
+
+        $prm = [
+            'cdgpe' => $CDGPE
+        ];
+
+        try {
+            $db = new Database();
+            $res = $db->queryOne($qry, $prm);
+            return self::Responde(true, 'Sucursales obtenidas', $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al obtener sucursales', null, $e->getMessage());
+        }
     }
 
     public static function getComboSucursalesAllCDGCO($datos)
@@ -343,7 +317,7 @@ sql;
         try {
             $db = new Database();
             $res = $db->queryOne($qry, $prm);
-            return self::Responde(true, 'Sucursales obtenidas', $res, $qry);
+            return self::Responde(true, 'Sucursales obtenidas', $res);
         } catch (\Exception $e) {
             return self::Responde(false, 'Error al obtener sucursales', null, $e->getMessage());
         }
@@ -759,43 +733,274 @@ sql;
 
     public static function getAllSolicitudes($cdgco)
     {
-
         $string_from_array = implode(', ', $cdgco);
-        //var_dump($string_from_array);
+        $in = '';
+        $in_1 = '';
 
         if ($string_from_array != '') {
             $in = 'SPE.CDGCO IN(' . $string_from_array . ') AND';
             $in_1 = 'SPR.CDGCO IN(' . $string_from_array . ') AND';
-        } else {
-            $in = '';
-            $in_1 = '';
         }
 
-        $mysqli = new Database();
+        $qry = <<<SQL
+            SELECT * FROM  
+            (
+                SELECT DISTINCT * FROM SOLICITUDES_PENDIENTES SPE
+                WHERE $in SPE.SOLICITUD > TO_DATE('19/10/2023', 'DD/MM/YYYY')
+                AND SPE.CICLO NOT LIKE 'R%'
+                AND SPE.CICLO NOT LIKE 'D%'
+                UNION 
+                SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
+                WHERE $in_1 SPR.SOLICITUD > TO_DATE('19/10/2023', 'DD/MM/YYYY')
+                AND (ESTATUS_FINAL IS NULL OR ESTATUS_FINAL LIKE 'PENDIENTE%')
+                AND SPR.CICLO NOT LIKE 'R%'
+                AND SPR.CICLO NOT LIKE 'D%'
+            )
+            ORDER BY SOLICITUD ASC
+        SQL;
 
-        $query = <<<sql
-         
+        $db = new Database();
+        return $db->queryAll($qry);
+    }
 
-        SELECT * FROM  
-        (
-          SELECT DISTINCT * FROM SOLICITUDES_PENDIENTES SPE
-	     WHERE $in SPE.SOLICITUD > TIMESTAMP '2023-10-19 00:00:00.000000'
-	     AND (SPE.CICLO != 'R1') AND (SPE.CICLO != 'R2') AND (SPE.CICLO != 'R3') AND (SPE.CICLO != 'R4') AND (SPE.CICLO != 'R5')
-	     AND (SPE.CICLO != 'D1') AND (SPE.CICLO != 'D2') AND (SPE.CICLO != 'D3') AND (SPE.CICLO != 'D4') AND (SPE.CICLO != 'D5')
-	     UNION 
-	     SELECT DISTINCT * FROM SOLICITUDES_PROCESADAS SPR
-	     WHERE $in_1 SPR.SOLICITUD > TIMESTAMP '2023-10-19 00:00:00.000000'
-         AND (ESTATUS_FINAL IS NULL OR ESTATUS_FINAL LIKE 'PENDIENTE%')
-	     AND (SPR.CICLO != 'R1') AND (SPR.CICLO != 'R2') AND (SPR.CICLO != 'R3') AND (SPR.CICLO != 'R4') AND (SPR.CICLO != 'R5')
-	     AND (SPR.CICLO != 'D1') AND (SPR.CICLO != 'D2') AND (SPR.CICLO != 'D3') AND (SPR.CICLO != 'D4') AND (SPR.CICLO != 'D5')
-        )
-        order by SOLICITUD ASC
+    public static function getSolicitudesRetiro($cdgco)
+    {
+        $qry = <<<SQL
+            SELECT
+                RA.ID
+                , RA.CDGNS AS CREDITO
+                , RA.CICLO
+                , RG.CODIGO AS REGION
+                , RG.NOMBRE AS NOMBRE_REGION
+                , CO.CODIGO AS SUCURSAL
+                , CO.NOMBRE AS NOMBRE_SUCURSAL
+                , GET_NOMBRE_EMPLEADO(PE.CODIGO) AS NOMBRE_EJECUTIVO
+                , RA.FECHA_ENTREGA
+                , GET_NOMBRE_CLIENTE(CL.CODIGO) AS NOMBRE_CLIENTE
+                , CL.TELEFONO
+                , RAC.COMENTARIO_INTERNO
+                , RAC.COMENTARIO_EXTERNO
+                , TO_CHAR(RA.FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
+                , NVL(RAC.ESTATUS, 'P') AS ESTATUS
+                , CASE RAC.ESTATUS
+                    WHEN 'I' THEN 'INCOMPLETA'
+                    WHEN 'C' THEN 'COMPLETA'
+                    ELSE 'PENDIENTE'
+                  END AS ESTATUS_ETIQUETA
+            FROM
+                RETIROS_AHORRO RA
+                INNER JOIN SN ON SN.CDGNS = RA.CDGNS AND SN.CICLO = RA.CICLO
+                INNER JOIN SC ON SC.CDGNS = SN.CDGNS AND SC.CICLO = SN.CICLO AND SC.CANTSOLIC <> 9999
+                INNER JOIN CL ON CL.CODIGO = SC.CDGCL 
+                INNER JOIN CO ON SN.CDGCO = CO.CODIGO 
+                INNER JOIN RG ON CO.CDGRG = RG.CODIGO 
+                INNER JOIN PE ON PE.CODIGO = SN.CDGOCPE
+                LEFT JOIN RETIROS_AHORRO_CALLCENTER RAC ON RA.ID = RAC.RETIRO
+            WHERE
+                RA.ESTATUS = 'P'
+                FILTR_SUC
+        SQL;
 
-	     
-sql;
+        $string_from_array = implode(', ', $cdgco);
+        $filtro_suc = " AND CO.CODIGO IN ($string_from_array) ";
+        $qry = $string_from_array != '' ? str_replace('FILTR_SUC', $filtro_suc, $qry) : str_replace('FILTR_SUC', '', $qry);
 
-        //var_dump($query);
-        return $mysqli->queryAll($query);
+        try {
+            $db = new Database();
+            $res = $db->queryAll($qry);
+            return self::Responde(true, 'Solicitudes de retiro obtenidas', $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al obtener solicitudes de retiro', null, $e->getMessage());
+        }
+    }
+
+    public static function getInfoRetiro($datos)
+    {
+        $qry = <<<SQL
+            SELECT
+                RA.ID
+                , RA.CDGNS AS CREDITO
+                , RA.CICLO
+                , RA.CANT_SOLICITADA
+                , CO.CODIGO AS SUCURSAL
+                , CO.NOMBRE AS NOMBRE_SUCURSAL
+                , GET_NOMBRE_EMPLEADO(PE.CODIGO) AS NOMBRE_EJECUTIVO
+                , RA.FECHA_ENTREGA
+                , CL.CODIGO AS CLIENTE
+                , GET_NOMBRE_CLIENTE(CL.CODIGO) AS NOMBRE_CLIENTE
+                , TO_CHAR(CL.NACIMIENTO, 'DD/MM/YYYY') AS FECHA_NACIMIENTO
+                , TRUNC(MONTHS_BETWEEN(SYSDATE, CL.NACIMIENTO) / 12) AS EDAD
+                , CASE CL.SEXO
+                    WHEN 'M' THEN 'Hombre'
+                    WHEN 'F' THEN 'Mujer'
+                    ELSE 'Otro'
+                  END AS SEXO
+                , CL.TELEFONO
+                , DOMICILIO_CLIENTE(CL.CODIGO) AS DOMICILIO
+                , TO_CHAR(RA.FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
+                , RAC.ESTATUS
+                , CASE RAC.ESTATUS
+                    WHEN 'I' THEN 'INCOMPLETA'
+                    WHEN 'C' THEN 'COMPLETA'
+                    ELSE 'PENDIENTE'
+                  END AS ESTATUS_ETIQUETA
+                , RAC.COMENTARIO_INTERNO
+                , RAC.COMENTARIO_EXTERNO
+                , RAC.INTENTOS
+                , TO_CHAR(CASE WHEN RAC.FECHA_LLAMADA_2 IS NOT NULL THEN RAC.FECHA_LLAMADA_2 ELSE RAC.FECHA_LLAMADA_1 END, 'DD/MM/YYYY HH24:MI:SS') AS ULTIMA_LLAMADA
+                , CASE WHEN RAC.TIPO_LLAMADA_2 IS NOT NULL THEN RAC.TIPO_LLAMADA_2 ELSE RAC.TIPO_LLAMADA_1 END AS TIPO_ULTIMA_LLAMADA
+                , RAC.R1
+                , RAC.R2
+            FROM
+                RETIROS_AHORRO RA
+                INNER JOIN SN ON SN.CDGNS = RA.CDGNS AND SN.CICLO = RA.CICLO
+                INNER JOIN SC ON SC.CDGNS = SN.CDGNS AND SC.CICLO = SN.CICLO AND SC.CANTSOLIC <> 9999
+                INNER JOIN CL ON CL.CODIGO = SC.CDGCL 
+                INNER JOIN CO ON SN.CDGCO = CO.CODIGO 
+                INNER JOIN RG ON CO.CDGRG = RG.CODIGO 
+                INNER JOIN PE ON PE.CODIGO = SN.CDGOCPE
+                LEFT JOIN RETIROS_AHORRO_CALLCENTER RAC ON RA.ID = RAC.RETIRO
+            WHERE
+                RA.ID = :retiro
+        SQL;
+
+        $prms = [
+            'retiro' => $datos['retiro']
+        ];
+
+        try {
+            $db = new Database();
+            $res = $db->queryOne($qry, $prms);
+            return self::Responde(true, 'Información de retiro obtenida', $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al obtener información de retiro', null, $e->getMessage());
+        }
+    }
+
+    public static function iniciaRetiroCallCenter($datos)
+    {
+        $qry = <<<SQL
+            MERGE INTO RETIROS_AHORRO_CALLCENTER RAC
+            USING (
+                SELECT :retiro AS RETIRO FROM DUAL
+            ) S
+            ON (RAC.RETIRO = S.RETIRO)
+            WHEN NOT MATCHED THEN
+                INSERT (
+                    RETIRO,
+                    CDGPE
+                )
+                VALUES (
+                    :retiro,
+                    :cdgpe
+                )
+        SQL;
+
+        $prms = [
+            'retiro' => $datos['retiro'],
+            'cdgpe' => $datos['usuario']
+        ];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $prms);
+            return self::Responde(true, 'Retiro iniciado correctamente', null);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al iniciar el retiro', null, $e->getMessage());
+        }
+    }
+
+    public static function RegistraLlamadaRetiro($datos)
+    {
+        $qry = <<<SQL
+            UPDATE RETIROS_AHORRO_CALLCENTER
+            SET
+                INTENTOS = INTENTOS + 1,
+                ACTUALIZACION = SYSDATE,
+                R1 = :r1,
+                R2 = :r2,
+                TIPO_LLAMADA_1 = CASE WHEN TIPO_LLAMADA_1 IS NULL THEN :tipo_llamada ELSE TIPO_LLAMADA_1 END,
+                FECHA_LLAMADA_1 = CASE WHEN FECHA_LLAMADA_1 IS NULL THEN SYSDATE ELSE FECHA_LLAMADA_1 END,
+                TIPO_LLAMADA_2 = CASE WHEN TIPO_LLAMADA_1 IS NOT NULL THEN :tipo_llamada ELSE TIPO_LLAMADA_2 END,
+                FECHA_LLAMADA_2 = CASE WHEN FECHA_LLAMADA_1 IS NOT NULL THEN SYSDATE ELSE FECHA_LLAMADA_2 END,
+                ESTATUS = CASE WHEN :completo = '1' THEN 'C' ELSE 'I' END
+            WHERE
+                RETIRO = :retiro
+        SQL;
+
+        $prms = [
+            'retiro' => $datos['retiro'],
+            'r1' => $datos['r1'],
+            'r2' => $datos['r2'],
+            'tipo_llamada' => $datos['tipo'],
+            'completo' => $datos['completo']
+        ];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $prms);
+            return self::Responde(true, 'Llamada registrada correctamente', null);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al registrar llamada', null, $e->getMessage());
+        }
+    }
+
+    public static function ActualizaComentariosRetiro($datos)
+    {
+        $qry = <<<SQL
+            UPDATE RETIROS_AHORRO_CALLCENTER
+            SET
+                CDGPE = :cdgpe,
+                COMENTARIO_INTERNO = CASE WHEN :interno IS NOT NULL THEN :interno ELSE COMENTARIO_INTERNO END,
+                COMENTARIO_EXTERNO = CASE WHEN :externo IS NOT NULL THEN :externo ELSE COMENTARIO_EXTERNO END,
+                ACTUALIZACION = SYSDATE
+            WHERE
+                RETIRO = :retiro
+        SQL;
+
+        $prms = [
+            'retiro' => $datos['retiro'],
+            'cdgpe' => $datos['usuario'],
+            'interno' => isset($datos['interno']) ? $datos['interno'] : null,
+            'externo' => isset($datos['externo']) ? $datos['externo'] : null
+        ];
+
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $prms);
+            return self::Responde(true, 'Comentarios de retiro actualizados correctamente', null);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al actualizar comentarios de retiro', null, $e->getMessage());
+        }
+    }
+
+    public static function FinalizaSolicitudRetiro($datos)
+    {
+        $qry = <<<SQL
+            UPDATE RETIROS_AHORRO
+            SET
+                ESTATUS = :estatus
+                , CDGPE_CANCELACION = CASE WHEN :estatus IN ('C', 'R') THEN :usuario ELSE NULL END
+                , MOTIVO_CANCELACION = CASE :estatus WHEN 'C' THEN 'CANCELADO POR CALL CENTER' WHEN 'R' THEN 'RECHAZADO POR CALL CENTER' ELSE NULL END
+                , FECHA_CANCELACION = CASE WHEN :estatus IN ('C', 'R') THEN SYSDATE ELSE NULL END
+            WHERE
+                ID = :retiro
+        SQL;
+
+        $prms = [
+            'retiro' => $datos['retiro'],
+            'estatus' => $datos['estatus'],
+            'usuario' => $datos['usuario']
+        ];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $prms);
+            return self::Responde(true, 'Solicitud de retiro finalizada correctamente', null);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al finalizar solicitud de retiro', null, $e->getMessage());
+        }
     }
 
     public static function getAllSolicitudesBusquedaRapida($cdgns)

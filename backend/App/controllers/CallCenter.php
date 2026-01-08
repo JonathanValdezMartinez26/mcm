@@ -29,6 +29,10 @@ class CallCenter extends Controller
         $tabla = "";
         $extraFooter = <<<HTML
             <script>
+                {$this->mensajes}
+                {$this->confirmarMovimiento}
+                {$this->consultaServidor}
+
                 const APROBADO = "aprobado";
                 const RECHAZADO = "rechazado";
                 const PENDIENTE = "pendiente";
@@ -71,6 +75,15 @@ class CallCenter extends Controller
                         table.search(jQuery.fn.DataTable.ext.type.search.html(this.value)).draw()
                     })
                     var checkAll = 0
+
+                    $("#guarda_internos").on("click", () => {
+                        guardaComentariosRetiro()
+                    })
+                    $("#guarda_externos").on("click", () => {
+                        guardaComentariosRetiro(false)
+                    })
+                    $("#guarda_encuesta_retiro").on("click", guardaEncuestaRetiro)
+                    $("#termina_retiro").on("click", finalizaSolicitudRetiro)
                 })
 
                 function InfoDesactivaEncuesta() {
@@ -607,6 +620,105 @@ class CallCenter extends Controller
                 const showEncuestaAval = (id) => {
                     $("#modal_encuesta_aval_"+id).modal("show")
                 }
+
+                const guardaComentariosRetiro = (internos = true) => {
+                    if (internos && $("#estatus").val() == "P") return showError("No se pueden guardar comentarios iniciales hasta que registre su primera llamada.");
+                    if (!internos && $("#estatus").val() != "C") return showError("No se pueden guardar comentarios finales hasta que finalice la encuesta.");
+                    
+                    const datos = {
+                        retiro: "{$_GET['retiro']}",
+                        usuario: "{$_SESSION['usuario']}",
+                    }
+
+                    if (internos) datos.interno = $("#comentarios_internos").val()
+                    else datos.externo = $("#comentarios_externos").val()
+
+
+                    confirmarMovimiento("Guardar comentarios", "¿Desea guardar los comentarios " + (internos ? "iniciales" : "finales") + "?")
+                    .then(continuar => {
+                        if (!continuar) return
+                        consultaServidor("/CallCenter/ComentariosRetiro/", datos, (respuesta) => {
+                            if (!respuesta.success) return showError(respuesta.mensaje)
+
+                            showSuccess("Se guardaron correctamente los comentarios.")
+                            .then(() => {
+                                showWait("Actualizando información...")
+                                location.reload()
+                            })
+                        })
+                    })
+                }
+
+                const guardaEncuestaRetiro = () => {
+                    const retiro = "{$_GET['retiro']}"
+                    const tipo = document.getElementById("tipo_llamada").value
+                    if (tipo == "") return showError("Seleccione el tipo de llamada que realizo")
+
+                    const r1 = document.getElementById("r1").value
+                    const r2 = document.getElementById("r2").value
+                    const completo = $('input[name="completo"]:checked').val()
+                    let titulo = "Llamada completa"
+                    let mensaje = "Usted va a finalizar y guardar la encuesta, no podrá editar esta información en un futuro."
+                    
+                    if (completo == "1") {
+                        if (r1 == "") return showError("Debe seleccionar una respuesta para la pregunta 1.")
+                        if (r2 == "") return showError("Debe seleccionar una respuesta para la pregunta 2.")
+                    } else {
+                        titulo = "Llamada incompleta"
+                        mensaje = "¿Desea registrar un intento de llamada como incompleta?"
+                    }
+
+                    confirmarMovimiento(titulo, mensaje)
+                    .then(continuar => {
+                        if (!continuar) return
+                        consultaServidor("/CallCenter/RegistraLlamadaRetiro/", {
+                            retiro,
+                            tipo,
+                            r1,
+                            r2,
+                            completo
+                        }, (respuesta) => {
+                            if (!respuesta.success) return showError(respuesta.mensaje)
+
+                            showSuccess("Registro guardado exitosamente")
+                            .then(() => {
+                                showWait("Actualizando información...")
+                                location.reload()
+                            })
+                        })
+
+                    })
+                }
+
+                const finalizaSolicitudRetiro = () => {
+                    const r1 = $("#r1").val()
+                    const r2 = $("#r2").val()
+                    const retiro = "{$_GET['retiro']}"
+                    const usuario = "{$_SESSION['usuario']}"
+                    const estatus = $("#estatus_solicitud").val()
+
+                    if (estatus == "V" && r1 != "S" && r2 != "S") return showError("No se puede finalizar la solicitud como válida si no se respondió correctamente a todas las preguntas.");
+
+                    const estatus_label = $("#estatus_solicitud option:selected").text()
+                    
+                    if ($("#estatus").val() == "P") return showError("No se puede finalizar la solicitud hasta que llene la encuesta.");
+                    if (!estatus) return showError("Seleccione el estatus final de la solicitud")
+
+                    confirmarMovimiento("Finalizar solicitud de retiro", "¿Desea finalizar la solicitud de retiro con estatus " + estatus_label + "?")
+                    .then(continuar => {
+                        if (!continuar) return
+
+                        consultaServidor("/CallCenter/FinalizaSolicitudRetiro/", { retiro, estatus, usuario }, (respuesta) => {
+                            if (!respuesta.success) return showError(respuesta.mensaje)
+
+                            showSuccess("La solicitud de retiro se finalizó correctamente.")
+                            .then(() => {
+                                showWait("Redirigiendo a la lista de pendientes...")
+                                window.location.href = "/CallCenter/Pendientes/"
+                            })
+                        })
+                    })
+                }
             </script>
         HTML;
 
@@ -615,26 +727,44 @@ class CallCenter extends Controller
         $suc = $_GET['Suc'];
         $reg = $_GET['Reg'];
         $fec = $_GET['Fec'];
-        $act = $_GET['Act'];
         $opciones_suc = '';
         $cdgco_all = array();
         $cdgco_suc = array();
         $ComboSucursales = CallCenterDao::getComboSucursales($this->__usuario);
         $opciones_suc .= '<option  value="000">(000) TODAS MIS SUCURSALES</option>';
 
-        foreach ($ComboSucursales as $key => $val2) {
-            $sel = $suc == $val2['CODIGO'] ? 'selected' : '';
+        if ($ComboSucursales['success']) {
+            foreach ($ComboSucursales['datos'] as $key => $val2) {
+                $sel = $suc == $val2['CODIGO'] ? 'selected' : '';
 
-            $opciones_suc .= <<<html
-                <option {$sel} value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
-            html;
-            array_push($cdgco_all, $val2['CODIGO']);
+                $opciones_suc .= <<<html
+                    <option {$sel} value="{$val2['CODIGO']}">({$val2['CODIGO']}) {$val2['NOMBRE']}</option>
+                html;
+                array_push($cdgco_all, $val2['CODIGO']);
+            }
         }
 
         View::set('header', $this->_contenedor->header($this->GetExtraHeader('Consulta de Clientes Call Center')));
         View::set('footer', $this->_contenedor->footer($extraFooter));
 
-        if ($credito != '' && $ciclo != '' && $fec != '') {
+        if (isset($_GET['retiro'])) {
+            $inicializar = CallCenterDao::iniciaRetiroCallCenter($_GET);
+            if ($inicializar['success'] == false) {
+                View::set('mensaje', $inicializar['mensaje']);
+                View::render("callcenter_retiros_message");
+                exit;
+            }
+
+            $datos_retiro = CallCenterDao::getInfoRetiro($_GET);
+            if ($datos_retiro['success'] == false) {
+                View::set('mensaje', $datos_retiro['mensaje']);
+                View::render("callcenter_retiros_message");
+                exit;
+            }
+
+            View::set('datos_retiro', $datos_retiro['datos']);
+            View::render("callcenter_retiros");
+        } elseif ($credito != '' && $ciclo != '' && $fec != '') {
             $AdministracionOne = CallCenterDao::getAllDescription($credito, $ciclo, $fec);
 
             if ($AdministracionOne[0] == '') {
@@ -643,48 +773,42 @@ class CallCenter extends Controller
                 View::set('ciclo', $ciclo);
                 View::render("callcenter_cliente_message_all");
             } else {
-
                 View::set('Administracion', $AdministracionOne);
-
-                if ($AdministracionOne[0]['CREDITO_ADICIONAL'] == '1') {
-                    View::set('visible', 'none');
-                } else {
-                    View::set('visible', 'block');
-                }
+                View::set('visible', $AdministracionOne[0]['CREDITO_ADICIONAL'] == '1' ? 'none' : 'block');
                 View::set('suc', $suc);
                 View::set('reg', $reg);
                 View::set('cdgpe', $this->__usuario);
                 View::set('pendientes', 'Mis ');
-
-                if ($act == 'N') {
-
-                    if ($AdministracionOne[0]['CREDITO_ADICIONAL'] == 1) {
-                        View::render("callcenter_cliente_all_mas");
-                    } else {
-                        View::render("callcenter_cliente_all_disable");
-                    }
-                } else {
-                    View::render("callcenter_cliente_all");
-                }
+                View::render($AdministracionOne[0]['CREDITO_ADICIONAL'] == 1 ? "callcenter_cliente_all_mas" : "callcenter_cliente_all_disable");
             }
         } else {
-            if ($credito == '' && $ciclo == '') {
-                if ($suc == '000' || $suc == '') {
-                    $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_all);
+            $param = null;
+
+            if ($credito === '' && $ciclo === '') {
+
+                if ($suc === '000' || $suc === '') {
+                    $param = $cdgco_all;
+                } elseif ($this->__perfil === 'ADMIN' || $this->__perfil === 'ACALL') {
+                    $param = '';
                 } else {
-                    if ($this->__perfil == 'ADMIN' || $this->__perfil == 'ACALL') {
-                        $Solicitudes = CallCenterDao::getAllSolicitudes('');
-                    } else {
-                        array_push($cdgco_suc, $suc);
-                        $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_suc);
-                    }
+                    $cdgco_suc[] = $suc;
+                    $param = $cdgco_suc;
                 }
             } else {
-                array_push($cdgco_suc, $suc);
-                $Solicitudes = CallCenterDao::getAllSolicitudes($cdgco_suc);
+                $cdgco_suc[] = $suc;
+                $param = $cdgco_suc;
             }
 
+            $Solicitudes = CallCenterDao::getAllSolicitudes($param);
+
+
+            $filas = [];
             foreach ($Solicitudes as $key => $value) {
+                $orden = \DateTime::createFromFormat(
+                    'd/m/Y H:i:s',
+                    $value['FECHA_SOL']
+                );
+
                 if ($value['ESTATUS_CL'] == 'PENDIENTE') {
                     $color = 'primary';
                     $icon = 'fa-frown-o';
@@ -784,12 +908,6 @@ class CallCenter extends Controller
                     $format = "(" . substr($value['TEL_CL'], 0, 3) . ")" . " " . substr($value['TEL_CL'], 3, 3) . " - " . substr($value['TEL_CL'], 6, 4);
                 }
 
-                if ($value['ID_SCALL'] == '') {
-                    $id_scall = '0000';
-                } else {
-                    $id_scall = $value['ID_SCALL'];
-                }
-
                 if ($value['RECOMENDADO'] != '') {
                     $recomendado = '<div><b>CAMPAÑA ACTIVA</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #6a0013"><span class="fa fa-yelp"> </span> </span></div><b><em>RECOMIENDA MÁS Y PAGA MENOS <em></em></b><hr>';
                 }
@@ -802,7 +920,7 @@ class CallCenter extends Controller
                     $aval_r = $value['ESTATUS_AV'];
                 }
 
-                $tabla .= <<<HTML
+                $fila = <<<HTML
                 <tr style="padding: 0px !important; ">
                     <td style="padding: 5px !important; width:65px !important;">
                     <div><span class="label label-success" style="color: #0D0A0A">MCM - {$value['ID_SCALL']}</span></div>
@@ -834,10 +952,10 @@ class CallCenter extends Controller
                     </td>
                     <td style="padding-top: 22px !important;">{$value['FECHA_SOL']}</td>
                     <td style="padding: 10px !important; text-align: left; width:165px !important;">
-                    <div><span class="label label-$color_ci" ><span class="fa $icon_ci"></span></span> Comentarios Iniciales</div>
-                    <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span> Comentarios Finales</div>
+                    <div><span class="label label-$color_ci" ><span class="fa $icon_ci"></span></span>&nbsp;Comentarios Iniciales</div>
+                    <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span>&nbsp;Comentarios Finales</div>
                     $comentario_prorroga
-                    <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span> Estatus Final Solicitud</div>
+                    <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span>&nbsp;Estatus Final Solicitud</div>
                     $vobo
                     </td>
                     <td style="padding-top: 22px !important;">
@@ -846,14 +964,134 @@ class CallCenter extends Controller
                     </td>
                 </tr>
                 HTML;
+
+                $filas[] = [
+                    'fecha' => $orden->getTimestamp(),
+                    'fila' => $fila
+                ];
             }
 
+            $retiros = CallCenterDao::getSolicitudesRetiro($param);
+
+            if ($retiros['success']) {
+                foreach ($retiros['datos'] as $key => $retiro) {
+                    $orden = \DateTime::createFromFormat(
+                        'd/m/Y H:i:s',
+                        $retiro['FECHA_CREACION']
+                    );
+
+                    $telefono = $retiro['TELEFONO'];
+                    $telefono = sprintf(
+                        '(%s) %s - %s',
+                        substr($telefono, 0, 3),
+                        substr($telefono, 3, 3),
+                        substr($telefono, 6, 4)
+                    );
+
+                    $color = 'success';
+                    $icon = 'fa-check';
+                    $icon_ci = $retiro['COMENTARIO_INTERNO'] == '' ? 'fa-close' : 'fa-check';
+                    $color_ci = $retiro['COMENTARIO_INTERNO'] == '' ? 'danger' : 'success';
+                    $icon_cf = $retiro['COMENTARIO_EXTERNO'] == '' ? 'fa-close' : 'fa-check';
+                    $color_cf = $retiro['COMENTARIO_EXTERNO'] == '' ? 'danger' : 'success';
+                    $icon_ef = 'fa-check';
+                    $color_ef = 'success';
+                    $titulo_boton = 'Iniciar';
+                    $color_boton = '#029f3f';
+                    $fuente = '';
+
+
+                    if ($retiro['ESTATUS'] == 'P') {
+                        $color = 'primary';
+                        $icon = 'fa-frown-o';
+                        $icon_ef = 'fa-close';
+                        $color_ef = 'danger';
+                    } else if ($retiro['ESTATUS'] == 'I') {
+                        $color = 'warning';
+                        $icon = 'fa-clock-o';
+                        $icon_ef = 'fa-clock-o';
+                        $color_ef = 'warning';
+                        $titulo_boton = 'Seguir';
+                        $color_boton = '#F0AD4E';
+                        $fuente = '#0D0A0A';
+                    } else if ($retiro['ESTATUS'] == 'C') {
+                        $titulo_boton = 'Acabar';
+                        $color_boton = '#000';
+                        $fuente = '#fff';
+                        $icon_ef = 'fa-clock-o';
+                        $color_ef = 'warning';
+                    }
+
+                    $fila = <<<HTML
+                        <tr style="vertical-align: middle;">
+                            <td>
+                                <div><span class="label label-success" style="color: #0D0A0A">MCM - {$retiro['ID']}</span></div>
+                                <hr>
+                                <div><label>{$retiro['CREDITO']}-{$retiro['CICLO']}</label></div>
+                            </td>
+                            <td style="text-align: left; vertical-align: middle;">
+                                <span class="fa fa-building">&nbsp;</span>GERENCIA REGIONAL: ({$retiro['REGION']}) {$retiro['NOMBRE_REGION']}
+                                <br>
+                                <span class="fa fa-map-marker">&nbsp;</span>SUCURSAL: ({$retiro['SUCURSAL']}) {$retiro['NOMBRE_SUCURSAL']}
+                                <br>
+                                <span class="fa fa-briefcase">&nbsp;</span>EJECUTIVO: {$retiro['NOMBRE_EJECUTIVO']}
+                            </td>
+                            <td style="vertical-align: middle;">
+                                <div>
+                                    <span class="fa fa-user"></span> <label style="color: #1c4e63">{$retiro['NOMBRE_CLIENTE']}</label><br><label><span class="fa fa-phone">&nbsp;</span>{$telefono}</label>
+                                    <hr>
+                                    <div><b>TIPO:</b> <span class="label label-success" style=" font-size: 95% !important; border-radius: 50em !important; background: #25895b"><span class="fa fa-university"></span></span></div><b><em>RETIRO DE AHORRO<em></em></b><hr>
+                                </div>
+                            </td>
+                            <td style="text-align: left; vertical-align: middle;">
+                                <div>
+                                    <b>CLIENTE: </b>{$retiro['ESTATUS_ETIQUETA']} <span class="label label-$color" style="font-size: 95% !important; border-radius: 50em !important;"><span class="fa $icon"></span></span>
+                                </div>
+                            </td>
+                            <td  style="text-align: left; vertical-align: middle;">
+                                {$retiro['FECHA_CREACION']}
+                            </td>
+                            <td style="text-align: left; vertical-align: middle;">
+                                <div><span class="label label-$color_ci" ><span class="fa $icon_ci"></span></span>&nbsp;Comentarios Iniciales</div>
+                                <div><span class="label label-$color_cf"><span class="fa $icon_cf"></span></span>&nbsp;Comentarios Finales</div>
+                                <div><span class="label label-$color_ef"><span class="fa $icon_ef"></span></span>&nbsp;Estatus Final Solicitud</div>
+                            </td>
+                            <td  style="vertical-align: middle;">
+                                <a type="button" href="/CallCenter/Pendientes/?credito={$retiro['CREDITO']}&ciclo={$retiro['CICLO']}&usuario={$_SESSION['usuario']}&retiro={$retiro['ID']}" class="btn btn-primary btn-circle" style="background: $color_boton; color: $fuente "><i class="fa fa-edit"></i> <b>$titulo_boton</b>
+                                </a>
+                            </td>
+                        </tr>
+                    HTML;
+
+                    $filas[] = [
+                        'fecha' => $orden->getTimestamp(),
+                        'fila' => $fila
+                    ];
+                }
+            }
+
+            usort($filas, function ($a, $b) {
+                return $a['fecha'] <=> $b['fecha'];
+            });
+
+            $filas = array_column($filas, 'fila');
+            $tabla = $filas != [] ? implode("", $filas) : '';
             View::set('tabla', $tabla);
             View::set('cdgpe', $this->__usuario);
             View::set('sucursal', $opciones_suc);
             View::set('pendientes', 'Mis ');
             View::render("callcenter_pendientes_all");
         }
+    }
+
+    public function RegistraLlamadaRetiro()
+    {
+        echo json_encode(CallCenterDao::RegistraLlamadaRetiro($_POST));
+    }
+
+    public function FinalizaSolicitudRetiro()
+    {
+        echo json_encode(CallCenterDao::FinalizaSolicitudRetiro($_POST));
     }
 
     public function Busqueda()
@@ -3903,6 +4141,11 @@ html;
         $encuesta->_comentarios_prorroga = MasterDom::getData('comentarios_prorroga');
 
         $id = CallCenterDao::UpdateResumen($encuesta);
+    }
+
+    public function ComentariosRetiro()
+    {
+        echo json_encode(CallCenterDao::ActualizaComentariosRetiro($_POST));
     }
 
     public function ProrrogaUpdate()
