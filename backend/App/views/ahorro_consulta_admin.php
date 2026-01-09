@@ -35,7 +35,9 @@
                             <th>Crédito</th>
                             <th>Cantidad Solicitada</th>
                             <th>Fecha de solicitud</th>
-                            <th>Fecha de entrega</th>
+                            <th>Fecha de entrega programada</th>
+                            <th>Fecha de entrega real</th>
+                            <th>Fecha de devolución</th>
                             <th>Región</th>
                             <th>Sucursal</th>
                             <th>Administradora</th>
@@ -51,6 +53,7 @@
     </div>
 </div>
 
+<!-- Modal para cancelar solicitud -->
 <div class="modal fade" id="modalCancelarSolicitud" tabindex="-1" role="dialog" aria-labelledby="modalCancelarSolicitudLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -154,16 +157,22 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Fecha Solicitud</label>
                                         <input type="text" class="form-control" id="detalle_fecha_solicitud" readonly>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Fecha Entrega</label>
+                                        <label>Fecha Entrega Programada</label>
                                         <input type="text" class="form-control" id="detalle_fecha_entrega" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Fecha Entrega Real</label>
+                                        <input type="text" class="form-control" id="detalle_fecha_entrega_real" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -289,9 +298,52 @@
     </div>
 </div>
 
+<!-- Modal para devolver retiro -->
+<div class="modal fade" id="modalDevolverRetiro" tabindex="-1" role="dialog" aria-labelledby="modalDevolverRetiroLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <center>
+                    <h4 class="modal-title">Devolver Retiro</h4>
+                </center>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <input type="hidden" id="idRetiroDevolucion" />
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="motivoDevolucion">Comentario de devolución:</label>
+                                <textarea class="form-control" id="motivoDevolucion" rows="4" placeholder="Ingrese el motivo de la devolución"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <span class="glyphicon glyphicon-remove">&nbsp;</span>Cerrar
+                </button>
+                <button type="button" class="btn btn-danger" id="btnDevolverRetiro">
+                    <span class="glyphicon glyphicon-floppy-disk">&nbsp;</span>Devolver Retiro
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?= $footer; ?>
 
 <style>
+    .alert-dark {
+        background-color: #000;
+        border-color: #000;
+        color: #fff;
+    }
+
     .nav-tabs-custom {
         border-bottom: 2px solid #e5e5e5;
         margin-bottom: 20px;

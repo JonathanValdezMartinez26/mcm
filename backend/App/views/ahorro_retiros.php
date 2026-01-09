@@ -44,7 +44,8 @@
                             <th>Cantidad Solicitada</th>
                             <th>Fecha de registro</th>
                             <th>Fecha de solicitud</th>
-                            <th>Fecha de entrega</th>
+                            <th>Fecha de entrega programada</th>
+                            <th>Fecha de devolución</th>
                             <th>Región</th>
                             <th>Sucursal</th>
                             <th>Administradora</th>

@@ -654,8 +654,8 @@ class CallCenter extends Controller
                     const tipo = document.getElementById("tipo_llamada").value
                     if (tipo == "") return showError("Seleccione el tipo de llamada que realizo")
 
-                    const r1 = document.getElementById("r1").value
-                    const r2 = document.getElementById("r2").value
+                    const r1 = $("#p1").val()
+                    const r2 = $("#p2").val()
                     const completo = $('input[name="completo"]:checked').val()
                     let titulo = "Llamada completa"
                     let mensaje = "Usted va a finalizar y guardar la encuesta, no podrá editar esta información en un futuro."

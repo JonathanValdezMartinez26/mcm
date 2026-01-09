@@ -16,32 +16,40 @@ class AhorroConsulta extends Model
                 RA.ID
                 ,RA.CDGNS
                 ,RA.CANT_SOLICITADA
-                ,NVL(RA.CANT_AUTORIZADA, 0) AS CANT_AUTORIZADA
+                ,RA.ESTATUS
                 ,TO_CHAR(RA.FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
                 ,TO_CHAR(RA.FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_ENTREGA
-                ,RA.OBSERVACIONES_ADMINISTRADORA
-                ,RA.ESTATUS
-                ,RA.CDGPE_ADMINISTRADORA
+                ,TO_CHAR(RA.FECHA_ENTREGA_REAL, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_ENTREGA_REAL
                 ,TO_CHAR(RA.FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
                 ,TO_CHAR(RA.FECHA_CANCELACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CANCELACION
+                ,TO_CHAR(RA.FECHA_DEVOLUCION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_DEVOLUCION
                 ,TO_CHAR(CASE WHEN RAC.FECHA_LLAMADA_2 IS NOT NULL THEN RAC.FECHA_LLAMADA_2 ELSE RAC.FECHA_LLAMADA_1 END, 'DD/MM/YYYY HH24:MI:SS') AS ULTIMA_LLAMADA
             FROM 
                 RETIROS_AHORRO RA
                 LEFT JOIN RETIROS_AHORRO_CALLCENTER RAC ON RA.ID = RAC.RETIRO
             WHERE
                 TRUNC(RA.FECHA_CREACION) BETWEEN TO_DATE(:fechaI, 'YYYY-MM-DD') AND TO_DATE(:fechaF, 'YYYY-MM-DD')
+                FILTRO_USUARIO
             ORDER BY 
                 RA.ID DESC
         SQL;
 
         $params = [
-            ':fechaI' => $datos['fechaI'],
-            ':fechaF' => $datos['fechaF']
+            'fechaI' => $datos['fechaI'],
+            'fechaF' => $datos['fechaF']
         ];
+
+        if ($_SESSION['perfil'] === 'ADMIN') {
+            $qry = str_replace('FILTRO_USUARIO', '', $qry);
+        } else {
+            $qry = str_replace('FILTRO_USUARIO', 'AND RA.CDGPE_ADMINISTRADORA = cdgpe_administradora', $qry);
+            $params['cdgpe_administradora'] = $_SESSION['cdgpe'];
+        }
 
         try {
             $db = new Database();
             $res = $db->queryAll($qry, $params);
+            if ($res === false) return self::Responde(false, "Error al obtener los retiros");
             return self::Responde(true, "Retiros obtenidos correctamente", $res ?? []);
         } catch (\Exception $e) {
             return self::Responde(false, "Error al obtener los retiros", null, $e->getMessage());
@@ -55,12 +63,13 @@ class AhorroConsulta extends Model
                 RA.ID
                 ,RA.CDGNS
                 ,RA.CANT_SOLICITADA
-                ,NVL(RA.CANT_AUTORIZADA, 0) AS CANT_AUTORIZADA
                 ,TO_CHAR(RA.FECHA_SOLICITUD, 'DD/MM/YYYY') AS FECHA_SOLICITUD
                 ,TO_CHAR(RA.FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_ENTREGA
+                ,TO_CHAR(RA.FECHA_ENTREGA_REAL, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_ENTREGA_REAL
                 ,RA.OBSERVACIONES_ADMINISTRADORA
                 ,RA.ESTATUS
                 ,RA.MOTIVO_CANCELACION
+                ,RA.COMENTARIO_DEVOLUCION
                 ,RA.CDGPE_ADMINISTRADORA
                 ,GET_NOMBRE_EMPLEADO(RA.CDGPE_ADMINISTRADORA) AS NOMBRE_ADMINISTRADORA
                 ,TO_CHAR(RA.FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
@@ -109,16 +118,45 @@ class AhorroConsulta extends Model
     public static function BuscarSaldo($datos)
     {
         $qry = <<<SQL
-            SELECT
-                CDGNS,
-                MAX(TO_NUMBER(CICLO)) AS CICLO_ACTUAL,
-                FN_GET_AHORRO(:cdgns) AS SALDO_ACTUAL
-            FROM
-                PRN
-            WHERE
-                CDGNS = :cdgns
-            GROUP BY
-                CDGNS
+            WITH CREDITO_ADICIONAL
+            AS (
+                SELECT CN.CDGCL
+                    ,NVL(CN.CDGNS, 0) AS CDGNS
+                    ,(
+                        SELECT MAX(TO_NUMBER(PRN.CICLO))
+                        FROM PRN
+                        WHERE PRN.CDGNS = CN.CDGNS
+                            AND PRN.CICLO NOT LIKE 'D%'
+                            AND PRN.CICLO NOT LIKE 'R%'
+                        GROUP BY PRN.CDGNS
+                        ) AS ULTIMO_CICLO
+                FROM CN
+                WHERE CN.CDGEM = 'EMPFIN'
+                    AND CN.ESTATUS = 'A'
+                    AND CN.CDGMS IS NULL
+                ORDER BY CN.INICIO DESC
+                )
+            SELECT CA.CDGNS
+                ,PRC.CICLO AS ULTIMO_CICLO_TRADICIONAL
+                ,CR_AD.CDGNS AS CREDITO_ADICIONAL
+                ,CR_AD.ULTIMO_CICLO AS ULTIMO_CICLO_ADICIONAL
+                ,0 AS ATRASO_TRADICONAL
+                --,FNCALDIASMORA(PRC.CDGEM, PRC.CDGNS, 'G', PRC.CICLO) AS DIAS_MORA_TRADICONAL
+                --,5 AS DIAS_MORA_ADICIONAL
+                ,CASE WHEN NOT CR_AD.ULTIMO_CICLO IS NULL THEN FNCALDIASMORA(PRC.CDGEM, CR_AD.CDGNS, 'G', LPAD(TO_CHAR(CR_AD.ULTIMO_CICLO), 2, '0')) ELSE NULL END AS DIAS_MORA_ADICIONAL
+                ,GET_NOMBRE_CLIENTE(CL.CODIGO) AS NOMBRE_CLIENTE
+                ,FN_GET_AHORRO(PRC.CDGNS) AS SALDO_ACTUAL
+                ,TO_CHAR(ADD_MONTHS(CA.FECHA_REGISTRO, 12), 'YYYY-MM-DD') AS ANIVERSARIO
+            FROM CONTRATOS_AHORRO CA
+            INNER JOIN PRC ON PRC.CDGNS = CA.CDGNS
+            INNER JOIN CL ON CL.CODIGO = PRC.CDGCL
+            LEFT JOIN CREDITO_ADICIONAL CR_AD ON CR_AD.CDGCL = CL.CODIGO
+                AND CR_AD.CDGNS <> CA.CDGNS
+            WHERE CA.CDGNS = :cdgns
+                AND PRC.CICLO NOT LIKE 'D%'
+                AND PRC.CICLO NOT LIKE 'R%'
+            ORDER BY PRC.CICLO DESC
+            FETCH FIRST 1 ROWS ONLY
         SQL;
 
         $params = [
@@ -129,7 +167,7 @@ class AhorroConsulta extends Model
             $db = new Database();
             $res = $db->queryOne($qry, $params);
 
-            if (!$res) return self::Responde(false, "No se encontró el ahorro", null);
+            if (!$res) return self::Responde(false, "El crédito no tiene un contrato de ahorro.", null);
 
             return self::Responde(true, "Saldo obtenido correctamente", $res);
         } catch (\Exception $e) {
@@ -204,6 +242,50 @@ class AhorroConsulta extends Model
             return self::Responde(true, "Imagen obtenida correctamente", $res);
         } catch (\Exception $e) {
             return self::Responde(false, "Error al obtener la imagen", null, $e->getMessage());
+        }
+    }
+
+    public static function confirmarEntregaRetiroAhorro($datos)
+    {
+        $qry = <<<SQL
+            UPDATE RETIROS_AHORRO
+            SET ESTATUS = 'E'
+                , FECHA_ENTREGA_REAL = SYSDATE
+            WHERE ID = :id
+        SQL;
+
+        $prms = ['id' => $datos['id']];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $prms);
+            return self::Responde(true, "Entrega confirmada correctamente");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al confirmar la entrega", null, $e->getMessage());
+        }
+    }
+
+    public static function devolverRetiro($datos)
+    {
+        $qry = <<<SQL
+            UPDATE RETIROS_AHORRO
+            SET ESTATUS = 'D'
+            , FECHA_DEVOLUCION = SYSDATE
+            , COMENTARIO_DEVOLUCION = :comentario
+            WHERE ID = :id
+        SQL;
+
+        $prms = [
+            'id' => $datos['id'],
+            'comentario' => $datos['comentario']
+        ];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $prms);
+            return self::Responde(true, "Retiro devuelto correctamente");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al devolver el retiro", null, $e->getMessage());
         }
     }
 }

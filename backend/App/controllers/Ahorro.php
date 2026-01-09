@@ -5769,6 +5769,7 @@ html;
                             dato.FECHA_CREACION,
                             dato.FECHA_SOLICITUD,
                             dato.FECHA_ENTREGA,
+                            dato.FECHA_DEVOLUCION || "-",
                             dato.REGION,
                             dato.SUCURSAL,
                             dato.CDGPE_ADMINISTRADORA
@@ -5828,7 +5829,8 @@ html;
             \PHPSpreadsheet::ColumnaExcel('CANT_SOLICITADA', 'Monto', ['estilo' => $estilos['moneda'], 'total' => true]),
             \PHPSpreadsheet::ColumnaExcel('FECHA_CREACION', 'Fecha Registro', ['estilo' => $estilos['fecha_hora']]),
             \PHPSpreadsheet::ColumnaExcel('FECHA_SOLICITUD', 'Fecha Solicitud', ['estilo' => $estilos['fecha']]),
-            \PHPSpreadsheet::ColumnaExcel('FECHA_ENTREGA', 'Fecha Entrega', ['estilo' => $estilos['fecha']]),
+            \PHPSpreadsheet::ColumnaExcel('FECHA_ENTREGA', 'Fecha Entrega Programada', ['estilo' => $estilos['fecha']]),
+            \PHPSpreadsheet::ColumnaExcel('FECHA_DEVOLUCION', 'Fecha Devolución', ['estilo' => $estilos['fecha_hora']]),
             \PHPSpreadsheet::ColumnaExcel('REGION', 'Región'),
             \PHPSpreadsheet::ColumnaExcel('SUCURSAL', 'Sucursal'),
             \PHPSpreadsheet::ColumnaExcel('CDGPE_ADMINISTRADORA', 'Administradora'),
@@ -5878,6 +5880,19 @@ html;
                             }
                         ]
 
+                        if (dato.ESTATUS === "V") acciones.push(
+                            {
+                                icono: "fa-check-circle text-success",
+                                texto: "Confirmar Entrega",
+                                funcion: "confirmarEntrega(" + dato.ID + ")"
+                            },
+                            {
+                                icono: "fa-undo text-warning",
+                                texto: "Devolver Retiro",
+                                funcion: "comentarioDevolucion(" + dato.ID + ")"
+                            }
+                        )
+
                         if (dato.ESTATUS === "P" && !dato.ESTATUS_TESORERIA) acciones.push(
                             "divisor",
                             {
@@ -5893,6 +5908,8 @@ html;
                             dato.CANT_SOLICITADA,
                             dato.FECHA_SOLICITUD,
                             dato.FECHA_ENTREGA,
+                            dato.FECHA_ENTREGA_REAL || "-",
+                            dato.FECHA_DEVOLUCION || "-",
                             dato.REGION,
                             dato.SUCURSAL,
                             dato.CDGPE_ADMINISTRADORA,
@@ -5911,9 +5928,9 @@ html;
                             clase: "default",
                             texto: "PENDIENTE",
                         },
-                        A: {
+                        E: {
                             clase: "success",
-                            texto: "APROBADO",
+                            texto: "ENTREGADO",
                         },
                         R: {
                             clase: "danger",
@@ -5926,6 +5943,10 @@ html;
                         V: {
                             clase: "info",
                             texto: "VALIDADO",
+                        },
+                        D: {
+                            clase: "dark",
+                            texto: "DEVUELTO",
                         }
                     }
 
@@ -5970,17 +5991,24 @@ html;
                         $("#detalle_fecha_creacion").val(datos.FECHA_CREACION || "");
                         $("#detalle_fecha_solicitud").val(datos.FECHA_SOLICITUD || "");
                         $("#detalle_fecha_entrega").val(datos.FECHA_ENTREGA || "");
+                        $("#detalle_fecha_entrega_real").val(datos.FECHA_ENTREGA_REAL || "");
                         $("#detalle_cantidad_solicitada").val("$" + formatoMoneda(datos.CANT_SOLICITADA || 0));
                         $("#detalle_estatus").val(datos.ESTATUS_ETIQUETA || "")
-                        if (datos.ESTATUS === "C" || datos.ESTATUS === "R") {
-                            const titulo = datos.ESTATUS === "C" ? "Motivo de cancelación" : "Motivo de rechazo";
+
+                        if (["C", "R"].includes(datos.ESTATUS)) {
+                            const titulo = "Motivo de " + (datos.ESTATUS === "C" ? "cancelación" : "rechazo");
                             $("#detalle_titulo_motivo").text(titulo);
                             $("#detalle_motivo").val(datos.MOTIVO_CANCELACION || "");
+                            $("#grupo_motivo_cancelacion").show();
+                        } else if (datos.ESTATUS === "D") {
+                            $("#detalle_titulo_motivo").text("Motivo de devolución");
+                            $("#detalle_motivo").val(datos.COMENTARIO_DEVOLUCION || "");
                             $("#grupo_motivo_cancelacion").show();
                         } else {
                             $("#detalle_motivo").val("");
                             $("#grupo_motivo_cancelacion").hide();
                         }
+
                         $("#detalle_cdgpe_administradora").val(datos.CDGPE_ADMINISTRADORA || "");
                         $("#detalle_nombre_administradora").val(datos.NOMBRE_ADMINISTRADORA || "");
                         $("#detalle_observaciones_administradora").val(datos.OBSERVACIONES_ADMINISTRADORA || "");
@@ -6035,6 +6063,48 @@ html;
                     )
                 }
 
+                const confirmarEntrega = (id) => {
+                    confirmarMovimiento("Confirmar entrega al cliente", "¿Desea confirmar la entrega de este retiro?")
+                    .then((continuar) => {
+                        if (continuar) {
+                            consultaServidor("/AhorroConsulta/ConfirmarEntregaRetiroAhorro", { id }, (res) => {
+                                if (!res.success) return showError(res.mensaje)
+                                showSuccess(res.mensaje)
+                                consultaSolicitudes()
+                            })
+                        }
+                    });
+                }
+
+                const comentarioDevolucion = (retiro) => {
+                    $("#idRetiroDevolucion").val(retiro)
+                    $("#motivoDevolucion").val("")
+                    
+                    $("#modalDevolverRetiro").modal("show")
+                }
+
+                const devolverRetiro = () => {
+                    const comentario = $("#motivoDevolucion").val().trim()
+                    if (comentario === "") return showError("Debe capturar el motivo que justifique la devolución.")
+
+                    const params = { 
+                        id: $("#idRetiroDevolucion").val(),
+                        comentario,
+                        usuario: "{$_SESSION['usuario']}"
+                     }
+
+                    consultaServidor("/AhorroConsulta/DevolverRetiro/",
+                        params,
+                        (resultado) => {
+                            if (!resultado.success) return showError(resultado.mensaje)
+
+                            $("#modalDevolverRetiro").modal("hide")
+                            showSuccess("El retiro ha sido devuelto.")
+                            .then(consultaSolicitudes)
+                        }
+                    )
+                }
+
                 $(document).ready(() => {
                     const hoy = new Date().getDate()
                     const fechaI = new Date().setDate(hoy - 7)
@@ -6043,6 +6113,7 @@ html;
 
                     $("#fechaI, #fechaF").change(getRetiros)
                     $("#btnCancelarSolicitud").click(cancelarSolicitud)
+                    $("#btnDevolverRetiro").click(devolverRetiro)
                     
                     $("#comprobanteImg").on("load", function() {
                         $("#loadingImg").hide()

@@ -86,6 +86,7 @@
                                         <input type="hidden" id="saldo_ahorro_disponible">
                                         <input type="hidden" id="nueva_cdgns">
                                         <input type="hidden" id="nueva_ciclo">
+                                        <input type="hidden" id="aniversario_ahorro">
                                         <button type="button" class="btn btn-primary" id="btnBuscarCredito">
                                             <span class="fa fa-search">&nbsp;</span>Buscar
                                         </button>
@@ -94,34 +95,30 @@
                             </div>
                         </div>
                         <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Cliente</label>
+                                    <input type="text" class="form-control" id="nombre_cliente" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Cantidad Solicitada <span class="text-danger">*</span></label>
                                     <input type="number" step="0.01" class="form-control" id="nueva_cantidad_solicitada" placeholder="0.00" required disabled>
-                                    <small class="form-text text-muted">Monto solicitado</small>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Fecha Solicitud <span class="text-danger">*</span></label>
                                     <input type="date" class="form-control" id="nueva_fecha_solicitud" required disabled min="<?= date('Y-m-d', strtotime('-3 days')) ?>" max="<?= date('Y-m-d', strtotime('+3 days')) ?>">
-                                    <small class="form-text text-muted">Fecha de solicitud</small>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Fecha Entrega</label>
                                     <input type="date" class="form-control" id="nueva_fecha_entrega" readonly>
-                                    <small class="form-text text-muted">Fecha de entrega</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label>Observaciones</label>
-                                    <textarea class="form-control" id="nueva_observaciones_administradora" rows="3" placeholder="Ingrese observaciones (opcional)" disabled></textarea>
-                                    <small class="form-text text-muted">Comentarios adicionales</small>
                                 </div>
                             </div>
                         </div>
@@ -131,6 +128,14 @@
                                     <label>Foto/Comprobante</label>
                                     <input type="file" class="form-control" id="nueva_foto" accept="image/*" disabled>
                                     <small class="form-text text-muted">Formatos aceptados: JPG, PNG, PDF (Máx. 5MB)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Observaciones</label>
+                                    <textarea class="form-control" id="nueva_observaciones_administradora" rows="3" placeholder="Ingrese observaciones (opcional)" disabled></textarea>
                                 </div>
                             </div>
                         </div>
@@ -163,7 +168,6 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <!-- Botón de Comprobante destacado -->
                     <div class="row" style="margin-bottom: 20px;">
                         <div class="col-md-4 col-md-offset-8" style="display: flex; justify-content: flex-end;">
                             <button type="button" class="btn btn-info" id="btnVerComprobante">
@@ -172,7 +176,6 @@
                         </div>
                     </div>
 
-                    <!-- Tabs de navegación -->
                     <ul class="nav nav-tabs nav-tabs-custom" role="tablist">
                         <li role="presentation" class="active">
                             <a href="#tabGeneral" aria-controls="tabGeneral" role="tab" data-toggle="tab">
@@ -191,9 +194,8 @@
                         </li>
                     </ul>
 
-                    <!-- Contenido de las pestañas -->
                     <div class="tab-content tab-content-custom">
-                        <!-- Tab: Información General -->
+                        <!-- Información General -->
                         <div role="tabpanel" class="tab-pane active" id="tabGeneral">
                             <div class="row">
                                 <div class="col-md-4">
@@ -216,16 +218,22 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Fecha Solicitud</label>
                                         <input type="text" class="form-control" id="detalle_fecha_solicitud" readonly>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Fecha Entrega</label>
+                                        <label>Fecha Entrega Programada</label>
                                         <input type="text" class="form-control" id="detalle_fecha_entrega" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Fecha Entrega Real</label>
+                                        <input type="text" class="form-control" id="detalle_fecha_entrega_real" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -253,7 +261,7 @@
                             </div>
                         </div>
 
-                        <!-- Tab: Administradora -->
+                        <!-- Administradora -->
                         <div role="tabpanel" class="tab-pane" id="tabAdministradora">
                             <div class="row">
                                 <div class="col-md-4">
@@ -279,7 +287,7 @@
                             </div>
                         </div>
 
-                        <!-- Tab: Call Center -->
+                        <!-- Call Center -->
                         <div role="tabpanel" class="tab-pane" id="tabCallCenter">
                             <div class="row">
                                 <div class="col-md-4">
@@ -354,6 +362,12 @@
 <?= $footer; ?>
 
 <style>
+    .alert-dark {
+        background-color: #000;
+        border-color: #000;
+        color: #fff;
+    }
+
     .nav-tabs-custom {
         border-bottom: 2px solid #e5e5e5;
         margin-bottom: 20px;

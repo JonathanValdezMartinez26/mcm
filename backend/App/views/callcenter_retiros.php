@@ -261,8 +261,8 @@ $estilo_ver = $datos_retiro['ESTATUS'] != 'C' ? 'display:none;' : '';
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="r1">1.- ¿Usted solicito un retiro? *</label>
-                                <select class="form-control mr-sm-3" id="r1">
+                                <label for="p1">1.- ¿Usted solicito un retiro? *</label>
+                                <select class="form-control mr-sm-3" id="p1">
                                     <option selected disabled value="">Seleccione una opción</option>
                                     <option value="S">SI</option>
                                     <option value="N">NO</option>
@@ -271,8 +271,8 @@ $estilo_ver = $datos_retiro['ESTATUS'] != 'C' ? 'display:none;' : '';
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="r2">2.- ¿Cuanto solicito? *</label>
-                                <select class="form-control mr-sm-3" id="r2">
+                                <label for="p2">2.- ¿Cuanto solicito? *</label>
+                                <select class="form-control mr-sm-3" id="p2">
                                     <option selected disabled value="">Seleccione una opción</option>
                                     <option value="S">RESPONDIO CORRECTAMENTE</option>
                                     <option value="N">NO RESPONDIO</option>
@@ -350,14 +350,14 @@ $estilo_ver = $datos_retiro['ESTATUS'] != 'C' ? 'display:none;' : '';
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="r1">1.- ¿Usted solicito un retiro? *</label>
+                                <label for="r1_etiqueta">1.- ¿Usted solicito un retiro? *</label>
                                 <input type="hidden" id="r1" value="<?= $datos_retiro['R1'] ?>">
                                 <input type="text" class="form-control" id="r1_etiqueta" value="<?= $datos_retiro['R1'] == 'S' ? 'SI' : 'NO' ?>" readonly>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="r2">2.- ¿Cuanto solicito? *</label>
+                                <label for="r2_etiqueta">2.- ¿Cuanto solicito? *</label>
                                 <input type="hidden" id="r2" value="<?= $datos_retiro['R2'] ?>">
                                 <input type="text" class="form-control" id="r2_etiqueta" value="<?= $datos_retiro['R2'] == 'S' ? 'RESPONDIO CORRECTAMENTE' : 'NO RESPONDIO' ?>" readonly>
                             </div>

@@ -50,19 +50,21 @@ class AhorroConsulta extends Controller
 
                 const resultadoOK = (datos) => {
                     datos = datos.map((item) => {
+                        const acciones = [
+                            {
+                                icono: "fa-eye text-info",
+                                texto: "Ver detalle",
+                                funcion: "verDetalle(" + item.ID + ")"
+                            }
+                        ]
+
                         return [
                             item.ID,
                             item.CDGNS,
                             "$ " + formatoMoneda(item.CANT_SOLICITADA),
-                            getFechas(item.FECHA_CREACION, item.FECHA_SOLICITUD, item.FECHA_ENTREGA, item.ESTATUS === "V" ? item.ULTIMA_LLAMADA : null, item.ESTATUS === "C" ? item.FECHA_CANCELACION : null, item.ESTATUS === "R" ? item.FECHA_CANCELACION : null),
+                            getFechas(item.FECHA_CREACION, item.FECHA_SOLICITUD, item.FECHA_ENTREGA, ["V", "E"].includes(item.ESTATUS) ? item.ULTIMA_LLAMADA : null, item.ESTATUS === "C" ? item.FECHA_CANCELACION : null, item.ESTATUS === "R" ? item.FECHA_CANCELACION : null, item.ESTATUS === "E" ? item.FECHA_ENTREGA_REAL : null, item.ESTATUS === "D" ? item.FECHA_DEVOLUCION : null),
                             getBadge(item.ESTATUS),
-                            menuAcciones([
-                                {
-                                    icono: "fa-eye",
-                                    texto: "Ver detalle",
-                                    funcion: "verDetalle(" + item.ID + ")"
-                                }
-                            ])
+                            menuAcciones(acciones)
                         ]
                     })
 
@@ -70,16 +72,18 @@ class AhorroConsulta extends Controller
                     $(".resultado").toggleClass("conDatos", true)
                 }
 
-                const getFechas = (fechaCreacion, fechaSolicitud, fechaEntrega, fechaValidacion = null, fechaCancelacion = null, fechaRechazo = null) => {
+                const getFechas = (fechaCreacion, fechaSolicitud, fechaEntrega, fechaValidacion = null, fechaCancelacion = null, fechaRechazo = null, fechaEntregaReal = null, fechaDevolucion = null) => {
                     const titulos = {
                         "Creación": fechaCreacion,
                         "Solicitud": fechaSolicitud,
-                        "Entrega": fechaEntrega
+                        "Entrega Programada": fechaEntrega
                     }
                     
                     if (fechaValidacion) titulos["Validación"] = fechaValidacion
                     if (fechaCancelacion) titulos["Cancelación"] = fechaCancelacion
                     if (fechaRechazo) titulos["Rechazo"] = fechaRechazo
+                    if (fechaEntregaReal) titulos["Entrega Real"] = fechaEntregaReal
+                    if (fechaDevolucion) titulos["Devolución"] = fechaDevolucion
                     
                     let resultado = "<div style='text-align: left;'>"
                     Object.entries(titulos).forEach(([key, value]) => {
@@ -96,9 +100,9 @@ class AhorroConsulta extends Controller
                             clase: "default",
                             texto: "PENDIENTE",
                         },
-                        A: {
+                        E: {
                             clase: "success",
-                            texto: "APROBADO",
+                            texto: "ENTREGADO",
                         },
                         R: {
                             clase: "danger",
@@ -111,6 +115,10 @@ class AhorroConsulta extends Controller
                         V: {
                             clase: "info",
                             texto: "VALIDADO",
+                        },
+                        D: {
+                            clase: "dark",
+                            texto: "DEVUELTO",
                         }
                     }
 
@@ -143,15 +151,9 @@ class AhorroConsulta extends Controller
                     showError(mensaje).then(() => actualizaDatosTabla(idTabla, []))
                 }
 
-                const verDetalle = (idRetiro) => {
-                    consultaServidor("/AhorroConsulta/GetRetiroById", { id: idRetiro }, (res) => {
-                        if (!res.success) {
-                            return Swal.fire({
-                                icon: "error",
-                                title: "Error",
-                                text: res.mensaje
-                            });
-                        }
+                const verDetalle = (id) => {
+                    consultaServidor("/AhorroConsulta/GetRetiroById", { id: id }, (res) => {
+                        if (!res.success) return showError(res.mensaje);
                         
                         const datos = res.datos;
                         
@@ -160,19 +162,24 @@ class AhorroConsulta extends Controller
                         $("#detalle_fecha_creacion").val(datos.FECHA_CREACION || "");
                         $("#detalle_fecha_solicitud").val(datos.FECHA_SOLICITUD || "");
                         $("#detalle_fecha_entrega").val(datos.FECHA_ENTREGA || "");
+                        $("#detalle_fecha_entrega_real").val(datos.FECHA_ENTREGA_REAL || "");
                         $("#detalle_cantidad_solicitada").val("$" + formatoMoneda(datos.CANT_SOLICITADA || 0));
                         $("#detalle_estatus").val(datos.ESTATUS_ETIQUETA || "");
 
-                        if (datos.ESTATUS === "C" || datos.ESTATUS === "R") {
-                            const titulo = datos.ESTATUS === "C" ? "Motivo de cancelación" : "Motivo de rechazo";
+                        if (["C", "R"].includes(datos.ESTATUS)) {
+                            const titulo = "Motivo de " + (datos.ESTATUS === "C" ? "cancelación" : "rechazo");
                             $("#detalle_titulo_motivo").text(titulo);
                             $("#detalle_motivo").val(datos.MOTIVO_CANCELACION || "");
+                            $("#grupo_motivo_cancelacion").show();
+                        } else if (datos.ESTATUS === "D") {
+                            $("#detalle_titulo_motivo").text("Motivo de devolución");
+                            $("#detalle_motivo").val(datos.COMENTARIO_DEVOLUCION || "");
                             $("#grupo_motivo_cancelacion").show();
                         } else {
                             $("#detalle_motivo").val("");
                             $("#grupo_motivo_cancelacion").hide();
                         }
-                        
+
                         $("#detalle_cdgpe_administradora").val(datos.CDGPE_ADMINISTRADORA || "");
                         $("#detalle_nombre_administradora").val(datos.NOMBRE_ADMINISTRADORA || "");
                         $("#detalle_observaciones_administradora").val(datos.OBSERVACIONES_ADMINISTRADORA || "");
@@ -181,20 +188,18 @@ class AhorroConsulta extends Controller
                         $("#detalle_fecha_procesa_call_center").val(datos.ULTIMA_LLAMADA || "");
                         $("#detalle_observaciones_call_center").val(datos.COMENTARIO_EXTERNO || "");
                         
-                        $("#btnVerComprobante").off("click").on("click", function() {
-                            verComprobante(idRetiro);
-                        });
+                        $("#btnVerComprobante").off("click").on("click", () => verComprobante(datos.ID))
                         
                         $('#modalDetalle .nav-tabs a[href="#tabGeneral"]').tab('show');
                         $("#modalDetalle").modal("show");
                     });
                 }
 
-                const verComprobante = (idRetiro) => {
+                const verComprobante = (id) => {
                     $("#modalDetalle").modal("hide");
                     $("#comprobanteImg").hide();
                     $("#loadingImg").show();
-                    $("#comprobanteImg").attr("src", "/AhorroConsulta/GetImgSolicitud/?id=" + idRetiro + "&tipo=comprobante");
+                    $("#comprobanteImg").attr("src", "/AhorroConsulta/GetImgSolicitud/?id=" + id + "&tipo=comprobante");
 
                     $("#modalComprobante").modal("show");
                 }
@@ -244,13 +249,17 @@ class AhorroConsulta extends Controller
                     consultaServidor("/AhorroConsulta/BuscarSaldo", { cdgns }, (res) => {
                         if (!res.success) return showError(res.mensaje);
                         if (res.datos.length === 0) return showError("No se encontró el crédito especificado.");
+                        if (parseInt(res.datos?.DIAS_MORA_TRADICONAL) > 0) return showError("El cliente tiene mora en su crédito tradicional, no es posible realizar retiros de ahorro.");
+                        if (parseInt(res.datos?.DIAS_MORA_ADICIONAL) > 0) return showError("El cliente tiene mora en su crédito adicional, no es posible realizar retiros de ahorro.");
                         
                         const saldo = parseaNumero(res.datos?.SALDO_ACTUAL);
 
                         if (saldo <= 0) return showError("El crédito no tiene saldo disponible para retiro.")
 
+                        $("#nombre_cliente").val(res.datos?.NOMBRE_CLIENTE);
                         $("#nueva_cdgns").val(cdgns);
-                        $("#nueva_ciclo").val(res.datos?.CICLO_ACTUAL);
+                        $("#nueva_ciclo").val(res.datos?.ULTIMO_CICLO_TRADICIONAL);
+                        $("#aniversario_ahorro").val(res.datos?.ANIVERSARIO);
                         $("#saldo_ahorro_disponible").val(saldo);
                         $("#nueva_cantidad_solicitada").prop("disabled", false);
                         $("#nueva_fecha_solicitud").prop("disabled", false);
@@ -262,10 +271,11 @@ class AhorroConsulta extends Controller
                 }
 
                 const guardarNuevaSolicitud = () => {
+                    const aniversario = new Date($("#aniversario_ahorro").val());
                     const cantidadSolicitada = parseaNumero($("#nueva_cantidad_solicitada").val());
                     const saldo = parseaNumero($("#saldo_ahorro_disponible").val());
                     if (cantidadSolicitada > saldo) return showError("La cantidad solicitada no puede ser mayor al saldo disponible ($" + formatoMoneda(saldo) + ")");
-
+                    
                     const cdgns = $("#nueva_cdgns").val().trim();
                     const fechaSolicitud = $("#nueva_fecha_solicitud").val();
                     const fechaEntrega = $("#nueva_fecha_entrega").val();
@@ -278,8 +288,15 @@ class AhorroConsulta extends Controller
                     const archivo = $("#nueva_foto")[0].files[0];
                     if (!archivo) return showError("Debe seleccionar un archivo");
                     if (archivo && archivo.size > 5242880) return showError("El archivo no debe superar los 5MB");
+
+                    let mensaje = document.createElement("div");
+                    mensaje.innerHTML = "¿Confirma el registro del retiro de ahorro por la cantidad de <strong>$" + formatoMoneda(cantidadSolicitada) + "</strong> para el crédito <strong>" + cdgns + "</strong>?";
                     
-                    confirmarMovimiento("Registro de retiro de ahorro", "¿Está seguro de crear esta solicitud de retiro?")
+                    if (new Date() < aniversario) {
+                        mensaje.innerHTML = "El ahorro aún no ha cumplido su aniversario<br/>se aplicaran las penalizaciones establecidas en las políticas.<br/>" + mensaje.innerHTML;
+                    }
+                    
+                    confirmarMovimiento("Registro de retiro de ahorro", null, mensaje)
                         .then((continuar) => {
                         if (continuar) {
                             const formData = new FormData();
@@ -322,7 +339,7 @@ class AhorroConsulta extends Controller
                     $("#fechaI").val(new Date(fechaI).toISOString().split("T")[0]);
                     $("#fechaF").val(new Date(fechaF).toISOString().split("T")[0]);
 
-                    $("#btnBuscarCredito").click(buscarCredito);
+                    $("#btnBuscarCredito").click(buscarCredito)
 
                     configuraTabla(idTabla)
                     consultaSolicitudes()
@@ -380,5 +397,15 @@ class AhorroConsulta extends Controller
             fclose($archivo);
         }
         return;
+    }
+
+    public function ConfirmarEntregaRetiroAhorro()
+    {
+        echo json_encode(AhorroConsultaDao::confirmarEntregaRetiroAhorro($_POST));
+    }
+
+    public function DevolverRetiro()
+    {
+        echo json_encode(AhorroConsultaDao::devolverRetiro($_POST));
     }
 }

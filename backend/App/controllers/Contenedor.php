@@ -174,17 +174,8 @@ class Contenedor extends Controller
 
         $permisos = ['AMGM'];
         if ($this->ValidaPermiso($permisos)) {
-            $menu .= '<li><a href="/AhorroConsulta/">1.- Solicitudes Retiro</a></li>';
-        }
-
-        $permisos = ['AMGM'];
-        if ($this->ValidaPermiso($permisos)) {
-            $menu .= '<li><a href="/Ahorro/SolicitudesRetiroAdmin/">2.- Solicitudes Retiro Admin</a></li>';
-        }
-
-        $permisos = ['AMGM'];
-        if ($this->ValidaPermiso($permisos)) {
-            $menu .= '<li><a href="/Ahorro/Retiros/">Reporte de solicitudes</a></li>';
+            $menu .= '<li><a href="/AhorroConsulta/">Solicitudes Retiro</a></li>';
+            $menu .= '<li><a href="/Ahorro/SolicitudesRetiroAdmin/">Gestión de Retiros</a></li>';
         }
 
         $menu .= '</ul></li>';
@@ -290,6 +281,7 @@ class Contenedor extends Controller
                     </i>&nbsp;Tesorería<span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             <li><a href="/Tesoreria/ReportePC">Reporte Productora Cultiva</a></li>
+                            <li><a href="/Ahorro/Retiros/">Solicitudes de Retiro</a></li>
                            
             HTML;
         }
