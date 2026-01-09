@@ -4,7 +4,7 @@
     <div class="panel">
         <div class="panel-header" style="padding: 10px;">
             <div class="x_title">
-                <label style="font-size: large;">Solicitudes de Retiro (Admin)</label>
+                <label style="font-size: large;">Gestión de retiros</label>
                 <div class="clearfix"></div>
             </div>
             <div class="card">
