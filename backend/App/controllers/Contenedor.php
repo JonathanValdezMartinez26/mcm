@@ -172,7 +172,7 @@ class Contenedor extends Controller
             $menu .= '<li><a href="/AhorroSimple/ExepcionesMXT/">Agregar Exepciones MXT</a></li>';
         }
 
-        $permisos = ['AMGM'];
+        $permisos = ['ADMIN', 'LVGA', 'MCDP', 'FLHR'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/AhorroConsulta/">Solicitudes Retiro</a></li>';
             $menu .= '<li><a href="/Ahorro/SolicitudesRetiroAdmin/">Gestión de Retiros</a></li>';
@@ -273,17 +273,26 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'PLMV', 'MCDP', 'LGFR', 'MACI', 'MGJC', 'JACJ'];
+        // Temporalmente se habilita a 'LVGA' y 'FLHR' para pruebas de Solicitudes de Retiro
+        $permisos = ['ADMIN', 'PLMV', 'MCDP', 'LGFR', 'MACI', 'MGJC', 'JACJ', 'LVGA', 'FLHR'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
                 <ul class="nav side-menu">
                     <li><a><i class="glyphicon glyphicon glyphicon glyphicon-globe"> 
                     </i>&nbsp;Tesorería<span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
-                            <li><a href="/Tesoreria/ReportePC">Reporte Productora Cultiva</a></li>
-                            <li><a href="/Ahorro/Retiros/">Solicitudes de Retiro</a></li>
                            
             HTML;
+        }
+
+        $permisos = ['ADMIN', 'PLMV', 'MCDP', 'LGFR', 'MACI', 'MGJC', 'JACJ'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= '<li><a href="/Tesoreria/ReportePC">Reporte Productora Cultiva</a></li>';
+        }
+
+        $permisos = ['ADMIN', 'LVGA', 'MCDP', 'FLHR'];
+        if ($this->ValidaPermiso($permisos)) {
+            $menu .= '<li><a href="/Ahorro/Retiros/">Solicitudes de Retiro</a></li>';
         }
 
         // $permisos = ['ADMIN', 'MCDP'];

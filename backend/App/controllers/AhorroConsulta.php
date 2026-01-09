@@ -33,7 +33,7 @@ class AhorroConsulta extends Controller
                 {$this->parseaNumero}
 
                 const idTabla = "tablaRetiros"
-
+                
                 const consultaSolicitudes = () => {
                     consultaServidor("/AhorroConsulta/GetRetirosAhorro", getPerametros(), (res) => {
                         if (!res.success) return resultadoError(res.mensaje)

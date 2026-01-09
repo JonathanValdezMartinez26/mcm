@@ -42,8 +42,8 @@ class AhorroConsulta extends Model
         if ($_SESSION['perfil'] === 'ADMIN') {
             $qry = str_replace('FILTRO_USUARIO', '', $qry);
         } else {
-            $qry = str_replace('FILTRO_USUARIO', 'AND RA.CDGPE_ADMINISTRADORA = cdgpe_administradora', $qry);
-            $params['cdgpe_administradora'] = $_SESSION['cdgpe'];
+            $qry = str_replace('FILTRO_USUARIO', 'AND RA.CDGPE_ADMINISTRADORA = :cdgpe', $qry);
+            $params['cdgpe'] = $_SESSION['usuario'];
         }
 
         try {
@@ -142,8 +142,8 @@ class AhorroConsulta extends Model
                 ,CR_AD.ULTIMO_CICLO AS ULTIMO_CICLO_ADICIONAL
                 --,0 AS ATRASO_TRADICONAL
                 ,FNCALDIASMORA(PRC.CDGEM, PRC.CDGNS, 'G', PRC.CICLO) AS DIAS_MORA_TRADICONAL
-                --,5 AS DIAS_MORA_ADICIONAL
-                ,CASE WHEN NOT CR_AD.ULTIMO_CICLO IS NULL THEN FNCALDIASMORA(PRC.CDGEM, CR_AD.CDGNS, 'G', LPAD(TO_CHAR(CR_AD.ULTIMO_CICLO), 2, '0')) ELSE NULL END AS DIAS_MORA_ADICIONAL
+                --,0 AS DIAS_MORA_ADICIONAL
+                ,CASE WHEN NOT CR_AD.ULTIMO_CICLO IS NULL THEN FNCALDIASMORA(PRC.CDGEM, CR_AD.CDGNS, 'G', LPAD(TO_CHAR(CR_AD.ULTIMO_CICLO), 2, '0')) ELSE 0 END AS DIAS_MORA_ADICIONAL
                 ,GET_NOMBRE_CLIENTE(CL.CODIGO) AS NOMBRE_CLIENTE
                 ,FN_GET_AHORRO(PRC.CDGNS) AS SALDO_ACTUAL
                 ,TO_CHAR(ADD_MONTHS(CA.FECHA_REGISTRO, 12), 'YYYY-MM-DD') AS ANIVERSARIO
