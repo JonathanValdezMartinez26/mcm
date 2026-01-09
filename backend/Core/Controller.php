@@ -238,4 +238,20 @@ class Controller
 
         return $html;
     }
+
+    public function GetDestinatarios($respuestas, $destinatarios = [])
+    {
+        $respuestas = array_key_exists('success', $respuestas) ? [$respuestas] : $respuestas;
+
+        foreach ($respuestas as $respuesta) {
+            if ($respuesta['success'] && count($respuesta['datos']) > 0) {
+                $destinatarios = array_merge($destinatarios, array_map(function ($d) {
+                    return $d['CORREO'];
+                }, $respuesta['datos']));
+            }
+        }
+
+        sort($destinatarios);
+        return array_unique($destinatarios);
+    }
 }

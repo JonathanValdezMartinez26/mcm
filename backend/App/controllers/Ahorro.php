@@ -4,6 +4,8 @@ namespace App\controllers;
 
 defined("APPPATH") or die("Access denied");
 
+include_once dirname(__DIR__) . '/../libs/PHPMailer/Mensajero.php';
+
 use \Core\View;
 use \Core\Controller;
 use \Core\MasterDom;
@@ -12,6 +14,7 @@ use \App\models\CajaAhorro as CajaAhorroDao;
 use \App\models\Ahorro as AhorroDao;
 use \App\components\TarjetaDedo;
 use DateTime;
+use Mensajero;
 
 class Ahorro extends Controller
 {
@@ -6067,10 +6070,10 @@ html;
                     confirmarMovimiento("Confirmar entrega al cliente", "¿Desea confirmar la entrega de este retiro?")
                     .then((continuar) => {
                         if (continuar) {
-                            consultaServidor("/AhorroConsulta/ConfirmarEntregaRetiroAhorro", { id }, (res) => {
+                            consultaServidor("/Ahorro/ConfirmarEntregaRetiroAhorro", { id }, (res) => {
                                 if (!res.success) return showError(res.mensaje)
                                 showSuccess(res.mensaje)
-                                consultaSolicitudes()
+                                getRetiros()
                             })
                         }
                     });
@@ -6093,14 +6096,14 @@ html;
                         usuario: "{$_SESSION['usuario']}"
                      }
 
-                    consultaServidor("/AhorroConsulta/DevolverRetiro/",
+                    consultaServidor("/Ahorro/DevolverRetiro/",
                         params,
                         (resultado) => {
                             if (!resultado.success) return showError(resultado.mensaje)
 
                             $("#modalDevolverRetiro").modal("hide")
                             showSuccess("El retiro ha sido devuelto.")
-                            .then(consultaSolicitudes)
+                            .then(getRetiros)
                         }
                     )
                 }
@@ -6141,5 +6144,81 @@ html;
     {
         $r = AhorroDao::CancelarRetiro($_POST);
         echo json_encode($r);
+    }
+
+
+    public function ConfirmarEntregaRetiroAhorro()
+    {
+        $registro = AhorroDao::confirmarEntregaRetiroAhorro($_POST);
+        if ($registro['success']) {
+            $destinatarios = $this->GetDestinatarios(AhorroDao::GetDestinatarios_Aplicacion(4));
+
+            if (count($destinatarios) > 0) {
+                $datos = AhorroDao::getInfoCorreoRetiroFinalizado($_POST);
+                if ($datos['success']) {
+                    $plantilla = self::Plantilla_Retiro_Finalizado($datos['datos']);
+                    Mensajero::EnviarCorreo(
+                        $destinatarios,
+                        'Entrega de retiro de ahorro confirmada',
+                        Mensajero::Notificaciones($plantilla)
+                    );
+                }
+            }
+        }
+        echo json_encode($registro);
+    }
+
+    public function DevolverRetiro()
+    {
+        $registro = AhorroDao::devolverRetiro($_POST);
+
+        if ($registro['success']) {
+            $destinatarios = $this->GetDestinatarios(AhorroDao::GetDestinatarios_Aplicacion(4));
+
+            if (count($destinatarios) > 0) {
+                $datos = AhorroDao::getInfoCorreoRetiroFinalizado($_POST);
+                if ($datos['success']) {
+                    $plantilla = self::Plantilla_Retiro_Finalizado($datos['datos']);
+                    Mensajero::EnviarCorreo(
+                        $destinatarios,
+                        'Devolución de retiro de ahorro',
+                        Mensajero::Notificaciones($plantilla)
+                    );
+                }
+            }
+        }
+
+        echo json_encode($registro);
+    }
+
+    public function Plantilla_Retiro_Finalizado($datos)
+    {
+        $titulo = $datos['ESTATUS'] == 'E' ? '✅ Retiro ENTREGADO.' : '❌ Retiro DEVUELTO.';
+        $motivo = '';
+
+        if ($datos['ESTATUS'] == 'D') {
+            $motivo = "<li>🔸<b>Motivo de devolución:</b> {$datos['COMENTARIO_DEVOLUCION']}</li>";
+        }
+
+        return <<<HTML
+            <!-- Encabezado -->
+            <h2 style="text-align: center">{$titulo}</h2>
+            <!-- Información General -->
+            <div style="margin: 30px 0">
+                <h3 style="color: #007bff; border-bottom: 1px solid #ddd; padding-bottom: 5px">
+                    📄 Información del retiro
+                </h3>
+                <ul style="list-style: none; padding: 0; margin: 0; color: #555">
+                    <li>🔸<b>ID:</b> {$datos['ID']}</li>
+                    <li>🔸<b>Cliente:</b> {$datos['CLIENTE']} - {$datos['NOMBRE_CLIENTE']}</li>
+                    <li>🔸<b>Crédito:</b> {$datos['CREDITO']}</li>
+                    <li>🔸<b>Fecha de captura:</b> {$datos['FECHA_CREACION']}</li>
+                    <li>🔸<b>Fecha de entrega programada:</b> {$datos['FECHA_ENTREGA_PROGRAMADA']}</li>
+                    <li>🔸<b>Región:</b> {$datos['REGION']} - {$datos['NOMBRE_REGION']}</li>
+                    <li>🔸<b>Agencia:</b> {$datos['SUCURSAL']} - {$datos['NOMBRE_SUCURSAL']}</li>
+                    {$motivo}
+                </ul>
+            </div>
+        HTML;
     }
 }

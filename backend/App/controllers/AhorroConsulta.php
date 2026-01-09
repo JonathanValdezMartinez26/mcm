@@ -398,14 +398,4 @@ class AhorroConsulta extends Controller
         }
         return;
     }
-
-    public function ConfirmarEntregaRetiroAhorro()
-    {
-        echo json_encode(AhorroConsultaDao::confirmarEntregaRetiroAhorro($_POST));
-    }
-
-    public function DevolverRetiro()
-    {
-        echo json_encode(AhorroConsultaDao::devolverRetiro($_POST));
-    }
 }

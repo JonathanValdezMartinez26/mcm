@@ -67,12 +67,12 @@ class AhorroConsulta extends Model
                 ,TO_CHAR(RA.FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_ENTREGA
                 ,TO_CHAR(RA.FECHA_ENTREGA_REAL, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_ENTREGA_REAL
                 ,RA.OBSERVACIONES_ADMINISTRADORA
-                ,RA.ESTATUS
                 ,RA.MOTIVO_CANCELACION
                 ,RA.COMENTARIO_DEVOLUCION
                 ,RA.CDGPE_ADMINISTRADORA
                 ,GET_NOMBRE_EMPLEADO(RA.CDGPE_ADMINISTRADORA) AS NOMBRE_ADMINISTRADORA
                 ,TO_CHAR(RA.FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
+                ,RA.ESTATUS
                 ,CASE RA.ESTATUS
                     WHEN 'V' THEN 'Validado'
                     WHEN 'C' THEN 'Cancelado'
@@ -245,47 +245,60 @@ class AhorroConsulta extends Model
         }
     }
 
-    public static function confirmarEntregaRetiroAhorro($datos)
+    public static function getInfoCorreoCC($datos)
     {
         $qry = <<<SQL
-            UPDATE RETIROS_AHORRO
-            SET ESTATUS = 'E'
-                , FECHA_ENTREGA_REAL = SYSDATE
-            WHERE ID = :id
-        SQL;
-
-        $prms = ['id' => $datos['id']];
-
-        try {
-            $db = new Database();
-            $db->insertar($qry, $prms);
-            return self::Responde(true, "Entrega confirmada correctamente");
-        } catch (\Exception $e) {
-            return self::Responde(false, "Error al confirmar la entrega", null, $e->getMessage());
-        }
-    }
-
-    public static function devolverRetiro($datos)
-    {
-        $qry = <<<SQL
-            UPDATE RETIROS_AHORRO
-            SET ESTATUS = 'D'
-            , FECHA_DEVOLUCION = SYSDATE
-            , COMENTARIO_DEVOLUCION = :comentario
-            WHERE ID = :id
+            SELECT
+                RA.ID
+                , CL.CODIGO AS CLIENTE
+                , GET_NOMBRE_CLIENTE(CL.CODIGO) AS NOMBRE_CLIENTE
+                , RA.CDGNS AS CREDITO
+                , TO_CHAR(RA.FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
+                , RG.CODIGO AS REGION
+                , RG.NOMBRE AS NOMBRE_REGION
+                , CO.CODIGO AS SUCURSAL
+                , CO.NOMBRE AS NOMBRE_SUCURSAL
+                , RA.ESTATUS
+                , CASE RA.ESTATUS
+                    WHEN 'V' THEN 'Validado'
+                    WHEN 'C' THEN 'Cancelado'
+                    WHEN 'R' THEN 'Rechazado'
+                    WHEN 'P' THEN 'Pendiente'
+                    WHEN 'A' THEN 'Aprobado'
+                    WHEN 'E' THEN 'Entregado'
+                    WHEN 'D' THEN 'Devuelto'
+                    ELSE NULL
+                 END AS ESTATUS_ETIQUETA
+                , RAC.CDGPE AS CALLCENTER
+                , GET_NOMBRE_EMPLEADO(RAC.CDGPE) AS NOMBRE_CALLCENTER
+                , CASE WHEN RAC.TIPO_LLAMADA_2 IS NOT NULL THEN 2 ELSE 1 END AS TOTAL_LLAMADAS
+                , RAC.INTENTOS AS INTENTOS
+                ,TO_CHAR(RAC.FECHA_LLAMADA_1, 'DD/MM/YYYY HH24:MI:SS') AS PRIMERA_LLAMADA
+                ,TO_CHAR(CASE WHEN RAC.FECHA_LLAMADA_2 IS NULL THEN RAC.FECHA_LLAMADA_1 ELSE RAC.FECHA_LLAMADA_2 END, 'DD/MM/YYYY HH24:MI:SS') AS ULTIMA_LLAMADA
+                , RAC.COMENTARIO_EXTERNO AS COMENTARIO_FINAL
+            FROM
+                RETIROS_AHORRO RA
+                INNER JOIN SN ON SN.CDGNS = RA.CDGNS AND SN.CICLO = RA.CICLO
+                INNER JOIN SC ON SC.CDGNS = SN.CDGNS AND SC.CICLO = SN.CICLO AND SC.CANTSOLIC <> 9999
+                INNER JOIN CL ON CL.CODIGO = SC.CDGCL 
+                INNER JOIN CO ON SN.CDGCO = CO.CODIGO 
+                INNER JOIN RG ON CO.CDGRG = RG.CODIGO 
+                INNER JOIN PE ON PE.CODIGO = SN.CDGOCPE
+                LEFT JOIN RETIROS_AHORRO_CALLCENTER RAC ON RA.ID = RAC.RETIRO
+            WHERE
+                RA.ID = :retiro
         SQL;
 
         $prms = [
-            'id' => $datos['id'],
-            'comentario' => $datos['comentario']
+            'retiro' => $datos['retiro']
         ];
 
         try {
             $db = new Database();
-            $db->insertar($qry, $prms);
-            return self::Responde(true, "Retiro devuelto correctamente");
+            $res = $db->queryOne($qry, $prms);
+            return self::Responde(true, 'Información de retiro obtenida', $res);
         } catch (\Exception $e) {
-            return self::Responde(false, "Error al devolver el retiro", null, $e->getMessage());
+            return self::Responde(false, 'Error al obtener información de retiro', null, $e->getMessage());
         }
     }
 }

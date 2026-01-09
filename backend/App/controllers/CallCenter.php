@@ -4,11 +4,14 @@ namespace App\controllers;
 
 defined("APPPATH") or die("Access denied");
 
+include_once dirname(__DIR__) . '/../libs/PHPMailer/Mensajero.php';
+
 use \Core\View;
 use \Core\App;
 use \Core\MasterDom;
 use \Core\Controller;
 use \App\models\CallCenter as CallCenterDao;
+use Mensajero;
 
 class CallCenter extends Controller
 {
@@ -1091,7 +1094,25 @@ class CallCenter extends Controller
 
     public function FinalizaSolicitudRetiro()
     {
-        echo json_encode(CallCenterDao::FinalizaSolicitudRetiro($_POST));
+        $registro = CallCenterDao::FinalizaSolicitudRetiro($_POST);
+        if ($registro['success']) {
+            $destinatarios = $this->GetDestinatarios(CallCenterDao::GetDestinatarios_Aplicacion(3));
+
+            if (count($destinatarios) > 0) {
+                $datos = \App\models\AhorroConsulta::getInfoCorreoCC($_POST);
+                if ($datos['success']) {
+                    $plantilla = self::Plantilla_Retiro_Finalizado($datos['datos']);
+                    $tipo = $_POST['estatus'] == 'V' ? 'Validación' : ($_POST['estatus'] == 'C' ? 'Cancelación' : 'Rechazo');
+                    Mensajero::EnviarCorreo(
+                        $destinatarios,
+                        $tipo . ' de solicitud de crédito por Call Center',
+                        Mensajero::Notificaciones($plantilla)
+                    );
+                }
+            }
+        }
+
+        echo json_encode($registro);
     }
 
     public function Busqueda()
@@ -4855,5 +4876,82 @@ html;
         View::set('header', $this->_contenedor->header(self::GetExtraHeader('Supervisión encuesta Postventa', [$this->socket])));
         View::set('footer', $this->_contenedor->footer($extraFooter));
         View::render('callcenter_supervisionEncuestaPostventa', $extraFooter);
+    }
+
+    public function Plantilla_Retiro_Finalizado($datos)
+    {
+        if ($datos['ESTATUS'] === 'V') {
+            $aprobada = true;
+        } else {
+            $aprobada = false;
+            $tipo = $datos['TIPO_RETIRO'] === 'T' ? 'cancelación' : 'rechazo';
+            $tipo_titulo = $datos['ESTATUS'] === 'C' ? 'CANCELADA' : 'RECHAZADA';
+        }
+
+        $pasosFinalesA = <<<HTML
+            <p style="text-align: center">
+                Para completar el proceso entregue la documentación correspondiente, si tiene alguna duda o inconveniente, comuníquese con {$datos['NOMBRE_CALLCENTER']} ({$datos['CALLCENTER']}) o con el gerente de call center.
+            </p>
+            <p style="text-align: center">
+                <b>Asegúrese de seguir todos los protocolos establecidos para la correcta gestión y archivo de los documentos.</b>
+            </p>
+        HTML;
+
+        $pasosFinalesR = <<<HTML
+            <p style="text-align: center">
+                Si tiene alguna duda o inconveniente referente al $tipo de la solicitud, comuníquese con {$datos['NOMBRE_CALLCENTER']} ({$datos['CALLCENTER']}) o con el gerente de call center.
+            </p>
+        HTML;
+
+        $titulo = $aprobada ? '✅ Solicitud de retiro VALIDADA.' : "❌ Solicitud de retiro $tipo_titulo.";
+        $pasosFinales = $aprobada ? $pasosFinalesA : $pasosFinalesR;
+
+        return <<<HTML
+            <!-- Encabezado -->
+            <h2 style="text-align: center">$titulo</h2>
+            <!-- Información General -->
+            <div style="margin: 30px 0">
+                <h3 style="color: #007bff; border-bottom: 1px solid #ddd; padding-bottom: 5px">
+                    📄 Información General
+                </h3>
+                <ul style="list-style: none; padding: 0; margin: 0; color: #555">
+                    <li>🔸<b>ID:</b> {$datos['ID']}</li>
+                    <li>🔸<b>Cliente:</b> {$datos['CLIENTE']} - {$datos['NOMBRE_CLIENTE']}</li>
+                    <li>🔸<b>Crédito:</b> {$datos['CREDITO']}</li>
+                    <li>🔸<b>Fecha de captura:</b> {$datos['FECHA_CREACION']}</li>
+                    <li>🔸<b>Región:</b> {$datos['REGION']} - {$datos['NOMBRE_REGION']}</li>
+                    <li>🔸<b>Agencia:</b> {$datos['SUCURSAL']} - {$datos['NOMBRE_SUCURSAL']}</li>
+                    <li>🔸<b>Estatus final:</b> {$datos['ESTATUS_ETIQUETA']}</li>
+                </ul>
+            </div>
+
+            <!-- Detalle de llamadas realizadas -->
+            <div style="margin: 30px 0">
+                <h3 style="color: #007bff; border-bottom: 1px solid #ddd; padding-bottom: 5px">
+                    ☎️ Detalle de llamadas realizadas
+                </h3>
+                <ul style="list-style: none; padding: 0; margin: 0; color: #555">
+                    <li>🔸<b>Total de llamadas:</b> {$datos['TOTAL_LLAMADAS']}</li>
+                    <li>🔸<b>Intentos realizados:</b> {$datos['INTENTOS']}</li>
+                    <li>🔸<b>Fecha primera llamada:</b> {$datos['PRIMERA_LLAMADA']}</li>
+                    <li>🔸<b>Fecha última llamada:</b> {$datos['ULTIMA_LLAMADA']}</li>
+                </ul>
+            </div>
+
+            <!-- Comentarios del Call Center -->
+            <div style="margin: 30px 0">
+                <h3 style="color: #007bff; border-bottom: 1px solid #ddd; padding-bottom: 5px">
+                    📝 Comentarios del Call Center
+                </h3>
+                <ul style="list-style: none; padding: 0; margin: 0; color: #555">
+                    <li>🔸<b>Comentario final:</b> {$datos['COMENTARIO_FINAL']}</li>
+                </ul>
+            </div>
+
+            <!-- Próximos pasos -->
+            <div style="padding-top: 14px">
+                $pasosFinales
+            </div>
+        HTML;
     }
 }

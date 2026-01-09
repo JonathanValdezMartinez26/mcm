@@ -277,4 +277,90 @@ sql;
             return self::Responde(false, "Error al cancelar el retiro", null, $e->getMessage());
         }
     }
+
+    public static function confirmarEntregaRetiroAhorro($datos)
+    {
+        $qry = <<<SQL
+            UPDATE RETIROS_AHORRO
+            SET ESTATUS = 'E'
+                , FECHA_ENTREGA_REAL = SYSDATE
+            WHERE ID = :id
+        SQL;
+
+        $prms = ['id' => $datos['id']];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $prms);
+            return self::Responde(true, "Entrega confirmada correctamente");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al confirmar la entrega", null, $e->getMessage());
+        }
+    }
+
+    public static function devolverRetiro($datos)
+    {
+        $qry = <<<SQL
+            UPDATE RETIROS_AHORRO
+            SET ESTATUS = 'D'
+            , FECHA_DEVOLUCION = SYSDATE
+            , COMENTARIO_DEVOLUCION = :comentario
+            WHERE ID = :id
+        SQL;
+
+        $prms = [
+            'id' => $datos['id'],
+            'comentario' => $datos['comentario']
+        ];
+
+        try {
+            $db = new Database();
+            $db->insertar($qry, $prms);
+            return self::Responde(true, "Retiro devuelto correctamente");
+        } catch (\Exception $e) {
+            return self::Responde(false, "Error al devolver el retiro", null, $e->getMessage());
+        }
+    }
+
+    public static function getInfoCorreoRetiroFinalizado($datos)
+    {
+        $qry = <<<SQL
+            SELECT
+                RA.ID
+                , CL.CODIGO AS CLIENTE
+                , GET_NOMBRE_CLIENTE(CL.CODIGO) AS NOMBRE_CLIENTE
+                , RA.CDGNS AS CREDITO
+                , TO_CHAR(RA.FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS FECHA_CREACION
+                , TO_CHAR(RA.FECHA_ENTREGA, 'DD/MM/YYYY') AS FECHA_ENTREGA_PROGRAMADA
+                , RG.CODIGO AS REGION
+                , RG.NOMBRE AS NOMBRE_REGION
+                , CO.CODIGO AS SUCURSAL
+                , CO.NOMBRE AS NOMBRE_SUCURSAL
+                , RA.ESTATUS
+                , RA.COMENTARIO_DEVOLUCION
+            FROM
+                RETIROS_AHORRO RA
+                INNER JOIN SN ON SN.CDGNS = RA.CDGNS AND SN.CICLO = RA.CICLO
+                INNER JOIN SC ON SC.CDGNS = SN.CDGNS AND SC.CICLO = SN.CICLO AND SC.CANTSOLIC <> 9999
+                INNER JOIN CL ON CL.CODIGO = SC.CDGCL 
+                INNER JOIN CO ON SN.CDGCO = CO.CODIGO 
+                INNER JOIN RG ON CO.CDGRG = RG.CODIGO 
+                INNER JOIN PE ON PE.CODIGO = SN.CDGOCPE
+                LEFT JOIN RETIROS_AHORRO_CALLCENTER RAC ON RA.ID = RAC.RETIRO
+            WHERE
+                RA.ID = :id
+        SQL;
+
+        $prms = [
+            'id' => $datos['id']
+        ];
+
+        try {
+            $db = new Database();
+            $res = $db->queryOne($qry, $prms);
+            return self::Responde(true, 'Información de retiro obtenida', $res);
+        } catch (\Exception $e) {
+            return self::Responde(false, 'Error al obtener información de retiro', null, $e->getMessage());
+        }
+    }
 }
