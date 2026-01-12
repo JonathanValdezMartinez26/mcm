@@ -1,103 +1,150 @@
-<?php echo $header; ?>
+<?= $header; ?>
 
 <div class="right_col" style="color: #000;">
 
-    <!-- Panel principal -->
     <div class="panel panel-body" style="margin-bottom: 0px; background: #f9f9f9; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 20px;">
-       <div class="x_title">
-			<a href="/AhorroSimple/EstadoCuenta/" style="text-decoration: none; color: inherit;">
-				<label style="font-size: 28px; font-weight: bold; cursor: pointer;">📊 Estado de Cuenta</label>
-			</a>
-			<div class="clearfix"></div>
-		</div>
+        <div class="x_title">
+            <label style="font-size: 28px; font-weight: bold; cursor: pointer;">📊 Estado de Cuenta</label>
+            <div class="clearfix"></div>
+        </div>
 
-        <!-- Botón de búsqueda -->
-        <div class="card col-md-12 mb-3">
-           
+        <div class="row tile_count float-right" style="margin-bottom: 1px; margin-top: 1px;">
 
-            <!-- Información resumida -->
-            <div class="row">
-                <div class="tile_count float-right col-sm-12" style="margin-bottom: 1px; margin-top: 1px;">
-
-                    <!-- Cliente -->
-                    <div class="col-md-4 col-sm-4 tile_stats_count">
-                        <span class="count_top" style="font-size: 15px;"><i class="fa fa-user-circle"></i> Cliente</span>
-                        <div class="count" style="font-size: 16px; font-weight: bold;">
-                            (<?= $ConsultaDatos['NO_CREDITO'] ?>) - <?= $ConsultaDatos['CLIENTE'] ?>
-                        </div>
-                        <div class="count" style="font-size: 14px; color: #555;">
-                            Apertura: <?= $ConsultaDatos['FECHA_APERTURA_AHORRO'] ?>
-                        </div>
-                    </div>
-
-                    <!-- Saldo -->
-                    <div class="col-md-1 col-sm-2 tile_stats_count">
-                        <span class="count_top" style="font-size: 15px;"><i class="fa fa-wallet"></i> Saldo</span>
-                        <div class="count" style="font-size: 16px; font-weight: bold;">$ <?= number_format((float)$ConsultaDatos['TOTAL'], 2, '.', ','); ?></div>
-                    </div>
-
-                    <!-- Abonos -->
-                    <div class="col-md-1 col-sm-2 tile_stats_count">
-                        <span class="count_top" style="font-size: 15px; color: green;"><i class="fa fa-arrow-down"></i> Abonos</span>
-                        <div class="count" style="font-size: 16px; font-weight: bold; color: green;">
-                           $ <?= number_format((float)$ConsultaDatos['PAGOSDIA'], 2, '.', ','); ?>
-                        </div>
-                    </div>
-
-                    <!-- Retiros -->
-                    <div class="col-md-1 col-sm-2 tile_stats_count">
-                        <span class="count_top" style="font-size: 15px; color: red;"><i class="fa fa-arrow-up"></i> Retiros</span>
-                        <div class="count" style="font-size: 16px; font-weight: bold; color: red;">
-                            $ <?= number_format((float)$ConsultaDatos['RETIROS_AHORRO_SIMPLE'], 2, '.', ''); ?>
-                        </div>
-                    </div>
-
-                    <!-- Tasa -->
-                    <div class="col-md-1 col-sm-2 tile_stats_count">
-                        <span class="count_top" style="font-size: 15px;"><i class="fa fa-percent"></i> Tasa</span>
-                        <div class="count" style="font-size: 16px; font-weight: bold;">6% ANUAL</div>
-						<span class="count_top" style="font-size: 15px;"><i class=""></i> Interes Anual</span>
-                        <div class="count" style="font-size: 16px; font-weight: bold;">$ 0.00</div>
-                    </div>
-					
-                    <!-- Sucursal -->
-                    <div class="col-md-2 col-sm-2 tile_stats_count">
-                        <span class="count_top" style="font-size: 15px;"><i class="fa fa-building"></i> Sucursal</span>
-                        <div class="count" style="font-size: 16px; font-weight: bold;"><?= $ConsultaDatos['SUCURSAL'] ?></div>
-                    </div>
-
-                    <!-- Ejecutivo -->
-                    <div class="col-md-2 col-sm-2 tile_stats_count">
-                        <span class="count_top" style="font-size: 15px;"><i class="fa fa-user-tie"></i> Ejecutivo</span>
-                        <div class="count" style="font-size: 16px; font-weight: bold;"><?= $ConsultaDatos['EJECUTIVO']; ?></div>
-                    </div>
+            <!-- Datos de generales del cliente -->
+            <div class="col-md-6 tile_stats_count">
+                <div>
+                    <span style="font-size: 16px; font-weight: bold;"><i class="fa fa-user">&nbsp;</i>Cliente:</span>
+                    <span style="font-size: 16px;"><?= $infoCredito['NOMBRE_CLIENTE'] ?> (<?= $infoCredito['CDGNS'] ?>)</span>
+                </div>
+                <div>
+                    <span style="font-size: 16px; font-weight: bold;"><i class="fa fa-building">&nbsp;</i>Sucursal:</span>
+                    <span style="font-size: 16px;"><?= $infoCredito['NOMBRE_SUCURSAL'] ?> (<?= $infoCredito['SUCURSAL'] ?>)</span>
+                </div>
+                <div>
+                    <span style="font-size: 16px; font-weight: bold;"><i class="fa fa-briefcase">&nbsp;</i>Ejecutivo:</span>
+                    <span style="font-size: 16px;;"><?= $infoCredito['NOMBRE_EJECUTIVO']; ?> (<?= $infoCredito['EJECUTIVO'] ?>)</span>
                 </div>
             </div>
+            <div class="col-md-3 tile_stats_count">
+                <div>
+                    <span style="font-size: 16px; font-weight: bold;"><i class="fa fa-calendar">&nbsp;</i>Apertura:</span>
+                    <span style="font-size: 16px;"><?= $infoCredito['APERTURA'] ?></span>
 
-            <!-- Tabla de pagos -->
-            <div class="dataTable_wrapper mt-3">
-                <table class="table table-striped table-bordered table-hover" id="pagosRegistrados" style="font-size: 14px;">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>Medio</th>
-                            <th>Fecha Aplicación</th>
-                            <th>Ciclo</th>
-							<th>Operación</th>
-                            <th>Monto</th>
-                            <th>Tipo de Movimiento</th>
-                            <th>Ejecutivo</th>
-                            <th>Fecha Registro</th>
-                        </tr>
-                    </thead>
+                </div>
+                <div>
+                    <span style="font-size: 16px; font-weight: bold;"><i class="fa fa-percent">&nbsp;</i>Tasa:</span>
+                    <span style="font-size: 16px;"><?= $infoCredito['TASA'] ?>% anual</span>
+                </div>
+                <div>
+                    <span style="font-size: 16px; font-weight: bold;"><i class="fa fa-dollar">&nbsp;</i>Interés:</span>
+                    <span style="font-size: 16px;">$ <?= number_format($infoCredito['INTERES'], 2, '.', ','); ?></span>
+                </div>
+            </div>
+            <div class="col-md-3 tile_stats_count">
+                <table style="width: 100%;">
                     <tbody>
-                        <?= $tabla; ?>
+                        <tr class="fila-abono">
+                            <td class="simbolo-operacion">+</td>
+                            <td class="concepto-operacion">Abonos</td>
+                            <td class="monto-operacion">$ <?= number_format($infoCredito['ABONOS'], 2, '.', ','); ?></td>
+                        </tr>
+                        <tr class="fila-retiro">
+                            <td class="simbolo-operacion">-</td>
+                            <td class="concepto-operacion">Retiros</td>
+                            <td class="monto-operacion">$ <?= number_format($infoCredito['RETIROS'], 2, '.', ','); ?></td>
+                        </tr>
+                        <tr class="fila-transito">
+                            <td class="simbolo-operacion">-</td>
+                            <td class="concepto-operacion">En tránsito</td>
+                            <td class="monto-operacion">$ <?= number_format($infoCredito['RETIROS_TRANSITO'], 2, '.', ','); ?></td>
+                        </tr>
+                        <tr class="fila-saldo">
+                            <td class="simbolo-operacion"></td>
+                            <td class="concepto-operacion">Saldo</td>
+                            <td class="monto-operacion">$ <?= number_format($infoCredito['SALDO_ACTUAL'], 2, '.', ','); ?></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-    </div>
 
-  
+        <div class="dataTable_wrapper mt-3">
+            <table class="table table-striped table-bordered table-hover" id="movimientosAhorro" style="font-size: 14px;">
+                <thead class="thead-dark">
+                    <tr class="encabezado">
+                        <th>Medio</th>
+                        <th>Fecha Registro</th>
+                        <th>Fecha Aplicación</th>
+                        <th>Operación</th>
+                        <th>Monto</th>
+                        <th>Descripción</th>
+                        <th>Ejecutivo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?= $tabla; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-<?php echo $footer; ?>
+<style>
+    .encabezado {
+        background-color: #c43136;
+        color: #fff;
+    }
+
+    .encabezado th {
+        padding: 5px;
+        text-transform: uppercase;
+        font-size: 14px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .simbolo-operacion {
+        width: 30px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .concepto-operacion {
+        font-weight: 500;
+        padding-left: 5px;
+    }
+
+    .monto-operacion {
+        text-align: right;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    .fila-abono td {
+        color: #28a745;
+        font-size: 14px;
+    }
+
+    .fila-retiro td {
+        color: #dc3545;
+        font-size: 14px;
+    }
+
+    .fila-transito td {
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+    .fila-saldo {
+        border-top: 2px solid #333;
+    }
+
+    .fila-saldo td {
+        color: #333;
+        font-size: 16px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+</style>
+
+<?= $footer; ?>

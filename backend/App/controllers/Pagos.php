@@ -1832,6 +1832,14 @@ html;
                             $("<option>", {
                                 value: "O",
                                 text: "PAGO EXCEDENTE ELECTRÓNICO"
+                            }),
+                            $("<option>", {
+                                value: "E",
+                                text: "AJUSTE ABONO AHORRO"
+                            }),
+                            $("<option>", {
+                                value: "H",
+                                text: "AJUSTE RETIRO AHORRO"
                             })
                         )
 
@@ -1875,6 +1883,14 @@ html;
                             $("<option>", {
                                 value: "O",
                                 text: "PAGO EXCEDENTE ELECTRÓNICO"
+                            }),
+                            $("<option>", {
+                                value: "E",
+                                text: "AJUSTE ABONO AHORRO"
+                            }),
+                            $("<option>", {
+                                value: "H",
+                                text: "AJUSTE RETIRO AHORRO"
                             })
                         )
                     }

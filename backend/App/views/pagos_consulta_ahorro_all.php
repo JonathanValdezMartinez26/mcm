@@ -1,4 +1,78 @@
-<?php echo $header; ?>
+<?= $header; ?>
+
+<div class="right_col" role="main">
+    <div class="estado-cuenta-wrapper">
+        <h1>Consulta Estados de Cuenta Ahorro</h1>
+        <p>Introduce el <strong>código del crédito</strong> para ver su estado de cuenta.</p>
+
+        <div class="buscador-box">
+            <input type="text" id="credito" name="credito" placeholder="Ejemplo: 006592" maxlength="6" value="<?= $_GET['credito'] ?>" autofocus required>
+            <button type="button"><i class="fa fa-search"></i> Buscar</button>
+        </div>
+    </div>
+    <?php
+    if (isset($_GET['credito'])) {
+        echo <<<HTML
+        <div class="row" style="display: flex; justify-content: center;">
+            <div class="col-md-6">
+                <div class="alert alert-warning alert-dismissable">
+                    <button type="button" class="close" style="color: black;" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <label style="font-size: 14px; color: black;">El crédito {$_GET['credito']} no tiene contrato de ahorro.</label>
+                    <ul style="margin-left: 10px;">
+                        <li style="color: black;">Valide que el número de crédito sea correcto.</li>
+                        <li style="color: black;">Si el problema persiste, comuníquese con soporte técnico.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        HTML;
+    }
+    ?>
+</div>
+
+
+<?= $footer; ?>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputCredito = document.getElementById('credito');
+        const botonBuscar = document.querySelector('.buscador-box button');
+
+        function realizarBusqueda() {
+            const credito = inputCredito.value.trim();
+            if (credito.length === 6) {
+                window.location.href = `/AhorroSimple/EstadoCuenta/?credito=${credito}`;
+            } else {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger alert-dismissable';
+                alertDiv.innerHTML = `
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <strong>Error:</strong> El código del crédito debe tener 6 dígitos.
+                `;
+                alertDiv.style.position = 'fixed';
+                alertDiv.style.bottom = '20px';
+                alertDiv.style.right = '20px';
+                document.querySelector('.right_col').appendChild(alertDiv);
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 5000);
+            }
+        }
+
+        botonBuscar.addEventListener('click', realizarBusqueda);
+
+        inputCredito.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                realizarBusqueda();
+            }
+        });
+
+        inputCredito.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    });
+</script>
 
 <style>
     /* === CONTENEDOR PRINCIPAL === */
@@ -13,16 +87,26 @@
         backdrop-filter: blur(12px);
         border-radius: 20px;
         padding: 60px 30px;
-        box-shadow: 0 0px 0px rgba(0, 0, 0, 0); /* sombra suave para efecto flotante */
+        box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
+        /* sombra suave para efecto flotante */
         color: #333;
         transition: box-shadow 0.4s ease;
-        
+
     }
 
     /* Animación levitar */
     @keyframes levitar {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-4px); } /* muy sutil */
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-4px);
+        }
+
+        /* muy sutil */
     }
 
     .estado-cuenta-wrapper h1 {
@@ -38,6 +122,7 @@
         from {
             text-shadow: 0 0 10px rgba(0, 136, 255, 0.3);
         }
+
         to {
             text-shadow: 0 0 18px rgba(0, 204, 255, 0.6);
         }
@@ -56,7 +141,8 @@
         transition: all 0.3s ease;
         border: 1px solid rgba(0, 0, 0, 0.1);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-        margin: 20px auto 0 auto; /* centrado horizontal */
+        margin: 20px auto 0 auto;
+        /* centrado horizontal */
     }
 
     .buscador-box:hover {
@@ -115,17 +201,3 @@
         }
     }
 </style>
-
-<div class="right_col" role="main">
-    <div class="estado-cuenta-wrapper">
-        <h1>Consulta Estados de Cuenta Ahorro</h1>
-        <p>Introduce el <strong>código del crédito</strong> para ver su estado de cuenta.</p>
-
-        <form action="/AhorroSimple/EstadoCuenta/" method="GET" class="buscador-box">
-            <input type="text" id="cdgns" name="cdgns" placeholder="Ejemplo: 006592" autofocus required value="<?php echo $CDGNS; ?>">
-            <button type="submit"><i class="fa fa-search"></i> Buscar</button>
-        </form>
-    </div>
-</div>
-
-<?php echo $footer; ?>
