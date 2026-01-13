@@ -117,7 +117,8 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'MCDP', 'LVGA', 'QARO'];
+        // Permisos temporales para pruebas de Administración Pagos a 'FLHR'
+        $permisos = ['ADMIN', 'MCDP', 'LVGA', 'QARO', 'FLHR'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= '<li><a href="/Pagos/">Administración Pagos</a></li>';
         }
@@ -216,7 +217,8 @@ class Contenedor extends Controller
 
         $menu .= '</ul></li>';
 
-        $permisos = ['ADMIN', 'CALLC', 'ACALL'];
+        // Permisos temporales para pruebas de Call Center a 'FLHR'
+        $permisos = ['ADMIN', 'CALLC', 'ACALL', 'FLHR'];
         if ($this->ValidaPermiso($permisos)) {
             $menu .= <<<HTML
             <ul class="nav side-menu">
@@ -259,11 +261,14 @@ class Contenedor extends Controller
                             <li><a href="/CallCenter/SupervisionEncuestaPostventa/">Supervisión Postventa</a></li>
                             <li><a href="/CallCenter/Busqueda/">Búsqueda Rápida</a></li>
                             $opcion
-                            </ul>
-                        </li>
-                    </ul>
                 HTML;
             }
+
+            $menu .= <<<HTML
+                        </ul>
+                    </li>
+                </ul>
+            HTML;
         }
 
         $permisos = ['ADMIN', 'PHEE', 'MCDP', 'FECR', 'ORHM'];
