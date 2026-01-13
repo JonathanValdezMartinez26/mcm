@@ -251,10 +251,9 @@ class Contenedor extends Controller
             }
 
             
-            $menu .= '<li><a href="/CallCenter/Pendientes/">$mis Pendientes $titulo</a></li>';
+            $menu .= "<li><a href='/CallCenter/Pendientes/'>$mis Pendientes $titulo</a></li>";
             if (!$this->ValidaPermiso(['FLHR'])) {
                 $menu .= <<<HTML
-                            <li><a href="/CallCenter/Pendientes/">$mis Pendientes $titulo</a></li>
                             <li><a href="/CallCenter/Historico/">$mis Históricos $titulo</a></li>
                             <li><a href="/CallCenter/EncuestaPostventa/">Postventa</a></li>
                             <li><a href="/CallCenter/ReporteEncuestaPostventa/">Reporte Postventa</a></li>
