@@ -117,8 +117,8 @@ class AhorroSimple extends Controller
                     <td style="padding: 0px !important;" width="45" nowrap onclick="{$mensaje}">{$medio}</td>
                     <td style="padding: 0px !important;">{$value['FECHA']}</td>
                     <td style="padding: 0px !important;">{$value['CICLO']}</td>
-                     <td style="padding: 0px !important;">{$value['TIPO_OPERA']}</td>
-                     <td style="padding: 0px !important;">$icono $ {$monto}</td>
+                    <td style="padding: 0px !important;">{$value['TIPO_OPERA']}</td>
+                    <td style="padding: 0px !important;">$icono $ {$monto}</td>
                     <td style="padding: 0px !important;">{$value['TIPO']}</td>
                     <td style="padding: 0px !important;">{$value['EJECUTIVO']}</td>
                     <td style="padding: 0px !important;">{$value['FREGISTRO']}</td>

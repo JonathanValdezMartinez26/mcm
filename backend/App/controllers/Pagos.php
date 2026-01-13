@@ -141,6 +141,14 @@ class Pagos extends Controller
                             $("<option>", {
                                 value: "O",
                                 text: "PAGO EXCEDENTE ELECTRÓNICO"
+                            }),
+                            $("<option>", {
+                                value: "E",
+                                text: "ABONO AHORRO (AJUSTE)"
+                            }),
+                            $("<option>", {
+                                value: "H",
+                                text: "RETIRO AHORRO (AJUSTE)"
                             })
                         )
                     }
@@ -178,6 +186,14 @@ class Pagos extends Controller
                             $("<option>", {
                                 value: "O",
                                 text: "PAGO EXCEDENTE ELECTRÓNICO"
+                            }),
+                            $("<option>", {
+                                value: "E",
+                                text: "ABONO AHORRO (AJUSTE)"
+                            }),
+                            $("<option>", {
+                                value: "H",
+                                text: "RETIRO AHORRO (AJUSTE)"
                             })
                         )
                     }
@@ -201,7 +217,9 @@ class Pagos extends Controller
 					"SEGURO": "S",
 					"AHORRO": "B",
 					"AHORRO ELECTRÓNICO": "F",
-					"PAGO EXCEDENTE ELECTRÓNICO": "O"
+					"PAGO EXCEDENTE ELECTRÓNICO": "O",
+                    "ABONO AHORRO (AJUSTE)": "E",
+                    "RETIRO AHORRO (AJUSTE)": "H"
 				};
 
                 const muestraAdmin = (e) => {
@@ -1832,14 +1850,6 @@ html;
                             $("<option>", {
                                 value: "O",
                                 text: "PAGO EXCEDENTE ELECTRÓNICO"
-                            }),
-                            $("<option>", {
-                                value: "E",
-                                text: "AJUSTE ABONO AHORRO"
-                            }),
-                            $("<option>", {
-                                value: "H",
-                                text: "AJUSTE RETIRO AHORRO"
                             })
                         )
 
@@ -1883,14 +1893,6 @@ html;
                             $("<option>", {
                                 value: "O",
                                 text: "PAGO EXCEDENTE ELECTRÓNICO"
-                            }),
-                            $("<option>", {
-                                value: "E",
-                                text: "AJUSTE ABONO AHORRO"
-                            }),
-                            $("<option>", {
-                                value: "H",
-                                text: "AJUSTE RETIRO AHORRO"
                             })
                         )
                     }

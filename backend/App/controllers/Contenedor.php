@@ -235,7 +235,8 @@ class Contenedor extends Controller
             HTML;
         }
 
-        $permisos = ['ADMIN', 'CALLC', 'ACALL', 'HSEJ', 'ESMM', 'MAPH'];
+        // Permisos temporales para pruebas de Call Center a 'FLHR'
+        $permisos = ['ADMIN', 'CALLC', 'ACALL', 'HSEJ', 'ESMM', 'MAPH', 'FLHR'];
         if ($this->ValidaPermiso($permisos)) {
             if ($this->__perfil == 'ADMIN' || $this->__usuario == 'HSEJ') {
                 $titulo = "(Analistas)";
@@ -247,18 +248,22 @@ class Contenedor extends Controller
                 $opcion .= '<li><a href="/CallCenter/Global/">Todos los Pendientes</a></li>';
             }
 
-            $menu .= <<<HTML
-                        <li><a href="/CallCenter/Pendientes/">$mis Pendientes $titulo</a></li>
-                        <li><a href="/CallCenter/Historico/">$mis Históricos $titulo</a></li>
-                        <li><a href="/CallCenter/EncuestaPostventa/">Postventa</a></li>
-                        <li><a href="/CallCenter/ReporteEncuestaPostventa/">Reporte Postventa</a></li>
-                        <li><a href="/CallCenter/SupervisionEncuestaPostventa/">Supervisión Postventa</a></li>
-                        <li><a href="/CallCenter/Busqueda/">Búsqueda Rápida</a></li>
-                        $opcion
-                        </ul>
-                    </li>
-                </ul>
-            HTML;
+            
+            $menu .= '<li><a href="/CallCenter/Pendientes/">$mis Pendientes $titulo</a></li>';
+            if (!$this->ValidaPermiso(['FLHR'])) {
+                $menu .= <<<HTML
+                            <li><a href="/CallCenter/Pendientes/">$mis Pendientes $titulo</a></li>
+                            <li><a href="/CallCenter/Historico/">$mis Históricos $titulo</a></li>
+                            <li><a href="/CallCenter/EncuestaPostventa/">Postventa</a></li>
+                            <li><a href="/CallCenter/ReporteEncuestaPostventa/">Reporte Postventa</a></li>
+                            <li><a href="/CallCenter/SupervisionEncuestaPostventa/">Supervisión Postventa</a></li>
+                            <li><a href="/CallCenter/Busqueda/">Búsqueda Rápida</a></li>
+                            $opcion
+                            </ul>
+                        </li>
+                    </ul>
+                HTML;
+            }
         }
 
         $permisos = ['ADMIN', 'PHEE', 'MCDP', 'FECR', 'ORHM'];
