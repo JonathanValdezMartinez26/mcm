@@ -40,14 +40,13 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Crédito</th>
-                            <th>Cantidad Solicitada</th>
-                            <th>Fecha de registro</th>
-                            <th>Fecha de solicitud</th>
-                            <th>Fecha de entrega programada</th>
-                            <th>Fecha de devolución</th>
                             <th>Región</th>
                             <th>Sucursal</th>
+                            <th>Crédito</th>
+                            <th>Monto</th>
+                            <th style="word-wrap: break-word; width: 150px;">Fecha de registro</th>
+                            <th style="word-wrap: break-word; width: 150px;">Fecha de entrega programada</th>
+                            <th style="word-wrap: break-word; width: 150px;">Fecha de devolución</th>
                             <th>Administradora</th>
                         </tr>
                     </thead>

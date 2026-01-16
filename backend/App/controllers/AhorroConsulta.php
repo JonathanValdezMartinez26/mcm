@@ -188,19 +188,22 @@ class AhorroConsulta extends Controller
                         $("#detalle_fecha_procesa_call_center").val(datos.ULTIMA_LLAMADA || "");
                         $("#detalle_observaciones_call_center").val(datos.COMENTARIO_EXTERNO || "");
                         
-                        $("#btnVerComprobante").off("click").on("click", () => verComprobante(datos.ID))
+                        $("#btnVerComprobante").off("click").on("click", () => verComprobante(datos.ID, datos.TIPO_FOTO))
                         
                         $('#modalDetalle .nav-tabs a[href="#tabGeneral"]').tab('show');
                         $("#modalDetalle").modal("show");
                     });
                 }
 
-                const verComprobante = (id) => {
-                    $("#modalDetalle").modal("hide");
-                    $("#comprobanteImg").hide();
+                const verComprobante = (id, tipo) => {
+                    $("#comprobanteImg").attr("src", "").hide();
+                    $("#comprobantePdf").attr("src", "").hide();
                     $("#loadingImg").show();
-                    $("#comprobanteImg").attr("src", "/AhorroConsulta/GetImgSolicitud/?id=" + id + "&tipo=comprobante");
+                    $("#modalDetalle").modal("hide");
 
+                    const contendor = tipo === "application/pdf" ? $("#comprobantePdf") : $("#comprobanteImg");
+                    contendor.attr("src", "/AhorroConsulta/GetImgSolicitud/?id=" + id + "&tipo=comprobante");
+                    
                     $("#modalComprobante").modal("show");
                 }
 
@@ -230,14 +233,18 @@ class AhorroConsulta extends Controller
                     const fecha = new Date()
                     const diaSemana = fecha.getDay()
 
-                    if (diaSemana === 4 || diaSemana === 5) {
-                        fecha.setDate(fecha.getDate() + 4);
-                    } else if (diaSemana === 6) {
-                        fecha.setDate(fecha.getDate() + 5);
-                    } else {
-                        fecha.setDate(fecha.getDate() + 3);
+                    const dias = {
+                        1: 2,
+                        2: 2,
+                        3: 5,
+                        4: 4,
+                        5: 4
                     }
-                    return fecha.toISOString().split("T")[0];
+
+                    if (dias[diaSemana]) fecha.setDate(fecha.getDate() + dias[diaSemana])
+                    else fecha.setDate(fecha.getDate() + 3)
+
+                    return fecha.toISOString().split("T")[0]
                 }
 
                 const buscarCredito = () => {
@@ -248,18 +255,22 @@ class AhorroConsulta extends Controller
 
                     consultaServidor("/AhorroConsulta/BuscarSaldo", { cdgns }, (res) => {
                         if (!res.success) return showError(res.mensaje);
-                        if (res.datos.length === 0) return showError("No se encontró el crédito especificado.");
-                        if (parseInt(res.datos?.DIAS_MORA_TRADICONAL) > 0) return showError("El cliente tiene mora en su crédito tradicional, no es posible realizar retiros de ahorro.");
-                        if (parseInt(res.datos?.DIAS_MORA_ADICIONAL) > 0) return showError("El cliente tiene mora en su crédito adicional, no es posible realizar retiros de ahorro.");
+                        const datos = res.datos
                         
-                        const saldo = parseaNumero(res.datos?.SALDO_ACTUAL);
+                        if (datos.length === 0) return showError("No se encontró el crédito especificado.");
+                        if ("{$_SESSION['perfil']}" !== 'ADMIN' && datos.CDGCO !== "{$_SESSION['cdgco']}") return showError("El crédito no pertenece a su sucursal, no es posible realizar retiros de ahorro.");
+                        if (parseInt(datos?.DIAS_MORA_TRADICIONAL) > 0) return showError("El cliente tiene mora en su crédito tradicional, no es posible realizar retiros de ahorro.");
+                        if (datos?.SITUACION_ADICIONAL === 'E') return showError("El cliente cuenta con un crédito adicional activo, no es posible realizar retiros de ahorro.");
+                        if (parseInt(datos?.DIAS_MORA_ADICIONAL) > 0) return showError("El cliente tiene mora en su crédito adicional, no es posible realizar retiros de ahorro.");
+                        
+                        const saldo = parseaNumero(datos?.SALDO_ACTUAL);
 
                         if (saldo <= 0) return showError("El crédito no tiene saldo disponible para retiro.")
 
-                        $("#nombre_cliente").val(res.datos?.NOMBRE_CLIENTE);
+                        $("#nombre_cliente").val(datos?.NOMBRE_CLIENTE);
                         $("#nueva_cdgns").val(cdgns);
-                        $("#nueva_ciclo").val(res.datos?.ULTIMO_CICLO_TRADICIONAL);
-                        $("#aniversario_ahorro").val(res.datos?.ANIVERSARIO);
+                        $("#nueva_ciclo").val(datos?.ULTIMO_CICLO_TRADICIONAL);
+                        $("#aniversario_ahorro").val(datos?.ANIVERSARIO);
                         $("#saldo_ahorro_disponible").val(saldo);
                         $("#nueva_cantidad_solicitada").prop("disabled", false);
                         $("#nueva_fecha_solicitud").prop("disabled", false);
@@ -328,7 +339,9 @@ class AhorroConsulta extends Controller
                     $("#btnNuevaSolicitud").click(nuevaSolicitud)
                     $("#btnGuardarNuevaSolicitud").click(guardarNuevaSolicitud)
 
-                    $("#comprobanteImg").on("load", function() {
+                    $("#comprobanteImg, #comprobantePdf").on("load", function() {
+                        if (!$(this).attr("src")) return;
+
                         $("#loadingImg").hide();
                         $(this).show();
                     });
@@ -359,7 +372,7 @@ class AhorroConsulta extends Controller
 
     public function GetRetiroById()
     {
-        echo json_encode(AhorroConsultaDao::getRetiroById($_POST['id']));
+        echo json_encode(AhorroConsultaDao::getRetiroById($_POST));
     }
 
     public function BuscarSaldo()
@@ -371,6 +384,7 @@ class AhorroConsulta extends Controller
     {
         if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
             $_POST['foto'] = fopen($_FILES['foto']['tmp_name'], 'rb');
+            $_POST['tipo_foto'] = $_FILES['foto']['type'];
         }
 
         $result = AhorroConsultaDao::insertRetiro($_POST);
@@ -388,14 +402,23 @@ class AhorroConsulta extends Controller
             echo "Imagen no encontrada";
             return;
         }
-        $archivo = $result['datos']['FOTO'];
-        $archivo = is_resource($archivo) ? stream_get_contents($archivo) : $archivo;
 
-        header('Content-Transfer-Encoding: binary');
-        echo $archivo;
-        if (is_resource($archivo)) {
-            fclose($archivo);
+        $archivo = $result['datos']['FOTO'];
+        $tipoArchivo = $result['datos']['TIPO_FOTO'] ?? 'image/jpeg';
+        $contenido = is_resource($archivo) ? stream_get_contents($archivo) : $archivo;
+
+        header('Content-Type: ' . $tipoArchivo);
+        header('Content-Length: ' . strlen($contenido));
+        if ($tipoArchivo === 'application/pdf') {
+            header('Content-Disposition: inline; filename="comprobante.pdf"');
+            header('Accept-Ranges: bytes');
+        } else {
+            header('Content-Disposition: inline');
         }
+
+        ob_clean();
+        flush();
+        echo $contenido;
         return;
     }
 }

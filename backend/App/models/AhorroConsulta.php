@@ -56,7 +56,7 @@ class AhorroConsulta extends Model
         }
     }
 
-    public static function getRetiroById($id)
+    public static function getRetiroById($datos)
     {
         $qry = <<<SQL
             SELECT 
@@ -92,6 +92,7 @@ class AhorroConsulta extends Model
                 ,RAC.CDGPE AS CDGPE_CC
                 ,RAC.COMENTARIO_EXTERNO
                 ,TO_CHAR(CASE WHEN RAC.FECHA_LLAMADA_2 IS NOT NULL THEN RAC.FECHA_LLAMADA_2 ELSE RAC.FECHA_LLAMADA_1 END, 'DD/MM/YYYY HH24:MI:SS') AS ULTIMA_LLAMADA
+                ,RA.TIPO_FOTO
             FROM  
                 RETIROS_AHORRO RA
                 LEFT JOIN RETIROS_AHORRO_CALLCENTER RAC ON RA.ID = RAC.RETIRO
@@ -99,7 +100,7 @@ class AhorroConsulta extends Model
                 RA.ID = :id
         SQL;
 
-        $params = [':id' => $id];
+        $params = [':id' => $datos['id']];
 
         try {
             $db = new Database();
@@ -118,45 +119,52 @@ class AhorroConsulta extends Model
     public static function BuscarSaldo($datos)
     {
         $qry = <<<SQL
-            WITH CREDITO_ADICIONAL
+            WITH CREDITOS
+            AS (
+                SELECT PRC.CDGCL
+                    ,PRC.CDGNS
+                    , LPAD(TO_CHAR(MAX(TO_NUMBER(PRC.CICLO))), 2, '0') AS CICLO
+                    , GET_SITUACION(PRC.CDGNS, LPAD(TO_CHAR(MAX(TO_NUMBER(PRC.CICLO))), 2, '0')) AS SITUACION
+                FROM PRC
+                WHERE PRC.CDGEM = 'EMPFIN'
+                    AND PRC.CICLO NOT LIKE 'D%'
+                    AND PRC.CICLO NOT LIKE 'R%'
+                GROUP BY PRC.CDGCL, PRC.CDGNS
+                ),
+            CREDITO_ADICIONAL
             AS (
                 SELECT CN.CDGCL
-                    ,NVL(CN.CDGNS, 0) AS CDGNS
-                    ,(
-                        SELECT MAX(TO_NUMBER(PRN.CICLO))
-                        FROM PRN
-                        WHERE PRN.CDGNS = CN.CDGNS
-                            AND PRN.CICLO NOT LIKE 'D%'
-                            AND PRN.CICLO NOT LIKE 'R%'
-                        GROUP BY PRN.CDGNS
-                        ) AS ULTIMO_CICLO
+                    ,CN.CDGNS
+                    ,CR.CICLO
+                    ,CR.SITUACION
                 FROM CN
+                    LEFT JOIN CREDITOS CR ON CR.CDGCL = CN.CDGCL AND CR.CDGNS = CN.CDGNS
                 WHERE CN.CDGEM = 'EMPFIN'
                     AND CN.ESTATUS = 'A'
                     AND CN.CDGMS IS NULL
                 ORDER BY CN.INICIO DESC
                 )
-            SELECT CA.CDGNS
-                ,PRC.CICLO AS ULTIMO_CICLO_TRADICIONAL
+            SELECT 
+                PRN.CDGCO
+                ,CA.CDGNS
+                ,CR.CICLO AS ULTIMO_CICLO_TRADICIONAL
+                ,CR.SITUACION AS SITUACION_TRADICIONAL
                 ,CR_AD.CDGNS AS CREDITO_ADICIONAL
-                ,CR_AD.ULTIMO_CICLO AS ULTIMO_CICLO_ADICIONAL
+                ,CR_AD.CICLO AS ULTIMO_CICLO_ADICIONAL
+                ,CR_AD.SITUACION AS SITUACION_ADICIONAL
                 --,0 AS ATRASO_TRADICONAL
-                ,FNCALDIASMORA(PRC.CDGEM, PRC.CDGNS, 'G', PRC.CICLO) AS DIAS_MORA_TRADICONAL
-                --,0 AS DIAS_MORA_ADICIONAL
-                ,CASE WHEN NOT CR_AD.ULTIMO_CICLO IS NULL THEN FNCALDIASMORA(PRC.CDGEM, CR_AD.CDGNS, 'G', LPAD(TO_CHAR(CR_AD.ULTIMO_CICLO), 2, '0')) ELSE 0 END AS DIAS_MORA_ADICIONAL
+                ,FNCALDIASMORA('EMPFIN', CR.CDGNS, 'G', CR.CICLO) AS DIAS_MORA_TRADICIONAL
+                ,0 AS DIAS_MORA_ADICIONAL
+                --,CASE WHEN NOT CR_AD.CICLO IS NULL THEN FNCALDIASMORA('EMPFIN', CR_AD.CDGNS, 'G', CR_AD.CICLO) ELSE 0 END AS DIAS_MORA_ADICIONAL
                 ,GET_NOMBRE_CLIENTE(CL.CODIGO) AS NOMBRE_CLIENTE
-                ,FN_GET_AHORRO(PRC.CDGNS) AS SALDO_ACTUAL
+                ,FN_GET_AHORRO(CR.CDGNS) AS SALDO_ACTUAL
                 ,TO_CHAR(ADD_MONTHS(CA.FECHA_REGISTRO, 12), 'YYYY-MM-DD') AS ANIVERSARIO
             FROM CONTRATOS_AHORRO CA
-            INNER JOIN PRC ON PRC.CDGNS = CA.CDGNS
-            INNER JOIN CL ON CL.CODIGO = PRC.CDGCL
-            LEFT JOIN CREDITO_ADICIONAL CR_AD ON CR_AD.CDGCL = CL.CODIGO
-                AND CR_AD.CDGNS <> CA.CDGNS
+            INNER JOIN CREDITOS CR ON CR.CDGNS = CA.CDGNS
+            INNER JOIN CL ON CL.CODIGO = CR.CDGCL
+            INNER JOIN PRN ON PRN.CDGNS = CR.CDGNS AND PRN.CICLO = CR.CICLO
+            LEFT JOIN CREDITO_ADICIONAL CR_AD ON CR_AD.CDGCL = CL.CODIGO AND CR_AD.CDGNS <> CA.CDGNS
             WHERE CA.CDGNS = :cdgns
-                AND PRC.CICLO NOT LIKE 'D%'
-                AND PRC.CICLO NOT LIKE 'R%'
-            ORDER BY PRC.CICLO DESC
-            FETCH FIRST 1 ROWS ONLY
         SQL;
 
         $params = [
@@ -187,6 +195,7 @@ class AhorroConsulta extends Model
                 ,OBSERVACIONES_ADMINISTRADORA
                 ,CDGPE_ADMINISTRADORA
                 ,FOTO
+                ,TIPO_FOTO
                 ,FECHA_CREACION
             ) VALUES (
                 :cdgns
@@ -196,7 +205,8 @@ class AhorroConsulta extends Model
                 ,TO_DATE(:fecha_entrega, 'YYYY-MM-DD')
                 ,:observaciones_administradora
                 ,:cdgpe_administradora
-                , EMPTY_BLOB()
+                ,EMPTY_BLOB()
+                ,:tipo_foto
                 ,SYSDATE
             )
             RETURNING FOTO INTO :foto
@@ -210,7 +220,8 @@ class AhorroConsulta extends Model
             'fecha_entrega' => $datos['fecha_entrega'],
             'observaciones_administradora' => $datos['observaciones_administradora'],
             'cdgpe_administradora' => $datos['cdgpe_administradora'],
-            'foto' => $datos['foto']
+            'foto' => $datos['foto'],
+            'tipo_foto' => $datos['tipo_foto']
         ];
 
         try {
@@ -227,6 +238,7 @@ class AhorroConsulta extends Model
         $qry = <<<SQL
             SELECT 
                 FOTO
+                ,TIPO_FOTO
             FROM 
                 RETIROS_AHORRO
             WHERE 

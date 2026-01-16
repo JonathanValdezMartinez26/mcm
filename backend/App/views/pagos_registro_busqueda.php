@@ -1,5 +1,9 @@
 <?= $header; ?>
 
+<?php
+$oculto = $Administracion[0]['TIPO_C'] === 'MAS POR TI' ? 'style="display:none;"' : '';
+?>
+
 <div class="right_col">
     <div class="panel panel-body" style="margin-bottom: 0px;">
         <div class="x_title">
@@ -190,8 +194,8 @@
                                         <option value="R">REFINANCIAMIENTO</option>
                                         <!--  <option value="H">RECOMIENDA</option> -->
                                         <option value="S">SEGURO</option>
-										<option value="B">AHORRO</option>
-										<option value="F">AHORRO ELECTRÓNICO</option>
+                                        <option <?= $oculto ?> value="B">AHORRO</option>
+                                        <option <?= $oculto ?> value="F">AHORRO ELECTRÓNICO</option>
                                     </select>
                                 </div>
                             </div>
@@ -309,8 +313,8 @@
                                         <option value="R">REFINANCIAMIENTO</option>
                                         <!--  <option value="H">RECOMIENDA</option> -->
                                         <option value="S">SEGURO</option>
-										<option value="B">AHORRO</option>
-										<option value="F">AHORRO ELECTRÓNICO</option>
+                                        <option <?= $oculto ?> value="B">AHORRO</option>
+                                        <option <?= $oculto ?> value="F">AHORRO ELECTRÓNICO</option>
                                     </select>
                                 </div>
                             </div>

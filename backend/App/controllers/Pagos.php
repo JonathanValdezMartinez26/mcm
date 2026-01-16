@@ -1760,7 +1760,6 @@ html;
                     // })
                 // }
 
-
                 const agregarPago = () => {
                     let texto = $("#ejecutivo :selected").text()
                     let tipo = $("#tipo").val()
@@ -1795,7 +1794,6 @@ html;
                         }
                     })
                 }
-
 
                 const enviar_edit = () => {
                     monto = $("#monto_e").val()

@@ -370,7 +370,6 @@ class AhorroSimple extends Controller
         }
     }
 
-
     public function Contrato()
     {
         $extraHeader = self::GetExtraHeader('Contratos de Ahorro');
@@ -623,6 +622,15 @@ class AhorroSimple extends Controller
 
     public function GetCliente()
     {
+        $contrato = AhorroSimpleDao::GetContrato($_POST);
+        if ($contrato['success'] && isset($contrato['datos'])) {
+            echo json_encode([
+                'success' => false,
+                'mensaje' => 'El cliente ya cuenta con un contrato de ahorro.'
+            ]);
+            return;
+        }
+
         echo json_encode(AhorroSimpleDao::GetCliente($_POST));
     }
 

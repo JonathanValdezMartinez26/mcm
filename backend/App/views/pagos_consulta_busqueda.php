@@ -7,7 +7,7 @@
                 <div class="clearfix"></div>
             </div>
 
-            <div class="card card-danger col-md-8" >
+            <div class="card card-danger col-md-8">
                 <div class="card-header">
                     <h5 class="card-title">Seleccione la sucursal y el rango de la fecha a generar el reporte </h5>
                 </div>
@@ -44,10 +44,10 @@
                     <button id="export_excel_consulta" type="button" class="btn btn-success btn-circle"><i class="fa fa-file-excel-o"> </i> <b>Exportar a Excel</b></button>
                     <hr style="border-top: 1px solid #787878; margin-top: 5px;">
 
-                <div class="dataTable_wrapper">
-                    <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
-                        <thead>
-                        <tr>
+                    <div class="dataTable_wrapper">
+                        <table class="table table-striped table-bordered table-hover" id="muestra-cupones">
+                            <thead>
+                                <tr>
                                     <th>Medio</th>
                                     <th>Region</th>
                                     <th>Sucursal</th>
@@ -61,14 +61,14 @@
                                     <th>Ejecutivo</th>
                                     <th>Fecha de Registro</th>
                                 </tr>
-                                </thead>
-                                <tbody>
+                            </thead>
+                            <tbody>
                                 <?= $tabla; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                </div>
+                            </tbody>
+                        </table>
+                    </div>
             </div>
+        </div>
     </div>
 </div>
 
@@ -77,7 +77,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Agregar Registro de Pago</h4></center>
+                <center>
+                    <h4 class="modal-title" id="myModalLabel">Agregar Registro de Pago</h4>
+                </center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -86,7 +88,8 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Fecha</label>
-                                    <input type="text" class="form-control" id="Fecha" aria-describedby="Fecha" disabled placeholder="" value="<?php $fechaActual = date('d-m-Y H:i:s'); echo $fechaActual; ?>">
+                                    <input type="text" class="form-control" id="Fecha" aria-describedby="Fecha" disabled placeholder="" value="<?php $fechaActual = date('d-m-Y H:i:s');
+                                                                                                                                                echo $fechaActual; ?>">
                                     <small id="emailHelp" class="form-text text-muted">Aparecera la fecha en la que registras el pago.</small>
                                 </div>
                             </div>
@@ -138,7 +141,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <center><h4 class="modal-title" id="myModalLabel">Editar Registro de Pago</h4></center>
+                <center>
+                    <h4 class="modal-title" id="myModalLabel">Editar Registro de Pago</h4>
+                </center>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
@@ -147,7 +152,8 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Fecha</label>
-                                    <input type="text" class="form-control" id="Fecha" aria-describedby="Fecha" disabled placeholder="" value="<?php $fechaActual = date('d-m-Y H:i:s'); echo $fechaActual; ?>">
+                                    <input type="text" class="form-control" id="Fecha" aria-describedby="Fecha" disabled placeholder="" value="<?php $fechaActual = date('d-m-Y H:i:s');
+                                                                                                                                                echo $fechaActual; ?>">
                                     <small id="emailHelp" class="form-text text-muted">Aparecera la fecha en la que registras el pago.</small>
                                 </div>
                             </div>
@@ -196,47 +202,50 @@
 
 
 <script>
-const mapTipos = {
-    "PAGO": "P",
-    "PAGO ELECTRÓNICO": "X",
-    "PAGO EXCEDENTE": "Y",
-    "PAGO EXCEDENTE ELECTRÓNICO": "O",
-    "MULTA": "M",
-    "MULTA GESTORES": "Z",
-    "MULTA ELECTRÓNICA": "L",
-    "GARANTÍA": "G",
-    "DESCUENTO": "D",
-    "REFINANCIAMIENTO": "R",
-    "RECOMIENDA": "H",
-    "SEGURO": "S",
-    "AHORRO": "B"
-	"AHORRO EL": "F"
-};
+    const mapTipos = {
+        "PAGO": "P",
+        "PAGO ELECTRÓNICO": "X",
+        "PAGO EXCEDENTE": "Y",
+        "PAGO EXCEDENTE ELECTRÓNICO": "O",
+        "MULTA": "M",
+        "MULTA GESTORES": "Z",
+        "MULTA ELECTRÓNICA": "L",
+        "GARANTÍA": "G",
+        "DESCUENTO": "D",
+        "REFINANCIAMIENTO": "R",
+        "RECOMIENDA": "H",
+        "SEGURO": "S",
+        "AHORRO": "B",
+        "AHORRO ELECTRÓNICO": "F",
+        "ABONO AHORRO (AJUSTE)": "E",
+        "RETIRO AHORRO (AJUSTE)": "H"
 
-const muestraAdmin = (e) => {
-    const tr = e.target.tagName === "I" 
-        ? e.target.parentElement.parentElement.parentElement 
-        : e.target.parentElement.parentElement;
+    };
 
-    const [, secuencia, cdgns, fecha_tabla, ciclo, monto, tipo, ejecutivo] = tr.children;
-    const fecha = new Date(fecha_tabla.innerText.split("/").reverse().join("-"));
-    const fechaMin = new Date(fecha);
-    fechaMin.setDate(fecha.getDate() - 20);
+    const muestraAdmin = (e) => {
+        const tr = e.target.tagName === "I" ?
+            e.target.parentElement.parentElement.parentElement :
+            e.target.parentElement.parentElement;
 
-    $("#nombre_admin").val($("#nombreCliente").text());
-    $("#secuencia_admin").val(secuencia.innerText);
-    $("#cdgns_admin").val(cdgns.innerText);
-    $("#Fecha_admin_r").val(fecha.toISOString().split("T")[0]);
-    $("#Fecha_admin").val(fecha.toISOString().split("T")[0]);
-    $("#Fecha_admin").attr("max", fecha.toISOString().split("T")[0]);
-    $("#Fecha_admin").attr("min", fechaMin.toISOString().split("T")[0]);
-    $("#ciclo_admin").val(ciclo.innerText);
-    $("#monto_admin").val(parseaNumero(monto.innerText));
-    $("#tipo_admin").val(mapTipos[tipo.innerText.trim()] || "");
-    $("#ejecutivo_admin").val($("#ejecutivo_admin option").filter((i, e) => e.text === ejecutivo.innerText).val());
+        const [, secuencia, cdgns, fecha_tabla, ciclo, monto, tipo, ejecutivo] = tr.children;
+        const fecha = new Date(fecha_tabla.innerText.split("/").reverse().join("-"));
+        const fechaMin = new Date(fecha);
+        fechaMin.setDate(fecha.getDate() - 20);
 
-    $("#modal_admin").modal("show");
-};
+        $("#nombre_admin").val($("#nombreCliente").text());
+        $("#secuencia_admin").val(secuencia.innerText);
+        $("#cdgns_admin").val(cdgns.innerText);
+        $("#Fecha_admin_r").val(fecha.toISOString().split("T")[0]);
+        $("#Fecha_admin").val(fecha.toISOString().split("T")[0]);
+        $("#Fecha_admin").attr("max", fecha.toISOString().split("T")[0]);
+        $("#Fecha_admin").attr("min", fechaMin.toISOString().split("T")[0]);
+        $("#ciclo_admin").val(ciclo.innerText);
+        $("#monto_admin").val(parseaNumero(monto.innerText));
+        $("#tipo_admin").val(mapTipos[tipo.innerText.trim()] || "");
+        $("#ejecutivo_admin").val($("#ejecutivo_admin option").filter((i, e) => e.text === ejecutivo.innerText).val());
+
+        $("#modal_admin").modal("show");
+    };
 </script>
 
 <?php echo $footer; ?>

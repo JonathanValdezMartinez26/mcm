@@ -126,7 +126,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>Foto/Comprobante</label>
-                                    <input type="file" class="form-control" id="nueva_foto" accept="image/*" disabled>
+                                    <input type="file" class="form-control" id="nueva_foto" accept="image/*, application/pdf" disabled>
                                     <small class="form-text text-muted">Formatos aceptados: JPG, PNG, PDF (Máx. 5MB)</small>
                                 </div>
                             </div>
@@ -342,11 +342,12 @@
                     <h4 class="modal-title" id="modalComprobanteLabel">Comprobante de Retiro</h4>
                 </center>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
                 <div class="container-fluid">
                     <div id="comprobanteContainer" class="text-center">
                         <img src="/img/wait.gif" alt="Descargando..." id="loadingImg">
-                        <img src="" alt="Comprobante" class="img-fluid" id="comprobanteImg" />
+                        <img src="" alt="Comprobante" class="img-fluid" id="comprobanteImg" style="display:none; max-width: 100%; height: auto;" />
+                        <iframe src="" id="comprobantePdf" style="display:none; width: 100%; height: 75vh;" frameborder="0"></iframe>
                     </div>
                 </div>
             </div>

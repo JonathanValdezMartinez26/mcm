@@ -5764,17 +5764,18 @@ html;
                 const resultadoOK = (datos) => {
                     datos = datos.map((dato) => {
                         dato.CANT_SOLICITADA = "$ " + formatoMoneda(dato.CANT_SOLICITADA)
+                        const region = dato.REGION + " - " + dato.NOMBRE_REGION
+                        const sucursal = dato.SUCURSAL + " - " + dato.NOMBRE_SUCURSAL
 
                         return [
                             dato.ID,
+                            region,
+                            sucursal,
                             dato.CDGNS,
                             dato.CANT_SOLICITADA,
                             dato.FECHA_CREACION,
-                            dato.FECHA_SOLICITUD,
                             dato.FECHA_ENTREGA,
                             dato.FECHA_DEVOLUCION || "-",
-                            dato.REGION,
-                            dato.SUCURSAL,
                             dato.CDGPE_ADMINISTRADORA
                         ]
                     })
@@ -5828,14 +5829,16 @@ html;
 
         $columnas = [
             \PHPSpreadsheet::ColumnaExcel('ID', 'ID retiro'),
+            \PHPSpreadsheet::ColumnaExcel('REGION', 'ID Región'),
+            \PHPSpreadsheet::ColumnaExcel('NOMBRE_REGION', 'Región'),
+            \PHPSpreadsheet::ColumnaExcel('SUCURSAL', 'ID Sucursal'),
+            \PHPSpreadsheet::ColumnaExcel('NOMBRE_SUCURSAL', 'Sucursal'),
             \PHPSpreadsheet::ColumnaExcel('CDGNS', 'No. Crédito'),
             \PHPSpreadsheet::ColumnaExcel('CANT_SOLICITADA', 'Monto', ['estilo' => $estilos['moneda'], 'total' => true]),
             \PHPSpreadsheet::ColumnaExcel('FECHA_CREACION', 'Fecha Registro', ['estilo' => $estilos['fecha_hora']]),
             \PHPSpreadsheet::ColumnaExcel('FECHA_SOLICITUD', 'Fecha Solicitud', ['estilo' => $estilos['fecha']]),
             \PHPSpreadsheet::ColumnaExcel('FECHA_ENTREGA', 'Fecha Entrega Programada', ['estilo' => $estilos['fecha']]),
             \PHPSpreadsheet::ColumnaExcel('FECHA_DEVOLUCION', 'Fecha Devolución', ['estilo' => $estilos['fecha_hora']]),
-            \PHPSpreadsheet::ColumnaExcel('REGION', 'Región'),
-            \PHPSpreadsheet::ColumnaExcel('SUCURSAL', 'Sucursal'),
             \PHPSpreadsheet::ColumnaExcel('CDGPE_ADMINISTRADORA', 'Administradora'),
         ];
 
@@ -5974,7 +5977,7 @@ html;
                         })
                         .join("")
 
-                    return '<div class="dropdown"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></button><ul class="dropdown-menu">' + acciones + '</ul></div>'
+                    return '<div class="dropdown"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></button><ul class="dropdown-menu" style="left: -100%;">' + acciones + '</ul></div>'
                 }
 
                 const verDetalle = (idRetiro) => {

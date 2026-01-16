@@ -60,7 +60,7 @@
                         </tr>
                         <tr class="fila-saldo">
                             <td class="simbolo-operacion"></td>
-                            <td class="concepto-operacion">Saldo</td>
+                            <td class="concepto-operacion">Saldo disponible</td>
                             <td class="monto-operacion">$ <?= number_format($infoCredito['SALDO_ACTUAL'], 2, '.', ','); ?></td>
                         </tr>
                     </tbody>

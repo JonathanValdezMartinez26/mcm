@@ -26,6 +26,7 @@
                 </div>
             </div>
         </div>
+        <hr>
         <div class="panel-body resultado">
             <div class="row">
                 <table class="table table-striped table-bordered table-hover" id="retiros">

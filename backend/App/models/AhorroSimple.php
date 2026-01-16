@@ -70,39 +70,41 @@ class AhorroSimple extends Model
     public static function GetMovimientosAhorro($datos)
     {
         $qry = <<<SQL
-            SELECT CASE PD.TIPO WHEN 'H' THEN 'RETIRO' ELSE 'ABONO' END AS TIPO
-                ,TIPO_OPERACION(PD.TIPO) AS DESCRIPCION
-                ,TO_CHAR(PD.FECHA, 'DD/MM/YYYY') AS APLICACION
-                ,TO_CHAR(PD.FREGISTRO, 'DD/MM/YYYY HH24:MI:SS') AS REGISTRO
-                ,PD.MONTO
-                ,PD.EJECUTIVO
-            FROM PAGOSDIA PD
-            WHERE PD.CDGEM = 'EMPFIN'
-                AND PD.ESTATUS = 'A'
-                AND PD.TIPO IN ('B' ,'F', 'E', 'H')
-                AND PD.CDGNS = :credito
-            UNION
-            SELECT 'RETIRO' AS TIPO
-                ,CASE
-                    WHEN RA.ESTATUS = 'C' THEN 'CANCELADO'
-                    WHEN RA.ESTATUS = 'R' THEN 'RECHAZADO'
-                    WHEN RA.ESTATUS = 'D' THEN 'DEVUELTO'
-                    WHEN RA.ESTATUS IN ('V', 'P', 'A') THEN 'EN TRÁNSITO'
-                    WHEN RA.ESTATUS = 'E' THEN 'ENTREGADO'
-                    ELSE 'DESCONOCIDO'
-                END AS DESCRIPCION
-                ,TO_CHAR(CASE
-                    WHEN RA.ESTATUS = 'E' THEN RA.FECHA_ENTREGA_REAL
-                    WHEN RA.ESTATUS = 'D' THEN RA.FECHA_DEVOLUCION
-                    WHEN RA.ESTATUS IN ('C', 'R') THEN RA.FECHA_CANCELACION
-                    ELSE RA.FECHA_CREACION
-                END, 'DD/MM/YYYY') AS APLICACION
-                ,TO_CHAR(RA.FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS REGISTRO
-                ,RA.CANT_SOLICITADA AS MONTO
-                ,GET_NOMBRE_EMPLEADO(RA.CDGPE_ADMINISTRADORA) AS EJECUTIVO
-            FROM RETIROS_AHORRO RA
-            WHERE RA.CDGNS = :credito
-            ORDER BY REGISTRO DESC
+            SELECT * FROM (
+                SELECT CASE PD.TIPO WHEN 'H' THEN 'RETIRO' ELSE 'ABONO' END AS TIPO
+                    ,TIPO_OPERACION(PD.TIPO) AS DESCRIPCION
+                    ,TO_CHAR(PD.FECHA, 'DD/MM/YYYY') AS APLICACION
+                    ,TO_CHAR(PD.FREGISTRO, 'DD/MM/YYYY HH24:MI:SS') AS REGISTRO
+                    ,PD.MONTO
+                    ,PD.EJECUTIVO
+                FROM PAGOSDIA PD
+                WHERE PD.CDGEM = 'EMPFIN'
+                    AND PD.ESTATUS = 'A'
+                    AND PD.TIPO IN ('B' ,'F', 'E', 'H')
+                    AND PD.CDGNS = :credito
+                UNION
+                SELECT 'RETIRO' AS TIPO
+                    ,CASE
+                        WHEN RA.ESTATUS = 'C' THEN 'CANCELADO'
+                        WHEN RA.ESTATUS = 'R' THEN 'RECHAZADO'
+                        WHEN RA.ESTATUS = 'D' THEN 'DEVUELTO'
+                        WHEN RA.ESTATUS IN ('V', 'P', 'A') THEN 'EN TRÁNSITO'
+                        WHEN RA.ESTATUS = 'E' THEN 'ENTREGADO'
+                        ELSE 'DESCONOCIDO'
+                    END AS DESCRIPCION
+                    ,TO_CHAR(CASE
+                        WHEN RA.ESTATUS = 'E' THEN RA.FECHA_ENTREGA_REAL
+                        WHEN RA.ESTATUS = 'D' THEN RA.FECHA_DEVOLUCION
+                        WHEN RA.ESTATUS IN ('C', 'R') THEN RA.FECHA_CANCELACION
+                        ELSE RA.FECHA_CREACION
+                    END, 'DD/MM/YYYY') AS APLICACION
+                    ,TO_CHAR(RA.FECHA_CREACION, 'DD/MM/YYYY HH24:MI:SS') AS REGISTRO
+                    ,RA.CANT_SOLICITADA AS MONTO
+                    ,GET_NOMBRE_EMPLEADO(RA.CDGPE_ADMINISTRADORA) AS EJECUTIVO
+                FROM RETIROS_AHORRO RA
+                WHERE RA.CDGNS = :credito
+            )
+            ORDER BY TO_DATE(REGISTRO, 'DD/MM/YYYY HH24:MI:SS') DESC
         SQL;
 
         $params = [
@@ -404,7 +406,29 @@ sql;
             $insertados++;
         }
 
-        return $insertados; // solo un número interno, no se hace echo
+        return $insertados;
+    }
+
+    public static function GetContrato($datos)
+    {
+        $query = <<<SQL
+            SELECT
+                COUNT(*) AS EXISTE
+            FROM 
+                CONTRATOS_AHORRO CA
+            WHERE 
+                CA.CDGNS = :credito
+        SQL;
+
+        $params = ['credito' => $datos['credito']];
+
+        try {
+            $db = new Database();
+            $res = $db->queryOne($query, $params);
+            return self::Responde(true, 'Cliente obtenido', $res);
+        } catch (\Exception $e) {
+            return  self::Responde(false, 'Error al obtener cliente', null, $e->getMessage());
+        }
     }
 
     public static function GetCliente($datos)
