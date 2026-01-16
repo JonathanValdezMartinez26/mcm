@@ -8,8 +8,6 @@ use Core\View;
 use Core\Controller;
 use App\models\CorreccionAjustes as CorreccionAjustesDao;
 
-
-
 class CorreccionAjustes extends Controller
 {
 
